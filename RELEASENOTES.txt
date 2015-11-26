@@ -1,0 +1,81 @@
+* Release notes on Sparsity-Aware Image and Volume Data Restoration Package
+
+- SaivDr20151126
+-- (Major) Migrated to GitHub
+-- (Major) Option 'GradObj' became available for a single-level Type-I NSOLT
+--- saivdr.dictionary.nsoltx.design.NsoltDictionaryLearning
+-- (Minor) Fixed a bug of frequency domain synthesis operations
+--- saivdr.dictionary.generalfb.*
+
+- SaivDr20150902
+-- (Minor) Fixed a bug and revised to support boundary operation
+--- saivdr.degradation.linearprocess.DecimationSystem
+--- saivdr.degradation.linearprocess.BlurSystem
+-- (Minor) Added SURE-LET denoising scripts in examples/dirlot
+
+- SaivDr20150610
+-- (Major) Frequency domain analysis and synthesis operations became available
+--- saivdr.dictionary.generalfb.*
+-- (Major) Different numbers settings became available for decimation factors
+--- saivdr.dictionary.nsoltx.*
+-- (Minor) Added a package of 1-D oversampled linear-phase paraunitary
+   filter banks
+--- saivdr.dictionary.olpprfb.*
+-- (Minor) Quickstart was revised to use frequency domain filtering.
+
+- SaivDr20141206
+-- (Major) Thoroughly revised NSOLT and NS-GenLOT codes for acceleration
+--- saivdr.dictionary.nsoltx.* 
+--- saivdr.dictionary.nsgenlotx.* 
+-- (Major) 3-D Volume data processing became available
+--- saivdr.dictionary.nsoltx.* 
+--- saivdr.dictionary.udhaar.* 
+--- saivdr.utility.PolyPhaseMatrix3d
+--- saivdr.utility.PolyPhaseCoefOperation3dSystem
+-- (Major) Type-II NSOLT with ps < pa became available
+--- saivdr.dictionary.nsoltx.* 
+
+- SaivDr20140512
+-- (Minor) Fixed a bug in a support function and updated data
+   in examples/icassp2014
+
+- SaivDr20140202
+-- (Major) Fixed the following classes to run without MATLAB Coder
+--- saivdr.dictionary.nsolt.TypeIAnalysisSystem
+--- saivdr.dictionary.nsolt.TypeIIAnalysisSystem
+--- saivdr.dictionary.nsolt.TypeISynthesisSystem
+--- saivdr.dictionary.nsolt.TypeIISynthesisSystem
+-- (Minor) Removed confliction caused by multiple calls of 
+   saivdr.dictonary.nsolt.mexsrcs.fcn_autobuild in parallel execution
+-- (Minor) Fixed saivdr.utility.StepMonitoringSystem to rehash path
+   just after downloading ssim_index.m
+-- (Minor) Fixed overwriting problem of files under
+   examples/{icassp2013_rev,icip2013_rev}/results
+
+- SaivDr20140122
+-- (Major) IterativeHardThresholdingWithNsolt and 
+   IterativeHardThresholdingWithUdHaar were removed and integrated into 
+   a new class IterativeHardThresholding.
+-- (Major) IterativePursuitWithNsolt and GradientPursuitWithUdHaar were 
+   removed and integrated into a new class GradientPursuit.
+-- (Minor) Bug in StepMonitoringSystem was fixed.
+-- (Minor) Property 'Smax' of saivdr.restoration.ista.IstaImRestoration
+   was renamed to 'MaxIter' so that what it means becomes clear.
+-- (Minor) Timing to call fcn_autobuild() in TypeINsoltAnalysisSystem,
+   TypeIINsoltAnalysisSystem, TypeINsoltSynthesisSystem and 
+   TypeIINsoltSynthesisSystem is moved to the object setup process.
+
+- SaivDr20140118
+-- HTML document of Quickstart was revised.
+
+- SaivDr20140117
+-- This is a brand-new package!
+
+* Known issues
+
+- Script 'mytest.m' sometimes fails to generate mex codes at the first
+  trial.  Please try it twice. Then, the code generation may successfully
+  be finished.
+
+% SVN identifier:
+% $Id: RELEASENOTES.txt 871 2015-11-26 09:04:01Z sho $

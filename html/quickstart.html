@@ -1,0 +1,845 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>Quickstart of SaivDr Package</title><meta name="generator" content="MATLAB 8.6"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2015-11-26"><meta name="DC.source" content="quickstart.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h1>Quickstart of <b>SaivDr Package</b></h1><!--introduction--><p>A brief introduction to image restroation with <b>SaivDr Package</b></p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Summary</a></li><li><a href="#2">Add the package to search path</a></li><li><a href="#3">Read a source image</a></li><li><a href="#4">Create a degradation system object</a></li><li><a href="#5">Generate an observed image</a></li><li><a href="#6">Create an NSOLT system object</a></li><li><a href="#7">Create an analysis and synthesis system object</a></li><li><a href="#10">Create an ISTA-based image restoration system object</a></li><li><a href="#11">Create a step monitor system object</a></li><li><a href="#12">Perform ISTA-based image restoration</a></li><li><a href="#13">Extract the final evaluation</a></li><li><a href="#14">Perform Wiener filtering</a></li><li><a href="#15">Compare deblurring performances</a></li><li><a href="#16">Release notes</a></li></ul></div><h2>Summary<a name="1"></a></h2><p><b>SaivDr</b> is an abbreviation of <i>Sparsity-Aware Image and Volume Data Restoration</i>. This package is developed in order for making</p><div><ul><li>Experiments,</li><li>Development and</li><li>Implementation</li></ul></div><p>of sparsity-aware image and volume data restoraition algorithms simple.</p><p>Information about <b>SaivDr Package</b> is given in Contents.m. The HELP command can be used to see the contents as follows:</p><pre class="codeinput">help <span class="string">SaivDr</span>
+</pre><pre class="codeoutput">  Sparsity-Aware Image and Volume Data Restoration Package
+ 
+  Files
+    mytest     - Script of unit testing for SaivDr Package
+    quickstart - Quickstart of *SaivDr Package*
+    setpath    - Path setup for *SaivDr Package*
+  
+  * Package structure
+  
+    + saivdr -+- testcase -+- sparserep 
+              |            |
+              |            +- embedded
+              |            |
+              |            +- dictionary  -+- nsolt     -+- design
+              |            |               |
+              |            |               +- nsoltx    -+- design
+              |            |               |
+              |            |               +- nsgenlot  -+- design
+              |            |               |
+              |            |               +- nsgenlotx -+- design
+              |            |               |
+              |            |               +- olpprfb
+              |            |               |
+              |            |               +- udhaar 
+              |            |               |
+              |            |               +- generalfb
+              |            |               |
+              |            |               +- mixture
+              |            |               |
+              |            |               +- utility
+              |            |
+              |            +- restoration -+- ista
+              |            |
+              |            +- degradation -+- linearprocess
+              |            |               |
+              |            |               +- noiseprocess
+              |            |
+              |            +- utility 
+              |
+              +- sparserep
+              |
+              +- embedded
+              |
+              +- dictionary  -+- nsolt     -+- design
+              |               |             |
+              |               |             +- mexsrcs
+              |               |        
+              |               +- nsoltx    -+- design
+              |               |             |
+              |               |             +- mexsrcs
+              |               |
+              |               +- nsgenlot  -+- design
+              |               |         
+              |               +- nsgenlotx -+- design
+              |               |         
+              |               +- olpprfb
+              |               |         
+              |               +- udhaar 
+              |               |
+              |               +- generalfb
+              |               |
+              |               +- mixture
+              |               |
+              |               +- utility
+              |
+              +- restoration -+- ista  
+              |
+              +- degradation -+- linearprocess
+              |               |
+              |               +- noiseprocess
+              |
+              +- utility
+ 
+  * Requirements
+  
+  - MATLAB R2013b or later, 
+  -- Signal Processing Toolbox
+  -- Image Processing Toolbox
+  -- Optimization Toolbox
+  
+  * Recomendation
+  
+  -- Global Optimization Toolbox 
+  -- Parallel Computing Toolbox
+  -- MATLAB Coder
+  
+  * Brief introduction
+  
+  1. Change current directory to where this file contains on MATLAB.
+  
+  2. Set the path by using the following command:
+  
+   &gt;&gt; setpath
+  
+  3. Several example codes are found under the second layer directory 
+     'examples' of this package. Change current directory to one under 
+     the second layer directiory 'examples' and execute an M-file of 
+     which name begins with 'main,' such as
+  
+   &gt;&gt; main_xxxx
+  
+     and then execute an M-file of which name begins with 'disp,' such as
+  
+   &gt;&gt; disp_xxxx
+  
+  * Contact address
+  
+     Shogo MURAMATSU,
+     Faculty of Engineering, Niigata University,
+     8050 2-no-cho Ikarashi, Nishi-ku,
+     Niigata, 950-2181, JAPAN
+     LinedIn: https://www.linkedin.com/in/shogo-muramatsu-627b084b
+  
+  * References
+ 
+  - Shogo Muramatsu, "Structured Dictionary Learning with 2-D Non-
+    separable Oversampled Lapped Transform," Proc. of 2014 IEEE 
+    International Conference on Acoustics, Speech and Signal Processing
+    (ICASSP), pp.2643-2647, May 2014
+ 
+  - Kousuke Furuya, Shintaro Hara and Shogo Muramatsu, "Boundary Operation
+    of 2-D non-separable Oversampled Lapped Transforms," Proc. of Asia 
+    Pacific Signal and Information Proc. Assoc. Annual Summit and Conf.
+    (APSIPA ASC), Nov. 2013
+ 
+  - Shogo Muramatsu and Natsuki Aizawa, "Image Restoration with 2-D 
+    Non-separable Oversampled Lapped Transforms," Proc. of 2013 IEEE 
+    International Conference on Image Processing (ICIP), pp.1051-1055, 
+    Sep. 2013 
+ 
+  - Shogo Muramatsu and Natsuki Aizawa, "Lattice Structures for 2-D 
+    Non-separable Oversampled Lapped Transforms, Proc. of 2013 IEEE 
+    International Conference on Acoustics, Speech and Signal Processing
+    (ICASSP), pp.5632-5636, May 2013 
+ 
+  * Acknowledgement
+ 
+    This project was supported by JSPS KAKENHI (23560443,26420347).
+ 
+  * Contributors
+  
+  - For coding
+  -- Shintaro HARA,  2013-2014
+  -- Natsuki AIZAWA, 2013-2014
+  -- Kosuke FURUYA,  2013-2015
+  -- Naotaka YUKI,   2014-2015
+ 
+  - For testing
+  -- Hidenori WATANABE, 2014
+  -- Kota HORIUCHI,     2015
+  -- Masaki ISHII,      2015
+  -- Takumi KAWAMURA,   2015
+  -- Kenta SEINO,       2015
+ 
+  SVN identifier:
+  $Id: Contents.m 868 2015-11-25 02:33:11Z sho $
+
+</pre><h2>Add the package to search path<a name="2"></a></h2><p>Before using <b>SaivDr Package</b> , it is required to add the package top and 'mexcode' directory in the second layer to the MATLAB's search path. After moving to the top directory, execute the following command:</p><pre class="codeinput">setpath
+</pre><h2>Read a source image<a name="3"></a></h2><p>In the followings, an image restoration procedure with this package is described. As a preliminary, let us read an RGB picture as the source image.</p><pre class="codeinput">srcImg = imread(<span class="string">'peppers.png'</span>);
+width  = 256; <span class="comment">% Width</span>
+height = 256; <span class="comment">% Height</span>
+px     = 64;  <span class="comment">% Horizontal position of cropping</span>
+py     = 64;  <span class="comment">% Vertical position of cropping</span>
+orgImg = im2double(srcImg(py:py+height-1,px:px+width-1,:));
+</pre><h2>Create a degradation system object<a name="4"></a></h2><p>Suppose that we only have a degraded image <img src="quickstart_eq08291690262771002032.png" alt="$\mathbf{x}$"> which is contaminated by Gaussian kernel blur <img src="quickstart_eq04341845410467366200.png" alt="$\mathbf{P}$"> with addtive white Gaussian noise <img src="quickstart_eq06351776505552165981.png" alt="$\mathbf{w}$">, i.e.</p><p><img src="quickstart_eq05931457240804436659.png" alt="$\mathbf{x} = \mathbf{Pu} + \mathbf{w}$"> ,</p><p>where <img src="quickstart_eq09258825031370906642.png" alt="$\mathbf{u}$"> is an unknown clearn original image.</p><p>Let us generate a degradation process by using the following classes provided by <b>SaivDr Package</b>.</p><div><ul><li>saivdr.degradation.linearprocess.BlurSystem</li><li>saivdr.degradation.noiseprocess.AdditiveWhiteGaussianNoiseSystem</li><li>saivdr.degradation.DegradationSystem</li></ul></div><pre class="codeinput">import <span class="string">saivdr.degradation.linearprocess.BlurSystem</span>
+blurtype = <span class="string">'Gaussian'</span>;  <span class="comment">% Blur type</span>
+boundary = <span class="string">'Symmetric'</span>; <span class="comment">% Boundary option</span>
+hsigma   = 2;           <span class="comment">% Sigma for Gausian kernel</span>
+blur = BlurSystem(<span class="keyword">...</span><span class="comment">   % Instantiation of blur process</span>
+    <span class="string">'BlurType'</span>,              blurtype,<span class="keyword">...</span>
+    <span class="string">'SigmaOfGaussianKernel'</span>, hsigma,<span class="keyword">...</span>
+    <span class="string">'BoundaryOption'</span>,boundary);
+
+import <span class="string">saivdr.degradation.noiseprocess.AdditiveWhiteGaussianNoiseSystem</span>
+nsigma    = 5;              <span class="comment">% Sigma for AWGN for scale [0..255]</span>
+noise_var = (nsigma/255)^2; <span class="comment">% Normalize sigma to scale [0..1]</span>
+awgn = AdditiveWhiteGaussianNoiseSystem(<span class="keyword">...</span><span class="comment"> % Instantiation of AWGN</span>
+    <span class="string">'Mean'</span>,     0,<span class="keyword">...</span>
+    <span class="string">'Variance'</span>, noise_var);
+
+import <span class="string">saivdr.degradation.DegradationSystem</span>
+dgrd = DegradationSystem(<span class="keyword">...</span><span class="comment"> % Integration of blur and AWGN</span>
+    <span class="string">'LinearProcess'</span>, blur,<span class="keyword">...</span>
+    <span class="string">'NoiseProcess'</span>,  awgn);
+</pre><h2>Generate an observed image<a name="5"></a></h2><p>Then, let us generate an observed image <img src="quickstart_eq08291690262771002032.png" alt="$\mathbf{x}$"> by the DegradationSystem object, <i>dgrd</i> , created in the previous step.</p><pre class="codeinput">obsImg = step(dgrd,orgImg);
+</pre><h2>Create an NSOLT system object<a name="6"></a></h2><p>In order to restore the clearn image <img src="quickstart_eq09258825031370906642.png" alt="$\mathbf{u}$">, let us assume that <img src="quickstart_eq09258825031370906642.png" alt="$\mathbf{u}$"> is represented by a dictionary <img src="quickstart_eq07812796122435096599.png" alt="$\mathbf{D}$"> as</p><p><img src="quickstart_eq08718062006498229712.png" alt="$\mathbf{u} = \mathbf{Dy}$"> ,</p><p>where <img src="quickstart_eq01759449390978539805.png" alt="$\mathbf{y}$"> is a coefficient vector and expected to be sparse, i.e. the number of non-zero coefficients are few.</p><p>A non-separalbe oversampled lapped transform (NSOLT) can be used as a dictionary <img src="quickstart_eq07812796122435096599.png" alt="$\mathbf{D}$"> and instantiated by using the following static factory method:</p><div><ul><li>saivdr.dictionary.nsoltx.NsoltFactory.createOvsdLpPuFb2d()</li></ul></div><p>In this deblurring demo, a pre-designed NSOLT is loaded from the following location:</p><div><ul><li>( <i>ROOT_OF_SAIVDR</i> )/examples/quickdesign/results/</li></ul></div><p>If you are interested in the design of NSOLT, please refer, for example, to the following function:</p><div><ul><li>( <i>ROOT_OF_SAIVDR</i> )/examples/quickdesign/main_quickdesign.m</li></ul></div><pre class="codeinput"><span class="comment">% Parameters for NSOLT</span>
+nLevels = 4;     <span class="comment">% # of wavelet tree levels</span>
+nDec    = [2 2]; <span class="comment">% Decimation factor</span>
+nChs    = [4 4]; <span class="comment">% # of channels</span>
+nOrd    = [4 4]; <span class="comment">% Polyphase order</span>
+nVm     = 1;     <span class="comment">% # of vanishing moments</span>
+
+<span class="comment">% Location which containts a pre-designed NSOLT</span>
+sdir = <span class="string">'./examples/quickdesign/results'</span>;
+
+<span class="comment">% Load a pre-designed dictionary from a MAT-file</span>
+s = load(sprintf(<span class="string">'%s/nsolt_d%dx%d_c%d+%d_o%d+%d_v%d_l%d_n%d_%s.mat'</span>,<span class="keyword">...</span>
+    sdir,nDec(1),nDec(2),nChs(1),nChs(2),nOrd(1),nOrd(2),nVm,nLevels,<span class="keyword">...</span>
+    2048,<span class="string">'peppers128x128'</span>),<span class="string">'nsolt'</span>);
+nsolt = s.nsolt; <span class="comment">% saivdr.dictionary.nsolt.OvsdLpPuFb2dTypeIVm1System</span>
+
+<span class="comment">% Conversion of nsolt to new package style</span>
+<span class="comment">% nsolt = saivdr.dictionary.utility.fcn_upgrade(nsolt);</span>
+
+<span class="comment">% Show the atomic images by using a method atmimshow()</span>
+hfig1 = figure(1);
+atmimshow(nsolt)
+set(hfig1,<span class="string">'Name'</span>,<span class="string">'Atomic images of NSOLT'</span>)
+</pre><img vspace="5" hspace="5" src="quickstart_01.png" alt=""> <h2>Create an analysis and synthesis system object<a name="7"></a></h2><p>Since the object of OvsdLpPuFb2dTypeIVm1System, <i>nsolt</i> , is not able to process images by itself, we have to construct an analysis and synthesis system for analyzing and synthesizing an image, respectively. The following two systems can do these tasks:</p><div><ul><li>saivdr.dictionary.generalfb.Synthesis2dSystem</li><li>saivdr.dictionary.generalfb.Analysis2dSystem</li></ul></div><pre class="codeinput">import <span class="string">saivdr.dictionary.generalfb.Analysis2dSystem</span>
+import <span class="string">saivdr.dictionary.generalfb.Synthesis2dSystem</span>
+
+<span class="comment">% Change the output mode of NSOLT to 'AnalysisFilters' and</span>
+<span class="comment">% draw inpulse responses of the analysis filters.</span>
+release(nsolt)
+set(nsolt,<span class="string">'OutputMode'</span>,<span class="string">'AnalysisFilters'</span>)
+analysisFilters = step(nsolt,[],[]);
+
+<span class="comment">% Change the output mode of NSOLT to 'SynthesisFilters' and</span>
+<span class="comment">% draw inpulse responses of the synthesis filters.</span>
+release(nsolt)
+set(nsolt,<span class="string">'OutputMode'</span>,<span class="string">'SynthesisFilters'</span>)
+synthesisFilters = step(nsolt,[],[]);
+
+<span class="comment">% Create analysis ans synthesis system objects with</span>
+<span class="comment">% frequency domain filtering mode.</span>
+analyzer    = Analysis2dSystem(<span class="keyword">...</span>
+    <span class="string">'DecimationFactor'</span>,nDec,<span class="keyword">...</span>
+    <span class="string">'AnalysisFilters'</span>,analysisFilters,<span class="keyword">...</span>
+    <span class="string">'FilterDomain'</span>,<span class="string">'Frequency'</span>);
+synthesizer = Synthesis2dSystem(<span class="keyword">...</span>
+    <span class="string">'DecimationFactor'</span>,nDec,<span class="keyword">...</span>
+    <span class="string">'SynthesisFilters'</span>,synthesisFilters,<span class="keyword">...</span>
+    <span class="string">'FilterDomain'</span>,<span class="string">'Frequency'</span>);
+setFrameBound(synthesizer,1);
+</pre><p>The following static factory methods can also be used to create lattice-based analysis and synthesis systems:</p><div><ul><li>saivdr.dictionary.nsoltx.NsoltFactory.createSynthesis2dSystem()</li><li>saivdr.dictionary.nsoltx.NsoltFactory.createAnalysis2dSystem()</li></ul></div><p>An available implementation is illustrated below.</p><pre class="language-matlab">import <span class="string">saivdr.dictionary.nsoltx.NsoltFactory</span>
+</pre><pre class="language-matlab"><span class="comment">% saivdr.dictionary.nsoltx.NsoltAnalysis2dSystem</span>
+analyzer    = NsoltFactory.createAnalysis2dSystem(nsolt);
+</pre><pre class="language-matlab"><span class="comment">% saivdr.dictionary.nsoltx.NsoltSynthesis2dSystem</span>
+synthesizer = NsoltFactory.createSynthesis2dSystem(nsolt);
+</pre><h2>Create an ISTA-based image restoration system object<a name="10"></a></h2><p>Let the <img src="quickstart_eq07491953565008501379.png" alt="$\ell_1$">-norm of <img src="quickstart_eq01759449390978539805.png" alt="$\mathbf{y}$">, i.e. <img src="quickstart_eq03981472617682197909.png" alt="$\|\mathbf{y}\|_1$">, be the sparsity measure of the coefficients. Then, the debluring problem can be formulated as</p><p><img src="quickstart_eq04865511837010530479.png" alt="$\hat{\mathbf{y}} = \arg\min_{\mathbf{y}}\frac{1}{2}\|\mathbf{x}-\mathbf{PDy}\|_2^2+\lambda\|\mathbf{y}\|_1$">.</p><p>Provided that the blur process <img src="quickstart_eq04341845410467366200.png" alt="$\mathbf{P}$"> is known and given as a linear process, the iterative shrinkage/thresholding algorithm (ISTA) becomes applicable to solve the above problem. In <b>SaivDr Package</b>, image restoration with ISTA is implemented in the following class:</p><div><ul><li>saivdr.restoration.ista.IstaImRestoration</li></ul></div><pre class="codeinput"><span class="comment">% Instantiation of ISTA system object</span>
+import <span class="string">saivdr.restoration.ista.IstaImRestoration</span>
+lambda    = 0.00185;                      <span class="comment">% lambda</span>
+ista = IstaImRestoration(<span class="keyword">...</span>
+    <span class="string">'Synthesizer'</span>,        synthesizer,<span class="keyword">...</span><span class="comment"> % Synthesizer (Dictionary)</span>
+    <span class="string">'AdjOfSynthesizer'</span>,   analyzer,<span class="keyword">...</span><span class="comment">    % Analyzer (Adj. of dictionary)</span>
+    <span class="string">'LinearProcess'</span>,      blur,<span class="keyword">...</span><span class="comment">        % Blur process</span>
+    <span class="string">'NumberOfTreeLevels'</span>, nLevels,<span class="keyword">...</span><span class="comment">     % # of tree levels of NSOLT</span>
+    <span class="string">'Lambda'</span>,             lambda);        <span class="comment">% Parameter lambda</span>
+</pre><h2>Create a step monitor system object<a name="11"></a></h2><p>ISTA iteratively approaches to the optimum solution. In order to observe the intermediate results, the following class can be used:</p><div><ul><li>saivdr.utility.StepMonitoringSystem</li></ul></div><pre class="codeinput"><span class="comment">% Parameters for StepMonitoringSystem</span>
+isverbose = true;  <span class="comment">% Verbose mode</span>
+isvisible = true;  <span class="comment">% Monitor intermediate results</span>
+hfig2 = figure(2); <span class="comment">% Figure to show the source, observed and result image</span>
+set(hfig2,<span class="string">'Name'</span>,<span class="string">'ISTA-based Image Restoration'</span>)
+
+<span class="comment">% Instantiation of StepMonitoringSystem</span>
+import <span class="string">saivdr.utility.StepMonitoringSystem</span>
+stepmonitor = StepMonitoringSystem(<span class="keyword">...</span>
+    <span class="string">'SourceImage'</span>,   orgImg,<span class="keyword">...</span><span class="comment">    % Original image</span>
+    <span class="string">'ObservedImage'</span>, obsImg,<span class="keyword">...</span><span class="comment">    % Observed image</span>
+    <span class="string">'IsMSE'</span>,         false,<span class="keyword">...</span><span class="comment">     % Switch for MSE  evaluation</span>
+    <span class="string">'IsPSNR'</span>,        true,<span class="keyword">...</span><span class="comment">      % Switch for PSNR evaluation</span>
+    <span class="string">'IsSSIM'</span>,        false,<span class="keyword">...</span><span class="comment">     % Switch for SSIM evaluation</span>
+    <span class="string">'IsVerbose'</span>,     isverbose,<span class="keyword">...</span><span class="comment"> % Switch for verbose mode</span>
+    <span class="string">'IsVisible'</span>,     isvisible,<span class="keyword">...</span><span class="comment"> % Switch for display intermediate result</span>
+    <span class="string">'ImageFigureHandle'</span>,hfig2);    <span class="comment">% Figure handle</span>
+
+<span class="comment">% Set the object to the ISTA system object</span>
+set(ista,<span class="string">'StepMonitor'</span>,stepmonitor);
+</pre><h2>Perform ISTA-based image restoration<a name="12"></a></h2><p>STEP method of IstaImRestoration system object, <i>ista</i> , executes the ISTA-based image restoration to deblur the observed image. As the result, a restored image</p><p><img src="quickstart_eq00899684586602534243.png" alt="$\hat{\mathbf{u}} = \mathbf{D}\hat{\mathbf{y}}$"></p><p>is obtained.</p><pre class="codeinput">fprintf(<span class="string">'\n ISTA'</span>)
+resImg = step(ista,obsImg); <span class="comment">% STEP method of IstaImRestoration</span>
+</pre><pre class="codeoutput">
+ ISTA
+(   1)  PSNR =  27.20 [dB] 
+(   2)  PSNR =  27.94 [dB] 
+(   3)  PSNR =  28.38 [dB] 
+(   4)  PSNR =  28.68 [dB] 
+(   5)  PSNR =  28.91 [dB] 
+(   6)  PSNR =  29.08 [dB] 
+(   7)  PSNR =  29.21 [dB] 
+(   8)  PSNR =  29.33 [dB] 
+(   9)  PSNR =  29.42 [dB] 
+(  10)  PSNR =  29.50 [dB] 
+(  11)  PSNR =  29.57 [dB] 
+(  12)  PSNR =  29.63 [dB] 
+(  13)  PSNR =  29.68 [dB] 
+(  14)  PSNR =  29.73 [dB] 
+(  15)  PSNR =  29.76 [dB] 
+(  16)  PSNR =  29.80 [dB] 
+(  17)  PSNR =  29.83 [dB] 
+(  18)  PSNR =  29.86 [dB] 
+(  19)  PSNR =  29.89 [dB] 
+(  20)  PSNR =  29.91 [dB] 
+(  21)  PSNR =  29.93 [dB] 
+(  22)  PSNR =  29.95 [dB] 
+(  23)  PSNR =  29.97 [dB] 
+(  24)  PSNR =  29.99 [dB] 
+(  25)  PSNR =  30.00 [dB] 
+(  26)  PSNR =  30.01 [dB] 
+(  27)  PSNR =  30.03 [dB] 
+(  28)  PSNR =  30.04 [dB] 
+(  29)  PSNR =  30.05 [dB] 
+(  30)  PSNR =  30.06 [dB] 
+(  31)  PSNR =  30.07 [dB] 
+(  32)  PSNR =  30.08 [dB] 
+(  33)  PSNR =  30.08 [dB] 
+(  34)  PSNR =  30.09 [dB] 
+(  35)  PSNR =  30.10 [dB] 
+(  36)  PSNR =  30.10 [dB] 
+(  37)  PSNR =  30.11 [dB] 
+(  38)  PSNR =  30.12 [dB] 
+(  39)  PSNR =  30.12 [dB] 
+(  40)  PSNR =  30.12 [dB] 
+(  41)  PSNR =  30.13 [dB] 
+(  42)  PSNR =  30.13 [dB] 
+(  43)  PSNR =  30.13 [dB] 
+(  44)  PSNR =  30.14 [dB] 
+(  45)  PSNR =  30.14 [dB] 
+(  46)  PSNR =  30.14 [dB] 
+(  47)  PSNR =  30.14 [dB] 
+(  48)  PSNR =  30.15 [dB] 
+(  49)  PSNR =  30.15 [dB] 
+(  50)  PSNR =  30.15 [dB] 
+(  51)  PSNR =  30.15 [dB] 
+(  52)  PSNR =  30.15 [dB] 
+</pre><img vspace="5" hspace="5" src="quickstart_02.png" alt=""> <h2>Extract the final evaluation<a name="13"></a></h2><p>The object of StepMonitoringSystem, <i>stepmonitor</i> , stores the evaluation values calculated iteratively in ISTA as a vector. The GET method of <i>stepmonitor</i>  can be used to extract the number of iterations and the sequence of PSNRs.</p><pre class="codeinput">nItr  = get(stepmonitor,<span class="string">'nItr'</span>);
+psnrs = get(stepmonitor,<span class="string">'PSNRs'</span>);
+psnr_ista = psnrs(nItr);
+</pre><h2>Perform Wiener filtering<a name="14"></a></h2><p>As a reference, let us show a result of Wiener filter.</p><pre class="codeinput"><span class="comment">% Create a step monitor system object for the PSNR evaluation</span>
+stepmonitor = StepMonitoringSystem(<span class="keyword">...</span>
+    <span class="string">'SourceImage'</span>,orgImg,<span class="keyword">...</span>
+    <span class="string">'MaxIter'</span>, 1,<span class="keyword">...</span>
+    <span class="string">'IsMSE'</span>,  false,<span class="keyword">...</span>
+    <span class="string">'IsPSNR'</span>, true,<span class="keyword">...</span>
+    <span class="string">'IsSSIM'</span>, false,<span class="keyword">...</span>
+    <span class="string">'IsVisible'</span>, false,<span class="keyword">...</span>
+    <span class="string">'IsVerbose'</span>, isverbose);
+
+<span class="comment">% Use the same blur kernel as that applied to the observed image, obsImg</span>
+blurKernel = get(blur,<span class="string">'BlurKernel'</span>);
+
+<span class="comment">% Estimation of noise to signal ratio</span>
+nsr = noise_var/var(orgImg(:));
+
+<span class="comment">% Wiener filter deconvolution of Image Processing Toolbox</span>
+wnfImg = deconvwnr(obsImg, blurKernel, nsr);
+
+<span class="comment">% Evaluation</span>
+fprintf(<span class="string">'\n Wiener'</span>)
+psnr_wfdc = step(stepmonitor,wnfImg); <span class="comment">% STEP method of StepMonitoringSystem</span>
+</pre><pre class="codeoutput">
+ Wiener
+(   1)  PSNR =  25.54 [dB] 
+</pre><h2>Compare deblurring performances<a name="15"></a></h2><p>In order to compare the deblurring performances between two methods, ISTA-based deblurring with NSOLT and Wiener filter, let us show the original, observed and two results in one figure together.</p><pre class="codeinput">hfig3 = figure(3);
+
+<span class="comment">% Original image x</span>
+subplot(2,2,1)
+imshow(orgImg)
+title(<span class="string">'Original image {\bf u}'</span>)
+
+<span class="comment">% Observed image u</span>
+subplot(2,2,2)
+imshow(obsImg)
+title(<span class="string">'Observed image {\bf x}'</span>)
+
+<span class="comment">% Result u^ of ISTA</span>
+subplot(2,2,3)
+imshow(resImg)
+title([<span class="string">'{\bf u}\^ by ISTA  : '</span> num2str(psnr_ista) <span class="string">' [dB]'</span>])
+
+<span class="comment">% Result u^ of Wiener filter</span>
+subplot(2,2,4)
+imshow(wnfImg)
+title([<span class="string">'{\bf u}\^ by Wiener: '</span> num2str(psnr_wfdc) <span class="string">' [dB]'</span>])
+</pre><img vspace="5" hspace="5" src="quickstart_03.png" alt=""> <h2>Release notes<a name="16"></a></h2><p>RELEASENOTES.txt contains release notes on <b>SaivDr Package</b>.</p><pre class="codeinput">type(<span class="string">'RELEASENOTES.txt'</span>)
+</pre><pre class="codeoutput">
+* Release notes on Sparsity-Aware Image and Volume Data Restoration Package
+
+- SaivDr20151126
+-- (Major) Migrated to GitHub
+-- (Major) Option 'GradObj' became available for a single-level Type-I NSOLT
+--- saivdr.dictionary.nsoltx.design.NsoltDictionaryLearning
+-- (Minor) Fixed a bug of frequency domain synthesis operations
+--- saivdr.dictionary.generalfb.*
+
+- SaivDr20150902
+-- (Minor) Fixed a bug and revised to support boundary operation
+--- saivdr.degradation.linearprocess.DecimationSystem
+--- saivdr.degradation.linearprocess.BlurSystem
+-- (Minor) Added SURE-LET denoising scripts in examples/dirlot
+
+- SaivDr20150610
+-- (Major) Frequency domain analysis and synthesis operations became available
+--- saivdr.dictionary.generalfb.*
+-- (Major) Different numbers settings became available for decimation factors
+--- saivdr.dictionary.nsoltx.*
+-- (Minor) Added a package of 1-D oversampled linear-phase paraunitary
+   filter banks
+--- saivdr.dictionary.olpprfb.*
+-- (Minor) Quickstart was revised to use frequency domain filtering.
+
+- SaivDr20141206
+-- (Major) Thoroughly revised NSOLT and NS-GenLOT codes for acceleration
+--- saivdr.dictionary.nsoltx.* 
+--- saivdr.dictionary.nsgenlotx.* 
+-- (Major) 3-D Volume data processing became available
+--- saivdr.dictionary.nsoltx.* 
+--- saivdr.dictionary.udhaar.* 
+--- saivdr.utility.PolyPhaseMatrix3d
+--- saivdr.utility.PolyPhaseCoefOperation3dSystem
+-- (Major) Type-II NSOLT with ps &lt; pa became available
+--- saivdr.dictionary.nsoltx.* 
+
+- SaivDr20140512
+-- (Minor) Fixed a bug in a support function and updated data
+   in examples/icassp2014
+
+- SaivDr20140202
+-- (Major) Fixed the following classes to run without MATLAB Coder
+--- saivdr.dictionary.nsolt.TypeIAnalysisSystem
+--- saivdr.dictionary.nsolt.TypeIIAnalysisSystem
+--- saivdr.dictionary.nsolt.TypeISynthesisSystem
+--- saivdr.dictionary.nsolt.TypeIISynthesisSystem
+-- (Minor) Removed confliction caused by multiple calls of 
+   saivdr.dictonary.nsolt.mexsrcs.fcn_autobuild in parallel execution
+-- (Minor) Fixed saivdr.utility.StepMonitoringSystem to rehash path
+   just after downloading ssim_index.m
+-- (Minor) Fixed overwriting problem of files under
+   examples/{icassp2013_rev,icip2013_rev}/results
+
+- SaivDr20140122
+-- (Major) IterativeHardThresholdingWithNsolt and 
+   IterativeHardThresholdingWithUdHaar were removed and integrated into 
+   a new class IterativeHardThresholding.
+-- (Major) IterativePursuitWithNsolt and GradientPursuitWithUdHaar were 
+   removed and integrated into a new class GradientPursuit.
+-- (Minor) Bug in StepMonitoringSystem was fixed.
+-- (Minor) Property 'Smax' of saivdr.restoration.ista.IstaImRestoration
+   was renamed to 'MaxIter' so that what it means becomes clear.
+-- (Minor) Timing to call fcn_autobuild() in TypeINsoltAnalysisSystem,
+   TypeIINsoltAnalysisSystem, TypeINsoltSynthesisSystem and 
+   TypeIINsoltSynthesisSystem is moved to the object setup process.
+
+- SaivDr20140118
+-- HTML document of Quickstart was revised.
+
+- SaivDr20140117
+-- This is a brand-new package!
+
+* Known issues
+
+- Script 'mytest.m' sometimes fails to generate mex codes at the first
+  trial.  Please try it twice. Then, the code generation may successfully
+  be finished.
+
+% SVN identifier:
+% $Id: RELEASENOTES.txt 751 2015-09-02 08:31:28Z sho $
+</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2015b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%% Quickstart of *SaivDr Package*
+% A brief introduction to image restroation with *SaivDr Package*
+
+%% Summary
+% *SaivDr* is an abbreviation of _Sparsity-Aware Image and Volume Data
+% Restoration_. This package is developed in order for making 
+% 
+% * Experiments, 
+% * Development and 
+% * Implementation
+% 
+% of sparsity-aware image and volume data restoraition algorithms simple.
+%
+% Information about *SaivDr Package* is given in Contents.m.
+% The HELP command can be used to see the contents as follows:
+
+help SaivDr
+
+%% Add the package to search path
+% Before using *SaivDr Package* , it is required to add the package top 
+% and 'mexcode' directory in the second layer to the MATLAB's search path. 
+% After moving to the top directory, execute the following command:
+
+setpath
+
+%% Read a source image
+% In the followings, an image restoration procedure with this package 
+% is described. As a preliminary, let us read an RGB picture as 
+% the source image.
+
+srcImg = imread('peppers.png');
+width  = 256; % Width
+height = 256; % Height
+px     = 64;  % Horizontal position of cropping
+py     = 64;  % Vertical position of cropping
+orgImg = im2double(srcImg(py:py+height-1,px:px+width-1,:));
+
+%% Create a degradation system object
+% Suppose that we only have a degraded image $\mathbf{x}$ which is 
+% contaminated by Gaussian kernel blur $\mathbf{P}$ with addtive 
+% white Gaussian noise $\mathbf{w}$, i.e.
+%
+% $\mathbf{x} = \mathbf{Pu} + \mathbf{w}$ ,
+%
+% where $\mathbf{u}$ is an unknown clearn original image.
+%
+% Let us generate a degradation process by using the following classes
+% provided by *SaivDr Package*.
+%
+% * saivdr.degradation.linearprocess.BlurSystem
+% * saivdr.degradation.noiseprocess.AdditiveWhiteGaussianNoiseSystem
+% * saivdr.degradation.DegradationSystem
+
+import saivdr.degradation.linearprocess.BlurSystem
+blurtype = 'Gaussian';  % Blur type
+boundary = 'Symmetric'; % Boundary option
+hsigma   = 2;           % Sigma for Gausian kernel
+blur = BlurSystem(...   % Instantiation of blur process              
+    'BlurType',              blurtype,...
+    'SigmaOfGaussianKernel', hsigma,...
+    'BoundaryOption',boundary);
+
+import saivdr.degradation.noiseprocess.AdditiveWhiteGaussianNoiseSystem
+nsigma    = 5;              % Sigma for AWGN for scale [0..255]
+noise_var = (nsigma/255)^2; % Normalize sigma to scale [0..1]
+awgn = AdditiveWhiteGaussianNoiseSystem(... % Instantiation of AWGN
+    'Mean',     0,...
+    'Variance', noise_var);
+
+import saivdr.degradation.DegradationSystem
+dgrd = DegradationSystem(... % Integration of blur and AWGN
+    'LinearProcess', blur,...
+    'NoiseProcess',  awgn);
+
+%% Generate an observed image
+% Then, let us generate an observed image $\mathbf{x}$ by the 
+% DegradationSystem object, _dgrd_ , created in the previous step.
+
+obsImg = step(dgrd,orgImg);
+
+%% Create an NSOLT system object
+% In order to restore the clearn image $\mathbf{u}$, let us assume that
+% $\mathbf{u}$ is represented by a dictionary $\mathbf{D}$ as
+%
+% $\mathbf{u} = \mathbf{Dy}$ ,
+%
+% where $\mathbf{y}$ is a coefficient vector and expected to be sparse,
+% i.e. the number of non-zero coefficients are few.
+%
+% A non-separalbe oversampled lapped transform (NSOLT) can be used as 
+% a dictionary $\mathbf{D}$ and instantiated by using the following 
+% static factory method:
+%
+% * saivdr.dictionary.nsoltx.NsoltFactory.createOvsdLpPuFb2d()
+%
+% In this deblurring demo, a pre-designed NSOLT is loaded from 
+% the following location: 
+%
+% * ( _ROOT_OF_SAIVDR_ )/examples/quickdesign/results/
+%
+% If you are interested in the design of NSOLT, please refer, for 
+% example, to the following function:
+%
+% * ( _ROOT_OF_SAIVDR_ )/examples/quickdesign/main_quickdesign.m
+
+% Parameters for NSOLT
+nLevels = 4;     % # of wavelet tree levels
+nDec    = [2 2]; % Decimation factor
+nChs    = [4 4]; % # of channels
+nOrd    = [4 4]; % Polyphase order
+nVm     = 1;     % # of vanishing moments
+
+% Location which containts a pre-designed NSOLT
+sdir = './examples/quickdesign/results';
+
+% Load a pre-designed dictionary from a MAT-file
+s = load(sprintf('%s/nsolt_d%dx%d_c%d+%d_o%d+%d_v%d_l%d_n%d_%s.mat',...
+    sdir,nDec(1),nDec(2),nChs(1),nChs(2),nOrd(1),nOrd(2),nVm,nLevels,...
+    2048,'peppers128x128'),'nsolt');
+nsolt = s.nsolt; % saivdr.dictionary.nsolt.OvsdLpPuFb2dTypeIVm1System
+
+% Conversion of nsolt to new package style
+% nsolt = saivdr.dictionary.utility.fcn_upgrade(nsolt); 
+
+% Show the atomic images by using a method atmimshow()
+hfig1 = figure(1);
+atmimshow(nsolt)
+set(hfig1,'Name','Atomic images of NSOLT')
+
+%% Create an analysis and synthesis system object
+% Since the object of OvsdLpPuFb2dTypeIVm1System, _nsolt_ , is not able 
+% to process images by itself, we have to construct an analysis and 
+% synthesis system for analyzing and synthesizing an image, respectively.
+% The following two systems can do these tasks:
+%
+% * saivdr.dictionary.generalfb.Synthesis2dSystem
+% * saivdr.dictionary.generalfb.Analysis2dSystem
+
+import saivdr.dictionary.generalfb.Analysis2dSystem
+import saivdr.dictionary.generalfb.Synthesis2dSystem
+
+% Change the output mode of NSOLT to 'AnalysisFilters' and
+% draw inpulse responses of the analysis filters.
+release(nsolt)
+set(nsolt,'OutputMode','AnalysisFilters')
+analysisFilters = step(nsolt,[],[]);
+
+% Change the output mode of NSOLT to 'SynthesisFilters' and
+% draw inpulse responses of the synthesis filters.
+release(nsolt)
+set(nsolt,'OutputMode','SynthesisFilters')
+synthesisFilters = step(nsolt,[],[]);
+
+% Create analysis ans synthesis system objects with
+% frequency domain filtering mode.
+analyzer    = Analysis2dSystem(...
+    'DecimationFactor',nDec,...
+    'AnalysisFilters',analysisFilters,...
+    'FilterDomain','Frequency');
+synthesizer = Synthesis2dSystem(...
+    'DecimationFactor',nDec,...
+    'SynthesisFilters',synthesisFilters,...
+    'FilterDomain','Frequency');
+setFrameBound(synthesizer,1);
+
+%%
+% The following static factory methods can also be used to create
+% lattice-based analysis and synthesis systems:
+%
+% * saivdr.dictionary.nsoltx.NsoltFactory.createSynthesis2dSystem()
+% * saivdr.dictionary.nsoltx.NsoltFactory.createAnalysis2dSystem()
+%
+% An available implementation is illustrated below. 
+
+%%
+%   import saivdr.dictionary.nsoltx.NsoltFactory
+%   
+%   % saivdr.dictionary.nsoltx.NsoltAnalysis2dSystem
+%   analyzer    = NsoltFactory.createAnalysis2dSystem(nsolt);
+%   
+%   % saivdr.dictionary.nsoltx.NsoltSynthesis2dSystem
+%   synthesizer = NsoltFactory.createSynthesis2dSystem(nsolt);
+%
+
+%% Create an ISTA-based image restoration system object
+% Let the $\ell_1$-norm of $\mathbf{y}$, i.e. $\|\mathbf{y}\|_1$, 
+% be the sparsity measure of the coefficients. 
+% Then, the debluring problem can be formulated as 
+%
+% $\hat{\mathbf{y}} =
+% \arg\min_{\mathbf{y}}\frac{1}{2}\|\mathbf{x}-\mathbf{PDy}\|_2^2+\lambda\|\mathbf{y}\|_1$.
+%
+% Provided that the blur process $\mathbf{P}$ is known and given 
+% as a linear process, the iterative shrinkage/thresholding algorithm 
+% (ISTA) becomes applicable to solve the above problem. In 
+% *SaivDr Package*, image restoration with ISTA is implemented in the 
+% following class:
+%
+% * saivdr.restoration.ista.IstaImRestoration
+
+% Instantiation of ISTA system object
+import saivdr.restoration.ista.IstaImRestoration
+lambda    = 0.00185;                      % lambda
+ista = IstaImRestoration(...
+    'Synthesizer',        synthesizer,... % Synthesizer (Dictionary)
+    'AdjOfSynthesizer',   analyzer,...    % Analyzer (Adj. of dictionary)
+    'LinearProcess',      blur,...        % Blur process
+    'NumberOfTreeLevels', nLevels,...     % # of tree levels of NSOLT
+    'Lambda',             lambda);        % Parameter lambda
+
+%% Create a step monitor system object
+% ISTA iteratively approaches to the optimum solution. In order to 
+% observe the intermediate results, the following class can be used:
+%
+% * saivdr.utility.StepMonitoringSystem
+
+% Parameters for StepMonitoringSystem
+isverbose = true;  % Verbose mode
+isvisible = true;  % Monitor intermediate results
+hfig2 = figure(2); % Figure to show the source, observed and result image 
+set(hfig2,'Name','ISTA-based Image Restoration')
+
+% Instantiation of StepMonitoringSystem
+import saivdr.utility.StepMonitoringSystem
+stepmonitor = StepMonitoringSystem(...
+    'SourceImage',   orgImg,...    % Original image
+    'ObservedImage', obsImg,...    % Observed image
+    'IsMSE',         false,...     % Switch for MSE  evaluation
+    'IsPSNR',        true,...      % Switch for PSNR evaluation
+    'IsSSIM',        false,...     % Switch for SSIM evaluation
+    'IsVerbose',     isverbose,... % Switch for verbose mode
+    'IsVisible',     isvisible,... % Switch for display intermediate result
+    'ImageFigureHandle',hfig2);    % Figure handle
+    
+% Set the object to the ISTA system object
+set(ista,'StepMonitor',stepmonitor);
+
+%% Perform ISTA-based image restoration
+% STEP method of IstaImRestoration system object, _ista_ , executes 
+% the ISTA-based image restoration to deblur the observed image.
+% As the result, a restored image 
+%
+% $\hat{\mathbf{u}} = \mathbf{D}\hat{\mathbf{y}}$
+%
+% is obtained.
+
+fprintf('\n ISTA')
+resImg = step(ista,obsImg); % STEP method of IstaImRestoration
+
+%% Extract the final evaluation  
+% The object of StepMonitoringSystem, _stepmonitor_ , stores the 
+% evaluation values calculated iteratively in ISTA as a vector. The GET 
+% method of _stepmonitor_  can be used to extract the number of iterations
+% and the sequence of PSNRs. 
+
+nItr  = get(stepmonitor,'nItr');
+psnrs = get(stepmonitor,'PSNRs');
+psnr_ista = psnrs(nItr);
+
+%% Perform Wiener filtering
+% As a reference, let us show a result of Wiener filter.
+
+% Create a step monitor system object for the PSNR evaluation
+stepmonitor = StepMonitoringSystem(...
+    'SourceImage',orgImg,...
+    'MaxIter', 1,...
+    'IsMSE',  false,...
+    'IsPSNR', true,...
+    'IsSSIM', false,...
+    'IsVisible', false,...
+    'IsVerbose', isverbose);
+
+% Use the same blur kernel as that applied to the observed image, obsImg
+blurKernel = get(blur,'BlurKernel');
+
+% Estimation of noise to signal ratio
+nsr = noise_var/var(orgImg(:));
+
+% Wiener filter deconvolution of Image Processing Toolbox
+wnfImg = deconvwnr(obsImg, blurKernel, nsr);
+
+% Evaluation
+fprintf('\n Wiener')
+psnr_wfdc = step(stepmonitor,wnfImg); % STEP method of StepMonitoringSystem
+
+%% Compare deblurring performances
+% In order to compare the deblurring performances between two methods,
+% ISTA-based deblurring with NSOLT and Wiener filter, let us show 
+% the original, observed and two results in one figure together.
+
+hfig3 = figure(3);
+
+% Original image x
+subplot(2,2,1)
+imshow(orgImg)
+title('Original image {\bf u}')
+
+% Observed image u
+subplot(2,2,2)
+imshow(obsImg)
+title('Observed image {\bf x}')
+
+% Result u^ of ISTA 
+subplot(2,2,3)
+imshow(resImg)
+title(['{\bf u}\^ by ISTA  : ' num2str(psnr_ista) ' [dB]'])
+
+% Result u^ of Wiener filter
+subplot(2,2,4)
+imshow(wnfImg)
+title(['{\bf u}\^ by Wiener: ' num2str(psnr_wfdc) ' [dB]'])
+
+%% Release notes
+% RELEASENOTES.txt contains release notes on *SaivDr Package*.
+
+type('RELEASENOTES.txt')
+##### SOURCE END #####
+--></body></html>
