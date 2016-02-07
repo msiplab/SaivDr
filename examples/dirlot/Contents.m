@@ -19,7 +19,7 @@
 %
 %   disp_denoisingresults - Display SURE-LET denoising results
 %   disp_denoisedpictures - Display denoised pictures
-%   main_sureletshrinkage - Script for SURE-LET denoising
+%   main_hssoshrinkage    - Script for SURE-LET denoising
 % 
 % * Brief introduction
 % 
