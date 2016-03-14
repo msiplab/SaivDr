@@ -13,111 +13,109 @@ of sparsity-aware image and volume data restoraition algorithms simple.
 
 Information about SaivDr Package is given in Contents.m. The HELP command can be used to see the contents as follows:
 
-   \>> help SaivDr
- 
-   Sparsity-Aware Image and Volume Data Restoration Package
- 
-   Files
-     mytest     - Script of unit testing for SaivDr Package
-     quickstart - Quickstart of *SaivDr Package*
-     setpath    - Path setup for *SaivDr Package*
-  
-   * Package structure
-     
-       + saivdr -+- testcase -+- sparserep 
-                 |            |
-                 |            +- embedded
-                 |            |
-                 |            +- dictionary  -+- nsolt     -+- design
-                 |            |               |
-                 |            |               +- nsoltx    -+- design
-                 |            |               |
-                 |            |               +- nsgenlot  -+- design
-                 |            |               |
-                 |            |               +- nsgenlotx -+- design
-                 |            |               |
-                 |            |               +- olpprfb
-                 |            |               |
-                 |            |               +- udhaar 
-                 |            |               |
-                 |            |               +- generalfb
-                 |            |               |
-                 |            |               +- mixture
-                 |            |               |
-                 |            |               +- utility
-                 |            |
-                 |            +- restoration -+- ista
-                 |            |
-                 |            +- degradation -+- linearprocess
-                 |            |               |
-                 |            |               +- noiseprocess
-                 |            |
-                 |            +- utility 
-                 |
-                 +- sparserep
-                 |
-                 +- embedded
-                 |
-                 +- dictionary  -+- nsolt     -+- design
-                 |               |             |
-                 |               |             +- mexsrcs
-                 |               |        
-                 |               +- nsoltx    -+- design
-                 |               |             |
-                 |               |             +- mexsrcs
-                 |               |
-                 |               +- nsgenlot  -+- design
-                 |               |         
-                 |               +- nsgenlotx -+- design
-                 |               |         
-                 |               +- olpprfb
-                 |               |         
-                 |               +- udhaar 
-                 |               |
-                 |               +- generalfb
-                 |               |
-                 |               +- mixture
-                 |               |
-                 |               +- utility
-                 |
-                 +- restoration -+- ista  
-                 |
-                 +- degradation -+- linearprocess
-                 |               |
-                 |               +- noiseprocess
-                 |
-                 +- utility
+       >> help SaivDr
+        
+       Sparsity-Aware Image and Volume Data Restoration Package
+         
+           Files
+             mytest     - Script of unit testing for SaivDr Package
+             quickstart - Quickstart of *SaivDr Package*
+             setpath    - Path setup for *SaivDr Package*
+          
+           * Package structure
+        　     + saivdr -+- testcase -+- sparserep 
+                         |            |
+                         |            +- embedded
+                         |            |
+                         |            +- dictionary  -+- nsolt     -+- design
+                         |            |               |
+                         |            |               +- nsoltx    -+- design
+                         |            |               |
+                         |            |               +- nsgenlot  -+- design
+                         |            |               |
+                         |            |               +- nsgenlotx -+- design
+                         |            |               |
+                         |            |               +- olpprfb
+                         |            |               |
+                         |            |               +- udhaar 
+                         |            |               |
+                         |            |               +- generalfb
+                         |            |               |
+                         |            |               +- mixture
+                         |            |               |
+                         |            |               +- utility
+                         |            |
+                         |            +- restoration -+- ista
+                         |            |
+                         |            +- degradation -+- linearprocess
+                         |            |               |
+                         |            |               +- noiseprocess
+                         |            |
+                         |            +- utility 
+                         |
+                         +- sparserep
+                         |
+                         +- embedded
+                         |
+                         +- dictionary  -+- nsolt     -+- design
+                         |               |             |
+                         |               |             +- mexsrcs
+                         |               |        
+                         |               |             |
+                         |               |             +- mexsrcs
+                         |               |
+                         |               +- nsgenlot  -+- design
+                         |               |         
+                         |               +- nsgenlotx -+- design
+                         |               |         
+                         |               +- olpprfb
+                         |               |         
+                         |               +- udhaar 
+                         |               |
+                         |               +- generalfb
+                         |               |
+                         |               +- mixture
+                         |               |
+                         |               +- utility
+                         |
+                         +- restoration -+- ista  
+                         |
+                         +- degradation -+- linearprocess
+                         |               |
+                         |               +- noiseprocess
+                         |
+                         +- utility
     
 ## Requirements
  
 * MATLAB R2013b or later, 
-** Signal Processing Toolbox
-** Image Processing Toolbox
-** Optimization Toolbox
+ * Signal Processing Toolbox
+ * Image Processing Toolbox
+ * Optimization Toolbox
  
 ## Recomendation
  
-** Global Optimization Toolbox 
-** Parallel Computing Toolbox
-** MATLAB Coder
+ * Global Optimization Toolbox 
+ * Parallel Computing Toolbox
+ * MATLAB Coder
 
 ## Brief introduction
  
 1. Change current directory to where this file contains on MATLAB.
 2. Set the path by using the following command:
 
-    \>> setpath
+        >> setpath
 
 3. Several example codes are found under the second layer directory 
    'examples' of this package. Change current directory to one under 
    the second layer directiory 'examples' and execute an M-file of 
    which name begins with 'main,' such as
  
-    \>> main_xxxx
+        >> main_xxxx
  
    and then execute an M-file of which name begins with 'disp,' such as
  
-    \>> disp_xxxx
+        >> disp_xxxx
  
 ## Contact address
  
@@ -156,14 +154,14 @@ This project was supported by JSPS KAKENHI (23560443,26420347).
 ## Contributors
 
 * For coding
-** Shintaro HARA,  2013-2014
-** Natsuki AIZAWA, 2013-2014
-** Kosuke FURUYA,  2013-2015
-** Naotaka YUKI,   2014-2015
+ * Shintaro HARA,  2013-2014
+ * Natsuki AIZAWA, 2013-2014
+ * Kosuke FURUYA,  2013-2015
+ * Naotaka YUKI,   2014-2015
  
 * For testing
-** Hidenori WATANABE, 2014
-** Kota HORIUCHI,     2015
-** Masaki ISHII,      2015
-** Takumi KAWAMURA,   2015
-** Kenta SEINO,       2015
+ * Hidenori WATANABE, 2014
+ * Kota HORIUCHI,     2015
+ * Masaki ISHII,      2015
+ * Takumi KAWAMURA,   2015
+ * Kenta SEINO,       2015
