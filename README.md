@@ -1,4 +1,4 @@
-# SaivDr
+# SaivDr Package for MATLAB/Simulink
 System object definitions for sparsity-aware image and volume data restoration
 
 ## Summary
