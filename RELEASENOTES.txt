@@ -1,5 +1,13 @@
 * Release notes on Sparsity-Aware Image and Volume Data Restoration Package
 
+- SaivDr20160314
+-- (Minor) Clarified the array dimension for code generation in R2016a
+--- saivdr.dictionary.nsoltx.AbstNsoltCoefManipulator2d
+--- saivdr.dictionary.nsoltx.AbstNsoltCoefManipulator3d
+--- saivdr.dictionary.olpprfb.AbstOLpPrFbCoefManipulator3d
+-- (Minor) Fixed test method calling
+--- saivdr.testcase.dictionary.nsgenlotx.design.NsGenLotDesignerFrqTestCase
+
 - SaivDr20151126
 -- (Major) Migrated to GitHub
 -- (Major) Option 'GradObj' became available for a single-level Type-I NSOLT
