@@ -61,6 +61,7 @@ Information about SaivDr Package is given in Contents.m. The HELP command can be
                          |               |             |
                          |               |             +- mexsrcs
                          |               |        
+                         |               +- nsoltx    -+- design
                          |               |             |
                          |               |             +- mexsrcs
                          |               |
