@@ -217,9 +217,9 @@ classdef AbstNsoltCoefManipulator3d < matlab.System
             hLen = obj.NumberOfSymmetricChannels;
             upper = arrayCoefs(1:hLen,:);
             lower = arrayCoefs(hLen+1:end,:);
-            arrayCoefs = [
-                upper + lower;
-                upper - lower ];
+            
+            arrayCoefs(1:hLen,:)     = upper + lower;
+            arrayCoefs(hLen+1:end,:) =  upper - lower;
         end
         
         function arrayCoefs = blockButterflyTypeII_(obj,arrayCoefs)
@@ -227,13 +227,13 @@ classdef AbstNsoltCoefManipulator3d < matlab.System
                 obj.NumberOfAntisymmetricChannels ];
             nChMx = max(chs);
             nChMn = min(chs);
-            upper = arrayCoefs(1:nChMn,:);
+            upper  = arrayCoefs(1:nChMn,:);
             middle = arrayCoefs(nChMn+1:nChMx,:);
-            lower = arrayCoefs(nChMx+1:end,:);
-            arrayCoefs = [
-                upper + lower;
-                1.414213562373095*middle;
-                upper - lower ];
+            lower  = arrayCoefs(nChMx+1:end,:);
+            
+            arrayCoefs(1:nChMn,:)       = upper + lower;
+            arrayCoefs(nChMn+1:nChMx,:) = 1.414213562373095*middle;
+            arrayCoefs(nChMx+1:end,:)   = upper - lower;
         end
        
         function arrayCoefs = lowerBlockRot_(obj,arrayCoefs,iLay,U)
