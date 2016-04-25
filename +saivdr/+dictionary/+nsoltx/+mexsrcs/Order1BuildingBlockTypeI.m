@@ -35,7 +35,7 @@ classdef Order1BuildingBlockTypeI < matlab.System  %#codegen
 	    function output = stepImpl(obj,input,mtxW,mtxU,theta,~,nshift)
             import saivdr.dictionary.nsoltx.mexsrcs.fcn_build_butterfly_mtx
             R = blkdiag(mtxW,mtxU);
-            hB = fcn_build_butterfly_mtx(nChannels, theta);
+            hB = fcn_build_butterfly_mtx(obj.nChannels, theta);
             output = R*processQ_(obj,hB,input,nshift);
         end
     end
