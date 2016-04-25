@@ -19,34 +19,25 @@ classdef Order2BuildingBlockTypeII < matlab.System
     %
 
   properties (Access=protected,Nontunable)
-        %nPs
-        %nPa
         nHalfChannels
         nChannels
-        %Is
-        %Ia
         I
-    end
-    
-    %properties(Access=protected,Nontunable,Logical)
-    %    IsPsGreaterThanPa
-    %end
+  end
     
     methods (Access = protected)
 
-        %function setupImpl(obj,~,~,~,ps,pa,~)
-        function setupImpl(obj,~,~,~,p,~)
+        function setupImpl(obj,~,~,~,~,~,~,~,p,~)
             obj.nHalfChannels = p;
             obj.nChannels = 2*p+1;
             obj.I = eye(p);
         end
         
-        function output = stepImpl(obj,input,mtxHW,mtxHU,theta2,mtxW,mtxU,theta1,~,~,nshift)
-            import fcn_build_butterfly_mtx
-            B = blkdiag(fcn_build_butterfly_mtx(theta1),1);
+        function output = stepImpl(obj,input,mtxHW,mtxHU,theta2,mtxW,mtxU,theta1,~,nshift)
+            import saivdr.dictionary.nsoltx.mexsrcs.fcn_build_butterfly_mtx
+            B = blkdiag(fcn_build_butterfly_mtx(obj.nChannels,theta1),1);
             R = blkdiag(mtxW,mtxU,1);
             temp   = R*processQo_(obj,B,input, nshift);
-            B = blkdiag(fcn_build_butterfly_mtx(tmp),1);
+            B = blkdiag(fcn_build_butterfly_mtx(obj.nChannels,theta2),1);
             R = blkdiag(mtxHW,obj.I)*blkdiag(obj.I,mtxHU);
             output = R*processQe_(obj,B, temp, nshift);
         end
@@ -57,33 +48,27 @@ classdef Order2BuildingBlockTypeII < matlab.System
         
         function value = processQo_(obj,B,x,nZ_)
             import saivdr.dictionary.nsoltx.mexsrcs.fcn_build_butterfly_mtx
+            nch = obj.nChannels;
+            hch = obj.nHalfChannels;
             x = B'*x;
             nLen = size(x,2);
-            value = zeros([sum(ch) nLen+nZ_]);
-            value(1:p,1:nLen) = x(1:p,:);
-            value(p+1:end-1,nZ_+1:end) = x(p+1:end-1,:);
+            value = zeros([sum(nch) nLen+nZ_]);
+            value(1:hch,1:nLen) = x(1:hch,:);
+            value(hch+1:end-1,nZ_+1:end) = x(hch+1:end-1,:);
             value(end,1:nLen) = x(end,:);
             value = B*value;
         end
         
-        function value = processQe_(obj,x,nZ_)
+        function value = processQe_(obj,B,x,nZ_)
             import saivdr.dictionary.nsoltx.mexsrcs.fcn_build_butterfly_mtx
+            nch = obj.nChannels;
+            hch = obj.nHalfChannels;
             x = B'*x;
             nLen = size(x,2);
-            value = zeros([sum(ch) nLen+nZ_]);
-            value(1:p,1:nLen) = x(1:p,:);
-            value(p+1:end,nZ_+1:end) = x(p+1:end,:);
+            value = zeros([sum(nch) nLen+nZ_]);
+            value(1:hch,1:nLen) = x(1:hch,:);
+            value(hch+1:end,nZ_+1:end) = x(hch+1:end,:);
             value = B*value;
         end
-        
-        %function value = butterfly_(~,x,nChMx,nChMn)
-        %    upper = x(1:nChMn,:);
-        %    middle = x(nChMn+1:nChMx,:);
-        %    lower = x(nChMx+1:end,:);
-        %    value = [
-        %        upper+lower ;
-        %        1.414213562373095*middle;
-        %        upper-lower ];
-        %end
     end
 end

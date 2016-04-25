@@ -1,16 +1,16 @@
 function hB = fcn_build_butterfly_mtx(P,theta)
-    qtrP = floor(P/4);
+    qrtP = floor(P/4);
 	
     hC = [];
     hS = [];
     for p = 1:qrtP
         tp = theta(p);
         
-        hC = blkdiag(hC, _buildMtxHc(tp));
-        hS = blkdiag(hS, _buildMtxHs(tp));
+        hC = blkdiag(hC, buildMtxHc_(tp));
+        hS = blkdiag(hS, buildMtxHs_(tp));
     end
 	
-    if odd(qtrP)
+    if mod(qrtP,2) == 1
         hC = blkdiag(hC, 1);
         hS = blkdiag(hS, 1);
     end
@@ -18,12 +18,12 @@ function hB = fcn_build_butterfly_mtx(P,theta)
     hB = [hC, conj(hC); 1i*hS, -1i*conj(hS)]/sqrt(2);
 end
 
-function mtxHc = _buildMtxHc(t)
+function mtxHc = buildMtxHc_(t)
     mtxHc =     [-1i*cos(t), -1i*sin(t);
                 cos(t) , -sin(t)];
 end
 
-function mtxHs = _buildMtxHs(t)
+function mtxHs = buildMtxHs_(t)
     mtxHs =     [ -1i*sin(t), -1i*cos(t);
                 sin(t) , -cos(t)];
 end

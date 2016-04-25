@@ -25,13 +25,12 @@ classdef Order1BuildingBlockTypeI < matlab.System  %#codegen
     end
     
     methods (Access = protected)
-        function setupImpl(obj,~,~,p,~)
+        function setupImpl(obj,~,~,~,~,p,~)
             obj.nHalfChannels = p;
             obj.nChannels     = 2*p;
             obj.I             = eye(p);
         end
         
-        %function output = stepImpl(obj,input,mtxU,~,nshift)
 	    function output = stepImpl(obj,input,mtxW,mtxU,theta,~,nshift)
             import saivdr.dictionary.nsoltx.mexsrcs.fcn_build_butterfly_mtx
             R = blkdiag(mtxW,mtxU);
@@ -52,15 +51,5 @@ classdef Order1BuildingBlockTypeI < matlab.System  %#codegen
             value(hChs+1:end,nZ_+1:end) = x(hChs+1:end,:);
             value = B*value;
         end
-        
-        %function value = butterfly_(obj,x)
-        %    hChs = obj.nHalfChannels;
-        %    upper = x(1:hChs,:);
-        %    lower = x(hChs+1:end,:);
-        %    value = [
-        %        upper+lower ;
-        %        upper-lower ];
-        %end
-        
     end
 end

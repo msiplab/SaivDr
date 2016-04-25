@@ -186,6 +186,7 @@ classdef AbstOvsdLpPuFb2dTypeISystem < ...
             %
             E0 = obj.matrixE0;
             %
+            %TODO: begin
             cM_2 = ceil(nHalfDecs);
             W = step(pmMtxSet_,[],uint32(1))*[ eye(cM_2) ;
                 zeros(nChs(ChannelGroup.LOWER)-cM_2,cM_2)];
@@ -193,8 +194,10 @@ classdef AbstOvsdLpPuFb2dTypeISystem < ...
             U = step(pmMtxSet_,[],uint32(2))*[ eye(fM_2);
                 zeros(nChs(ChannelGroup.LOWER)-fM_2,fM_2) ];
             R = blkdiag(W,U);
+            %TODO: end
             E = R*E0;
             iParamMtx = uint32(3);
+            %TODO: iParamMtx = uint32(2);
             hChs = nChs(1);
             
             %
@@ -206,15 +209,22 @@ classdef AbstOvsdLpPuFb2dTypeISystem < ...
             % Horizontal extention
             nShift = int32(lenY*lenX);
             for iOrdX = initOrdX:ordX
+                %TODO:
+                %W = step(pmMtxSet_,[],iParamMtx);
+                %U = step(pmMtxSet_,[],iParamMtx+1);
+                %theta = step(pmMtxSet_,[],iParamMtx+2);
                 U = step(pmMtxSet_,[],iParamMtx);
                 if mexFlag_
+                    %TODO
                     E = mexFcn_(E, U, hChs, nShift);
                 else
                     import saivdr.dictionary.nsoltx.mexsrcs.Order1BuildingBlockTypeI
                     hObb = Order1BuildingBlockTypeI();
-                    E = step(hObb, E, U, hChs, nShift);
+                    E = step(hObb, E, eye(hChs), U, zeros(floor(nChs/4)), hChs, nShift);
+                    %E = step(hObb, E, W, U, theta, hChs, nShift);
                 end
                 iParamMtx = iParamMtx+1;
+                %iParamMtx = iParamMtx+3;
             end
             lenX = decX*(ordX+1);                            
             
@@ -223,15 +233,21 @@ classdef AbstOvsdLpPuFb2dTypeISystem < ...
                 E = permuteCoefs_(obj,E,lenY);
                 nShift = int32(lenX*lenY);
                 for iOrdY = initOrdY:ordY
+                    %W = step(pmMtxSet_,[],iParamMtx);
+                    %U = step(pmMtxSet_,[],iParamMtx+1);
+                    %theta = step(pmMtxSet_,[],iParamMtx+2);
                     U = step(pmMtxSet_,[],iParamMtx);
                     if mexFlag_
+                        %TODO
                         E = mexFcn_(E, U, hChs, nShift);
                     else
                         import saivdr.dictionary.nsoltx.mexsrcs.Order1BuildingBlockTypeI
                         hObb = Order1BuildingBlockTypeI();
-                        E = step(hObb, E, U, hChs, nShift);
+                        E = step(hObb, E, eye(hChs), U, zeros(floor(nChs/4)), hChs, nShift);
+                        %E = step(hObb, E, W, U, theta, hChs, nShift);
                     end
                     iParamMtx = iParamMtx+1;
+                    %iParamMtx = iParamMtx+3;
                 end
                 lenY = decY*(ordY+1);                
                 E = ipermuteCoefs_(obj,E,lenY);
