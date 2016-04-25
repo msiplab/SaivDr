@@ -19,86 +19,71 @@ classdef Order2BuildingBlockTypeII < matlab.System
     %
 
   properties (Access=protected,Nontunable)
-        nPs
-        nPa
+        %nPs
+        %nPa
+        nHalfChannels
         nChannels
-        Is
-        Ia
+        %Is
+        %Ia
+        I
     end
     
-    properties(Access=protected,Nontunable,Logical)
-        IsPsGreaterThanPa
-    end
+    %properties(Access=protected,Nontunable,Logical)
+    %    IsPsGreaterThanPa
+    %end
     
     methods (Access = protected)
 
-        function setupImpl(obj,~,~,~,ps,pa,~)
-            obj.nPs = ps;
-            obj.nPa = pa;
-            obj.nChannels = ps+pa;
-            obj.Is = eye(ps);
-            obj.Ia = eye(pa);
-            if ps > pa
-                obj.IsPsGreaterThanPa = true;
-            else
-                obj.IsPsGreaterThanPa = false;
-            end
+        %function setupImpl(obj,~,~,~,ps,pa,~)
+        function setupImpl(obj,~,~,~,p,~)
+            obj.nHalfChannels = p;
+            obj.nChannels = 2*p+1;
+            obj.I = eye(p);
         end
         
-        function output = stepImpl(obj,input,mtxW,mtxU,~,~,nshift)
-            if obj.IsPsGreaterThanPa
-                R = blkdiag(obj.Is,mtxU);
-                temp   = R*processQo_(obj,input, nshift);
-                R = blkdiag(mtxW,obj.Ia);
-                output = R*processQe_(obj,temp, nshift);
-            else
-                R = blkdiag(mtxW,obj.Ia);
-                temp   = R*processQo_(obj,input, nshift);
-                R = blkdiag(obj.Is,mtxU);
-                output = R*processQe_(obj,temp, nshift);                
-            end
+        function output = stepImpl(obj,input,mtxHW,mtxHU,theta2,mtxW,mtxU,theta1,~,~,nshift)
+            import fcn_build_butterfly_mtx
+            B = blkdiag(fcn_build_butterfly_mtx(theta1),1);
+            R = blkdiag(mtxW,mtxU,1);
+            temp   = R*processQo_(obj,B,input, nshift);
+            B = blkdiag(fcn_build_butterfly_mtx(tmp),1);
+            R = blkdiag(mtxHW,obj.I)*blkdiag(obj.I,mtxHU);
+            output = R*processQe_(obj,B, temp, nshift);
         end
         
     end
     
     methods (Access = private)
         
-        function value = processQo_(obj,x,nZ_)
-            ps = obj.nPs;
-            pa = obj.nPa;
-            nChMx = max([ps pa]);
-            nChMn = min([ps pa]);
-            ch = ps+pa;
-            x = butterfly_(obj,x,nChMx,nChMn);
+        function value = processQo_(obj,B,x,nZ_)
+            import saivdr.dictionary.nsoltx.mexsrcs.fcn_build_butterfly_mtx
+            x = B'*x;
             nLen = size(x,2);
             value = zeros([sum(ch) nLen+nZ_]);
-            value(1:nChMn,1:nLen) = x(1:nChMn,:);
-            value(nChMn+1:end,nZ_+1:end) = x(nChMn+1:end,:);
-            value = butterfly_(obj,value,nChMx,nChMn)/2.0;
+            value(1:p,1:nLen) = x(1:p,:);
+            value(p+1:end-1,nZ_+1:end) = x(p+1:end-1,:);
+            value(end,1:nLen) = x(end,:);
+            value = B*value;
         end
         
         function value = processQe_(obj,x,nZ_)
-            ps = obj.nPs;
-            pa = obj.nPa;            
-            nChMx = max([ps pa]);
-            nChMn = min([ps pa]);
-            ch = ps+pa;
-            x = butterfly_(obj,x,nChMx,nChMn);
+            import saivdr.dictionary.nsoltx.mexsrcs.fcn_build_butterfly_mtx
+            x = B'*x;
             nLen = size(x,2);
             value = zeros([sum(ch) nLen+nZ_]);
-            value(1:nChMx,1:nLen) = x(1:nChMx,:);
-            value(nChMx+1:end,nZ_+1:end) = x(nChMx+1:end,:);
-            value = butterfly_(obj,value,nChMx,nChMn)/2.0;
+            value(1:p,1:nLen) = x(1:p,:);
+            value(p+1:end,nZ_+1:end) = x(p+1:end,:);
+            value = B*value;
         end
         
-        function value = butterfly_(~,x,nChMx,nChMn)
-            upper = x(1:nChMn,:);
-            middle = x(nChMn+1:nChMx,:);
-            lower = x(nChMx+1:end,:);
-            value = [
-                upper+lower ;
-                1.414213562373095*middle;
-                upper-lower ];
-        end
+        %function value = butterfly_(~,x,nChMx,nChMn)
+        %    upper = x(1:nChMn,:);
+        %    middle = x(nChMn+1:nChMx,:);
+        %    lower = x(nChMx+1:end,:);
+        %    value = [
+        %        upper+lower ;
+        %        1.414213562373095*middle;
+        %        upper-lower ];
+        %end
     end
 end

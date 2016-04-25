@@ -1,5 +1,5 @@
-classdef Order1BuildingBlockTypeI < matlab.System  %#codegen
-    %ORDER1BUILDINGBLOCKTYPEI  Type-I building block with order 1
+classdef AbstBuildingBlock < matlab.System  %#codegen
+    %ABSTBUILDINGBLOCK  building block with
     %
     % SVN identifier:
     % $Id: Order1BuildingBlockTypeI.m 683 2015-05-29 08:22:13Z sho $
@@ -30,18 +30,7 @@ classdef Order1BuildingBlockTypeI < matlab.System  %#codegen
             obj.nChannels     = 2*p;
             obj.I             = eye(p);
         end
-        
-        %function output = stepImpl(obj,input,mtxU,~,nshift)
-	    function output = stepImpl(obj,input,mtxW,mtxU,theta,~,nshift)
-            import saivdr.dictionary.nsoltx.mexsrcs.fcn_build_butterfly_mtx
-            R = blkdiag(mtxW,mtxU);
-            hB = fcn_build_butterfly_mtx(nChannels, theta);
-            output = R*processQ_(obj,hB,input,nshift);
-        end
-    end
-    
-    methods (Access = private)
-    
+
         function value = processQ_(obj,B,x,nZ_)
             hChs = obj.nHalfChannels;
             nChs = obj.nChannels;
@@ -53,14 +42,34 @@ classdef Order1BuildingBlockTypeI < matlab.System  %#codegen
             value = B*value;
         end
         
-        %function value = butterfly_(obj,x)
-        %    hChs = obj.nHalfChannels;
-        %    upper = x(1:hChs,:);
-        %    lower = x(hChs+1:end,:);
-        %    value = [
-        %        upper+lower ;
-        %        upper-lower ];
-        %end
+        function hB = mtxB_(obj,P,theta)
+            qtrP = floor(P/4);
+	
+            hC = [];
+            hS = [];
+            for p = 1:qrtP
+                tp = theta(p);
         
+                hC = blkdiag(hC, _buildMtxHc(tp));
+                hS = blkdiag(hS, _buildMtxHs(tp));
+            end
+	
+            if odd(qtrP)
+                hC = blkdiag(hC, 1);
+                hS = blkdiag(hS, 1);
+            end
+            hB = [hC, conj(hC); 1i*hS, -1i*conj(hS)]/sqrt(2);
+        end
+
+        function mtxHc = buildMtxHc_(t)
+            mtxHc =     [-1i*cos(t), -1i*sin(t);
+                        cos(t) , -sin(t)];
+        end
+
+        function mtxHs = buildMtxHs_(t)
+            mtxHs =     [ -1i*sin(t), -1i*cos(t);
+                        sin(t) , -cos(t)];
+        end
+
     end
 end
