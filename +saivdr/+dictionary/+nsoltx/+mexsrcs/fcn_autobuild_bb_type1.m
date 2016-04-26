@@ -42,9 +42,9 @@ if isempty(task) || task.ID == 1
         cd(saivdr_root)
         packagedir = './+saivdr/+dictionary/+nsoltx/+mexsrcs';
         fbsfile = exist([packagedir '/' bsfname '.m'],'file');
-        
+
         if fbsfile == 2
-            
+
             outputdir = fullfile(saivdr_root,'mexcodes');
             %
             maxNCfs = 518400;
@@ -52,7 +52,7 @@ if isempty(task) || task.ID == 1
             arrayCoefs = coder.typeof(double(0),[2*hChs maxNCfs],[0 1]); %#ok
             paramMtx = coder.typeof(double(0),hChs*[1 1],[0 0]); %#ok 
             constHChs = coder.Constant(hChs); %#ok
-            nshift = coder.typeof(int32(0),[1 1],[0 0]); %#ok            
+            nshift = coder.typeof(int32(0),[1 1],[0 0]); %#ok
             % build mex
             cfg = coder.config('mex');
             cfg.DynamicMemoryAllocation = 'Threshold';
@@ -60,14 +60,14 @@ if isempty(task) || task.ID == 1
             args = '{ arrayCoefs, paramMtx, constHChs, nshift }';
             seval = [ 'codegen -config cfg ' ' -o ' outputdir '/' mexname ' ' ...
                 packagedir '/' bsfname '.m -args ' args];
-            
+
             disp(seval)
             eval(seval)
-            
+
         else
             error('SaivDr: Invalid argument')
         end
-        
+
         cd(cdir)
     end
     ftypemex = exist(mexname, 'file');
@@ -75,11 +75,11 @@ if isempty(task) || task.ID == 1
 end
 
 if ftypemex == 3 % MEX file exists
-    
+
     fcnhandler = str2func(mexname);
     flag       = true;
-    
-else 
+
+else
 
     fcnhandler = [];
     flag       = false;

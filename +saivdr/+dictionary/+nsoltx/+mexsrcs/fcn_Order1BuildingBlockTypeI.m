@@ -1,6 +1,6 @@
 function output = fcn_Order1BuildingBlockTypeI( input, mtxU, p, nshift ) %#codegen
 % FCN_NSOLTX_SUPEXT_TYPE1
-%    
+%
 % SVN identifier:
 % $Id: fcn_Order1BuildingBlockTypeI.m 683 2015-05-29 08:22:13Z sho $
 %
@@ -21,5 +21,5 @@ persistent h;
 if isempty(h)
     h = saivdr.dictionary.nsoltx.mexsrcs.Order1BuildingBlockTypeI();
 end
-output = step(h, input, mtxU, p, nshift);
+output = step(h, input, eye(p), mtxU, zeros(floor(p/2),1), p, nshift);
 end

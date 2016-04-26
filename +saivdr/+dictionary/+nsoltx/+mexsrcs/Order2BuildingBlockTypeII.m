@@ -23,7 +23,7 @@ classdef Order2BuildingBlockTypeII < matlab.System
         nChannels
         I
   end
-    
+
     methods (Access = protected)
 
         function setupImpl(obj,~,~,~,~,~,~,~,p,~)
@@ -31,23 +31,21 @@ classdef Order2BuildingBlockTypeII < matlab.System
             obj.nChannels = 2*p+1;
             obj.I = eye(p);
         end
-        
+
         function output = stepImpl(obj,input,mtxHW,mtxHU,theta2,mtxW,mtxU,theta1,~,nshift)
-            import saivdr.dictionary.nsoltx.mexsrcs.fcn_build_butterfly_mtx
-            B = blkdiag(fcn_build_butterfly_mtx(obj.nChannels,theta1),1);
+            B = blkdiag(saivdr.dictionary.nsoltx.mexsrcs.fcn_build_butterfly_mtx(obj.nChannels,theta1),1);
             R = blkdiag(mtxW,mtxU,1);
             temp   = R*processQo_(obj,B,input, nshift);
-            B = blkdiag(fcn_build_butterfly_mtx(obj.nChannels,theta2),1);
+            B = blkdiag(saivdr.dictionary.nsoltx.mexsrcs.fcn_build_butterfly_mtx(obj.nChannels,theta2),1);
             R = blkdiag(mtxHW,obj.I)*blkdiag(obj.I,mtxHU);
             output = R*processQe_(obj,B, temp, nshift);
         end
-        
+
     end
-    
+
     methods (Access = private)
-        
+
         function value = processQo_(obj,B,x,nZ_)
-            import saivdr.dictionary.nsoltx.mexsrcs.fcn_build_butterfly_mtx
             nch = obj.nChannels;
             hch = obj.nHalfChannels;
             x = B'*x;
@@ -58,9 +56,8 @@ classdef Order2BuildingBlockTypeII < matlab.System
             value(end,1:nLen) = x(end,:);
             value = B*value;
         end
-        
+
         function value = processQe_(obj,B,x,nZ_)
-            import saivdr.dictionary.nsoltx.mexsrcs.fcn_build_butterfly_mtx
             nch = obj.nChannels;
             hch = obj.nHalfChannels;
             x = B'*x;

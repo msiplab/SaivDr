@@ -17,30 +17,29 @@ classdef Order1BuildingBlockTypeI < matlab.System  %#codegen
     %
     % LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627
     %
-    
+
     properties (Access=protected,Nontunable)
         nHalfChannels
         nChannels
         I
     end
-    
+
     methods (Access = protected)
         function setupImpl(obj,~,~,~,~,p,~)
             obj.nHalfChannels = p;
             obj.nChannels     = 2*p;
             obj.I             = eye(p);
         end
-        
+
 	    function output = stepImpl(obj,input,mtxW,mtxU,theta,~,nshift)
-            import saivdr.dictionary.nsoltx.mexsrcs.fcn_build_butterfly_mtx
             R = blkdiag(mtxW,mtxU);
-            hB = fcn_build_butterfly_mtx(obj.nChannels, theta);
+            hB = saivdr.dictionary.nsoltx.mexsrcs.fcn_build_butterfly_mtx(obj.nChannels, theta);
             output = R*processQ_(obj,hB,input,nshift);
         end
     end
-    
+
     methods (Access = private)
-    
+
         function value = processQ_(obj,B,x,nZ_)
             hChs = obj.nHalfChannels;
             nChs = obj.nChannels;

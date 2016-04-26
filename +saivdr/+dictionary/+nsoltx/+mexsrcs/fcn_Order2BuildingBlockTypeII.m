@@ -1,5 +1,5 @@
 function output = fcn_Order2BuildingBlockTypeII( input, mtxW, mtxU, ps, pa, nshift ) %#codegen
-% FCN_NSOLTX_SUPEXT_TYPE2 
+% FCN_NSOLTX_SUPEXT_TYPE2
 %
 % SVN identifier:
 % $Id: fcn_Order2BuildingBlockTypeII.m 683 2015-05-29 08:22:13Z sho $
@@ -21,5 +21,8 @@ persistent h;
 if isempty(h)
     h = saivdr.dictionary.nsoltx.mexsrcs.Order2BuildingBlockTypeII();
 end
-output = step(h, input, mtxW, mtxU, ps, pa, nshift);
+P = ps + pa;
+p1 = floor(P/2);
+p2 = ceil(P/2);
+output = step(h, input, eye(p2), eye(p2), zeros(floor(P/4),1), mtxW, mtxU, zeros(floor(P/4),1), nshift);
 end
