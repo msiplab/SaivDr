@@ -193,7 +193,7 @@ classdef AbstOvsdLpPuFb2dTypeISystem < ...
             fM_2 = floor(nHalfDecs);
             U = step(pmMtxSet_,[],uint32(2))*[ eye(fM_2);
                 zeros(nChs(ChannelGroup.LOWER)-fM_2,fM_2) ];
-            %V = step(pmMtxSet_,[],uint32(1))*[ eye(dec), zeros(nChs-dec)];
+            %V = step(pmMtxSet_,[],uint32(1))*[ eye(dec); zeros(nChs-dec)];
             R = blkdiag(W,U);
             %TODO: end
             E = R*E0;
