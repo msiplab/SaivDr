@@ -1,7 +1,7 @@
 classdef AbstOvsdLpPuFb2dTypeISystem < ...
         saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2dSystem %#codegen
-    %ABSTOVSDLPPUFB2DTYPEISYSTEM Abstract class 2-D Type-I OLPPUFB 
-    % 
+    %ABSTOVSDLPPUFB2DTYPEISYSTEM Abstract class 2-D Type-I OLPPUFB
+    %
     % SVN identifier:
     % $Id: AbstOvsdLpPuFb2dTypeISystem.m 690 2015-06-09 09:37:49Z sho $
     %
@@ -16,22 +16,22 @@ classdef AbstOvsdLpPuFb2dTypeISystem < ...
     %                8050 2-no-cho Ikarashi, Nishi-ku,
     %                Niigata, 950-2181, JAPAN
     %
-    % LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627    
+    % LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627
     %
-    
+
     properties (Access = protected)
         matrixE0
         mexFcn
     end
-    
+
     properties (Access = protected,PositiveInteger)
         nStages
     end
 
     methods (Access = protected, Static = true, Abstract = true)
         value = getDefaultPolyPhaseOrder_()
-    end    
-    
+    end
+
     methods
         function obj = AbstOvsdLpPuFb2dTypeISystem(varargin)
             obj = obj@saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2dSystem(...
@@ -41,48 +41,48 @@ classdef AbstOvsdLpPuFb2dTypeISystem < ...
             updateMus_(obj);
         end
     end
-    
+
     methods (Access = protected)
-        
+
         function s = saveObjectImpl(obj)
             s = saveObjectImpl@saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2dSystem(obj);
             s.nStages = obj.nStages;
             s.matrixE0 = obj.matrixE0;
             s.mexFcn   = obj.mexFcn;
         end
-        
+
         function loadObjectImpl(obj,s,wasLocked)
             obj.mexFcn   = s.mexFcn;
             obj.nStages = s.nStages;
             obj.matrixE0 = s.matrixE0;
             loadObjectImpl@saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2dSystem(obj,s,wasLocked);
         end
-        
+
         function resetImpl(obj)
             resetImpl@saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2dSystem(obj);
             % Prepare MEX function
             import saivdr.dictionary.nsoltx.mexsrcs.fcn_autobuild_bb_type1
-            [obj.mexFcn, obj.mexFlag] = fcn_autobuild_bb_type1(obj.NumberOfChannels(1));            
+            [obj.mexFcn, obj.mexFlag] = fcn_autobuild_bb_type1(obj.NumberOfChannels(1));
         end
-        
+
         function setupImpl(obj,varargin)
             % Prepare MEX function
             import saivdr.dictionary.nsoltx.mexsrcs.fcn_autobuild_bb_type1
             [obj.mexFcn, obj.mexFlag] = fcn_autobuild_bb_type1(obj.NumberOfChannels(1));
         end
-        
+
         function updateProperties_(obj)
             import saivdr.dictionary.nsoltx.ChannelGroup
             import saivdr.dictionary.utility.Direction
             import saivdr.dictionary.utility.ParameterMatrixSet
            % import saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2dTypeISystem
-            
+
             % Check DecimationFactor
             if length(obj.DecimationFactor) > 2
                 error('Dimension of DecimationFactor must be less than or equal to two.');
             end
             nHalfDecs = prod(obj.DecimationFactor)/2;
-            
+
             % Check PolyPhaseOrder
             if isempty(obj.PolyPhaseOrder)
                 obj.PolyPhaseOrder = obj.getDefaultPolyPhaseOrder_();
@@ -94,7 +94,7 @@ classdef AbstOvsdLpPuFb2dTypeISystem < ...
             ordY = obj.PolyPhaseOrder(Direction.VERTICAL);
             obj.nStages = uint32(1+ordX+ordY);
             obj.matrixE0 = getMatrixE0_(obj);
-            
+
             % Check NumberOfChannels
             if length(obj.NumberOfChannels) > 2
                 error('Dimension of NumberOfChannels must be less than or equal to two.');
@@ -117,15 +117,15 @@ classdef AbstOvsdLpPuFb2dTypeISystem < ...
                 me = MException(id, msg);
                 throw(me);
             end
-            
+
             % Prepare ParameterMatrixSet
             paramMtxSizeTab = ...
                 obj.NumberOfChannels(ChannelGroup.LOWER)*ones(obj.nStages+1,2);
             obj.ParameterMatrixSet = ParameterMatrixSet(...
                 'MatrixSizeTable',paramMtxSizeTab);
-            
+
         end
-        
+
         function updateAngles_(obj)
             import saivdr.dictionary.nsoltx.ChannelGroup
             import saivdr.dictionary.utility.Direction
@@ -145,7 +145,7 @@ classdef AbstOvsdLpPuFb2dTypeISystem < ...
                 throw(me);
             end
         end
-        
+
         function updateMus_(obj)
             import saivdr.dictionary.nsoltx.ChannelGroup
             import saivdr.dictionary.utility.Direction
@@ -166,7 +166,7 @@ classdef AbstOvsdLpPuFb2dTypeISystem < ...
             end
 
         end
-        
+
         function value = getAnalysisFilterBank_(obj)
             import saivdr.dictionary.nsoltx.ChannelGroup
             import saivdr.dictionary.utility.Direction
@@ -193,19 +193,20 @@ classdef AbstOvsdLpPuFb2dTypeISystem < ...
             fM_2 = floor(nHalfDecs);
             U = step(pmMtxSet_,[],uint32(2))*[ eye(fM_2);
                 zeros(nChs(ChannelGroup.LOWER)-fM_2,fM_2) ];
+            %V = step(pmMtxSet_,[],uint32(1))*[ eye(dec), zeros(nChs-dec)];
             R = blkdiag(W,U);
             %TODO: end
             E = R*E0;
             iParamMtx = uint32(3);
             %TODO: iParamMtx = uint32(2);
             hChs = nChs(1);
-            
+
             %
             initOrdX = 1;
-            lenX = decX;    
+            lenX = decX;
             initOrdY = 1;
             lenY = decY;
-            
+
             % Horizontal extention
             nShift = int32(lenY*lenX);
             for iOrdX = initOrdX:ordX
@@ -226,8 +227,8 @@ classdef AbstOvsdLpPuFb2dTypeISystem < ...
                 iParamMtx = iParamMtx+1;
                 %iParamMtx = iParamMtx+3;
             end
-            lenX = decX*(ordX+1);                            
-            
+            lenX = decX*(ordX+1);
+
             % Vertical extention
             if ordY > 0
                 E = permuteCoefs_(obj,E,lenY);
@@ -249,7 +250,7 @@ classdef AbstOvsdLpPuFb2dTypeISystem < ...
                     iParamMtx = iParamMtx+1;
                     %iParamMtx = iParamMtx+3;
                 end
-                lenY = decY*(ordY+1);                
+                lenY = decY*(ordY+1);
                 E = ipermuteCoefs_(obj,E,lenY);
             end
             %
@@ -258,8 +259,8 @@ classdef AbstOvsdLpPuFb2dTypeISystem < ...
             for iSubband = 1:nSubbands
                 value(:,:,iSubband) = reshape(E(iSubband,:),lenY,lenX);
             end
-            
+
         end
-        
+
     end
 end
