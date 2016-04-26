@@ -212,17 +212,18 @@ classdef AbstOvsdLpPuFb2dTypeISystem < ...
             for iOrdX = initOrdX:ordX
                 %TODO:
                 %W = step(pmMtxSet_,[],iParamMtx);
+                W = eye(hChs);
                 %U = step(pmMtxSet_,[],iParamMtx+1);
-                %theta = step(pmMtxSet_,[],iParamMtx+2);
                 U = step(pmMtxSet_,[],iParamMtx);
+                %theta = step(pmMtxSet_,[],iParamMtx+2);
+                theta = zeros(floor(hChs/2),1);
                 if mexFlag_
-                    %TODO
+                    %TODO:
                     E = mexFcn_(E, U, hChs, nShift);
                 else
                     import saivdr.dictionary.nsoltx.mexsrcs.Order1BuildingBlockTypeI
                     hObb = Order1BuildingBlockTypeI();
-                    E = step(hObb, E, eye(hChs), U, zeros(floor(nChs/4)), hChs, nShift);
-                    %E = step(hObb, E, W, U, theta, hChs, nShift);
+                    E = step(hObb, E, W, U, theta, hChs, nShift);
                 end
                 iParamMtx = iParamMtx+1;
                 %iParamMtx = iParamMtx+3;
@@ -235,17 +236,18 @@ classdef AbstOvsdLpPuFb2dTypeISystem < ...
                 nShift = int32(lenX*lenY);
                 for iOrdY = initOrdY:ordY
                     %W = step(pmMtxSet_,[],iParamMtx);
+                    W = eye(hChs);
                     %U = step(pmMtxSet_,[],iParamMtx+1);
-                    %theta = step(pmMtxSet_,[],iParamMtx+2);
                     U = step(pmMtxSet_,[],iParamMtx);
+                    %theta = step(pmMtxSet_,[],iParamMtx+2);
+                    theta = zeros(floor(hChs/2),1);
                     if mexFlag_
                         %TODO
                         E = mexFcn_(E, U, hChs, nShift);
                     else
                         import saivdr.dictionary.nsoltx.mexsrcs.Order1BuildingBlockTypeI
                         hObb = Order1BuildingBlockTypeI();
-                        E = step(hObb, E, eye(hChs), U, zeros(floor(nChs/4)), hChs, nShift);
-                        %E = step(hObb, E, W, U, theta, hChs, nShift);
+                        E = step(hObb, E, W, U, theta, hChs, nShift);
                     end
                     iParamMtx = iParamMtx+1;
                     %iParamMtx = iParamMtx+3;

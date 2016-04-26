@@ -18,20 +18,20 @@ classdef AbstOvsdLpPuFb3dTypeISystem < ...
     %
     % LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627
     %
-    
+
     properties (Access = protected)
         matrixE0
         mexFcn
     end
-    
+
     properties (Access = protected,PositiveInteger)
         nStages
     end
-    
+
     methods (Access = protected, Static = true, Abstract = true)
         value = getDefaultPolyPhaseOrder_()
     end
-    
+
     methods
         function obj = AbstOvsdLpPuFb3dTypeISystem(varargin)
             obj = obj@saivdr.dictionary.nsoltx.AbstOvsdLpPuFb3dSystem(...
@@ -41,48 +41,48 @@ classdef AbstOvsdLpPuFb3dTypeISystem < ...
             updateMus_(obj);
         end
     end
-    
+
     methods (Access = protected)
-        
+
         function s = saveObjectImpl(obj)
             s = saveObjectImpl@saivdr.dictionary.nsoltx.AbstOvsdLpPuFb3dSystem(obj);
             s.nStages = obj.nStages;
             s.matrixE0 = obj.matrixE0;
             s.mexFcn   = obj.mexFcn;
         end
-        
+
         function loadObjectImpl(obj,s,wasLocked)
-            obj.mexFcn   = s.mexFcn;            
+            obj.mexFcn   = s.mexFcn;
             obj.nStages = s.nStages;
             obj.matrixE0 = s.matrixE0;
             loadObjectImpl@saivdr.dictionary.nsoltx.AbstOvsdLpPuFb3dSystem(obj,s,wasLocked);
         end
-        
+
         function resetImpl(obj)
-            resetImpl@saivdr.dictionary.nsoltx.AbstOvsdLpPuFb3dSystem(obj);            
+            resetImpl@saivdr.dictionary.nsoltx.AbstOvsdLpPuFb3dSystem(obj);
             % Prepare MEX function
             import saivdr.dictionary.nsoltx.mexsrcs.fcn_autobuild_bb_type1
-            [obj.mexFcn, obj.mexFlag] = fcn_autobuild_bb_type1(obj.NumberOfChannels(1));            
+            [obj.mexFcn, obj.mexFlag] = fcn_autobuild_bb_type1(obj.NumberOfChannels(1));
         end
-        
+
         function setupImpl(obj,varargin)
             % Prepare MEX function
             import saivdr.dictionary.nsoltx.mexsrcs.fcn_autobuild_bb_type1
             [obj.mexFcn, obj.mexFlag] = fcn_autobuild_bb_type1(obj.NumberOfChannels(1));
         end
-        
+
         function updateProperties_(obj)
             import saivdr.dictionary.nsoltx.ChannelGroup
             import saivdr.dictionary.utility.Direction
             import saivdr.dictionary.utility.ParameterMatrixSet
            % import saivdr.dictionary.nsoltx.AbstOvsdLpPuFb3dTypeISystem
-            
+
             % Check DecimationFactor
             if length(obj.DecimationFactor) > 3
                 error('Dimension of DecimationFactor must be less than or equal to three.');
             end
             nHalfDecs = prod(obj.DecimationFactor)/2;
-            
+
             % Check PolyPhaseOrder
             if isempty(obj.PolyPhaseOrder)
                 obj.PolyPhaseOrder = obj.getDefaultPolyPhaseOrder_();
@@ -95,7 +95,7 @@ classdef AbstOvsdLpPuFb3dTypeISystem < ...
             ordZ = obj.PolyPhaseOrder(Direction.DEPTH);
             obj.nStages = uint32(1+ordX+ordY+ordZ);
             obj.matrixE0 = getMatrixE0_(obj);
-            
+
             % Check NumberOfChannels
             if length(obj.NumberOfChannels) > 2
                 error('Dimension of NumberOfChannels must be less than or equal to two.');
@@ -126,20 +126,20 @@ classdef AbstOvsdLpPuFb3dTypeISystem < ...
                 me = MException(id, msg);
                 throw(me);
             end
-            
+
             % Prepare ParameterMatrixSet
             paramMtxSizeTab = ...
                 obj.NumberOfChannels(ChannelGroup.LOWER)*ones(obj.nStages+1,2);
             obj.ParameterMatrixSet = ParameterMatrixSet(...
                 'MatrixSizeTable',paramMtxSizeTab);
-            
+
             % Prepare MEX function
 %            if ~obj.mexFlag
 %                import saivdr.dictionary.nsoltx.mexsrcs.fcn_autobuild_bb_type1
 %                [obj.mexFcn, obj.mexFlag] = fcn_autobuild_bb_type1(obj.NumberOfChannels(1));
-%            end            
+%            end
         end
-        
+
         function updateAngles_(obj)
             import saivdr.dictionary.nsoltx.ChannelGroup
             import saivdr.dictionary.utility.Direction
@@ -159,7 +159,7 @@ classdef AbstOvsdLpPuFb3dTypeISystem < ...
                 throw(me);
             end
         end
-        
+
         function updateMus_(obj)
             import saivdr.dictionary.nsoltx.ChannelGroup
             import saivdr.dictionary.utility.Direction
@@ -180,9 +180,9 @@ classdef AbstOvsdLpPuFb3dTypeISystem < ...
                 me = MException(id, msg);
                 throw(me);
             end
-            
+
         end
-        
+
         function value = getAnalysisFilterBank_(obj)
             import saivdr.dictionary.nsoltx.ChannelGroup
             import saivdr.dictionary.utility.Direction
@@ -200,48 +200,65 @@ classdef AbstOvsdLpPuFb3dTypeISystem < ...
             %
             E0 = obj.matrixE0;
             %
+            %TODO:begin
             cM_2 = ceil(nHalfDecs);
-            pmMtxSt_ = obj.ParameterMatrixSet; 
+            pmMtxSt_ = obj.ParameterMatrixSet;
             W = step(pmMtxSt_,[],uint32(1))*[ eye(cM_2) ;
                 zeros(nChs(ChannelGroup.LOWER)-cM_2,cM_2)];
             fM_2 = floor(nHalfDecs);
             U = step(pmMtxSt_,[],uint32(2))*[ eye(fM_2);
                 zeros(nChs(ChannelGroup.LOWER)-fM_2,fM_2) ];
             R = blkdiag(W,U);
+            %TODO:end
+            %R = step(pmMtxSt_,[],uint32(1))*[eye(nChs);zeros(nChs-dec,prod(dec))];
             E = R*E0;
             iParamMtx = uint32(3);
+            %iParamMtx = uint32(2);
             hChs = nChs(1);
-            
+
             % Depth extention
             lenY = decY;
             lenX = decX;
             nShift = int32(lenY*(decZ*lenX));
             for iOrdZ = 1:ordZ
+                %W = step(pmMtxSt_,[],iParamMtx);
+                W = eye(hChs);
                 U = step(pmMtxSt_,[],iParamMtx);
+                %theta = step(pmMtxSt_,[],iParamMtx);
+                theta = zeros(floor(hChs/2),1);
                 if obj.mexFlag
+                    %TODO:mexFcnの修正
                     E = obj.mexFcn(E, U, hChs, nShift);
                 else
                     import saivdr.dictionary.nsoltx.mexsrcs.Order1BuildingBlockTypeI
                     hObb = Order1BuildingBlockTypeI();
-                    E = step(hObb, E, U, hChs, nShift);
+                    E = step(hObb, E, W, U, theta, hChs, nShift);
                 end
                 iParamMtx = iParamMtx+1;
+                %iParamMtx = iParamMtx+3;
             end
-            lenZ = decZ*(ordZ+1);            
+            lenZ = decZ*(ordZ+1);
 
             % Horizontal extention
             E = permuteCoefs_(obj,E,lenY*lenX); % Y X Z -> Z Y X
             nShift = int32(lenZ*(decX*lenY));
             for iOrdX = 1:ordX
+                %W = step(pmMtxSt_,[],iParamMtx);
+                W = eye(hChs);
+                %U = step(pmMtxSt_,[],iParamMtx+1);
                 U = step(pmMtxSt_,[],iParamMtx);
+                %theta = step(pmMtxSt_,[],iParamMtx+2);
+                theta = zeros(floor(hChs/2),1);
                 if obj.mexFlag
+                    %TODO:
                     E = obj.mexFcn(E, U, hChs, nShift);
                 else
                     import saivdr.dictionary.nsoltx.mexsrcs.Order1BuildingBlockTypeI
                     hObb = Order1BuildingBlockTypeI();
-                    E = step(hObb, E, U, hChs, nShift);
+                    E = step(hObb, E, W, U, theta, hChs, nShift);
                 end
-                iParamMtx = iParamMtx+1;
+                %iParamMtx = iParamMtx+1;
+                %iParamMtx = iParamMtx+3;
             end
             lenX = decX*(ordX+1);
 
@@ -249,15 +266,21 @@ classdef AbstOvsdLpPuFb3dTypeISystem < ...
             E = permuteCoefs_(obj,E,lenZ*lenY); % Z Y X -> X Z Y
             nShift = int32(lenX*(decY*lenZ));
             for iOrdY = 1:ordY
+                %W = step(pmMtxSt_,[],iParamMtx);
+                W = eye(hChs);
+                %U = step(pmMtxSt_,[],iParamMtx+1);
                 U = step(pmMtxSt_,[],iParamMtx);
+                %theta = step(pmMtxSt_,[],iParamMtx+2);
+                theta = zeros(floor(hChs/2),1);
                 if obj.mexFlag
                     E = obj.mexFcn(E, U, hChs, nShift);
                 else
                     import saivdr.dictionary.nsoltx.mexsrcs.Order1BuildingBlockTypeI
                     hObb = Order1BuildingBlockTypeI();
-                    E = step(hObb, E, U, hChs, nShift);
+                    E = step(hObb, E, W, U, theta, hChs, nShift);
                 end
                 iParamMtx = iParamMtx+1;
+                %iParamMtx = iParamMtx+3;
             end
             lenY = decY*(ordY+1);
 
@@ -268,9 +291,9 @@ classdef AbstOvsdLpPuFb3dTypeISystem < ...
             for iSubband = 1:nSubbands
                 value(:,:,:,iSubband) = reshape(E(iSubband,:),lenY,lenX,lenZ);
             end
-            
+
         end
-        
+
     end
-    
+
 end
