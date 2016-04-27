@@ -247,6 +247,9 @@ classdef AbstOvsdLpPuFb2dTypeIISystem < ...
             iParamMtx = uint32(3);
             %iParamMtx = uint32(2);
 
+            %TODO: 周辺ライブラリが充実したら削除
+            E = blkdiag(eye(nChs(ChannelGroup.Lower)),1i*eye(nChs(ChannelGroup.Lower)),1);
+
             % Horizontal extention
             lenY = decY;
             lenX = decX;
@@ -257,13 +260,13 @@ classdef AbstOvsdLpPuFb2dTypeIISystem < ...
                 %hU = step(pmMtxSt_,[],iParamMtx+1);
                 hU = eye(ceil(nHalfDecs));
                 %theta2 = step(pmMtxSt_,[],iParamMtx+2);
-                theta2 = zeros(floor(nHalfDecs/2),1);
+                theta2 = pi/4*ones(floor(nHalfDecs/2),1);
                 %W = step(pmMtxSt_,[],iParamMtx+3);
                 W = step(pmMtxSt_,[],iParamMtx);
                 %U = step(pmMtxSt_,[],iParamMtx+4);
                 U = step(pmMtxSt_,[],iParamMtx+1);
                 %theta1 = step(pmMtxSt_,[],iParamMtx+5);
-                theta1 = zeros(floor(nHalfDecs/2),1);
+                theta1 = pi/4*ones(floor(nHalfDecs/2),1);
                 if mexFlag_
                     %TODO:
                     E = mexFcn_(E, W, U, nChs(1), nChs(2), nShift);
@@ -287,13 +290,13 @@ classdef AbstOvsdLpPuFb2dTypeIISystem < ...
                     %hU = step(pmMtxSt_,[],iParamMtx+1);
                     hU = eye(ceil(nHalfDecs));
                     %theta2 = step(pmMtxSt_,[],iParamMtx+2);
-                    theta2 = zeros(floor(nHalfDecs/2),1);
+                    theta2 = pi/4*ones(floor(nHalfDecs/2),1);
                     %W = step(pmMtxSt_,[],iParamMtx+3);
                     W = step(pmMtxSt_,[],iParamMtx);
                     %U = step(pmMtxSt_,[],iParamMtx+4);
                     U = step(pmMtxSt_,[],iParamMtx+1);
                     %theta1 = step(pmMtxSt_,[],iParamMtx+5);
-                    theta1 = zeros(floor(nHalfDecs/2),1);
+                    theta1 = pi/4*ones(floor(nHalfDecs/2),1);
                     if mexFlag_
                         %TODO:
                         E = mexFcn_(E, W, U, nChs(1), nChs(2), nShift);
@@ -306,6 +309,10 @@ classdef AbstOvsdLpPuFb2dTypeIISystem < ...
                     %iParamMtx = iParamMtx+6;
                 end
                 lenY = decY*(ordY+1);
+
+                %TODO: 周辺ライブラリが充実したら削除
+                E = blkdiag(eye(nChs(ChannelGroup.Lower)),-1i*eye(nChs(ChannelGroup.Lower)),1);
+
                 E = ipermuteCoefs_(obj,E,lenY);
             end
             %

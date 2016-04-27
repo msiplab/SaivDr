@@ -251,6 +251,9 @@ classdef AbstOvsdLpPuFb3dTypeIISystem < ...
             iParamMtx = uint32(3);
             %iParamMtx = uint32(2);
 
+            %TOOD: 周辺ライブラリが充実したら削除
+            E = blkdiag(eye(nChs(ChannelGourp.LOWER)),1i*eye(nChs(ChannelGourp.LOWER)),1);
+
             % Depth extention
             lenY = decY;
             lenX = decX;
@@ -261,13 +264,13 @@ classdef AbstOvsdLpPuFb3dTypeIISystem < ...
                 %hU = step(pmMtxSt_,[],iParamMtx+1);
                 hU = eye(ceil(nHalfDecs));
                 %theta2 = step(pmMtxSt_,[],iParamMtx+2);
-                theta2 = zeros(floor(nHalfDecs/2),1);
+                theta2 = pi/4*ones(floor(nHalfDecs/2),1);
                 %W = step(pmMtxSt_,[],iParamMtx+3);
                 W = step(pmMtxSt_,[],iParamMtx);
                 %U = step(pmMtxSt_,[],iParamMtx+4);
                 U = step(pmMtxSt_,[],iParamMtx+1);
                 %theta1 = step(pmMtxSt_,[],iParamMtx+5);
-                theta1 = zeros(floor(nHalfDecs/2),1);
+                theta1 = pi/4*ones(floor(nHalfDecs/2),1);
                 if obj.mexFlag
                     %TODO:
                     E = obj.mexFcn(E, W, U, nChs(1), nChs(2), nShift);
@@ -290,13 +293,13 @@ classdef AbstOvsdLpPuFb3dTypeIISystem < ...
                 %hU = step(pmMtxSt_,[],iParamMtx+1);
                 hU = eye(ceil(nHalfDecs));
                 %theta2 = step(pmMtxSt_,[],iParamMtx+2);
-                theta2 = zeros(floor(nHalfDecs/2),1);
+                theta2 = pi/4*ones(floor(nHalfDecs/2),1);
                 %W = step(pmMtxSt_,[],iParamMtx+3);
                 W = step(pmMtxSt_,[],iParamMtx);
                 %U = step(pmMtxSt_,[],iParamMtx+4);
                 U = step(pmMtxSt_,[],iParamMtx+1);
                 %theta1 = step(pmMtxSt_,[],iParamMtx+5);
-                theta1 = zeros(floor(nHalfDecs/2),1);
+                theta1 = pi/4*ones(floor(nHalfDecs/2),1);
                 if obj.mexFlag
                     %TODO:
                     E = obj.mexFcn(E, W, U, nChs(1), nChs(2), nShift);
@@ -319,13 +322,13 @@ classdef AbstOvsdLpPuFb3dTypeIISystem < ...
                 %hU = step(pmMtxSt_,[],iParamMtx+1);
                 hU = eye(ceil(nHalfDecs));
                 %theta2 = step(pmMtxSt_,[],iParamMtx+2);
-                theta2 = zeros(floor(nHalfDecs/2),1);
+                theta2 = pi/4*ones(floor(nHalfDecs/2),1);
                 %W = step(pmMtxSt_,[],iParamMtx+3);
                 W = step(pmMtxSt_,[],iParamMtx);
                 %U = step(pmMtxSt_,[],iParamMtx+4);
                 U = step(pmMtxSt_,[],iParamMtx+1);
                 %theta1 = step(pmMtxSt_,[],iParamMtx+5);
-                theta1 = zeros(floor(nHalfDecs/2),1);
+                theta1 = pi/4*ones(floor(nHalfDecs/2),1);
                 if obj.mexFlag
                     %TODO:
                     E = obj.mexFcn(E, W, U, nChs(1), nChs(2), nShift);
@@ -338,6 +341,9 @@ classdef AbstOvsdLpPuFb3dTypeIISystem < ...
                 %iParamMtx = iParamMtx+6;
             end
             lenY = decY*(ordY+1);
+
+            %TOOD: 周辺ライブラリが充実したら削除
+            E = blkdiag(eye(nChs(ChannelGourp.LOWER)),1i*eye(nChs(ChannelGourp.LOWER)),1);
 
             %
             E = permuteCoefs_(obj,E,lenX*lenZ); % X Z Y -> Y X Z

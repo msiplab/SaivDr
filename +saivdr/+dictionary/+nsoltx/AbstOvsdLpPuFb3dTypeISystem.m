@@ -216,6 +216,9 @@ classdef AbstOvsdLpPuFb3dTypeISystem < ...
             %iParamMtx = uint32(2);
             hChs = nChs(1);
 
+            %TODO: 周辺ライブラリが充実したら削除
+            E = blkdiag(eye(hChs), 1i*(hChs));
+
             % Depth extention
             lenY = decY;
             lenX = decX;
@@ -225,7 +228,7 @@ classdef AbstOvsdLpPuFb3dTypeISystem < ...
                 W = eye(hChs);
                 U = step(pmMtxSt_,[],iParamMtx);
                 %theta = step(pmMtxSt_,[],iParamMtx);
-                theta = zeros(floor(hChs/2),1);
+                theta = pi/4*ones(floor(hChs/2),1);
                 if obj.mexFlag
                     %TODO:mexFcnの修正
                     E = obj.mexFcn(E, U, hChs, nShift);
@@ -248,7 +251,7 @@ classdef AbstOvsdLpPuFb3dTypeISystem < ...
                 %U = step(pmMtxSt_,[],iParamMtx+1);
                 U = step(pmMtxSt_,[],iParamMtx);
                 %theta = step(pmMtxSt_,[],iParamMtx+2);
-                theta = zeros(floor(hChs/2),1);
+                theta = pi/4*ones(floor(hChs/2),1);
                 if obj.mexFlag
                     %TODO:
                     E = obj.mexFcn(E, U, hChs, nShift);
@@ -271,7 +274,7 @@ classdef AbstOvsdLpPuFb3dTypeISystem < ...
                 %U = step(pmMtxSt_,[],iParamMtx+1);
                 U = step(pmMtxSt_,[],iParamMtx);
                 %theta = step(pmMtxSt_,[],iParamMtx+2);
-                theta = zeros(floor(hChs/2),1);
+                theta = pi/4*ones(floor(hChs/2),1);
                 if obj.mexFlag
                     E = obj.mexFcn(E, U, hChs, nShift);
                 else
@@ -284,6 +287,8 @@ classdef AbstOvsdLpPuFb3dTypeISystem < ...
             end
             lenY = decY*(ordY+1);
 
+            %TODO: 周辺ライブラリが充実したら削除
+            E = blkdiag(eye(hChs), -1i*(hChs));
             %
             E = permuteCoefs_(obj,E,lenX*lenZ); % X Z Y -> Y X Z
             nSubbands = size(E,1);

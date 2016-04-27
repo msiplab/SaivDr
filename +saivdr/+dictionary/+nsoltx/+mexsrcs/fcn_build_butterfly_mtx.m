@@ -1,8 +1,8 @@
 function hB = fcn_build_butterfly_mtx(P,theta)
     qrtP = floor(P/4);
 
-    hC = ones(floor(P/2));
-    hS = ones(floor(P/2));
+    hC = eye(floor(P/2));
+    hS = eye(floor(P/2));
     for p = 1:qrtP
         tp = theta(p);
 

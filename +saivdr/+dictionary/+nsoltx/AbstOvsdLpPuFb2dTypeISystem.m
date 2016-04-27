@@ -201,6 +201,9 @@ classdef AbstOvsdLpPuFb2dTypeISystem < ...
             %TODO: iParamMtx = uint32(2);
             hChs = nChs(1);
 
+            %TODO: 周辺ライブラリが充実したら削除
+            E = diag(eye(hChs),1i*eye(hChs))*E;
+
             %
             initOrdX = 1;
             lenX = decX;
@@ -216,7 +219,7 @@ classdef AbstOvsdLpPuFb2dTypeISystem < ...
                 %U = step(pmMtxSet_,[],iParamMtx+1);
                 U = step(pmMtxSet_,[],iParamMtx);
                 %theta = step(pmMtxSet_,[],iParamMtx+2);
-                theta = zeros(floor(hChs/2),1);
+                theta = pi/4*ones(floor(hChs/2),1);
                 if mexFlag_
                     %TODO:
                     E = mexFcn_(E, U, hChs, nShift);
@@ -240,7 +243,7 @@ classdef AbstOvsdLpPuFb2dTypeISystem < ...
                     %U = step(pmMtxSet_,[],iParamMtx+1);
                     U = step(pmMtxSet_,[],iParamMtx);
                     %theta = step(pmMtxSet_,[],iParamMtx+2);
-                    theta = zeros(floor(hChs/2),1);
+                    theta = pi/4*ones(floor(hChs/2),1);
                     if mexFlag_
                         %TODO
                         E = mexFcn_(E, U, hChs, nShift);
@@ -253,6 +256,10 @@ classdef AbstOvsdLpPuFb2dTypeISystem < ...
                     %iParamMtx = iParamMtx+3;
                 end
                 lenY = decY*(ordY+1);
+
+                %TODO: 周辺ライブラリが充実したら削除
+                E = blkdiag(eye(hChs),-1i*eye(hChs));
+
                 E = ipermuteCoefs_(obj,E,lenY);
             end
             %
