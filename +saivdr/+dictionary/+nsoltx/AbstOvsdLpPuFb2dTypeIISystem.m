@@ -248,7 +248,7 @@ classdef AbstOvsdLpPuFb2dTypeIISystem < ...
             %iParamMtx = uint32(2);
 
             %TODO: 周辺ライブラリが充実したら削除
-            E = blkdiag(eye(nChs(ChannelGroup.Lower)),1i*eye(nChs(ChannelGroup.Lower)),1);
+            E = blkdiag(eye(nChs(ChannelGroup.Lower)),1i*eye(nChs(ChannelGroup.Lower)),1)*E;
 
             % Horizontal extention
             lenY = decY;
@@ -311,7 +311,7 @@ classdef AbstOvsdLpPuFb2dTypeIISystem < ...
                 lenY = decY*(ordY+1);
 
                 %TODO: 周辺ライブラリが充実したら削除
-                E = blkdiag(eye(nChs(ChannelGroup.Lower)),-1i*eye(nChs(ChannelGroup.Lower)),1);
+                E = blkdiag(eye(nChs(ChannelGroup.Lower)),-1i*eye(nChs(ChannelGroup.Lower)),1)*E;
 
                 E = ipermuteCoefs_(obj,E,lenY);
             end

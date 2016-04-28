@@ -217,7 +217,7 @@ classdef AbstOvsdLpPuFb3dTypeISystem < ...
             hChs = nChs(1);
 
             %TODO: 周辺ライブラリが充実したら削除
-            E = blkdiag(eye(hChs), 1i*(hChs));
+            E = blkdiag(eye(hChs), 1i*(hChs))*E;
 
             % Depth extention
             lenY = decY;
@@ -288,7 +288,7 @@ classdef AbstOvsdLpPuFb3dTypeISystem < ...
             lenY = decY*(ordY+1);
 
             %TODO: 周辺ライブラリが充実したら削除
-            E = blkdiag(eye(hChs), -1i*(hChs));
+            E = blkdiag(eye(hChs), -1i*(hChs))*E;
             %
             E = permuteCoefs_(obj,E,lenX*lenZ); % X Z Y -> Y X Z
             nSubbands = size(E,1);

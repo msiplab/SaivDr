@@ -252,7 +252,7 @@ classdef AbstOvsdLpPuFb3dTypeIISystem < ...
             %iParamMtx = uint32(2);
 
             %TOOD: 周辺ライブラリが充実したら削除
-            E = blkdiag(eye(nChs(ChannelGourp.LOWER)),1i*eye(nChs(ChannelGourp.LOWER)),1);
+            E = blkdiag(eye(nChs(ChannelGourp.LOWER)),1i*eye(nChs(ChannelGourp.LOWER)),1)*E;
 
             % Depth extention
             lenY = decY;
@@ -343,7 +343,7 @@ classdef AbstOvsdLpPuFb3dTypeIISystem < ...
             lenY = decY*(ordY+1);
 
             %TOOD: 周辺ライブラリが充実したら削除
-            E = blkdiag(eye(nChs(ChannelGourp.LOWER)),1i*eye(nChs(ChannelGourp.LOWER)),1);
+            E = blkdiag(eye(nChs(ChannelGourp.LOWER)),1i*eye(nChs(ChannelGourp.LOWER)),1)*E;
 
             %
             E = permuteCoefs_(obj,E,lenX*lenZ); % X Z Y -> Y X Z

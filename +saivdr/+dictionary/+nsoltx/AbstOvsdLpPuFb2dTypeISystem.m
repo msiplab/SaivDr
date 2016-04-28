@@ -202,7 +202,7 @@ classdef AbstOvsdLpPuFb2dTypeISystem < ...
             hChs = nChs(1);
 
             %TODO: 周辺ライブラリが充実したら削除
-            E = diag(eye(hChs),1i*eye(hChs))*E;
+            E = blkdiag(eye(hChs),1i*eye(hChs))*E;
 
             %
             initOrdX = 1;
@@ -258,7 +258,7 @@ classdef AbstOvsdLpPuFb2dTypeISystem < ...
                 lenY = decY*(ordY+1);
 
                 %TODO: 周辺ライブラリが充実したら削除
-                E = blkdiag(eye(hChs),-1i*eye(hChs));
+                E = blkdiag(eye(hChs),-1i*eye(hChs))*E;
 
                 E = ipermuteCoefs_(obj,E,lenY);
             end
