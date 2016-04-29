@@ -15,16 +15,16 @@ classdef AbstOvsdLpPuFb3dSystem < matlab.System %#codegen
     %                8050 2-no-cho Ikarashi, Nishi-ku,
     %                Niigata, 950-2181, JAPAN
     %
-    % LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627    
+    % LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627
     %
-    
+
     properties (Nontunable)
         DecimationFactor = [ 2 2 2 ];
         PolyPhaseOrder   = [];
         NumberOfChannels = [];
         OutputMode = 'Coefficients'
     end
-    
+
     properties (Hidden, Transient)
         OutputModeSet = ...
             matlab.system.StringSet({...
@@ -34,7 +34,7 @@ classdef AbstOvsdLpPuFb3dSystem < matlab.System %#codegen
             'SynthesisFilters',...
             'ParameterMatrixSet'});
     end
-    
+
     properties (Hidden)
         Angles = 0;
         Mus    = 1;
@@ -42,31 +42,31 @@ classdef AbstOvsdLpPuFb3dSystem < matlab.System %#codegen
         SliceIntervalAtmImShow = 1/2;
         IsColorBarAtmImShow    = false;
     end
-    
+
     properties (GetAccess = public, SetAccess = protected)
         ParameterMatrixSet
     end
-    
+
     properties (Access = protected)
         Coefficients
     end
-    
+
     properties(Access = protected, Logical)
         mexFlag = false
-    end    
-    
+    end
+
     methods (Access = protected, Abstract = true)
         value = getAnalysisFilterBank_(obj)
         updateParameterMatrixSet_(obj)
         updateAngles_(obj)
         updateMus_(obj)
     end
-    
+
     methods
         function obj = AbstOvsdLpPuFb3dSystem(varargin)
             setProperties(obj,nargin,varargin{:});
         end
-        
+
         function atmimshow(obj,varargin)
             % Show Atomic Images
             updateParameterMatrixSet_(obj);
@@ -132,10 +132,10 @@ classdef AbstOvsdLpPuFb3dSystem < matlab.System %#codegen
                     end
                     if isprop(hcb,'XTickLabel')
                         set(hcb,'XTickLabel',[]);
-                    end                
+                    end
                     if isprop(hcb,'ZTickLabel')
                         set(hcb,'ZTickLabel',[]);
-                    end                
+                    end
                 end
                 for iSlice = 1:length(hslice)
                     map = abs(get(hslice(iSlice),'CData'));
@@ -158,41 +158,41 @@ classdef AbstOvsdLpPuFb3dSystem < matlab.System %#codegen
                 %}
             end
         end
-        
+
     end
-    
+
     methods (Access = protected)
 
         function s = saveObjectImpl(obj)
             s = saveObjectImpl@matlab.System(obj);
             s.ParameterMatrixSet = matlab.System.saveObject(obj.ParameterMatrixSet);
             s.Coefficients = obj.Coefficients;
-            s.mexFlag = obj.mexFlag;            
+            s.mexFlag = obj.mexFlag;
         end
-        
+
         function loadObjectImpl(obj,s,wasLocked)
             import saivdr.dictionary.utility.ParameterMatrixSet
-            obj.mexFlag = s.mexFlag;                        
+            obj.mexFlag = s.mexFlag;
             obj.Coefficients = s.Coefficients;
             loadObjectImpl@matlab.System(obj,s,wasLocked);
             %
             obj.ParameterMatrixSet = matlab.System.loadObject(s.ParameterMatrixSet);
-        end        
-        
+        end
+
         function validatePropertiesImpl(obj)
             id = 'SaivDr:IllegalPropertyException';
             if prod(obj.DecimationFactor) > sum(obj.NumberOfChannels)
                 error('%s:\n sum(NumberOfChannels) must be greater than or equalto prod(DecimationFactor).',...
                     id);
             end
-        end   
-        
+        end
+
         function resetImpl(obj)
             obj.mexFlag = false;
         end
-        
+
         function output = stepImpl(obj,varargin)
-            
+
             if ~isempty(varargin{1})
                 obj.Angles = varargin{1};
                 updateAngles_(obj);
@@ -201,26 +201,28 @@ classdef AbstOvsdLpPuFb3dSystem < matlab.System %#codegen
                 obj.Mus = varargin{2};
                 updateMus_(obj);
             end
-            
+
             updateParameterMatrixSet_(obj);
             updateCoefficients_(obj);
-            
-            if strcmp(obj.OutputMode,'Coefficients') 
+
+            if strcmp(obj.OutputMode,'Coefficients')
                 output = obj.Coefficients;
             elseif strcmp(obj.OutputMode,'ParameterMatrixSet')
                 output = clone(obj.ParameterMatrixSet);
-            elseif strcmp(obj.OutputMode,'AnalysisFilterAt')     
+            elseif strcmp(obj.OutputMode,'AnalysisFilterAt')
                 idx = varargin{3};
                 H = getAnalysisFilterBank_(obj);
                 output = H(:,:,:,idx);
-            elseif strcmp(obj.OutputMode,'AnalysisFilters')     
+            elseif strcmp(obj.OutputMode,'AnalysisFilters')
                 output = getAnalysisFilterBank_(obj);
-            elseif strcmp(obj.OutputMode,'SynthesisFilterAt')     
+            elseif strcmp(obj.OutputMode,'SynthesisFilterAt')
                 idx = varargin{3};
                 H = getAnalysisFilterBank_(obj);
+                H = conj(H);
                 output = flip(H(:,:,:,idx),[1 2 3]);
-            elseif strcmp(obj.OutputMode,'SynthesisFilters')     
-                H = getAnalysisFilterBank_(obj);          
+            elseif strcmp(obj.OutputMode,'SynthesisFilters')
+                H = getAnalysisFilterBank_(obj);
+                H = conj(H);
                 H = flip(H,1);
                 H = flip(H,2);
                 output = flip(H,3);
@@ -228,26 +230,26 @@ classdef AbstOvsdLpPuFb3dSystem < matlab.System %#codegen
                 output = [];
             end
         end
-        
+
         function N = getNumInputsImpl(obj)
             if strcmp(obj.OutputMode,'Coefficients') || ...
                     strcmp(obj.OutputMode,'ParameterMatrixSet') || ...
                     strcmp(obj.OutputMode,'AnalysisFilters') || ...
-                    strcmp(obj.OutputMode,'SynthesisFilters') 
+                    strcmp(obj.OutputMode,'SynthesisFilters')
                 N = 2;
             else
                 N = 3;
             end
         end
-        
+
         function N = getNumOutputsImpl(~)
             N = 1;
-        end        
-        
+        end
+
         function updateCoefficients_(obj)
             import saivdr.dictionary.utility.Direction
             decX = obj.DecimationFactor(Direction.HORIZONTAL);
-            decY = obj.DecimationFactor(Direction.VERTICAL);            
+            decY = obj.DecimationFactor(Direction.VERTICAL);
             decZ = obj.DecimationFactor(Direction.DEPTH);
             ordX = obj.PolyPhaseOrder(Direction.HORIZONTAL);
             ordY = obj.PolyPhaseOrder(Direction.VERTICAL);
@@ -276,7 +278,7 @@ classdef AbstOvsdLpPuFb3dSystem < matlab.System %#codegen
             end
             obj.Coefficients = coefs;
         end
-        
+
         function value = getMatrixE0_(obj)
             import saivdr.dictionary.utility.Direction
             nRows = obj.DecimationFactor(Direction.VERTICAL);
@@ -284,10 +286,10 @@ classdef AbstOvsdLpPuFb3dSystem < matlab.System %#codegen
             nDeps = obj.DecimationFactor(Direction.DEPTH);
             nElmBi = nRows*nCols*nDeps;
             coefs = zeros(nElmBi);
-            iElm = 1; 
+            iElm = 1;
             % E0.'= [ Beee Beoo Booe Boeo Beeo Beoe Booo Boee ] % Byxz
             % Beee
-            for iRow = 1:2:nRows % y-e            
+            for iRow = 1:2:nRows % y-e
                 for iCol = 1:2:nCols % x-e
                     dctCoefYX = zeros(nRows,nCols);
                     dctCoefYX(iRow,iCol) = 1;
@@ -296,7 +298,7 @@ classdef AbstOvsdLpPuFb3dSystem < matlab.System %#codegen
                         dctCoefZ = zeros(nDeps,1);
                         dctCoefZ(iDep) = 1;
                         basisZ  = permute(idct(dctCoefZ),[2 3 1]);
-                        basisVd = convn(basisZ,basisYX);                                                
+                        basisVd = convn(basisZ,basisYX);
                         coefs(iElm,:) = basisVd(:).';
                         iElm = iElm + 1;
                     end
@@ -312,7 +314,7 @@ classdef AbstOvsdLpPuFb3dSystem < matlab.System %#codegen
                         dctCoefZ = zeros(nDeps,1);
                         dctCoefZ(iDep) = 1;
                         basisZ  = permute(idct(dctCoefZ),[2 3 1]);
-                        basisVd = convn(basisZ,basisYX);                        
+                        basisVd = convn(basisZ,basisYX);
                         coefs(iElm,:) = basisVd(:).';
                         iElm = iElm + 1;
                     end
@@ -362,6 +364,7 @@ classdef AbstOvsdLpPuFb3dSystem < matlab.System %#codegen
                         basisZ  = permute(idct(dctCoefZ),[2 3 1]);
                         basisVd = convn(basisZ,basisYX);
                         coefs(iElm,:) = basisVd(:).';
+                        coefs(iElm,:) = 1i*coefs(iElm,:);
                         iElm = iElm + 1;
                     end
                 end
@@ -376,14 +379,15 @@ classdef AbstOvsdLpPuFb3dSystem < matlab.System %#codegen
                         dctCoefZ = zeros(nDeps,1);
                         dctCoefZ(iDep) = 1;
                         basisZ  = permute(idct(dctCoefZ),[2 3 1]);
-                        basisVd = convn(basisZ,basisYX);            
+                        basisVd = convn(basisZ,basisYX);
                         coefs(iElm,:) = basisVd(:).';
+                        coefs(iElm,:) = 1i*coefs(iElm,:);
                         iElm = iElm + 1;
                     end
                 end
             end
             %Booo
-            for iRow = 2:2:nRows % y-o            
+            for iRow = 2:2:nRows % y-o
                 for iCol = 2:2:nCols % x-o
                     dctCoefYX = zeros(nRows,nCols);
                     dctCoefYX(iRow,iCol) = 1;
@@ -394,6 +398,7 @@ classdef AbstOvsdLpPuFb3dSystem < matlab.System %#codegen
                         basisZ  = permute(idct(dctCoefZ),[2 3 1]);
                         basisVd = convn(basisZ,basisYX);
                         coefs(iElm,:) = basisVd(:).';
+                        coefs(iElm,:) = 1i*coefs(iElm,:);
                         iElm = iElm + 1;
                     end
                 end
@@ -410,6 +415,7 @@ classdef AbstOvsdLpPuFb3dSystem < matlab.System %#codegen
                         basisZ  = permute(idct(dctCoefZ),[2 3 1]);
                         basisVd = convn(basisZ,basisYX);
                         coefs(iElm,:) = basisVd(:).';
+                        coefs(iElm,:) = 1i*coefs(iElm,:);
                         iElm = iElm + 1;
                     end
                 end
@@ -417,7 +423,7 @@ classdef AbstOvsdLpPuFb3dSystem < matlab.System %#codegen
             %
             value = flip(coefs,2);
         end
-        
+
         function value = permuteCoefs_(~,arr_,phs_)
             len_ = size(arr_,2)/phs_;
             value = zeros(size(arr_));
@@ -425,7 +431,7 @@ classdef AbstOvsdLpPuFb3dSystem < matlab.System %#codegen
                 value(:,idx*len_+1:(idx+1)*len_) = arr_(:,idx+1:phs_:end);
             end
         end
-        
+
     end
-    
+
 end

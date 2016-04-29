@@ -63,18 +63,20 @@ classdef AbstOvsdLpPuFb3dTypeIISystem < ...
             % Prepare MEX function
             import saivdr.dictionary.nsoltx.ChannelGroup
             import saivdr.dictionary.nsoltx.mexsrcs.fcn_autobuild_bb_type2
-            [obj.mexFcn, obj.mexFlag] = fcn_autobuild_bb_type2(...
-                obj.NumberOfChannels(ChannelGroup.UPPER),...
-                obj.NumberOfChannels(ChannelGroup.LOWER));
+            %TODO: MEXファイルの複素対応完了まで機能停止
+            %[obj.mexFcn, obj.mexFlag] = fcn_autobuild_bb_type2(...
+            %    obj.NumberOfChannels(ChannelGroup.UPPER),...
+            %    obj.NumberOfChannels(ChannelGroup.LOWER));
         end
 
         function setupImpl(obj,varargin)
             % Prepare MEX function
             import saivdr.dictionary.nsoltx.ChannelGroup
             import saivdr.dictionary.nsoltx.mexsrcs.fcn_autobuild_bb_type2
-            [obj.mexFcn, obj.mexFlag] = fcn_autobuild_bb_type2(...
-                obj.NumberOfChannels(ChannelGroup.UPPER),...
-                obj.NumberOfChannels(ChannelGroup.LOWER));
+            %TODO: MEXファイルの複素対応完了まで機能停止
+            %[obj.mexFcn, obj.mexFlag] = fcn_autobuild_bb_type2(...
+            %    obj.NumberOfChannels(ChannelGroup.UPPER),...
+            %    obj.NumberOfChannels(ChannelGroup.LOWER));
         end
 
         function updateProperties_(obj)
@@ -252,7 +254,7 @@ classdef AbstOvsdLpPuFb3dTypeIISystem < ...
             %iParamMtx = uint32(2);
 
             %TOOD: 周辺ライブラリが充実したら削除
-            E = blkdiag(eye(nChs(ChannelGourp.LOWER)),1i*eye(nChs(ChannelGourp.LOWER)),1)*E;
+            %E = blkdiag(eye(nChs(ChannelGourp.LOWER)),1i*eye(nChs(ChannelGourp.LOWER)),1)*E;
 
             % Depth extention
             lenY = decY;

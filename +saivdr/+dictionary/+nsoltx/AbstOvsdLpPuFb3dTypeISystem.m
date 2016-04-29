@@ -62,13 +62,15 @@ classdef AbstOvsdLpPuFb3dTypeISystem < ...
             resetImpl@saivdr.dictionary.nsoltx.AbstOvsdLpPuFb3dSystem(obj);
             % Prepare MEX function
             import saivdr.dictionary.nsoltx.mexsrcs.fcn_autobuild_bb_type1
-            [obj.mexFcn, obj.mexFlag] = fcn_autobuild_bb_type1(obj.NumberOfChannels(1));
+            %TODO: MEXファイルの複素対応完了まで機能停止
+            %[obj.mexFcn, obj.mexFlag] = fcn_autobuild_bb_type1(obj.NumberOfChannels(1));
         end
 
         function setupImpl(obj,varargin)
             % Prepare MEX function
             import saivdr.dictionary.nsoltx.mexsrcs.fcn_autobuild_bb_type1
-            [obj.mexFcn, obj.mexFlag] = fcn_autobuild_bb_type1(obj.NumberOfChannels(1));
+            %TODO: MEXファイルの複素対応完了まで機能停止
+            %[obj.mexFcn, obj.mexFlag] = fcn_autobuild_bb_type1(obj.NumberOfChannels(1));
         end
 
         function updateProperties_(obj)
@@ -217,7 +219,7 @@ classdef AbstOvsdLpPuFb3dTypeISystem < ...
             hChs = nChs(1);
 
             %TODO: 周辺ライブラリが充実したら削除
-            E = blkdiag(eye(hChs), 1i*(hChs))*E;
+            %E = blkdiag(eye(hChs), 1i*(hChs))*E;
 
             % Depth extention
             lenY = decY;
