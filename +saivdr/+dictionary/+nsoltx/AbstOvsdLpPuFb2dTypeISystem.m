@@ -54,7 +54,8 @@ classdef AbstOvsdLpPuFb2dTypeISystem < ...
         function loadObjectImpl(obj,s,wasLocked)
             obj.mexFcn   = s.mexFcn;
             obj.nStages = s.nStages;
-            obj.matrixE0 = s.matrixE0;
+            %TODO: MEXファイルの複素対応完了まで機能停止
+            %obj.matrixE0 = s.matrixE0;
             loadObjectImpl@saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2dSystem(obj,s,wasLocked);
         end
 
