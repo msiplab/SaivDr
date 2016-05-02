@@ -15,38 +15,38 @@ classdef IstaImRestoration < matlab.System %~#codegen
     %                8050 2-no-cho Ikarashi, Nishi-ku,
     %                Niigata, 950-2181, JAPAN
     %
-    % LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627    
+    % LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627
     %
-    
+
     properties(Nontunable)
         Synthesizer
         AdjOfSynthesizer
         LinearProcess
         NumberOfTreeLevels = 1
     end
-    
+
     properties(Hidden,Nontunable)
         NumberOfComponents
     end
-    
+
     properties
         StepMonitor
         Eps0   = 1e-6
-        Lambda 
+        Lambda
     end
-    
+
     properties (Logical)
         UseParallel = false;
     end
-    
+
     properties (PositiveInteger)
         MaxIter = 1000
     end
-       
+
     properties (Access = protected,Nontunable)
         AdjLinProcess
     end
-    
+
     properties (Access = private)
         nItr
         x
@@ -59,22 +59,22 @@ classdef IstaImRestoration < matlab.System %~#codegen
         scales
         threshold
     end
-    
+
     methods
         function obj = IstaImRestoration(varargin)
             setProperties(obj,nargin,varargin{:})
         end
     end
-    
+
     methods(Access = protected)
-        
+
         function s = saveObjectImpl(obj)
             s = saveObjectImpl@matlab.System(obj);
             %
             s.Synthesizer = ...
                 matlab.System.saveObject(obj.Synthesizer);
             s.AdjOfSynthesizer = ...
-                matlab.System.saveObject(obj.AdjOfSynthesizer);            
+                matlab.System.saveObject(obj.AdjOfSynthesizer);
             s.LinearProcess = ...
                 matlab.System.saveObject(obj.LinearProcess);
             %
@@ -91,8 +91,8 @@ classdef IstaImRestoration < matlab.System %~#codegen
              s.scales = obj.scales;
 %             s.threshold    = obj.threshold;
         end
-        
-        function loadObjectImpl(obj, s, wasLocked)           
+
+        function loadObjectImpl(obj, s, wasLocked)
 %             obj.nItr = s.nItr;
 %             obj.x    = s.x;
 %             obj.y    = s.y;
@@ -102,8 +102,8 @@ classdef IstaImRestoration < matlab.System %~#codegen
 %             obj.err  = s.err;
              obj.valueL = s.valueL;
              obj.scales = s.scales;
-%             obj.threshold    = s.threshold;            
-            loadObjectImpl@matlab.System(obj,s,wasLocked); 
+%             obj.threshold    = s.threshold;
+            loadObjectImpl@matlab.System(obj,s,wasLocked);
             %
             obj.Synthesizer = ...
                 matlab.System.loadObject(s.Synthesizer);
@@ -114,42 +114,42 @@ classdef IstaImRestoration < matlab.System %~#codegen
             %
             obj.AdjLinProcess = ...
                 matlab.System.loadObject(s.AdjLinProcess);
-            
+
         end
-       
+
         function validatePropertiesImpl(obj)
             if isempty(obj.Synthesizer)
                 me = MException('SaivDr:InstantiationException',...
                     'Synthesizer must be given.');
                 throw(me)
-            end 
+            end
             if isempty(obj.AdjOfSynthesizer)
                 me = MException('SaivDr:InstantiationException',...
                     'AdjOfSynthesizer must be given.');
                 throw(me)
-            end 
+            end
             if isempty(obj.LinearProcess)
                 me = MException('SaivDr:InstantiationException',...
                     'LinearProcess must be given.');
                 throw(me)
-            end             
+            end
             if ~strcmp(get(obj.LinearProcess,'ProcessingMode'),'Normal')
                 error('SaivDr: Invalid processing mode')
             end
         end
-        
-        function setupImpl(obj,srcImg) 
+
+        function setupImpl(obj,srcImg)
             obj.AdjLinProcess = clone(obj.LinearProcess);
-            set(obj.AdjLinProcess,'ProcessingMode','Adjoint');            
-            obj.NumberOfComponents = size(srcImg,3); 
+            set(obj.AdjLinProcess,'ProcessingMode','Adjoint');
+            obj.NumberOfComponents = size(srcImg,3);
             obj.x = srcImg;
-            obj.valueL  = getLipschitzConstant_(obj);            
+            obj.valueL  = getLipschitzConstant_(obj);
         end
-        
+
         function resetImpl(~)
             %            obj.valueL  = getLipschitzConstant_(obj);
         end
-        
+
         function resImg = stepImpl(obj,srcImg)
             % Initialization
             obj.x = srcImg;
@@ -165,18 +165,18 @@ classdef IstaImRestoration < matlab.System %~#codegen
             %  ^x = P^u = PP.'r = PP.'x
             obj.hx = step(obj.LinearProcess,obj.hu);
             % r = ^x - x;
-            obj.r   = obj.hx - obj.x;        
-            obj.threshold   = obj.Lambda/obj.valueL;     
+            obj.r   = obj.hx - obj.x;
+            obj.threshold   = obj.Lambda/obj.valueL;
             %
             if ~isempty(obj.StepMonitor)
                 reset(obj.StepMonitor)
             end
-            
+
             % Iterative processing
             obj.err = Inf;
             % ypre = y
             ypre = obj.y;
-            while ( obj.err > obj.Eps0 && obj.nItr < obj.MaxIter )                         
+            while ( obj.err > obj.Eps0 && obj.nItr < obj.MaxIter )
                 obj.nItr = obj.nItr + 1;
                 % Process per iteration
                 procPerIter_(obj);
@@ -193,19 +193,19 @@ classdef IstaImRestoration < matlab.System %~#codegen
             end
             resImg = obj.hu;
          end
-        
+
         function N = getNumInputsImpl(~)
             N = 1;
         end
-        
+
         function N = getNumOutputsimpl(~)
             N = 1;
         end
-        
+
     end
-    
+
     methods (Access = private)
-        
+
         function procPerIter_(obj)
             adjSyn_  = obj.AdjOfSynthesizer;
             syn_     = obj.Synthesizer;
@@ -215,7 +215,7 @@ classdef IstaImRestoration < matlab.System %~#codegen
             threshold_ = obj.threshold;
 
             % Processing per iteration
-                        
+
             % h = P.'r = P.'(^x-x)
             h_ = step(obj.AdjLinProcess,obj.r);
             %
@@ -260,24 +260,25 @@ classdef IstaImRestoration < matlab.System %~#codegen
             % r = ^x - x;
             obj.r  = obj.hx - obj.x;
         end
-        
+
         function value = getLipschitzConstant_(obj)
             B_ = get(obj.Synthesizer,'FrameBound');
             step(obj.LinearProcess,obj.x);
             value =B_*get(obj.LinearProcess,'LambdaMax');
         end
-   
+
     end
-    
+
     methods (Static = true, Access = private)
         % Soft shrink
         function outputcf = softshrink_(inputcf,threshold)
             % Soft-thresholding shrinkage
-            nc = abs(inputcf)-threshold;
+            ln = norm(inputcf);
+            nc = ln-threshold;
             nc(nc<0) = 0;
-            outputcf = sign(inputcf).*nc;
+            outputcf = nc/ln*inputcf;
         end
-        
+
     end
-    
+
 end
