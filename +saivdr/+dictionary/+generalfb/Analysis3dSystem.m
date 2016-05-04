@@ -4,7 +4,7 @@ classdef Analysis3dSystem < saivdr.dictionary.AbstAnalysisSystem
     % Reference:
     %   Shogo Muramatsu and Hitoshi Kiya,
     %   ''Parallel Processing Techniques for Multidimensional Sampling
-    %   Lattice Alteration Based on Overlap-Add and Overlap-Save Methods,'' 
+    %   Lattice Alteration Based on Overlap-Add and Overlap-Save Methods,''
     %   IEICE Trans. on Fundamentals, Vol.E78-A, No.8, pp.939-943, Aug. 1995
     %
     % SVN identifier:
@@ -21,12 +21,12 @@ classdef Analysis3dSystem < saivdr.dictionary.AbstAnalysisSystem
     %                8050 2-no-cho Ikarashi, Nishi-ku,
     %                Niigata, 950-2181, JAPAN
     %
-    % LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627    
-    %    
+    % LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627
+    %
     properties (Access = protected, Constant = true)
         DATA_DIMENSION = 3
     end
-    
+
     properties (Nontunable)
         AnalysisFilters
         DecimationFactor = [2 2 2]
@@ -38,13 +38,13 @@ classdef Analysis3dSystem < saivdr.dictionary.AbstAnalysisSystem
         BoundaryOperationSet = ...
             matlab.system.StringSet({'Circular'});
         FilterDomainSet = ...
-            matlab.system.StringSet({'Spatial','Frequency'});  
+            matlab.system.StringSet({'Spatial','Frequency'});
     end
-    
+
     properties (Access = private, Nontunable, PositiveInteger)
         nChs
-    end    
-    
+    end
+
     properties (Access = private, Nontunable)
         nAllCoefs
         nAllChs
@@ -54,47 +54,47 @@ classdef Analysis3dSystem < saivdr.dictionary.AbstAnalysisSystem
         allCoefs
         allScales
         freqRes
-    end              
-    
+    end
+
     methods
         % Constractor
         function obj = Analysis3dSystem(varargin)
             setProperties(obj,nargin,varargin{:})
             obj.nChs = size(obj.AnalysisFilters,4);
-        end        
+        end
     end
-    
+
     methods (Access = protected)
-        
+
         function s = saveObjectImpl(obj)
             s = saveObjectImpl@matlab.System(obj);
             s.nChs = obj.nChs;
             s.nAllCoefs  = obj.nAllCoefs;
             s.nAllChs    = obj.nAllChs;
             s.allScales  = obj.allScales;
-            s.allCoefs   = obj.allCoefs;   
+            s.allCoefs   = obj.allCoefs;
             s.AnalysisFilters = obj.AnalysisFilters;
-            s.FilterDomain = obj.FilterDomain;            
-            s.freqRes = obj.freqRes;            
+            s.FilterDomain = obj.FilterDomain;
+            s.freqRes = obj.freqRes;
         end
-        
+
         function loadObjectImpl(obj,s,wasLocked)
             obj.nAllCoefs  = s.nAllCoefs;
             obj.nAllChs    = s.nAllChs;
             obj.allScales   = s.allScales;
-            obj.allCoefs    = s.allCoefs;              
+            obj.allCoefs    = s.allCoefs;
             obj.nChs = s.nChs;
             obj.AnalysisFilters = s.AnalysisFilters;
-            obj.FilterDomain = s.FilterDomain;            
-            obj.freqRes = s.freqRes;            
+            obj.FilterDomain = s.FilterDomain;
+            obj.freqRes = s.freqRes;
             loadObjectImpl@matlab.System(obj,s,wasLocked);
         end
-        
+
         function validateInputsImpl(obj,srcImg,nLevels)
             if nLevels < 1
                 error('SaivDr: #Levels should be positive.');
             end
-            
+
             if strcmp(obj.FilterDomain,'Frequency')
                 dim_ = size(srcImg);
                 if lcm(dim_,obj.DecimationFactor.^nLevels) ~= dim_
@@ -122,11 +122,11 @@ classdef Analysis3dSystem < saivdr.dictionary.AbstAnalysisSystem
             end
             obj.nAllChs = nLevels*(nChs_-1)+1;
             obj.allCoefs  = zeros(1,obj.nAllCoefs);
-            obj.allScales = zeros(obj.nAllChs,obj.DATA_DIMENSION);  
-            
+            obj.allScales = zeros(obj.nAllChs,obj.DATA_DIMENSION);
+
             % Set up for frequency domain filtering
             if strcmp(obj.FilterDomain,'Frequency')
-                iSubband = obj.nAllChs;                
+                iSubband = obj.nAllChs;
                 nRows_ = size(srcImg,1);
                 nCols_ = size(srcImg,2);
                 nLays_ = size(srcImg,3);
@@ -156,8 +156,8 @@ classdef Analysis3dSystem < saivdr.dictionary.AbstAnalysisSystem
                         .* fftn(hext,[nRows_,nCols_,nLays_]);
                 end
                 obj.freqRes = freqRes_;
-            end            
-            
+            end
+
         end
 
         function [coefs,scales] = stepImpl(obj,srcImg,nLevels)
@@ -167,19 +167,19 @@ classdef Analysis3dSystem < saivdr.dictionary.AbstAnalysisSystem
                 [coefs,scales] = analyzeFrequency_(obj,srcImg,nLevels);
             end
         end
-        
+
     end
-    
+
     methods (Access = private)
-        
+
         function [coefs,scales] = analyzeFrequency_(obj,srcImg,nLevels)
             % Frequency domain analysis
-            
-            import saivdr.dictionary.utility.Direction                        
+
+            import saivdr.dictionary.utility.Direction
             %
             nChs_  = obj.nChs;
             decY = obj.DecimationFactor(Direction.VERTICAL);
-            decX = obj.DecimationFactor(Direction.HORIZONTAL);            
+            decX = obj.DecimationFactor(Direction.HORIZONTAL);
             decZ = obj.DecimationFactor(Direction.DEPTH);
             %
             iSubband = obj.nAllChs;
@@ -214,18 +214,18 @@ classdef Analysis3dSystem < saivdr.dictionary.AbstAnalysisSystem
                             end
                         end
                     end
-                    subbandCoefs = real(ifftn(U))/((decY*decX*decZ)^iLevel);
+                    subbandCoefs = ifftn(U)/((decY*decX*decZ)^iLevel);
                     %
                     obj.allScales(iSubband,:) = [ nRows_ nCols_ nLays_];
                     sIdx = eIdx - (nRows_*nCols_*nLays_) + 1;
-                    obj.allCoefs(sIdx:eIdx) = subbandCoefs(:).';                    
+                    obj.allCoefs(sIdx:eIdx) = subbandCoefs(:).';
                     iSubband = iSubband - 1;
                     eIdx = sIdx - 1;
                 end
             end
             nRows_ = height/(decY^nLevels);
-            nCols_ = width/(decX^nLevels);            
-            nLays_ = depth/(decZ^nLevels);                        
+            nCols_ = width/(decX^nLevels);
+            nLays_ = depth/(decZ^nLevels);
             freqRes_ = obj.freqRes(:,:,:,1);
             freqSubImg = freqSrcImg.*freqRes_;
             U = 0;
@@ -251,12 +251,12 @@ classdef Analysis3dSystem < saivdr.dictionary.AbstAnalysisSystem
             obj.allCoefs(1:nRows_*nCols_*nLays_) = subbandCoefs(:).';
             %
             scales = obj.allScales;
-            coefs  = obj.allCoefs;            
+            coefs  = obj.allCoefs;
         end
-        
+
         function [coefs,scales] = analyzeSpatial_(obj,srcImg,nLevels)
             % Spatial domain analysis
-            
+
             import saivdr.dictionary.utility.Direction
             %
             nChs_  = obj.nChs;
@@ -301,24 +301,24 @@ classdef Analysis3dSystem < saivdr.dictionary.AbstAnalysisSystem
                 coefs  = obj.allCoefs;
             end
         end
-        
+
     end
-    
+
     methods (Access = private, Static = true)
-        
+
         function y = downsample3_(x,d)
             y = shiftdim(downsample(...
                 shiftdim(downsample(...
                 shiftdim(downsample(x,...
                 d(1)),1),d(2)),1),d(3)),1);
         end
-        
-        function y = upsample3_(x,d,p) 
+
+        function y = upsample3_(x,d,p)
             y = shiftdim(upsample(...
                 shiftdim(upsample(...
                 shiftdim(upsample(x,...
                 d(1),p(1)),1),d(2),p(2)),1),d(3),p(3)),1);
-        end                
+        end
     end
-    
+
 end

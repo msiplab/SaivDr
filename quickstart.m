@@ -3,12 +3,12 @@
 
 %% Summary
 % *SaivDr* is an abbreviation of _Sparsity-Aware Image and Volume Data
-% Restoration_. This package is developed in order for making 
-% 
-% * Experiments, 
-% * Development and 
+% Restoration_. This package is developed in order for making
+%
+% * Experiments,
+% * Development and
 % * Implementation
-% 
+%
 % of sparsity-aware image and volume data restoraition algorithms simple.
 %
 % Information about *SaivDr Package* is given in Contents.m.
@@ -17,15 +17,15 @@
 help SaivDr
 
 %% Add the package to search path
-% Before using *SaivDr Package* , it is required to add the package top 
-% and 'mexcode' directory in the second layer to the MATLAB's search path. 
+% Before using *SaivDr Package* , it is required to add the package top
+% and 'mexcode' directory in the second layer to the MATLAB's search path.
 % After moving to the top directory, execute the following command:
 
 setpath
 
 %% Read a source image
-% In the followings, an image restoration procedure with this package 
-% is described. As a preliminary, let us read an RGB picture as 
+% In the followings, an image restoration procedure with this package
+% is described. As a preliminary, let us read an RGB picture as
 % the source image.
 
 srcImg = imread('peppers.png');
@@ -36,8 +36,8 @@ py     = 64;  % Vertical position of cropping
 orgImg = im2double(srcImg(py:py+height-1,px:px+width-1,:));
 
 %% Create a degradation system object
-% Suppose that we only have a degraded image $\mathbf{x}$ which is 
-% contaminated by Gaussian kernel blur $\mathbf{P}$ with addtive 
+% Suppose that we only have a degraded image $\mathbf{x}$ which is
+% contaminated by Gaussian kernel blur $\mathbf{P}$ with addtive
 % white Gaussian noise $\mathbf{w}$, i.e.
 %
 % $\mathbf{x} = \mathbf{Pu} + \mathbf{w}$ ,
@@ -55,7 +55,7 @@ import saivdr.degradation.linearprocess.BlurSystem
 blurtype = 'Gaussian';  % Blur type
 boundary = 'Symmetric'; % Boundary option
 hsigma   = 2;           % Sigma for Gausian kernel
-blur = BlurSystem(...   % Instantiation of blur process              
+blur = BlurSystem(...   % Instantiation of blur process
     'BlurType',              blurtype,...
     'SigmaOfGaussianKernel', hsigma,...
     'BoundaryOption',boundary);
@@ -73,7 +73,7 @@ dgrd = DegradationSystem(... % Integration of blur and AWGN
     'NoiseProcess',  awgn);
 
 %% Generate an observed image
-% Then, let us generate an observed image $\mathbf{x}$ by the 
+% Then, let us generate an observed image $\mathbf{x}$ by the
 % DegradationSystem object, _dgrd_ , created in the previous step.
 
 obsImg = step(dgrd,orgImg);
@@ -87,18 +87,18 @@ obsImg = step(dgrd,orgImg);
 % where $\mathbf{y}$ is a coefficient vector and expected to be sparse,
 % i.e. the number of non-zero coefficients are few.
 %
-% A non-separalbe oversampled lapped transform (NSOLT) can be used as 
-% a dictionary $\mathbf{D}$ and instantiated by using the following 
+% A non-separalbe oversampled lapped transform (NSOLT) can be used as
+% a dictionary $\mathbf{D}$ and instantiated by using the following
 % static factory method:
 %
 % * saivdr.dictionary.nsoltx.NsoltFactory.createOvsdLpPuFb2d()
 %
-% In this deblurring demo, a pre-designed NSOLT is loaded from 
-% the following location: 
+% In this deblurring demo, a pre-designed NSOLT is loaded from
+% the following location:
 %
 % * ( _ROOT_OF_SAIVDR_ )/examples/quickdesign/results/
 %
-% If you are interested in the design of NSOLT, please refer, for 
+% If you are interested in the design of NSOLT, please refer, for
 % example, to the following function:
 %
 % * ( _ROOT_OF_SAIVDR_ )/examples/quickdesign/main_quickdesign.m
@@ -120,7 +120,7 @@ s = load(sprintf('%s/nsolt_d%dx%d_c%d+%d_o%d+%d_v%d_l%d_n%d_%s.mat',...
 nsolt = s.nsolt; % saivdr.dictionary.nsolt.OvsdLpPuFb2dTypeIVm1System
 
 % Conversion of nsolt to new package style
-% nsolt = saivdr.dictionary.utility.fcn_upgrade(nsolt); 
+% nsolt = saivdr.dictionary.utility.fcn_upgrade(nsolt);
 
 % Show the atomic images by using a method atmimshow()
 hfig1 = figure(1);
@@ -128,8 +128,8 @@ atmimshow(nsolt)
 set(hfig1,'Name','Atomic images of NSOLT')
 
 %% Create an analysis and synthesis system object
-% Since the object of OvsdLpPuFb2dTypeIVm1System, _nsolt_ , is not able 
-% to process images by itself, we have to construct an analysis and 
+% Since the object of OvsdLpPuFb2dTypeIVm1System, _nsolt_ , is not able
+% to process images by itself, we have to construct an analysis and
 % synthesis system for analyzing and synthesizing an image, respectively.
 % The following two systems can do these tasks:
 %
@@ -170,30 +170,30 @@ setFrameBound(synthesizer,1);
 % * saivdr.dictionary.nsoltx.NsoltFactory.createSynthesis2dSystem()
 % * saivdr.dictionary.nsoltx.NsoltFactory.createAnalysis2dSystem()
 %
-% An available implementation is illustrated below. 
+% An available implementation is illustrated below.
 
 %%
 %   import saivdr.dictionary.nsoltx.NsoltFactory
-%   
+%
 %   % saivdr.dictionary.nsoltx.NsoltAnalysis2dSystem
 %   analyzer    = NsoltFactory.createAnalysis2dSystem(nsolt);
-%   
+%
 %   % saivdr.dictionary.nsoltx.NsoltSynthesis2dSystem
 %   synthesizer = NsoltFactory.createSynthesis2dSystem(nsolt);
 %
 
 %% Create an ISTA-based image restoration system object
-% Let the $\ell_1$-norm of $\mathbf{y}$, i.e. $\|\mathbf{y}\|_1$, 
-% be the sparsity measure of the coefficients. 
-% Then, the debluring problem can be formulated as 
+% Let the $\ell_1$-norm of $\mathbf{y}$, i.e. $\|\mathbf{y}\|_1$,
+% be the sparsity measure of the coefficients.
+% Then, the debluring problem can be formulated as
 %
 % $\hat{\mathbf{y}} =
 % \arg\min_{\mathbf{y}}\frac{1}{2}\|\mathbf{x}-\mathbf{PDy}\|_2^2+\lambda\|\mathbf{y}\|_1$.
 %
-% Provided that the blur process $\mathbf{P}$ is known and given 
-% as a linear process, the iterative shrinkage/thresholding algorithm 
-% (ISTA) becomes applicable to solve the above problem. In 
-% *SaivDr Package*, image restoration with ISTA is implemented in the 
+% Provided that the blur process $\mathbf{P}$ is known and given
+% as a linear process, the iterative shrinkage/thresholding algorithm
+% (ISTA) becomes applicable to solve the above problem. In
+% *SaivDr Package*, image restoration with ISTA is implemented in the
 % following class:
 %
 % * saivdr.restoration.ista.IstaImRestoration
@@ -209,7 +209,7 @@ ista = IstaImRestoration(...
     'Lambda',             lambda);        % Parameter lambda
 
 %% Create a step monitor system object
-% ISTA iteratively approaches to the optimum solution. In order to 
+% ISTA iteratively approaches to the optimum solution. In order to
 % observe the intermediate results, the following class can be used:
 %
 % * saivdr.utility.StepMonitoringSystem
@@ -217,7 +217,7 @@ ista = IstaImRestoration(...
 % Parameters for StepMonitoringSystem
 isverbose = true;  % Verbose mode
 isvisible = true;  % Monitor intermediate results
-hfig2 = figure(2); % Figure to show the source, observed and result image 
+hfig2 = figure(2); % Figure to show the source, observed and result image
 set(hfig2,'Name','ISTA-based Image Restoration')
 
 % Instantiation of StepMonitoringSystem
@@ -231,14 +231,14 @@ stepmonitor = StepMonitoringSystem(...
     'IsVerbose',     isverbose,... % Switch for verbose mode
     'IsVisible',     isvisible,... % Switch for display intermediate result
     'ImageFigureHandle',hfig2);    % Figure handle
-    
+
 % Set the object to the ISTA system object
 set(ista,'StepMonitor',stepmonitor);
 
 %% Perform ISTA-based image restoration
-% STEP method of IstaImRestoration system object, _ista_ , executes 
+% STEP method of IstaImRestoration system object, _ista_ , executes
 % the ISTA-based image restoration to deblur the observed image.
-% As the result, a restored image 
+% As the result, a restored image
 %
 % $\hat{\mathbf{u}} = \mathbf{D}\hat{\mathbf{y}}$
 %
@@ -247,11 +247,11 @@ set(ista,'StepMonitor',stepmonitor);
 fprintf('\n ISTA')
 resImg = step(ista,obsImg); % STEP method of IstaImRestoration
 
-%% Extract the final evaluation  
-% The object of StepMonitoringSystem, _stepmonitor_ , stores the 
-% evaluation values calculated iteratively in ISTA as a vector. The GET 
+%% Extract the final evaluation
+% The object of StepMonitoringSystem, _stepmonitor_ , stores the
+% evaluation values calculated iteratively in ISTA as a vector. The GET
 % method of _stepmonitor_  can be used to extract the number of iterations
-% and the sequence of PSNRs. 
+% and the sequence of PSNRs.
 
 nItr  = get(stepmonitor,'nItr');
 psnrs = get(stepmonitor,'PSNRs');
@@ -285,7 +285,7 @@ psnr_wfdc = step(stepmonitor,wnfImg); % STEP method of StepMonitoringSystem
 
 %% Compare deblurring performances
 % In order to compare the deblurring performances between two methods,
-% ISTA-based deblurring with NSOLT and Wiener filter, let us show 
+% ISTA-based deblurring with NSOLT and Wiener filter, let us show
 % the original, observed and two results in one figure together.
 
 hfig3 = figure(3);
@@ -300,7 +300,7 @@ subplot(2,2,2)
 imshow(obsImg)
 title('Observed image {\bf x}')
 
-% Result u^ of ISTA 
+% Result u^ of ISTA
 subplot(2,2,3)
 imshow(resImg)
 title(['{\bf u}\^ by ISTA  : ' num2str(psnr_ista) ' [dB]'])

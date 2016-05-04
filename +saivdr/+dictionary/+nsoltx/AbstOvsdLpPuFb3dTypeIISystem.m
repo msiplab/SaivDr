@@ -254,9 +254,6 @@ classdef AbstOvsdLpPuFb3dTypeIISystem < ...
             iParamMtx = uint32(3);
             %iParamMtx = uint32(2);
 
-            %TOOD: 周辺ライブラリが充実したら削除
-            %E = blkdiag(eye(nChs(ChannelGourp.LOWER)),1i*eye(nChs(ChannelGourp.LOWER)),1)*E;
-
             % Depth extention
             lenY = decY;
             lenX = decX;
@@ -344,9 +341,6 @@ classdef AbstOvsdLpPuFb3dTypeIISystem < ...
                 %iParamMtx = iParamMtx+6;
             end
             lenY = decY*(ordY+1);
-
-            %TOOD: 周辺ライブラリが充実したら削除
-            E = blkdiag(eye(nChs(ChannelGourp.LOWER)),1i*eye(nChs(ChannelGourp.LOWER)),1)*E;
 
             %
             E = permuteCoefs_(obj,E,lenX*lenZ); % X Z Y -> Y X Z

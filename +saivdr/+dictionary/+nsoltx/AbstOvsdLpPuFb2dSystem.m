@@ -134,8 +134,8 @@ classdef AbstOvsdLpPuFb2dSystem < matlab.System %#codegen
                 output = getAnalysisFilterBank_(obj);
             elseif strcmp(obj.OutputMode,'SynthesisFilterAt')
                 idx = varargin{3};
-                H = conj(H);
                 H = getAnalysisFilterBank_(obj);
+                H = conj(H);
                 output = rot90(H(:,:,idx),2);
             elseif strcmp(obj.OutputMode,'SynthesisFilters')
                 H = getAnalysisFilterBank_(obj);
