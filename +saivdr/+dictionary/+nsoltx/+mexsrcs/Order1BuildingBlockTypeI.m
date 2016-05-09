@@ -31,9 +31,9 @@ classdef Order1BuildingBlockTypeI < matlab.System  %#codegen
             obj.I             = eye(p);
         end
 
-	    function output = stepImpl(obj,input,mtxW,mtxU,theta,~,nshift)
+	    function output = stepImpl(obj,input,mtxW,mtxU,angles,~,nshift)
             R = blkdiag(mtxW,mtxU);
-            hB = saivdr.dictionary.nsoltx.mexsrcs.fcn_build_butterfly_mtx(obj.nChannels, theta);
+            hB = saivdr.dictionary.nsoltx.mexsrcs.fcn_build_butterfly_mtx(obj.nChannels, angles);
             output = R*processQ_(obj,hB,input,nshift);
         end
     end
@@ -45,7 +45,7 @@ classdef Order1BuildingBlockTypeI < matlab.System  %#codegen
             nChs = obj.nChannels;
             nLen = size(x,2);
             x = B'*x;
-            value = zeros([nChs nLen+nZ_]);
+            value = complex(zeros([nChs nLen+nZ_]));
             value(1:hChs,1:nLen) = x(1:hChs,:);
             value(hChs+1:end,nZ_+1:end) = x(hChs+1:end,:);
             value = B*value;

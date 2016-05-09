@@ -54,8 +54,9 @@ classdef AbstOvsdLpPuFb2dTypeISystem < ...
         function loadObjectImpl(obj,s,wasLocked)
             obj.mexFcn   = s.mexFcn;
             obj.nStages = s.nStages;
-            %TODO: MEXファイルの複素対応完了まで機能停止
-            %obj.matrixE0 = s.matrixE0;
+            %TODO: 読み込みデータが複素対応したら修正
+            [p_,~] = size(s.matrixE0);
+            obj.matrixE0 = blkdiag(eye(p_/2),1i*eye(p_/2))*s.matrixE0;
             loadObjectImpl@saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2dSystem(obj,s,wasLocked);
         end
 
@@ -63,15 +64,13 @@ classdef AbstOvsdLpPuFb2dTypeISystem < ...
             resetImpl@saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2dSystem(obj);
             % Prepare MEX function
             import saivdr.dictionary.nsoltx.mexsrcs.fcn_autobuild_bb_type1
-            %TODO: MEXファイルの複素対応完了まで機能停止
-            %[obj.mexFcn, obj.mexFlag] = fcn_autobuild_bb_type1(obj.NumberOfChannels(1));
+            [obj.mexFcn, obj.mexFlag] = fcn_autobuild_bb_type1(obj.NumberOfChannels(1));
         end
 
         function setupImpl(obj,varargin)
             % Prepare MEX function
             import saivdr.dictionary.nsoltx.mexsrcs.fcn_autobuild_bb_type1
-            %TODO: MEXファイルの複素対応完了まで機能停止
-            %[obj.mexFcn, obj.mexFlag] = fcn_autobuild_bb_type1(obj.NumberOfChannels(1));
+            [obj.mexFcn, obj.mexFlag] = fcn_autobuild_bb_type1(obj.NumberOfChannels(1));
         end
 
         function updateProperties_(obj)
@@ -218,15 +217,15 @@ classdef AbstOvsdLpPuFb2dTypeISystem < ...
                 W = eye(hChs);
                 %U = step(pmMtxSet_,[],iParamMtx+1);
                 U = step(pmMtxSet_,[],iParamMtx);
-                %theta = step(pmMtxSet_,[],iParamMtx+2);
-                theta = pi/4*ones(floor(hChs/2),1);
+                %angles = step(pmMtxSet_,[],iParamMtx+2);
+                angles = pi/4*ones(floor(hChs/2),1);
                 if mexFlag_
                     %TODO:
-                    E = mexFcn_(E, U, hChs, nShift);
+                    E = mexFcn_(E, W, U, angles, hChs, nShift);
                 else
                     import saivdr.dictionary.nsoltx.mexsrcs.Order1BuildingBlockTypeI
                     hObb = Order1BuildingBlockTypeI();
-                    E = step(hObb, E, W, U, theta, hChs, nShift);
+                    E = step(hObb, E, W, U, angles, hChs, nShift);
                 end
                 iParamMtx = iParamMtx+1;
                 %iParamMtx = iParamMtx+3;
@@ -242,15 +241,15 @@ classdef AbstOvsdLpPuFb2dTypeISystem < ...
                     W = eye(hChs);
                     %U = step(pmMtxSet_,[],iParamMtx+1);
                     U = step(pmMtxSet_,[],iParamMtx);
-                    %theta = step(pmMtxSet_,[],iParamMtx+2);
-                    theta = pi/4*ones(floor(hChs/2),1);
+                    %angles = step(pmMtxSet_,[],iParamMtx+2);
+                    angles = pi/4*ones(floor(hChs/2),1);
                     if mexFlag_
                         %TODO
-                        E = mexFcn_(E, U, hChs, nShift);
+                        E = mexFcn_(E, W, U, angles, hChs, nShift);
                     else
                         import saivdr.dictionary.nsoltx.mexsrcs.Order1BuildingBlockTypeI
                         hObb = Order1BuildingBlockTypeI();
-                        E = step(hObb, E, W, U, theta, hChs, nShift);
+                        E = step(hObb, E, W, U, angles, hChs, nShift);
                     end
                     iParamMtx = iParamMtx+1;
                     %iParamMtx = iParamMtx+3;

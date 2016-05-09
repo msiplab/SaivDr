@@ -49,15 +49,17 @@ if isempty(task) || task.ID == 1
             %
             maxNCfs = 518400;
             %
-            arrayCoefs = coder.typeof(double(0),[2*hChs maxNCfs],[0 1]); %#ok
-            paramMtx = coder.typeof(double(0),hChs*[1 1],[0 0]); %#ok 
+            arrayCoefs = coder.typeof(complex(0),[2*hChs maxNCfs],[0 1]); %#ok
+            paramMtxW = coder.typeof(double(0),hChs*[1 1],[0 0]); %#ok
+            paramMtxU = coder.typeof(double(0),hChs*[1 1],[0 0]); %#ok
+            paramAngles = coder.typeof(double(0), [floor(hChs/2),1],[0 0]);
             constHChs = coder.Constant(hChs); %#ok
             nshift = coder.typeof(int32(0),[1 1],[0 0]); %#ok
             % build mex
             cfg = coder.config('mex');
             cfg.DynamicMemoryAllocation = 'Threshold';
             cfg.GenerateReport = true;
-            args = '{ arrayCoefs, paramMtx, constHChs, nshift }';
+            args = '{ arrayCoefs, paramMtxW, paramMtxU, paramAngles, constHChs, nshift }';
             seval = [ 'codegen -config cfg ' ' -o ' outputdir '/' mexname ' ' ...
                 packagedir '/' bsfname '.m -args ' args];
 

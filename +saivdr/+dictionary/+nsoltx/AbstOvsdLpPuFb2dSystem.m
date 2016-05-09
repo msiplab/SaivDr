@@ -197,7 +197,7 @@ classdef AbstOvsdLpPuFb2dSystem < matlab.System %#codegen
             nElmBi = nRows*nCols;
             dctY = dctmtx(nRows);
             dctX = dctmtx(nCols);
-            coefs = zeros(nElmBi);
+            coefs = complex(zeros(nElmBi));
             iElm = 1; % E0.'= [ Bee Boo Boe Beo ] % Byx
             for iCol = 1:2:nCols % x-e
                 for iRow = 1:2:nRows % y-e

@@ -32,11 +32,11 @@ classdef Order2BuildingBlockTypeII < matlab.System
             obj.I = eye(p);
         end
 
-        function output = stepImpl(obj,input,mtxHW,mtxHU,theta2,mtxW,mtxU,theta1,~,nshift)
-            B = blkdiag(saivdr.dictionary.nsoltx.mexsrcs.fcn_build_butterfly_mtx(obj.nChannels,theta1),1);
+        function output = stepImpl(obj,input,mtxHW,mtxHU,angles2,mtxW,mtxU,angles1,~,nshift)
+            B = blkdiag(saivdr.dictionary.nsoltx.mexsrcs.fcn_build_butterfly_mtx(obj.nChannels,angles1),1);
             R = blkdiag(mtxW,mtxU,1);
             temp   = R*processQo_(obj,B,input, nshift);
-            B = blkdiag(saivdr.dictionary.nsoltx.mexsrcs.fcn_build_butterfly_mtx(obj.nChannels,theta2),1);
+            B = blkdiag(saivdr.dictionary.nsoltx.mexsrcs.fcn_build_butterfly_mtx(obj.nChannels,angles2),1);
             R = blkdiag(mtxHW,obj.I)*blkdiag(obj.I,mtxHU);
             output = R*processQe_(obj,B, temp, nshift);
         end
@@ -50,7 +50,7 @@ classdef Order2BuildingBlockTypeII < matlab.System
             hch = obj.nHalfChannels;
             x = B'*x;
             nLen = size(x,2);
-            value = zeros([sum(nch) nLen+nZ_]);
+            value = complex(zeros([sum(nch) nLen+nZ_]));
             value(1:hch,1:nLen) = x(1:hch,:);
             value(hch+1:end-1,nZ_+1:end) = x(hch+1:end-1,:);
             value(end,1:nLen) = x(end,:);
@@ -62,7 +62,7 @@ classdef Order2BuildingBlockTypeII < matlab.System
             hch = obj.nHalfChannels;
             x = B'*x;
             nLen = size(x,2);
-            value = zeros([sum(nch) nLen+nZ_]);
+            value = complex(zeros([sum(nch) nLen+nZ_]));
             value(1:hch,1:nLen) = x(1:hch,:);
             value(hch+1:end,nZ_+1:end) = x(hch+1:end,:);
             value = B*value;

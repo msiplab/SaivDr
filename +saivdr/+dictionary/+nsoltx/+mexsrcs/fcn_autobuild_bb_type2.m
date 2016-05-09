@@ -42,34 +42,37 @@ if isempty(task) || task.ID == 1
         cd(saivdr_root)
         packagedir = './+saivdr/+dictionary/+nsoltx/+mexsrcs';
         fbsfile = exist([packagedir '/' bsfname '.m'],'file');
-        
+
         if fbsfile == 2
-            
+
             outputdir = fullfile(saivdr_root,'mexcodes');
             %
             maxNCfs = 518400;
             %
-            arrayCoefs = coder.typeof(double(0),[(ps+pa) maxNCfs],[0 1]); %#ok
-            paramMtxU = coder.typeof(double(0),pa*[1 1],[0 0]); %#ok            
-            paramMtxW = coder.typeof(double(0),ps*[1 1],[0 0]); %#ok   
-            constPs = coder.Constant(ps); %#ok
-            constPa = coder.Constant(pa); %#ok
-            nshift = coder.typeof(int32(0),[1 1],[0 0]); %#ok            
+            arrayCoefs = coder.typeof(complex(0),[(ps+pa) maxNCfs],[0 1]); %#ok
+            paramMtxHW = coder.typeof(double(0),ps*[1 1],[0 0]);
+            paramMtxHU = coder.typeof(double(0),ps*[1 1],[0 0]);
+            paramAngles2 = coder.typeof(double(0),[floor(pa/2),1],[0 0]);
+            paramMtxW = coder.typeof(double(0),pa*[1 1],[0 0]); %#ok
+            paramMtxU = coder.typeof(double(0),pa*[1 1],[0 0]); %#ok
+            paramAngles1 = coder.typeof(double(0),[floor(pa/2),1],[0 0]);
+            constP = coder.Constant(p); %#ok
+            nshift = coder.typeof(int32(0),[1 1],[0 0]); %#ok
             % build mex
             cfg = coder.config('mex');
             cfg.DynamicMemoryAllocation = 'Threshold';
             cfg.GenerateReport = true;
-            args = '{ arrayCoefs, paramMtxW, paramMtxU, constPs, constPa, nshift }';
+            args = '{ arrayCoefs, pramMtxHW, paramMtxHU, paramAngles2, paramMtxW, paramMtxU, paramAngles1, constP, nshift }';
             seval = [ 'codegen -config cfg ' ' -o ' outputdir '/' mexname ' ' ...
                 packagedir '/' bsfname '.m -args ' args];
-            
+
             disp(seval)
             eval(seval)
-            
+
         else
             error('SaivDr: Invalid argument')
         end
-        
+
         cd(cdir)
     end
     ftypemex = exist(mexname, 'file');
@@ -77,11 +80,11 @@ if isempty(task) || task.ID == 1
 end
 
 if ftypemex == 3 % MEX file exists
-    
+
     fcnhandler = str2func(mexname);
     flag       = true;
-    
-else 
+
+else
 
     fcnhandler = [];
     flag       = false;

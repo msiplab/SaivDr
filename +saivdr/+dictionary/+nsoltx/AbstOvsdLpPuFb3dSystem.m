@@ -285,7 +285,7 @@ classdef AbstOvsdLpPuFb3dSystem < matlab.System %#codegen
             nCols = obj.DecimationFactor(Direction.HORIZONTAL);
             nDeps = obj.DecimationFactor(Direction.DEPTH);
             nElmBi = nRows*nCols*nDeps;
-            coefs = zeros(nElmBi);
+            coefs = complex(zeros(nElmBi));
             iElm = 1;
             % E0.'= [ Beee Beoo Booe Boeo Beeo Beoe Booo Boee ] % Byxz
             % Beee
