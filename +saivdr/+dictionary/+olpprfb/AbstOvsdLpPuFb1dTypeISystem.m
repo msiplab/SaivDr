@@ -1,7 +1,7 @@
 classdef AbstOvsdLpPuFb1dTypeISystem < ...
         saivdr.dictionary.olpprfb.AbstOvsdLpPuFb1dSystem %#codegen
-    %ABSTOVSDLPPUFB1DTYPEISYSTEM Abstract class 2-D Type-I OLPPUFB 
-    % 
+    %ABSTOVSDLPPUFB1DTYPEISYSTEM Abstract class 2-D Type-I OLPPUFB
+    %
     % SVN identifier:
     % $Id: AbstOvsdLpPuFb1dTypeISystem.m 690 2015-06-09 09:37:49Z sho $
     %
@@ -16,22 +16,22 @@ classdef AbstOvsdLpPuFb1dTypeISystem < ...
     %                8050 2-no-cho Ikarashi, Nishi-ku,
     %                Niigata, 950-2181, JAPAN
     %
-    % LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627    
+    % LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627
     %
-    
+
     properties (Access = protected)
         matrixE0
         mexFcn
     end
-    
+
     properties (Access = protected,PositiveInteger)
         nStages
     end
 
     methods (Access = protected, Static = true, Abstract = true)
         value = getDefaultPolyPhaseOrder_()
-    end    
-    
+    end
+
     methods
         function obj = AbstOvsdLpPuFb1dTypeISystem(varargin)
             obj = obj@saivdr.dictionary.olpprfb.AbstOvsdLpPuFb1dSystem(...
@@ -41,47 +41,47 @@ classdef AbstOvsdLpPuFb1dTypeISystem < ...
             updateMus_(obj);
         end
     end
-    
+
     methods (Access = protected)
-        
+
         function s = saveObjectImpl(obj)
             s = saveObjectImpl@saivdr.dictionary.olpprfb.AbstOvsdLpPuFb1dSystem(obj);
             s.nStages = obj.nStages;
             s.matrixE0 = obj.matrixE0;
             s.mexFcn   = obj.mexFcn;
         end
-        
+
         function loadObjectImpl(obj,s,wasLocked)
             obj.mexFcn   = s.mexFcn;
             obj.nStages = s.nStages;
             obj.matrixE0 = s.matrixE0;
             loadObjectImpl@saivdr.dictionary.olpprfb.AbstOvsdLpPuFb1dSystem(obj,s,wasLocked);
         end
-        
+
         function resetImpl(obj)
             resetImpl@saivdr.dictionary.olpprfb.AbstOvsdLpPuFb1dSystem(obj);
             % Prepare MEX function
             import saivdr.dictionary.nsoltx.mexsrcs.fcn_autobuild_bb_type1
-            [obj.mexFcn, obj.mexFlag] = fcn_autobuild_bb_type1(obj.NumberOfChannels(1));            
+            [obj.mexFcn, obj.mexFlag] = fcn_autobuild_bb_type1(obj.NumberOfChannels(1));
         end
-        
+
         function setupImpl(obj,varargin)
             % Prepare MEX function
             import saivdr.dictionary.nsoltx.mexsrcs.fcn_autobuild_bb_type1
             [obj.mexFcn, obj.mexFlag] = fcn_autobuild_bb_type1(obj.NumberOfChannels(1));
         end
-        
+
         function updateProperties_(obj)
             import saivdr.dictionary.nsoltx.ChannelGroup
             import saivdr.dictionary.utility.ParameterMatrixSet
            % import saivdr.dictionary.olpprfb.AbstOvsdLpPuFb1dTypeISystem
-            
+
             % Check DecimationFactor
             if ~isscalar(obj.DecimationFactor)
                 error('DecimationFactor must be a scaler.');
             end
             nHalfDecs = obj.DecimationFactor/2;
-            
+
             % Check PolyPhaseOrder
             if isempty(obj.PolyPhaseOrder)
                 obj.PolyPhaseOrder = obj.getDefaultPolyPhaseOrder_();
@@ -92,7 +92,7 @@ classdef AbstOvsdLpPuFb1dTypeISystem < ...
             ord = obj.PolyPhaseOrder;
             obj.nStages = uint32(1+ord);
             obj.matrixE0 = getMatrixE0_(obj);
-            
+
             % Check NumberOfChannels
             if length(obj.NumberOfChannels) > 2
                 error('Dimension of NumberOfChannels must be less than or equal to two.');
@@ -115,15 +115,15 @@ classdef AbstOvsdLpPuFb1dTypeISystem < ...
                 me = MException(id, msg);
                 throw(me);
             end
-            
+
             % Prepare ParameterMatrixSet
             paramMtxSizeTab = ...
                 obj.NumberOfChannels(ChannelGroup.LOWER)*ones(obj.nStages+1,2);
             obj.ParameterMatrixSet = ParameterMatrixSet(...
                 'MatrixSizeTable',paramMtxSizeTab);
-            
+
         end
-        
+
         function updateAngles_(obj)
             import saivdr.dictionary.nsoltx.ChannelGroup
             nChL = obj.NumberOfChannels(ChannelGroup.LOWER);
@@ -142,7 +142,7 @@ classdef AbstOvsdLpPuFb1dTypeISystem < ...
                 throw(me);
             end
         end
-        
+
         function updateMus_(obj)
             import saivdr.dictionary.nsoltx.ChannelGroup
             nChL = obj.NumberOfChannels(ChannelGroup.LOWER);
@@ -162,7 +162,7 @@ classdef AbstOvsdLpPuFb1dTypeISystem < ...
             end
 
         end
-        
+
         function value = getAnalysisFilterBank_(obj)
             import saivdr.dictionary.nsoltx.ChannelGroup
             import saivdr.dictionary.olpprfb.AbstOvsdLpPuFb1dTypeISystem
@@ -188,24 +188,29 @@ classdef AbstOvsdLpPuFb1dTypeISystem < ...
             E = R*E0;
             iParamMtx = uint32(3);
             hChs = nChs(1);
-            
+
             % Order extention
             if ord > 0
                 nShift = int32(dec);
                 for iOrd = 1:ord
+                    W = eye(hChs);
+                    %W = step(pmMtxSet_,[],iParamMtx);
                     U = step(pmMtxSet_,[],iParamMtx);
+                    %U = step(pmMtxSet_,[],iParamMtx+1);
+                    angles = pi/4*ones(floor(hChs/2),1);
                     if mexFlag_
-                        E = mexFcn_(E, U, hChs, nShift);
+                        E = mexFcn_(E, W, U, angles, hChs, nShift);
                     else
                         import saivdr.dictionary.nsoltx.mexsrcs.Order1BuildingBlockTypeI
                         hObb = Order1BuildingBlockTypeI();
-                        E = step(hObb, E, U, hChs, nShift);
+                        E = step(hObb, E, W, U, angles, hChs, nShift);
                     end
                     iParamMtx = iParamMtx+1;
+                    %iParamMtx = iParamMtx+3;
                 end
             end
             value = E.';
         end
-        
+
     end
 end
