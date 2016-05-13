@@ -15,11 +15,11 @@ classdef NsoltFactory
     %                8050 2-no-cho Ikarashi, Nishi-ku,
     %                Niigata, 950-2181, JAPAN
     %
-    % LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627    
-    % 
-    
+    % LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627
+    %
+
     methods (Static = true)
-        
+
         function value = createOvsdLpPuFb2dSystem(varargin)
             import saivdr.dictionary.nsoltx.*
             if nargin < 1
@@ -47,7 +47,7 @@ classdef NsoltFactory
                 else
                     type = 2;
                 end
-                % 
+                %
                 newidx = 1;
                 oldidx = 1;
                 while oldidx < nargin+1
@@ -75,7 +75,7 @@ classdef NsoltFactory
                 end
             end
         end
-        
+
         function value = createOvsdLpPuFb3dSystem(varargin)
             import saivdr.dictionary.nsoltx.*
             if nargin < 1
@@ -103,7 +103,7 @@ classdef NsoltFactory
                 else
                     type = 2;
                 end
-                % 
+                %
                 newidx = 1;
                 oldidx = 1;
                 while oldidx < nargin+1
@@ -130,12 +130,12 @@ classdef NsoltFactory
                     end
                 end
             end
-        end        
-            
+        end
+
         function value = createAnalysis2dSystem(varargin)
             import saivdr.dictionary.nsoltx.NsoltAnalysis2dSystem
             import saivdr.dictionary.nsoltx.NsoltFactory
-            if nargin < 1 
+            if nargin < 1
                 value = NsoltAnalysis2dSystem();
             elseif isa(varargin{1},...
                     'saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2dSystem')
@@ -144,7 +144,7 @@ classdef NsoltFactory
                 error('SaivDr: Invalid arguments');
             end
         end
-        
+
         function value = createSynthesis2dSystem(varargin)
             import saivdr.dictionary.nsoltx.NsoltSynthesis2dSystem
             import saivdr.dictionary.nsoltx.NsoltFactory
@@ -156,12 +156,12 @@ classdef NsoltFactory
             else
                 error('SaivDr: Invalid arguments');
             end
-        end        
-        
+        end
+
         function value = createAnalysis3dSystem(varargin)
             import saivdr.dictionary.nsoltx.NsoltAnalysis3dSystem
             import saivdr.dictionary.nsoltx.NsoltFactory
-            if nargin < 1 
+            if nargin < 1
                 value = NsoltAnalysis3dSystem();
             elseif isa(varargin{1},...
                     'saivdr.dictionary.nsoltx.AbstOvsdLpPuFb3dSystem')
@@ -170,7 +170,7 @@ classdef NsoltFactory
                 error('SaivDr: Invalid arguments');
             end
         end
-        
+
         function value = createSynthesis3dSystem(varargin)
             import saivdr.dictionary.nsoltx.NsoltSynthesis3dSystem
             import saivdr.dictionary.nsoltx.NsoltFactory
@@ -182,8 +182,8 @@ classdef NsoltFactory
             else
                 error('SaivDr: Invalid arguments');
             end
-        end  
-        
+        end
+
     end
-    
+
 end

@@ -54,9 +54,7 @@ classdef AbstOvsdLpPuFb2dTypeISystem < ...
         function loadObjectImpl(obj,s,wasLocked)
             obj.mexFcn   = s.mexFcn;
             obj.nStages = s.nStages;
-            %TODO: 読み込みデータが複素対応したら修正
-            [p_,~] = size(s.matrixE0);
-            obj.matrixE0 = blkdiag(eye(p_/2),1i*eye(p_/2))*s.matrixE0;
+            obj.matrixE0 = s.matrixE0;
             loadObjectImpl@saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2dSystem(obj,s,wasLocked);
         end
 

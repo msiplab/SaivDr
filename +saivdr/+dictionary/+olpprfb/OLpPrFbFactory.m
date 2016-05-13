@@ -15,9 +15,9 @@ classdef OLpPrFbFactory
     %                8050 2-no-cho Ikarashi, Nishi-ku,
     %                Niigata, 950-2181, JAPAN
     %
-    % LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627    
-    % 
-    
+    % LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627
+    %
+
     methods (Static = true)
 
         function value = createOvsdLpPuFb1dSystem(varargin)
@@ -39,16 +39,16 @@ classdef OLpPrFbFactory
                 nChs = p.Results.NumberOfChannels;
                 vm = p.Results.NumberOfVanishingMoments;
                 if isempty(nChs)
-                    nChs = [ceil(nDec/2) floor(nDec/2) ];
-                elseif isscalar(nChs)
-                    nChs = [ceil(nChs/2) floor(nChs/2) ];
+                    nChs = nDec;
+                elseif isvector(nChs)
+                    nChs = sum(nChs);
                 end
-                if nChs(ChannelGroup.UPPER) == nChs(ChannelGroup.LOWER)
+                if rem(nChs,2) == 0
                     type = 1;
                 else
                     type = 2;
                 end
-                % 
+                %
                 newidx = 1;
                 oldidx = 1;
                 while oldidx < nargin+1
@@ -76,11 +76,11 @@ classdef OLpPrFbFactory
                 end
             end
         end
-        
+
         function value = createAnalysis1dSystem(varargin)
             import saivdr.dictionary.olpprfb.OLpPuFbAnalysis1dSystem
             import saivdr.dictionary.olpprfb.OLpPrFbFactory
-            if nargin < 1 
+            if nargin < 1
                 value = OLpPuFbAnalysis1dSystem();
             elseif isa(varargin{1},...
                     'saivdr.dictionary.olpprfb.AbstOvsdLpPuFb1dSystem')
@@ -89,7 +89,7 @@ classdef OLpPrFbFactory
                 error('SaivDr: Invalid arguments');
             end
         end
-        
+
         function value = createSynthesis1dSystem(varargin)
             import saivdr.dictionary.olpprfb.OLpPuFbSynthesis1dSystem
             import saivdr.dictionary.olpprfb.OLpPrFbFactory
@@ -101,8 +101,8 @@ classdef OLpPrFbFactory
             else
                 error('SaivDr: Invalid arguments');
             end
-        end        
+        end
 
     end
-    
+
 end

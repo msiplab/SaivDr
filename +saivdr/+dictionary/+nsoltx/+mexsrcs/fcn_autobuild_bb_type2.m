@@ -62,7 +62,7 @@ if isempty(task) || task.ID == 1
             cfg = coder.config('mex');
             cfg.DynamicMemoryAllocation = 'Threshold';
             cfg.GenerateReport = true;
-            args = '{ arrayCoefs, pramMtxHW, paramMtxHU, paramAngles2, paramMtxW, paramMtxU, paramAngles1, constP, nshift }';
+            args = '{ arrayCoefs, paramMtxHW, paramMtxHU, paramAngles2, paramMtxW, paramMtxU, paramAngles1, constP, nshift }';
             seval = [ 'codegen -config cfg ' ' -o ' outputdir '/' mexname ' ' ...
                 packagedir '/' bsfname '.m -args ' args];
 

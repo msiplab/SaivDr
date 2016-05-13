@@ -54,9 +54,7 @@ classdef AbstOvsdLpPuFb3dTypeIISystem < ...
         function loadObjectImpl(obj,s,wasLocked)
             obj.mexFcn  = s.mexFcn;
             obj.nStages = s.nStages;
-            %TODO: 読み込みデータが複素対応したら修正
-            [p_,~] = s.matrixE0;
-            obj.matrixE0 = blkdiag(eye(floor(p_/2)),1i*eye(floor(p_/2)),1)*s.matrixE0;
+            obj.matrixE0 = s.matrixE0;
             loadObjectImpl@saivdr.dictionary.nsoltx.AbstOvsdLpPuFb3dSystem(obj,s,wasLocked);
         end
 
@@ -67,7 +65,6 @@ classdef AbstOvsdLpPuFb3dTypeIISystem < ...
             import saivdr.dictionary.nsoltx.mexsrcs.fcn_autobuild_bb_type2
             %TODO: 引数を修正
             [obj.mexFcn, obj.mexFlag] = fcn_autobuild_bb_type2(...
-                obj.NumberOfChannels(ChannelGroup.UPPER),...
                 obj.NumberOfChannels(ChannelGroup.LOWER));
         end
 
@@ -77,7 +74,6 @@ classdef AbstOvsdLpPuFb3dTypeIISystem < ...
             import saivdr.dictionary.nsoltx.mexsrcs.fcn_autobuild_bb_type2
             %TODO: 引数を修正
             [obj.mexFcn, obj.mexFlag] = fcn_autobuild_bb_type2(...
-                obj.NumberOfChannels(ChannelGroup.UPPER),...
                 obj.NumberOfChannels(ChannelGroup.LOWER));
         end
 
@@ -261,24 +257,24 @@ classdef AbstOvsdLpPuFb3dTypeIISystem < ...
             nShift = int32(lenY*(decZ*lenX));
             for iOrdZ = 1:uint32(double(ordZ)/2)
                 %hW = step(pmMtxSt_,[],iParamMtx);
-                hW = eye(ceil(nHalfDecs));
+                hW = eye(nChs(ChannelGroup.UPPER));
                 %hU = step(pmMtxSt_,[],iParamMtx+1);
-                hU = eye(ceil(nHalfDecs));
+                hU = step(pmMtxSt_,[],iParamMtx);
                 %angles2 = step(pmMtxSt_,[],iParamMtx+2);
-                angles2 = pi/4*ones(floor(nHalfDecs/2),1);
+                angles2 = pi/4*ones(floor(nChs(ChannelGroup.LOWER)/2),1);
                 %W = step(pmMtxSt_,[],iParamMtx+3);
-                W = step(pmMtxSt_,[],iParamMtx);
+                W = step(pmMtxSt_,[],iParamMtx+1);
                 %U = step(pmMtxSt_,[],iParamMtx+4);
-                U = step(pmMtxSt_,[],iParamMtx+1);
+                U = eye(nChs(ChannelGroup.LOWER));
                 %angles1 = step(pmMtxSt_,[],iParamMtx+5);
-                angles1 = pi/4*ones(floor(nHalfDecs/2),1);
+                angles1 = pi/4*ones(floor(nChs(ChannelGroup.LOWER)/2),1);
                 if obj.mexFlag
                     %TODO:
-                    E = obj.mexFcn(E, hW, hU, angles2, W, U, angles1, floor(hChs), nShift);
+                    E = obj.mexFcn(E, hW, hU, angles2, W, U, angles1, nChs(ChannelGroup.LOWER), nShift);
                 else
                     import saivdr.dictionary.nsoltx.mexsrcs.Order2BuildingBlockTypeII
                     hObb = Order2BuildingBlockTypeII();
-                    E = step(hObb, E, hW, hU, angles2, W, U, angles1, floor(hChs), nShift);
+                    E = step(hObb, E, hW, hU, angles2, W, U, angles1, nChs(ChannelGroup.LOWER), nShift);
                 end
                 iParamMtx = iParamMtx+2;
                 %iParamMtx = iParamMtx+6;
@@ -290,24 +286,24 @@ classdef AbstOvsdLpPuFb3dTypeIISystem < ...
             nShift = int32(lenZ*(decX*lenY));
             for iOrdX = 1:uint32(double(ordX)/2)
                 %hW = step(pmMtxSt_,[],iParamMtx);
-                hW = eye(ceil(nHalfDecs));
+                hW = eye(nChs(ChannelGroup.UPPER));
                 %hU = step(pmMtxSt_,[],iParamMtx+1);
-                hU = eye(ceil(nHalfDecs));
+                hU = step(pmMtxSt_,[],iParamMtx);
                 %angles2 = step(pmMtxSt_,[],iParamMtx+2);
-                angles2 = pi/4*ones(floor(nHalfDecs/2),1);
+                angles2 = pi/4*ones(floor(nChs(ChannelGroup.LOWER)/2),1);
                 %W = step(pmMtxSt_,[],iParamMtx+3);
-                W = step(pmMtxSt_,[],iParamMtx);
+                W = step(pmMtxSt_,[],iParamMtx+1);
                 %U = step(pmMtxSt_,[],iParamMtx+4);
-                U = step(pmMtxSt_,[],iParamMtx+1);
+                U = eye(nChs(ChannelGroup.LOWER));
                 %angles1 = step(pmMtxSt_,[],iParamMtx+5);
-                angles1 = pi/4*ones(floor(nHalfDecs/2),1);
+                angles1 = pi/4*ones(floor(nChs(ChannelGroup.LOWER)/2),1);
                 if obj.mexFlag
                     %TODO:
-                    E = obj.mexFcn(E, hW, hU, angles2, W, U, angles1, floor(hChs), nShift);
+                    E = obj.mexFcn(E, hW, hU, angles2, W, U, angles1, nChs(ChannelGroup.LOWER), nShift);
                 else
                     import saivdr.dictionary.nsoltx.mexsrcs.Order2BuildingBlockTypeII
                     hObb = Order2BuildingBlockTypeII();
-                    E = step(hObb, E, hW, hU, angles2, W, U, angles1, floor(hChs), nShift);
+                    E = step(hObb, E, hW, hU, angles2, W, U, angles1, nChs(ChannelGroup.LOWER), nShift);
                 end
                 iParamMtx = iParamMtx+2;
                 %iParamMtx = iParamMtx+6;
@@ -319,24 +315,24 @@ classdef AbstOvsdLpPuFb3dTypeIISystem < ...
             nShift = int32(lenX*(decY*lenZ));
             for iOrdY = 1:uint32(double(ordY)/2)
                 %hW = step(pmMtxSt_,[],iParamMtx);
-                hW = eye(ceil(nHalfDecs));
+                hW = eye(nChs(ChannelGroup.UPPER));
                 %hU = step(pmMtxSt_,[],iParamMtx+1);
-                hU = eye(ceil(nHalfDecs));
+                hU = step(pmMtxSt_,[],iParamMtx);
                 %angles2 = step(pmMtxSt_,[],iParamMtx+2);
-                angles2 = pi/4*ones(floor(nHalfDecs/2),1);
+                angles2 = pi/4*ones(floor(nChs(ChannelGroup.LOWER)/2),1);
                 %W = step(pmMtxSt_,[],iParamMtx+3);
-                W = step(pmMtxSt_,[],iParamMtx);
+                W = step(pmMtxSt_,[],iParamMtx+1);
                 %U = step(pmMtxSt_,[],iParamMtx+4);
-                U = step(pmMtxSt_,[],iParamMtx+1);
+                U = eye(nChs(ChannelGroup.LOWER));
                 %angles1 = step(pmMtxSt_,[],iParamMtx+5);
-                angles1 = pi/4*ones(floor(nHalfDecs/2),1);
+                angles1 = pi/4*ones(floor(nChs(ChannelGroup.LOWER)/2),1);
                 if obj.mexFlag
                     %TODO:
-                    E = obj.mexFcn(E, hW, hU, angles2, W, U, angles1, floor(hChs), nShift);
+                    E = obj.mexFcn(E, hW, hU, angles2, W, U, angles1, nChs(ChannelGroup.LOWER), nShift);
                 else
                     import saivdr.dictionary.nsoltx.mexsrcs.Order2BuildingBlockTypeII
                     hObb = Order2BuildingBlockTypeII();
-                    E = step(hObb, E, hW, hU, angles2, W, U, angles1, floor(hChs), nShift);
+                    E = step(hObb, E, hW, hU, angles2, W, U, angles1, nChs(ChannelGroup.LOWER), nShift);
                 end
                 iParamMtx = iParamMtx+2;
                 %iParamMtx = iParamMtx+6;

@@ -64,7 +64,6 @@ classdef AbstOvsdLpPuFb1dTypeIISystem < ...
             import saivdr.dictionary.nsoltx.mexsrcs.fcn_autobuild_bb_type2
             import saivdr.dictionary.nsoltx.ChannelGroup
             [obj.mexFcn, obj.mexFlag] = fcn_autobuild_bb_type2(...
-                obj.NumberOfChannels(ChannelGroup.UPPER),...
                 obj.NumberOfChannels(ChannelGroup.LOWER));
         end
 
@@ -73,7 +72,6 @@ classdef AbstOvsdLpPuFb1dTypeIISystem < ...
             import saivdr.dictionary.nsoltx.ChannelGroup
             import saivdr.dictionary.nsoltx.mexsrcs.fcn_autobuild_bb_type2
             [obj.mexFcn, obj.mexFlag] = fcn_autobuild_bb_type2(...
-                obj.NumberOfChannels(ChannelGroup.UPPER),...
                 obj.NumberOfChannels(ChannelGroup.LOWER));
         end
 
@@ -228,21 +226,21 @@ classdef AbstOvsdLpPuFb1dTypeIISystem < ...
                     %hW = step(pmMtxSt_,[],iParamMtx);
                     hW = step(pmMtxSt_,[],iParamMtx);
                     %hU = step(pmMtxSt_,[],iParamMtx+1);
-                    hU = eye(nChs(ChannelGroup.Upper));
+                    hU = eye(nChs(ChannelGroup.UPPER));
                     %angles2 = step(PmMtxSt_,[],iParamMtx+2);
-                    angles2 = pi/4*ones(floor(nChs(:)/2),1);
+                    angles2 = pi/4*ones(floor(sum(nChs)/4),1);
                     %W = step(pmMtxSt_,[],iParamMtx+3);
-                    W = eye(nChs(ChannelGroup.Lower));
+                    W = eye(nChs(ChannelGroup.LOWER));
                     %U = step(pmMtxSt_,[],iParamMtx+4);
                     U = step(pmMtxSt_,[],iParamMtx+1);
                     %angles1 = step(PmMtxSt_,[],iParamMtx+5);
-                    angles2 = pi/4*ones(floor(nChs(:)/2),1);
+                    angles1 = pi/4*ones(floor(sum(nChs)/4),1);
                     if mexFlag_
-                        E = mexFcn_(E, hW, hU, angles2, W, U, angles1, floor(prod(nChs(:))/2), nShift);
+                        E = mexFcn_(E, hW, hU, angles2, W, U, angles1, floor(sum(nChs)/2), nShift);
                     else
                         import saivdr.dictionary.nsoltx.mexsrcs.Order2BuildingBlockTypeII
                         hObb = Order2BuildingBlockTypeII();
-                        E = step(hObb,E, hW, hU, angles2, W, U, angles1, floor(prod(nChs(:))/2), nShift);
+                        E = step(hObb,E, hW, hU, angles2, W, U, angles1, floor(sum(nChs)/2), nShift);
                     end
                     iParamMtx = iParamMtx+2;
                 end

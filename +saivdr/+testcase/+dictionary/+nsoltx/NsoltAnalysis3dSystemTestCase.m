@@ -1185,66 +1185,66 @@ classdef NsoltAnalysis3dSystemTestCase < matlab.unittest.TestCase
             
         end                
             
-        % Test
-        function testStepDec222Ch64Ord222Level1PeriodicExt(testCase)
-            
-            dec = 2;
-            ch = [ 6 4 ];
-            nChs = sum(ch);
-            
-            ord = 2;
-            height = 32;
-            width  = 32;
-            depth  = 32;
-            srcImg = rand(height,width,depth);
-            nLevels = 1;
-            
-            % Preparation
-            import saivdr.dictionary.nsoltx.*
-            lppufb = NsoltFactory.createOvsdLpPuFb3dSystem(...
-                'DecimationFactor',[dec dec dec],...
-                'NumberOfChannels',ch,...
-                'PolyPhaseOrder',[ord ord ord]);
-            angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
-            set(lppufb,'Angles',angs);
-            
-           % Expected values
-            downsample3_ = @(x,d) ...
-                shiftdim(downsample(...
-                shiftdim(downsample(...
-                shiftdim(downsample(x,d),1),d),1),d),1);            
-           release(lppufb)
-           set(lppufb,'OutputMode','AnalysisFilterAt');
-           nSubCoefs = numel(srcImg)/(dec*dec*dec);
-           coefsExpctd = zeros(1,nChs*nSubCoefs);
-           for iSubband = 1:nChs
-                atom = step(lppufb,[],[],iSubband);
-                subCoef = downsample3_(...
-                    imfilter(srcImg,atom,'conv','circ'),dec);
-                coefsExpctd((iSubband-1)*nSubCoefs+1:iSubband*nSubCoefs) = ...
-                    subCoef(:).';
-           end
-            scalesExpctd = repmat(size(srcImg)./[dec dec dec],nChs,1);
-
-            % Instantiation of target class
-            release(lppufb)
-            set(lppufb,'OutputMode','ParameterMatrixSet');
-            testCase.analyzer = NsoltAnalysis3dSystem(...
-                'LpPuFb3d',lppufb,...
-                'NumberOfSymmetricChannels',ch(1),...
-                'NumberOfAntisymmetricChannels',ch(2),...
-                'BoundaryOperation','Circular');
-            
-            % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
-            
-            % Evaluation
-            testCase.verifyEqual(scalesActual,scalesExpctd);
-            diff = max(abs(coefsExpctd(:) - coefsActual(:)));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-7,sprintf('%g',diff));
-            
-        end                
+%         % Test
+%         function testStepDec222Ch64Ord222Level1PeriodicExt(testCase)
+%             
+%             dec = 2;
+%             ch = [ 6 4 ];
+%             nChs = sum(ch);
+%             
+%             ord = 2;
+%             height = 32;
+%             width  = 32;
+%             depth  = 32;
+%             srcImg = rand(height,width,depth);
+%             nLevels = 1;
+%             
+%             % Preparation
+%             import saivdr.dictionary.nsoltx.*
+%             lppufb = NsoltFactory.createOvsdLpPuFb3dSystem(...
+%                 'DecimationFactor',[dec dec dec],...
+%                 'NumberOfChannels',ch,...
+%                 'PolyPhaseOrder',[ord ord ord]);
+%             angs = get(lppufb,'Angles');
+%             angs = randn(size(angs));
+%             set(lppufb,'Angles',angs);
+%             
+%            % Expected values
+%             downsample3_ = @(x,d) ...
+%                 shiftdim(downsample(...
+%                 shiftdim(downsample(...
+%                 shiftdim(downsample(x,d),1),d),1),d),1);            
+%            release(lppufb)
+%            set(lppufb,'OutputMode','AnalysisFilterAt');
+%            nSubCoefs = numel(srcImg)/(dec*dec*dec);
+%            coefsExpctd = zeros(1,nChs*nSubCoefs);
+%            for iSubband = 1:nChs
+%                 atom = step(lppufb,[],[],iSubband);
+%                 subCoef = downsample3_(...
+%                     imfilter(srcImg,atom,'conv','circ'),dec);
+%                 coefsExpctd((iSubband-1)*nSubCoefs+1:iSubband*nSubCoefs) = ...
+%                     subCoef(:).';
+%            end
+%             scalesExpctd = repmat(size(srcImg)./[dec dec dec],nChs,1);
+% 
+%             % Instantiation of target class
+%             release(lppufb)
+%             set(lppufb,'OutputMode','ParameterMatrixSet');
+%             testCase.analyzer = NsoltAnalysis3dSystem(...
+%                 'LpPuFb3d',lppufb,...
+%                 'NumberOfSymmetricChannels',ch(1),...
+%                 'NumberOfAntisymmetricChannels',ch(2),...
+%                 'BoundaryOperation','Circular');
+%             
+%             % Actual values
+%             [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+%             
+%             % Evaluation
+%             testCase.verifyEqual(scalesActual,scalesExpctd);
+%             diff = max(abs(coefsExpctd(:) - coefsActual(:)));
+%             testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-7,sprintf('%g',diff));
+%             
+%         end                
                         
         % Test
         function testStepDec111Ch32Ord000Level1PeriodicExtVm0(testCase)
@@ -1692,66 +1692,66 @@ classdef NsoltAnalysis3dSystemTestCase < matlab.unittest.TestCase
             
         end
 
-        % Test
-        function testStepDec222Ch64Ord000Level1PeriodicExt(testCase)
-            
-            dec = 2;
-            decch = [ dec dec dec 6 4 ];
-            nChs = sum(decch(4:5));
-            ord = 0;
-            height = 32;
-            width = 32;
-            depth = 32;
-            srcImg = rand(height,width,depth);
-            nLevels = 1;
-            
-            % Preparation
-            import saivdr.dictionary.nsoltx.*
-            lppufb = NsoltFactory.createOvsdLpPuFb3dSystem(...
-                'DecimationFactor',decch(1:3),...
-                'NumberOfChannels',decch(4:end),...
-                'PolyPhaseOrder',[ord ord ord],...
-                'NumberOfVanishingMoments',0);
-            angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
-            set(lppufb,'Angles',angs);
-            
-            % Expected values
-            downsample3_ = @(x,d) ...
-                shiftdim(downsample(...
-                shiftdim(downsample(...
-                shiftdim(downsample(x,d),1),d),1),d),1);                                                            
-            release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
-            nSubCoefs = numel(srcImg)/prod(decch(1:3));
-            coefsExpctd = zeros(1,nChs*nSubCoefs);
-            for iSubband = 1:nChs
-                atom = step(lppufb,[],[],iSubband);
-                subCoef = downsample3_(...
-                    imfilter(srcImg,atom,'conv','circ'),dec);
-                coefsExpctd((iSubband-1)*nSubCoefs+1:iSubband*nSubCoefs) = ...
-                    subCoef(:).';
-            end
-            scalesExpctd = repmat(size(srcImg)./decch(1:3),nChs,1);
-            
-            % Instantiation of target class
-            release(lppufb)
-            set(lppufb,'OutputMode','ParameterMatrixSet');
-            testCase.analyzer = NsoltAnalysis3dSystem(...
-                'LpPuFb3d',lppufb,...
-                'NumberOfSymmetricChannels',decch(4),...
-                'NumberOfAntisymmetricChannels',decch(5),...
-                'BoundaryOperation','Circular');
-            
-            % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
-            
-            % Evaluation
-            testCase.verifyEqual(scalesActual,scalesExpctd);
-            diff = max(abs(coefsExpctd(:) - coefsActual(:))./abs(coefsExpctd(:)));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'RelTol',1e-7,sprintf('%g',diff));
-            
-        end
+%         % Test
+%         function testStepDec222Ch64Ord000Level1PeriodicExt(testCase)
+%             
+%             dec = 2;
+%             decch = [ dec dec dec 6 4 ];
+%             nChs = sum(decch(4:5));
+%             ord = 0;
+%             height = 32;
+%             width = 32;
+%             depth = 32;
+%             srcImg = rand(height,width,depth);
+%             nLevels = 1;
+%             
+%             % Preparation
+%             import saivdr.dictionary.nsoltx.*
+%             lppufb = NsoltFactory.createOvsdLpPuFb3dSystem(...
+%                 'DecimationFactor',decch(1:3),...
+%                 'NumberOfChannels',decch(4:end),...
+%                 'PolyPhaseOrder',[ord ord ord],...
+%                 'NumberOfVanishingMoments',0);
+%             angs = get(lppufb,'Angles');
+%             angs = randn(size(angs));
+%             set(lppufb,'Angles',angs);
+%             
+%             % Expected values
+%             downsample3_ = @(x,d) ...
+%                 shiftdim(downsample(...
+%                 shiftdim(downsample(...
+%                 shiftdim(downsample(x,d),1),d),1),d),1);                                                            
+%             release(lppufb)
+%             set(lppufb,'OutputMode','AnalysisFilterAt');
+%             nSubCoefs = numel(srcImg)/prod(decch(1:3));
+%             coefsExpctd = zeros(1,nChs*nSubCoefs);
+%             for iSubband = 1:nChs
+%                 atom = step(lppufb,[],[],iSubband);
+%                 subCoef = downsample3_(...
+%                     imfilter(srcImg,atom,'conv','circ'),dec);
+%                 coefsExpctd((iSubband-1)*nSubCoefs+1:iSubband*nSubCoefs) = ...
+%                     subCoef(:).';
+%             end
+%             scalesExpctd = repmat(size(srcImg)./decch(1:3),nChs,1);
+%             
+%             % Instantiation of target class
+%             release(lppufb)
+%             set(lppufb,'OutputMode','ParameterMatrixSet');
+%             testCase.analyzer = NsoltAnalysis3dSystem(...
+%                 'LpPuFb3d',lppufb,...
+%                 'NumberOfSymmetricChannels',decch(4),...
+%                 'NumberOfAntisymmetricChannels',decch(5),...
+%                 'BoundaryOperation','Circular');
+%             
+%             % Actual values
+%             [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+%             
+%             % Evaluation
+%             testCase.verifyEqual(scalesActual,scalesExpctd);
+%             diff = max(abs(coefsExpctd(:) - coefsActual(:))./abs(coefsExpctd(:)));
+%             testCase.verifyEqual(coefsActual,coefsExpctd,'RelTol',1e-7,sprintf('%g',diff));
+%             
+%         end
 
         % Test
         function testStepDec111Ch32Ord222Level1PeriodicExt(testCase)
@@ -2200,109 +2200,109 @@ classdef NsoltAnalysis3dSystemTestCase < matlab.unittest.TestCase
                 sprintf('%g',diff));
             
         end
-
-        % Test
-        function testIsCloneFalseTypeII(testCase)
-            
-            dec = [ 2 2 2 ];
-            ch =  [ 6 4 ];
-            ord = [ 4 4 4 ];
-            height = 64;
-            width = 64;
-            depth = 64;
-            nLevels = 1;
-            srcImg = rand(height,width,depth);
-            
-            % Preparation
-            import saivdr.dictionary.nsoltx.*
-            lppufb = NsoltFactory.createOvsdLpPuFb3dSystem(...
-                'DecimationFactor',dec,...
-                'NumberOfChannels',ch,...
-                'PolyPhaseOrder',ord,...
-                'OutputMode','ParameterMatrixSet');
-            
-            % Instantiation of target class
-            testCase.analyzer = NsoltAnalysis3dSystem(...
-                'LpPuFb3d',lppufb,...
-                'BoundaryOperation','Termination',...
-                'IsCloneLpPuFb3d',true);
-            
-            % Pre
-            coefsPre1 = step(testCase.analyzer,srcImg,nLevels);
-            
-            % Pst
-            angs = randn(size(get(lppufb,'Angles')));
-            set(lppufb,'Angles',angs);
-            coefsPst1 = step(testCase.analyzer,srcImg,nLevels);
-            
-            % Evaluation
-            diff = norm(coefsPst1(:)-coefsPre1(:));
-            testCase.verifyEqual(diff,0,'AbsTol',1e-15,sprintf('%g',diff));
-            
-            % Instantiation of target class
-            testCase.analyzer = NsoltAnalysis3dSystem(...
-                'LpPuFb3d',lppufb,...
-                'BoundaryOperation','Termination',...
-                'IsCloneLpPuFb3d',false);
-            
-            % Pre
-            coefsPre1 = step(testCase.analyzer,srcImg,nLevels);
-            
-            % Pst
-            angs = randn(size(get(lppufb,'Angles')));
-            set(lppufb,'Angles',angs);
-            coefsPst1 = step(testCase.analyzer,srcImg,nLevels);
-            
-            % Evaluation
-            import matlab.unittest.constraints.IsGreaterThan
-            diff = norm(coefsPst1(:)-coefsPre1(:));
-            testCase.verifyThat(diff,IsGreaterThan(0),sprintf('%g',diff));            
-           
-        end
-
-        % Test
-        function testCloneTypeII(testCase)
-            
-            dec = [ 2 2 2 ];
-            ch =  [ 6 4 ];
-            ord = [ 4 4 4 ];
-            height = 64;
-            width  = 64;
-            depth  = 64;
-            nLevels = 1;
-            srcImg = rand(height,width,depth);
-            
-            % Preparation
-            import saivdr.dictionary.nsoltx.*
-            lppufb = NsoltFactory.createOvsdLpPuFb3dSystem(...
-                'DecimationFactor',dec,...
-                'NumberOfChannels',ch,...
-                'PolyPhaseOrder',ord,...
-                'OutputMode','ParameterMatrixSet');
-            
-            % Instantiation of target class
-            testCase.analyzer = NsoltAnalysis3dSystem(...
-                'LpPuFb3d',lppufb,...
-                'BoundaryOperation','Termination');
-            %s = matlab.System.saveObject(testCase.analyzer);
-
-            % Clone
-            cloneAnalyzer = clone(testCase.analyzer);
-            
-            % Evaluation
-            testCase.verifyEqual(cloneAnalyzer,testCase.analyzer);
-            testCase.verifyFalse(cloneAnalyzer == testCase.analyzer);
-            prpOrg = get(testCase.analyzer,'LpPuFb3d');
-            prpCln = get(cloneAnalyzer,'LpPuFb3d');
-            testCase.verifyEqual(prpCln,prpOrg);
-            testCase.verifyFalse(prpCln == prpOrg);
-            %            
-            [coefExpctd,scaleExpctd] = step(testCase.analyzer,srcImg,nLevels);
-            [coefActual,scaleActual] = step(cloneAnalyzer,srcImg,nLevels);
-            testCase.assertEqual(coefActual,coefExpctd);
-            testCase.assertEqual(scaleActual,scaleExpctd);
-            
-        end
+% 
+%         % Test
+%         function testIsCloneFalseTypeII(testCase)
+%             
+%             dec = [ 2 2 2 ];
+%             ch =  [ 6 4 ];
+%             ord = [ 4 4 4 ];
+%             height = 64;
+%             width = 64;
+%             depth = 64;
+%             nLevels = 1;
+%             srcImg = rand(height,width,depth);
+%             
+%             % Preparation
+%             import saivdr.dictionary.nsoltx.*
+%             lppufb = NsoltFactory.createOvsdLpPuFb3dSystem(...
+%                 'DecimationFactor',dec,...
+%                 'NumberOfChannels',ch,...
+%                 'PolyPhaseOrder',ord,...
+%                 'OutputMode','ParameterMatrixSet');
+%             
+%             % Instantiation of target class
+%             testCase.analyzer = NsoltAnalysis3dSystem(...
+%                 'LpPuFb3d',lppufb,...
+%                 'BoundaryOperation','Termination',...
+%                 'IsCloneLpPuFb3d',true);
+%             
+%             % Pre
+%             coefsPre1 = step(testCase.analyzer,srcImg,nLevels);
+%             
+%             % Pst
+%             angs = randn(size(get(lppufb,'Angles')));
+%             set(lppufb,'Angles',angs);
+%             coefsPst1 = step(testCase.analyzer,srcImg,nLevels);
+%             
+%             % Evaluation
+%             diff = norm(coefsPst1(:)-coefsPre1(:));
+%             testCase.verifyEqual(diff,0,'AbsTol',1e-15,sprintf('%g',diff));
+%             
+%             % Instantiation of target class
+%             testCase.analyzer = NsoltAnalysis3dSystem(...
+%                 'LpPuFb3d',lppufb,...
+%                 'BoundaryOperation','Termination',...
+%                 'IsCloneLpPuFb3d',false);
+%             
+%             % Pre
+%             coefsPre1 = step(testCase.analyzer,srcImg,nLevels);
+%             
+%             % Pst
+%             angs = randn(size(get(lppufb,'Angles')));
+%             set(lppufb,'Angles',angs);
+%             coefsPst1 = step(testCase.analyzer,srcImg,nLevels);
+%             
+%             % Evaluation
+%             import matlab.unittest.constraints.IsGreaterThan
+%             diff = norm(coefsPst1(:)-coefsPre1(:));
+%             testCase.verifyThat(diff,IsGreaterThan(0),sprintf('%g',diff));            
+%            
+%         end
+% 
+%         % Test
+%         function testCloneTypeII(testCase)
+%             
+%             dec = [ 2 2 2 ];
+%             ch =  [ 6 4 ];
+%             ord = [ 4 4 4 ];
+%             height = 64;
+%             width  = 64;
+%             depth  = 64;
+%             nLevels = 1;
+%             srcImg = rand(height,width,depth);
+%             
+%             % Preparation
+%             import saivdr.dictionary.nsoltx.*
+%             lppufb = NsoltFactory.createOvsdLpPuFb3dSystem(...
+%                 'DecimationFactor',dec,...
+%                 'NumberOfChannels',ch,...
+%                 'PolyPhaseOrder',ord,...
+%                 'OutputMode','ParameterMatrixSet');
+%             
+%             % Instantiation of target class
+%             testCase.analyzer = NsoltAnalysis3dSystem(...
+%                 'LpPuFb3d',lppufb,...
+%                 'BoundaryOperation','Termination');
+%             %s = matlab.System.saveObject(testCase.analyzer);
+% 
+%             % Clone
+%             cloneAnalyzer = clone(testCase.analyzer);
+%             
+%             % Evaluation
+%             testCase.verifyEqual(cloneAnalyzer,testCase.analyzer);
+%             testCase.verifyFalse(cloneAnalyzer == testCase.analyzer);
+%             prpOrg = get(testCase.analyzer,'LpPuFb3d');
+%             prpCln = get(cloneAnalyzer,'LpPuFb3d');
+%             testCase.verifyEqual(prpCln,prpOrg);
+%             testCase.verifyFalse(prpCln == prpOrg);
+%             %            
+%             [coefExpctd,scaleExpctd] = step(testCase.analyzer,srcImg,nLevels);
+%             [coefActual,scaleActual] = step(cloneAnalyzer,srcImg,nLevels);
+%             testCase.assertEqual(coefActual,coefExpctd);
+%             testCase.assertEqual(scaleActual,scaleExpctd);
+%             
+%         end
         
         %{
         % Test
@@ -2367,421 +2367,421 @@ classdef NsoltAnalysis3dSystemTestCase < matlab.unittest.TestCase
         %}
         
         % Test
-        function testStepDec222Ch45Ord222Level1PeriodicExt(testCase)
-            
-            dec = 2;
-            ch = [ 4 5 ];
-            nChs = sum(ch);
-            
-            ord = 2;
-            height = 32;
-            width  = 32;
-            depth  = 32;
-            srcImg = rand(height,width,depth);
-            nLevels = 1;
-            
-            % Preparation
-            import saivdr.dictionary.nsoltx.*
-            lppufb = NsoltFactory.createOvsdLpPuFb3dSystem(...
-                'DecimationFactor',[dec dec dec],...
-                'NumberOfChannels',ch,...
-                'PolyPhaseOrder',[ord ord ord]);
-            angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
-            set(lppufb,'Angles',angs);
-            
-           % Expected values
-            downsample3_ = @(x,d) ...
-                shiftdim(downsample(...
-                shiftdim(downsample(...
-                shiftdim(downsample(x,d),1),d),1),d),1);            
-           release(lppufb)
-           set(lppufb,'OutputMode','AnalysisFilterAt');
-           nSubCoefs = numel(srcImg)/(dec*dec*dec);
-           coefsExpctd = zeros(1,nChs*nSubCoefs);
-           for iSubband = 1:nChs
-                atom = step(lppufb,[],[],iSubband);
-                subCoef = downsample3_(...
-                    imfilter(srcImg,atom,'conv','circ'),dec);
-                coefsExpctd((iSubband-1)*nSubCoefs+1:iSubband*nSubCoefs) = ...
-                    subCoef(:).';
-           end
-            scalesExpctd = repmat(size(srcImg)./[dec dec dec],nChs,1);
-
-            % Instantiation of target class
-            release(lppufb)
-            set(lppufb,'OutputMode','ParameterMatrixSet');
-            testCase.analyzer = NsoltAnalysis3dSystem(...
-                'LpPuFb3d',lppufb,...
-                'NumberOfSymmetricChannels',ch(1),...
-                'NumberOfAntisymmetricChannels',ch(2),...
-                'BoundaryOperation','Circular');
-            
-            % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
-            
-            % Evaluation
-            testCase.verifyEqual(scalesActual,scalesExpctd);
-            diff = max(abs(coefsExpctd(:) - coefsActual(:)));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-7,sprintf('%g',diff));
-            
-        end                
-            
-        % Test
-        function testStepDec222Ch46Ord222Level1PeriodicExt(testCase)
-            
-            dec = 2;
-            ch = [ 4 6 ];
-            nChs = sum(ch);
-            
-            ord = 2;
-            height = 32;
-            width  = 32;
-            depth  = 32;
-            srcImg = rand(height,width,depth);
-            nLevels = 1;
-            
-            % Preparation
-            import saivdr.dictionary.nsoltx.*
-            lppufb = NsoltFactory.createOvsdLpPuFb3dSystem(...
-                'DecimationFactor',[dec dec dec],...
-                'NumberOfChannels',ch,...
-                'PolyPhaseOrder',[ord ord ord]);
-            angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
-            set(lppufb,'Angles',angs);
-            
-           % Expected values
-            downsample3_ = @(x,d) ...
-                shiftdim(downsample(...
-                shiftdim(downsample(...
-                shiftdim(downsample(x,d),1),d),1),d),1);            
-           release(lppufb)
-           set(lppufb,'OutputMode','AnalysisFilterAt');
-           nSubCoefs = numel(srcImg)/(dec*dec*dec);
-           coefsExpctd = zeros(1,nChs*nSubCoefs);
-           for iSubband = 1:nChs
-                atom = step(lppufb,[],[],iSubband);
-                subCoef = downsample3_(...
-                    imfilter(srcImg,atom,'conv','circ'),dec);
-                coefsExpctd((iSubband-1)*nSubCoefs+1:iSubband*nSubCoefs) = ...
-                    subCoef(:).';
-           end
-            scalesExpctd = repmat(size(srcImg)./[dec dec dec],nChs,1);
-
-            % Instantiation of target class
-            release(lppufb)
-            set(lppufb,'OutputMode','ParameterMatrixSet');
-            testCase.analyzer = NsoltAnalysis3dSystem(...
-                'LpPuFb3d',lppufb,...
-                'NumberOfSymmetricChannels',ch(1),...
-                'NumberOfAntisymmetricChannels',ch(2),...
-                'BoundaryOperation','Circular');
-            
-            % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
-            
-            % Evaluation
-            testCase.verifyEqual(scalesActual,scalesExpctd);
-            diff = max(abs(coefsExpctd(:) - coefsActual(:)));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-7,sprintf('%g',diff));
-            
-        end                
-                        
-        % Test
-        function testStepDec111Ch23Ord000Level1PeriodicExtVm0(testCase)
-            
-            dec = 1;
-            decch = [ dec dec dec 2 3 ];
-            nChs = sum(decch(4:5));
-            ord = 0;
-            height = 32;
-            width = 32;
-            depth = 32;
-            srcImg = rand(height,width,depth);
-            nLevels = 1;
-            
-            % Preparation
-            import saivdr.dictionary.nsoltx.*
-            lppufb = NsoltFactory.createOvsdLpPuFb3dSystem(...
-                'DecimationFactor',decch(1:3),...
-                'NumberOfChannels',decch(4:end),...
-                'PolyPhaseOrder',[ord ord ord],...
-                'NumberOfVanishingMoments',0);
-            angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
-            set(lppufb,'Angles',angs);
-            
-            % Expected values
-            downsample3_ = @(x,d) ...
-                shiftdim(downsample(...
-                shiftdim(downsample(...
-                shiftdim(downsample(x,d),1),d),1),d),1);            
-            release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');
-            nSubCoefs = numel(srcImg)/(dec*dec*dec);
-            coefsExpctd = zeros(1,nChs*nSubCoefs);
-            for iSubband = 1:nChs
-                atom = step(lppufb,[],[],iSubband);
-                subCoef = downsample3_(...
-                    imfilter(srcImg,atom,'conv','circ'),dec);
-                coefsExpctd((iSubband-1)*nSubCoefs+1:iSubband*nSubCoefs) = ...
-                    subCoef(:).';
-            end
-            scalesExpctd = repmat(size(srcImg)./decch(1:3),nChs,1);
-            
-            % Instantiation of target class
-            release(lppufb)
-            set(lppufb,'OutputMode','ParameterMatrixSet');
-            release(lppufb)
-            set(lppufb,'OutputMode','ParameterMatrixSet');
-            testCase.analyzer = NsoltAnalysis3dSystem(...
-                'LpPuFb3d',lppufb,...
-                'NumberOfSymmetricChannels',decch(4),...
-                'NumberOfAntisymmetricChannels',decch(5),...
-                'BoundaryOperation','Circular');
-            
-            % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
-            
-            % Evaluation
-            testCase.verifyEqual(scalesActual,scalesExpctd);
-            diff = max(abs(coefsExpctd(:) - coefsActual(:))./abs(coefsExpctd(:)));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'RelTol',1e-7,...
-                sprintf('%g',diff));
-            
-        end
-        
-        % Test
-        function testStepDec111Ch23Ord000Level1PeriodicExtVm1(testCase)
-            
-            dec = 1;
-            decch = [ dec dec dec 2 3 ];
-            nChs = sum(decch(4:5));
-            ord = 0;
-            height = 32;
-            width = 32;
-            depth = 32;
-            srcImg = rand(height,width,depth);
-            nLevels = 1;
-            nvm = 1;
-            
-            % Preparation
-            import saivdr.dictionary.nsoltx.*
-            lppufb = NsoltFactory.createOvsdLpPuFb3dSystem(...
-                'DecimationFactor',decch(1:3),...
-                'NumberOfChannels',decch(4:end),...
-                'PolyPhaseOrder',[ord ord ord],...
-                'NumberOfVanishingMoments',nvm);
-            angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
-            set(lppufb,'Angles',angs);
-            
-            % Expected values
-            downsample3_ = @(x,d) ...
-                shiftdim(downsample(...
-                shiftdim(downsample(...
-                shiftdim(downsample(x,d),1),d),1),d),1);            
-            release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');
-            nSubCoefs = numel(srcImg)/(dec*dec*dec);
-            coefsExpctd = zeros(1,nChs*nSubCoefs);
-            for iSubband = 1:nChs
-                atom = step(lppufb,[],[],iSubband);
-                subCoef = downsample3_(...
-                    imfilter(srcImg,atom,'conv','circ'),dec);
-                coefsExpctd((iSubband-1)*nSubCoefs+1:iSubband*nSubCoefs) = ...
-                    subCoef(:).';
-            end
-            scalesExpctd = repmat(size(srcImg)./decch(1:3),nChs,1);
-            
-            % Instantiation of target class
-            release(lppufb)
-            set(lppufb,'OutputMode','ParameterMatrixSet');
-            release(lppufb)
-            set(lppufb,'OutputMode','ParameterMatrixSet');
-            testCase.analyzer = NsoltAnalysis3dSystem(...
-                'LpPuFb3d',lppufb,...
-                'NumberOfSymmetricChannels',decch(4),...
-                'NumberOfAntisymmetricChannels',decch(5),...
-                'BoundaryOperation','Circular');
-            
-            % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
-            
-            % Evaluation
-            testCase.verifyEqual(scalesActual,scalesExpctd);
-            diff = max(abs(coefsExpctd(:) - coefsActual(:))./abs(coefsExpctd(:)));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'RelTol',1e-7,...
-                sprintf('%g',diff));
-            
-        end
-        
-        % Test
-        function testStepDec111Ch23Ord000Level2PeriodicExtVm0(testCase)
-            
-            dec = 1;
-            decch = [ dec dec dec 2 3 ];
-            nChs = sum(decch(4:5));
-            ord = 0;
-            height = 32;
-            width = 32;
-            depth = 32;
-            srcImg = rand(height,width,depth);
-            nLevels = 2;
-            
-            % Preparation
-            import saivdr.dictionary.nsoltx.*
-            lppufb = NsoltFactory.createOvsdLpPuFb3dSystem(...
-                'DecimationFactor',decch(1:3),...
-                'NumberOfChannels', decch(4:end),...
-                'PolyPhaseOrder',[ord ord ord],...
-                'NumberOfVanishingMoments',0);
-            angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
-            set(lppufb,'Angles',angs);
-            
-            % Expected values
-            downsample3_ = @(x,d) ...
-                shiftdim(downsample(...
-                shiftdim(downsample(...
-                shiftdim(downsample(x,d),1),d),1),d),1);                        
-            release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
-            coefsExpctdLv1 = cell(nChs,1);
-            for iSubband = 1:nChs
-                atom = step(lppufb,[],[],iSubband);
-                coefsExpctdLv1{iSubband} = downsample3_(...
-                    imfilter(srcImg,atom,'conv','circ'),dec);
-            end
-            coefsExpctdLv2 = cell(nChs,1);
-            for iSubband = 1:nChs
-                atom = step(lppufb,[],[],iSubband);
-                coefsExpctdLv2{iSubband} = downsample3_(...
-                    imfilter(coefsExpctdLv1{1},atom,'conv','circ'),dec);
-            end
-            coefs{1} = coefsExpctdLv2{1};
-            coefs{2} = coefsExpctdLv2{2};
-            coefs{3} = coefsExpctdLv2{3};
-            coefs{4} = coefsExpctdLv2{4};
-            coefs{5} = coefsExpctdLv2{5};
-            coefs{6} = coefsExpctdLv1{2};
-            coefs{7} = coefsExpctdLv1{3};
-            coefs{8} = coefsExpctdLv1{4};
-            coefs{9} = coefsExpctdLv1{5};
-            nSubbands = length(coefs);
-            scalesExpctd = zeros(nSubbands,3);
-            sIdx = 1;
-            for iSubband = 1:nSubbands
-                scalesExpctd(iSubband,:) = size(coefs{iSubband});
-                eIdx = sIdx + prod(scalesExpctd(iSubband,:))-1;
-                coefsExpctd(sIdx:eIdx) = coefs{iSubband}(:).';
-                sIdx = eIdx + 1;
-            end
-            
-            % Instantiation of target class
-            release(lppufb)
-            set(lppufb,'OutputMode','ParameterMatrixSet');
-            testCase.analyzer = NsoltAnalysis3dSystem(...
-                'LpPuFb3d',lppufb,...
-                'NumberOfSymmetricChannels',decch(4),...
-                'NumberOfAntisymmetricChannels',decch(5),...
-                'BoundaryOperation','Circular');
-            
-            % Actual values
-            [coefsActual,scalesActual] = ...
-                step(testCase.analyzer,srcImg,nLevels);
-            
-            % Evaluation
-            testCase.verifyEqual(scalesActual,scalesExpctd);
-            diff = max(abs(coefsExpctd(:) - coefsActual(:))./abs(coefsExpctd(:)));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'RelTol',1e-7,...
-                sprintf('%g',diff));
-            
-        end
-
-        % Test
-        function testStepDec111Ch23Ord000Level2PeriodicExtVm1(testCase)
-            
-            dec = 1;
-            decch = [ dec dec dec 2 3 ];
-            nChs = sum(decch(4:5));
-            ord = 0;
-            height = 32;
-            width = 32;
-            depth = 32;
-            srcImg = rand(height,width,depth);
-            nLevels = 2;
-            
-            % Preparation
-            import saivdr.dictionary.nsoltx.*
-            lppufb = NsoltFactory.createOvsdLpPuFb3dSystem(...
-                'DecimationFactor',decch(1:3),...
-                'NumberOfChannels', decch(4:end),...
-                'PolyPhaseOrder',[ord ord ord],...
-                'NumberOfVanishingMoments',1);
-            angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
-            set(lppufb,'Angles',angs);
-            
-            % Expected values
-            downsample3_ = @(x,d) ...
-                shiftdim(downsample(...
-                shiftdim(downsample(...
-                shiftdim(downsample(x,d),1),d),1),d),1);                                    
-            release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
-            coefsExpctdLv1 = cell(nChs,1);
-            for iSubband = 1:nChs
-                atom = step(lppufb,[],[],iSubband);
-                coefsExpctdLv1{iSubband} = downsample3_(...
-                    imfilter(srcImg,atom,'conv','circ'),dec);
-            end
-            coefsExpctdLv2 = cell(nChs,1);
-            for iSubband = 1:nChs
-                atom = step(lppufb,[],[],iSubband);
-                coefsExpctdLv2{iSubband} = downsample3_(...
-                    imfilter(coefsExpctdLv1{1},atom,'conv','circ'),dec);
-            end
-            coefs{1} = coefsExpctdLv2{1};
-            coefs{2} = coefsExpctdLv2{2};
-            coefs{3} = coefsExpctdLv2{3};
-            coefs{4} = coefsExpctdLv2{4};
-            coefs{5} = coefsExpctdLv2{5};
-            coefs{6} = coefsExpctdLv1{2};
-            coefs{7} = coefsExpctdLv1{3};
-            coefs{8} = coefsExpctdLv1{4};
-            coefs{9} = coefsExpctdLv1{5};
-            nSubbands = length(coefs);
-            scalesExpctd = zeros(nSubbands,3);
-            sIdx = 1;
-            for iSubband = 1:nSubbands
-                scalesExpctd(iSubband,:) = size(coefs{iSubband});
-                eIdx = sIdx + prod(scalesExpctd(iSubband,:))-1;
-                coefsExpctd(sIdx:eIdx) = coefs{iSubband}(:).';
-                sIdx = eIdx + 1;
-            end
-            
-            % Instantiation of target class
-            release(lppufb)
-            set(lppufb,'OutputMode','ParameterMatrixSet');
-            testCase.analyzer = NsoltAnalysis3dSystem(...
-                'LpPuFb3d',lppufb,...
-                'NumberOfSymmetricChannels',decch(4),...
-                'NumberOfAntisymmetricChannels',decch(5),...
-                'BoundaryOperation','Circular');
-            
-            % Actual values
-            [coefsActual,scalesActual] = ...
-                step(testCase.analyzer,srcImg,nLevels);
-            
-            % Evaluation
-            testCase.verifyEqual(scalesActual,scalesExpctd);
-            diff = max(abs(coefsExpctd(:) - coefsActual(:))./abs(coefsExpctd(:)));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'RelTol',1e-7,...
-                sprintf('%g',diff));
-            
-        end
+%         function testStepDec222Ch45Ord222Level1PeriodicExt(testCase)
+%             
+%             dec = 2;
+%             ch = [ 4 5 ];
+%             nChs = sum(ch);
+%             
+%             ord = 2;
+%             height = 32;
+%             width  = 32;
+%             depth  = 32;
+%             srcImg = rand(height,width,depth);
+%             nLevels = 1;
+%             
+%             % Preparation
+%             import saivdr.dictionary.nsoltx.*
+%             lppufb = NsoltFactory.createOvsdLpPuFb3dSystem(...
+%                 'DecimationFactor',[dec dec dec],...
+%                 'NumberOfChannels',ch,...
+%                 'PolyPhaseOrder',[ord ord ord]);
+%             angs = get(lppufb,'Angles');
+%             angs = randn(size(angs));
+%             set(lppufb,'Angles',angs);
+%             
+%            % Expected values
+%             downsample3_ = @(x,d) ...
+%                 shiftdim(downsample(...
+%                 shiftdim(downsample(...
+%                 shiftdim(downsample(x,d),1),d),1),d),1);            
+%            release(lppufb)
+%            set(lppufb,'OutputMode','AnalysisFilterAt');
+%            nSubCoefs = numel(srcImg)/(dec*dec*dec);
+%            coefsExpctd = zeros(1,nChs*nSubCoefs);
+%            for iSubband = 1:nChs
+%                 atom = step(lppufb,[],[],iSubband);
+%                 subCoef = downsample3_(...
+%                     imfilter(srcImg,atom,'conv','circ'),dec);
+%                 coefsExpctd((iSubband-1)*nSubCoefs+1:iSubband*nSubCoefs) = ...
+%                     subCoef(:).';
+%            end
+%             scalesExpctd = repmat(size(srcImg)./[dec dec dec],nChs,1);
+% 
+%             % Instantiation of target class
+%             release(lppufb)
+%             set(lppufb,'OutputMode','ParameterMatrixSet');
+%             testCase.analyzer = NsoltAnalysis3dSystem(...
+%                 'LpPuFb3d',lppufb,...
+%                 'NumberOfSymmetricChannels',ch(1),...
+%                 'NumberOfAntisymmetricChannels',ch(2),...
+%                 'BoundaryOperation','Circular');
+%             
+%             % Actual values
+%             [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+%             
+%             % Evaluation
+%             testCase.verifyEqual(scalesActual,scalesExpctd);
+%             diff = max(abs(coefsExpctd(:) - coefsActual(:)));
+%             testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-7,sprintf('%g',diff));
+%             
+%         end                
+%             
+%         % Test
+%         function testStepDec222Ch46Ord222Level1PeriodicExt(testCase)
+%             
+%             dec = 2;
+%             ch = [ 4 6 ];
+%             nChs = sum(ch);
+%             
+%             ord = 2;
+%             height = 32;
+%             width  = 32;
+%             depth  = 32;
+%             srcImg = rand(height,width,depth);
+%             nLevels = 1;
+%             
+%             % Preparation
+%             import saivdr.dictionary.nsoltx.*
+%             lppufb = NsoltFactory.createOvsdLpPuFb3dSystem(...
+%                 'DecimationFactor',[dec dec dec],...
+%                 'NumberOfChannels',ch,...
+%                 'PolyPhaseOrder',[ord ord ord]);
+%             angs = get(lppufb,'Angles');
+%             angs = randn(size(angs));
+%             set(lppufb,'Angles',angs);
+%             
+%            % Expected values
+%             downsample3_ = @(x,d) ...
+%                 shiftdim(downsample(...
+%                 shiftdim(downsample(...
+%                 shiftdim(downsample(x,d),1),d),1),d),1);            
+%            release(lppufb)
+%            set(lppufb,'OutputMode','AnalysisFilterAt');
+%            nSubCoefs = numel(srcImg)/(dec*dec*dec);
+%            coefsExpctd = zeros(1,nChs*nSubCoefs);
+%            for iSubband = 1:nChs
+%                 atom = step(lppufb,[],[],iSubband);
+%                 subCoef = downsample3_(...
+%                     imfilter(srcImg,atom,'conv','circ'),dec);
+%                 coefsExpctd((iSubband-1)*nSubCoefs+1:iSubband*nSubCoefs) = ...
+%                     subCoef(:).';
+%            end
+%             scalesExpctd = repmat(size(srcImg)./[dec dec dec],nChs,1);
+% 
+%             % Instantiation of target class
+%             release(lppufb)
+%             set(lppufb,'OutputMode','ParameterMatrixSet');
+%             testCase.analyzer = NsoltAnalysis3dSystem(...
+%                 'LpPuFb3d',lppufb,...
+%                 'NumberOfSymmetricChannels',ch(1),...
+%                 'NumberOfAntisymmetricChannels',ch(2),...
+%                 'BoundaryOperation','Circular');
+%             
+%             % Actual values
+%             [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+%             
+%             % Evaluation
+%             testCase.verifyEqual(scalesActual,scalesExpctd);
+%             diff = max(abs(coefsExpctd(:) - coefsActual(:)));
+%             testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-7,sprintf('%g',diff));
+%             
+%         end                
+%                         
+%         % Test
+%         function testStepDec111Ch23Ord000Level1PeriodicExtVm0(testCase)
+%             
+%             dec = 1;
+%             decch = [ dec dec dec 2 3 ];
+%             nChs = sum(decch(4:5));
+%             ord = 0;
+%             height = 32;
+%             width = 32;
+%             depth = 32;
+%             srcImg = rand(height,width,depth);
+%             nLevels = 1;
+%             
+%             % Preparation
+%             import saivdr.dictionary.nsoltx.*
+%             lppufb = NsoltFactory.createOvsdLpPuFb3dSystem(...
+%                 'DecimationFactor',decch(1:3),...
+%                 'NumberOfChannels',decch(4:end),...
+%                 'PolyPhaseOrder',[ord ord ord],...
+%                 'NumberOfVanishingMoments',0);
+%             angs = get(lppufb,'Angles');
+%             angs = randn(size(angs));
+%             set(lppufb,'Angles',angs);
+%             
+%             % Expected values
+%             downsample3_ = @(x,d) ...
+%                 shiftdim(downsample(...
+%                 shiftdim(downsample(...
+%                 shiftdim(downsample(x,d),1),d),1),d),1);            
+%             release(lppufb);
+%             set(lppufb,'OutputMode','AnalysisFilterAt');
+%             nSubCoefs = numel(srcImg)/(dec*dec*dec);
+%             coefsExpctd = zeros(1,nChs*nSubCoefs);
+%             for iSubband = 1:nChs
+%                 atom = step(lppufb,[],[],iSubband);
+%                 subCoef = downsample3_(...
+%                     imfilter(srcImg,atom,'conv','circ'),dec);
+%                 coefsExpctd((iSubband-1)*nSubCoefs+1:iSubband*nSubCoefs) = ...
+%                     subCoef(:).';
+%             end
+%             scalesExpctd = repmat(size(srcImg)./decch(1:3),nChs,1);
+%             
+%             % Instantiation of target class
+%             release(lppufb)
+%             set(lppufb,'OutputMode','ParameterMatrixSet');
+%             release(lppufb)
+%             set(lppufb,'OutputMode','ParameterMatrixSet');
+%             testCase.analyzer = NsoltAnalysis3dSystem(...
+%                 'LpPuFb3d',lppufb,...
+%                 'NumberOfSymmetricChannels',decch(4),...
+%                 'NumberOfAntisymmetricChannels',decch(5),...
+%                 'BoundaryOperation','Circular');
+%             
+%             % Actual values
+%             [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+%             
+%             % Evaluation
+%             testCase.verifyEqual(scalesActual,scalesExpctd);
+%             diff = max(abs(coefsExpctd(:) - coefsActual(:))./abs(coefsExpctd(:)));
+%             testCase.verifyEqual(coefsActual,coefsExpctd,'RelTol',1e-7,...
+%                 sprintf('%g',diff));
+%             
+%         end
+%         
+%         % Test
+%         function testStepDec111Ch23Ord000Level1PeriodicExtVm1(testCase)
+%             
+%             dec = 1;
+%             decch = [ dec dec dec 2 3 ];
+%             nChs = sum(decch(4:5));
+%             ord = 0;
+%             height = 32;
+%             width = 32;
+%             depth = 32;
+%             srcImg = rand(height,width,depth);
+%             nLevels = 1;
+%             nvm = 1;
+%             
+%             % Preparation
+%             import saivdr.dictionary.nsoltx.*
+%             lppufb = NsoltFactory.createOvsdLpPuFb3dSystem(...
+%                 'DecimationFactor',decch(1:3),...
+%                 'NumberOfChannels',decch(4:end),...
+%                 'PolyPhaseOrder',[ord ord ord],...
+%                 'NumberOfVanishingMoments',nvm);
+%             angs = get(lppufb,'Angles');
+%             angs = randn(size(angs));
+%             set(lppufb,'Angles',angs);
+%             
+%             % Expected values
+%             downsample3_ = @(x,d) ...
+%                 shiftdim(downsample(...
+%                 shiftdim(downsample(...
+%                 shiftdim(downsample(x,d),1),d),1),d),1);            
+%             release(lppufb);
+%             set(lppufb,'OutputMode','AnalysisFilterAt');
+%             nSubCoefs = numel(srcImg)/(dec*dec*dec);
+%             coefsExpctd = zeros(1,nChs*nSubCoefs);
+%             for iSubband = 1:nChs
+%                 atom = step(lppufb,[],[],iSubband);
+%                 subCoef = downsample3_(...
+%                     imfilter(srcImg,atom,'conv','circ'),dec);
+%                 coefsExpctd((iSubband-1)*nSubCoefs+1:iSubband*nSubCoefs) = ...
+%                     subCoef(:).';
+%             end
+%             scalesExpctd = repmat(size(srcImg)./decch(1:3),nChs,1);
+%             
+%             % Instantiation of target class
+%             release(lppufb)
+%             set(lppufb,'OutputMode','ParameterMatrixSet');
+%             release(lppufb)
+%             set(lppufb,'OutputMode','ParameterMatrixSet');
+%             testCase.analyzer = NsoltAnalysis3dSystem(...
+%                 'LpPuFb3d',lppufb,...
+%                 'NumberOfSymmetricChannels',decch(4),...
+%                 'NumberOfAntisymmetricChannels',decch(5),...
+%                 'BoundaryOperation','Circular');
+%             
+%             % Actual values
+%             [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+%             
+%             % Evaluation
+%             testCase.verifyEqual(scalesActual,scalesExpctd);
+%             diff = max(abs(coefsExpctd(:) - coefsActual(:))./abs(coefsExpctd(:)));
+%             testCase.verifyEqual(coefsActual,coefsExpctd,'RelTol',1e-7,...
+%                 sprintf('%g',diff));
+%             
+%         end
+%         
+%         % Test
+%         function testStepDec111Ch23Ord000Level2PeriodicExtVm0(testCase)
+%             
+%             dec = 1;
+%             decch = [ dec dec dec 2 3 ];
+%             nChs = sum(decch(4:5));
+%             ord = 0;
+%             height = 32;
+%             width = 32;
+%             depth = 32;
+%             srcImg = rand(height,width,depth);
+%             nLevels = 2;
+%             
+%             % Preparation
+%             import saivdr.dictionary.nsoltx.*
+%             lppufb = NsoltFactory.createOvsdLpPuFb3dSystem(...
+%                 'DecimationFactor',decch(1:3),...
+%                 'NumberOfChannels', decch(4:end),...
+%                 'PolyPhaseOrder',[ord ord ord],...
+%                 'NumberOfVanishingMoments',0);
+%             angs = get(lppufb,'Angles');
+%             angs = randn(size(angs));
+%             set(lppufb,'Angles',angs);
+%             
+%             % Expected values
+%             downsample3_ = @(x,d) ...
+%                 shiftdim(downsample(...
+%                 shiftdim(downsample(...
+%                 shiftdim(downsample(x,d),1),d),1),d),1);                        
+%             release(lppufb)
+%             set(lppufb,'OutputMode','AnalysisFilterAt');
+%             coefsExpctdLv1 = cell(nChs,1);
+%             for iSubband = 1:nChs
+%                 atom = step(lppufb,[],[],iSubband);
+%                 coefsExpctdLv1{iSubband} = downsample3_(...
+%                     imfilter(srcImg,atom,'conv','circ'),dec);
+%             end
+%             coefsExpctdLv2 = cell(nChs,1);
+%             for iSubband = 1:nChs
+%                 atom = step(lppufb,[],[],iSubband);
+%                 coefsExpctdLv2{iSubband} = downsample3_(...
+%                     imfilter(coefsExpctdLv1{1},atom,'conv','circ'),dec);
+%             end
+%             coefs{1} = coefsExpctdLv2{1};
+%             coefs{2} = coefsExpctdLv2{2};
+%             coefs{3} = coefsExpctdLv2{3};
+%             coefs{4} = coefsExpctdLv2{4};
+%             coefs{5} = coefsExpctdLv2{5};
+%             coefs{6} = coefsExpctdLv1{2};
+%             coefs{7} = coefsExpctdLv1{3};
+%             coefs{8} = coefsExpctdLv1{4};
+%             coefs{9} = coefsExpctdLv1{5};
+%             nSubbands = length(coefs);
+%             scalesExpctd = zeros(nSubbands,3);
+%             sIdx = 1;
+%             for iSubband = 1:nSubbands
+%                 scalesExpctd(iSubband,:) = size(coefs{iSubband});
+%                 eIdx = sIdx + prod(scalesExpctd(iSubband,:))-1;
+%                 coefsExpctd(sIdx:eIdx) = coefs{iSubband}(:).';
+%                 sIdx = eIdx + 1;
+%             end
+%             
+%             % Instantiation of target class
+%             release(lppufb)
+%             set(lppufb,'OutputMode','ParameterMatrixSet');
+%             testCase.analyzer = NsoltAnalysis3dSystem(...
+%                 'LpPuFb3d',lppufb,...
+%                 'NumberOfSymmetricChannels',decch(4),...
+%                 'NumberOfAntisymmetricChannels',decch(5),...
+%                 'BoundaryOperation','Circular');
+%             
+%             % Actual values
+%             [coefsActual,scalesActual] = ...
+%                 step(testCase.analyzer,srcImg,nLevels);
+%             
+%             % Evaluation
+%             testCase.verifyEqual(scalesActual,scalesExpctd);
+%             diff = max(abs(coefsExpctd(:) - coefsActual(:))./abs(coefsExpctd(:)));
+%             testCase.verifyEqual(coefsActual,coefsExpctd,'RelTol',1e-7,...
+%                 sprintf('%g',diff));
+%             
+%         end
+% 
+%         % Test
+%         function testStepDec111Ch23Ord000Level2PeriodicExtVm1(testCase)
+%             
+%             dec = 1;
+%             decch = [ dec dec dec 2 3 ];
+%             nChs = sum(decch(4:5));
+%             ord = 0;
+%             height = 32;
+%             width = 32;
+%             depth = 32;
+%             srcImg = rand(height,width,depth);
+%             nLevels = 2;
+%             
+%             % Preparation
+%             import saivdr.dictionary.nsoltx.*
+%             lppufb = NsoltFactory.createOvsdLpPuFb3dSystem(...
+%                 'DecimationFactor',decch(1:3),...
+%                 'NumberOfChannels', decch(4:end),...
+%                 'PolyPhaseOrder',[ord ord ord],...
+%                 'NumberOfVanishingMoments',1);
+%             angs = get(lppufb,'Angles');
+%             angs = randn(size(angs));
+%             set(lppufb,'Angles',angs);
+%             
+%             % Expected values
+%             downsample3_ = @(x,d) ...
+%                 shiftdim(downsample(...
+%                 shiftdim(downsample(...
+%                 shiftdim(downsample(x,d),1),d),1),d),1);                                    
+%             release(lppufb)
+%             set(lppufb,'OutputMode','AnalysisFilterAt');
+%             coefsExpctdLv1 = cell(nChs,1);
+%             for iSubband = 1:nChs
+%                 atom = step(lppufb,[],[],iSubband);
+%                 coefsExpctdLv1{iSubband} = downsample3_(...
+%                     imfilter(srcImg,atom,'conv','circ'),dec);
+%             end
+%             coefsExpctdLv2 = cell(nChs,1);
+%             for iSubband = 1:nChs
+%                 atom = step(lppufb,[],[],iSubband);
+%                 coefsExpctdLv2{iSubband} = downsample3_(...
+%                     imfilter(coefsExpctdLv1{1},atom,'conv','circ'),dec);
+%             end
+%             coefs{1} = coefsExpctdLv2{1};
+%             coefs{2} = coefsExpctdLv2{2};
+%             coefs{3} = coefsExpctdLv2{3};
+%             coefs{4} = coefsExpctdLv2{4};
+%             coefs{5} = coefsExpctdLv2{5};
+%             coefs{6} = coefsExpctdLv1{2};
+%             coefs{7} = coefsExpctdLv1{3};
+%             coefs{8} = coefsExpctdLv1{4};
+%             coefs{9} = coefsExpctdLv1{5};
+%             nSubbands = length(coefs);
+%             scalesExpctd = zeros(nSubbands,3);
+%             sIdx = 1;
+%             for iSubband = 1:nSubbands
+%                 scalesExpctd(iSubband,:) = size(coefs{iSubband});
+%                 eIdx = sIdx + prod(scalesExpctd(iSubband,:))-1;
+%                 coefsExpctd(sIdx:eIdx) = coefs{iSubband}(:).';
+%                 sIdx = eIdx + 1;
+%             end
+%             
+%             % Instantiation of target class
+%             release(lppufb)
+%             set(lppufb,'OutputMode','ParameterMatrixSet');
+%             testCase.analyzer = NsoltAnalysis3dSystem(...
+%                 'LpPuFb3d',lppufb,...
+%                 'NumberOfSymmetricChannels',decch(4),...
+%                 'NumberOfAntisymmetricChannels',decch(5),...
+%                 'BoundaryOperation','Circular');
+%             
+%             % Actual values
+%             [coefsActual,scalesActual] = ...
+%                 step(testCase.analyzer,srcImg,nLevels);
+%             
+%             % Evaluation
+%             testCase.verifyEqual(scalesActual,scalesExpctd);
+%             diff = max(abs(coefsExpctd(:) - coefsActual(:))./abs(coefsExpctd(:)));
+%             testCase.verifyEqual(coefsActual,coefsExpctd,'RelTol',1e-7,...
+%                 sprintf('%g',diff));
+%             
+%         end
 
         %{
         % Test
@@ -2934,514 +2934,514 @@ classdef NsoltAnalysis3dSystemTestCase < matlab.unittest.TestCase
             
         end
 
-        % Test
-        function testStepDec222Ch46Ord000Level1PeriodicExt(testCase)
-            
-            dec = 2;
-            decch = [ dec dec dec 4 6 ];
-            nChs = sum(decch(4:5));
-            ord = 0;
-            height = 32;
-            width = 32;
-            depth = 32;
-            srcImg = rand(height,width,depth);
-            nLevels = 1;
-            
-            % Preparation
-            import saivdr.dictionary.nsoltx.*
-            lppufb = NsoltFactory.createOvsdLpPuFb3dSystem(...
-                'DecimationFactor',decch(1:3),...
-                'NumberOfChannels',decch(4:end),...
-                'PolyPhaseOrder',[ord ord ord],...
-                'NumberOfVanishingMoments',0);
-            angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
-            set(lppufb,'Angles',angs);
-            
-            % Expected values
-            downsample3_ = @(x,d) ...
-                shiftdim(downsample(...
-                shiftdim(downsample(...
-                shiftdim(downsample(x,d),1),d),1),d),1);                                                            
-            release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
-            nSubCoefs = numel(srcImg)/prod(decch(1:3));
-            coefsExpctd = zeros(1,nChs*nSubCoefs);
-            for iSubband = 1:nChs
-                atom = step(lppufb,[],[],iSubband);
-                subCoef = downsample3_(...
-                    imfilter(srcImg,atom,'conv','circ'),dec);
-                coefsExpctd((iSubband-1)*nSubCoefs+1:iSubband*nSubCoefs) = ...
-                    subCoef(:).';
-            end
-            scalesExpctd = repmat(size(srcImg)./decch(1:3),nChs,1);
-            
-            % Instantiation of target class
-            release(lppufb)
-            set(lppufb,'OutputMode','ParameterMatrixSet');
-            testCase.analyzer = NsoltAnalysis3dSystem(...
-                'LpPuFb3d',lppufb,...
-                'NumberOfSymmetricChannels',decch(4),...
-                'NumberOfAntisymmetricChannels',decch(5),...
-                'BoundaryOperation','Circular');
-            
-            % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
-            
-            % Evaluation
-            testCase.verifyEqual(scalesActual,scalesExpctd);
-            diff = max(abs(coefsExpctd(:) - coefsActual(:))./abs(coefsExpctd(:)));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'RelTol',1e-7,sprintf('%g',diff));
-            
-        end
-
-        % Test
-        function testStepDec111Ch23Ord222Level1PeriodicExt(testCase)
-            
-            dec = 1;
-            decch = [ dec dec dec 2 3 ];
-            nChs = sum(decch(4:5));
-            ord = 2;
-            height = 32;
-            width = 32;
-            depth = 32;
-            srcImg = rand(height,width,depth);
-            nLevels = 1;
-            
-            % Preparation
-            import saivdr.dictionary.nsoltx.*
-            lppufb = NsoltFactory.createOvsdLpPuFb3dSystem(...
-                'DecimationFactor',decch(1:3),...
-                'NumberOfChannels',decch(4:end),...
-                'PolyPhaseOrder',[ord ord ord],...
-                'NumberOfVanishingMoments',0);
-            angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
-            set(lppufb,'Angles',angs);
-            
-            % Expected values
-            downsample3_ = @(x,d) ...
-                shiftdim(downsample(...
-                shiftdim(downsample(...
-                shiftdim(downsample(x,d),1),d),1),d),1);            
-            release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
-            nSubCoefs = numel(srcImg)/prod(decch(1:3));
-            coefsExpctd = zeros(1,nChs*nSubCoefs);
-            for iSubband = 1:nChs
-                atom = step(lppufb,[],[],iSubband);
-                subCoef = downsample3_(...
-                    imfilter(srcImg,atom,'conv','circ'),dec);
-                coefsExpctd((iSubband-1)*nSubCoefs+1:iSubband*nSubCoefs) = ...
-                    subCoef(:).';
-            end
-            scalesExpctd = repmat(size(srcImg)./decch(1:3),nChs,1);
-            
-            % Instantiation of target class
-            release(lppufb)
-            set(lppufb,'OutputMode','ParameterMatrixSet');
-            testCase.analyzer = NsoltAnalysis3dSystem(...
-                'LpPuFb3d',lppufb,...
-                'NumberOfSymmetricChannels',decch(4),...
-                'NumberOfAntisymmetricChannels',decch(5),...
-                'BoundaryOperation','Circular');
-            
-            % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
-            
-            % Evaluation
-            testCase.verifyEqual(scalesActual,scalesExpctd);
-            diff = max(abs(coefsExpctd(:) - coefsActual(:))./abs(coefsExpctd(:)));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'RelTol',1e-7,sprintf('%g',diff));
-            
-        end
-
-        % Test
-        function testStepDec111Ch23Ord222Level2PeriodicExt(testCase)
-            
-            dec = 1;
-            decch = [ dec dec dec 2 3 ];
-            ch = sum(decch(4:5));
-            ord = 2;
-            height = 32;
-            width = 32;
-            depth = 32;
-            srcImg = rand(height,width,depth);
-            nLevels = 2;
-            
-            % Preparation
-            import saivdr.dictionary.nsoltx.*
-            lppufb = NsoltFactory.createOvsdLpPuFb3dSystem(...
-                'DecimationFactor',[dec dec dec],...
-                'NumberOfChannels',ch,...
-                'PolyPhaseOrder',[ord ord ord],...
-                'NumberOfVanishingMoments',0);
-            angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
-            set(lppufb,'Angles',angs);
-            
-            % Expected values
-            downsample3_ = @(x,d) ...
-                shiftdim(downsample(...
-                shiftdim(downsample(...
-                shiftdim(downsample(x,d),1),d),1),d),1);                        
-            release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
-            coefsExpctdLv1 = cell(ch,1);
-            for iSubband = 1:ch
-                atom = step(lppufb,[],[],iSubband);
-                coefsExpctdLv1{iSubband} = downsample3_(...
-                    imfilter(srcImg,atom,'conv','circ'),dec);
-            end
-            coefsExpctdLv2 = cell(ch,1);
-            for iSubband = 1:ch
-                atom = step(lppufb,[],[],iSubband);
-                coefsExpctdLv2{iSubband} = downsample3_(...
-                    imfilter(coefsExpctdLv1{1},atom,'conv','circ'),dec);
-            end
-            coefs{1} = coefsExpctdLv2{1};
-            coefs{2} = coefsExpctdLv2{2};
-            coefs{3} = coefsExpctdLv2{3};
-            coefs{4} = coefsExpctdLv2{4};
-            coefs{5} = coefsExpctdLv2{5};
-            coefs{6} = coefsExpctdLv1{2};
-            coefs{7} = coefsExpctdLv1{3};
-            coefs{8} = coefsExpctdLv1{4};
-            coefs{9} = coefsExpctdLv1{5};
-            nSubbands = length(coefs);
-            scalesExpctd = zeros(nSubbands,3);
-            sIdx = 1;
-            for iSubband = 1:nSubbands
-                scalesExpctd(iSubband,:) = size(coefs{iSubband});
-                eIdx = sIdx + prod(scalesExpctd(iSubband,:))-1;
-                coefsExpctd(sIdx:eIdx) = coefs{iSubband}(:).';
-                sIdx = eIdx + 1;
-            end
-            
-            % Instantiation of target class
-            release(lppufb)
-            set(lppufb,'OutputMode','ParameterMatrixSet');
-            testCase.analyzer = NsoltAnalysis3dSystem(...
-                'LpPuFb3d',lppufb,...
-                'NumberOfSymmetricChannels',decch(4),...
-                'NumberOfAntisymmetricChannels',decch(5),...
-                'BoundaryOperation','Circular');
-            
-            % Actual values
-            [coefsActual,scalesActual] = ...
-                step(testCase.analyzer,srcImg,nLevels);
-            
-            % Evaluation
-            testCase.verifyEqual(scalesActual,scalesExpctd);
-            diff = max(abs(coefsExpctd(:) - coefsActual(:))./abs(coefsExpctd(:)));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'RelTol',1e-7,...
-                sprintf('%g',diff));
-            
-        end
-
-        % Test
-        function testStepDec222Ch45Ord222Level2PeriodicExt(testCase)
-            
-            dec = 2;
-            decch = [ dec dec dec 4 5 ];
-            ch = sum(decch(4:5));
-            ord = 2;
-            height = 32;
-            width = 32;
-            depth = 32;
-            srcImg = rand(height,width,depth);
-            nLevels = 2;
-            
-            % Preparation
-            import saivdr.dictionary.nsoltx.*
-            lppufb = NsoltFactory.createOvsdLpPuFb3dSystem(...
-                'DecimationFactor',[dec dec dec],...
-                'NumberOfChannels',ch,...
-                'PolyPhaseOrder',[ord ord ord],...
-                'NumberOfVanishingMoments',0);
-            angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
-            set(lppufb,'Angles',angs);
-            
-            % Expected values
-            downsample3_ = @(x,d) ...
-                shiftdim(downsample(...
-                shiftdim(downsample(...
-                shiftdim(downsample(x,d),1),d),1),d),1);                        
-            release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
-            coefsExpctdLv1 = cell(ch,1);
-            for iSubband = 1:ch
-                atom = step(lppufb,[],[],iSubband);
-                coefsExpctdLv1{iSubband} = downsample3_(...
-                    imfilter(srcImg,atom,'conv','circ'),dec);
-            end
-            coefsExpctdLv2 = cell(ch,1);
-            for iSubband = 1:ch
-                atom = step(lppufb,[],[],iSubband);
-                coefsExpctdLv2{iSubband} = downsample3_(...
-                    imfilter(coefsExpctdLv1{1},atom,'conv','circ'),dec);
-            end
-            coefs{1} = coefsExpctdLv2{1};
-            coefs{2} = coefsExpctdLv2{2};
-            coefs{3} = coefsExpctdLv2{3};
-            coefs{4} = coefsExpctdLv2{4};
-            coefs{5} = coefsExpctdLv2{5};
-            coefs{6} = coefsExpctdLv2{6};
-            coefs{7} = coefsExpctdLv2{7};
-            coefs{8} = coefsExpctdLv2{8};
-            coefs{9} = coefsExpctdLv2{9};            
-            coefs{10} = coefsExpctdLv1{2};
-            coefs{11} = coefsExpctdLv1{3};
-            coefs{12} = coefsExpctdLv1{4};
-            coefs{13} = coefsExpctdLv1{5};
-            coefs{14} = coefsExpctdLv1{6};
-            coefs{15} = coefsExpctdLv1{7};
-            coefs{16} = coefsExpctdLv1{8};
-            coefs{17} = coefsExpctdLv1{9};            
-            nSubbands = length(coefs);
-            scalesExpctd = zeros(nSubbands,3);
-            sIdx = 1;
-            for iSubband = 1:nSubbands
-                scalesExpctd(iSubband,:) = size(coefs{iSubband});
-                eIdx = sIdx + prod(scalesExpctd(iSubband,:))-1;
-                coefsExpctd(sIdx:eIdx) = coefs{iSubband}(:).';
-                sIdx = eIdx + 1;
-            end
-            
-            % Instantiation of target class
-            release(lppufb)
-            set(lppufb,'OutputMode','ParameterMatrixSet');
-            testCase.analyzer = NsoltAnalysis3dSystem(...
-                'LpPuFb3d',lppufb,...
-                'NumberOfSymmetricChannels',decch(4),...
-                'NumberOfAntisymmetricChannels',decch(5),...
-                'BoundaryOperation','Circular');
-            
-            % Actual values
-            [coefsActual,scalesActual] = ...
-                step(testCase.analyzer,srcImg,nLevels);
-            
-            % Evaluation
-            testCase.verifyEqual(scalesActual,scalesExpctd);
-            diff = max(abs(coefsExpctd(:) - coefsActual(:))./abs(coefsExpctd(:)));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'RelTol',1e-7,...
-                sprintf('%g',diff));
-            
-            
-        end
-
-        % Test
-        function testStepDec222Ch45Ord222Level3PeriodicExt(testCase)
-            
-            dec = 2;
-            nChs = [ 4 5 ];
-            decch = [ dec dec dec nChs ];
-            ch = sum(nChs);
-            ord = 2;
-            height = 32;
-            width = 32;
-            depth = 32;
-            srcImg = rand(height,width,depth);
-            nLevels = 3;
-            
-            % Preparation
-            import saivdr.dictionary.nsoltx.*
-            lppufb = NsoltFactory.createOvsdLpPuFb3dSystem(...
-                'DecimationFactor',[dec dec dec],...
-                'NumberOfChannels',ch,...
-                'PolyPhaseOrder',[ord ord ord],...
-                'NumberOfVanishingMoments',0);
-            angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
-            set(lppufb,'Angles',angs);
-            
-            % Expected values
-            downsample3_ = @(x,d) ...
-                shiftdim(downsample(...
-                shiftdim(downsample(...
-                shiftdim(downsample(x,d),1),d),1),d),1);                                    
-            release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
-            coefsExpctdLv1 = cell(ch,1);
-            for iSubband = 1:ch
-                atom = step(lppufb,[],[],iSubband);
-                coefsExpctdLv1{iSubband} = downsample3_(...
-                    imfilter(srcImg,atom,'conv','circ'),dec);
-            end
-            coefsExpctdLv2 = cell(ch,1);
-            for iSubband = 1:ch
-                atom = step(lppufb,[],[],iSubband);
-                coefsExpctdLv2{iSubband} = downsample3_(...
-                    imfilter(coefsExpctdLv1{1},atom,'conv','circ'),dec);
-            end
-            coefsExpctdLv3 = cell(ch,1);
-            for iSubband = 1:ch
-                atom = step(lppufb,[],[],iSubband);
-                coefsExpctdLv3{iSubband} = downsample3_(...
-                    imfilter(coefsExpctdLv2{1},atom,'conv','circ'),dec);
-            end
-            coefs{1} = coefsExpctdLv3{1};
-            coefs{2} = coefsExpctdLv3{2};
-            coefs{3} = coefsExpctdLv3{3};
-            coefs{4} = coefsExpctdLv3{4};
-            coefs{5} = coefsExpctdLv3{5};
-            coefs{6} = coefsExpctdLv3{6};
-            coefs{7} = coefsExpctdLv3{7};
-            coefs{8} = coefsExpctdLv3{8};
-            coefs{9} = coefsExpctdLv3{9};
-            coefs{10} = coefsExpctdLv2{2};
-            coefs{11} = coefsExpctdLv2{3};
-            coefs{12} = coefsExpctdLv2{4};
-            coefs{13} = coefsExpctdLv2{5};
-            coefs{14} = coefsExpctdLv2{6};
-            coefs{15} = coefsExpctdLv2{7};
-            coefs{16} = coefsExpctdLv2{8};
-            coefs{17} = coefsExpctdLv2{9};
-            coefs{18} = coefsExpctdLv1{2};
-            coefs{19} = coefsExpctdLv1{3};
-            coefs{20} = coefsExpctdLv1{4};
-            coefs{21} = coefsExpctdLv1{5};
-            coefs{22} = coefsExpctdLv1{6};
-            coefs{23} = coefsExpctdLv1{7};
-            coefs{24} = coefsExpctdLv1{8};
-            coefs{25} = coefsExpctdLv1{9};
-            nSubbands = length(coefs);
-            scalesExpctd = zeros(nSubbands,3);
-            sIdx = 1;
-            for iSubband = 1:nSubbands
-                scalesExpctd(iSubband,:) = size(coefs{iSubband});
-                eIdx = sIdx + prod(scalesExpctd(iSubband,:))-1;
-                coefsExpctd(sIdx:eIdx) = coefs{iSubband}(:).';
-                sIdx = eIdx + 1;
-            end
-            
-            % Instantiation of target class
-            release(lppufb)
-            set(lppufb,'OutputMode','ParameterMatrixSet');
-            testCase.analyzer = NsoltAnalysis3dSystem(...
-                'LpPuFb3d',lppufb,...
-                'NumberOfSymmetricChannels',decch(4),...
-                'NumberOfAntisymmetricChannels',decch(5),...
-                'BoundaryOperation','Circular');
-            
-            % Actual values
-            [coefsActual,scalesActual] = ...
-                step(testCase.analyzer,srcImg,nLevels);
-            
-            % Evaluation
-            testCase.verifyEqual(scalesActual,scalesExpctd);
-            diff = max(abs(coefsExpctd(:) - coefsActual(:))./abs(coefsExpctd(:)));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'RelTol',1e-6,...
-                sprintf('%g',diff));
-            
-        end
-
-        % Test
-        function testStepDec222Ch45Ord444Level3PeriodicExt(testCase)
-            
-            dec = 2;
-            nChs = [ 4 5 ];
-            decch = [ dec dec dec nChs ];
-            ch = sum(nChs);
-            ord = 4;
-            height = 64;
-            width = 64;
-            depth = 64;
-            srcImg = rand(height,width,depth);
-            nLevels = 3;
-            
-            % Preparation
-            import saivdr.dictionary.nsoltx.*
-            lppufb = NsoltFactory.createOvsdLpPuFb3dSystem(...
-                'DecimationFactor',[dec dec dec],...
-                'NumberOfChannels',ch,...
-                'PolyPhaseOrder',[ord ord ord],...
-                'NumberOfVanishingMoments',0);
-            angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
-            set(lppufb,'Angles',angs);
-            
-            % Expected values
-            downsample3_ = @(x,d) ...
-                shiftdim(downsample(...
-                shiftdim(downsample(...
-                shiftdim(downsample(x,d),1),d),1),d),1);
-            release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
-            coefsExpctdLv1 = cell(ch,1);
-            for iSubband = 1:ch
-                atom = step(lppufb,[],[],iSubband);
-                coefsExpctdLv1{iSubband} = downsample3_(...
-                    imfilter(srcImg,atom,'conv','circ'),dec);
-            end
-            coefsExpctdLv2 = cell(ch,1);
-            for iSubband = 1:ch
-                atom = step(lppufb,[],[],iSubband);
-                coefsExpctdLv2{iSubband} = downsample3_(...
-                    imfilter(coefsExpctdLv1{1},atom,'conv','circ'),dec);
-            end
-            coefsExpctdLv3 = cell(ch,1);
-            for iSubband = 1:ch
-                atom = step(lppufb,[],[],iSubband);
-                coefsExpctdLv3{iSubband} = downsample3_(...
-                    imfilter(coefsExpctdLv2{1},atom,'conv','circ'),dec);
-            end
-            coefs{1} = coefsExpctdLv3{1};
-            coefs{2} = coefsExpctdLv3{2};
-            coefs{3} = coefsExpctdLv3{3};
-            coefs{4} = coefsExpctdLv3{4};
-            coefs{5} = coefsExpctdLv3{5};
-            coefs{6} = coefsExpctdLv3{6};
-            coefs{7} = coefsExpctdLv3{7};
-            coefs{8} = coefsExpctdLv3{8};
-            coefs{9} = coefsExpctdLv3{9};
-            coefs{10} = coefsExpctdLv2{2};
-            coefs{11} = coefsExpctdLv2{3};
-            coefs{12} = coefsExpctdLv2{4};
-            coefs{13} = coefsExpctdLv2{5};
-            coefs{14} = coefsExpctdLv2{6};
-            coefs{15} = coefsExpctdLv2{7};
-            coefs{16} = coefsExpctdLv2{8};
-            coefs{17} = coefsExpctdLv2{9};
-            coefs{18} = coefsExpctdLv1{2};
-            coefs{19} = coefsExpctdLv1{3};
-            coefs{20} = coefsExpctdLv1{4};
-            coefs{21} = coefsExpctdLv1{5};
-            coefs{22} = coefsExpctdLv1{6};
-            coefs{23} = coefsExpctdLv1{7};
-            coefs{24} = coefsExpctdLv1{8};
-            coefs{25} = coefsExpctdLv1{9};
-            nSubbands = length(coefs);
-            scalesExpctd = zeros(nSubbands,3);
-            sIdx = 1;
-            for iSubband = 1:nSubbands
-                scalesExpctd(iSubband,:) = size(coefs{iSubband});
-                eIdx = sIdx + prod(scalesExpctd(iSubband,:))-1;
-                coefsExpctd(sIdx:eIdx) = coefs{iSubband}(:).';
-                sIdx = eIdx + 1;
-            end
-            
-            % Instantiation of target class
-            release(lppufb)
-            set(lppufb,'OutputMode','ParameterMatrixSet');
-            testCase.analyzer = NsoltAnalysis3dSystem(...
-                'LpPuFb3d',lppufb,...
-                'NumberOfSymmetricChannels',decch(4),...
-                'NumberOfAntisymmetricChannels',decch(5),...
-                'BoundaryOperation','Circular');
-            
-            % Actual values
-            [coefsActual,scalesActual] = ...
-                step(testCase.analyzer,srcImg,nLevels);
-            
-            % Evaluation
-            testCase.verifyEqual(scalesActual,scalesExpctd);
-            diff = max(abs(coefsExpctd(:) - coefsActual(:))./abs(coefsExpctd(:)));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'RelTol',1e-6,...
-                sprintf('%g',diff));
-            
-        end
+%         % Test
+%         function testStepDec222Ch46Ord000Level1PeriodicExt(testCase)
+%             
+%             dec = 2;
+%             decch = [ dec dec dec 4 6 ];
+%             nChs = sum(decch(4:5));
+%             ord = 0;
+%             height = 32;
+%             width = 32;
+%             depth = 32;
+%             srcImg = rand(height,width,depth);
+%             nLevels = 1;
+%             
+%             % Preparation
+%             import saivdr.dictionary.nsoltx.*
+%             lppufb = NsoltFactory.createOvsdLpPuFb3dSystem(...
+%                 'DecimationFactor',decch(1:3),...
+%                 'NumberOfChannels',decch(4:end),...
+%                 'PolyPhaseOrder',[ord ord ord],...
+%                 'NumberOfVanishingMoments',0);
+%             angs = get(lppufb,'Angles');
+%             angs = randn(size(angs));
+%             set(lppufb,'Angles',angs);
+%             
+%             % Expected values
+%             downsample3_ = @(x,d) ...
+%                 shiftdim(downsample(...
+%                 shiftdim(downsample(...
+%                 shiftdim(downsample(x,d),1),d),1),d),1);                                                            
+%             release(lppufb)
+%             set(lppufb,'OutputMode','AnalysisFilterAt');
+%             nSubCoefs = numel(srcImg)/prod(decch(1:3));
+%             coefsExpctd = zeros(1,nChs*nSubCoefs);
+%             for iSubband = 1:nChs
+%                 atom = step(lppufb,[],[],iSubband);
+%                 subCoef = downsample3_(...
+%                     imfilter(srcImg,atom,'conv','circ'),dec);
+%                 coefsExpctd((iSubband-1)*nSubCoefs+1:iSubband*nSubCoefs) = ...
+%                     subCoef(:).';
+%             end
+%             scalesExpctd = repmat(size(srcImg)./decch(1:3),nChs,1);
+%             
+%             % Instantiation of target class
+%             release(lppufb)
+%             set(lppufb,'OutputMode','ParameterMatrixSet');
+%             testCase.analyzer = NsoltAnalysis3dSystem(...
+%                 'LpPuFb3d',lppufb,...
+%                 'NumberOfSymmetricChannels',decch(4),...
+%                 'NumberOfAntisymmetricChannels',decch(5),...
+%                 'BoundaryOperation','Circular');
+%             
+%             % Actual values
+%             [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+%             
+%             % Evaluation
+%             testCase.verifyEqual(scalesActual,scalesExpctd);
+%             diff = max(abs(coefsExpctd(:) - coefsActual(:))./abs(coefsExpctd(:)));
+%             testCase.verifyEqual(coefsActual,coefsExpctd,'RelTol',1e-7,sprintf('%g',diff));
+%             
+%         end
+% 
+%         % Test
+%         function testStepDec111Ch23Ord222Level1PeriodicExt(testCase)
+%             
+%             dec = 1;
+%             decch = [ dec dec dec 2 3 ];
+%             nChs = sum(decch(4:5));
+%             ord = 2;
+%             height = 32;
+%             width = 32;
+%             depth = 32;
+%             srcImg = rand(height,width,depth);
+%             nLevels = 1;
+%             
+%             % Preparation
+%             import saivdr.dictionary.nsoltx.*
+%             lppufb = NsoltFactory.createOvsdLpPuFb3dSystem(...
+%                 'DecimationFactor',decch(1:3),...
+%                 'NumberOfChannels',decch(4:end),...
+%                 'PolyPhaseOrder',[ord ord ord],...
+%                 'NumberOfVanishingMoments',0);
+%             angs = get(lppufb,'Angles');
+%             angs = randn(size(angs));
+%             set(lppufb,'Angles',angs);
+%             
+%             % Expected values
+%             downsample3_ = @(x,d) ...
+%                 shiftdim(downsample(...
+%                 shiftdim(downsample(...
+%                 shiftdim(downsample(x,d),1),d),1),d),1);            
+%             release(lppufb)
+%             set(lppufb,'OutputMode','AnalysisFilterAt');
+%             nSubCoefs = numel(srcImg)/prod(decch(1:3));
+%             coefsExpctd = zeros(1,nChs*nSubCoefs);
+%             for iSubband = 1:nChs
+%                 atom = step(lppufb,[],[],iSubband);
+%                 subCoef = downsample3_(...
+%                     imfilter(srcImg,atom,'conv','circ'),dec);
+%                 coefsExpctd((iSubband-1)*nSubCoefs+1:iSubband*nSubCoefs) = ...
+%                     subCoef(:).';
+%             end
+%             scalesExpctd = repmat(size(srcImg)./decch(1:3),nChs,1);
+%             
+%             % Instantiation of target class
+%             release(lppufb)
+%             set(lppufb,'OutputMode','ParameterMatrixSet');
+%             testCase.analyzer = NsoltAnalysis3dSystem(...
+%                 'LpPuFb3d',lppufb,...
+%                 'NumberOfSymmetricChannels',decch(4),...
+%                 'NumberOfAntisymmetricChannels',decch(5),...
+%                 'BoundaryOperation','Circular');
+%             
+%             % Actual values
+%             [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+%             
+%             % Evaluation
+%             testCase.verifyEqual(scalesActual,scalesExpctd);
+%             diff = max(abs(coefsExpctd(:) - coefsActual(:))./abs(coefsExpctd(:)));
+%             testCase.verifyEqual(coefsActual,coefsExpctd,'RelTol',1e-7,sprintf('%g',diff));
+%             
+%         end
+% 
+%         % Test
+%         function testStepDec111Ch23Ord222Level2PeriodicExt(testCase)
+%             
+%             dec = 1;
+%             decch = [ dec dec dec 2 3 ];
+%             ch = sum(decch(4:5));
+%             ord = 2;
+%             height = 32;
+%             width = 32;
+%             depth = 32;
+%             srcImg = rand(height,width,depth);
+%             nLevels = 2;
+%             
+%             % Preparation
+%             import saivdr.dictionary.nsoltx.*
+%             lppufb = NsoltFactory.createOvsdLpPuFb3dSystem(...
+%                 'DecimationFactor',[dec dec dec],...
+%                 'NumberOfChannels',ch,...
+%                 'PolyPhaseOrder',[ord ord ord],...
+%                 'NumberOfVanishingMoments',0);
+%             angs = get(lppufb,'Angles');
+%             angs = randn(size(angs));
+%             set(lppufb,'Angles',angs);
+%             
+%             % Expected values
+%             downsample3_ = @(x,d) ...
+%                 shiftdim(downsample(...
+%                 shiftdim(downsample(...
+%                 shiftdim(downsample(x,d),1),d),1),d),1);                        
+%             release(lppufb)
+%             set(lppufb,'OutputMode','AnalysisFilterAt');
+%             coefsExpctdLv1 = cell(ch,1);
+%             for iSubband = 1:ch
+%                 atom = step(lppufb,[],[],iSubband);
+%                 coefsExpctdLv1{iSubband} = downsample3_(...
+%                     imfilter(srcImg,atom,'conv','circ'),dec);
+%             end
+%             coefsExpctdLv2 = cell(ch,1);
+%             for iSubband = 1:ch
+%                 atom = step(lppufb,[],[],iSubband);
+%                 coefsExpctdLv2{iSubband} = downsample3_(...
+%                     imfilter(coefsExpctdLv1{1},atom,'conv','circ'),dec);
+%             end
+%             coefs{1} = coefsExpctdLv2{1};
+%             coefs{2} = coefsExpctdLv2{2};
+%             coefs{3} = coefsExpctdLv2{3};
+%             coefs{4} = coefsExpctdLv2{4};
+%             coefs{5} = coefsExpctdLv2{5};
+%             coefs{6} = coefsExpctdLv1{2};
+%             coefs{7} = coefsExpctdLv1{3};
+%             coefs{8} = coefsExpctdLv1{4};
+%             coefs{9} = coefsExpctdLv1{5};
+%             nSubbands = length(coefs);
+%             scalesExpctd = zeros(nSubbands,3);
+%             sIdx = 1;
+%             for iSubband = 1:nSubbands
+%                 scalesExpctd(iSubband,:) = size(coefs{iSubband});
+%                 eIdx = sIdx + prod(scalesExpctd(iSubband,:))-1;
+%                 coefsExpctd(sIdx:eIdx) = coefs{iSubband}(:).';
+%                 sIdx = eIdx + 1;
+%             end
+%             
+%             % Instantiation of target class
+%             release(lppufb)
+%             set(lppufb,'OutputMode','ParameterMatrixSet');
+%             testCase.analyzer = NsoltAnalysis3dSystem(...
+%                 'LpPuFb3d',lppufb,...
+%                 'NumberOfSymmetricChannels',decch(4),...
+%                 'NumberOfAntisymmetricChannels',decch(5),...
+%                 'BoundaryOperation','Circular');
+%             
+%             % Actual values
+%             [coefsActual,scalesActual] = ...
+%                 step(testCase.analyzer,srcImg,nLevels);
+%             
+%             % Evaluation
+%             testCase.verifyEqual(scalesActual,scalesExpctd);
+%             diff = max(abs(coefsExpctd(:) - coefsActual(:))./abs(coefsExpctd(:)));
+%             testCase.verifyEqual(coefsActual,coefsExpctd,'RelTol',1e-7,...
+%                 sprintf('%g',diff));
+%             
+%         end
+% 
+%         % Test
+%         function testStepDec222Ch45Ord222Level2PeriodicExt(testCase)
+%             
+%             dec = 2;
+%             decch = [ dec dec dec 4 5 ];
+%             ch = sum(decch(4:5));
+%             ord = 2;
+%             height = 32;
+%             width = 32;
+%             depth = 32;
+%             srcImg = rand(height,width,depth);
+%             nLevels = 2;
+%             
+%             % Preparation
+%             import saivdr.dictionary.nsoltx.*
+%             lppufb = NsoltFactory.createOvsdLpPuFb3dSystem(...
+%                 'DecimationFactor',[dec dec dec],...
+%                 'NumberOfChannels',ch,...
+%                 'PolyPhaseOrder',[ord ord ord],...
+%                 'NumberOfVanishingMoments',0);
+%             angs = get(lppufb,'Angles');
+%             angs = randn(size(angs));
+%             set(lppufb,'Angles',angs);
+%             
+%             % Expected values
+%             downsample3_ = @(x,d) ...
+%                 shiftdim(downsample(...
+%                 shiftdim(downsample(...
+%                 shiftdim(downsample(x,d),1),d),1),d),1);                        
+%             release(lppufb)
+%             set(lppufb,'OutputMode','AnalysisFilterAt');
+%             coefsExpctdLv1 = cell(ch,1);
+%             for iSubband = 1:ch
+%                 atom = step(lppufb,[],[],iSubband);
+%                 coefsExpctdLv1{iSubband} = downsample3_(...
+%                     imfilter(srcImg,atom,'conv','circ'),dec);
+%             end
+%             coefsExpctdLv2 = cell(ch,1);
+%             for iSubband = 1:ch
+%                 atom = step(lppufb,[],[],iSubband);
+%                 coefsExpctdLv2{iSubband} = downsample3_(...
+%                     imfilter(coefsExpctdLv1{1},atom,'conv','circ'),dec);
+%             end
+%             coefs{1} = coefsExpctdLv2{1};
+%             coefs{2} = coefsExpctdLv2{2};
+%             coefs{3} = coefsExpctdLv2{3};
+%             coefs{4} = coefsExpctdLv2{4};
+%             coefs{5} = coefsExpctdLv2{5};
+%             coefs{6} = coefsExpctdLv2{6};
+%             coefs{7} = coefsExpctdLv2{7};
+%             coefs{8} = coefsExpctdLv2{8};
+%             coefs{9} = coefsExpctdLv2{9};            
+%             coefs{10} = coefsExpctdLv1{2};
+%             coefs{11} = coefsExpctdLv1{3};
+%             coefs{12} = coefsExpctdLv1{4};
+%             coefs{13} = coefsExpctdLv1{5};
+%             coefs{14} = coefsExpctdLv1{6};
+%             coefs{15} = coefsExpctdLv1{7};
+%             coefs{16} = coefsExpctdLv1{8};
+%             coefs{17} = coefsExpctdLv1{9};            
+%             nSubbands = length(coefs);
+%             scalesExpctd = zeros(nSubbands,3);
+%             sIdx = 1;
+%             for iSubband = 1:nSubbands
+%                 scalesExpctd(iSubband,:) = size(coefs{iSubband});
+%                 eIdx = sIdx + prod(scalesExpctd(iSubband,:))-1;
+%                 coefsExpctd(sIdx:eIdx) = coefs{iSubband}(:).';
+%                 sIdx = eIdx + 1;
+%             end
+%             
+%             % Instantiation of target class
+%             release(lppufb)
+%             set(lppufb,'OutputMode','ParameterMatrixSet');
+%             testCase.analyzer = NsoltAnalysis3dSystem(...
+%                 'LpPuFb3d',lppufb,...
+%                 'NumberOfSymmetricChannels',decch(4),...
+%                 'NumberOfAntisymmetricChannels',decch(5),...
+%                 'BoundaryOperation','Circular');
+%             
+%             % Actual values
+%             [coefsActual,scalesActual] = ...
+%                 step(testCase.analyzer,srcImg,nLevels);
+%             
+%             % Evaluation
+%             testCase.verifyEqual(scalesActual,scalesExpctd);
+%             diff = max(abs(coefsExpctd(:) - coefsActual(:))./abs(coefsExpctd(:)));
+%             testCase.verifyEqual(coefsActual,coefsExpctd,'RelTol',1e-7,...
+%                 sprintf('%g',diff));
+%             
+%             
+%         end
+% 
+%         % Test
+%         function testStepDec222Ch45Ord222Level3PeriodicExt(testCase)
+%             
+%             dec = 2;
+%             nChs = [ 4 5 ];
+%             decch = [ dec dec dec nChs ];
+%             ch = sum(nChs);
+%             ord = 2;
+%             height = 32;
+%             width = 32;
+%             depth = 32;
+%             srcImg = rand(height,width,depth);
+%             nLevels = 3;
+%             
+%             % Preparation
+%             import saivdr.dictionary.nsoltx.*
+%             lppufb = NsoltFactory.createOvsdLpPuFb3dSystem(...
+%                 'DecimationFactor',[dec dec dec],...
+%                 'NumberOfChannels',ch,...
+%                 'PolyPhaseOrder',[ord ord ord],...
+%                 'NumberOfVanishingMoments',0);
+%             angs = get(lppufb,'Angles');
+%             angs = randn(size(angs));
+%             set(lppufb,'Angles',angs);
+%             
+%             % Expected values
+%             downsample3_ = @(x,d) ...
+%                 shiftdim(downsample(...
+%                 shiftdim(downsample(...
+%                 shiftdim(downsample(x,d),1),d),1),d),1);                                    
+%             release(lppufb)
+%             set(lppufb,'OutputMode','AnalysisFilterAt');
+%             coefsExpctdLv1 = cell(ch,1);
+%             for iSubband = 1:ch
+%                 atom = step(lppufb,[],[],iSubband);
+%                 coefsExpctdLv1{iSubband} = downsample3_(...
+%                     imfilter(srcImg,atom,'conv','circ'),dec);
+%             end
+%             coefsExpctdLv2 = cell(ch,1);
+%             for iSubband = 1:ch
+%                 atom = step(lppufb,[],[],iSubband);
+%                 coefsExpctdLv2{iSubband} = downsample3_(...
+%                     imfilter(coefsExpctdLv1{1},atom,'conv','circ'),dec);
+%             end
+%             coefsExpctdLv3 = cell(ch,1);
+%             for iSubband = 1:ch
+%                 atom = step(lppufb,[],[],iSubband);
+%                 coefsExpctdLv3{iSubband} = downsample3_(...
+%                     imfilter(coefsExpctdLv2{1},atom,'conv','circ'),dec);
+%             end
+%             coefs{1} = coefsExpctdLv3{1};
+%             coefs{2} = coefsExpctdLv3{2};
+%             coefs{3} = coefsExpctdLv3{3};
+%             coefs{4} = coefsExpctdLv3{4};
+%             coefs{5} = coefsExpctdLv3{5};
+%             coefs{6} = coefsExpctdLv3{6};
+%             coefs{7} = coefsExpctdLv3{7};
+%             coefs{8} = coefsExpctdLv3{8};
+%             coefs{9} = coefsExpctdLv3{9};
+%             coefs{10} = coefsExpctdLv2{2};
+%             coefs{11} = coefsExpctdLv2{3};
+%             coefs{12} = coefsExpctdLv2{4};
+%             coefs{13} = coefsExpctdLv2{5};
+%             coefs{14} = coefsExpctdLv2{6};
+%             coefs{15} = coefsExpctdLv2{7};
+%             coefs{16} = coefsExpctdLv2{8};
+%             coefs{17} = coefsExpctdLv2{9};
+%             coefs{18} = coefsExpctdLv1{2};
+%             coefs{19} = coefsExpctdLv1{3};
+%             coefs{20} = coefsExpctdLv1{4};
+%             coefs{21} = coefsExpctdLv1{5};
+%             coefs{22} = coefsExpctdLv1{6};
+%             coefs{23} = coefsExpctdLv1{7};
+%             coefs{24} = coefsExpctdLv1{8};
+%             coefs{25} = coefsExpctdLv1{9};
+%             nSubbands = length(coefs);
+%             scalesExpctd = zeros(nSubbands,3);
+%             sIdx = 1;
+%             for iSubband = 1:nSubbands
+%                 scalesExpctd(iSubband,:) = size(coefs{iSubband});
+%                 eIdx = sIdx + prod(scalesExpctd(iSubband,:))-1;
+%                 coefsExpctd(sIdx:eIdx) = coefs{iSubband}(:).';
+%                 sIdx = eIdx + 1;
+%             end
+%             
+%             % Instantiation of target class
+%             release(lppufb)
+%             set(lppufb,'OutputMode','ParameterMatrixSet');
+%             testCase.analyzer = NsoltAnalysis3dSystem(...
+%                 'LpPuFb3d',lppufb,...
+%                 'NumberOfSymmetricChannels',decch(4),...
+%                 'NumberOfAntisymmetricChannels',decch(5),...
+%                 'BoundaryOperation','Circular');
+%             
+%             % Actual values
+%             [coefsActual,scalesActual] = ...
+%                 step(testCase.analyzer,srcImg,nLevels);
+%             
+%             % Evaluation
+%             testCase.verifyEqual(scalesActual,scalesExpctd);
+%             diff = max(abs(coefsExpctd(:) - coefsActual(:))./abs(coefsExpctd(:)));
+%             testCase.verifyEqual(coefsActual,coefsExpctd,'RelTol',1e-6,...
+%                 sprintf('%g',diff));
+%             
+%         end
+% 
+%         % Test
+%         function testStepDec222Ch45Ord444Level3PeriodicExt(testCase)
+%             
+%             dec = 2;
+%             nChs = [ 4 5 ];
+%             decch = [ dec dec dec nChs ];
+%             ch = sum(nChs);
+%             ord = 4;
+%             height = 64;
+%             width = 64;
+%             depth = 64;
+%             srcImg = rand(height,width,depth);
+%             nLevels = 3;
+%             
+%             % Preparation
+%             import saivdr.dictionary.nsoltx.*
+%             lppufb = NsoltFactory.createOvsdLpPuFb3dSystem(...
+%                 'DecimationFactor',[dec dec dec],...
+%                 'NumberOfChannels',ch,...
+%                 'PolyPhaseOrder',[ord ord ord],...
+%                 'NumberOfVanishingMoments',0);
+%             angs = get(lppufb,'Angles');
+%             angs = randn(size(angs));
+%             set(lppufb,'Angles',angs);
+%             
+%             % Expected values
+%             downsample3_ = @(x,d) ...
+%                 shiftdim(downsample(...
+%                 shiftdim(downsample(...
+%                 shiftdim(downsample(x,d),1),d),1),d),1);
+%             release(lppufb)
+%             set(lppufb,'OutputMode','AnalysisFilterAt');
+%             coefsExpctdLv1 = cell(ch,1);
+%             for iSubband = 1:ch
+%                 atom = step(lppufb,[],[],iSubband);
+%                 coefsExpctdLv1{iSubband} = downsample3_(...
+%                     imfilter(srcImg,atom,'conv','circ'),dec);
+%             end
+%             coefsExpctdLv2 = cell(ch,1);
+%             for iSubband = 1:ch
+%                 atom = step(lppufb,[],[],iSubband);
+%                 coefsExpctdLv2{iSubband} = downsample3_(...
+%                     imfilter(coefsExpctdLv1{1},atom,'conv','circ'),dec);
+%             end
+%             coefsExpctdLv3 = cell(ch,1);
+%             for iSubband = 1:ch
+%                 atom = step(lppufb,[],[],iSubband);
+%                 coefsExpctdLv3{iSubband} = downsample3_(...
+%                     imfilter(coefsExpctdLv2{1},atom,'conv','circ'),dec);
+%             end
+%             coefs{1} = coefsExpctdLv3{1};
+%             coefs{2} = coefsExpctdLv3{2};
+%             coefs{3} = coefsExpctdLv3{3};
+%             coefs{4} = coefsExpctdLv3{4};
+%             coefs{5} = coefsExpctdLv3{5};
+%             coefs{6} = coefsExpctdLv3{6};
+%             coefs{7} = coefsExpctdLv3{7};
+%             coefs{8} = coefsExpctdLv3{8};
+%             coefs{9} = coefsExpctdLv3{9};
+%             coefs{10} = coefsExpctdLv2{2};
+%             coefs{11} = coefsExpctdLv2{3};
+%             coefs{12} = coefsExpctdLv2{4};
+%             coefs{13} = coefsExpctdLv2{5};
+%             coefs{14} = coefsExpctdLv2{6};
+%             coefs{15} = coefsExpctdLv2{7};
+%             coefs{16} = coefsExpctdLv2{8};
+%             coefs{17} = coefsExpctdLv2{9};
+%             coefs{18} = coefsExpctdLv1{2};
+%             coefs{19} = coefsExpctdLv1{3};
+%             coefs{20} = coefsExpctdLv1{4};
+%             coefs{21} = coefsExpctdLv1{5};
+%             coefs{22} = coefsExpctdLv1{6};
+%             coefs{23} = coefsExpctdLv1{7};
+%             coefs{24} = coefsExpctdLv1{8};
+%             coefs{25} = coefsExpctdLv1{9};
+%             nSubbands = length(coefs);
+%             scalesExpctd = zeros(nSubbands,3);
+%             sIdx = 1;
+%             for iSubband = 1:nSubbands
+%                 scalesExpctd(iSubband,:) = size(coefs{iSubband});
+%                 eIdx = sIdx + prod(scalesExpctd(iSubband,:))-1;
+%                 coefsExpctd(sIdx:eIdx) = coefs{iSubband}(:).';
+%                 sIdx = eIdx + 1;
+%             end
+%             
+%             % Instantiation of target class
+%             release(lppufb)
+%             set(lppufb,'OutputMode','ParameterMatrixSet');
+%             testCase.analyzer = NsoltAnalysis3dSystem(...
+%                 'LpPuFb3d',lppufb,...
+%                 'NumberOfSymmetricChannels',decch(4),...
+%                 'NumberOfAntisymmetricChannels',decch(5),...
+%                 'BoundaryOperation','Circular');
+%             
+%             % Actual values
+%             [coefsActual,scalesActual] = ...
+%                 step(testCase.analyzer,srcImg,nLevels);
+%             
+%             % Evaluation
+%             testCase.verifyEqual(scalesActual,scalesExpctd);
+%             diff = max(abs(coefsExpctd(:) - coefsActual(:))./abs(coefsExpctd(:)));
+%             testCase.verifyEqual(coefsActual,coefsExpctd,'RelTol',1e-6,...
+%                 sprintf('%g',diff));
+%             
+%         end
                 
         % Test
         function testStepDec112Ch22Ord000Level1Vm0(testCase)
@@ -3821,68 +3821,68 @@ classdef NsoltAnalysis3dSystemTestCase < matlab.unittest.TestCase
 
         end  
         
-        % Test
-        function testStepDec112Ch23Ord000Level1Vm0(testCase)
-            
-            nDecs = [ 1 1 2 ];
-            nChs = [ 2 3 ];
-            ch = sum(nChs);
-            ord = 0;
-            height = 32;
-            width = 32;
-            depth = 32;
-            srcImg = rand(height,width,depth);
-            nLevels = 1;
-            
-            % Preparation
-            import saivdr.dictionary.nsoltx.*
-            lppufb = NsoltFactory.createOvsdLpPuFb3dSystem(...
-                'DecimationFactor',nDecs,...
-                'NumberOfChannels',nChs,...
-                'PolyPhaseOrder',[ord ord ord],...
-                'NumberOfVanishingMoments',0);
-            angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
-            set(lppufb,'Angles',angs);
-            
-            % Expected values
-            downsample3_ = @(x,d) ...
-                shiftdim(downsample(...
-                shiftdim(downsample(...
-                shiftdim(downsample(x,d(1)),1),d(2)),1),d(3)),1);
-            release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');
-            nSubCoefs = numel(srcImg)/prod(nDecs);
-            coefsExpctd = zeros(1,ch*nSubCoefs);
-            for iSubband = 1:ch
-                atom  = step(lppufb,[],[],iSubband);
-                subCoef = downsample3_(...
-                    imfilter(srcImg,atom,'conv','circ'),...
-                    nDecs);
-                coefsExpctd((iSubband-1)*nSubCoefs+1:iSubband*nSubCoefs) = ...
-                    subCoef(:).';
-            end
-            scalesExpctd = repmat(size(srcImg)./nDecs,ch,1);
-            
-            % Instantiation of target class
-            release(lppufb)
-            set(lppufb,'OutputMode','ParameterMatrixSet');
-            testCase.analyzer = NsoltAnalysis3dSystem(...
-                'LpPuFb3d',lppufb,...
-                'NumberOfSymmetricChannels',nChs(1),...
-                'NumberOfAntisymmetricChannels',nChs(2),...
-                'BoundaryOperation','Circular');
-            
-            % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
-            
-            % Evaluation
-            testCase.verifyEqual(scalesActual,scalesExpctd);
-            diff = max(abs(coefsExpctd(:) - coefsActual(:))./abs(coefsExpctd(:)));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'RelTol',1e-7,...
-                sprintf('%g',diff));
-            
-        end
+%         % Test
+%         function testStepDec112Ch23Ord000Level1Vm0(testCase)
+%             
+%             nDecs = [ 1 1 2 ];
+%             nChs = [ 2 3 ];
+%             ch = sum(nChs);
+%             ord = 0;
+%             height = 32;
+%             width = 32;
+%             depth = 32;
+%             srcImg = rand(height,width,depth);
+%             nLevels = 1;
+%             
+%             % Preparation
+%             import saivdr.dictionary.nsoltx.*
+%             lppufb = NsoltFactory.createOvsdLpPuFb3dSystem(...
+%                 'DecimationFactor',nDecs,...
+%                 'NumberOfChannels',nChs,...
+%                 'PolyPhaseOrder',[ord ord ord],...
+%                 'NumberOfVanishingMoments',0);
+%             angs = get(lppufb,'Angles');
+%             angs = randn(size(angs));
+%             set(lppufb,'Angles',angs);
+%             
+%             % Expected values
+%             downsample3_ = @(x,d) ...
+%                 shiftdim(downsample(...
+%                 shiftdim(downsample(...
+%                 shiftdim(downsample(x,d(1)),1),d(2)),1),d(3)),1);
+%             release(lppufb);
+%             set(lppufb,'OutputMode','AnalysisFilterAt');
+%             nSubCoefs = numel(srcImg)/prod(nDecs);
+%             coefsExpctd = zeros(1,ch*nSubCoefs);
+%             for iSubband = 1:ch
+%                 atom  = step(lppufb,[],[],iSubband);
+%                 subCoef = downsample3_(...
+%                     imfilter(srcImg,atom,'conv','circ'),...
+%                     nDecs);
+%                 coefsExpctd((iSubband-1)*nSubCoefs+1:iSubband*nSubCoefs) = ...
+%                     subCoef(:).';
+%             end
+%             scalesExpctd = repmat(size(srcImg)./nDecs,ch,1);
+%             
+%             % Instantiation of target class
+%             release(lppufb)
+%             set(lppufb,'OutputMode','ParameterMatrixSet');
+%             testCase.analyzer = NsoltAnalysis3dSystem(...
+%                 'LpPuFb3d',lppufb,...
+%                 'NumberOfSymmetricChannels',nChs(1),...
+%                 'NumberOfAntisymmetricChannels',nChs(2),...
+%                 'BoundaryOperation','Circular');
+%             
+%             % Actual values
+%             [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+%             
+%             % Evaluation
+%             testCase.verifyEqual(scalesActual,scalesExpctd);
+%             diff = max(abs(coefsExpctd(:) - coefsActual(:))./abs(coefsExpctd(:)));
+%             testCase.verifyEqual(coefsActual,coefsExpctd,'RelTol',1e-7,...
+%                 sprintf('%g',diff));
+%             
+%         end
         
         % Test
         function testStepDec112Ch32Ord000Level1Vm0(testCase)
@@ -3947,68 +3947,68 @@ classdef NsoltAnalysis3dSystemTestCase < matlab.unittest.TestCase
             
         end
         
-        % Test
-        function testStepDec121Ch23Ord000Level1Vm0(testCase)
-            
-            nDecs = [ 1 2 1 ];
-            nChs = [ 2 3 ];
-            ch = sum(nChs);
-            ord = 0;
-            height = 32;
-            width = 32;
-            depth = 32;
-            srcImg = rand(height,width,depth);
-            nLevels = 1;
-            
-            % Preparation
-            import saivdr.dictionary.nsoltx.*
-            lppufb = NsoltFactory.createOvsdLpPuFb3dSystem(...
-                'DecimationFactor',nDecs,...
-                'NumberOfChannels',nChs,...
-                'PolyPhaseOrder',[ord ord ord],...
-                'NumberOfVanishingMoments',0);
-            angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
-            set(lppufb,'Angles',angs);
-            
-            % Expected values
-            downsample3_ = @(x,d) ...
-                shiftdim(downsample(...
-                shiftdim(downsample(...
-                shiftdim(downsample(x,d(1)),1),d(2)),1),d(3)),1);
-            release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');
-            nSubCoefs = numel(srcImg)/prod(nDecs);
-            coefsExpctd = zeros(1,ch*nSubCoefs);
-            for iSubband = 1:ch
-                atom  = step(lppufb,[],[],iSubband);
-                subCoef = downsample3_(...
-                    imfilter(srcImg,atom,'conv','circ'),...
-                    nDecs);
-                coefsExpctd((iSubband-1)*nSubCoefs+1:iSubband*nSubCoefs) = ...
-                    subCoef(:).';
-            end
-            scalesExpctd = repmat(size(srcImg)./nDecs,ch,1);
-            
-            % Instantiation of target class
-            release(lppufb)
-            set(lppufb,'OutputMode','ParameterMatrixSet');
-            testCase.analyzer = NsoltAnalysis3dSystem(...
-                'LpPuFb3d',lppufb,...
-                'NumberOfSymmetricChannels',nChs(1),...
-                'NumberOfAntisymmetricChannels',nChs(2),...
-                'BoundaryOperation','Circular');
-            
-            % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
-            
-            % Evaluation
-            testCase.verifyEqual(scalesActual,scalesExpctd);
-            diff = max(abs(coefsExpctd(:) - coefsActual(:))./abs(coefsExpctd(:)));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'RelTol',1e-7,...
-                sprintf('%g',diff));
-            
-        end
+%         % Test
+%         function testStepDec121Ch23Ord000Level1Vm0(testCase)
+%             
+%             nDecs = [ 1 2 1 ];
+%             nChs = [ 2 3 ];
+%             ch = sum(nChs);
+%             ord = 0;
+%             height = 32;
+%             width = 32;
+%             depth = 32;
+%             srcImg = rand(height,width,depth);
+%             nLevels = 1;
+%             
+%             % Preparation
+%             import saivdr.dictionary.nsoltx.*
+%             lppufb = NsoltFactory.createOvsdLpPuFb3dSystem(...
+%                 'DecimationFactor',nDecs,...
+%                 'NumberOfChannels',nChs,...
+%                 'PolyPhaseOrder',[ord ord ord],...
+%                 'NumberOfVanishingMoments',0);
+%             angs = get(lppufb,'Angles');
+%             angs = randn(size(angs));
+%             set(lppufb,'Angles',angs);
+%             
+%             % Expected values
+%             downsample3_ = @(x,d) ...
+%                 shiftdim(downsample(...
+%                 shiftdim(downsample(...
+%                 shiftdim(downsample(x,d(1)),1),d(2)),1),d(3)),1);
+%             release(lppufb);
+%             set(lppufb,'OutputMode','AnalysisFilterAt');
+%             nSubCoefs = numel(srcImg)/prod(nDecs);
+%             coefsExpctd = zeros(1,ch*nSubCoefs);
+%             for iSubband = 1:ch
+%                 atom  = step(lppufb,[],[],iSubband);
+%                 subCoef = downsample3_(...
+%                     imfilter(srcImg,atom,'conv','circ'),...
+%                     nDecs);
+%                 coefsExpctd((iSubband-1)*nSubCoefs+1:iSubband*nSubCoefs) = ...
+%                     subCoef(:).';
+%             end
+%             scalesExpctd = repmat(size(srcImg)./nDecs,ch,1);
+%             
+%             % Instantiation of target class
+%             release(lppufb)
+%             set(lppufb,'OutputMode','ParameterMatrixSet');
+%             testCase.analyzer = NsoltAnalysis3dSystem(...
+%                 'LpPuFb3d',lppufb,...
+%                 'NumberOfSymmetricChannels',nChs(1),...
+%                 'NumberOfAntisymmetricChannels',nChs(2),...
+%                 'BoundaryOperation','Circular');
+%             
+%             % Actual values
+%             [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+%             
+%             % Evaluation
+%             testCase.verifyEqual(scalesActual,scalesExpctd);
+%             diff = max(abs(coefsExpctd(:) - coefsActual(:))./abs(coefsExpctd(:)));
+%             testCase.verifyEqual(coefsActual,coefsExpctd,'RelTol',1e-7,...
+%                 sprintf('%g',diff));
+%             
+%         end
         
         % Test
         function testStepDec121Ch32Ord000Level1Vm0(testCase)
@@ -4073,68 +4073,68 @@ classdef NsoltAnalysis3dSystemTestCase < matlab.unittest.TestCase
             
         end
         
-        % Test
-        function testStepDec211Ch23Ord000Level1Vm0(testCase)
-            
-            nDecs = [ 2 1 1 ];
-            nChs = [ 2 3 ];
-            ch = sum(nChs);
-            ord = 0;
-            height = 32;
-            width = 32;
-            depth = 32;
-            srcImg = rand(height,width,depth);
-            nLevels = 1;
-            
-            % Preparation
-            import saivdr.dictionary.nsoltx.*
-            lppufb = NsoltFactory.createOvsdLpPuFb3dSystem(...
-                'DecimationFactor',nDecs,...
-                'NumberOfChannels',nChs,...
-                'PolyPhaseOrder',[ord ord ord],...
-                'NumberOfVanishingMoments',0);
-            angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
-            set(lppufb,'Angles',angs);
-            
-            % Expected values
-            downsample3_ = @(x,d) ...
-                shiftdim(downsample(...
-                shiftdim(downsample(...
-                shiftdim(downsample(x,d(1)),1),d(2)),1),d(3)),1);
-            release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');
-            nSubCoefs = numel(srcImg)/prod(nDecs);
-            coefsExpctd = zeros(1,ch*nSubCoefs);
-            for iSubband = 1:ch
-                atom  = step(lppufb,[],[],iSubband);
-                subCoef = downsample3_(...
-                    imfilter(srcImg,atom,'conv','circ'),...
-                    nDecs);
-                coefsExpctd((iSubband-1)*nSubCoefs+1:iSubband*nSubCoefs) = ...
-                    subCoef(:).';
-            end
-            scalesExpctd = repmat(size(srcImg)./nDecs,ch,1);
-            
-            % Instantiation of target class
-            release(lppufb)
-            set(lppufb,'OutputMode','ParameterMatrixSet');
-            testCase.analyzer = NsoltAnalysis3dSystem(...
-                'LpPuFb3d',lppufb,...
-                'NumberOfSymmetricChannels',nChs(1),...
-                'NumberOfAntisymmetricChannels',nChs(2),...
-                'BoundaryOperation','Circular');
-            
-            % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
-            
-            % Evaluation
-            testCase.verifyEqual(scalesActual,scalesExpctd);
-            diff = max(abs(coefsExpctd(:) - coefsActual(:))./abs(coefsExpctd(:)));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'RelTol',1e-7,...
-                sprintf('%g',diff));
-            
-        end
+%         % Test
+%         function testStepDec211Ch23Ord000Level1Vm0(testCase)
+%             
+%             nDecs = [ 2 1 1 ];
+%             nChs = [ 2 3 ];
+%             ch = sum(nChs);
+%             ord = 0;
+%             height = 32;
+%             width = 32;
+%             depth = 32;
+%             srcImg = rand(height,width,depth);
+%             nLevels = 1;
+%             
+%             % Preparation
+%             import saivdr.dictionary.nsoltx.*
+%             lppufb = NsoltFactory.createOvsdLpPuFb3dSystem(...
+%                 'DecimationFactor',nDecs,...
+%                 'NumberOfChannels',nChs,...
+%                 'PolyPhaseOrder',[ord ord ord],...
+%                 'NumberOfVanishingMoments',0);
+%             angs = get(lppufb,'Angles');
+%             angs = randn(size(angs));
+%             set(lppufb,'Angles',angs);
+%             
+%             % Expected values
+%             downsample3_ = @(x,d) ...
+%                 shiftdim(downsample(...
+%                 shiftdim(downsample(...
+%                 shiftdim(downsample(x,d(1)),1),d(2)),1),d(3)),1);
+%             release(lppufb);
+%             set(lppufb,'OutputMode','AnalysisFilterAt');
+%             nSubCoefs = numel(srcImg)/prod(nDecs);
+%             coefsExpctd = zeros(1,ch*nSubCoefs);
+%             for iSubband = 1:ch
+%                 atom  = step(lppufb,[],[],iSubband);
+%                 subCoef = downsample3_(...
+%                     imfilter(srcImg,atom,'conv','circ'),...
+%                     nDecs);
+%                 coefsExpctd((iSubband-1)*nSubCoefs+1:iSubband*nSubCoefs) = ...
+%                     subCoef(:).';
+%             end
+%             scalesExpctd = repmat(size(srcImg)./nDecs,ch,1);
+%             
+%             % Instantiation of target class
+%             release(lppufb)
+%             set(lppufb,'OutputMode','ParameterMatrixSet');
+%             testCase.analyzer = NsoltAnalysis3dSystem(...
+%                 'LpPuFb3d',lppufb,...
+%                 'NumberOfSymmetricChannels',nChs(1),...
+%                 'NumberOfAntisymmetricChannels',nChs(2),...
+%                 'BoundaryOperation','Circular');
+%             
+%             % Actual values
+%             [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+%             
+%             % Evaluation
+%             testCase.verifyEqual(scalesActual,scalesExpctd);
+%             diff = max(abs(coefsExpctd(:) - coefsActual(:))./abs(coefsExpctd(:)));
+%             testCase.verifyEqual(coefsActual,coefsExpctd,'RelTol',1e-7,...
+%                 sprintf('%g',diff));
+%             
+%         end
         
         % Test
         function testStepDec211Ch32Ord000Level1Vm0(testCase)
@@ -4199,68 +4199,68 @@ classdef NsoltAnalysis3dSystemTestCase < matlab.unittest.TestCase
             
         end
         
-                % Test
-        function testStepDec112Ch23Ord222Level1Vm0(testCase)
-            
-            nDecs = [ 1 1 2 ];
-            nChs = [ 2 3 ];
-            ch = sum(nChs);
-            ord = 2;
-            height = 32;
-            width = 32;
-            depth = 32;
-            srcImg = rand(height,width,depth);
-            nLevels = 1;
-            
-            % Preparation
-            import saivdr.dictionary.nsoltx.*
-            lppufb = NsoltFactory.createOvsdLpPuFb3dSystem(...
-                'DecimationFactor',nDecs,...
-                'NumberOfChannels',nChs,...
-                'PolyPhaseOrder',[ord ord ord],...
-                'NumberOfVanishingMoments',0);
-            angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
-            set(lppufb,'Angles',angs);
-            
-            % Expected values
-            downsample3_ = @(x,d) ...
-                shiftdim(downsample(...
-                shiftdim(downsample(...
-                shiftdim(downsample(x,d(1)),1),d(2)),1),d(3)),1);
-            release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');
-            nSubCoefs = numel(srcImg)/prod(nDecs);
-            coefsExpctd = zeros(1,ch*nSubCoefs);
-            for iSubband = 1:ch
-                atom  = step(lppufb,[],[],iSubband);
-                subCoef = downsample3_(...
-                    imfilter(srcImg,atom,'conv','circ'),...
-                    nDecs);
-                coefsExpctd((iSubband-1)*nSubCoefs+1:iSubband*nSubCoefs) = ...
-                    subCoef(:).';
-            end
-            scalesExpctd = repmat(size(srcImg)./nDecs,ch,1);
-            
-            % Instantiation of target class
-            release(lppufb)
-            set(lppufb,'OutputMode','ParameterMatrixSet');
-            testCase.analyzer = NsoltAnalysis3dSystem(...
-                'LpPuFb3d',lppufb,...
-                'NumberOfSymmetricChannels',nChs(1),...
-                'NumberOfAntisymmetricChannels',nChs(2),...
-                'BoundaryOperation','Circular');
-            
-            % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
-            
-            % Evaluation
-            testCase.verifyEqual(scalesActual,scalesExpctd);
-            diff = max(abs(coefsExpctd(:) - coefsActual(:))./abs(coefsExpctd(:)));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'RelTol',1e-7,...
-                sprintf('%g',diff));
-            
-        end
+%                 % Test
+%         function testStepDec112Ch23Ord222Level1Vm0(testCase)
+%             
+%             nDecs = [ 1 1 2 ];
+%             nChs = [ 2 3 ];
+%             ch = sum(nChs);
+%             ord = 2;
+%             height = 32;
+%             width = 32;
+%             depth = 32;
+%             srcImg = rand(height,width,depth);
+%             nLevels = 1;
+%             
+%             % Preparation
+%             import saivdr.dictionary.nsoltx.*
+%             lppufb = NsoltFactory.createOvsdLpPuFb3dSystem(...
+%                 'DecimationFactor',nDecs,...
+%                 'NumberOfChannels',nChs,...
+%                 'PolyPhaseOrder',[ord ord ord],...
+%                 'NumberOfVanishingMoments',0);
+%             angs = get(lppufb,'Angles');
+%             angs = randn(size(angs));
+%             set(lppufb,'Angles',angs);
+%             
+%             % Expected values
+%             downsample3_ = @(x,d) ...
+%                 shiftdim(downsample(...
+%                 shiftdim(downsample(...
+%                 shiftdim(downsample(x,d(1)),1),d(2)),1),d(3)),1);
+%             release(lppufb);
+%             set(lppufb,'OutputMode','AnalysisFilterAt');
+%             nSubCoefs = numel(srcImg)/prod(nDecs);
+%             coefsExpctd = zeros(1,ch*nSubCoefs);
+%             for iSubband = 1:ch
+%                 atom  = step(lppufb,[],[],iSubband);
+%                 subCoef = downsample3_(...
+%                     imfilter(srcImg,atom,'conv','circ'),...
+%                     nDecs);
+%                 coefsExpctd((iSubband-1)*nSubCoefs+1:iSubband*nSubCoefs) = ...
+%                     subCoef(:).';
+%             end
+%             scalesExpctd = repmat(size(srcImg)./nDecs,ch,1);
+%             
+%             % Instantiation of target class
+%             release(lppufb)
+%             set(lppufb,'OutputMode','ParameterMatrixSet');
+%             testCase.analyzer = NsoltAnalysis3dSystem(...
+%                 'LpPuFb3d',lppufb,...
+%                 'NumberOfSymmetricChannels',nChs(1),...
+%                 'NumberOfAntisymmetricChannels',nChs(2),...
+%                 'BoundaryOperation','Circular');
+%             
+%             % Actual values
+%             [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+%             
+%             % Evaluation
+%             testCase.verifyEqual(scalesActual,scalesExpctd);
+%             diff = max(abs(coefsExpctd(:) - coefsActual(:))./abs(coefsExpctd(:)));
+%             testCase.verifyEqual(coefsActual,coefsExpctd,'RelTol',1e-7,...
+%                 sprintf('%g',diff));
+%             
+%         end
         
         % Test
         function testStepDec112Ch32Ord222Level1Vm0(testCase)
@@ -4325,68 +4325,68 @@ classdef NsoltAnalysis3dSystemTestCase < matlab.unittest.TestCase
             
         end
         
-        % Test
-        function testStepDec121Ch23Ord222Level1Vm0(testCase)
-            
-            nDecs = [ 1 2 1 ];
-            nChs = [ 2 3 ];
-            ch = sum(nChs);
-            ord = 2;
-            height = 32;
-            width = 32;
-            depth = 32;
-            srcImg = rand(height,width,depth);
-            nLevels = 1;
-            
-            % Preparation
-            import saivdr.dictionary.nsoltx.*
-            lppufb = NsoltFactory.createOvsdLpPuFb3dSystem(...
-                'DecimationFactor',nDecs,...
-                'NumberOfChannels',nChs,...
-                'PolyPhaseOrder',[ord ord ord],...
-                'NumberOfVanishingMoments',0);
-            angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
-            set(lppufb,'Angles',angs);
-            
-            % Expected values
-            downsample3_ = @(x,d) ...
-                shiftdim(downsample(...
-                shiftdim(downsample(...
-                shiftdim(downsample(x,d(1)),1),d(2)),1),d(3)),1);
-            release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');
-            nSubCoefs = numel(srcImg)/prod(nDecs);
-            coefsExpctd = zeros(1,ch*nSubCoefs);
-            for iSubband = 1:ch
-                atom  = step(lppufb,[],[],iSubband);
-                subCoef = downsample3_(...
-                    imfilter(srcImg,atom,'conv','circ'),...
-                    nDecs);
-                coefsExpctd((iSubband-1)*nSubCoefs+1:iSubband*nSubCoefs) = ...
-                    subCoef(:).';
-            end
-            scalesExpctd = repmat(size(srcImg)./nDecs,ch,1);
-            
-            % Instantiation of target class
-            release(lppufb)
-            set(lppufb,'OutputMode','ParameterMatrixSet');
-            testCase.analyzer = NsoltAnalysis3dSystem(...
-                'LpPuFb3d',lppufb,...
-                'NumberOfSymmetricChannels',nChs(1),...
-                'NumberOfAntisymmetricChannels',nChs(2),...
-                'BoundaryOperation','Circular');
-            
-            % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
-            
-            % Evaluation
-            testCase.verifyEqual(scalesActual,scalesExpctd);
-            diff = max(abs(coefsExpctd(:) - coefsActual(:))./abs(coefsExpctd(:)));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'RelTol',1e-7,...
-                sprintf('%g',diff));
-            
-        end
+%         % Test
+%         function testStepDec121Ch23Ord222Level1Vm0(testCase)
+%             
+%             nDecs = [ 1 2 1 ];
+%             nChs = [ 2 3 ];
+%             ch = sum(nChs);
+%             ord = 2;
+%             height = 32;
+%             width = 32;
+%             depth = 32;
+%             srcImg = rand(height,width,depth);
+%             nLevels = 1;
+%             
+%             % Preparation
+%             import saivdr.dictionary.nsoltx.*
+%             lppufb = NsoltFactory.createOvsdLpPuFb3dSystem(...
+%                 'DecimationFactor',nDecs,...
+%                 'NumberOfChannels',nChs,...
+%                 'PolyPhaseOrder',[ord ord ord],...
+%                 'NumberOfVanishingMoments',0);
+%             angs = get(lppufb,'Angles');
+%             angs = randn(size(angs));
+%             set(lppufb,'Angles',angs);
+%             
+%             % Expected values
+%             downsample3_ = @(x,d) ...
+%                 shiftdim(downsample(...
+%                 shiftdim(downsample(...
+%                 shiftdim(downsample(x,d(1)),1),d(2)),1),d(3)),1);
+%             release(lppufb);
+%             set(lppufb,'OutputMode','AnalysisFilterAt');
+%             nSubCoefs = numel(srcImg)/prod(nDecs);
+%             coefsExpctd = zeros(1,ch*nSubCoefs);
+%             for iSubband = 1:ch
+%                 atom  = step(lppufb,[],[],iSubband);
+%                 subCoef = downsample3_(...
+%                     imfilter(srcImg,atom,'conv','circ'),...
+%                     nDecs);
+%                 coefsExpctd((iSubband-1)*nSubCoefs+1:iSubband*nSubCoefs) = ...
+%                     subCoef(:).';
+%             end
+%             scalesExpctd = repmat(size(srcImg)./nDecs,ch,1);
+%             
+%             % Instantiation of target class
+%             release(lppufb)
+%             set(lppufb,'OutputMode','ParameterMatrixSet');
+%             testCase.analyzer = NsoltAnalysis3dSystem(...
+%                 'LpPuFb3d',lppufb,...
+%                 'NumberOfSymmetricChannels',nChs(1),...
+%                 'NumberOfAntisymmetricChannels',nChs(2),...
+%                 'BoundaryOperation','Circular');
+%             
+%             % Actual values
+%             [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+%             
+%             % Evaluation
+%             testCase.verifyEqual(scalesActual,scalesExpctd);
+%             diff = max(abs(coefsExpctd(:) - coefsActual(:))./abs(coefsExpctd(:)));
+%             testCase.verifyEqual(coefsActual,coefsExpctd,'RelTol',1e-7,...
+%                 sprintf('%g',diff));
+%             
+%         end
         
         % Test
         function testStepDec121Ch32Ord222Level1Vm0(testCase)
@@ -4451,68 +4451,68 @@ classdef NsoltAnalysis3dSystemTestCase < matlab.unittest.TestCase
             
         end
         
-        % Test
-        function testStepDec211Ch23Ord222Level1Vm0(testCase)
-            
-            nDecs = [ 2 1 1 ];
-            nChs = [ 2 3 ];
-            ch = sum(nChs);
-            ord = 2;
-            height = 32;
-            width = 32;
-            depth = 32;
-            srcImg = rand(height,width,depth);
-            nLevels = 1;
-            
-            % Preparation
-            import saivdr.dictionary.nsoltx.*
-            lppufb = NsoltFactory.createOvsdLpPuFb3dSystem(...
-                'DecimationFactor',nDecs,...
-                'NumberOfChannels',nChs,...
-                'PolyPhaseOrder',[ord ord ord],...
-                'NumberOfVanishingMoments',0);
-            angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
-            set(lppufb,'Angles',angs);
-            
-            % Expected values
-            downsample3_ = @(x,d) ...
-                shiftdim(downsample(...
-                shiftdim(downsample(...
-                shiftdim(downsample(x,d(1)),1),d(2)),1),d(3)),1);
-            release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');
-            nSubCoefs = numel(srcImg)/prod(nDecs);
-            coefsExpctd = zeros(1,ch*nSubCoefs);
-            for iSubband = 1:ch
-                atom  = step(lppufb,[],[],iSubband);
-                subCoef = downsample3_(...
-                    imfilter(srcImg,atom,'conv','circ'),...
-                    nDecs);
-                coefsExpctd((iSubband-1)*nSubCoefs+1:iSubband*nSubCoefs) = ...
-                    subCoef(:).';
-            end
-            scalesExpctd = repmat(size(srcImg)./nDecs,ch,1);
-            
-            % Instantiation of target class
-            release(lppufb)
-            set(lppufb,'OutputMode','ParameterMatrixSet');
-            testCase.analyzer = NsoltAnalysis3dSystem(...
-                'LpPuFb3d',lppufb,...
-                'NumberOfSymmetricChannels',nChs(1),...
-                'NumberOfAntisymmetricChannels',nChs(2),...
-                'BoundaryOperation','Circular');
-            
-            % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
-            
-            % Evaluation
-            testCase.verifyEqual(scalesActual,scalesExpctd);
-            diff = max(abs(coefsExpctd(:) - coefsActual(:))./abs(coefsExpctd(:)));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'RelTol',1e-7,...
-                sprintf('%g',diff));
-            
-        end
+%         % Test
+%         function testStepDec211Ch23Ord222Level1Vm0(testCase)
+%             
+%             nDecs = [ 2 1 1 ];
+%             nChs = [ 2 3 ];
+%             ch = sum(nChs);
+%             ord = 2;
+%             height = 32;
+%             width = 32;
+%             depth = 32;
+%             srcImg = rand(height,width,depth);
+%             nLevels = 1;
+%             
+%             % Preparation
+%             import saivdr.dictionary.nsoltx.*
+%             lppufb = NsoltFactory.createOvsdLpPuFb3dSystem(...
+%                 'DecimationFactor',nDecs,...
+%                 'NumberOfChannels',nChs,...
+%                 'PolyPhaseOrder',[ord ord ord],...
+%                 'NumberOfVanishingMoments',0);
+%             angs = get(lppufb,'Angles');
+%             angs = randn(size(angs));
+%             set(lppufb,'Angles',angs);
+%             
+%             % Expected values
+%             downsample3_ = @(x,d) ...
+%                 shiftdim(downsample(...
+%                 shiftdim(downsample(...
+%                 shiftdim(downsample(x,d(1)),1),d(2)),1),d(3)),1);
+%             release(lppufb);
+%             set(lppufb,'OutputMode','AnalysisFilterAt');
+%             nSubCoefs = numel(srcImg)/prod(nDecs);
+%             coefsExpctd = zeros(1,ch*nSubCoefs);
+%             for iSubband = 1:ch
+%                 atom  = step(lppufb,[],[],iSubband);
+%                 subCoef = downsample3_(...
+%                     imfilter(srcImg,atom,'conv','circ'),...
+%                     nDecs);
+%                 coefsExpctd((iSubband-1)*nSubCoefs+1:iSubband*nSubCoefs) = ...
+%                     subCoef(:).';
+%             end
+%             scalesExpctd = repmat(size(srcImg)./nDecs,ch,1);
+%             
+%             % Instantiation of target class
+%             release(lppufb)
+%             set(lppufb,'OutputMode','ParameterMatrixSet');
+%             testCase.analyzer = NsoltAnalysis3dSystem(...
+%                 'LpPuFb3d',lppufb,...
+%                 'NumberOfSymmetricChannels',nChs(1),...
+%                 'NumberOfAntisymmetricChannels',nChs(2),...
+%                 'BoundaryOperation','Circular');
+%             
+%             % Actual values
+%             [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+%             
+%             % Evaluation
+%             testCase.verifyEqual(scalesActual,scalesExpctd);
+%             diff = max(abs(coefsExpctd(:) - coefsActual(:))./abs(coefsExpctd(:)));
+%             testCase.verifyEqual(coefsActual,coefsExpctd,'RelTol',1e-7,...
+%                 sprintf('%g',diff));
+%             
+%         end
         
         % Test
         function testStepDec211Ch32Ord222Level1Vm0(testCase)

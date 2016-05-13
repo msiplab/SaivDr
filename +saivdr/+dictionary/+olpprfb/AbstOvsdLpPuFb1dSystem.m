@@ -136,9 +136,11 @@ classdef AbstOvsdLpPuFb1dSystem < matlab.System %#codegen
             elseif strcmp(obj.OutputMode,'SynthesisFilterAt')     
                 idx = varargin{3};
                 H = getAnalysisFilterBank_(obj);
+                H = conj(H);
                 output = flipud(H(:,idx));
             elseif strcmp(obj.OutputMode,'SynthesisFilters')     
-                H = getAnalysisFilterBank_(obj);          
+                H = getAnalysisFilterBank_(obj);
+                H = conj(H);
                 output = flip(H,1);
             else
                 output = [];
@@ -198,6 +200,7 @@ classdef AbstOvsdLpPuFb1dSystem < matlab.System %#codegen
                 dctCoef(iCoef) = 1;
                 basisVector = dctMtx.'*dctCoef;
                 coefs(iElm,:) = basisVector(:).';
+                coefs(iElm,:) = 1i*coefs(iElm,:);
                 iElm = iElm + 1;
             end
             value = coefs;

@@ -768,32 +768,32 @@ classdef OvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             end
         end
 
-        function testConstructorWithUnEqualPsPa(testCase)
-            
-            % Invalid input
-            decch = [ 6 2 4 ];
-            ord = 0;
-            
-            % Expected values
-            exceptionIdExpctd = 'SaivDr:IllegalArgumentException';
-            messageExpctd = 'ps and pa must be the same as each other.';
-            
-            % Instantiation of target class
-            try
-                import saivdr.dictionary.olpprfb.*
-                OvsdLpPuFb1dTypeIVm0System(...
-                    'DecimationFactor',decch(1),...
-                    'NumberOfChannels',decch(2:end),...
-                    'PolyPhaseOrder',ord);
-                testCase.verifyFail(sprintf('%s must be thrown.',...
-                    exceptionIdExpctd));
-            catch me
-                exceptionIdActual = me.identifier;
-                testCase.verifyEqual(exceptionIdActual, exceptionIdExpctd);
-                messageActual = me.message;
-                testCase.verifyEqual(messageActual, messageExpctd);
-            end
-        end
+%         function testConstructorWithUnEqualPsPa(testCase)
+%             
+%             % Invalid input
+%             decch = [ 6 2 4 ];
+%             ord = 0;
+%             
+%             % Expected values
+%             exceptionIdExpctd = 'SaivDr:IllegalArgumentException';
+%             messageExpctd = 'ps and pa must be the same as each other.';
+%             
+%             % Instantiation of target class
+%             try
+%                 import saivdr.dictionary.olpprfb.*
+%                 OvsdLpPuFb1dTypeIVm0System(...
+%                     'DecimationFactor',decch(1),...
+%                     'NumberOfChannels',decch(2:end),...
+%                     'PolyPhaseOrder',ord);
+%                 testCase.verifyFail(sprintf('%s must be thrown.',...
+%                     exceptionIdExpctd));
+%             catch me
+%                 exceptionIdActual = me.identifier;
+%                 testCase.verifyEqual(exceptionIdActual, exceptionIdExpctd);
+%                 messageActual = me.message;
+%                 testCase.verifyEqual(messageActual, messageExpctd);
+%             end
+%         end
 
         % Test for construction
         function testConstructorWithMusPosNeg(testCase)
