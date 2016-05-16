@@ -39,7 +39,7 @@ classdef ParameterMatrixSet < matlab.System %#codegen
         function obj = ParameterMatrixSet(varargin)
             setProperties(obj,nargin,varargin{:})
             mtxSzTab_ = obj.MatrixSizeTable;
-            obj.Coefficients = zeros(sum(prod(mtxSzTab_,2)),1);
+            obj.Coefficients = complex(zeros(sum(prod(mtxSzTab_,2)),1));
             nRows = size(mtxSzTab_,1);
             obj.indexSizeTable = zeros(nRows,3);
             cidx = 1;

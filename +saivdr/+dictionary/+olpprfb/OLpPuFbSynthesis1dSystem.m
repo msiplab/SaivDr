@@ -212,17 +212,17 @@ classdef OLpPuFbSynthesis1dSystem  < ...
             % Block IDCT
             if dec_ == 1
                 subSeq = arrayCoefs(1,:);
-            elseif dec_ == 2 
-                subSeq = zeros(1,2*subScale);
-                subCoef1 =  arrayCoefs(1,:);
-                subCoef2 = -arrayCoefs(ps+1,:);
-                %
-                subSeq(1:2:end) = (subCoef1+subCoef2)/sqrt(2);
-                subSeq(2:2:end) = (subCoef1-subCoef2)/sqrt(2);
+%             elseif dec_ == 2 
+%                 subSeq = zeros(1,2*subScale);
+%                 subCoef1 =  arrayCoefs(1,:);
+%                 subCoef2 = -arrayCoefs(ps+1,:);
+%                 %
+%                 subSeq(1:2:end) = (subCoef1+subCoef2)/sqrt(2);
+%                 subSeq(2:2:end) = (subCoef1-subCoef2)/sqrt(2);
             else 
                 mc = ceil(dec_/2);
                 mf = floor(dec_/2);
-                dctCoefs = zeros(dec_,size(arrayCoefs,2));
+                dctCoefs = complex(zeros(dec_,size(arrayCoefs,2)));
                 dctCoefs(1:2:end,:) =  arrayCoefs(1:mc,:);
                 dctCoefs(2:2:end,:) = -arrayCoefs(ps+1:ps+mf,:);
                 subSeq = reshape(idct(dctCoefs),[1 dec_*nBlks_]);

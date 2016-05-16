@@ -232,20 +232,20 @@ classdef OLpPuFbAnalysis1dSystem < ...
             end
 
             % Prepare array
-            arrayCoefs = zeros(nChs,nBlks_);
+            arrayCoefs = complex(zeros(nChs,nBlks_));
             
             % Block DCT
             if dec_ == 1 
                 arrayCoefs(1,:) = subSeq(:).';
-            elseif dec_ == 2 
-                subSeq1 = subSeq(1:2:end);
-                subSeq2 = subSeq(2:2:end);
-                %
-                subSeq1 = subSeq1(:).';
-                subSeq2 = subSeq2(:).';
-                %     
-                arrayCoefs(1,:)    = (subSeq1+subSeq2)/sqrt(2);
-                arrayCoefs(ps+1,:) = -(subSeq1-subSeq2)/sqrt(2);
+%             elseif dec_ == 2 
+%                 subSeq1 = subSeq(1:2:end);
+%                 subSeq2 = subSeq(2:2:end);
+%                 %
+%                 subSeq1 = subSeq1(:).';
+%                 subSeq2 = subSeq2(:).';
+%                 %     
+%                 arrayCoefs(1,:)    = (subSeq1+subSeq2)/sqrt(2);
+%                 arrayCoefs(ps+1,:) = -(subSeq1-subSeq2)/sqrt(2);
             else
                  mc = ceil(dec_/2);
                  mf = floor(dec_/2);

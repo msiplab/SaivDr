@@ -117,8 +117,9 @@ classdef AbstOvsdLpPuFb1dTypeISystem < ...
             end
 
             % Prepare ParameterMatrixSet
-            paramMtxSizeTab = ...
-                obj.NumberOfChannels(ChannelGroup.LOWER)*ones(obj.nStages+1,2);
+            %paramMtxSizeTab = ...
+            %    obj.NumberOfChannels(ChannelGroup.LOWER)*ones(obj.nStages+1,2);
+            paramMtxSizeTab = repmat(obj.NumberOfChannels(ChannelGroup.LOWER)*ones(2,2), obj.nStages, 1);
             obj.ParameterMatrixSet = ParameterMatrixSet(...
                 'MatrixSizeTable',paramMtxSizeTab);
 
@@ -128,7 +129,7 @@ classdef AbstOvsdLpPuFb1dTypeISystem < ...
             import saivdr.dictionary.nsoltx.ChannelGroup
             nChL = obj.NumberOfChannels(ChannelGroup.LOWER);
             nAngsPerStg = nChL*(nChL-1)/2;
-            sizeOfAngles = [nAngsPerStg obj.nStages+1];
+            sizeOfAngles = [2*nAngsPerStg obj.nStages];
             if isscalar(obj.Angles) && obj.Angles==0
                 obj.Angles = zeros(sizeOfAngles);
             end
@@ -146,10 +147,10 @@ classdef AbstOvsdLpPuFb1dTypeISystem < ...
         function updateMus_(obj)
             import saivdr.dictionary.nsoltx.ChannelGroup
             nChL = obj.NumberOfChannels(ChannelGroup.LOWER);
-            sizeOfMus = [ nChL obj.nStages+1 ];
+            sizeOfMus = [ 2*nChL obj.nStages ];
             if isscalar(obj.Mus) && obj.Mus==1
                 obj.Mus = -ones(sizeOfMus);
-                obj.Mus(:,1:2) = ones(size(obj.Mus,1),2);
+                obj.Mus(:,1) = ones(size(obj.Mus,1),1);
             end
             if size(obj.Mus,1) ~= sizeOfMus(1) || ...
                     size(obj.Mus,2) ~= sizeOfMus(2)
@@ -193,11 +194,12 @@ classdef AbstOvsdLpPuFb1dTypeISystem < ...
             if ord > 0
                 nShift = int32(dec);
                 for iOrd = 1:ord
-                    W = eye(hChs);
-                    %W = step(pmMtxSet_,[],iParamMtx);
-                    U = step(pmMtxSet_,[],iParamMtx);
-                    %U = step(pmMtxSet_,[],iParamMtx+1);
+                    %W = eye(hChs);
+                    W = step(pmMtxSet_,[],iParamMtx);
+                    %U = step(pmMtxSet_,[],iParamMtx);
+                    U = step(pmMtxSet_,[],iParamMtx+1);
                     angles = pi/4*ones(floor(hChs/2),1);
+                    %angles = step(pmMtxSet_,[],iParamMt+2);
                     if mexFlag_
                         E = mexFcn_(E, W, U, angles, hChs, nShift);
                     else
@@ -205,10 +207,11 @@ classdef AbstOvsdLpPuFb1dTypeISystem < ...
                         hObb = Order1BuildingBlockTypeI();
                         E = step(hObb, E, W, U, angles, hChs, nShift);
                     end
-                    iParamMtx = iParamMtx+1;
-                    %iParamMtx = iParamMtx+3;
+                    %iParamMtx = iParamMtx+1;
+                    iParamMtx = iParamMtx+2;
                 end
             end
+            %E = blkdiag(eye(hChs),-1i*eye(hChs))*E;
             value = E.';
         end
 

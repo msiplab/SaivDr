@@ -247,6 +247,7 @@ classdef AbstOvsdLpPuFb1dTypeIISystem < ...
                 len = dec*(ord+1);
             end
             %
+            E = blkdiag(eye(nChs(ChannelGroup.UPPER)),-1i*eye(nChs(ChannelGroup.LOWER)))*E;
             value = E.';
         end
 

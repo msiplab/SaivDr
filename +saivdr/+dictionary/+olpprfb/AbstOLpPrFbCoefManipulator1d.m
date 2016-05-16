@@ -190,7 +190,7 @@ classdef AbstOLpPrFbCoefManipulator1d < matlab.System %#codegen
             nElements = prod(dimension);
             endIdx = startIdx + nElements - 1;
             pmCoefs = obj.paramMtxCoefs(startIdx:endIdx);
-            value = zeros(dimension);
+            value = complex(zeros(dimension));
             nRows_ = dimension(1);
             for iRow = 1:nRows_
                 value(iRow,:) = pmCoefs(iRow:nRows_:end);

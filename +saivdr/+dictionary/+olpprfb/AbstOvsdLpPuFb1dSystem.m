@@ -186,7 +186,7 @@ classdef AbstOvsdLpPuFb1dSystem < matlab.System %#codegen
             nCoefs = obj.DecimationFactor;
             nElmBi = nCoefs;
             dctMtx = dctmtx(nCoefs);
-            coefs = zeros(nElmBi);
+            coefs = complex(zeros(nElmBi));
             iElm = 1; % E0.'= [ Bee Boo Boe Beo ] % Byx
             for iCoef = 1:2:nCoefs % y-e
                 dctCoef = zeros(nCoefs,1);
@@ -200,10 +200,9 @@ classdef AbstOvsdLpPuFb1dSystem < matlab.System %#codegen
                 dctCoef(iCoef) = 1;
                 basisVector = dctMtx.'*dctCoef;
                 coefs(iElm,:) = basisVector(:).';
-                coefs(iElm,:) = 1i*coefs(iElm,:);
                 iElm = iElm + 1;
             end
-            value = coefs;
+            value = blkdiag(eye(ceil(nElmBi/2)),1i*eye(floor(nElmBi/2)))*coefs;
         end
         
         function value = permuteCoefs_(~,arr_,phs_)
