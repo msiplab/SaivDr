@@ -235,23 +235,24 @@ classdef OLpPuFbAnalysis1dSystem < ...
             arrayCoefs = complex(zeros(nChs,nBlks_));
             
             % Block DCT
-            if dec_ == 1 
+            if dec_ == 1
                 arrayCoefs(1,:) = subSeq(:).';
-%             elseif dec_ == 2 
+%             elseif dec_ == 2
 %                 subSeq1 = subSeq(1:2:end);
 %                 subSeq2 = subSeq(2:2:end);
 %                 %
 %                 subSeq1 = subSeq1(:).';
 %                 subSeq2 = subSeq2(:).';
-%                 %     
+%                 %
 %                 arrayCoefs(1,:)    = (subSeq1+subSeq2)/sqrt(2);
 %                 arrayCoefs(ps+1,:) = -(subSeq1-subSeq2)/sqrt(2);
             else
-                 mc = ceil(dec_/2);
-                 mf = floor(dec_/2);
-                 dctCoefs = dct(reshape(subSeq,[dec_, nBlks_]));
-                 arrayCoefs(1:mc,:) = dctCoefs(1:2:end,:) ;
-                 arrayCoefs(ps+1:ps+mf,:) = -dctCoefs(2:2:end,:);
+                mc = ceil(dec_/2);
+                mf = floor(dec_/2);
+                %dctCoefs = dct(reshape(subSeq,[dec_, nBlks_]));
+                dctCoefs = hsdft_(obj, reshape(subSeq,[dec_, nBlks_]));
+                arrayCoefs(1:mc,:) = dctCoefs(1:mc,:) ;
+                arrayCoefs(ps+1:ps+mf,:) = dctCoefs(mc+1:end,:);
             end
             
             % Atom extension
@@ -260,7 +261,22 @@ classdef OLpPuFbAnalysis1dSystem < ...
             fpe = strcmp(obj.BoundaryOperation,'Circular');
             arrayCoefs = obj.atomExtFcn(arrayCoefs,subScale,pmCoefs,...
                 ord,fpe);
-        end        
+        end
+        
+        function value = hsdftmtx_(~, nDec) %Hermitian-Symmetric DFT matrix
+            w = exp(-2*pi*1i/nDec);
+            value = complex(zeros(nDec));
+            for u = 0:nDec-1
+                for x =0:nDec-1
+                    value(u+1,x+1) = w^(u*(x+0.5))/sqrt(nDec);
+                end
+            end
+        end
+        
+        function value = hsdft_(obj, X)
+            mtx = hsdftmtx_(obj,size(X,1));
+            value = mtx*X;
+        end
         
     end
 

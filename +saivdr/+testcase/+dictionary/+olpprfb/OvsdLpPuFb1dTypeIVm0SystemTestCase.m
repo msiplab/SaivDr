@@ -137,17 +137,12 @@ classdef OvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             
             % Check symmetry
             import matlab.unittest.constraints.IsLessThan;
-            coefEvn = coefActual(1:ceil(end/2),:);
-            coefDiff = coefEvn-fliplr(coefEvn);
+            coefDiff = coefActual(:,:)-fliplr(conj(coefActual(:,:)));
             coefDist = max(abs(coefDiff(:)));
-            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));            
-            coefOdd = coefActual(ceil(end/2)+1:end,:);
-            coefDiff = coefOdd+fliplr(coefOdd);
-            coefDist = max(abs(coefDiff(:)));
-            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));                        
+            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));                 
             
             % Check orthogonality
-            coefDist = norm((coefActual.'*coefActual)-eye(dimExpctd(2)))/sqrt(numel(coefActual));
+            coefDist = norm((coefActual'*coefActual)-eye(dimExpctd(2)))/sqrt(numel(coefActual));
             testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));
             
         end
@@ -207,22 +202,17 @@ classdef OvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             
             % Evaluation
             testCase.verifySize(coefActual,dimExpctd);
-            
+
             % Check symmetry
             import matlab.unittest.constraints.IsLessThan;
-            coefEvn = coefActual(1:ceil(end/2),:);
-            coefDiff = coefEvn-fliplr(coefEvn);
+            coefDiff = coefActual(:,:)-fliplr(conj(coefActual(:,:)));
             coefDist = max(abs(coefDiff(:)));
-            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));            
-            coefOdd = coefActual(ceil(end/2)+1:end,:);
-            coefDiff = coefOdd+fliplr(coefOdd);
-            coefDist = max(abs(coefDiff(:)));
-            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));                        
+            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));                             
             
             % Check tightness
             coefE = step(testCase.lppufb,[],[]);
             E = saivdr.dictionary.utility.PolyPhaseMatrix1d(coefE);
-            coefActual = double(E.'*E);
+            coefActual = double(E'*E);
             coefActual(1:nDec,1:nDec,ord+1) = ...
                 coefActual(1:nDec,1:nDec,ord+1) - eye(nDec);
             coefDist = max(abs(coefActual(:)));
@@ -259,19 +249,14 @@ classdef OvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             
             % Check symmetry
             import matlab.unittest.constraints.IsLessThan;
-            coefEvn = coefActual(1:ceil(end/2),:);
-            coefDiff = coefEvn-fliplr(coefEvn);
+            coefDiff = coefActual(:,:)-fliplr(conj(coefActual(:,:)));
             coefDist = max(abs(coefDiff(:)));
-            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));            
-            coefOdd = coefActual(ceil(end/2)+1:end,:);
-            coefDiff = coefOdd+fliplr(coefOdd);
-            coefDist = max(abs(coefDiff(:)));
-            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));                        
+            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));                               
             
             % Check tightness
             coefE = step(testCase.lppufb,[],[]);
             E = saivdr.dictionary.utility.PolyPhaseMatrix1d(coefE);
-            coefActual = double(E.'*E);
+            coefActual = double(E'*E);
             coefActual(1:nDec,1:nDec,ord+1) = ...
                 coefActual(1:nDec,1:nDec,ord+1) - eye(nDec);
             coefDist = max(abs(coefActual(:)));
@@ -305,22 +290,17 @@ classdef OvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             
             % Evaluation
             testCase.verifySize(coefActual,dimExpctd);
-            
+
             % Check symmetry
             import matlab.unittest.constraints.IsLessThan;
-            coefEvn = coefActual(1:ceil(end/2),:);
-            coefDiff = coefEvn-fliplr(coefEvn);
+            coefDiff = coefActual(:,:)-fliplr(conj(coefActual(:,:)));
             coefDist = max(abs(coefDiff(:)));
-            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));            
-            coefOdd = coefActual(ceil(end/2)+1:end,:);
-            coefDiff = coefOdd+fliplr(coefOdd);
-            coefDist = max(abs(coefDiff(:)));
-            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));                        
+            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));                           
             
             % Check tightness
             coefE = step(testCase.lppufb,[],[]);
             E = saivdr.dictionary.utility.PolyPhaseMatrix1d(coefE);
-            coefActual = double(E.'*E);
+            coefActual = double(E'*E);
             coefActual(1:nDec,1:nDec,ord+1) = ...
                 coefActual(1:nDec,1:nDec,ord+1) - eye(nDec);
             coefDist = max(abs(coefActual(:)));
@@ -354,22 +334,17 @@ classdef OvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             
             % Evaluation
             testCase.verifySize(coefActual,dimExpctd);
-            
+
             % Check symmetry
             import matlab.unittest.constraints.IsLessThan;
-            coefEvn = coefActual(1:ceil(end/2),:);
-            coefDiff = coefEvn-fliplr(coefEvn);
+            coefDiff = coefActual(:,:)-fliplr(conj(coefActual(:,:)));
             coefDist = max(abs(coefDiff(:)));
-            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));            
-            coefOdd = coefActual(ceil(end/2)+1:end,:);
-            coefDiff = coefOdd+fliplr(coefOdd);
-            coefDist = max(abs(coefDiff(:)));
-            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));                        
+            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));                           
             
             % Check tightness
             coefE = step(testCase.lppufb,[],[]);
             E = saivdr.dictionary.utility.PolyPhaseMatrix1d(coefE);
-            coefActual = double(E.'*E);
+            coefActual = double(E'*E);
             coefActual(1:nDec,1:nDec,ord+1) = ...
                 coefActual(1:nDec,1:nDec,ord+1) - eye(nDec);
             coefDist = max(abs(coefActual(:)));
@@ -399,20 +374,15 @@ classdef OvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             
             % Evaluation
             testCase.verifySize(coefActual,dimExpctd);
-            
+
             % Check symmetry
             import matlab.unittest.constraints.IsLessThan;
-            coefEvn = coefActual(1:ceil(end/2),:);
-            coefDiff = coefEvn-fliplr(coefEvn);
+            coefDiff = coefActual(:,:)-fliplr(conj(coefActual(:,:)));
             coefDist = max(abs(coefDiff(:)));
-            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));            
-            coefOdd = coefActual(ceil(end/2)+1:end,:);
-            coefDiff = coefOdd+fliplr(coefOdd);
-            coefDist = max(abs(coefDiff(:)));
-            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));                        
+            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));                       
             
             % Check orthogonality
-            coefDist = norm((coefActual.'*coefActual)-eye(dimExpctd(2)))/sqrt(numel(coefActual));
+            coefDist = norm((coefActual'*coefActual)-eye(dimExpctd(2)))/sqrt(numel(coefActual));
             testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));
             
         end
@@ -509,20 +479,15 @@ classdef OvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             
             % Evaluation
             testCase.verifySize(coefActual,dimExpctd);
-            
+
             % Check symmetry
             import matlab.unittest.constraints.IsLessThan;
-            coefEvn = coefActual(1:ceil(end/2),:);
-            coefDiff = coefEvn-fliplr(coefEvn);
+            coefDiff = coefActual(:,:)-fliplr(conj(coefActual(:,:)));
             coefDist = max(abs(coefDiff(:)));
-            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));            
-            coefOdd = coefActual(ceil(end/2)+1:end,:);
-            coefDiff = coefOdd+fliplr(coefOdd);
-            coefDist = max(abs(coefDiff(:)));
-            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));                        
+            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));                       
             
             % Check orthogonality
-            coefDist = norm((coefActual.'*coefActual)-eye(dimExpctd(2)))/sqrt(numel(coefActual));
+            coefDist = norm((coefActual'*coefActual)-eye(dimExpctd(2)))/sqrt(numel(coefActual));
             testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));
             
         end
@@ -551,20 +516,15 @@ classdef OvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
 
             % Evaluation
             testCase.verifySize(coefActual,dimExpctd);
-            
+
             % Check symmetry
             import matlab.unittest.constraints.IsLessThan;
-            coefEvn = coefActual(1:ceil(end/2),:);
-            coefDiff = coefEvn-fliplr(coefEvn);
+            coefDiff = coefActual(:,:)-fliplr(conj(coefActual(:,:)));
             coefDist = max(abs(coefDiff(:)));
-            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));            
-            coefOdd = coefActual(ceil(end/2)+1:end,:);
-            coefDiff = coefOdd+fliplr(coefOdd);
-            coefDist = max(abs(coefDiff(:)));
-            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));                        
+            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));                          
             
             % Check orthogonality
-            coefDist = norm((coefActual.'*coefActual)-eye(dimExpctd(2)))/sqrt(numel(coefActual));
+            coefDist = norm((coefActual'*coefActual)-eye(dimExpctd(2)))/sqrt(numel(coefActual));
             testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));
             
         end
@@ -593,20 +553,15 @@ classdef OvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             
             % Evaluation
             testCase.verifySize(coefActual,dimExpctd);
-            
+
             % Check symmetry
             import matlab.unittest.constraints.IsLessThan;
-            coefEvn = coefActual(1:ceil(end/2),:);
-            coefDiff = coefEvn-fliplr(coefEvn);
+            coefDiff = coefActual(:,:)-fliplr(conj(coefActual(:,:)));
             coefDist = max(abs(coefDiff(:)));
-            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));            
-            coefOdd = coefActual(ceil(end/2)+1:end,:);
-            coefDiff = coefOdd+fliplr(coefOdd);
-            coefDist = max(abs(coefDiff(:)));
-            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));                        
+            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));                              
             
             % Check orthogonality
-            coefDist = norm((coefActual.'*coefActual)-eye(dimExpctd(2)))/sqrt(numel(coefActual));
+            coefDist = norm((coefActual'*coefActual)-eye(dimExpctd(2)))/sqrt(numel(coefActual));
             testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));
             
         end
@@ -891,22 +846,17 @@ classdef OvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             
             % Evaluation
             testCase.verifySize(coefActual,dimExpctd);
-            
+
             % Check symmetry
             import matlab.unittest.constraints.IsLessThan;
-            coefEvn = coefActual(1:ceil(end/2),:);
-            coefDiff = coefEvn-fliplr(coefEvn);
+            coefDiff = coefActual(:,:)-fliplr(conj(coefActual(:,:)));
             coefDist = max(abs(coefDiff(:)));
-            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));            
-            coefOdd = coefActual(ceil(end/2)+1:end,:);
-            coefDiff = coefOdd+fliplr(coefOdd);
-            coefDist = max(abs(coefDiff(:)));
-            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));                        
+            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));                         
             
             % Check orthogonality
             coefE = step(testCase.lppufb,[],[]);
             E = saivdr.dictionary.utility.PolyPhaseMatrix1d(coefE);
-            coefActual = double(E.'*E);
+            coefActual = double(E'*E);
             coefActual(1:nDecs,1:nDecs,ord+1) = ...
                 coefActual(1:nDecs,1:nDecs,ord+1) - eye(nDecs);
             coefDist = norm(coefActual(:))/sqrt(numel(coefActual));
@@ -937,22 +887,17 @@ classdef OvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             
             % Evaluation
             testCase.verifySize(coefActual,dimExpctd);
-            
+
             % Check symmetry
             import matlab.unittest.constraints.IsLessThan;
-            coefEvn = coefActual(1:ceil(end/2),:);
-            coefDiff = coefEvn-fliplr(coefEvn);
+            coefDiff = coefActual(:,:)-fliplr(conj(coefActual(:,:)));
             coefDist = max(abs(coefDiff(:)));
-            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));            
-            coefOdd = coefActual(ceil(end/2)+1:end,:);
-            coefDiff = coefOdd+fliplr(coefOdd);
-            coefDist = max(abs(coefDiff(:)));
-            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));                        
+            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));                            
             
             % Check orthogonality
             coefE = step(testCase.lppufb,[],[]);
             E = saivdr.dictionary.utility.PolyPhaseMatrix1d(coefE);
-            coefActual = double(E.'*E);
+            coefActual = double(E'*E);
             coefActual(1:nDecs,1:nDecs,ord+1) = ...
                 coefActual(1:nDecs,1:nDecs,ord+1) - eye(nDecs);
             coefDist = norm(coefActual(:))/sqrt(numel(coefActual));
@@ -1020,22 +965,17 @@ classdef OvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             
             % Evaluation
             testCase.verifySize(coefActual,dimExpctd);
-            
+
             % Check symmetry
             import matlab.unittest.constraints.IsLessThan;
-            coefEvn = coefActual(1:ceil(end/2),:);
-            coefDiff = coefEvn-fliplr(coefEvn);
+            coefDiff = coefActual(:,:)-fliplr(conj(coefActual(:,:)));
             coefDist = max(abs(coefDiff(:)));
-            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));            
-            coefOdd = coefActual(ceil(end/2)+1:end,:);
-            coefDiff = coefOdd+fliplr(coefOdd);
-            coefDist = max(abs(coefDiff(:)));
-            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));                        
+            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));                            
             
             % Check orthogonality
             coefE = step(testCase.lppufb,[],[]);
             E = saivdr.dictionary.utility.PolyPhaseMatrix1d(coefE);
-            coefActual = double(E.'*E);
+            coefActual = double(E'*E);
             coefActual(1:nDecs,1:nDecs,ord+1) = ...
                 coefActual(1:nDecs,1:nDecs,ord+1) - eye(nDecs);
             coefDist = norm(coefActual(:))/sqrt(numel(coefActual));
@@ -1066,22 +1006,17 @@ classdef OvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             
             % Evaluation
             testCase.verifySize(coefActual,dimExpctd);
-            
+
             % Check symmetry
             import matlab.unittest.constraints.IsLessThan;
-            coefEvn = coefActual(1:ceil(end/2),:);
-            coefDiff = coefEvn-fliplr(coefEvn);
+            coefDiff = coefActual(:,:)-fliplr(conj(coefActual(:,:)));
             coefDist = max(abs(coefDiff(:)));
-            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));            
-            coefOdd = coefActual(ceil(end/2)+1:end,:);
-            coefDiff = coefOdd+fliplr(coefOdd);
-            coefDist = max(abs(coefDiff(:)));
-            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));                        
+            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));                         
             
             % Check orthogonality
             coefE = step(testCase.lppufb,[],[]);
             E = saivdr.dictionary.utility.PolyPhaseMatrix1d(coefE);
-            coefActual = double(E.'*E);
+            coefActual = double(E'*E);
             coefActual(1:nDecs,1:nDecs,ord+1) = ...
                 coefActual(1:nDecs,1:nDecs,ord+1) - eye(nDecs);
             coefDist = norm(coefActual(:))/sqrt(numel(coefActual));
@@ -1433,22 +1368,17 @@ classdef OvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             
             % Evaluation
             testCase.verifySize(coefActual,dimExpctd);
-            
+
             % Check symmetry
             import matlab.unittest.constraints.IsLessThan;
-            coefEvn = coefActual(1:ceil(end/2),:);
-            coefDiff = coefEvn-fliplr(coefEvn);
+            coefDiff = coefActual(:,:)-fliplr(conj(coefActual(:,:)));
             coefDist = max(abs(coefDiff(:)));
-            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));            
-            coefOdd = coefActual(ceil(end/2)+1:end,:);
-            coefDiff = coefOdd+fliplr(coefOdd);
-            coefDist = max(abs(coefDiff(:)));
-            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));                        
+            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));                            
             
             % Check orthogonality
             coefE = step(testCase.lppufb,[],[]);
             E = saivdr.dictionary.utility.PolyPhaseMatrix1d(coefE);
-            coefActual = double(E.'*E);
+            coefActual = double(E'*E);
             coefActual(1:nDecs,1:nDecs,ord+1) = ...
                 coefActual(1:nDecs,1:nDecs,ord+1) - eye(nDecs);
             coefDist = norm(coefActual(:))/sqrt(numel(coefActual));
@@ -1481,22 +1411,17 @@ classdef OvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             
             % Evaluation
             testCase.verifySize(coefActual,dimExpctd);
-            
+
             % Check symmetry
             import matlab.unittest.constraints.IsLessThan;
-            coefEvn = coefActual(1:ceil(end/2),:);
-            coefDiff = coefEvn-fliplr(coefEvn);
+            coefDiff = coefActual(:,:)-fliplr(conj(coefActual(:,:)));
             coefDist = max(abs(coefDiff(:)));
-            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));            
-            coefOdd = coefActual(ceil(end/2)+1:end,:);
-            coefDiff = coefOdd+fliplr(coefOdd);
-            coefDist = max(abs(coefDiff(:)));
-            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));                        
+            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));                           
             
             % Check tightness
             coefE = step(testCase.lppufb,[],[]);
             E = saivdr.dictionary.utility.PolyPhaseMatrix1d(coefE);
-            coefActual = double(E.'*E);
+            coefActual = double(E'*E);
             coefActual(1:nDec,1:nDec,ord+1) = ...
                 coefActual(1:nDec,1:nDec,ord+1) - eye(nDec);
             coefDist = max(abs(coefActual(:)));
@@ -1559,22 +1484,17 @@ classdef OvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             
             % Evaluation
             testCase.verifySize(coefActual,dimExpctd);
-            
+
             % Check symmetry
             import matlab.unittest.constraints.IsLessThan;
-            coefEvn = coefActual(1:ceil(end/2),:);
-            coefDiff = coefEvn-fliplr(coefEvn);
+            coefDiff = coefActual(:,:)-fliplr(conj(coefActual(:,:)));
             coefDist = max(abs(coefDiff(:)));
-            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));            
-            coefOdd = coefActual(ceil(end/2)+1:end,:);
-            coefDiff = coefOdd+fliplr(coefOdd);
-            coefDist = max(abs(coefDiff(:)));
-            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));                        
+            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));                              
             
             % Check orthogonality
             coefE = step(testCase.lppufb,[],[]);
             E = saivdr.dictionary.utility.PolyPhaseMatrix1d(coefE);
-            coefActual = double(E.'*E);
+            coefActual = double(E'*E);
             coefActual(1:nDecs,1:nDecs,ord+1) = ...
                 coefActual(1:nDecs,1:nDecs,ord+1) - eye(nDecs);
             coefDist = norm(coefActual(:))/sqrt(numel(coefActual));
@@ -1641,22 +1561,17 @@ classdef OvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             
             % Evaluation
             testCase.verifySize(coefActual,dimExpctd);
-            
+
             % Check symmetry
             import matlab.unittest.constraints.IsLessThan;
-            coefEvn = coefActual(1:ceil(end/2),:);
-            coefDiff = coefEvn-fliplr(coefEvn);
+            coefDiff = coefActual(:,:)-fliplr(conj(coefActual(:,:)));
             coefDist = max(abs(coefDiff(:)));
-            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));            
-            coefOdd = coefActual(ceil(end/2)+1:end,:);
-            coefDiff = coefOdd+fliplr(coefOdd);
-            coefDist = max(abs(coefDiff(:)));
-            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));                        
+            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));                           
             
             % Check orthogonality
             coefE = step(testCase.lppufb,[],[]);
             E = saivdr.dictionary.utility.PolyPhaseMatrix1d(coefE);
-            coefActual = double(E.'*E);
+            coefActual = double(E'*E);
             coefActual(1:nDecs,1:nDecs,ord+1) = ...
                 coefActual(1:nDecs,1:nDecs,ord+1) - eye(nDecs);
             coefDist = norm(coefActual(:))/sqrt(numel(coefActual));
@@ -1721,22 +1636,17 @@ classdef OvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             
             % Evaluation
             testCase.verifySize(coefActual,dimExpctd);
-            
+
             % Check symmetry
             import matlab.unittest.constraints.IsLessThan;
-            coefEvn = coefActual(1:ceil(end/2),:);
-            coefDiff = coefEvn-fliplr(coefEvn);
+            coefDiff = coefActual(:,:)-fliplr(conj(coefActual(:,:)));
             coefDist = max(abs(coefDiff(:)));
-            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));            
-            coefOdd = coefActual(ceil(end/2)+1:end,:);
-            coefDiff = coefOdd+fliplr(coefOdd);
-            coefDist = max(abs(coefDiff(:)));
-            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));                        
+            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));                              
             
             % Check orthogonality
             coefE = step(testCase.lppufb,[],[]);
             E = saivdr.dictionary.utility.PolyPhaseMatrix1d(coefE);
-            coefActual = double(E.'*E);
+            coefActual = double(E'*E);
             coefActual(1:nDecs,1:nDecs,ord+1) = ...
                 coefActual(1:nDecs,1:nDecs,ord+1) - eye(nDecs);
             coefDist = norm(coefActual(:))/sqrt(numel(coefActual));
@@ -1799,22 +1709,17 @@ classdef OvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             
             % Evaluation
             testCase.verifySize(coefActual,dimExpctd);
-            
+
             % Check symmetry
             import matlab.unittest.constraints.IsLessThan;
-            coefEvn = coefActual(1:ceil(end/2),:);
-            coefDiff = coefEvn-fliplr(coefEvn);
-            coefDist = max(abs(coefDiff(:)));
-            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));            
-            coefOdd = coefActual(ceil(end/2)+1:end,:);
-            coefDiff = coefOdd+fliplr(coefOdd);
+            coefDiff = coefActual(:,:)-fliplr(conj(coefActual(:,:)));
             coefDist = max(abs(coefDiff(:)));
             testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));                        
             
             % Check orthogonality
             coefE = step(testCase.lppufb,[],[]);
             E = saivdr.dictionary.utility.PolyPhaseMatrix1d(coefE);
-            coefActual = double(E.'*E);
+            coefActual = double(E'*E);
             coefActual(1:nDecs,1:nDecs,ord+1) = ...
                 coefActual(1:nDecs,1:nDecs,ord+1) - eye(nDecs);
             coefDist = norm(coefActual(:))/sqrt(numel(coefActual));
@@ -1881,22 +1786,17 @@ classdef OvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             
             % Evaluation
             testCase.verifySize(coefActual,dimExpctd);
-            
+
             % Check symmetry
             import matlab.unittest.constraints.IsLessThan;
-            coefEvn = coefActual(1:ceil(end/2),:);
-            coefDiff = coefEvn-fliplr(coefEvn);
+            coefDiff = coefActual(:,:)-fliplr(conj(coefActual(:,:)));
             coefDist = max(abs(coefDiff(:)));
-            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));            
-            coefOdd = coefActual(ceil(end/2)+1:end,:);
-            coefDiff = coefOdd+fliplr(coefOdd);
-            coefDist = max(abs(coefDiff(:)));
-            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));                        
+            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));                            
             
             % Check orthogonality
             coefE = step(testCase.lppufb,[],[]);
             E = saivdr.dictionary.utility.PolyPhaseMatrix1d(coefE);
-            coefActual = double(E.'*E);
+            coefActual = double(E'*E);
             coefActual(1:nDecs,1:nDecs,ord+1) = ...
                 coefActual(1:nDecs,1:nDecs,ord+1) - eye(nDecs);
             coefDist = norm(coefActual(:))/sqrt(numel(coefActual));
@@ -1929,22 +1829,17 @@ classdef OvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             
             % Evaluation
             testCase.verifySize(coefActual,dimExpctd);
-            
+
             % Check symmetry
             import matlab.unittest.constraints.IsLessThan;
-            coefEvn = coefActual(1:ceil(end/2),:);
-            coefDiff = coefEvn-fliplr(coefEvn);
+            coefDiff = coefActual(:,:)-fliplr(conj(coefActual(:,:)));
             coefDist = max(abs(coefDiff(:)));
-            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));            
-            coefOdd = coefActual(ceil(end/2)+1:end,:);
-            coefDiff = coefOdd+fliplr(coefOdd);
-            coefDist = max(abs(coefDiff(:)));
-            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));                        
+            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));                     
             
             % Check tightness
             coefE = step(testCase.lppufb,[],[]);
             E = saivdr.dictionary.utility.PolyPhaseMatrix1d(coefE);
-            coefActual = double(E.'*E);
+            coefActual = double(E'*E);
             coefActual(1:nDec,1:nDec,ord+1) = ...
                 coefActual(1:nDec,1:nDec,ord+1) - eye(nDec);
             coefDist = max(abs(coefActual(:)));
@@ -1977,22 +1872,17 @@ classdef OvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             
             % Evaluation
             testCase.verifySize(coefActual,dimExpctd);
-            
+
             % Check symmetry
             import matlab.unittest.constraints.IsLessThan;
-            coefEvn = coefActual(1:ceil(end/2),:);
-            coefDiff = coefEvn-fliplr(coefEvn);
+            coefDiff = coefActual(:,:)-fliplr(conj(coefActual(:,:)));
             coefDist = max(abs(coefDiff(:)));
-            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));            
-            coefOdd = coefActual(ceil(end/2)+1:end,:);
-            coefDiff = coefOdd+fliplr(coefOdd);
-            coefDist = max(abs(coefDiff(:)));
-            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));                        
+            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));                          
             
             % Check tightness
             coefE = step(testCase.lppufb,[],[]);
             E = saivdr.dictionary.utility.PolyPhaseMatrix1d(coefE);
-            coefActual = double(E.'*E);
+            coefActual = double(E'*E);
             coefActual(1:nDec,1:nDec,ord+1) = ...
                 coefActual(1:nDec,1:nDec,ord+1) - eye(nDec);
             coefDist = max(abs(coefActual(:)));
@@ -2025,22 +1915,17 @@ classdef OvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             
             % Evaluation
             testCase.verifySize(coefActual,dimExpctd);
-            
+
             % Check symmetry
             import matlab.unittest.constraints.IsLessThan;
-            coefEvn = coefActual(1:ceil(end/2),:);
-            coefDiff = coefEvn-fliplr(coefEvn);
+            coefDiff = coefActual(:,:)-fliplr(conj(coefActual(:,:)));
             coefDist = max(abs(coefDiff(:)));
-            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));            
-            coefOdd = coefActual(ceil(end/2)+1:end,:);
-            coefDiff = coefOdd+fliplr(coefOdd);
-            coefDist = max(abs(coefDiff(:)));
-            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));                        
+            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));                           
             
             % Check tightness
             coefE = step(testCase.lppufb,[],[]);
             E = saivdr.dictionary.utility.PolyPhaseMatrix1d(coefE);
-            coefActual = double(E.'*E);
+            coefActual = double(E'*E);
             coefActual(1:nDec,1:nDec,ord+1) = ...
                 coefActual(1:nDec,1:nDec,ord+1) - eye(nDec);
             coefDist = max(abs(coefActual(:)));
@@ -2073,22 +1958,17 @@ classdef OvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             
             % Evaluation
             testCase.verifySize(coefActual,dimExpctd);
-            
+
             % Check symmetry
             import matlab.unittest.constraints.IsLessThan;
-            coefEvn = coefActual(1:ceil(end/2),:);
-            coefDiff = coefEvn-fliplr(coefEvn);
+            coefDiff = coefActual(:,:)-fliplr(conj(coefActual(:,:)));
             coefDist = max(abs(coefDiff(:)));
-            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));            
-            coefOdd = coefActual(ceil(end/2)+1:end,:);
-            coefDiff = coefOdd+fliplr(coefOdd);
-            coefDist = max(abs(coefDiff(:)));
-            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));                        
+            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));                         
             
             % Check tightness
             coefE = step(testCase.lppufb,[],[]);
             E = saivdr.dictionary.utility.PolyPhaseMatrix1d(coefE);
-            coefActual = double(E.'*E);
+            coefActual = double(E'*E);
             coefActual(1:nDec,1:nDec,ord+1) = ...
                 coefActual(1:nDec,1:nDec,ord+1) - eye(nDec);
             coefDist = max(abs(coefActual(:)));
@@ -2121,22 +2001,17 @@ classdef OvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             
             % Evaluation
             testCase.verifySize(coefActual,dimExpctd);
-            
+
             % Check symmetry
             import matlab.unittest.constraints.IsLessThan;
-            coefEvn = coefActual(1:ceil(end/2),:);
-            coefDiff = coefEvn-fliplr(coefEvn);
+            coefDiff = coefActual(:,:)-fliplr(conj(coefActual(:,:)));
             coefDist = max(abs(coefDiff(:)));
-            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));            
-            coefOdd = coefActual(ceil(end/2)+1:end,:);
-            coefDiff = coefOdd+fliplr(coefOdd);
-            coefDist = max(abs(coefDiff(:)));
-            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));                        
+            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));                             
             
             % Check tightness
             coefE = step(testCase.lppufb,[],[]);
             E = saivdr.dictionary.utility.PolyPhaseMatrix1d(coefE);
-            coefActual = double(E.'*E);
+            coefActual = double(E'*E);
             coefActual(1:nDec,1:nDec,ord+1) = ...
                 coefActual(1:nDec,1:nDec,ord+1) - eye(nDec);
             coefDist = max(abs(coefActual(:)));
