@@ -254,7 +254,7 @@ classdef AbstOvsdLpPuFb2dTypeISystem < ...
                 end
                 lenY = decY*(ordY+1);
 
-                E = ipermuteCoefs_(obj,E,lenY);
+                %E = ipermuteCoefs_(obj,E,lenY);
             end
             %
             nSubbands = size(E,1);

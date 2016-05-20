@@ -195,45 +195,18 @@ classdef AbstOvsdLpPuFb2dSystem < matlab.System %#codegen
             nRows = obj.DecimationFactor(Direction.VERTICAL);
             nCols = obj.DecimationFactor(Direction.HORIZONTAL);
             nElmBi = nRows*nCols;
-            dctY = dctmtx(nRows);
-            dctX = dctmtx(nCols);
+            %dctY = dctmtx(nRows);
+            %dctX = dctmtx(nCols);
+            hsdftY = hsdftmtx_(obj, nRows);
+            hsdftX = hsdftmtx_(obj, nRows);
             coefs = complex(zeros(nElmBi));
-            iElm = 1; % E0.'= [ Bee Boo Boe Beo ] % Byx
-            for iCol = 1:2:nCols % x-e
-                for iRow = 1:2:nRows % y-e
-                    dctCoef = zeros(nRows,nCols);
-                    dctCoef(iRow,iCol) = 1;
-                    basisImage = dctY.'*dctCoef*dctX;
+            iElm = 1;
+            for iCol = 1:nCols % x-e
+                for iRow = 1:nRows % y-e
+                    hsdftCoef = zeros(nRows,nCols);
+                    hsdftCoef(iRow,iCol) = 1;
+                    basisImage = hsdftY.'*hsdftCoef*hsdftX;
                     coefs(iElm,:) = basisImage(:).';
-                    iElm = iElm + 1;
-                end
-            end
-            for iCol = 2:2:nCols % x-o
-                for iRow = 2:2:nRows % y-e
-                    dctCoef = zeros(nRows,nCols);
-                    dctCoef(iRow,iCol) = 1;
-                    basisImage = dctY.'*dctCoef*dctX;
-                    coefs(iElm,:) = basisImage(:).';
-                    iElm = iElm + 1;
-                end
-            end
-            for iCol = 1:2:nCols % x-e
-                for iRow = 2:2:nRows % y-o
-                    dctCoef = zeros(nRows,nCols);
-                    dctCoef(iRow,iCol) = 1;
-                    basisImage = dctY.'*dctCoef*dctX;
-                    coefs(iElm,:) = -basisImage(:).';
-                    coefs(iElm,:) = 1i*coefs(iElm,:);
-                    iElm = iElm + 1;
-                end
-            end
-            for iCol = 2:2:nCols % x-o
-                for iRow = 1:2:nRows % y-e
-                    dctCoef = zeros(nRows,nCols);
-                    dctCoef(iRow,iCol) = 1;
-                    basisImage = dctY.'*dctCoef*dctX;
-                    coefs(iElm,:) = -basisImage(:).';
-                    coefs(iElm,:) = 1i*coefs(iElm,:);
                     iElm = iElm + 1;
                 end
             end
@@ -254,6 +227,16 @@ classdef AbstOvsdLpPuFb2dSystem < matlab.System %#codegen
             value = zeros(size(arr_));
             for idx = 0:phs_-1
                 value(:,idx+1:phs_:end) = arr_(:,idx*len_+1:(idx+1)*len_);
+            end
+        end
+        
+        function value = hsdftmtx_(~, nDec) %Hermitian-Symmetric DFT matrix
+            w = exp(-2*pi*1i/nDec);
+            value = complex(zeros(nDec));
+            for u = 0:nDec-1
+                for x =0:nDec-1
+                    value(u+1,x+1) = w^(u*(x+0.5))/sqrt(nDec);
+                end
             end
         end
 

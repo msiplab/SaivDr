@@ -287,135 +287,18 @@ classdef AbstOvsdLpPuFb3dSystem < matlab.System %#codegen
             nElmBi = nRows*nCols*nDeps;
             coefs = complex(zeros(nElmBi));
             iElm = 1;
-            % E0.'= [ Beee Beoo Booe Boeo Beeo Beoe Booo Boee ] % Byxz
-            % Beee
-            for iRow = 1:2:nRows % y-e
-                for iCol = 1:2:nCols % x-e
-                    dctCoefYX = zeros(nRows,nCols);
-                    dctCoefYX(iRow,iCol) = 1;
-                    basisYX = idct2(dctCoefYX);
-                    for iDep = 1:2:nDeps % z-e
-                        dctCoefZ = zeros(nDeps,1);
-                        dctCoefZ(iDep) = 1;
-                        basisZ  = permute(idct(dctCoefZ),[2 3 1]);
+            for iRow = 1:nRows
+                for iCol = 1:nCols
+                    hsdftCoefYX = zeros(nRows,nCols);
+                    hsdftCoefYX(iRow,iCol) = 1;
+                    basisYX = ihsdft2_(obj,hsdftCoefYX);
+                    for iDep = 1:nDeps
+                        hsdftCoefZ = zeros(nDeps,1);
+                        hsdftCoefZ(iDep) = 1;
+                        %basisZ  = permute(idct(hsdftCoefZ),[2 3 1]);
+                        basisZ = ihsdft_(obj,hsdftCoefZ);
                         basisVd = convn(basisZ,basisYX);
                         coefs(iElm,:) = basisVd(:).';
-                        iElm = iElm + 1;
-                    end
-                end
-            end
-            % Beoo
-            for iRow = 1:2:nRows % y-e
-                for iCol = 2:2:nCols % x-o
-                    dctCoefYX = zeros(nRows,nCols);
-                    dctCoefYX(iRow,iCol) = 1;
-                    basisYX = idct2(dctCoefYX);
-                    for iDep = 2:2:nDeps % z-o
-                        dctCoefZ = zeros(nDeps,1);
-                        dctCoefZ(iDep) = 1;
-                        basisZ  = permute(idct(dctCoefZ),[2 3 1]);
-                        basisVd = convn(basisZ,basisYX);
-                        coefs(iElm,:) = basisVd(:).';
-                        iElm = iElm + 1;
-                    end
-                end
-            end
-            %Booe
-            for iRow = 2:2:nRows % y-o
-                for iCol = 2:2:nCols % x-o
-                    dctCoefYX = zeros(nRows,nCols);
-                    dctCoefYX(iRow,iCol) = 1;
-                    basisYX = idct2(dctCoefYX);
-                    for iDep = 1:2:nDeps % z-e
-                        dctCoefZ = zeros(nDeps,1);
-                        dctCoefZ(iDep) = 1;
-                        basisZ  = permute(idct(dctCoefZ),[2 3 1]);
-                        basisVd = convn(basisZ,basisYX);
-                        coefs(iElm,:) = basisVd(:).';
-                        iElm = iElm + 1;
-                    end
-                end
-            end
-            %Boeo
-            for iRow = 2:2:nRows % y-o
-                for iCol = 1:2:nCols % x-e
-                    dctCoefYX = zeros(nRows,nCols);
-                    dctCoefYX(iRow,iCol) = 1;
-                    basisYX = idct2(dctCoefYX);
-                    for iDep = 2:2:nDeps % z-o
-                        dctCoefZ = zeros(nDeps,1);
-                        dctCoefZ(iDep) = 1;
-                        basisZ  = permute(idct(dctCoefZ),[2 3 1]);
-                        basisVd = convn(basisZ,basisYX);
-                        coefs(iElm,:) = basisVd(:).';
-                        iElm = iElm + 1;
-                    end
-                end
-            end
-            %Beeo
-            for iRow = 1:2:nRows % y-e
-                for iCol = 1:2:nCols % x-e
-                    dctCoefYX = zeros(nRows,nCols);
-                    dctCoefYX(iRow,iCol) = 1;
-                    basisYX = idct2(dctCoefYX);
-                    for iDep = 2:2:nDeps % z-o
-                        dctCoefZ = zeros(nDeps,1);
-                        dctCoefZ(iDep) = 1;
-                        basisZ  = permute(idct(dctCoefZ),[2 3 1]);
-                        basisVd = convn(basisZ,basisYX);
-                        coefs(iElm,:) = basisVd(:).';
-                        coefs(iElm,:) = 1i*coefs(iElm,:);
-                        iElm = iElm + 1;
-                    end
-                end
-            end
-            %Beoe
-            for iRow = 1:2:nRows % y-e
-                for iCol = 2:2:nCols % x-o
-                    dctCoefYX = zeros(nRows,nCols);
-                    dctCoefYX(iRow,iCol) = 1;
-                    basisYX = idct2(dctCoefYX);
-                    for iDep = 1:2:nDeps % z-e
-                        dctCoefZ = zeros(nDeps,1);
-                        dctCoefZ(iDep) = 1;
-                        basisZ  = permute(idct(dctCoefZ),[2 3 1]);
-                        basisVd = convn(basisZ,basisYX);
-                        coefs(iElm,:) = basisVd(:).';
-                        coefs(iElm,:) = 1i*coefs(iElm,:);
-                        iElm = iElm + 1;
-                    end
-                end
-            end
-            %Booo
-            for iRow = 2:2:nRows % y-o
-                for iCol = 2:2:nCols % x-o
-                    dctCoefYX = zeros(nRows,nCols);
-                    dctCoefYX(iRow,iCol) = 1;
-                    basisYX = idct2(dctCoefYX);
-                    for iDep = 2:2:nDeps % z-o
-                        dctCoefZ = zeros(nDeps,1);
-                        dctCoefZ(iDep) = 1;
-                        basisZ  = permute(idct(dctCoefZ),[2 3 1]);
-                        basisVd = convn(basisZ,basisYX);
-                        coefs(iElm,:) = basisVd(:).';
-                        coefs(iElm,:) = 1i*coefs(iElm,:);
-                        iElm = iElm + 1;
-                    end
-                end
-            end
-            %Boee
-            for iRow = 2:2:nRows % y-o
-                for iCol = 1:2:nCols % x-e
-                    dctCoefYX = zeros(nRows,nCols);
-                    dctCoefYX(iRow,iCol) = 1;
-                    basisYX = idct2(dctCoefYX);
-                    for iDep = 1:2:nDeps % z-e
-                        dctCoefZ = zeros(nDeps,1);
-                        dctCoefZ(iDep) = 1;
-                        basisZ  = permute(idct(dctCoefZ),[2 3 1]);
-                        basisVd = convn(basisZ,basisYX);
-                        coefs(iElm,:) = basisVd(:).';
-                        coefs(iElm,:) = 1i*coefs(iElm,:);
                         iElm = iElm + 1;
                     end
                 end
@@ -430,6 +313,27 @@ classdef AbstOvsdLpPuFb3dSystem < matlab.System %#codegen
             for idx = 0:phs_-1
                 value(:,idx*len_+1:(idx+1)*len_) = arr_(:,idx+1:phs_:end);
             end
+        end
+        
+        function value = hsdftmtx_(~, nDec) %Hermitian-Symmetric DFT matrix
+            w = exp(-2*pi*1i/nDec);
+            value = complex(zeros(nDec));
+            for u = 0:nDec-1
+                for x =0:nDec-1
+                    value(u+1,x+1) = w^(u*(x+0.5))/sqrt(nDec);
+                end
+            end
+        end
+        
+        function value = ihsdft_(~, X)
+            value = hsdftmtx_(obj, len(X))'*X;
+        end
+        
+        function value = ihsdft2_(~, X)
+            [lenU, lenV] = size(X);
+            ihsdftU = hsdftmtx_(obj, lenU)';
+            ihsdftV = hsdftmtx_(obj, lenV)';
+            value = (ihsdftV*((ihsdftU*X).')).';
         end
 
     end

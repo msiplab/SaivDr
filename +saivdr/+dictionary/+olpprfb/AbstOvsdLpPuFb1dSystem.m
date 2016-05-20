@@ -185,24 +185,17 @@ classdef AbstOvsdLpPuFb1dSystem < matlab.System %#codegen
         function value = getMatrixE0_(obj)
             nCoefs = obj.DecimationFactor;
             nElmBi = nCoefs;
-            dctMtx = dctmtx(nCoefs);
+            hsdftMtx = hsdftmtx_(obj, nCoefs);
             coefs = complex(zeros(nElmBi));
             iElm = 1; % E0.'= [ Bee Boo Boe Beo ] % Byx
-            for iCoef = 1:2:nCoefs % y-e
-                dctCoef = zeros(nCoefs,1);
-                dctCoef(iCoef) = 1;
-                basisVector = dctMtx.'*dctCoef;
+            for iCoef = 1:nCoefs % y-e
+                hsdftCoef = complex(zeros(nCoefs,1));
+                hsdftCoef(iCoef) = 1;
+                basisVector = hsdftMtx.'*hsdftCoef;
                 coefs(iElm,:) = basisVector(:).';
                 iElm = iElm + 1;
             end
-            for iCoef = 2:2:nCoefs % y-e
-                dctCoef = zeros(nCoefs,1);
-                dctCoef(iCoef) = 1;
-                basisVector = dctMtx.'*dctCoef;
-                coefs(iElm,:) = basisVector(:).';
-                iElm = iElm + 1;
-            end
-            value = blkdiag(eye(ceil(nElmBi/2)),1i*eye(floor(nElmBi/2)))*coefs;
+            value = coefs;
         end
         
         function value = permuteCoefs_(~,arr_,phs_)
@@ -218,6 +211,16 @@ classdef AbstOvsdLpPuFb1dSystem < matlab.System %#codegen
             value = zeros(size(arr_));
             for idx = 0:phs_-1
                 value(:,idx+1:phs_:end) = arr_(:,idx*len_+1:(idx+1)*len_);
+            end
+        end
+        
+        function value = hsdftmtx_(~, nDec) %Hermitian-Symmetric DFT matrix
+            w = exp(-2*pi*1i/nDec);
+            value = complex(zeros(nDec));
+            for u = 0:nDec-1
+                for x =0:nDec-1
+                    value(u+1,x+1) = w^(u*(x+0.5))/sqrt(nDec);
+                end
             end
         end
         

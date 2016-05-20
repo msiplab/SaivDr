@@ -50,12 +50,12 @@ if isempty(task) || task.ID == 1
             maxNCfs = 518400;
             %
             arrayCoefs = coder.typeof(complex(0),[(2*fhChs+1) maxNCfs],[0 1]); %#ok
-            paramMtxHW = coder.typeof(double(0),(fhChs+1)*[1 1],[0 0]);
-            paramMtxHU = coder.typeof(double(0),(fhChs+1)*[1 1],[0 0]);
-            paramAngles2 = coder.typeof(double(0),[floor(fhChs/2),1],[0 0]);
+            paramMtxHW = coder.typeof(double(0),(fhChs+1)*[1 1],[0 0]); %#ok
+            paramMtxHU = coder.typeof(double(0),(fhChs+1)*[1 1],[0 0]); %#ok
+            paramAngles2 = coder.typeof(double(0),[floor(fhChs/2),1],[0 0]); %#ok
             paramMtxW = coder.typeof(double(0),fhChs*[1 1],[0 0]); %#ok
             paramMtxU = coder.typeof(double(0),fhChs*[1 1],[0 0]); %#ok
-            paramAngles1 = coder.typeof(double(0),[floor(fhChs/2),1],[0 0]);
+            paramAngles1 = coder.typeof(double(0),[floor(fhChs/2),1],[0 0]); %#ok
             constP = coder.Constant(fhChs); %#ok
             nshift = coder.typeof(int32(0),[1 1],[0 0]); %#ok
             % build mex

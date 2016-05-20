@@ -1,4 +1,4 @@
-classdef Order1BuildingBlockTypeI < matlab.System  %#codegen
+classdef Order1BuildingBlockTypeI < saivdr.dictionary.nsoltx.mexsrcs.AbstBuildingBlock  %#codegen
     %ORDER1BUILDINGBLOCKTYPEI  Type-I building block with order 1
     %
     % SVN identifier:
@@ -18,37 +18,16 @@ classdef Order1BuildingBlockTypeI < matlab.System  %#codegen
     % LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627
     %
 
-    properties (Access=protected,Nontunable)
-        nHalfChannels
-        nChannels
-        I
-    end
-
     methods (Access = protected)
         function setupImpl(obj,~,~,~,~,p,~)
             obj.nHalfChannels = p;
-            obj.nChannels     = 2*p;
             obj.I             = eye(p);
         end
 
 	    function output = stepImpl(obj,input,mtxW,mtxU,angles,~,nshift)
             R = blkdiag(mtxW,mtxU);
-            hB = saivdr.dictionary.nsoltx.mexsrcs.fcn_build_butterfly_mtx(obj.nChannels, angles);
-            output = R*processQ_(obj,hB,input,nshift);
+            output = R*processQ_(obj,angles,input,nshift);
         end
     end
 
-    methods (Access = private)
-
-        function value = processQ_(obj,B,x,nZ_)
-            hChs = obj.nHalfChannels;
-            nChs = obj.nChannels;
-            nLen = size(x,2);
-            x = B'*x;
-            value = complex(zeros([nChs nLen+nZ_]));
-            value(1:hChs,1:nLen) = x(1:hChs,:);
-            value(hChs+1:end,nZ_+1:end) = x(hChs+1:end,:);
-            value = B*value;
-        end
-    end
 end

@@ -240,14 +240,14 @@ classdef AbstOvsdLpPuFb1dTypeIISystem < ...
                     else
                         import saivdr.dictionary.nsoltx.mexsrcs.Order2BuildingBlockTypeII
                         hObb = Order2BuildingBlockTypeII();
-                        E = step(hObb,E, hW, hU, angles2, W, U, angles1, floor(sum(nChs)/2), nShift);
+                        E = step(hObb, E, hW, hU, angles2, W, U, angles1, floor(sum(nChs)/2), nShift);
                     end
                     iParamMtx = iParamMtx+2;
                 end
                 len = dec*(ord+1);
             end
             %
-            E = blkdiag(eye(nChs(ChannelGroup.UPPER)),-1i*eye(nChs(ChannelGroup.LOWER)))*E;
+            %E = blkdiag(eye(nChs(ChannelGroup.UPPER)),-1i*eye(nChs(ChannelGroup.LOWER)))*E;
             value = E.';
         end
 

@@ -20,56 +20,41 @@ classdef AbstBuildingBlock < matlab.System  %#codegen
     
     properties (Access=protected,Nontunable)
         nHalfChannels
-        nChannels
         I
     end
     
     methods (Access = protected)
-        function setupImpl(obj,~,~,p,~)
-            obj.nHalfChannels = p;
-            obj.nChannels     = 2*p;
-            obj.I             = eye(p);
-        end
-
-        function value = processQ_(obj,B,x,nZ_)
+        
+        function value = processQ_(obj,angles,x,nZ_)
             hChs = obj.nHalfChannels;
-            nChs = obj.nChannels;
             nLen = size(x,2);
+            B = butterflyMtx_(obj, angles);
             x = B'*x;
-            value = zeros([nChs nLen+nZ_]);
+            value = complex(zeros([2*hChs nLen+nZ_]));
             value(1:hChs,1:nLen) = x(1:hChs,:);
             value(hChs+1:end,nZ_+1:end) = x(hChs+1:end,:);
             value = B*value;
         end
-        
-        function hB = mtxB_(obj,P,theta)
-            qtrP = floor(P/4);
-	
-            hC = [];
-            hS = [];
-            for p = 1:qrtP
-                tp = theta(p);
-        
-                hC = blkdiag(hC, _buildMtxHc(tp));
-                hS = blkdiag(hS, _buildMtxHs(tp));
+
+    end
+    
+    methods (Access = private)
+        function hB = butterflyMtx_(obj, angles)%TODO:‰Â”\‚Å‚ ‚ê‚ÎMEX‰»
+            hchs = obj.nHalfChannels;
+            
+            hC = complex(eye(hchs));
+            hS = complex(eye(hchs));
+            for p = 1:floor(hchs/2)
+                tp = angles(p);
+                
+                hC(2*p-1:2*p, 2*p-1:2*p) = [-1i*cos(tp), -1i*sin(tp);
+                    cos(tp) , -sin(tp)]; %c^
+                hS(2*p-1:2*p, 2*p-1:2*p) = [ -1i*sin(tp), -1i*cos(tp);
+                    sin(tp) , -cos(tp)]; %s^
             end
-	
-            if odd(qtrP)
-                hC = blkdiag(hC, 1);
-                hS = blkdiag(hS, 1);
-            end
+            
             hB = [hC, conj(hC); 1i*hS, -1i*conj(hS)]/sqrt(2);
         end
-
-        function mtxHc = buildMtxHc_(t)
-            mtxHc =     [-1i*cos(t), -1i*sin(t);
-                        cos(t) , -sin(t)];
-        end
-
-        function mtxHs = buildMtxHs_(t)
-            mtxHs =     [ -1i*sin(t), -1i*cos(t);
-                        sin(t) , -cos(t)];
-        end
-
+        
     end
 end

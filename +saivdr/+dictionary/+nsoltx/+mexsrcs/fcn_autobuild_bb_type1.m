@@ -52,7 +52,7 @@ if isempty(task) || task.ID == 1
             arrayCoefs = coder.typeof(complex(0),[2*hChs maxNCfs],[0 1]); %#ok
             paramMtxW = coder.typeof(double(0),hChs*[1 1],[0 0]); %#ok
             paramMtxU = coder.typeof(double(0),hChs*[1 1],[0 0]); %#ok
-            paramAngles = coder.typeof(double(0), [floor(hChs/2),1],[0 0]);
+            paramAngles = coder.typeof(double(0), [floor(hChs/2),1],[0 0]); %#ok
             constHChs = coder.Constant(hChs); %#ok
             nshift = coder.typeof(int32(0),[1 1],[0 0]); %#ok
             % build mex
