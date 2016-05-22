@@ -195,14 +195,12 @@ classdef AbstOvsdLpPuFb2dSystem < matlab.System %#codegen
             nRows = obj.DecimationFactor(Direction.VERTICAL);
             nCols = obj.DecimationFactor(Direction.HORIZONTAL);
             nElmBi = nRows*nCols;
-            %dctY = dctmtx(nRows);
-            %dctX = dctmtx(nCols);
             hsdftY = hsdftmtx_(obj, nRows);
-            hsdftX = hsdftmtx_(obj, nRows);
+            hsdftX = hsdftmtx_(obj, nCols);
             coefs = complex(zeros(nElmBi));
             iElm = 1;
-            for iCol = 1:nCols % x-e
-                for iRow = 1:nRows % y-e
+            for iCol = 1:nCols
+                for iRow = 1:nRows
                     hsdftCoef = zeros(nRows,nCols);
                     hsdftCoef(iRow,iCol) = 1;
                     basisImage = hsdftY.'*hsdftCoef*hsdftX;

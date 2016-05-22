@@ -168,10 +168,12 @@ classdef AbstOLpPrFbCoefManipulator1d < matlab.System %#codegen
             ps  = obj.NumberOfSymmetricChannels;
             pa  = obj.NumberOfAntisymmetricChannels;
             %
-            obj.paramMtxSzTab = zeros(sum(ord)+2, 2);
+            obj.paramMtxSzTab = zeros(2*sum(ord)+2, 2);
             for iOrd = 0:sum(ord)/2
-                obj.paramMtxSzTab(2*iOrd+1,:) = [ ps ps ];
-                obj.paramMtxSzTab(2*iOrd+2,:) = [ pa pa ];
+                obj.paramMtxSzTab(4*iOrd+1,:) = [ ps ps ];
+                obj.paramMtxSzTab(4*iOrd+2,:) = [ pa pa ];
+                obj.paramMtxSzTab(4*iOrd+3,:) = [ ps ps ];
+                obj.paramMtxSzTab(4*iOrd+4,:) = [ pa pa ];
             end
             %
             nPm = size(obj.paramMtxSzTab,1);
@@ -198,7 +200,6 @@ classdef AbstOLpPrFbCoefManipulator1d < matlab.System %#codegen
         end
         
         function arrayCoefs = blockButterflyTypeI_(obj,arrayCoefs,angles)
-            tmp = angles;
             hLen = obj.NumberOfSymmetricChannels;
             upper = arrayCoefs(1:hLen,:);
             lower = arrayCoefs(hLen+1:end,:);
@@ -207,7 +208,6 @@ classdef AbstOLpPrFbCoefManipulator1d < matlab.System %#codegen
         end
         
         function arrayCoefs = blockButterflyTypeII_(obj,arrayCoefs,angles)
-            tmp = angles;
             chs = [obj.NumberOfSymmetricChannels ...
                 obj.NumberOfAntisymmetricChannels ];
             nChMx  = max(chs);

@@ -152,6 +152,8 @@ classdef OLpPuFbAnalysis1dSystem < ...
             obj.allScales = zeros(obj.nAllChs,obj.DATA_DIMENSION);
             
             % Prepare MEX function
+            obj.isMexFcn = 1;
+            mexFcn = [];
             if obj.NumberOfSymmetricChannels == 1 || ...
                     obj.NumberOfAntisymmetricChannels == 1 
                 mexFcn = [];
@@ -249,7 +251,6 @@ classdef OLpPuFbAnalysis1dSystem < ...
             else
                 mc = ceil(dec_/2);
                 mf = floor(dec_/2);
-                %dctCoefs = dct(reshape(subSeq,[dec_, nBlks_]));
                 dctCoefs = hsdft_(obj, reshape(subSeq,[dec_, nBlks_]));
                 arrayCoefs(1:mc,:) = dctCoefs(1:mc,:) ;
                 arrayCoefs(ps+1:ps+mf,:) = dctCoefs(mc+1:end,:);

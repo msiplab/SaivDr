@@ -219,14 +219,29 @@ classdef OLpPuFbSynthesis1dSystem  < ...
 %                 %
 %                 subSeq(1:2:end) = (subCoef1+subCoef2)/sqrt(2);
 %                 subSeq(2:2:end) = (subCoef1-subCoef2)/sqrt(2);
-            else 
+            else
                 mc = ceil(dec_/2);
                 mf = floor(dec_/2);
-                dctCoefs = complex(zeros(dec_,size(arrayCoefs,2)));
-                dctCoefs(1:2:end,:) =  arrayCoefs(1:mc,:);
-                dctCoefs(2:2:end,:) = -arrayCoefs(ps+1:ps+mf,:);
-                subSeq = reshape(idct(dctCoefs),[1 dec_*nBlks_]);
+                hsdftCoefs = complex(zeros(dec_,size(arrayCoefs,2)));
+                hsdftCoefs(1:mc,:) = arrayCoefs(1:mc,:);
+                hsdftCoefs(mc+1:end,:) = arrayCoefs(ps+1:ps+mf,:);
+                subSeq = reshape(ihsdft_(obj, hsdftCoefs), [1 dec_*nBlks_]);
             end
+        end
+        
+        function value = hsdftmtx_(~, nDec) %Hermitian-Symmetric DFT matrix
+            w = exp(-2*pi*1i/nDec);
+            value = complex(zeros(nDec));
+            for u = 0:nDec-1
+                for x =0:nDec-1
+                    value(u+1,x+1) = w^(u*(x+0.5))/sqrt(nDec);
+                end
+            end
+        end
+        
+        function value = ihsdft_(obj, X)
+            mtx = hsdftmtx_(obj,size(X,1))';
+            value = mtx*X;
         end
         
     end
