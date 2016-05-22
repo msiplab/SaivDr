@@ -120,9 +120,9 @@ classdef OLpPrFbAtomConcatenator1d < ...
             Ux2 = paramMtx1.';
             % Lower channel rotation
             arrayCoefs(hLen+1:end,:) = Ux2*arrayCoefs(hLen+1:end,:);
-            arrayCoefs = blockButterflyTypeI_(obj,arrayCoefs);
+            arrayCoefs = blockButterflyTypeI_(obj,arrayCoefs,[]);
             arrayCoefs = rightShiftUpperCoefs_(obj,arrayCoefs);
-            arrayCoefs = blockButterflyTypeI_(obj,arrayCoefs);
+            arrayCoefs = blockButterflyTypeI_(obj,arrayCoefs,[]);
             arrayCoefs = arrayCoefs/2.0;
             
             % Phase 2
@@ -134,9 +134,9 @@ classdef OLpPrFbAtomConcatenator1d < ...
                 arrayCoefs(hLen+1:end,1) = -arrayCoefs(hLen+1:end,1);                
                 arrayCoefs(hLen+1:end,2:end) = Ux1*arrayCoefs(hLen+1:end,2:end);                
             end
-            arrayCoefs = blockButterflyTypeI_(obj,arrayCoefs);
+            arrayCoefs = blockButterflyTypeI_(obj,arrayCoefs,[]);
             arrayCoefs = leftShiftLowerCoefs_(obj,arrayCoefs);
-            arrayCoefs = blockButterflyTypeI_(obj,arrayCoefs);
+            arrayCoefs = blockButterflyTypeI_(obj,arrayCoefs,[]);
             arrayCoefs = arrayCoefs/2.0;
         end
         
@@ -147,9 +147,9 @@ classdef OLpPrFbAtomConcatenator1d < ...
             Wx = paramMtx1.';
             % Upper channel rotation
             arrayCoefs(1:hLen,:) = Wx*arrayCoefs(1:hLen,:);
-            arrayCoefs = blockButterflyTypeII_(obj,arrayCoefs);
+            arrayCoefs = blockButterflyTypeII_(obj,arrayCoefs,[]);
             arrayCoefs = rightShiftUpperCoefs_(obj,arrayCoefs);
-            arrayCoefs = blockButterflyTypeII_(obj,arrayCoefs);
+            arrayCoefs = blockButterflyTypeII_(obj,arrayCoefs,[]);
             arrayCoefs = arrayCoefs/2.0;
             
             % Phase 2
@@ -161,9 +161,9 @@ classdef OLpPrFbAtomConcatenator1d < ...
                 arrayCoefs(hLen+1:end,1) = -arrayCoefs(hLen+1:end,1);
                 arrayCoefs(hLen+1:end,2:end) = Ux*arrayCoefs(hLen+1:end,2:end);
             end
-            arrayCoefs = blockButterflyTypeII_(obj,arrayCoefs);
+            arrayCoefs = blockButterflyTypeII_(obj,arrayCoefs,[]);
             arrayCoefs = leftShiftLowerCoefs_(obj,arrayCoefs);
-            arrayCoefs = blockButterflyTypeII_(obj,arrayCoefs);
+            arrayCoefs = blockButterflyTypeII_(obj,arrayCoefs,[]);
             arrayCoefs = arrayCoefs/2.0;
         end
         
@@ -174,9 +174,9 @@ classdef OLpPrFbAtomConcatenator1d < ...
             Ux = paramMtx2.';
             % Lower channel rotation
             arrayCoefs(hLen+1:end,:) = Ux*arrayCoefs(hLen+1:end,:);
-            arrayCoefs = blockButterflyTypeII_(obj,arrayCoefs);
+            arrayCoefs = blockButterflyTypeII_(obj,arrayCoefs,[]);
             arrayCoefs = rightShiftUpperCoefs_(obj,arrayCoefs);
-            arrayCoefs = blockButterflyTypeII_(obj,arrayCoefs);
+            arrayCoefs = blockButterflyTypeII_(obj,arrayCoefs,[]);
             arrayCoefs = arrayCoefs/2.0;
             
             % Phase 2
@@ -188,9 +188,9 @@ classdef OLpPrFbAtomConcatenator1d < ...
                  arrayCoefs(1:hLen,1) = -arrayCoefs(1:hLen,1);
                  arrayCoefs(1:hLen,2:end) = Wx*arrayCoefs(1:hLen,2:end);
             end
-            arrayCoefs = blockButterflyTypeII_(obj,arrayCoefs);
+            arrayCoefs = blockButterflyTypeII_(obj,arrayCoefs,[]);
             arrayCoefs = leftShiftLowerCoefs_(obj,arrayCoefs);
-            arrayCoefs = blockButterflyTypeII_(obj,arrayCoefs);
+            arrayCoefs = blockButterflyTypeII_(obj,arrayCoefs,[]);
             arrayCoefs = arrayCoefs/2.0;
         end        
         

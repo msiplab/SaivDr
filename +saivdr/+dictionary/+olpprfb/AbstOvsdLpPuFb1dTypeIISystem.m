@@ -64,7 +64,7 @@ classdef AbstOvsdLpPuFb1dTypeIISystem < ...
             import saivdr.dictionary.nsoltx.mexsrcs.fcn_autobuild_bb_type2
             import saivdr.dictionary.nsoltx.ChannelGroup
             [obj.mexFcn, obj.mexFlag] = fcn_autobuild_bb_type2(...
-                obj.NumberOfChannels(ChannelGroup.LOWER));
+                floor(obj.NumberOfChannels/2));
         end
 
         function setupImpl(obj,varargin)
@@ -72,7 +72,7 @@ classdef AbstOvsdLpPuFb1dTypeIISystem < ...
             import saivdr.dictionary.nsoltx.ChannelGroup
             import saivdr.dictionary.nsoltx.mexsrcs.fcn_autobuild_bb_type2
             [obj.mexFcn, obj.mexFlag] = fcn_autobuild_bb_type2(...
-                obj.NumberOfChannels(ChannelGroup.LOWER));
+                floor(obj.NumberOfChannels/2));
         end
 
         function updateProperties_(obj)
@@ -104,30 +104,21 @@ classdef AbstOvsdLpPuFb1dTypeIISystem < ...
                 error('Dimension of NumberOfChannels must be less than or equal to two.');
             end
             if isempty(obj.NumberOfChannels)
-                obj.NumberOfChannels = [ floor(nHalfDecs+1) floor(nHalfDecs) ];
-            elseif length(obj.NumberOfChannels) == 1
+                obj.NumberOfChannels = 2*floor(nHalfDecs)+1;
+            elseif isvector(obj.NumberOfChannels)
+                obj.NumberOfChannels = sum(obj.NumberOfChannels);
                 if mod(obj.NumberOfChannels,2) == 0
                     id = 'SaivDr:IllegalArgumentException';
                     msg = '#Channels must be odd.';
                     me = MException(id, msg);
                     throw(me);
-                else
-                    obj.NumberOfChannels = ...
-                        [ ceil(double(obj.NumberOfChannels)/2) ...
-                        floor(double(obj.NumberOfChannels)/2) ];
                 end
-            elseif (obj.NumberOfChannels(ChannelGroup.UPPER) < ceil(nHalfDecs)) ||...
-                    (obj.NumberOfChannels(ChannelGroup.LOWER) < floor(nHalfDecs))
-                id = 'SaivDr:IllegalArgumentException';
-                msg = 'Both of ps and pa must be greater than a half of #Decs.';
-                me = MException(id, msg);
-                throw(me);
             end
 
             % Prepare ParameterMatrixSet
             paramMtxSizeTab = repmat(...
-                [ obj.NumberOfChannels(ChannelGroup.UPPER) ;
-                obj.NumberOfChannels(ChannelGroup.LOWER) ],...
+                [ ceil(obj.NumberOfChannels/2) ;
+                floor(obj.NumberOfChannels/2) ],...
                 obj.nStages,2);
             obj.ParameterMatrixSet = ParameterMatrixSet(...
                 'MatrixSizeTable',paramMtxSizeTab);
@@ -137,12 +128,12 @@ classdef AbstOvsdLpPuFb1dTypeIISystem < ...
             import saivdr.dictionary.nsoltx.ChannelGroup
             nAngsPerStg = zeros(2,1);
             %
-            nAngsPerStg(ChannelGroup.UPPER) = ...
-                obj.NumberOfChannels(ChannelGroup.UPPER) ...
-                *double(obj.NumberOfChannels(ChannelGroup.UPPER)-1)/2;
-            nAngsPerStg(ChannelGroup.LOWER) = ...
-                obj.NumberOfChannels(ChannelGroup.LOWER) ...
-                *double(obj.NumberOfChannels(ChannelGroup.LOWER)-1)/2;
+            nAngsPerStg(1) = ...
+                ceil(obj.NumberOfChannels/2) ...
+                *double(ceil(obj.NumberOfChannels/2)-1)/2;
+            nAngsPerStg(2) = ...
+                floor(obj.NumberOfChannels/2) ...
+                *double(floor(obj.NumberOfChannels/2)-1)/2;
             sizeOfAngles = [sum(nAngsPerStg) obj.nStages];
             %
 
@@ -165,8 +156,8 @@ classdef AbstOvsdLpPuFb1dTypeIISystem < ...
             %
             sizeOfMus = [ sum(obj.NumberOfChannels) obj.nStages ];
             %
-            nChL = obj.NumberOfChannels(ChannelGroup.LOWER);
-            nChU = obj.NumberOfChannels(ChannelGroup.UPPER);
+            nChL = floor(obj.NumberOfChannels/2);
+            nChU = ceil(obj.NumberOfChannels/2);
             if isscalar(obj.Mus) && obj.Mus == 1
                 if nChU > nChL
                     obj.Mus = [
@@ -210,10 +201,10 @@ classdef AbstOvsdLpPuFb1dTypeIISystem < ...
             %
             cM_2 = ceil(nHalfDecs);
             W = step(pmMtxSt_,[],uint32(1))*[ eye(cM_2) ;
-                zeros(nChs(ChannelGroup.UPPER)-cM_2,cM_2)];
+                zeros(ceil(nChs/2)-cM_2,cM_2)];
             fM_2 = floor(nHalfDecs);
             U = step(pmMtxSt_,[],uint32(2))*[ eye(fM_2);
-                zeros(nChs(ChannelGroup.LOWER)-fM_2,fM_2) ];
+                zeros(floor(nChs/2)-fM_2,fM_2) ];
             R = blkdiag(W,U);
             E = R*E0;
             iParamMtx = uint32(3);
@@ -226,28 +217,26 @@ classdef AbstOvsdLpPuFb1dTypeIISystem < ...
                     %hW = step(pmMtxSt_,[],iParamMtx);
                     hW = step(pmMtxSt_,[],iParamMtx);
                     %hU = step(pmMtxSt_,[],iParamMtx+1);
-                    hU = eye(nChs(ChannelGroup.UPPER));
+                    hU = eye(ceil(nChs/2));
                     %angles2 = step(PmMtxSt_,[],iParamMtx+2);
-                    angles2 = pi/4*ones(floor(sum(nChs)/4),1);
+                    angles2 = pi/4*ones(floor(nChs/4),1);
                     %W = step(pmMtxSt_,[],iParamMtx+3);
-                    W = eye(nChs(ChannelGroup.LOWER));
+                    W = eye(floor(nChs/2));
                     %U = step(pmMtxSt_,[],iParamMtx+4);
                     U = step(pmMtxSt_,[],iParamMtx+1);
                     %angles1 = step(PmMtxSt_,[],iParamMtx+5);
-                    angles1 = pi/4*ones(floor(sum(nChs)/4),1);
+                    angles1 = pi/4*ones(floor(nChs/4),1);
                     if mexFlag_
-                        E = mexFcn_(E, hW, hU, angles2, W, U, angles1, floor(sum(nChs)/2), nShift);
+                        E = mexFcn_(E, hW, hU, angles2, W, U, angles1, floor(nChs/2), nShift);
                     else
                         import saivdr.dictionary.nsoltx.mexsrcs.Order2BuildingBlockTypeII
                         hObb = Order2BuildingBlockTypeII();
-                        E = step(hObb, E, hW, hU, angles2, W, U, angles1, floor(sum(nChs)/2), nShift);
+                        E = step(hObb, E, hW, hU, angles2, W, U, angles1, floor(nChs/2), nShift);
                     end
                     iParamMtx = iParamMtx+2;
                 end
                 len = dec*(ord+1);
             end
-            %
-            %E = blkdiag(eye(nChs(ChannelGroup.UPPER)),-1i*eye(nChs(ChannelGroup.LOWER)))*E;
             value = E.';
         end
 

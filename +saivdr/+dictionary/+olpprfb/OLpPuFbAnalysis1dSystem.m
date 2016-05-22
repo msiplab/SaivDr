@@ -91,8 +91,8 @@ classdef OLpPuFbAnalysis1dSystem < ...
             obj.decimationFactor = get(obj.LpPuFb1d,'DecimationFactor');
             obj.polyPhaseOrder   = get(obj.LpPuFb1d,'PolyPhaseOrder');
             nch = get(obj.LpPuFb1d,'NumberOfChannels');
-            obj.NumberOfSymmetricChannels = nch(1);
-            obj.NumberOfAntisymmetricChannels = nch(2);
+            obj.NumberOfSymmetricChannels = ceil(nch/2);
+            obj.NumberOfAntisymmetricChannels = floor(nch/2);
         end
         
     end

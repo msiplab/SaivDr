@@ -296,7 +296,7 @@ classdef AbstOvsdLpPuFb3dSystem < matlab.System %#codegen
                         hsdftCoefZ = zeros(nDeps,1);
                         hsdftCoefZ(iDep) = 1;
                         %basisZ  = permute(idct(hsdftCoefZ),[2 3 1]);
-                        basisZ = ihsdft_(obj,hsdftCoefZ);
+                        basisZ = permute(ihsdft_(obj,hsdftCoefZ),[2 3 1]);
                         basisVd = convn(basisZ,basisYX);
                         coefs(iElm,:) = basisVd(:).';
                         iElm = iElm + 1;
@@ -325,11 +325,11 @@ classdef AbstOvsdLpPuFb3dSystem < matlab.System %#codegen
             end
         end
         
-        function value = ihsdft_(~, X)
-            value = hsdftmtx_(obj, len(X))'*X;
+        function value = ihsdft_(obj, X)
+            value = hsdftmtx_(obj, length(X))'*X;
         end
         
-        function value = ihsdft2_(~, X)
+        function value = ihsdft2_(obj, X)
             [lenU, lenV] = size(X);
             ihsdftU = hsdftmtx_(obj, lenU)';
             ihsdftV = hsdftmtx_(obj, lenV)';

@@ -50,16 +50,16 @@ classdef OvsdLpPuFb1dTypeIVm1System < ...
         
         function updateParameterMatrixSet_(obj)
             import saivdr.dictionary.nsoltx.ChannelGroup
-            nChs = obj.NumberOfChannels;
+            hChs = obj.NumberOfChannels/2;
             angles = obj.Angles;
             mus    = obj.Mus;
             % No-DC-Leackage condition
-            angles(1:nChs(ChannelGroup.LOWER)-1,1) = ...
-                zeros(nChs(ChannelGroup.LOWER)-1,1);
+            angles(1:hChs-1,1) = ...
+                zeros(hChs-1,1);
             mus(1,1) = 1;
             pmMtxSet = obj.ParameterMatrixSet;
-            nAngs = nChs(ChannelGroup.UPPER)*(nChs(ChannelGroup.UPPER)-1)/2;
-            nMus = nChs(ChannelGroup.UPPER);
+            nAngs = hChs*(hChs-1)/2;
+            nMus = hChs;
             omgsW     = obj.omgsW_;
             omgsU     = obj.omgsU_;
             for iParamMtx = uint32(1):obj.nStages

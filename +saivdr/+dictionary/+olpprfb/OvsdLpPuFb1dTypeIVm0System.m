@@ -54,11 +54,11 @@ classdef OvsdLpPuFb1dTypeIVm0System < ...
         
         function obj = updateParameterMatrixSet_(obj)
             import saivdr.dictionary.nsoltx.ChannelGroup
-            nChs = obj.NumberOfChannels;
+            hChs = obj.NumberOfChannels/2;
             angles = obj.Angles;
             mus    = obj.Mus;
-            nAngs = nChs(ChannelGroup.UPPER)*(nChs(ChannelGroup.UPPER)-1)/2;
-            nMus = nChs(ChannelGroup.UPPER);
+            nAngs = hChs*(hChs-1)/2;
+            nMus = hChs;
             %pmMtxSt_ = obj.ParamteterMatrixSet;
             for iParamMtx = uint32(1):obj.nStages
                 % W

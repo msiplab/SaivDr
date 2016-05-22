@@ -62,13 +62,13 @@ classdef AbstOvsdLpPuFb1dTypeISystem < ...
             resetImpl@saivdr.dictionary.olpprfb.AbstOvsdLpPuFb1dSystem(obj);
             % Prepare MEX function
             import saivdr.dictionary.nsoltx.mexsrcs.fcn_autobuild_bb_type1
-            [obj.mexFcn, obj.mexFlag] = fcn_autobuild_bb_type1(obj.NumberOfChannels(1));
+            [obj.mexFcn, obj.mexFlag] = fcn_autobuild_bb_type1(obj.NumberOfChannels/2);
         end
 
         function setupImpl(obj,varargin)
             % Prepare MEX function
             import saivdr.dictionary.nsoltx.mexsrcs.fcn_autobuild_bb_type1
-            [obj.mexFcn, obj.mexFlag] = fcn_autobuild_bb_type1(obj.NumberOfChannels(1));
+            [obj.mexFcn, obj.mexFlag] = fcn_autobuild_bb_type1(obj.NumberOfChannels/2);
         end
 
         function updateProperties_(obj)
@@ -99,27 +99,20 @@ classdef AbstOvsdLpPuFb1dTypeISystem < ...
             end
             id = 'SaivDr:IllegalArgumentException';
             if isempty(obj.NumberOfChannels)
-                obj.NumberOfChannels = nHalfDecs * [ 1 1 ];
-            elseif isscalar(obj.NumberOfChannels)
+                obj.NumberOfChannels = 2*ceil(nHalfDecs);
+            elseif isvector(obj.NumberOfChannels)
+                obj.NumberOfChannels = sum(obj.NumberOfChannels);
                 if mod(obj.NumberOfChannels,2) ~= 0
                     msg = '#Channels must be even.';
                     me = MException(id, msg);
                     throw(me);
-                else
-                    obj.NumberOfChannels = ...
-                        obj.NumberOfChannels * [ 1 1 ]/2;
                 end
-            elseif obj.NumberOfChannels(ChannelGroup.UPPER) ~= ...
-                    obj.NumberOfChannels(ChannelGroup.LOWER)
-                msg = 'ps and pa must be the same as each other.';
-                me = MException(id, msg);
-                throw(me);
             end
 
             % Prepare ParameterMatrixSet
             %paramMtxSizeTab = ...
             %    obj.NumberOfChannels(ChannelGroup.LOWER)*ones(obj.nStages+1,2);
-            paramMtxSizeTab = repmat(obj.NumberOfChannels(ChannelGroup.LOWER)*ones(2,2), obj.nStages, 1);
+            paramMtxSizeTab = repmat(obj.NumberOfChannels/2*ones(2,2), obj.nStages, 1);
             obj.ParameterMatrixSet = ParameterMatrixSet(...
                 'MatrixSizeTable',paramMtxSizeTab);
 
@@ -127,7 +120,7 @@ classdef AbstOvsdLpPuFb1dTypeISystem < ...
 
         function updateAngles_(obj)
             import saivdr.dictionary.nsoltx.ChannelGroup
-            nChL = obj.NumberOfChannels(ChannelGroup.LOWER);
+            nChL = obj.NumberOfChannels/2;
             nAngsPerStg = nChL*(nChL-1)/2;
             sizeOfAngles = [2*nAngsPerStg obj.nStages];
             if isscalar(obj.Angles) && obj.Angles==0
@@ -146,7 +139,7 @@ classdef AbstOvsdLpPuFb1dTypeISystem < ...
 
         function updateMus_(obj)
             import saivdr.dictionary.nsoltx.ChannelGroup
-            nChL = obj.NumberOfChannels(ChannelGroup.LOWER);
+            nChL = obj.NumberOfChannels/2;
             sizeOfMus = [ 2*nChL obj.nStages ];
             if isscalar(obj.Mus) && obj.Mus==1
                 obj.Mus = -ones(sizeOfMus);
@@ -172,6 +165,7 @@ classdef AbstOvsdLpPuFb1dTypeISystem < ...
             nChs = obj.NumberOfChannels;
             dec  = obj.DecimationFactor;
             nHalfDecs = dec/2;
+            hChs = nChs/2;
             ord = obj.PolyPhaseOrder;
             pmMtxSet_  = obj.ParameterMatrixSet;
             mexFcn_ = obj.mexFcn;
@@ -181,14 +175,14 @@ classdef AbstOvsdLpPuFb1dTypeISystem < ...
             %
             cM_2 = ceil(nHalfDecs);
             W = step(pmMtxSet_,[],uint32(1))*[ eye(cM_2) ;
-                zeros(nChs(ChannelGroup.LOWER)-cM_2,cM_2)];
+                zeros(hChs-cM_2,cM_2)];
             fM_2 = floor(nHalfDecs);
             U = step(pmMtxSet_,[],uint32(2))*[ eye(fM_2);
-                zeros(nChs(ChannelGroup.LOWER)-fM_2,fM_2) ];
+                zeros(hChs-fM_2,fM_2) ];
+            %R = step(obj.pmMtxSet_,[],uint32(1))*[eye(dec);zeros(nChs - dec, dec)]; 
             R = blkdiag(W,U);
             E = R*E0;
             iParamMtx = uint32(3);
-            hChs = nChs(1);
 
             % Order extention
             if ord > 0
@@ -211,7 +205,6 @@ classdef AbstOvsdLpPuFb1dTypeISystem < ...
                     iParamMtx = iParamMtx+2;
                 end
             end
-            %E = blkdiag(eye(hChs),-1i*eye(hChs))*E;
             value = E.';
         end
 

@@ -197,7 +197,8 @@ classdef AbstOLpPrFbCoefManipulator1d < matlab.System %#codegen
             end
         end
         
-        function arrayCoefs = blockButterflyTypeI_(obj,arrayCoefs)
+        function arrayCoefs = blockButterflyTypeI_(obj,arrayCoefs,angles)
+            tmp = angles;
             hLen = obj.NumberOfSymmetricChannels;
             upper = arrayCoefs(1:hLen,:);
             lower = arrayCoefs(hLen+1:end,:);
@@ -205,7 +206,8 @@ classdef AbstOLpPrFbCoefManipulator1d < matlab.System %#codegen
             arrayCoefs(hLen+1:end,:) = upper - lower;
         end
         
-        function arrayCoefs = blockButterflyTypeII_(obj,arrayCoefs)
+        function arrayCoefs = blockButterflyTypeII_(obj,arrayCoefs,angles)
+            tmp = angles;
             chs = [obj.NumberOfSymmetricChannels ...
                 obj.NumberOfAntisymmetricChannels ];
             nChMx  = max(chs);

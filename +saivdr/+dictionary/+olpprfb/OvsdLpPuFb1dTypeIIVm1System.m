@@ -59,11 +59,11 @@ classdef OvsdLpPuFb1dTypeIIVm1System < ...
             angles = obj.Angles;
             mus    = obj.Mus;
             nSts   = obj.nStages;
-            nAngsW = nChs(ChannelGroup.UPPER)*(nChs(ChannelGroup.UPPER)-1)/2;
-            nMusW  = nChs(ChannelGroup.UPPER);
+            nAngsW = ceil(nChs/2)*(ceil(nChs/2)-1)/2;
+            nMusW  = ceil(nChs/2);
             
             % No-DC-Leackage condition
-            W_ = eye(nChs(ChannelGroup.UPPER)); 
+            W_ = eye(ceil(nChs/2)); 
             omgsW = obj.omgsW_;
             omgsU = obj.omgsU_;
             pmMtxSet = obj.ParameterMatrixSet;
@@ -80,8 +80,8 @@ classdef OvsdLpPuFb1dTypeIIVm1System < ...
                 W_ = step(pmMtxSet,[],2*iParamMtx-1)*W_;
             end
             [angles_,mus_] = step(obj.omfs_,W_.');
-            angles(1:nChs(ChannelGroup.UPPER)-1,nSts) = ...
-                angles_(1:nChs(ChannelGroup.UPPER)-1);
+            angles(1:ceil(nChs/2)-1,nSts) = ...
+                angles_(1:ceil(nChs/2)-1);
             mus(1,nSts) = mus_(1);
             % W
             mtx = step(omgsW,angles(1:nAngsW,nSts),...

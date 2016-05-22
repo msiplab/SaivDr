@@ -53,8 +53,8 @@ classdef OvsdLpPuFb1dTypeIIVm0System < ...
             nChs = obj.NumberOfChannels;
             angles = obj.Angles;
             mus    = obj.Mus;            
-            nAngsW = nChs(ChannelGroup.UPPER)*(nChs(ChannelGroup.UPPER)-1)/2;
-            nMusW = nChs(ChannelGroup.UPPER);
+            nAngsW = ceil(nChs/2)*(ceil(nChs/2)-1)/2;
+            nMusW = ceil(nChs/2);
             pmMtxSt_ = obj.ParameterMatrixSet;
             omgsW = obj.omgsW_;
             omgsU = obj.omgsU_;

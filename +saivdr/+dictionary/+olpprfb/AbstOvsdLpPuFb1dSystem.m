@@ -187,8 +187,8 @@ classdef AbstOvsdLpPuFb1dSystem < matlab.System %#codegen
             nElmBi = nCoefs;
             hsdftMtx = hsdftmtx_(obj, nCoefs);
             coefs = complex(zeros(nElmBi));
-            iElm = 1; % E0.'= [ Bee Boo Boe Beo ] % Byx
-            for iCoef = 1:nCoefs % y-e
+            iElm = 1;
+            for iCoef = 1:nCoefs
                 hsdftCoef = complex(zeros(nCoefs,1));
                 hsdftCoef(iCoef) = 1;
                 basisVector = hsdftMtx.'*hsdftCoef;
