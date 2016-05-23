@@ -249,11 +249,12 @@ classdef OLpPuFbAnalysis1dSystem < ...
 %                 arrayCoefs(1,:)    = (subSeq1+subSeq2)/sqrt(2);
 %                 arrayCoefs(ps+1,:) = -(subSeq1-subSeq2)/sqrt(2);
             else
-                mc = ceil(dec_/2);
-                mf = floor(dec_/2);
-                dctCoefs = hsdft_(obj, reshape(subSeq,[dec_, nBlks_]));
-                arrayCoefs(1:mc,:) = dctCoefs(1:mc,:) ;
-                arrayCoefs(ps+1:ps+mf,:) = dctCoefs(mc+1:end,:);
+                %mc = ceil(dec_/2);
+                %mf = floor(dec_/2);
+                hsdftCoefs = hsdft_(obj, reshape(subSeq,[dec_, nBlks_]));
+                %arrayCoefs(1:mc,:) = dctCoefs(1:mc,:) ;
+                %arrayCoefs(ps+1:ps+mf,:) = dctCoefs(mc+1:end,:);
+                arrayCoefs(1:dec) = hsdftCoefs;
             end
             
             % Atom extension

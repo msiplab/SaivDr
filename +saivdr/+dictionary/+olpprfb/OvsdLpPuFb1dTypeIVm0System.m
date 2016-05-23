@@ -20,6 +20,7 @@ classdef OvsdLpPuFb1dTypeIVm0System < ...
     % 
     
     properties (Access = private)
+        omgsV0_
         omgsW_
         omgsU_
         %TODO: angles
@@ -30,6 +31,7 @@ classdef OvsdLpPuFb1dTypeIVm0System < ...
             import saivdr.dictionary.utility.OrthonormalMatrixGenerationSystem
             obj = obj@saivdr.dictionary.olpprfb.AbstOvsdLpPuFb1dTypeISystem(...
                 varargin{:});
+            obj.omgsV0_ = OrthonormalMatrixGenerationSystem();
             obj.omgsW_ = OrthonormalMatrixGenerationSystem();
             obj.omgsU_ = OrthonormalMatrixGenerationSystem();
             %TODO: angles
@@ -40,12 +42,14 @@ classdef OvsdLpPuFb1dTypeIVm0System < ...
         
         function s = saveObjectImpl(obj)
             s = saveObjectImpl@saivdr.dictionary.olpprfb.AbstOvsdLpPuFb1dTypeISystem(obj);
+            s.omgsV0_ = matlab.System.saveObject(obj.omgsV0_);
             s.omgsW_ = matlab.System.saveObject(obj.omgsW_);
             s.omgsU_ = matlab.System.saveObject(obj.omgsU_);
             %TODO: angles
         end
         
         function loadObjectImpl(obj,s,wasLocked)
+            obj.omgsV0_ = matlab.System.loadObject(s.omgsV0_);
             obj.omgsW_ = matlab.System.loadObject(s.omgsW_);
             obj.omgsU_ = matlab.System.loadObject(s.omgsU_);
             %TODO: angles
@@ -54,19 +58,31 @@ classdef OvsdLpPuFb1dTypeIVm0System < ...
         
         function obj = updateParameterMatrixSet_(obj)
             import saivdr.dictionary.nsoltx.ChannelGroup
+            nChs = obj.NumberOfChannels;
+            
+            % V0
+            mtx = step(obj.omgsV0_,obj.Angles(1:nChs*(nChs-1)/2),obj.Mus(1:nChs));
+            step(obj.ParameterMatrixSet,mtx,uint32(1));
+            
             hChs = obj.NumberOfChannels/2;
-            angles = obj.Angles;
-            mus    = obj.Mus;
+            angles = reshape(obj.Angles(nChs*(nChs-1)/2+1:end),[],obj.nStages-1);
+            mus    = reshape(obj.Mus(nChs+1:end),[],obj.nStages-1);
             nAngs = hChs*(hChs-1)/2;
             nMus = hChs;
             %pmMtxSt_ = obj.ParamteterMatrixSet;
-            for iParamMtx = uint32(1):obj.nStages
+            %TODO:
+            for iParamMtx = uint32(1):obj.nStages-1
                 % W
-                mtx = step(obj.omgsW_,angles(1:nAngs,iParamMtx),mus(1:nMus,iParamMtx));
-                step(obj.ParameterMatrixSet,mtx,2*iParamMtx-1);
+                mtx = step(obj.omgsW_,angles(1:nAngs,iParamMtx),...
+                    mus(1:nMus,iParamMtx));
+                step(obj.ParameterMatrixSet,mtx,3*iParamMtx-1);
                 % U
-                mtx = step(obj.omgsU_,angles(nAngs+1:end,iParamMtx),mus(nMus+1:end,iParamMtx));
-                step(obj.ParameterMatrixSet,mtx,2*iParamMtx);
+                mtx = step(obj.omgsU_,angles(nAngs+1:2*nAngs,iParamMtx),...
+                    mus(nMus+1:end,iParamMtx));
+                step(obj.ParameterMatrixSet,mtx,3*iParamMtx+0);
+                % angles_B
+                step(obj.ParameterMatrixSet,angles(2*nAngs+1:end,iParamMtx),...
+                    3*iParamMtx+1);
             end
         end
         

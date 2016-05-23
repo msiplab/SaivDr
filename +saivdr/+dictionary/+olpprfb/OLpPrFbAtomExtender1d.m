@@ -59,15 +59,15 @@ classdef OLpPrFbAtomExtender1d <  ...
         
         function arrayCoefs = initialStep_(obj,arrayCoefs)
             
-            hLenU = obj.NumberOfSymmetricChannels;            
+            %hLenU = obj.NumberOfSymmetricChannels;            
             %
             if ~isempty(obj.paramMtxCoefs)
-                W0 = getParamMtx_(obj,uint32(1));
-                U0 = getParamMtx_(obj,uint32(2));
-                %V0 = getParamMtx_(obj,uint32(1));
-                arrayCoefs(1:hLenU,:)     = W0*arrayCoefs(1:hLenU,:);
-                arrayCoefs(hLenU+1:end,:) = U0*arrayCoefs(hLenU+1:end,:);
-                %arrayCoefs = V0*arrayCoefs;
+                %W0 = getParamMtx_(obj,uint32(1));
+                %U0 = getParamMtx_(obj,uint32(2));
+                V0 = getParamMtx_(obj,uint32(1));
+                %arrayCoefs(1:hLenU,:)     = W0*arrayCoefs(1:hLenU,:);
+                %arrayCoefs(hLenU+1:end,:) = U0*arrayCoefs(hLenU+1:end,:);
+                arrayCoefs = V0*arrayCoefs;
             end
 
         end

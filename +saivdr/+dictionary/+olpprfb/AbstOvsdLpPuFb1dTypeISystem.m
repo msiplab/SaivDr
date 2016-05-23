@@ -110,9 +110,8 @@ classdef AbstOvsdLpPuFb1dTypeISystem < ...
             end
 
             % Prepare ParameterMatrixSet
-            %paramMtxSizeTab = ...
-            %    obj.NumberOfChannels(ChannelGroup.LOWER)*ones(obj.nStages+1,2);
-            paramMtxSizeTab = repmat(obj.NumberOfChannels/2*ones(2,2), obj.nStages, 1);
+            paramMtxSizeTab = [obj.NumberOfChannels*ones(1,2);
+                repmat([obj.NumberOfChannels/2*ones(2,2);floor(obj.NumberOfChannels/4),1], obj.nStages-1, 1)];
             obj.ParameterMatrixSet = ParameterMatrixSet(...
                 'MatrixSizeTable',paramMtxSizeTab);
 
@@ -121,13 +120,18 @@ classdef AbstOvsdLpPuFb1dTypeISystem < ...
         function updateAngles_(obj)
             import saivdr.dictionary.nsoltx.ChannelGroup
             nChL = obj.NumberOfChannels/2;
-            nAngsPerStg = nChL*(nChL-1)/2;
-            sizeOfAngles = [2*nAngsPerStg obj.nStages];
+            nAngsInitStg = obj.NumberOfChannels*(obj.NumberOfChannels-1)/2;
+            %nAngsPerStg = nChL*(nChL-1);
+            nAngsPerStg = nChL*(nChL-1)+floor(nChL/2);
+            %sizeOfAngles = [2*nAngsPerStg obj.nStages];
+            sizeOfAngles = nAngsInitStg+nAngsPerStg*(obj.nStages-1);
             if isscalar(obj.Angles) && obj.Angles==0
-                obj.Angles = zeros(sizeOfAngles);
+                obj.Angles = zeros(sizeOfAngles,1);
             end
-            if size(obj.Angles,1) ~= sizeOfAngles(1) || ...
-                    size(obj.Angles,2) ~= sizeOfAngles(2)
+            obj.Angles = obj.Angles(:);
+%             if size(obj.Angles,1) ~= sizeOfAngles(1) || ...
+%                     size(obj.Angles,2) ~= sizeOfAngles(2)
+            if size(obj.Angles) ~= sizeOfAngles
                 id = 'SaivDr:IllegalArgumentException';
                 msg = sprintf(...
                     'Size of angles must be [ %d %d ]',...
@@ -141,12 +145,16 @@ classdef AbstOvsdLpPuFb1dTypeISystem < ...
             import saivdr.dictionary.nsoltx.ChannelGroup
             nChL = obj.NumberOfChannels/2;
             sizeOfMus = [ 2*nChL obj.nStages ];
+            %sizeOfMus = 2*nChL*obj.nStages;
             if isscalar(obj.Mus) && obj.Mus==1
                 obj.Mus = -ones(sizeOfMus);
                 obj.Mus(:,1) = ones(size(obj.Mus,1),1);
+                obj.Mus = obj.Mus(:);
+                sizeOfMus = prod(sizeOfMus);
             end
-            if size(obj.Mus,1) ~= sizeOfMus(1) || ...
-                    size(obj.Mus,2) ~= sizeOfMus(2)
+%             if size(obj.Mus,1) ~= sizeOfMus(1) || ...
+%                     size(obj.Mus,2) ~= sizeOfMus(2)
+            if size(obj.Mus) ~= sizeOfMus
                 id = 'SaivDr:IllegalArgumentException';
                 msg = sprintf(...
                     'Size of mus must be [ %d %d ]',...
@@ -164,7 +172,6 @@ classdef AbstOvsdLpPuFb1dTypeISystem < ...
             %
             nChs = obj.NumberOfChannels;
             dec  = obj.DecimationFactor;
-            nHalfDecs = dec/2;
             hChs = nChs/2;
             ord = obj.PolyPhaseOrder;
             pmMtxSet_  = obj.ParameterMatrixSet;
@@ -173,24 +180,15 @@ classdef AbstOvsdLpPuFb1dTypeISystem < ...
             %
             E0 = obj.matrixE0;
             %
-            cM_2 = ceil(nHalfDecs);
-            W = step(pmMtxSet_,[],uint32(1))*[ eye(cM_2) ;
-                zeros(hChs-cM_2,cM_2)];
-            fM_2 = floor(nHalfDecs);
-            U = step(pmMtxSet_,[],uint32(2))*[ eye(fM_2);
-                zeros(hChs-fM_2,fM_2) ];
-            %R = step(obj.pmMtxSet_,[],uint32(1))*[eye(dec);zeros(nChs - dec, dec)]; 
-            R = blkdiag(W,U);
+            R = step(pmMtxSet_,[],uint32(1))*[eye(dec);zeros(nChs - dec, dec)];
             E = R*E0;
-            iParamMtx = uint32(3);
+            iParamMtx = uint32(2);
 
             % Order extention
             if ord > 0
                 nShift = int32(dec);
                 for iOrd = 1:ord
-                    %W = eye(hChs);
                     W = step(pmMtxSet_,[],iParamMtx);
-                    %U = step(pmMtxSet_,[],iParamMtx);
                     U = step(pmMtxSet_,[],iParamMtx+1);
                     angles = pi/4*ones(floor(hChs/2),1);
                     %angles = step(pmMtxSet_,[],iParamMt+2);
@@ -202,7 +200,7 @@ classdef AbstOvsdLpPuFb1dTypeISystem < ...
                         E = step(hObb, E, W, U, angles, hChs, nShift);
                     end
                     %iParamMtx = iParamMtx+1;
-                    iParamMtx = iParamMtx+2;
+                    iParamMtx = iParamMtx+3;
                 end
             end
             value = E.';

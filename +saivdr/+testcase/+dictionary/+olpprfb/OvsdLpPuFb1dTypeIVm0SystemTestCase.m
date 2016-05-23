@@ -35,11 +35,14 @@ classdef OvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             coefExpctd = [
-               0.500000000000000   0.500000000000000   0.500000000000000   0.500000000000000 ;
-               0.500000000000000  -0.500000000000000  -0.500000000000000   0.500000000000000 ;
-               0.653281482438188   0.270598050073099  -0.270598050073099  -0.653281482438188 ;
-               0.270598050073099  -0.653281482438188   0.653281482438188  -0.270598050073099 ];
-            
+                 0.500000000000000 + 0.000000000000000i,  0.500000000000000 + 0.000000000000000i,...
+                 0.500000000000000 + 0.000000000000000i,  0.500000000000000 + 0.000000000000000i;
+                 0.353553390593274 - 0.353553390593274i, -0.353553390593274 - 0.353553390593274i,...
+                -0.353553390593274 + 0.353553390593274i,  0.353553390593274 + 0.353553390593274i;
+                 0.000000000000000 - 0.500000000000000i,  0.000000000000000 + 0.500000000000000i,...
+                 0.000000000000000 - 0.500000000000000i,  0.000000000000000 + 0.500000000000000i;
+                -0.353553390593274 - 0.353553390593274i,  0.353553390593274 - 0.353553390593274i,...
+                 0.353553390593274 + 0.353553390593274i, -0.353553390593274 + 0.353553390593274i];
             % Instantiation of target class
             import saivdr.dictionary.olpprfb.*
             testCase.lppufb = OvsdLpPuFb1dTypeIVm0System();
@@ -93,10 +96,14 @@ classdef OvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             coefExpctd = [
-               0.500000000000000   0.500000000000000   0.500000000000000   0.500000000000000 ;
-               0.500000000000000  -0.500000000000000  -0.500000000000000   0.500000000000000 ;
-               0.653281482438188   0.270598050073099  -0.270598050073099  -0.653281482438188 ;
-               0.270598050073099  -0.653281482438188   0.653281482438188  -0.270598050073099 ];
+                 0.500000000000000 + 0.000000000000000i,  0.500000000000000 + 0.000000000000000i,...
+                 0.500000000000000 + 0.000000000000000i,  0.500000000000000 + 0.000000000000000i;
+                 0.353553390593274 - 0.353553390593274i, -0.353553390593274 - 0.353553390593274i,...
+                -0.353553390593274 + 0.353553390593274i,  0.353553390593274 + 0.353553390593274i;
+                 0.000000000000000 - 0.500000000000000i,  0.000000000000000 + 0.500000000000000i,...
+                 0.000000000000000 - 0.500000000000000i,  0.000000000000000 + 0.500000000000000i;
+                -0.353553390593274 - 0.353553390593274i,  0.353553390593274 - 0.353553390593274i,...
+                 0.353553390593274 + 0.353553390593274i, -0.353553390593274 + 0.353553390593274i];
             
             % Instantiation of target class
             import saivdr.dictionary.olpprfb.*            
@@ -155,10 +162,14 @@ classdef OvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             coefExpctd = [
-               0.500000000000000   0.500000000000000   0.500000000000000   0.500000000000000 ;
-               0.500000000000000  -0.500000000000000  -0.500000000000000   0.500000000000000 ;
-               0.653281482438188   0.270598050073099  -0.270598050073099  -0.653281482438188 ;
-               0.270598050073099  -0.653281482438188   0.653281482438188  -0.270598050073099 ];
+                 0.500000000000000 + 0.000000000000000i,  0.500000000000000 + 0.000000000000000i,...
+                 0.500000000000000 + 0.000000000000000i,  0.500000000000000 + 0.000000000000000i;
+                 0.353553390593274 - 0.353553390593274i, -0.353553390593274 - 0.353553390593274i,...
+                -0.353553390593274 + 0.353553390593274i,  0.353553390593274 + 0.353553390593274i;
+                 0.000000000000000 - 0.500000000000000i,  0.000000000000000 + 0.500000000000000i,...
+                 0.000000000000000 - 0.500000000000000i,  0.000000000000000 + 0.500000000000000i;
+                -0.353553390593274 - 0.353553390593274i,  0.353553390593274 - 0.353553390593274i,...
+                 0.353553390593274 + 0.353553390593274i, -0.353553390593274 + 0.353553390593274i];
             
             % Instantiation of target class
             import saivdr.dictionary.olpprfb.*            
@@ -182,7 +193,7 @@ classdef OvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 4 6 ];
             ord = 0;
-            ang = 2*pi*rand(6,1);
+            ang = 2*pi*rand(15,1);
             
             % Expected values
             nChs = decch(2);
@@ -226,7 +237,7 @@ classdef OvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 4 6 ];
             ord   = 2;
-            ang   = 2*pi*rand(6,3);
+            ang   = 2*pi*rand(15+12+2,1);
             
             % Expected values
             nChs = decch(2);
@@ -270,7 +281,7 @@ classdef OvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 4 8 ];
             ord = 2;
-            ang = 2*pi*rand(12,3);
+            ang = 2*pi*rand(28+24+4,1);
             
             % Expected values
             nChs = decch(2);
@@ -314,7 +325,7 @@ classdef OvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 4 8 ];
             ord = 2;
-            ang = 2*pi*rand(12,3);
+            ang = 2*pi*rand(28+24+4,1);
             
             % Expected values
             nChs = decch(2);
@@ -397,10 +408,14 @@ classdef OvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             coefExpctd = [
-               0.500000000000000   0.500000000000000   0.500000000000000   0.500000000000000 ;
-               0.500000000000000  -0.500000000000000  -0.500000000000000   0.500000000000000 ;
-               0.653281482438188   0.270598050073099  -0.270598050073099  -0.653281482438188 ;
-               0.270598050073099  -0.653281482438188   0.653281482438188  -0.270598050073099 ];
+                 0.500000000000000 + 0.000000000000000i,  0.500000000000000 + 0.000000000000000i,...
+                 0.500000000000000 + 0.000000000000000i,  0.500000000000000 + 0.000000000000000i;
+                 0.353553390593274 - 0.353553390593274i, -0.353553390593274 - 0.353553390593274i,...
+                -0.353553390593274 + 0.353553390593274i,  0.353553390593274 + 0.353553390593274i;
+                 0.000000000000000 - 0.500000000000000i,  0.000000000000000 + 0.500000000000000i,...
+                 0.000000000000000 - 0.500000000000000i,  0.000000000000000 + 0.500000000000000i;
+                -0.353553390593274 - 0.353553390593274i,  0.353553390593274 - 0.353553390593274i,...
+                 0.353553390593274 + 0.353553390593274i, -0.353553390593274 + 0.353553390593274i];
 
             % Instantiation of target class
             import saivdr.dictionary.olpprfb.*            
@@ -434,10 +449,15 @@ classdef OvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             matrixU0 = step(omgs,ang(2),1);
             coefExpctd = ...
                 blkdiag(matrixW0, matrixU0) * ...
-               [ 0.500000000000000   0.500000000000000   0.500000000000000   0.500000000000000 ;
-               0.500000000000000  -0.500000000000000  -0.500000000000000   0.500000000000000 ;
-               0.653281482438188   0.270598050073099  -0.270598050073099  -0.653281482438188 ;
-               0.270598050073099  -0.653281482438188   0.653281482438188  -0.270598050073099 ];
+               [
+                 0.500000000000000 + 0.000000000000000i,  0.500000000000000 + 0.000000000000000i,...
+                 0.500000000000000 + 0.000000000000000i,  0.500000000000000 + 0.000000000000000i;
+                 0.353553390593274 - 0.353553390593274i, -0.353553390593274 - 0.353553390593274i,...
+                -0.353553390593274 + 0.353553390593274i,  0.353553390593274 + 0.353553390593274i;
+                 0.000000000000000 - 0.500000000000000i,  0.000000000000000 + 0.500000000000000i,...
+                 0.000000000000000 - 0.500000000000000i,  0.000000000000000 + 0.500000000000000i;
+                -0.353553390593274 - 0.353553390593274i,  0.353553390593274 - 0.353553390593274i,...
+                 0.353553390593274 + 0.353553390593274i, -0.353553390593274 + 0.353553390593274i];
             
             % Instantiation of target class
             import saivdr.dictionary.olpprfb.*
@@ -462,7 +482,7 @@ classdef OvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             dec = 8;
             ord = 0;
-            ang = 2*pi*rand(12,1);
+            ang = 2*pi*rand(28,1);
             
             % Expected values
             dimExpctd = [8 8];
@@ -498,7 +518,7 @@ classdef OvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 4 8 ];
             ord = 0;
-            ang = 2*pi*rand(12,1);
+            ang = 2*pi*rand(28,1);
             
             % Expected values
             dimExpctd = [8 4];
@@ -535,7 +555,7 @@ classdef OvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 4 6 ];
             ord = 0;
-            ang = 2*pi*rand(6,1);
+            ang = 2*pi*rand(15,1);
             
             % Expected values
             dimExpctd = [6 4];
@@ -761,10 +781,14 @@ classdef OvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
 %             
 %             % Expected values
 %             coefExpctd(:,:,1) = [
-%                0.500000000000000   0.500000000000000   0.500000000000000   0.500000000000000 ;
-%               -0.500000000000000   0.500000000000000   0.500000000000000  -0.500000000000000 ;
-%                0.653281482438188   0.270598050073099  -0.270598050073099  -0.653281482438188 ;
-%               -0.270598050073099   0.653281482438188  -0.653281482438188   0.270598050073099 ];      
+%                  0.500000000000000 + 0.000000000000000i,  0.500000000000000 + 0.000000000000000i,...
+%                  0.500000000000000 + 0.000000000000000i,  0.500000000000000 + 0.000000000000000i;
+%                  0.353553390593274 - 0.353553390593274i, -0.353553390593274 - 0.353553390593274i,...
+%                 -0.353553390593274 + 0.353553390593274i,  0.353553390593274 + 0.353553390593274i;
+%                  0.000000000000000 - 0.500000000000000i,  0.000000000000000 + 0.500000000000000i,...
+%                  0.000000000000000 - 0.500000000000000i,  0.000000000000000 + 0.500000000000000i;
+%                 -0.353553390593274 - 0.353553390593274i,  0.353553390593274 - 0.353553390593274i,...
+%                  0.353553390593274 + 0.353553390593274i, -0.353553390593274 + 0.353553390593274i];    
 %             
 %             % Instantiation of target class
 %             import saivdr.dictionary.olpprfb.*            
@@ -798,10 +822,14 @@ classdef OvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
 %                 0     0     0     0
 %                 0     0     0     0 ];
 %             coefExpctd(:,:,2) = [
-%                0.500000000000000   0.500000000000000   0.500000000000000   0.500000000000000 ;
-%                0.500000000000000  -0.500000000000000  -0.500000000000000   0.500000000000000 ;
-%                0.653281482438188   0.270598050073099  -0.270598050073099  -0.653281482438188 ;
-%                0.270598050073099  -0.653281482438188   0.653281482438188  -0.270598050073099 ];
+%                  0.500000000000000 + 0.000000000000000i,  0.500000000000000 + 0.000000000000000i,...
+%                  0.500000000000000 + 0.000000000000000i,  0.500000000000000 + 0.000000000000000i;
+%                  0.353553390593274 - 0.353553390593274i, -0.353553390593274 - 0.353553390593274i,...
+%                 -0.353553390593274 + 0.353553390593274i,  0.353553390593274 + 0.353553390593274i;
+%                  0.000000000000000 - 0.500000000000000i,  0.000000000000000 + 0.500000000000000i,...
+%                  0.000000000000000 - 0.500000000000000i,  0.000000000000000 + 0.500000000000000i;
+%                 -0.353553390593274 - 0.353553390593274i,  0.353553390593274 - 0.353553390593274i,...
+%                  0.353553390593274 + 0.353553390593274i, -0.353553390593274 + 0.353553390593274i];
 %             coefExpctd(:,:,3) = [
 %                 0     0     0     0
 %                 0     0     0     0
@@ -829,7 +857,7 @@ classdef OvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             dec = 4;
             ord = 4;
-            ang = 2*pi*rand(2,5);
+            ang = 2*pi*rand(6+8+4,1);
             
             % Expected values
             nDecs = prod(dec);
@@ -870,7 +898,7 @@ classdef OvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             dec = 4;
             ord = 5;
-            ang = 2*pi*rand(2,6);
+            ang = 2*pi*rand(6+10+5,1);
             
             % Expected values
             nDecs = prod(dec);
@@ -948,7 +976,7 @@ classdef OvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             dec = 8;
             ord = 2;
-            ang = 2*pi*rand(12,3);
+            ang = 2*pi*rand(28+24+4,1);
             
             % Expected values
             nDecs = prod(dec);
@@ -989,7 +1017,7 @@ classdef OvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             dec = 8;
             ord = 4;
-            ang = 2*pi*rand(12,5);
+            ang = 2*pi*rand(28+48+8,1);
             
             % Expected values
             nDecs = prod(dec);
@@ -1109,11 +1137,14 @@ classdef OvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
         function testAnalysisFilterAt(testCase)
             
             % Expected value
-            anFiltExpctd1 = [ 0.500000000000000   0.500000000000000   0.500000000000000   0.500000000000000 ];
-            anFiltExpctd2 = [ 0.500000000000000  -0.500000000000000  -0.500000000000000   0.500000000000000 ];
-            anFiltExpctd3 = [ 0.653281482438188   0.270598050073099  -0.270598050073099  -0.653281482438188 ];
-            anFiltExpctd4 = [ 0.270598050073099  -0.653281482438188   0.653281482438188  -0.270598050073099 ];
-            
+            anFiltExpctd1 = [ 0.500000000000000 + 0.000000000000000i,  0.500000000000000 + 0.000000000000000i,...
+                0.500000000000000 + 0.000000000000000i,  0.500000000000000 + 0.000000000000000i ];
+            anFiltExpctd2 = [ 0.353553390593274 - 0.353553390593274i, -0.353553390593274 - 0.353553390593274i,...
+                -0.353553390593274 + 0.353553390593274i,  0.353553390593274 + 0.353553390593274i ];
+            anFiltExpctd3 = [ 0.000000000000000 - 0.500000000000000i,  0.000000000000000 + 0.500000000000000i,...
+                 0.000000000000000 - 0.500000000000000i,  0.000000000000000 + 0.500000000000000i ];
+            anFiltExpctd4 = [ -0.353553390593274 - 0.353553390593274i,  0.353553390593274 - 0.353553390593274i,...
+                 0.353553390593274 + 0.353553390593274i, -0.353553390593274 + 0.353553390593274i ];
             % Instantiation of target class
             import saivdr.dictionary.olpprfb.*            
             testCase.lppufb = OvsdLpPuFb1dTypeIVm0System(...
@@ -1141,10 +1172,15 @@ classdef OvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
          function testAnalysisFilters(testCase)
             
             % Expected value
-            anFiltExpctd1 = [ 0.500000000000000   0.500000000000000   0.500000000000000   0.500000000000000 ].';
-            anFiltExpctd2 = [ 0.500000000000000  -0.500000000000000  -0.500000000000000   0.500000000000000 ].';
-            anFiltExpctd3 = [ 0.653281482438188   0.270598050073099  -0.270598050073099  -0.653281482438188 ].';
-            anFiltExpctd4 = [ 0.270598050073099  -0.653281482438188   0.653281482438188  -0.270598050073099 ].';
+
+            anFiltExpctd1 = [ 0.500000000000000 + 0.000000000000000i,  0.500000000000000 + 0.000000000000000i,...
+                0.500000000000000 + 0.000000000000000i,  0.500000000000000 + 0.000000000000000i ].';
+            anFiltExpctd2 = [ 0.353553390593274 - 0.353553390593274i, -0.353553390593274 - 0.353553390593274i,...
+                -0.353553390593274 + 0.353553390593274i,  0.353553390593274 + 0.353553390593274i ].';
+            anFiltExpctd3 = [ 0.000000000000000 - 0.500000000000000i,  0.000000000000000 + 0.500000000000000i,...
+                 0.000000000000000 - 0.500000000000000i,  0.000000000000000 + 0.500000000000000i ].';
+            anFiltExpctd4 = [ -0.353553390593274 - 0.353553390593274i,  0.353553390593274 - 0.353553390593274i,...
+                 0.353553390593274 + 0.353553390593274i, -0.353553390593274 + 0.353553390593274i ].';
             
             % Instantiation of target class
             import saivdr.dictionary.olpprfb.*
@@ -1351,7 +1387,7 @@ classdef OvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             dec = 4;
             ord = 2;
-            ang = 2*pi*rand(2,3);
+            ang = 2*pi*rand(6+4+2,1);
             
             % Expected values
             nDecs = prod(dec);
@@ -1392,7 +1428,7 @@ classdef OvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 4 4 ];
             ord = 2;
-            ang = 2*pi*rand(2,3);
+            ang = 2*pi*rand(6+4+2,1);
             
             % Expected values
             nChs = decch(2);
@@ -1467,7 +1503,7 @@ classdef OvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             dec = 4;
             ord = 4;
-            ang = 2*pi*rand(2,5);
+            ang = 2*pi*rand(6+8+4,1);
             
             % Expected values
             nDecs = prod(dec);
@@ -1544,7 +1580,7 @@ classdef OvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             dec = 6;
             ord = 4;
-            ang = 2*pi*rand(6,5);
+            ang = 2*pi*rand(15+24+4,1);
             
             % Expected values
             nDecs = prod(dec);
@@ -1619,7 +1655,7 @@ classdef OvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             dec = 10;
             ord = 4;
-            ang = 2*pi*rand(20,5);
+            ang = 2*pi*rand(45+80+8,1);
             
             % Expected values
             nDecs = prod(dec);
@@ -1691,7 +1727,7 @@ classdef OvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             dec = 4;
             ord = 6;
-            ang = 2*pi*rand(2,7);
+            ang = 2*pi*rand(6+12+6,1);
             
             % Expected values
             nDecs = prod(dec);
@@ -1769,7 +1805,7 @@ classdef OvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             dec = 8;
             ord = 6;
-            ang = 2*pi*rand(12,7);
+            ang = 2*pi*rand(28+72+12,1);
             
             % Expected values
             nDecs = prod(dec);
@@ -1810,7 +1846,7 @@ classdef OvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 4 4 ];
             ord = 4;
-            ang = 2*pi*rand(2,5);
+            ang = 2*pi*rand(6+8+4,1);
             
             % Expected values
             nChs = decch(2);
@@ -1853,7 +1889,7 @@ classdef OvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 4 6 ];
             ord = 2;
-            ang = 2*pi*rand(6,3);
+            ang = 2*pi*rand(15+12+2,1);
             
             % Expected values
             nChs = decch(2);
@@ -1896,7 +1932,7 @@ classdef OvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 4 6 ];
             ord = 4;
-            ang = 2*pi*rand(6,5);
+            ang = 2*pi*rand(15+24+4,1);
             
             % Expected values
             nChs = decch(2);
@@ -1939,7 +1975,7 @@ classdef OvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 4 8 ];
             ord = 2;
-            ang = 2*pi*rand(12,3);
+            ang = 2*pi*rand(28+24+4,1);
             
             % Expected values
             nChs = decch(2);
@@ -1982,7 +2018,7 @@ classdef OvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 4 8 ];
             ord = 4;
-            ang = 2*pi*rand(12,5);
+            ang = 2*pi*rand(28+48+8,1);
             
             % Expected values
             nChs = decch(2);
