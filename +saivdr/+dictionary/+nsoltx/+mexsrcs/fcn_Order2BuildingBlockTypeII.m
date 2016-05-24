@@ -1,4 +1,4 @@
-function output = fcn_Order2BuildingBlockTypeII( input, mtxHW, mtxHU, angles2, mtxW, mtxU, angles1, p, nshift ) %#codegen
+function output = fcn_Order2BuildingBlockTypeII( input, mtxW, mtxU, angB1, mtxHW, mtxHU, angB2, p, nshift ) %#codegen
 % FCN_NSOLTX_SUPEXT_TYPE2
 %
 % SVN identifier:
@@ -22,5 +22,5 @@ if isempty(h)
     h = saivdr.dictionary.nsoltx.mexsrcs.Order2BuildingBlockTypeII();
 end
 
-output = step(h, input, mtxHW, mtxHU, angles2, mtxW, mtxU, angles1, p, nshift);
+output = step(h, input, mtxW, mtxU, angB1, mtxHW, mtxHU, angB2, p, nshift);
 end

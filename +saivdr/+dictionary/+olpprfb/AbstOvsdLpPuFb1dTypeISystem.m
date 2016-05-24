@@ -144,13 +144,15 @@ classdef AbstOvsdLpPuFb1dTypeISystem < ...
         function updateMus_(obj)
             import saivdr.dictionary.nsoltx.ChannelGroup
             nChL = obj.NumberOfChannels/2;
-            sizeOfMus = [ 2*nChL obj.nStages ];
-            %sizeOfMus = 2*nChL*obj.nStages;
+            %sizeOfMus = [ 2*nChL obj.nStages ];
+            sizeOfMus = 2*nChL*obj.nStages;
             if isscalar(obj.Mus) && obj.Mus==1
-                obj.Mus = -ones(sizeOfMus);
-                obj.Mus(:,1) = ones(size(obj.Mus,1),1);
-                obj.Mus = obj.Mus(:);
-                sizeOfMus = prod(sizeOfMus);
+                %TODO:obj.Mus‚ð“KØ‚É’è‚ß‚é
+%                 obj.Mus = -ones(sizeOfMus);
+%                 obj.Mus(:,1) = ones(size(obj.Mus,1),1);
+%                 obj.Mus = obj.Mus(:);
+%                 sizeOfMus = prod(sizeOfMus);
+                obj.Mus = ones(sizeOfMus,1);
             end
 %             if size(obj.Mus,1) ~= sizeOfMus(1) || ...
 %                     size(obj.Mus,2) ~= sizeOfMus(2)

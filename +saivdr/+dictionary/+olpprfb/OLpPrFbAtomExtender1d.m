@@ -82,13 +82,16 @@ classdef OLpPrFbAtomExtender1d <  ...
             hOrd = uint32(ord/2);
             if hOrd > 0
                 for iOrd = uint32(1):hOrd
-                    paramMtxW1 = getParamMtx_(obj,4*iOrd-1);
-                    paramMtxU1 = getParamMtx_(obj,4*iOrd+0);
-                    paramMtxW2 = getParamMtx_(obj,4*iOrd+1);
-                    paramMtxU2 = getParamMtx_(obj,4*iOrd+2);
+                    paramMtxW1 = getParamMtx_(obj,6*iOrd-4);
+                    paramMtxU1 = getParamMtx_(obj,6*iOrd-3);
+                    paramAngB1 = getParamMtx_(obj,6*iOrd-2);
+                    paramMtxW2 = getParamMtx_(obj,6*iOrd-1);
+                    paramMtxU2 = getParamMtx_(obj,6*iOrd+0);
+                    paramAngB2 = getParamMtx_(obj,6*iOrd+1);
                     %
                     arrayCoefs = supportExtTypeI_(obj,arrayCoefs,...
-                        paramMtxW1,paramMtxU1,paramMtxW2,paramMtxU2,...
+                        paramMtxW1,paramMtxU1,paramAngB1,...
+                        paramMtxW2,paramMtxU2,paramAngB2,...
                         [],isPeriodicExt);
                 end
             end
@@ -120,15 +123,17 @@ classdef OLpPrFbAtomExtender1d <  ...
 
         end
         
-        function arrayCoefs = supportExtTypeI_(obj,arrayCoefs,paramMtxW1,paramMtxU1,paramMtxW2,paramMtxU2,~,isPeriodicExt)
+        function arrayCoefs = supportExtTypeI_(obj,arrayCoefs,paramMtx1,paramMtx2,paramMtx3,paramMtx4,paramMtx5,paramMtx6,isPeriodicExt)
             hLen = obj.NumberOfSymmetricChannels;
 
             % Phase 1
-            Wx1 = paramMtxW1;
-            Ux1 = paramMtxU1;
-            arrayCoefs = blockButterflyTypeI_(obj,arrayCoefs,[]);
+            Wx1 = paramMtx1;
+            Ux1 = paramMtx2;
+            angB1 = paramMtx3;
+            %TODO:
+            arrayCoefs = blockButterflyTypeI_(obj,arrayCoefs,paramMtx3);
             arrayCoefs = rightShiftLowerCoefs_(obj,arrayCoefs);
-            arrayCoefs = blockButterflyTypeI_(obj,arrayCoefs,[]);
+            arrayCoefs = blockButterflyTypeI_(obj,arrayCoefs,paramMtx3);
             arrayCoefs = arrayCoefs/2.0;
             % Lower channel rotation
             if isPeriodicExt
@@ -143,11 +148,13 @@ classdef OLpPrFbAtomExtender1d <  ...
             end
             
             % Phase 2
-            Wx2 = paramMtxW2;
-            Ux2 = paramMtxU2;
-            arrayCoefs = blockButterflyTypeI_(obj,arrayCoefs,[]);
+            Wx2 = paramMtx4;
+            Ux2 = paramMtx5;
+            angB2 = paramMtx6;
+            %TODO:
+            arrayCoefs = blockButterflyTypeI_(obj,arrayCoefs,angB2);
             arrayCoefs = leftShiftUpperCoefs_(obj,arrayCoefs);
-            arrayCoefs = blockButterflyTypeI_(obj,arrayCoefs,[]);
+            arrayCoefs = blockButterflyTypeI_(obj,arrayCoefs,anbB2);
             arrayCoefs = arrayCoefs/2.0;
             % Lower channel rotation
             arrayCoefs(1:hLen,:) = Wx2*arrayCoefs(1:hLen,:);

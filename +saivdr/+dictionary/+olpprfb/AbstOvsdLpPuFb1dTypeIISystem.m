@@ -116,32 +116,41 @@ classdef AbstOvsdLpPuFb1dTypeIISystem < ...
             end
 
             % Prepare ParameterMatrixSet
-            paramMtxSizeTab = repmat(...
-                [ ceil(obj.NumberOfChannels/2) ;
-                floor(obj.NumberOfChannels/2) ],...
-                obj.nStages,2);
+%             paramMtxSizeTab = repmat(...
+%                 [ ceil(obj.NumberOfChannels/2) ;
+%                 floor(obj.NumberOfChannels/2) ],...
+%                 obj.nStages,2);
+            paramMtxSizeTab = [obj.NumberOfChannels*ones(1,2);
+                repmat([floor(obj.NumberOfChannels/2)*ones(2,2);
+                floor(obj.NumberOfChannels/4),1;
+                ceil(obj.NumberOfChannels/2)*ones(2,2);
+                floor(obj.NumberOfChannels/4),1], obj.nStages-1, 1)];
             obj.ParameterMatrixSet = ParameterMatrixSet(...
                 'MatrixSizeTable',paramMtxSizeTab);
         end
 
         function updateAngles_(obj)
             import saivdr.dictionary.nsoltx.ChannelGroup
-            nAngsPerStg = zeros(2,1);
+            nAngsPerStg = zeros(3,1);
             %
             nAngsPerStg(1) = ...
-                ceil(obj.NumberOfChannels/2) ...
-                *double(ceil(obj.NumberOfChannels/2)-1)/2;
-            nAngsPerStg(2) = ...
                 floor(obj.NumberOfChannels/2) ...
-                *double(floor(obj.NumberOfChannels/2)-1)/2;
-            sizeOfAngles = [sum(nAngsPerStg) obj.nStages];
+                *double(floor(obj.NumberOfChannels/2)-1);
+            nAngsPerStg(2) = ...
+                ceil(obj.NumberOfChannels/2) ...
+                *double(ceil(obj.NumberOfChannels/2)-1);
+            nAngsPerStg(3) = 2*floor(obj.NumberOfChannels/4);
+            nAngsInit = obj.NumberOfChannels*(obj.NumberOfChannels-1)/2;
+            sizeOfAngles = nAngsInit + sum(nAngsPerStg)*(obj.nStages-1);
             %
 
             if isscalar(obj.Angles) && obj.Angles == 0
-                obj.Angles = zeros(sizeOfAngles);
+                obj.Angles = zeros(sizeOfAngles,1);
             end
-            if size(obj.Angles,1) ~= sizeOfAngles(1) || ...
-                    size(obj.Angles,2) ~= sizeOfAngles(2)
+            obj.Angles = obj.Angles(:);
+%             if size(obj.Angles,1) ~= sizeOfAngles(1) || ...
+%                     size(obj.Angles,2) ~= sizeOfAngles(2)
+            if size(obj.Angles) ~= sizeOfAngles
                 id = 'SaivDr:IllegalArgumentException';
                 msg = sprintf(...
                     'Size of angles must be [ %d %d ]',...
@@ -154,26 +163,31 @@ classdef AbstOvsdLpPuFb1dTypeIISystem < ...
         function updateMus_(obj)
             import saivdr.dictionary.nsoltx.ChannelGroup
             %
-            sizeOfMus = [ sum(obj.NumberOfChannels) obj.nStages ];
+%             sizeOfMus = [ 2*sum(obj.NumberOfChannels) obj.nStages ];
+            sizeOfMus = obj.NumberOfChannels*(2*obj.nStages-1);
             %
-            nChL = floor(obj.NumberOfChannels/2);
-            nChU = ceil(obj.NumberOfChannels/2);
-            if isscalar(obj.Mus) && obj.Mus == 1
-                if nChU > nChL
-                    obj.Mus = [
-                        ones(nChU, obj.nStages);
-                        -ones(nChL, obj.nStages) ];
-                else
-                    obj.Mus = [
-                        -ones(nChU, obj.nStages);
-                        ones(nChL, obj.nStages) ];
-                end
-                if mod(obj.nStages,2) == 1
-                    obj.Mus(:,1) = ones(size(obj.Mus,1),1);
-                end
-            end
-            if size(obj.Mus,1) ~= sizeOfMus(1) || ...
-                    size(obj.Mus,2) ~= sizeOfMus(2)
+%             nChL = floor(obj.NumberOfChannels/2);
+%             nChU = ceil(obj.NumberOfChannels/2);
+%             if isscalar(obj.Mus) && obj.Mus == 1
+                %TODO:obj.Mus‚ð“KØ‚ÉÝ’è‚·‚é
+%                 if nChU > nChL
+%                     obj.Mus = repmat([
+%                         ones(nChU, obj.nStages);
+%                         -ones(nChL, obj.nStages) ],2,1);
+%                 else
+%                     obj.Mus = repmat([
+%                         -ones(nChU, obj.nStages);
+%                         ones(nChL, obj.nStages) ],2,1);
+%                 end
+%                 if mod(obj.nStages,2) == 1
+%                     obj.Mus(:,1) = ones(size(obj.Mus,1),1);
+%                 end
+%                 sizeOfMus = prod(sizeOfMus);
+%             end
+            obj.Mus = ones(sizeOfMus,1);
+%             if size(obj.Mus,1) ~= sizeOfMus(1) || ...
+%                     size(obj.Mus,2) ~= sizeOfMus(2)
+            if size(obj.Mus) ~= sizeOfMus
                 id = 'SaivDr:IllegalArgumentException';
                 msg = sprintf(...
                     'Size of mus must be [ %d %d ]',...
@@ -199,41 +213,42 @@ classdef AbstOvsdLpPuFb1dTypeIISystem < ...
             %
             E0 = obj.matrixE0;
             %
-            cM_2 = ceil(nHalfDecs);
-            W = step(pmMtxSt_,[],uint32(1))*[ eye(cM_2) ;
-                zeros(ceil(nChs/2)-cM_2,cM_2)];
-            fM_2 = floor(nHalfDecs);
-            U = step(pmMtxSt_,[],uint32(2))*[ eye(fM_2);
-                zeros(floor(nChs/2)-fM_2,fM_2) ];
-            R = blkdiag(W,U);
+%             cM_2 = ceil(nHalfDecs);
+%             W = step(pmMtxSt_,[],uint32(1))*[ eye(cM_2) ;
+%                 zeros(ceil(nChs/2)-cM_2,cM_2)];
+%             fM_2 = floor(nHalfDecs);
+%             U = step(pmMtxSt_,[],uint32(2))*[ eye(fM_2);
+%                 zeros(floor(nChs/2)-fM_2,fM_2) ];
+%             R = blkdiag(W,U);
+            R = step(pmMtxSt_,[],uint32(1))*[eye(dec);zeros(nChs-dec,dec)];
             E = R*E0;
-            iParamMtx = uint32(3);
+            iParamMtx = uint32(2);
 
             %TODO
             % Order extension
             if ord > 0
                 nShift = int32(dec);
                 for iOrd = 1:uint32(double(ord)/2)
-                    %hW = step(pmMtxSt_,[],iParamMtx);
-                    hW = step(pmMtxSt_,[],iParamMtx);
-                    %hU = step(pmMtxSt_,[],iParamMtx+1);
-                    hU = eye(ceil(nChs/2));
-                    %angles2 = step(PmMtxSt_,[],iParamMtx+2);
-                    angles2 = pi/4*ones(floor(nChs/4),1);
-                    %W = step(pmMtxSt_,[],iParamMtx+3);
-                    W = eye(floor(nChs/2));
-                    %U = step(pmMtxSt_,[],iParamMtx+4);
+                    %W = step(pmMtxSt_,[],iParamMtx);
+                    W = step(pmMtxSt_,[],iParamMtx);
+                    %U = step(pmMtxSt_,[],iParamMtx+1);
                     U = step(pmMtxSt_,[],iParamMtx+1);
-                    %angles1 = step(PmMtxSt_,[],iParamMtx+5);
-                    angles1 = pi/4*ones(floor(nChs/4),1);
+                    %angB1 = step(PmMtxSt_,[],iParamMtx+2);
+                    angB1 = step(pmMtxSt_,[],iParamMtx+2);
+                    %hW = step(pmMtxSt_,[],iParamMtx+3);
+                    hW = step(pmMtxSt_,[],iParamMtx+3);
+                    %hU = step(pmMtxSt_,[],iParamMtx+4);
+                    hU = step(pmMtxSt_,[],iParamMtx+4);
+                    %angB2 = step(PmMtxSt_,[],iParamMtx+5);
+                    angB2 = step(pmMtxSt_,[],iParamMtx+5);
                     if mexFlag_
-                        E = mexFcn_(E, hW, hU, angles2, W, U, angles1, floor(nChs/2), nShift);
+                        E = mexFcn_(E, W, U, angB1, hW, hU, angB2, floor(nChs/2), nShift);
                     else
                         import saivdr.dictionary.nsoltx.mexsrcs.Order2BuildingBlockTypeII
                         hObb = Order2BuildingBlockTypeII();
-                        E = step(hObb, E, hW, hU, angles2, W, U, angles1, floor(nChs/2), nShift);
+                        E = step(hObb, E, W, U, angB1, hW, hU, angB2, floor(nChs/2), nShift);
                     end
-                    iParamMtx = iParamMtx+2;
+                    iParamMtx = iParamMtx+6;
                 end
                 len = dec*(ord+1);
             end

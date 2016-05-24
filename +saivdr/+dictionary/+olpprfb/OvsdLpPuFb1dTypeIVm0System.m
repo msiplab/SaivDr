@@ -21,8 +21,7 @@ classdef OvsdLpPuFb1dTypeIVm0System < ...
     
     properties (Access = private)
         omgsV0_
-        omgsW_
-        omgsU_
+        omgsWU_
         %TODO: angles
     end
     
@@ -32,8 +31,7 @@ classdef OvsdLpPuFb1dTypeIVm0System < ...
             obj = obj@saivdr.dictionary.olpprfb.AbstOvsdLpPuFb1dTypeISystem(...
                 varargin{:});
             obj.omgsV0_ = OrthonormalMatrixGenerationSystem();
-            obj.omgsW_ = OrthonormalMatrixGenerationSystem();
-            obj.omgsU_ = OrthonormalMatrixGenerationSystem();
+            obj.omgsWU_ = OrthonormalMatrixGenerationSystem();
             %TODO: angles
         end
     end
@@ -43,15 +41,13 @@ classdef OvsdLpPuFb1dTypeIVm0System < ...
         function s = saveObjectImpl(obj)
             s = saveObjectImpl@saivdr.dictionary.olpprfb.AbstOvsdLpPuFb1dTypeISystem(obj);
             s.omgsV0_ = matlab.System.saveObject(obj.omgsV0_);
-            s.omgsW_ = matlab.System.saveObject(obj.omgsW_);
-            s.omgsU_ = matlab.System.saveObject(obj.omgsU_);
+            s.omgsWU_ = matlab.System.saveObject(obj.omgsWU_);
             %TODO: angles
         end
         
         function loadObjectImpl(obj,s,wasLocked)
             obj.omgsV0_ = matlab.System.loadObject(s.omgsV0_);
-            obj.omgsW_ = matlab.System.loadObject(s.omgsW_);
-            obj.omgsU_ = matlab.System.loadObject(s.omgsU_);
+            obj.omgsWU_ = matlab.System.loadObject(s.omgsWU_);
             %TODO: angles
             loadObjectImpl@saivdr.dictionary.olpprfb.AbstOvsdLpPuFb1dTypeISystem(obj,s,wasLocked);
         end
@@ -73,11 +69,11 @@ classdef OvsdLpPuFb1dTypeIVm0System < ...
             %TODO:
             for iParamMtx = uint32(1):obj.nStages-1
                 % W
-                mtx = step(obj.omgsW_,angles(1:nAngs,iParamMtx),...
+                mtx = step(obj.omgsWU_,angles(1:nAngs,iParamMtx),...
                     mus(1:nMus,iParamMtx));
                 step(obj.ParameterMatrixSet,mtx,3*iParamMtx-1);
                 % U
-                mtx = step(obj.omgsU_,angles(nAngs+1:2*nAngs,iParamMtx),...
+                mtx = step(obj.omgsWU_,angles(nAngs+1:2*nAngs,iParamMtx),...
                     mus(nMus+1:end,iParamMtx));
                 step(obj.ParameterMatrixSet,mtx,3*iParamMtx+0);
                 % angles_B
