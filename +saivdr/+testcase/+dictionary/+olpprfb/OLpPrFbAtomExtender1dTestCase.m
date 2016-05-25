@@ -101,9 +101,8 @@ classdef OLpPrFbAtomExtender1dTestCase < matlab.unittest.TestCase
             ord   = 0;
             coefs = randn(sum(nch), srclen);
             scale = srclen;
-            Ix = eye(nch(1));
-            In = eye(nch(2));
-            pmCoefs = [ Ix(:) ; In(:) ];
+            I0 = eye(sum(nch));
+            pmCoefs = I0(:);
             
             % Expected values
             ordExpctd = ord;
@@ -136,9 +135,8 @@ classdef OLpPrFbAtomExtender1dTestCase < matlab.unittest.TestCase
             nch   = [ 3 2 ];
             coefs = randn(sum(nch), srclen);
             scale = srclen;
-            Ix = eye(nch(1));
-            In = eye(nch(2));
-            pmCoefs = [ Ix(:) ; In(:) ];
+            I0 = eye(sum(nch));
+            pmCoefs = I0(:);
             
             % Expected values
             ordExpctd = ord;
@@ -171,9 +169,11 @@ classdef OLpPrFbAtomExtender1dTestCase < matlab.unittest.TestCase
             nch   = [ 2 2 ];
             coefs = randn(sum(nch), srclen);
             scale = srclen;
+            I0 = eye(sum(nch));
             Ix = eye(nch(1));
             In = eye(nch(2));
-            pmCoefs = [ Ix(:) ; In(:) ; -In(:) ; -In(:) ];
+            angB = pi/4*ones(floor(sum(nch)/4),1);
+            pmCoefs = [ I0(:); Ix(:) ; In(:) ; angB; In(:) ; In(:); angB ];
             
             % Expected values
             ordExpctd = ord;

@@ -216,6 +216,7 @@ classdef AbstOvsdLpPuFb1dSystem < matlab.System %#codegen
             end
         end
         
+        %TODO:“¯ˆê‚ÌŠÖ”‚ª2D,3D‚Å‚à’è‹`‚³‚ê‚Ä‚¢‚é‚Ì‚Åˆê‰ÓŠ‚ÉW–ñ‚·‚é
         function value = hsdftmtx_(~, nDec) %Hermitian-Symmetric DFT matrix
             w = exp(-2*pi*1i/nDec);
             value = complex(zeros(nDec));

@@ -168,12 +168,15 @@ classdef AbstOLpPrFbCoefManipulator1d < matlab.System %#codegen
             ps  = obj.NumberOfSymmetricChannels;
             pa  = obj.NumberOfAntisymmetricChannels;
             %
-            obj.paramMtxSzTab = zeros(2*sum(ord)+2, 2);
+            obj.paramMtxSzTab = zeros(6*sum(ord)+1, 2);
+            obj.paramMtxSzTab(1,:) = [ps+pa, ps+pa];
             for iOrd = 0:sum(ord)/2
-                obj.paramMtxSzTab(4*iOrd+1,:) = [ ps ps ];
-                obj.paramMtxSzTab(4*iOrd+2,:) = [ pa pa ];
-                obj.paramMtxSzTab(4*iOrd+3,:) = [ ps ps ];
-                obj.paramMtxSzTab(4*iOrd+4,:) = [ pa pa ];
+                obj.paramMtxSzTab(6*iOrd+2,:) = [ pa pa ];
+                obj.paramMtxSzTab(6*iOrd+3,:) = [ pa pa ];
+                obj.paramMtxSzTab(6*iOrd+4,:) = [ floor(ps/2) 1 ];
+                obj.paramMtxSzTab(6*iOrd+5,:) = [ ps ps ];
+                obj.paramMtxSzTab(6*iOrd+6,:) = [ ps ps ];
+                obj.paramMtxSzTab(6*iOrd+7,:) = [ floor(ps/2) 1 ];
             end
             %
             nPm = size(obj.paramMtxSzTab,1);
