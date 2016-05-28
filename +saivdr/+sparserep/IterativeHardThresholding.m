@@ -50,41 +50,46 @@ classdef IterativeHardThresholding < ...
         function [ residual, coefvec, scales ] = ...
                 stepImpl(obj, srcImg, nCoefs)
             source = im2double(srcImg);
+            nSamples = numel(source);
             
             % Initalization
-            residual = source;
-            coefvec = 0;
+            iIter    = 0;                
+            [coefvec,scales] = step(obj.AdjOfSynthesizer,...
+                    source,obj.NumberOfTreeLevels);
             if ~isempty(obj.StepMonitor)
                 reset(obj.StepMonitor)
             end
-            iIter = 0;
-            diff = Inf;
-            
+             
             % Iteration
-            while (diff > obj.TolRes && iIter < obj.MaxIter)
-                preresidual = residual;
+            while true
+                iIter = iIter + 1;                
+                precoefvec = coefvec;
+                % Reconstruction
+                reconst = step(obj.Synthesizer,precoefvec,scales);
+                % Residual
+                residual = source - reconst;
                 % g = Phi.'*r
-                [gradvec,scales] = step(obj.AdjOfSynthesizer,...
+                [gradvec,~] = step(obj.AdjOfSynthesizer,...
                     residual,obj.NumberOfTreeLevels);
-                coefvec = coefvec + obj.Mu*gradvec;
+                coefvec = precoefvec + obj.Mu*gradvec;
                 % Hard thresholding
                 [~, idxsort ] = sort(abs(coefvec(:)),1,'descend');
                 indexSet = idxsort(1:nCoefs);
                 mask = 0*coefvec;
                 mask(indexSet) = 1;
                 coefvec = mask.*coefvec;
-                % Reconstruction
-                reconst = step(obj.Synthesizer,coefvec,scales);
-                % Residual
-                residual = source - reconst;
                 %
                 if ~isempty(obj.StepMonitor)
                     step(obj.StepMonitor,reconst);
                 end
-                %
-                iIter = iIter + 1;
-                diff = norm(residual(:)-preresidual(:))^2/numel(residual);
+                % Evaluation of convergence
+                diff = norm(coefvec(:)-precoefvec(:))^2/nSamples;
+                if ~(diff > obj.TolRes && iIter < obj.MaxIter)
+                    break
+                end
             end
+            % Final residual
+            residual = source - step(obj.Synthesizer,coefvec,scales);            
         end
         
     end
