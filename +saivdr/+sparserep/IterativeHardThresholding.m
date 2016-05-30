@@ -30,7 +30,7 @@ classdef IterativeHardThresholding < ...
     %
     
     properties
-        TolRes  = 1e-7
+        TolRes  = 1e-7;
         Mu = (1-1e-3)
     end
        
@@ -50,7 +50,6 @@ classdef IterativeHardThresholding < ...
         function [ residual, coefvec, scales ] = ...
                 stepImpl(obj, srcImg, nCoefs)
             source = im2double(srcImg);
-            nSamples = numel(source);
             
             % Initalization
             iIter    = 0;                
@@ -66,6 +65,9 @@ classdef IterativeHardThresholding < ...
                 precoefvec = coefvec;
                 % Reconstruction
                 reconst = step(obj.Synthesizer,precoefvec,scales);
+                if ~isempty(obj.StepMonitor) && iIter > 1
+                    step(obj.StepMonitor,reconst);
+                end                  
                 % Residual
                 residual = source - reconst;
                 % g = Phi.'*r
@@ -78,18 +80,19 @@ classdef IterativeHardThresholding < ...
                 mask = 0*coefvec;
                 mask(indexSet) = 1;
                 coefvec = mask.*coefvec;
-                %
-                if ~isempty(obj.StepMonitor)
-                    step(obj.StepMonitor,reconst);
-                end
                 % Evaluation of convergence
-                diff = norm(coefvec(:)-precoefvec(:))^2/nSamples;
-                if ~(diff > obj.TolRes && iIter < obj.MaxIter)
+                diff = (norm(coefvec(:)-precoefvec(:))/norm(coefvec(:)))^2;
+                if (diff < obj.TolRes || iIter >= obj.MaxIter)
                     break
                 end
             end
-            % Final residual
-            residual = source - step(obj.Synthesizer,coefvec,scales);            
+            % Reconstruction
+            reconst = step(obj.Synthesizer,coefvec,scales); 
+            if ~isempty(obj.StepMonitor) 
+                step(obj.StepMonitor,reconst);
+            end
+            % Residual
+            residual = source - reconst;
         end
         
     end
