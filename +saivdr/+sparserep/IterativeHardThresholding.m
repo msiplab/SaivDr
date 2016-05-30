@@ -30,7 +30,7 @@ classdef IterativeHardThresholding < ...
     %
     
     properties
-        TolRes  = 1e-7;
+        TolRes  = 1e-7
         Mu = (1-1e-3)
     end
        
