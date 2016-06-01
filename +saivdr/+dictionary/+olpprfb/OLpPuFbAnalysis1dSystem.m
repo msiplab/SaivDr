@@ -238,7 +238,7 @@ classdef OLpPuFbAnalysis1dSystem < ...
             
             % Block DCT
             if dec_ == 1
-                arrayCoefs(1,:) = subSeq(:).';
+                arrayCoefs(1,:) = subSeq(:)';
 %             elseif dec_ == 2
 %                 subSeq1 = subSeq(1:2:end);
 %                 subSeq2 = subSeq(2:2:end);
@@ -251,10 +251,11 @@ classdef OLpPuFbAnalysis1dSystem < ...
             else
                 %mc = ceil(dec_/2);
                 %mf = floor(dec_/2);
-                hsdftCoefs = hsdft_(obj, reshape(subSeq,[dec_, nBlks_]));
+                tmp = reshape(subSeq,[dec_, nBlks_]);
+                hsdftCoefs = hsdft_(obj, conj(tmp));
                 %arrayCoefs(1:mc,:) = dctCoefs(1:mc,:) ;
                 %arrayCoefs(ps+1:ps+mf,:) = dctCoefs(mc+1:end,:);
-                arrayCoefs(1:dec) = hsdftCoefs;
+                arrayCoefs(1:dec_,:) = hsdftCoefs;
             end
             
             % Atom extension
@@ -263,14 +264,17 @@ classdef OLpPuFbAnalysis1dSystem < ...
             fpe = strcmp(obj.BoundaryOperation,'Circular');
             arrayCoefs = obj.atomExtFcn(arrayCoefs,subScale,pmCoefs,...
                 ord,fpe);
+            arrayCoefs = conj(arrayCoefs);
         end
         
+        %TODO:“¯ˆê‚ÌŠÖ”‚ªAbstOLpPuFb1dSystem‚Å‚à’è‹`‚³‚ê‚Ä‚¢‚é‚Ì‚Åˆê‰ÓŠ‚ÉW–ñ‚·‚é
         function value = hsdftmtx_(~, nDec) %Hermitian-Symmetric DFT matrix
-            w = exp(-2*pi*1i/nDec);
+            %w = exp(-2*pi*1i/nDec);
             value = complex(zeros(nDec));
             for u = 0:nDec-1
                 for x =0:nDec-1
-                    value(u+1,x+1) = w^(u*(x+0.5))/sqrt(nDec);
+                    n = rem(u*(2*x+1),2*nDec);
+                    value(u+1,x+1) = exp(-1i*pi*n/nDec)/sqrt(nDec);
                 end
             end
         end

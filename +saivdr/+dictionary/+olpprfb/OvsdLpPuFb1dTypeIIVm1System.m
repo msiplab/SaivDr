@@ -63,7 +63,7 @@ classdef OvsdLpPuFb1dTypeIIVm1System < ...
             % V0
             mtx = step(obj.omgsV0_,obj.Angles(1:nChs*(nChs-1)/2),...
                 obj.Mus(1:nChs));
-            step(pmMtxSt_,mtx,uint32(1));
+            step(obj.ParameterMatrixSet,mtx,uint32(1));
             
             nSts   = obj.nStages;
             angles = reshape(obj.Angles(nChs*(nChs-1)/2+1:end),[],obj.nStages-1);
@@ -79,8 +79,6 @@ classdef OvsdLpPuFb1dTypeIIVm1System < ...
             % TODO: CNSOLT‚É‚¨‚¯‚éNo-DC-Leakage condition‚ð³‚µ‚­’è‹`‚·‚éD
             % No-DC-Leakage condition
             W_ = eye(ceil(nChs/2)); 
-            omgsW = obj.omgsW_;
-            omgsU = obj.omgsU_;
             pmMtxSet = obj.ParameterMatrixSet;
             for iParamMtx = uint32(1):nSts-1
                 % W
@@ -115,11 +113,11 @@ classdef OvsdLpPuFb1dTypeIIVm1System < ...
                 angles_(1:ceil(nChs/2)-1);
             mus(1,nSts) = mus_(1);
             % W
-            mtx = step(omgsW,angles(1:nAngsW,nSts),...
+            mtx = step(omgsWU,angles(1:nAngsW,nSts),...
                 mus(1:nMusW,nSts));            
             step(pmMtxSet,mtx,2*nSts-1); 
             % U
-            mtx = step(omgsU,angles(nAngsW+1:end,nSts),...
+            mtx = step(omgsWU,angles(nAngsW+1:end,nSts),...
                 mus(nMusW+1:end,nSts));
             step(pmMtxSet,mtx,2*nSts);
             %
