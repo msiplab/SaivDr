@@ -252,7 +252,7 @@ classdef OLpPuFbAnalysis1dSystem < ...
                 %mc = ceil(dec_/2);
                 %mf = floor(dec_/2);
                 tmp = reshape(subSeq,[dec_, nBlks_]);
-                hsdftCoefs = hsdft_(obj, conj(tmp));
+                hsdftCoefs = hsdft_(obj, tmp);
                 %arrayCoefs(1:mc,:) = dctCoefs(1:mc,:) ;
                 %arrayCoefs(ps+1:ps+mf,:) = dctCoefs(mc+1:end,:);
                 arrayCoefs(1:dec_,:) = hsdftCoefs;

@@ -35,11 +35,11 @@ classdef OvsdLpPuFb1dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             coefExpctd = [
-                0.500000000000000   0.500000000000000   0.500000000000000   0.500000000000000
-                0.500000000000000  -0.500000000000000  -0.500000000000000   0.500000000000000
-                0 0 0 0 
-                0.653281482438188   0.270598050073099  -0.270598050073099  -0.653281482438188
-                0.270598050073099  -0.653281482438188   0.653281482438188  -0.270598050073099
+                 0.500000000000000 + 0.000000000000000i, 0.500000000000000 + 0.000000000000000i, 0.500000000000000 + 0.000000000000000i, 0.500000000000000 + 0.000000000000000i;
+                 0.353553390593274 - 0.353553390593274i,-0.353553390593274 - 0.353553390593274i,-0.353553390593274 + 0.353553390593274i, 0.353553390593274 + 0.353553390593274i;
+                 0.000000000000000 - 0.500000000000000i, 0.000000000000000 + 0.500000000000000i, 0.000000000000000 - 0.500000000000000i, 0.000000000000000 + 0.500000000000000i;
+                -0.353553390593274 - 0.353553390593274i, 0.353553390593274 - 0.353553390593274i, 0.353553390593274 + 0.353553390593274i,-0.353553390593274 + 0.353553390593274i;
+                 0.000000000000000 + 0.000000000000000i, 0.000000000000000 + 0.000000000000000i, 0.000000000000000 + 0.000000000000000i, 0.000000000000000 + 0.000000000000000i...
                 ];
             
             % Instantiation of target class
@@ -167,7 +167,7 @@ classdef OvsdLpPuFb1dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 4 5 ];
             ord   = 2;
-            ang = 2*pi*rand(4,2);
+            ang = 2*pi*rand(10+10,1);
             
             % Expected values
             nChs = decch(2);
@@ -279,7 +279,7 @@ classdef OvsdLpPuFb1dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 4 5 ];
             ord = 4;
-            ang = 2*pi*rand(4,3);
+            ang = 2*pi*rand(10+2*10,1);
             
             % Expected values
             nChs = decch(2);
@@ -317,7 +317,7 @@ classdef OvsdLpPuFb1dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 4 5 ];
             ord = 8;
-            ang = 2*pi*rand(4,5);
+            ang = 2*pi*rand(10+4*10,1);
             
             % Expected values
             nChs = decch(2);
@@ -391,14 +391,13 @@ classdef OvsdLpPuFb1dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
         function testParameterMatrixSet(testCase)
             
             % Preparation
-            mstab = [ 3 3 ; 2 2 ];
+            mstab = [ 5 5 ];
             
             % Expected value
             import saivdr.dictionary.utility.ParameterMatrixSet
             paramExpctd = ParameterMatrixSet(...
                 'MatrixSizeTable',mstab);
-            step(paramExpctd,eye(3),1);
-            step(paramExpctd,eye(2),2);
+            step(paramExpctd,eye(5),1);
             
             % Instantiation of target class
             import saivdr.dictionary.olpprfb.*
@@ -419,7 +418,7 @@ classdef OvsdLpPuFb1dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 4 3 2 ];
             ord = 4;
-            mstab = [ 3 3 ; 2 2 ; 3 3 ; 2 2 ; 3 3 ; 2 2 ];
+            mstab = [ 5 5 ; 2 2 ; 2 2 ; 1 1 ; 3 3 ; 3 3; 1 1 ; 2 2 ; 2 2 ; 1 1 ; 3 3 ; 3 3 ; 1 1 ];
             
             % Expected values
             import saivdr.dictionary.utility.*

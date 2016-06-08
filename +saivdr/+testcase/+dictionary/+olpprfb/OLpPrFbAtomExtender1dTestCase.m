@@ -338,7 +338,8 @@ classdef OLpPrFbAtomExtender1dTestCase < matlab.unittest.TestCase
             srclen = 16;
             ord   = 2;
             nch   = [ 3 2 ];
-            coefs = randn(sum(nch), srclen) + 1i*randn(sum(nch), srclen);
+            %coefs = randn(sum(nch), srclen) + 1i*randn(sum(nch), srclen);
+            coefs = ones(sum(nch),srclen);
             scale = srclen;
             I0 = eye(sum(nch));
             Ix = eye(nch(1));

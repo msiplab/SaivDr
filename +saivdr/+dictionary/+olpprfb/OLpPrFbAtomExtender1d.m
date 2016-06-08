@@ -190,14 +190,11 @@ classdef OLpPrFbAtomExtender1d <  ...
                 arrayCoefs(1:hLen,:) = Wx*arrayCoefs(1:hLen,:);
                 arrayCoefs(hLen+1:end-1,:) = Ux*arrayCoefs(hLen+1:end-1,:);
             else
-                % TODO: 周期拡張でない場合の変換方法の定義
-                arrayCoefs(1:hLen,1) = -arrayCoefs(1:hLen,1);
-                arrayCoefs(1:hLen,2:end) = Wx*arrayCoefs(1:hLen,2:end);
+                % TODO:　アルゴリズムの正当性を確かめる
+                arrayCoefs(1:hLen,:) = Wx*arrayCoefs(1:hLen,:);
                 
                 arrayCoefs(hLen+1:end-1,1) = -arrayCoefs(hLen+1:end-1,1);
                 arrayCoefs(hLen+1:end-1,2:end) = Ux*arrayCoefs(hLen+1:end-1,2:end);
-%                 arrayCoefs(1:hLen,:) = Wx*arrayCoefs(1:hLen,:);
-%                 arrayCoefs(hLen+1:end-1,:) = Ux*arrayCoefs(hLen+1:end-1,:);
             end
             
             % Phase 2
@@ -215,6 +212,7 @@ classdef OLpPrFbAtomExtender1d <  ...
             arrayCoefs(1:hLen+1,:) = Wx*arrayCoefs(1:hLen+1,:);
         end
         
+        %TODO : 動作確認完了次第削除する
 %         function arrayCoefs = supportExtTypeIIPsLtPa_(obj,arrayCoefs,paramMtx1,paramMtx2,~,isPeriodicExt)
 %             hLen = obj.NumberOfSymmetricChannels;
 %             
@@ -268,7 +266,7 @@ classdef OLpPrFbAtomExtender1d <  ...
             for p = 1:floor(hchs/2)
                 tp = angles(p);
                 
-                hC(2*p-1:2*p, 2*p-1:2*p) = [-1i*cos(tp), -1i*sin(tp);
+                hC(2*p-1:2*p, 2*p-1:2*p) = [ -1i*cos(tp), -1i*sin(tp);
                     cos(tp) , -sin(tp)]; %c^
                 hS(2*p-1:2*p, 2*p-1:2*p) = [ -1i*sin(tp), -1i*cos(tp);
                     sin(tp) , -cos(tp)]; %s^

@@ -371,7 +371,7 @@ classdef OvsdLpPuFb1dTypeIVm1SystemTestCase < matlab.unittest.TestCase
             % Parameters
             dec = 4;
             ord = 0;
-            ang = [ 0 0 ].';
+            ang = [ 0 0 0 0 0 0 ].';
             
             % Expected values
             coefExpctd(:,:,1) = [
@@ -401,21 +401,21 @@ classdef OvsdLpPuFb1dTypeIVm1SystemTestCase < matlab.unittest.TestCase
             
         end
         
+        % TODO: テストの妥当性を考える
         % Test for construction
         function testConstructorWithAng0Pi4(testCase)
             
             % Parameters
             dec = 4;
             ord = 0;
-            ang = [ 0 pi/4 ].';
+            ang = [ 0 0 0 0 0 pi/4 ].';
             
             % Expected values
             import saivdr.dictionary.utility.*
             omgs = OrthonormalMatrixGenerationSystem();
-            matrixW0 = step(omgs,ang(1),1);
-            matrixU0 = step(omgs,ang(2),1);
+            matrixV0 = step(omgs,ang,1);
             coefExpctd(:,:,1) = ...
-                blkdiag(matrixW0, matrixU0) * [
+                matrixV0 * [
                  0.500000000000000 + 0.000000000000000i,  0.500000000000000 + 0.000000000000000i,...
                  0.500000000000000 + 0.000000000000000i,  0.500000000000000 + 0.000000000000000i;
                  0.353553390593274 - 0.353553390593274i, -0.353553390593274 - 0.353553390593274i,...
@@ -636,14 +636,13 @@ classdef OvsdLpPuFb1dTypeIVm1SystemTestCase < matlab.unittest.TestCase
         function testParameterMatrixSet(testCase)
             
             % Preparation
-            mstab = [ 2 2 ; 2 2 ];
+            mstab = [4 4];
             
             % Expected value
             import saivdr.dictionary.utility.ParameterMatrixSet
             paramExpctd = ParameterMatrixSet(...
                 'MatrixSizeTable',mstab);
-            step(paramExpctd,eye(2),1);
-            step(paramExpctd,eye(2),2);
+            step(paramExpctd,eye(4),1);
             
             % Instantiation of target class
             import saivdr.dictionary.olpprfb.*
@@ -658,247 +657,258 @@ classdef OvsdLpPuFb1dTypeIVm1SystemTestCase < matlab.unittest.TestCase
             
         end
         
-%         % Test for construction with order 4
-%         function testParameterMatrixSetRandAngMuWithDec4Ch22Ord4(testCase)
-%             
-%             % Parameters
-%             decch = [ 4 2 2 ];
-%             ord = 4;
-%             mstab = [ 2 2 ; 2 2 ; 2 2 ; 2 2 ; 2 2 ; 2 2 ];
-%             
-%             % Expected values
-%             import saivdr.dictionary.utility.*
-%             paramMtxExpctd = ParameterMatrixSet(...
-%                 'MatrixSizeTable',mstab);
-%             step(paramMtxExpctd, eye(mstab(1,:)),uint32(1)); % W0
-%             step(paramMtxExpctd, eye(mstab(2,:)),uint32(2)); % U0
-%             step(paramMtxExpctd,-eye(mstab(3,:)),uint32(3)); % U1
-%             step(paramMtxExpctd,-eye(mstab(4,:)),uint32(4)); % U2
-%             step(paramMtxExpctd,-eye(mstab(5,:)),uint32(5)); % U3
-%             step(paramMtxExpctd,-eye(mstab(6,:)),uint32(6)); % U4
-%             coefExpctd = get(paramMtxExpctd,'Coefficients');
-%             
-%             % Instantiation of target class
-%             import saivdr.dictionary.olpprfb.*
-%             testCase.lppufb = OvsdLpPuFb1dTypeIVm1System(...
-%                 'DecimationFactor',decch(1),...
-%                 'NumberOfChannels',decch(2:end),...
-%                 'PolyPhaseOrder',ord,...
-%                 'OutputMode','ParameterMatrixSet');
-%             
-%             % Actual values
-%             paramMtxActual = step(testCase.lppufb,[],[]);
-%             coefActual = get(paramMtxActual,'Coefficients');
-%             
-%             % Evaluation
-%             diff = max(abs(coefExpctd-coefActual)./abs(coefExpctd));
-%             testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',diff));
-%             
-%             %
-%             ang = get(testCase.lppufb,'Angles');
-%             ang = randn(size(ang));
-%             mus = get(testCase.lppufb,'Mus');
-%             mus = 2*(rand(size(mus))>0.5)-1;
-%             %
-%             import saivdr.dictionary.utility.*
-%             omgs = OrthonormalMatrixGenerationSystem();
-%             W0  = step(omgs,0     , [1; mus(2,1)]);
-%             U0  = step(omgs,ang(2), mus(:,2));
-%             U1 = step(omgs,ang(3), mus(:,3));
-%             U2 = step(omgs,ang(4), mus(:,4));
-%             U3 = step(omgs,ang(5), mus(:,5));
-%             U4 = step(omgs,ang(6), mus(:,6));
-%             step(paramMtxExpctd,W0 ,uint32(1)); % W0
-%             step(paramMtxExpctd,U0 ,uint32(2)); % U0
-%             step(paramMtxExpctd,U1,uint32(3));  % U1
-%             step(paramMtxExpctd,U2,uint32(4));  % U2
-%             step(paramMtxExpctd,U3,uint32(5));  % U3            
-%             step(paramMtxExpctd,U4,uint32(6));  % U4
-%             %
-%             coefExpctd = get(paramMtxExpctd,'Coefficients');            
-%             
-%             %
-%             set(testCase.lppufb,'Angles',ang,'Mus',mus);
-% 
-%             % Actual values
-%             paramMtxActual = step(testCase.lppufb,ang,mus);
-%             coefActual = get(paramMtxActual,'Coefficients');
-%             
-%             % Evaluation
-%             diff = max(abs(coefExpctd-coefActual)./abs(coefExpctd));
-%             testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',diff));
-%             
-%             % Check DC-E
-%             release(testCase.lppufb)
-%             import matlab.unittest.constraints.IsLessThan
-%             set(testCase.lppufb,'OutputMode','AnalysisFilterAt');
-%             for iSubband = 2:sum(decch(2:3))
-%                 H = step(testCase.lppufb,[],[],iSubband);
-%                 dc = abs(sum(H(:)));
-%                 testCase.verifyThat(dc,IsLessThan(1e-14),sprintf('%g',dc));
-%             end
-%             
-%         end
-%         
-%         % Test for construction with order 4
-%         function testParameterMatrixSetRandAngWithDec4Ch22Ord4(testCase)
-%             
-%             % Parameters
-%             decch = [ 4 2 2 ];
-%             ord = 4;
-%             mstab = [ 2 2 ; 2 2 ; 2 2 ; 2 2 ; 2 2 ; 2 2 ];
-%             
-%             % Expected values
-%             import saivdr.dictionary.utility.*
-%             paramMtxExpctd = ParameterMatrixSet(...
-%                 'MatrixSizeTable',mstab);
-%             step(paramMtxExpctd, eye(mstab(1,:)),uint32(1)); % W0
-%             step(paramMtxExpctd, eye(mstab(2,:)),uint32(2)); % U0
-%             step(paramMtxExpctd,-eye(mstab(3,:)),uint32(3)); % U1
-%             step(paramMtxExpctd,-eye(mstab(4,:)),uint32(4)); % U2
-%             step(paramMtxExpctd,-eye(mstab(5,:)),uint32(5)); % U3
-%             step(paramMtxExpctd,-eye(mstab(6,:)),uint32(6)); % U4
-%             coefExpctd = get(paramMtxExpctd,'Coefficients');
-%             
-%             % Instantiation of target class
-%             import saivdr.dictionary.olpprfb.*
-%             testCase.lppufb = OvsdLpPuFb1dTypeIVm1System(...
-%                 'DecimationFactor',decch(1),...
-%                 'NumberOfChannels',decch(2:end),...
-%                 'PolyPhaseOrder',ord,...
-%                 'OutputMode','ParameterMatrixSet');
-%             
-%             % Actual values
-%             paramMtxActual = step(testCase.lppufb,[],[]);
-%             coefActual = get(paramMtxActual,'Coefficients');
-%             
-%             % Evaluation
-%             diff = max(abs(coefExpctd-coefActual)./abs(coefExpctd));
-%             testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',diff));
-%             
-%             %
-%             ang = get(testCase.lppufb,'Angles');
-%             ang = randn(size(ang));
-%             mus = get(testCase.lppufb,'Mus');
-%             %
-%             import saivdr.dictionary.utility.*
-%             omgs = OrthonormalMatrixGenerationSystem();
-%             W0  = step(omgs,0     , [1; mus(2,1)]);
-%             U0  = step(omgs,ang(2), mus(:,2));
-%             U1 = step(omgs,ang(3), mus(:,3));
-%             U2 = step(omgs,ang(4), mus(:,4));
-%             U3 = step(omgs,ang(5), mus(:,5));
-%             U4 = step(omgs,ang(6), mus(:,6));
-%             step(paramMtxExpctd,W0 ,uint32(1)); % W0
-%             step(paramMtxExpctd,U0 ,uint32(2)); % U0
-%             step(paramMtxExpctd,U1 ,uint32(3)); % U1
-%             step(paramMtxExpctd,U2 ,uint32(4)); % U2
-%             step(paramMtxExpctd,U3 ,uint32(5)); % U3            
-%             step(paramMtxExpctd,U4 ,uint32(6));  % U4
-%             %
-%             coefExpctd = get(paramMtxExpctd,'Coefficients');            
-%             
-%             %
-%             set(testCase.lppufb,'Angles',ang);
-% 
-%             % Actual values
-%             paramMtxActual = step(testCase.lppufb,ang,mus);
-%             coefActual = get(paramMtxActual,'Coefficients');
-%             
-%             % Evaluation
-%             diff = max(abs(coefExpctd-coefActual)./abs(coefExpctd));
-%             testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',diff));
-%             
-%             % Check DC-E
-%             release(testCase.lppufb)
-%             import matlab.unittest.constraints.IsLessThan
-%             set(testCase.lppufb,'OutputMode','AnalysisFilterAt');
-%             for iSubband = 2:sum(decch(2:3))
-%                 H = step(testCase.lppufb,[],[],iSubband);
-%                 dc = abs(sum(H(:)));
-%                 testCase.verifyThat(dc,IsLessThan(1e-14),sprintf('%g',dc));
-%             end            
-%         end  
-% 
-%         % Test for construction with order 4
-%         function testParameterMatrixSetRandMuWithDec4Ch22Ord4(testCase)
-%             
-%             % Parameters
-%             decch = [ 4 2 2 ];
-%             ord = 4;
-%             mstab = [ 2 2 ; 2 2 ; 2 2 ; 2 2 ; 2 2 ; 2 2 ];
-%             
-%             % Expected values
-%             import saivdr.dictionary.utility.*
-%             paramMtxExpctd = ParameterMatrixSet(...
-%                 'MatrixSizeTable',mstab);
-%             step(paramMtxExpctd, eye(mstab(1,:)),uint32(1)); % W0
-%             step(paramMtxExpctd, eye(mstab(2,:)),uint32(2)); % U0
-%             step(paramMtxExpctd,-eye(mstab(3,:)),uint32(3)); % U1
-%             step(paramMtxExpctd,-eye(mstab(4,:)),uint32(4)); % U2
-%             step(paramMtxExpctd,-eye(mstab(5,:)),uint32(5)); % U3
-%             step(paramMtxExpctd,-eye(mstab(6,:)),uint32(6)); % U4
-%             coefExpctd = get(paramMtxExpctd,'Coefficients');
-%             
-%             % Instantiation of target class
-%             import saivdr.dictionary.olpprfb.*
-%             testCase.lppufb = OvsdLpPuFb1dTypeIVm1System(...
-%                 'DecimationFactor',decch(1),...
-%                 'NumberOfChannels',decch(2:end),...
-%                 'PolyPhaseOrder',ord,...
-%                 'OutputMode','ParameterMatrixSet');
-%             
-%             % Actual values
-%             paramMtxActual = step(testCase.lppufb,[],[]);
-%             coefActual = get(paramMtxActual,'Coefficients');
-%             
-%             % Evaluation
-%             diff = max(abs(coefExpctd-coefActual)./abs(coefExpctd));
-%             testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',diff));
-%             
-%             %
-%             ang = get(testCase.lppufb,'Angles');
-%             mus = get(testCase.lppufb,'Mus');
-%             mus = 2*(rand(size(mus))>0.5)-1;
-%             %
-%             import saivdr.dictionary.utility.*
-%             omgs = OrthonormalMatrixGenerationSystem();
-%             W0 = step(omgs,0     , [1; mus(2,1)]);
-%             U0 = step(omgs,ang(2), mus(:,2));
-%             U1 = step(omgs,ang(3), mus(:,3));
-%             U2 = step(omgs,ang(4), mus(:,4));
-%             U3 = step(omgs,ang(5), mus(:,5));
-%             U4 = step(omgs,ang(6), mus(:,6));
-%             step(paramMtxExpctd,W0,uint32(1)); % W0
-%             step(paramMtxExpctd,U0,uint32(2)); % U0
-%             step(paramMtxExpctd,U1,uint32(3)); % U1
-%             step(paramMtxExpctd,U2,uint32(4)); % U2
-%             step(paramMtxExpctd,U3,uint32(5)); % U3            
-%             step(paramMtxExpctd,U4,uint32(6)); % U4
-%             %
-%             coefExpctd = get(paramMtxExpctd,'Coefficients');            
-%             
-%             %
-%             set(testCase.lppufb,'Mus',mus);
-% 
-%             % Actual values
-%             paramMtxActual = step(testCase.lppufb,ang,mus);
-%             coefActual = get(paramMtxActual,'Coefficients');
-%             
-%             % Evaluation
-%             diff = max(abs(coefExpctd-coefActual)./abs(coefExpctd));
-%             testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',diff));
-%             
-%             % Check DC-E
-%             release(testCase.lppufb)
-%             import matlab.unittest.constraints.IsLessThan
-%             set(testCase.lppufb,'OutputMode','AnalysisFilterAt');
-%             for iSubband = 2:sum(decch(2:3))
-%                 H = step(testCase.lppufb,[],[],iSubband);
-%                 dc = abs(sum(H(:)));
-%                 testCase.verifyThat(dc,IsLessThan(1e-14),sprintf('%g',dc));
-%             end
-%         end  
+        % Test for construction with order 4
+        function testParameterMatrixSetRandAngMuWithDec4Ch22Ord4(testCase)
+            
+            % Parameters
+            decch = [ 4 2 2 ];
+            ord = 4;
+            mstab = [ 4 4 ; 2 2 ; 2 2 ; 1 1 ; 2 2 ; 2 2 ; 1 1 ; 2 2 ; 2 2 ; 1 1 ; 2 2 ; 2 2 ; 1 1;];
+            
+            % Expected values
+            import saivdr.dictionary.utility.*
+            paramMtxExpctd = ParameterMatrixSet(...
+                'MatrixSizeTable',mstab);
+            step(paramMtxExpctd, eye(mstab( 1,:)),uint32( 1)); % V0
+            step(paramMtxExpctd, eye(mstab( 2,:)),uint32( 2)); % W1
+            step(paramMtxExpctd,-eye(mstab( 3,:)),uint32( 3)); % U1
+            step(paramMtxExpctd,            pi/4 ,uint32( 4)); % angB1
+            step(paramMtxExpctd, eye(mstab( 5,:)),uint32( 5)); % W2
+            step(paramMtxExpctd,-eye(mstab( 6,:)),uint32( 6)); % U2
+            step(paramMtxExpctd,            pi/4 ,uint32( 7)); % angB2
+            step(paramMtxExpctd, eye(mstab( 8,:)),uint32( 8)); % W3
+            step(paramMtxExpctd,-eye(mstab( 9,:)),uint32( 9)); % U3
+            step(paramMtxExpctd,            pi/4 ,uint32(10)); % angB3
+            step(paramMtxExpctd, eye(mstab(11,:)),uint32(11)); % W4
+            step(paramMtxExpctd,-eye(mstab(12,:)),uint32(12)); % U4
+            step(paramMtxExpctd,            pi/4 ,uint32(13)); % angB4
+            coefExpctd = get(paramMtxExpctd,'Coefficients');
+            
+            % Instantiation of target class
+            import saivdr.dictionary.olpprfb.*
+            testCase.lppufb = OvsdLpPuFb1dTypeIVm1System(...
+                'DecimationFactor',decch(1),...
+                'NumberOfChannels',decch(2:end),...
+                'PolyPhaseOrder',ord,...
+                'OutputMode','ParameterMatrixSet');
+            
+            % Actual values
+            paramMtxActual = step(testCase.lppufb,[],[]);
+            coefActual = get(paramMtxActual,'Coefficients');
+            
+            % Evaluation
+            diff = max(abs(coefExpctd-coefActual)./abs(coefExpctd));
+            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',diff));
+            
+            %
+            ang = get(testCase.lppufb,'Angles');
+            ang = randn(size(ang));
+            mus = get(testCase.lppufb,'Mus');
+            mus = 2*(rand(size(mus))>0.5)-1;
+            %
+            import saivdr.dictionary.utility.*
+            initOmgs = OrthonormalMatrixGenerationSystem();
+            propOmgs = OrthonormalMatrixGenerationSystem();
+            V0 = step(initOmgs, 0 , [1; mus(2,1)]);
+            W1 = step(propOmgs,ang(1) , [1; mus(2,2)]);
+            U1 = step(propOmgs,ang(2), mus(:,3));
+            W2 = step(propOmgs,ang(3), [1; mus(2,4)]);
+            U2 = step(propOmgs,ang(4), mus(:,5));
+            W3 = step(propOmgs,ang(5), [1; mus(2,6)]);
+            U3 = step(propOmgs,ang(6), mus(:,7));
+            W4 = step(propOmgs,ang(7), [1; mus(2,8)]);
+            U4 = step(propOmgs,ang(8), mus(:,9));
+            step(paramMtxExpctd,W1 ,uint32(1)); % W0
+            step(paramMtxExpctd,U1 ,uint32(2)); % U0
+            step(paramMtxExpctd,U1,uint32(3));  % U1
+            step(paramMtxExpctd,U2,uint32(4));  % U2
+            step(paramMtxExpctd,U3,uint32(5));  % U3            
+            step(paramMtxExpctd,U4,uint32(6));  % U4
+            %
+            coefExpctd = get(paramMtxExpctd,'Coefficients');            
+            
+            %
+            set(testCase.lppufb,'Angles',ang,'Mus',mus);
+
+            % Actual values
+            paramMtxActual = step(testCase.lppufb,ang,mus);
+            coefActual = get(paramMtxActual,'Coefficients');
+            
+            % Evaluation
+            diff = max(abs(coefExpctd-coefActual)./abs(coefExpctd));
+            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',diff));
+            
+            % Check DC-E
+            release(testCase.lppufb)
+            import matlab.unittest.constraints.IsLessThan
+            set(testCase.lppufb,'OutputMode','AnalysisFilterAt');
+            for iSubband = 2:sum(decch(2:3))
+                H = step(testCase.lppufb,[],[],iSubband);
+                dc = abs(sum(H(:)));
+                testCase.verifyThat(dc,IsLessThan(1e-14),sprintf('%g',dc));
+            end
+            
+        end
+        
+        % Test for construction with order 4
+        function testParameterMatrixSetRandAngWithDec4Ch22Ord4(testCase)
+            
+            % Parameters
+            decch = [ 4 2 2 ];
+            ord = 4;
+            mstab = [ 2 2 ; 2 2 ; 2 2 ; 2 2 ; 2 2 ; 2 2 ];
+            
+            % Expected values
+            import saivdr.dictionary.utility.*
+            paramMtxExpctd = ParameterMatrixSet(...
+                'MatrixSizeTable',mstab);
+            step(paramMtxExpctd, eye(mstab(1,:)),uint32(1)); % W0
+            step(paramMtxExpctd, eye(mstab(2,:)),uint32(2)); % U0
+            step(paramMtxExpctd,-eye(mstab(3,:)),uint32(3)); % U1
+            step(paramMtxExpctd,-eye(mstab(4,:)),uint32(4)); % U2
+            step(paramMtxExpctd,-eye(mstab(5,:)),uint32(5)); % U3
+            step(paramMtxExpctd,-eye(mstab(6,:)),uint32(6)); % U4
+            coefExpctd = get(paramMtxExpctd,'Coefficients');
+            
+            % Instantiation of target class
+            import saivdr.dictionary.olpprfb.*
+            testCase.lppufb = OvsdLpPuFb1dTypeIVm1System(...
+                'DecimationFactor',decch(1),...
+                'NumberOfChannels',decch(2:end),...
+                'PolyPhaseOrder',ord,...
+                'OutputMode','ParameterMatrixSet');
+            
+            % Actual values
+            paramMtxActual = step(testCase.lppufb,[],[]);
+            coefActual = get(paramMtxActual,'Coefficients');
+            
+            % Evaluation
+            diff = max(abs(coefExpctd-coefActual)./abs(coefExpctd));
+            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',diff));
+            
+            %
+            ang = get(testCase.lppufb,'Angles');
+            ang = randn(size(ang));
+            mus = get(testCase.lppufb,'Mus');
+            %
+            import saivdr.dictionary.utility.*
+            omgs = OrthonormalMatrixGenerationSystem();
+            W0  = step(omgs,0     , [1; mus(2,1)]);
+            U0  = step(omgs,ang(2), mus(:,2));
+            U1 = step(omgs,ang(3), mus(:,3));
+            U2 = step(omgs,ang(4), mus(:,4));
+            U3 = step(omgs,ang(5), mus(:,5));
+            U4 = step(omgs,ang(6), mus(:,6));
+            step(paramMtxExpctd,W0 ,uint32(1)); % W0
+            step(paramMtxExpctd,U0 ,uint32(2)); % U0
+            step(paramMtxExpctd,U1 ,uint32(3)); % U1
+            step(paramMtxExpctd,U2 ,uint32(4)); % U2
+            step(paramMtxExpctd,U3 ,uint32(5)); % U3            
+            step(paramMtxExpctd,U4 ,uint32(6));  % U4
+            %
+            coefExpctd = get(paramMtxExpctd,'Coefficients');            
+            
+            %
+            set(testCase.lppufb,'Angles',ang);
+
+            % Actual values
+            paramMtxActual = step(testCase.lppufb,ang,mus);
+            coefActual = get(paramMtxActual,'Coefficients');
+            
+            % Evaluation
+            diff = max(abs(coefExpctd-coefActual)./abs(coefExpctd));
+            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',diff));
+            
+            % Check DC-E
+            release(testCase.lppufb)
+            import matlab.unittest.constraints.IsLessThan
+            set(testCase.lppufb,'OutputMode','AnalysisFilterAt');
+            for iSubband = 2:sum(decch(2:3))
+                H = step(testCase.lppufb,[],[],iSubband);
+                dc = abs(sum(H(:)));
+                testCase.verifyThat(dc,IsLessThan(1e-14),sprintf('%g',dc));
+            end            
+        end  
+
+        % Test for construction with order 4
+        function testParameterMatrixSetRandMuWithDec4Ch22Ord4(testCase)
+            
+            % Parameters
+            decch = [ 4 2 2 ];
+            ord = 4;
+            mstab = [ 2 2 ; 2 2 ; 2 2 ; 2 2 ; 2 2 ; 2 2 ];
+            
+            % Expected values
+            import saivdr.dictionary.utility.*
+            paramMtxExpctd = ParameterMatrixSet(...
+                'MatrixSizeTable',mstab);
+            step(paramMtxExpctd, eye(mstab(1,:)),uint32(1)); % W0
+            step(paramMtxExpctd, eye(mstab(2,:)),uint32(2)); % U0
+            step(paramMtxExpctd,-eye(mstab(3,:)),uint32(3)); % U1
+            step(paramMtxExpctd,-eye(mstab(4,:)),uint32(4)); % U2
+            step(paramMtxExpctd,-eye(mstab(5,:)),uint32(5)); % U3
+            step(paramMtxExpctd,-eye(mstab(6,:)),uint32(6)); % U4
+            coefExpctd = get(paramMtxExpctd,'Coefficients');
+            
+            % Instantiation of target class
+            import saivdr.dictionary.olpprfb.*
+            testCase.lppufb = OvsdLpPuFb1dTypeIVm1System(...
+                'DecimationFactor',decch(1),...
+                'NumberOfChannels',decch(2:end),...
+                'PolyPhaseOrder',ord,...
+                'OutputMode','ParameterMatrixSet');
+            
+            % Actual values
+            paramMtxActual = step(testCase.lppufb,[],[]);
+            coefActual = get(paramMtxActual,'Coefficients');
+            
+            % Evaluation
+            diff = max(abs(coefExpctd-coefActual)./abs(coefExpctd));
+            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',diff));
+            
+            %
+            ang = get(testCase.lppufb,'Angles');
+            mus = get(testCase.lppufb,'Mus');
+            mus = 2*(rand(size(mus))>0.5)-1;
+            %
+            import saivdr.dictionary.utility.*
+            omgs = OrthonormalMatrixGenerationSystem();
+            W0 = step(omgs,0     , [1; mus(2,1)]);
+            U0 = step(omgs,ang(2), mus(:,2));
+            U1 = step(omgs,ang(3), mus(:,3));
+            U2 = step(omgs,ang(4), mus(:,4));
+            U3 = step(omgs,ang(5), mus(:,5));
+            U4 = step(omgs,ang(6), mus(:,6));
+            step(paramMtxExpctd,W0,uint32(1)); % W0
+            step(paramMtxExpctd,U0,uint32(2)); % U0
+            step(paramMtxExpctd,U1,uint32(3)); % U1
+            step(paramMtxExpctd,U2,uint32(4)); % U2
+            step(paramMtxExpctd,U3,uint32(5)); % U3            
+            step(paramMtxExpctd,U4,uint32(6)); % U4
+            %
+            coefExpctd = get(paramMtxExpctd,'Coefficients');            
+            
+            %
+            set(testCase.lppufb,'Mus',mus);
+
+            % Actual values
+            paramMtxActual = step(testCase.lppufb,ang,mus);
+            coefActual = get(paramMtxActual,'Coefficients');
+            
+            % Evaluation
+            diff = max(abs(coefExpctd-coefActual)./abs(coefExpctd));
+            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',diff));
+            
+            % Check DC-E
+            release(testCase.lppufb)
+            import matlab.unittest.constraints.IsLessThan
+            set(testCase.lppufb,'OutputMode','AnalysisFilterAt');
+            for iSubband = 2:sum(decch(2:3))
+                H = step(testCase.lppufb,[],[],iSubband);
+                dc = abs(sum(H(:)));
+                testCase.verifyThat(dc,IsLessThan(1e-14),sprintf('%g',dc));
+            end
+        end  
 
     end
     

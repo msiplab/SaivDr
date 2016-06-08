@@ -404,7 +404,7 @@ classdef OvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 4 4 ];
             ord   = 0;
-            ang   = 0;
+            ang   = [ 0 0 0 0 0 0 ].';
             
             % Expected values
             coefExpctd = [
@@ -434,13 +434,14 @@ classdef OvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             
         end
         
+        % TODO:テストの妥当性を考える
         % Test for construction
         function testConstructorWithAng0Pi4(testCase)
             
             % Parameters
             decch = [ 4 4 ];
             ord   = 0;
-            ang   = [ 0 pi/4 ].';
+            ang   = [ 0 0 0 0 0 pi/4 ].';
             
             % Expected values
             import saivdr.dictionary.utility.*            

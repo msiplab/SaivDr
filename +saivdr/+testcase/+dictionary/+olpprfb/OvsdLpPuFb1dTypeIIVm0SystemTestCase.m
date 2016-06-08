@@ -758,7 +758,7 @@ classdef OvsdLpPuFb1dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
                 'PolyPhaseOrder',ord);
             
             % Actual values
-            coefActual = step(testCase.lppufb,[angW;angU],[]);
+            coefActual = step(testCase.lppufb,angV0,[]);
             
             % Evaluation
             coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
@@ -837,6 +837,7 @@ classdef OvsdLpPuFb1dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
         end
 
         % Test for construction with order 2
+        % ƒeƒXƒg–¼‚ðC³‚·‚é
         function testConstructorWithDec4Ch5Ord4Ang0(testCase)
             
             % Parameters
@@ -1044,8 +1045,8 @@ classdef OvsdLpPuFb1dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 4 5 ];
             ord = 0;
-            angPre = [ pi/4 pi/4 pi/4 pi/4 ].';
-            angPst = [ 0 0 0 0 ].';
+            angPre = [ pi/4 pi/4 pi/4 pi/4 pi/4 pi/4 pi/4 pi/4 pi/4 pi/4].';
+            angPst = [ 0 0 0 0 0 0 0 0 0 0 ].';
             
             % Expected values
             coefExpctd = [...
@@ -1088,8 +1089,8 @@ classdef OvsdLpPuFb1dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 4 5 ];
             ord = 0;
-            ang = [ 0 0 0 0 ].';
-            musPre = [ 1 -1  1 -1 1].';
+            ang = [ 0 0 0 0 0 0 0 0 0 0 ].';
+            musPre = [ 1 -1  1 -1 1 -1 1 -1 1 -1].';
             musPst = 1;
             
             % Expected values
@@ -2430,14 +2431,13 @@ classdef OvsdLpPuFb1dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
         function testParameterMatrixSet(testCase)
             
             % Preparation
-            mstab = [ 3 3 ; 2 2 ];
+            mstab = [ 5 5 ];
             
             % Expected value
             import saivdr.dictionary.utility.ParameterMatrixSet
             paramExpctd = ParameterMatrixSet(...
                 'MatrixSizeTable',mstab);
-            step(paramExpctd,eye(3),1);
-            step(paramExpctd,eye(2),2);
+            step(paramExpctd,eye(5),1);
             
             % Instantiation of target class
             import saivdr.dictionary.olpprfb.*

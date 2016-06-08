@@ -756,6 +756,7 @@ classdef OLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             ord = 2;
             nLen = 32;
             srcSeq = rand(1,nLen);
+            %srcSeq = ones(1,nLen);
             nLevels = 1;
             
             % Preparation
@@ -2177,7 +2178,7 @@ classdef OLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testStepDec2Ch32Ord0Level2eriodicExt(testCase)
+        function testStepDec2Ch32Ord0Level2PeriodicExt(testCase)
             
             dec = 2;
             decch = [ dec 3 2];

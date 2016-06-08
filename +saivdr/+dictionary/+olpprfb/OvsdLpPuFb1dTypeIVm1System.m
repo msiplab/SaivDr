@@ -55,8 +55,8 @@ classdef OvsdLpPuFb1dTypeIVm1System < ...
             angles = obj.Angles;
             mus    = obj.Mus;
             % No-DC-Leakage condition
-            angles(1:hChs-1) = ...
-                zeros(hChs-1,1);
+            angles(1:nChs-1) = ...
+                zeros(nChs-1,1);
             mus(1) = 1;
             % V0 with No-DC-Leakage condition
             mtx = step(obj.omgsV0_,angles(1:nChs*(nChs-1)/2),mus(1:nChs));
@@ -72,12 +72,19 @@ classdef OvsdLpPuFb1dTypeIVm1System < ...
             nAngs = hChs*(hChs-1)/2;
             nMus = hChs;
             for iParamMtx = uint32(1):obj.nStages-1
+                % No-DC-Leakage condition
+                angles(1:hChs-1,iParamMtx) = zeros(hChs-1,1);
+                mus(1,iParamMtx) = 1;
+                % W
                 mtx = step(omgsWU,angles(1:nAngs,iParamMtx),mus(1:nMus,iParamMtx));
                 step(pmMtxSet,mtx,3*iParamMtx-1);
+                
+                % U
                 mtx = step(omgsWU,angles(nAngs+1:2*nAngs,iParamMtx),mus(nMus+1:end,iParamMtx));
                 step(pmMtxSet,mtx,3*iParamMtx);
                 step(pmMtxSet,angles(2*nAngs+1:end,iParamMtx),3*iParamMtx+1);
             end
+            % TODO: obj.Angles‚ð‘‚«Š·‚¦‚é
         end
         
     end

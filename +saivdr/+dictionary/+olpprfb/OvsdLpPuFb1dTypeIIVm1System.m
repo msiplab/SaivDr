@@ -60,12 +60,13 @@ classdef OvsdLpPuFb1dTypeIIVm1System < ...
         function updateParameterMatrixSet_(obj)
             import saivdr.dictionary.nsoltx.ChannelGroup
             nChs = obj.NumberOfChannels;
+            nSts = obj.nStages;
+            pmMtxSt_ = obj.ParameterMatrixSet;
             % V0
             mtx = step(obj.omgsV0_,obj.Angles(1:nChs*(nChs-1)/2),...
                 obj.Mus(1:nChs));
-            step(obj.ParameterMatrixSet,mtx,uint32(1));
+            step(pmMtxSt_,mtx,uint32(1));
             
-            nSts   = obj.nStages;
             angles = reshape(obj.Angles(nChs*(nChs-1)/2+1:end),[],obj.nStages-1);
             mus    = reshape(obj.Mus(nChs+1:end),[],obj.nStages-1);            
             nAngsW = floor(nChs/2)*(floor(nChs/2)-1)/2;
@@ -78,7 +79,7 @@ classdef OvsdLpPuFb1dTypeIIVm1System < ...
             
             % TODO: CNSOLTにおけるNo-DC-Leakage conditionを正しく定義する．
             % No-DC-Leakage condition
-            W_ = eye(ceil(nChs/2)); 
+            %W_ = eye(ceil(nChs/2)); 
             pmMtxSet = obj.ParameterMatrixSet;
             for iParamMtx = uint32(1):nSts-1
                 % W
@@ -105,24 +106,24 @@ classdef OvsdLpPuFb1dTypeIIVm1System < ...
                 % angsB2
                 step(pmMtxSt_,angles(2*nAngsW+1:2*nAngsW+nAngsB,iParamMtx),6*iParamMtx+1);
 
-                W_ = step(pmMtxSet,[],2*iParamMtx-1)*W_;
+                %W_ = step(pmMtxSet,[],2*iParamMtx-1)*W_;
             end
             %TODO: 以下のソースを修正
-            [angles_,mus_] = step(obj.omfs_,W_.');
-            angles(1:ceil(nChs/2)-1,nSts) = ...
-                angles_(1:ceil(nChs/2)-1);
-            mus(1,nSts) = mus_(1);
-            % W
-            mtx = step(omgsWU,angles(1:nAngsW,nSts),...
-                mus(1:nMusW,nSts));            
-            step(pmMtxSet,mtx,2*nSts-1); 
-            % U
-            mtx = step(omgsWU,angles(nAngsW+1:end,nSts),...
-                mus(nMusW+1:end,nSts));
-            step(pmMtxSet,mtx,2*nSts);
-            %
-            obj.Angles = angles;
-            obj.Mus    = mus;
+%             [angles_,mus_] = step(obj.omfs_,W_.');
+%             angles(1:ceil(nChs/2)-1,nSts) = ...
+%                 angles_(1:ceil(nChs/2)-1);
+%             mus(1,nSts) = mus_(1);
+%             % W
+%             mtx = step(omgsWU,angles(1:nAngsW,nSts),...
+%                 mus(1:nMusW,nSts));            
+%             step(pmMtxSet,mtx,2*nSts-1); 
+%             % U
+%             mtx = step(omgsWU,angles(nAngsW+1:end,nSts),...
+%                 mus(nMusW+1:end,nSts));
+%             step(pmMtxSet,mtx,2*nSts);
+%             %
+%             obj.Angles = angles;
+%             obj.Mus    = mus;
         end
         
     end
