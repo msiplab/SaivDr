@@ -37,8 +37,6 @@ nfig   = 2;     % Figure number
 ntab   = 3;     % Table number
 isEdit = false; % Edit mode
 
-setpath
-
 %% General parameters
 params.isMonitoring = true;
 imgSizeApx = 512;

@@ -33,8 +33,6 @@
 %
 nfig = 3;       % Figure number
 
-setpath
-
 %% Preparation
 close all
 isExport = true;

@@ -48,8 +48,6 @@
 % LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627
 %
 
-setpath
-
 %% Setup KSVDSbox
 support.fcn_setup_ksvdsbox
 

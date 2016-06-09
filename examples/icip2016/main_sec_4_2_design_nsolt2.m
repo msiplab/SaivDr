@@ -56,8 +56,6 @@
 %
 isEdit = false; % Edit mode
 
-setpath
-
 %% Parameter settings
 imgSetLrn = { 'goldhill32', 'lena32', 'barbara32', 'baboon32' };
 nSubImgs  = 64; % # of patches

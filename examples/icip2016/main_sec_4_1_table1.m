@@ -31,8 +31,6 @@
 %
 ntab = 1;
 
-setpath
-
 %% Parameters
 nDecs = [ 4 4 ]; % Decimation factor
 nOrds = [ 2 2 ]; % Polyphase order
