@@ -7,7 +7,7 @@ classdef AbstNsoltDesignerGaFmin < ...
     %
     % Requirements: MATLAB R2013b
     %
-    % Copyright (c) 2014-2015, Shogo MURAMATSU
+    % Copyright (c) 2014-2016, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -89,17 +89,14 @@ classdef AbstNsoltDesignerGaFmin < ...
             else
                 initAngs = get(lppufb,'Angles');
                 %
+                problem.x0 = initAngs;
+                problem.options = options;                
+                problem.objective = @(x)costFcnAng(obj,lppufb,x);                
                 if strcmp(char(obj.OptimizationFunction),'fmincon')
-                    problem = createOptimProblem('fmincon',...
-                        'objective',@(x)costFcnAng(obj,lppufb,x),...
-                        'x0',initAngs,...
-                        'nonlcon', @(x)nonlconFcn(obj,lppufb,x),...
-                        'options', options);
+                    problem.solver = 'fmincon';
+                    problem.nonlcon = @(x)nonlconFcn(obj,lppufb,x);
                 else
-                    problem = createOptimProblem('fminunc',...
-                        'objective',@(x)costFcnAng(obj,lppufb,x),...                        
-                        'x0',initAngs,...
-                        'options', options);
+                    problem.solver = 'fminunc';
                 end
             end
             [optAngs, fval, exitflag] = obj.OptimizationFunction(problem);
