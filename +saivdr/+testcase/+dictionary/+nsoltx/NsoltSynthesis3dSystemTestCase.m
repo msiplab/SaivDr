@@ -4793,7 +4793,7 @@ function testClone(testCase)
             imgExpctd = imgExpctd(dec+1:end-dec,dec+1:end-dec,:); % ignore border
             imgActual = imgActual(dec+1:end-dec,dec+1:end-dec,:); % ignore border
             diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
         end
         
         % Test
