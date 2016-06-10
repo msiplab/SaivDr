@@ -1,5 +1,11 @@
 * Release notes on Sparsity-Aware Image and Volume Data Restoration Package
 
+- SaivDr20160610
+-- (Minor) Removed the dependency on Global Optimization Toolbox when GA is not used
+--- saivdr.dictionary.nsoltx.design.AbstNsoltDesignerGaFmin
+-- (Minor) Added new sample codes 
+--- examples/icip2016
+
 - SaivDr20160314
 -- (Minor) Clarified the array dimension for code generation in R2016a
 --- saivdr.dictionary.nsoltx.AbstNsoltCoefManipulator2d
@@ -85,5 +91,4 @@
   trial.  Please try it twice. Then, the code generation may successfully
   be finished.
 
-% SVN identifier:
-% $Id: RELEASENOTES.txt 871 2015-11-26 09:04:01Z sho $
+---
