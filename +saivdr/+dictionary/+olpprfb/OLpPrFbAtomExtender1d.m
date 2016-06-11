@@ -145,13 +145,13 @@ classdef OLpPrFbAtomExtender1d <  ...
                 arrayCoefs(1:hLen,:) = Wx*arrayCoefs(1:hLen,:);
                 arrayCoefs(hLen+1:end,:) = Ux*arrayCoefs(hLen+1:end,:);
             else % TODO:ŽüŠúŠg’£‚Å‚È‚¢ê‡‚Ì•ÏŠ·•û–@‚Ì’è‹`
-%                 arrayCoefs(1:hLen,1) = -arrayCoefs(1:hLen,1);
-%                 arrayCoefs(1:hLen,2:end) = Wx*arrayCoefs(1:hLen,2:end);
-%                 
-%                 arrayCoefs(hLen+1:end,1) = -arrayCoefs(hLen+1:end,1);
-%                 arrayCoefs(hLen+1:end,2:end) = Ux*arrayCoefs(hLen+1:end,2:end);
-                arrayCoefs(1:hLen,:) = Wx*arrayCoefs(1:hLen,:);
-                arrayCoefs(hLen+1:end,:) = Ux*arrayCoefs(hLen+1:end,:);
+                arrayCoefs(1:hLen,1) = -arrayCoefs(1:hLen,1);
+                arrayCoefs(1:hLen,2:end) = Wx*arrayCoefs(1:hLen,2:end);
+                
+                arrayCoefs(hLen+1:end,1) = -arrayCoefs(hLen+1:end,1);
+                arrayCoefs(hLen+1:end,2:end) = Ux*arrayCoefs(hLen+1:end,2:end);
+%                 arrayCoefs(1:hLen,:) = Wx*arrayCoefs(1:hLen,:);
+%                 arrayCoefs(hLen+1:end,:) = Ux*arrayCoefs(hLen+1:end,:);
             end
             
             % Phase 2

@@ -65,26 +65,28 @@ classdef OvsdLpPuFb1dTypeIVm1System < ...
             obj.Angles = angles;
             obj.Mus = mus;
             
-            pmMtxSet = obj.ParameterMatrixSet;
             angles = reshape(angles(nChs*(nChs-1)/2+1:end),[],obj.nStages-1);
             mus    = reshape(mus(nChs+1:end),[],obj.nStages-1);
-            omgsWU     = obj.omgsWU_;
             nAngs = hChs*(hChs-1)/2;
             nMus = hChs;
             for iParamMtx = uint32(1):obj.nStages-1
+                %TODO: No-DC-Leakage condition ‚ðC³‚·‚é
                 % No-DC-Leakage condition
                 angles(1:hChs-1,iParamMtx) = zeros(hChs-1,1);
                 mus(1,iParamMtx) = 1;
+
                 % W
-                mtx = step(omgsWU,angles(1:nAngs,iParamMtx),mus(1:nMus,iParamMtx));
-                step(pmMtxSet,mtx,3*iParamMtx-1);
-                
+                mtx = step(obj.omgsWU_,angles(1:nAngs,iParamMtx),...
+                    mus(1:nMus,iParamMtx));
+                step(obj.ParameterMatrixSet,mtx,3*iParamMtx-1);
                 % U
-                mtx = step(omgsWU,angles(nAngs+1:2*nAngs,iParamMtx),mus(nMus+1:end,iParamMtx));
-                step(pmMtxSet,mtx,3*iParamMtx);
-                step(pmMtxSet,angles(2*nAngs+1:end,iParamMtx),3*iParamMtx+1);
+                mtx = step(obj.omgsWU_,angles(nAngs+1:2*nAngs,iParamMtx),...
+                    mus(nMus+1:end,iParamMtx));
+                step(obj.ParameterMatrixSet,mtx,3*iParamMtx+0);
+                % angles_B
+                step(obj.ParameterMatrixSet,angles(2*nAngs+1:end,iParamMtx),...
+                    3*iParamMtx+1);
             end
-            % TODO: obj.Angles‚ð‘‚«Š·‚¦‚é
         end
         
     end

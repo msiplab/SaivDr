@@ -202,6 +202,7 @@ classdef AbstOLpPrFbCoefManipulator1d < matlab.System %#codegen
             end
         end
         
+        %TODO: 現在使用していないので削除を検討する
         function arrayCoefs = blockButterflyTypeI_(obj,arrayCoefs,angles)
             hLen = obj.NumberOfSymmetricChannels;
             upper = arrayCoefs(1:hLen,:);
@@ -210,6 +211,7 @@ classdef AbstOLpPrFbCoefManipulator1d < matlab.System %#codegen
             arrayCoefs(hLen+1:end,:) = upper - lower;
         end
         
+        %TODO: 現在使用していないので削除を検討する
         function arrayCoefs = blockButterflyTypeII_(obj,arrayCoefs,angles)
             chs = [obj.NumberOfSymmetricChannels ...
                 obj.NumberOfAntisymmetricChannels ];

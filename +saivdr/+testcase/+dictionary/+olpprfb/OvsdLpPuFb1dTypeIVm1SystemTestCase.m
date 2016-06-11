@@ -671,17 +671,17 @@ classdef OvsdLpPuFb1dTypeIVm1SystemTestCase < matlab.unittest.TestCase
                 'MatrixSizeTable',mstab);
             step(paramMtxExpctd, eye(mstab( 1,:)),uint32( 1)); % V0
             step(paramMtxExpctd, eye(mstab( 2,:)),uint32( 2)); % W1
-            step(paramMtxExpctd,-eye(mstab( 3,:)),uint32( 3)); % U1
-            step(paramMtxExpctd,            pi/4 ,uint32( 4)); % angB1
+            step(paramMtxExpctd, eye(mstab( 3,:)),uint32( 3)); % U1
+            step(paramMtxExpctd,            0 ,uint32( 4)); % angB1
             step(paramMtxExpctd, eye(mstab( 5,:)),uint32( 5)); % W2
-            step(paramMtxExpctd,-eye(mstab( 6,:)),uint32( 6)); % U2
-            step(paramMtxExpctd,            pi/4 ,uint32( 7)); % angB2
+            step(paramMtxExpctd, eye(mstab( 6,:)),uint32( 6)); % U2
+            step(paramMtxExpctd,            0 ,uint32( 7)); % angB2
             step(paramMtxExpctd, eye(mstab( 8,:)),uint32( 8)); % W3
-            step(paramMtxExpctd,-eye(mstab( 9,:)),uint32( 9)); % U3
-            step(paramMtxExpctd,            pi/4 ,uint32(10)); % angB3
+            step(paramMtxExpctd, eye(mstab( 9,:)),uint32( 9)); % U3
+            step(paramMtxExpctd,            0 ,uint32(10)); % angB3
             step(paramMtxExpctd, eye(mstab(11,:)),uint32(11)); % W4
-            step(paramMtxExpctd,-eye(mstab(12,:)),uint32(12)); % U4
-            step(paramMtxExpctd,            pi/4 ,uint32(13)); % angB4
+            step(paramMtxExpctd, eye(mstab(12,:)),uint32(12)); % U4
+            step(paramMtxExpctd,            0 ,uint32(13)); % angB4
             coefExpctd = get(paramMtxExpctd,'Coefficients');
             
             % Instantiation of target class
@@ -704,26 +704,40 @@ classdef OvsdLpPuFb1dTypeIVm1SystemTestCase < matlab.unittest.TestCase
             ang = get(testCase.lppufb,'Angles');
             ang = randn(size(ang));
             mus = get(testCase.lppufb,'Mus');
-            mus = 2*(rand(size(mus))>0.5)-1;
+            %mus = 2*(rand(size(mus))>0.5)-1;
+            mus = ones(size(mus));
             %
+            %TODO: musÇçló∂ÇµÇΩê›åvÇ…Ç∑ÇÈÅD
             import saivdr.dictionary.utility.*
             initOmgs = OrthonormalMatrixGenerationSystem();
             propOmgs = OrthonormalMatrixGenerationSystem();
-            V0 = step(initOmgs, 0 , [1; mus(2,1)]);
-            W1 = step(propOmgs,ang(1) , [1; mus(2,2)]);
-            U1 = step(propOmgs,ang(2), mus(:,3));
-            W2 = step(propOmgs,ang(3), [1; mus(2,4)]);
-            U2 = step(propOmgs,ang(4), mus(:,5));
-            W3 = step(propOmgs,ang(5), [1; mus(2,6)]);
-            U3 = step(propOmgs,ang(6), mus(:,7));
-            W4 = step(propOmgs,ang(7), [1; mus(2,8)]);
-            U4 = step(propOmgs,ang(8), mus(:,9));
-            step(paramMtxExpctd,W1 ,uint32(1)); % W0
-            step(paramMtxExpctd,U1 ,uint32(2)); % U0
-            step(paramMtxExpctd,U1,uint32(3));  % U1
-            step(paramMtxExpctd,U2,uint32(4));  % U2
-            step(paramMtxExpctd,U3,uint32(5));  % U3            
-            step(paramMtxExpctd,U4,uint32(6));  % U4
+            V0 = step(initOmgs, ang(1:6) , [1;1;1;1]);
+            W1 = step(propOmgs,ang(7) , [1;1]);
+            U1 = step(propOmgs,ang(8), [1;1]);
+            angB1 = ang(9);
+            W2 = step(propOmgs,ang(10), [1;1]);
+            U2 = step(propOmgs,ang(11), [1;1]);
+            angB2 = ang(12);
+            W3 = step(propOmgs,ang(13), [1;1]);
+            U3 = step(propOmgs,ang(14), [1;1]);
+            angB3 = ang(15);
+            W4 = step(propOmgs,ang(16), [1;1]);
+            U4 = step(propOmgs,ang(17), [1;1]);
+            angB4 = ang(18);
+            
+            step(paramMtxExpctd,V0,uint32(1)); % V0
+            step(paramMtxExpctd,W1,uint32(2)); % W1
+            step(paramMtxExpctd,U1,uint32(3)); % U1
+            step(paramMtxExpctd,angB1,uint32(4)); % angB1
+            step(paramMtxExpctd,W2,uint32(5));  % W2
+            step(paramMtxExpctd,U2,uint32(6));  % U2
+            step(paramMtxExpctd,angB2,uint32(7)); % angB2
+            step(paramMtxExpctd,W3,uint32(8));  % W3            
+            step(paramMtxExpctd,U3,uint32(9));  % U3
+            step(paramMtxExpctd,angB3,uint32(10)); % angB1
+            step(paramMtxExpctd,W4,uint32(11));  % W4            
+            step(paramMtxExpctd,U4,uint32(12));  % U4
+            step(paramMtxExpctd,angB4,uint32(13)); % angB1
             %
             coefExpctd = get(paramMtxExpctd,'Coefficients');            
             

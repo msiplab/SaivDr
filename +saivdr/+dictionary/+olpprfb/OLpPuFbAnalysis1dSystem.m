@@ -238,7 +238,7 @@ classdef OLpPuFbAnalysis1dSystem < ...
             
             % Block DCT
             if dec_ == 1
-                arrayCoefs(1,:) = subSeq(:)';
+                arrayCoefs(1,:) = subSeq(:).';
 %             elseif dec_ == 2
 %                 subSeq1 = subSeq(1:2:end);
 %                 subSeq2 = subSeq(2:2:end);
@@ -264,7 +264,7 @@ classdef OLpPuFbAnalysis1dSystem < ...
             fpe = strcmp(obj.BoundaryOperation,'Circular');
             arrayCoefs = obj.atomExtFcn(arrayCoefs,subScale,pmCoefs,...
                 ord,fpe);
-            arrayCoefs = conj(arrayCoefs);
+            %arrayCoefs = conj(arrayCoefs);
         end
         
         %TODO:“¯ˆê‚ÌŠÖ”‚ªAbstOLpPuFb1dSystem‚Å‚à’è‹`‚³‚ê‚Ä‚¢‚é‚Ì‚Åˆê‰ÓŠ‚ÉW–ñ‚·‚é
