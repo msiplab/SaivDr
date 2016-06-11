@@ -252,7 +252,8 @@ classdef OLpPuFbAnalysis1dSystem < ...
                 %mc = ceil(dec_/2);
                 %mf = floor(dec_/2);
                 tmp = reshape(subSeq,[dec_, nBlks_]);
-                hsdftCoefs = hsdft_(obj, tmp);
+                Edft = hsdftmtx_(obj,dec_);
+                hsdftCoefs = conj(Edft)*tmp;
                 %arrayCoefs(1:mc,:) = dctCoefs(1:mc,:) ;
                 %arrayCoefs(ps+1:ps+mf,:) = dctCoefs(mc+1:end,:);
                 arrayCoefs(1:dec_,:) = hsdftCoefs;
@@ -264,7 +265,6 @@ classdef OLpPuFbAnalysis1dSystem < ...
             fpe = strcmp(obj.BoundaryOperation,'Circular');
             arrayCoefs = obj.atomExtFcn(arrayCoefs,subScale,pmCoefs,...
                 ord,fpe);
-            %arrayCoefs = conj(arrayCoefs);
         end
         
         %TODO:“¯ˆê‚ÌŠÖ”‚ªAbstOLpPuFb1dSystem‚Å‚à’è‹`‚³‚ê‚Ä‚¢‚é‚Ì‚Åˆê‰ÓŠ‚ÉW–ñ‚·‚é

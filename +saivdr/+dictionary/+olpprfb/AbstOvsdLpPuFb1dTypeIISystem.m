@@ -234,19 +234,19 @@ classdef AbstOvsdLpPuFb1dTypeIISystem < ...
                     %U = step(pmMtxSt_,[],iParamMtx+1);
                     U = step(pmMtxSt_,[],iParamMtx+1);
                     %angB1 = step(PmMtxSt_,[],iParamMtx+2);
-                    angB1 = step(pmMtxSt_,[],iParamMtx+2);
+                    angsB1 = step(pmMtxSt_,[],iParamMtx+2);
                     %hW = step(pmMtxSt_,[],iParamMtx+3);
                     hW = step(pmMtxSt_,[],iParamMtx+3);
                     %hU = step(pmMtxSt_,[],iParamMtx+4);
                     hU = step(pmMtxSt_,[],iParamMtx+4);
                     %angB2 = step(PmMtxSt_,[],iParamMtx+5);
-                    angB2 = step(pmMtxSt_,[],iParamMtx+5);
+                    angsB2 = step(pmMtxSt_,[],iParamMtx+5);
                     if mexFlag_
-                        E = mexFcn_(E, W, U, angB1, hW, hU, angB2, floor(nChs/2), nShift);
+                        E = mexFcn_(E, W, U, angsB1, hW, hU, angsB2, floor(nChs/2), nShift);
                     else
                         import saivdr.dictionary.nsoltx.mexsrcs.Order2BuildingBlockTypeII
                         hObb = Order2BuildingBlockTypeII();
-                        E = step(hObb, E, W, U, angB1, hW, hU, angB2, floor(nChs/2), nShift);
+                        E = step(hObb, E, W, U, angsB1, hW, hU, angsB2, floor(nChs/2), nShift);
                     end
                     iParamMtx = iParamMtx+6;
                 end

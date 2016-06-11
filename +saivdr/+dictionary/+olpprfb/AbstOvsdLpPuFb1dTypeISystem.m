@@ -192,16 +192,14 @@ classdef AbstOvsdLpPuFb1dTypeISystem < ...
                 for iOrd = 1:ord
                     W = step(pmMtxSet_,[],iParamMtx);
                     U = step(pmMtxSet_,[],iParamMtx+1);
-                    angles = pi/4*ones(floor(hChs/2),1);
-                    %angles = step(pmMtxSet_,[],iParamMt+2);
+                    angsB = step(pmMtxSet_,[],iParamMtx+2);
                     if mexFlag_
-                        E = mexFcn_(E, W, U, angles, hChs, nShift);
+                        E = mexFcn_(E, W, U, angsB, hChs, nShift);
                     else
                         import saivdr.dictionary.nsoltx.mexsrcs.Order1BuildingBlockTypeI
                         hObb = Order1BuildingBlockTypeI();
-                        E = step(hObb, E, W, U, angles, hChs, nShift);
+                        E = step(hObb, E, W, U, angsB, hChs, nShift);
                     end
-                    %iParamMtx = iParamMtx+1;
                     iParamMtx = iParamMtx+3;
                 end
             end
