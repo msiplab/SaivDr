@@ -27,11 +27,10 @@ classdef Order2BuildingBlockTypeII < saivdr.dictionary.nsoltx.mexsrcs.AbstBuildi
 
         function output = stepImpl(obj,input,mtxW,mtxU,angB1,mtxHW,mtxHU,angB2,~,nshift)
             R = blkdiag(mtxW,mtxU);
-            temp1 = R*processQ_(obj,angB1,input(2:end,:), nshift);
-            
-            temp2u = horzcat(zeros(1,nshift),input(1,:), zeros(1,nshift));
-            temp2b = processQ_(obj, angB2, temp1, nshift);
-            R = blkdiag(obj.I,mtxHU)*blkdiag(mtxHW,obj.I);
+            temp1 = R*processQ_(obj,angB1,input(1:end-1,:), nshift);
+            temp2u = processQ_(obj, angB2, temp1, nshift);
+            temp2b = horzcat(zeros(1,nshift),input(end,:), zeros(1,nshift));
+            R = blkdiag(mtxHW,obj.I)*blkdiag(obj.I,mtxHU);
             output = R*[temp2u ; temp2b];
         end
 
