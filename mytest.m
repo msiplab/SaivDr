@@ -46,10 +46,6 @@ packageList = { ...
     'saivdr.testcase.dictionary.nsgenlotx',...
     'saivdr.testcase.dictionary.nsgenlotx.design',...    
     'saivdr.testcase.dictionary.generalfb',...
-    ...%'saivdr.testcase.dictionary.nsolt',...
-    ...%'saivdr.testcase.dictionary.nsolt.design',...
-    ...%'saivdr.testcase.dictionary.nsgenlot',...
-    ...%'saivdr.testcase.dictionary.nsgenlot.design',...
     'saivdr.testcase.dictionary.mixture',...
     'saivdr.testcase.dictionary.utility',...
     'saivdr.testcase.utility',...
@@ -62,24 +58,6 @@ packageList = { ...
 
 %% Set path
 setpath
-
-%% Open matlabpool or parpool
-%{
-isOpeningPct = false;
-isPctAvailable = license('checkout','distrib_computing_toolbox');
-if isPctAvailable 
-    if exist('matlabpool','file') == 2 && ... % Before R2013b
-            ~verLessThan('distcomp','4.0') && verLessThan('distcomp','6.4')
-        if matlabpool('size') < 1 %#ok 
-            matlabpool %#ok
-            isOpeningPct = true;
-        end
-    elseif exist('parpool','file') == 2 && isempty(gcp('nocreate'))
-        poolobj = parpool;
-        isOpeningPct = true;
-    end
-end
-%}
 
 %% Run test cases
 if isProfiling
@@ -105,24 +83,6 @@ if isProfiling
     profile off
     profile viewer
 end
-
-%% Close matlabpool or parpool
-%{
-if isPctAvailable && isOpeningPct
-    if exist('matlabpool','file') == 2 && ... % Before R2013b
-            ~verLessThan('distcomp','4.0') && verLessThan('distcomp','6.4')
-        if matlabpool('size') > 0 %#ok
-            matlabpool close %#ok
-        end
-    elseif exist('parbpool','file') == 2 
-        p = gcp('nocreate');
-        if p.NumWorkers > 0 
-            delete(poolobj)
-        end
-    end
-        
-end
-%}
 
 %% License check
 license('inuse')
