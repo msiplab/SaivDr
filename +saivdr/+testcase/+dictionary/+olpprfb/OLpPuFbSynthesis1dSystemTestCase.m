@@ -97,7 +97,7 @@ classdef OLpPuFbSynthesis1dSystemTestCase < matlab.unittest.TestCase
             lppufb = OLpPrFbFactory.createOvsdLpPuFb1dSystem(...
                 'DecimationFactor',dec);
             E0 = step(lppufb,[],[]);
-            seqExpctd = reshape(flipud(E0.'*subCoefs),[1 nLen]);
+            seqExpctd = reshape(flipud(E0'*subCoefs),[1 nLen]);
             
             % Instantiation of target class
             release(lppufb)
@@ -142,7 +142,7 @@ classdef OLpPuFbSynthesis1dSystemTestCase < matlab.unittest.TestCase
             E = step(lppufb,[],[]);
             
             % Expected values
-            seqExpctd = reshape(flipud(E.'*subCoefs),[1 nLen]);
+            seqExpctd = reshape(flipud(E'*subCoefs),[1 nLen]);
             
             % Instantiation of target class
             release(lppufb)
@@ -4172,7 +4172,7 @@ classdef OLpPuFbSynthesis1dSystemTestCase < matlab.unittest.TestCase
             E = step(lppufb,[],[]);
             
             % Expected values
-            tmp = flipud(E.'*subCoefs);
+            tmp = flipud(E'*subCoefs);
             seqExpctd = tmp(:).';
             
             % Instantiation of target class
@@ -4221,7 +4221,7 @@ classdef OLpPuFbSynthesis1dSystemTestCase < matlab.unittest.TestCase
             E = step(lppufb,[],[]);
             
             % Expected values
-            tmp = flipud(E.'*subCoefs);
+            tmp = flipud(E'*subCoefs);
             seqExpctd = tmp(:).';
             
             % Instantiation of target class
@@ -8263,7 +8263,7 @@ classdef OLpPuFbSynthesis1dSystemTestCase < matlab.unittest.TestCase
             E = step(lppufb,[],[]);
             
             % Expected values
-            tmp = flipud(E.'*subCoefs);
+            tmp = flipud(E'*subCoefs);
             seqExpctd = tmp(:).';
             
             % Instantiation of target class
@@ -8563,7 +8563,7 @@ classdef OLpPuFbSynthesis1dSystemTestCase < matlab.unittest.TestCase
 %             E = step(lppufb,[],[]);
 %             
 %             % Expected values
-%             tmp = flipud(E.'*subCoefs);
+%             tmp = flipud(E'*subCoefs);
 %             seqExpctd = tmp(:).';
 %             
 %             % Instantiation of target class
@@ -9313,7 +9313,7 @@ classdef OLpPuFbSynthesis1dSystemTestCase < matlab.unittest.TestCase
 %             E = step(lppufb,[],[]);
 %             
 %             % Expected values
-%             tmp = flipud(E.'*subCoefs);
+%             tmp = flipud(E'*subCoefs);
 %             seqExpctd = tmp(:).';
 %             
 %             % Instantiation of target class
@@ -9613,7 +9613,7 @@ classdef OLpPuFbSynthesis1dSystemTestCase < matlab.unittest.TestCase
 %             E = step(lppufb,[],[]);
 %             
 %             % Expected values
-%             tmp = flipud(E.'*subCoefs);
+%             tmp = flipud(E'*subCoefs);
 %             seqExpctd = tmp(:).';
 %             
 %             % Instantiation of target class

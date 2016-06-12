@@ -166,8 +166,8 @@ classdef OLpPrFbAtomExtender1d <  ...
             %arrayCoefs = blockButterflyTypeI_(obj,arrayCoefs,angB2);
             %arrayCoefs = arrayCoefs/2.0;
             % Lower channel rotation
-            arrayCoefs(1:hLen,:) = Wx*arrayCoefs(1:hLen,:);
             arrayCoefs(hLen+1:end,:) = Ux*arrayCoefs(hLen+1:end,:);
+            arrayCoefs(1:hLen,:) = Wx*arrayCoefs(1:hLen,:);
             %arrayCoefs = conj(arrayCoefs);
         end
         

@@ -131,7 +131,7 @@ classdef OLpPrFbAtomConcatenator1dTestCase < matlab.unittest.TestCase
             srclen = 16;
             nch   = [ 3 2 ];
             ord   = 0;
-            coefs = randn(sum(nch), srclen);
+            coefs = randn(sum(nch), srclen) + 1i*randn(sum(nch), srclen);
             scale = srclen;
             V0 = eye(sum(nch));
             pmCoefs = V0(:);
@@ -355,7 +355,7 @@ classdef OLpPrFbAtomConcatenator1dTestCase < matlab.unittest.TestCase
             srclen = 16;
             ord   = 2;
             nch   = [ 3 2 ];
-            coefs = randn(sum(nch), srclen);
+            coefs = randn(sum(nch), srclen) + 1i*randn(sum(nch), srclen);
             scale = srclen;
             
             I0 = eye(sum(nch));
@@ -399,21 +399,27 @@ classdef OLpPrFbAtomConcatenator1dTestCase < matlab.unittest.TestCase
             srclen = 16;
             ord   = 2;
             nch   = [ 3 2 ];
-            coefs = randn(sum(nch), srclen);
+            coefs = randn(sum(nch), srclen) + 1i*randn(sum(nch), srclen);
             scale = srclen;
+            
+            U0 = dctmtx(sum(nch));
             Ix = eye(nch(1));
             In = eye(nch(2));
-            U0 = dctmtx(nch(2));
-            pmCoefs = [ 
-                Ix(:) ; 
+            Ux = blkdiag(-In,1);
+            angB = pi/4*ones(floor(sum(nch)/4),1);
+            pmCoefs = [
                 U0(:) ;
-                Ix(:) ; 
-                -In(:) ];
+                In(:) ;
+                -In(:) ;
+                angB ;
+                Ix(:) ;
+                Ux(:) ;
+                angB ];
             
             % Expected values
             ordExpctd = ord;
             cfsExpctd = coefs;
-            cfsExpctd(nch(1)+1:end,:) = -U0.'*cfsExpctd(nch(1)+1:end,:);
+            cfsExpctd = U0.'*cfsExpctd;
                         
             % Instantiation
             import saivdr.dictionary.olpprfb.OLpPrFbAtomConcatenator1d
@@ -438,7 +444,7 @@ classdef OLpPrFbAtomConcatenator1dTestCase < matlab.unittest.TestCase
             srclen = 16;
             ord   = 0;
             nch   = [ 3 2 ];
-            coefs = randn(sum(nch), srclen);
+            coefs = randn(sum(nch), srclen) + 1i*randn(sum(nch), srclen);
             scale = srclen;
             V0 = eye(sum(nch));
             pmCoefs = V0(:);
@@ -470,17 +476,29 @@ classdef OLpPrFbAtomConcatenator1dTestCase < matlab.unittest.TestCase
             srclen = 16;
             ord   = 4;
             nch   = [ 3 2 ];
-            coefs = randn(sum(nch), srclen);
+            coefs = randn(sum(nch), srclen) + 1i*randn(sum(nch), srclen);
             scale = srclen;
+            
+            I0 = eye(sum(nch));
             Ix = eye(nch(1));
             In = eye(nch(2));
-            pmCoefs = [ 
-                Ix(:) ; 
+            Ux = blkdiag(-In,1);
+            angB = pi/4*ones(floor(sum(nch)/4),1);
+            pmCoefs = [
+                I0(:) ;
                 In(:) ;
-                Ix(:) ; 
-                -In(:) ;                
-                Ix(:) ; 
-                -In(:) ];
+                -In(:) ;
+                angB ;
+                Ix(:) ;
+                Ux(:) ;
+                angB ;
+                In(:) ;
+                -In(:) ;
+                angB ;
+                Ix(:) ;
+                Ux(:) ;
+                angB ];
+            
             
             % Expected values
             ordExpctd = ord;
@@ -509,15 +527,22 @@ classdef OLpPrFbAtomConcatenator1dTestCase < matlab.unittest.TestCase
             srclen = 16;
             ord   = 2;
             nch   = [ 5 4 ];
-            coefs = randn(sum(nch), srclen);
+            coefs = randn(sum(nch), srclen) + 1i*randn(sum(nch), srclen);
             scale = srclen;
+
+            I0 = eye(sum(nch));
             Ix = eye(nch(1));
             In = eye(nch(2));
-            pmCoefs = [ 
-                Ix(:) ; 
+            Ux = blkdiag(-In,1);
+            angB = pi/4*ones(floor(sum(nch)/4),1);
+            pmCoefs = [
+                I0(:) ;
+                In(:) ;
                 -In(:) ;
-                Ix(:) ; 
-                -In(:) ];
+                angB ;
+                Ix(:) ;
+                Ux(:) ;
+                angB ];
             
             % Expected values
             ordExpctd = ord;

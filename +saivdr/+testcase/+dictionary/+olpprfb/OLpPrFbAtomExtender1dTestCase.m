@@ -338,8 +338,7 @@ classdef OLpPrFbAtomExtender1dTestCase < matlab.unittest.TestCase
             srclen = 16;
             ord   = 2;
             nch   = [ 3 2 ];
-            %coefs = randn(sum(nch), srclen) + 1i*randn(sum(nch), srclen);
-            coefs = ones(sum(nch),srclen);
+            coefs = randn(sum(nch), srclen) + 1i*randn(sum(nch), srclen);
             scale = srclen;
             I0 = eye(sum(nch));
             Ix = eye(nch(1));
@@ -371,7 +370,6 @@ classdef OLpPrFbAtomExtender1dTestCase < matlab.unittest.TestCase
             
         end
         
-        % TODO: coefs=cfsExpctdが成立するパラメータの条件を調べる．
         function testStepOrd2Ch32U0(testCase)
             
             % Parameters
@@ -410,7 +408,6 @@ classdef OLpPrFbAtomExtender1dTestCase < matlab.unittest.TestCase
             
         end
         
-        % TODO: coefs=cfsExpctdが成立するパラメータの条件を調べる．
         function testStepOrd0Ch32(testCase)
             
             % Parameters
@@ -445,7 +442,6 @@ classdef OLpPrFbAtomExtender1dTestCase < matlab.unittest.TestCase
             
         end
         
-        % TODO: coefs=cfsExpctdが成立するパラメータの条件を調べる．
         function testStepOrd4Ch32(testCase)
             
             % Parameters
@@ -497,7 +493,6 @@ classdef OLpPrFbAtomExtender1dTestCase < matlab.unittest.TestCase
             
         end
         
-        % TODO: coefs=cfsExpctdが成立するパラメータの条件を調べる．
         function testStepOrd2Ch54(testCase)
             
             % Parameters

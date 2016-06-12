@@ -143,14 +143,13 @@ classdef OLpPrFbAtomConcatenator1d < ...
             cB1 = conj(B1);
             % Lower channel rotation
             if isPeriodicExt
-                arrayCoefs(1:hLen,:) = Wx1*arrayCoefs(1:hLen,:);
-                arrayCoefs(hLen+1:end,:) = Ux1*arrayCoefs(hLen+1:end,:);
+                 arrayCoefs(1:hLen,:) = Wx1*arrayCoefs(1:hLen,:);
+                 arrayCoefs(hLen+1:end,:) = Ux1*arrayCoefs(hLen+1:end,:);
             else
                 % TODO:ŽüŠúŠg’£‚Ì’è‹`
                 arrayCoefs(1:hLen,:) = Wx1*arrayCoefs(1:hLen,:);
-                
-                arrayCoefs(hLen+1:end,1) = Ux1*arrayCoefs(hLen+1:end,1);                
-                arrayCoefs(hLen+1:end,2:end) = Ux1*arrayCoefs(hLen+1:end,2:end);                
+                arrayCoefs(hLen+1:end,1) = -arrayCoefs(hLen+1:end,1);
+                arrayCoefs(hLen+1:end,2:end) = Ux1*arrayCoefs(hLen+1:end,2:end);
             end
             %arrayCoefs = blockButterflyTypeI_(obj,arrayCoefs,[]);
             arrayCoefs = cB1'*arrayCoefs;
@@ -174,7 +173,7 @@ classdef OLpPrFbAtomConcatenator1d < ...
             
             %arrayCoefs = blockButterflyTypeII_(obj,arrayCoefs,[]);
             arrayCoefs(1:end-1,:) = cB2'*arrayCoefs(1:end-1,:);
-            arrayCoefs = rightShiftUpperCoefs_(obj,arrayCoefs);
+            arrayCoefs(1:end-1,:) = rightShiftUpperCoefs_(obj,arrayCoefs(1:end-1,:));
             arrayCoefs(1:end-1,:) = cB2*arrayCoefs(1:end-1,:);
 %             arrayCoefs = blockButterflyTypeII_(obj,arrayCoefs,[]);
 %             arrayCoefs = arrayCoefs/2.0;
@@ -190,9 +189,9 @@ classdef OLpPrFbAtomConcatenator1d < ...
                 arrayCoefs(hLen:end-1,:) = Ux1*arrayCoefs(hLen:end-1,:);
             else
                 arrayCoefs(1:hLen-1,:) = Wx1*arrayCoefs(1:hLen-1,:);
-                arrayCoefs(hLen:end-1,1) = Ux1*arrayCoefs(hLen:end-1,1);
+                
+                arrayCoefs(hLen:end-1,1) = -arrayCoefs(hLen:end-1,1);
                 arrayCoefs(hLen:end-1,2:end) = Ux1*arrayCoefs(hLen:end-1,2:end);
-                % TODO:ŽüŠúŠg’£‚Ì’è‹`
             end
             %arrayCoefs = blockButterflyTypeII_(obj,arrayCoefs,[]);
             arrayCoefs(1:end-1,:) = cB1'*arrayCoefs(1:end-1,:);
@@ -239,12 +238,12 @@ classdef OLpPrFbAtomConcatenator1d < ...
         end
         
         function arrayCoefs = rightShiftUpperCoefs_(obj,arrayCoefs)
-            hLenMx = max([ obj.NumberOfSymmetricChannels
+            hLenMn = min([ obj.NumberOfSymmetricChannels
                 obj.NumberOfAntisymmetricChannels]);
             %
-            upperCoefsPost = arrayCoefs(1:hLenMx,end);
-            arrayCoefs(1:hLenMx,2:end) = arrayCoefs(1:hLenMx,1:end-1);
-            arrayCoefs(1:hLenMx,1) = upperCoefsPost;
+            upperCoefsPost = arrayCoefs(1:hLenMn,end);
+            arrayCoefs(1:hLenMn,2:end) = arrayCoefs(1:hLenMn,1:end-1);
+            arrayCoefs(1:hLenMn,1) = upperCoefsPost;
         end
         
         function hB = butterflyMtx_(obj, angles)%TODO: “¯ˆê‚ÌŠÖ”‚ªAbstBuildingBlock.m‚ÅŽÀ‘•‚³‚ê‚Ä‚¢‚é‚Ì‚Åˆê‰ÓŠ‚É‚Ü‚Æ‚ß‚éD
