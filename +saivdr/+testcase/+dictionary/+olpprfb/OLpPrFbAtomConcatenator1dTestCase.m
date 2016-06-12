@@ -99,11 +99,10 @@ classdef OLpPrFbAtomConcatenator1dTestCase < matlab.unittest.TestCase
             srclen = 16;
             nch   = [ 2 2 ];
             ord   = 0;
-            coefs = randn(sum(nch), srclen);
+            coefs = randn(sum(nch), srclen) + 1i*randn(sum(nch), srclen);
             scale = srclen;
-            Ix = eye(nch(1));
-            In = eye(nch(2));
-            pmCoefs = [ Ix(:) ; In(:) ];
+            V0 = eye(sum(nch));
+            pmCoefs = V0(:);
             
             % Expected values
             ordExpctd = ord;
@@ -134,9 +133,8 @@ classdef OLpPrFbAtomConcatenator1dTestCase < matlab.unittest.TestCase
             ord   = 0;
             coefs = randn(sum(nch), srclen);
             scale = srclen;
-            Ix = eye(nch(1));
-            In = eye(nch(2));
-            pmCoefs = [ Ix(:) ; In(:) ];
+            V0 = eye(sum(nch));
+            pmCoefs = V0(:);
             
             % Expected values
             ordExpctd = ord;
@@ -165,11 +163,13 @@ classdef OLpPrFbAtomConcatenator1dTestCase < matlab.unittest.TestCase
             srclen = 16;
             ord   = 2;
             nch   = [ 2 2 ];
-            coefs = randn(sum(nch), srclen);
+            coefs = randn(sum(nch), srclen) + 1i*randn(sum(nch), srclen);
             scale = srclen;
+            V0 = eye(sum(nch));
             Ix = eye(nch(1));
             In = eye(nch(2));
-            pmCoefs = [ Ix(:) ; In(:) ; -In(:) ; -In(:) ];
+            angB = pi/4*ones(floor(nch(1)/2),1);
+            pmCoefs = [ V0(:); In(:) ; -In(:) ; angB(:) ; Ix(:) ; -Ix(:) ; angB(:) ];
             
             % Expected values
             ordExpctd = ord;
@@ -198,17 +198,23 @@ classdef OLpPrFbAtomConcatenator1dTestCase < matlab.unittest.TestCase
             srclen = 16;
             ord   = 2;
             nch   = [ 2 2 ];
-            coefs = randn(sum(nch), srclen);
+            coefs = randn(sum(nch), srclen) + 1i*randn(sum(nch), srclen);
             scale = srclen;
+%             Ix = eye(nch(1));
+%             In = eye(nch(2));
+%             U0 = dctmtx(nch(2));
+%             pmCoefs = [ Ix(:) ; U0(:); -In(:); -In(:) ];
+            V0 = eye(sum(nch));
             Ix = eye(nch(1));
             In = eye(nch(2));
-            U0 = dctmtx(nch(2));
-            pmCoefs = [ Ix(:) ; U0(:); -In(:); -In(:) ];
+            angB = pi/4*ones(floor(nch(1)/2),1);
+            pmCoefs = [ V0(:); In(:) ; -In(:) ; angB(:) ; Ix(:) ; -Ix(:) ; angB(:) ];
             
             % Expected values
             ordExpctd = ord;
             cfsExpctd = coefs;
-            cfsExpctd(nch(1)+1:end,:) = U0*cfsExpctd(nch(1)+1:end,:);
+            %cfsExpctd(nch(1)+1:end,:) = U0*cfsExpctd(nch(1)+1:end,:);
+            cfsExpctd = V0*cfsExpctd;
                         
             % Instantiation
             import saivdr.dictionary.olpprfb.OLpPrFbAtomConcatenator1d
@@ -233,11 +239,10 @@ classdef OLpPrFbAtomConcatenator1dTestCase < matlab.unittest.TestCase
             srclen = 16;
             ord   = 0;
             nch   = [ 2 2 ];
-            coefs = randn(sum(nch), srclen);
+            coefs = randn(sum(nch), srclen) + 1i*randn(sum(nch), srclen);
             scale = srclen;
-            Ix = eye(nch(1));
-            In = eye(nch(2));
-            pmCoefs = [ Ix(:) ; In(:)  ];
+            V0 = eye(sum(nch));
+            pmCoefs = V0(:);
             
             % Expected values
             ordExpctd = ord;
@@ -266,17 +271,26 @@ classdef OLpPrFbAtomConcatenator1dTestCase < matlab.unittest.TestCase
             srclen = 16;
             ord   = 4;
             nch   = [ 2 2 ];
-            coefs = randn(sum(nch), srclen);
+            coefs = randn(sum(nch), srclen) + 1i*randn(sum(nch), srclen);
             scale = srclen;
+            V0 = eye(sum(nch));
             Ix = eye(nch(1));
             In = eye(nch(2));
+            angB = pi/4*ones(floor(nch(1)/2),1);
             pmCoefs = [ 
-                Ix(:) ; 
+                V0(:) ;
+                In(:) ; 
+                -In(:) ;
+                angB(:) ;
+                Ix(:) ;
+                -Ix(:) ;
+                angB(:) ;
                 In(:) ;
-                -In(:) ; 
-                -In(:) ;                
-                -In(:) ;                 
-                -In(:)  ];
+                -In(:) ;
+                angB(:) ;
+                Ix(:) ;                 
+                -Ix(:) ;
+                angB(:)  ];
             
             % Expected values
             ordExpctd = ord;
@@ -305,17 +319,14 @@ classdef OLpPrFbAtomConcatenator1dTestCase < matlab.unittest.TestCase
             srclen = 16;
             ord   = 2;
             nch   = [ 4 4 ];
-            coefs = randn(sum(nch), srclen);
+            coefs = randn(sum(nch), srclen) + 1i*randn(sum(nch), srclen);
             scale = srclen;
+            
+            V0 = eye(sum(nch));
             Ix = eye(nch(1));
             In = eye(nch(2));
-            pmCoefs = [ 
-                Ix(:) ; 
-                In(:) ;
-                -In(:) ; 
-                -In(:) ;                
-                -In(:) ;                 
-                -In(:)  ];
+            angB = pi/4*ones(floor(nch(1)/2),1);
+            pmCoefs = [ V0(:); In(:) ; -In(:) ; angB(:) ; Ix(:) ; -Ix(:) ; angB(:) ];
             
             % Expected values
             ordExpctd = ord;
@@ -346,9 +357,20 @@ classdef OLpPrFbAtomConcatenator1dTestCase < matlab.unittest.TestCase
             nch   = [ 3 2 ];
             coefs = randn(sum(nch), srclen);
             scale = srclen;
+            
+            I0 = eye(sum(nch));
             Ix = eye(nch(1));
             In = eye(nch(2));
-            pmCoefs = [ Ix(:) ; -In(:) ; Ix(:) ; -In(:) ];
+            Ux = blkdiag(-In,1);
+            angB = pi/4*ones(floor(sum(nch)/4),1);
+            pmCoefs = [
+                I0(:) ;
+                In(:) ;
+                -In(:) ;
+                angB ;
+                Ix(:) ;
+                Ux(:) ;
+                angB ];
             
             % Expected values
             ordExpctd = ord;
@@ -418,11 +440,8 @@ classdef OLpPrFbAtomConcatenator1dTestCase < matlab.unittest.TestCase
             nch   = [ 3 2 ];
             coefs = randn(sum(nch), srclen);
             scale = srclen;
-            Ix = eye(nch(1));
-            In = eye(nch(2));
-            pmCoefs = [ 
-                Ix(:) ; 
-                In(:) ];
+            V0 = eye(sum(nch));
+            pmCoefs = V0(:);
             
             % Expected values
             ordExpctd = ord;
@@ -521,188 +540,188 @@ classdef OLpPrFbAtomConcatenator1dTestCase < matlab.unittest.TestCase
             
         end
 
-        function testStepOrd2Ch23(testCase)
-
-            % Parameters
-            srclen = 16;
-            ord   = 2;
-            nch   = [ 2 3 ];
-            coefs = randn(sum(nch), srclen);
-            scale = srclen;
-            In = eye(nch(1));
-            Ix = eye(nch(2));
-            pmCoefs = [ -In(:) ; Ix(:) ; -In(:) ;  Ix(:) ];
-            
-            % Expected values
-            ordExpctd = ord;
-            cfsExpctd = coefs;
-                        
-            % Instantiation
-            import saivdr.dictionary.olpprfb.OLpPrFbAtomConcatenator1d
-            testCase.module = OLpPrFbAtomConcatenator1d(...
-                'NumberOfSymmetricChannels',nch(1),...
-                'NumberOfAntisymmetricChannels',nch(2));
-            set(testCase.module,'PolyPhaseOrder',ord);
-            
-            % Actual values
-            ordActual = get(testCase.module,'PolyPhaseOrder');
-            cfsActual = step(testCase.module,coefs,scale,pmCoefs);
-            
-            % Evaluation
-            testCase.verifyEqual(ordActual,ordExpctd);
-            testCase.verifyEqual(cfsActual,cfsExpctd,'RelTol',1e-10);
-            
-        end       
-
-        function testStepOrd2Ch23W0(testCase)
-
-            % Parameters
-            srclen = 16;
-            ord   = 2;
-            nch   = [ 2 3 ];
-            coefs = randn(sum(nch), srclen);
-            scale = srclen;
-            In = eye(nch(1));
-            Ix = eye(nch(2));
-            W0 = dctmtx(nch(1));
-            pmCoefs = [ 
-                W0(:) ;
-                Ix(:) ; 
-                -In(:) ; 
-                Ix(:) ];
-            
-            % Expected values
-            ordExpctd = ord;
-            cfsExpctd = coefs;
-            cfsExpctd(1:nch(1),:) = -W0.'*cfsExpctd(1:nch(1),:);
-                        
-            % Instantiation
-            import saivdr.dictionary.olpprfb.OLpPrFbAtomConcatenator1d
-            testCase.module = OLpPrFbAtomConcatenator1d(...
-                'NumberOfSymmetricChannels',nch(1),...
-                'NumberOfAntisymmetricChannels',nch(2));
-            set(testCase.module,'PolyPhaseOrder',ord);
-            
-            % Actual values
-            ordActual = get(testCase.module,'PolyPhaseOrder');
-            cfsActual = step(testCase.module,coefs,scale,pmCoefs);
-            
-            % Evaluation
-            testCase.verifyEqual(ordActual,ordExpctd);
-            testCase.verifyEqual(cfsActual,cfsExpctd,'RelTol',1e-10);
-            
-        end      
-
-        function testStepOrd0Ch23(testCase)
-
-            % Parameters
-            srclen = 16;
-            ord   = 0;
-            nch   = [ 2 3 ];
-            coefs = randn(sum(nch), srclen);
-            scale = srclen;
-            In = eye(nch(1));
-            Ix = eye(nch(2));
-            pmCoefs = [ 
-                In(:) ; 
-                Ix(:) ];
-            
-            % Expected values
-            ordExpctd = ord;
-            cfsExpctd = coefs;
-                        
-            % Instantiation
-            import saivdr.dictionary.olpprfb.OLpPrFbAtomConcatenator1d
-            testCase.module = OLpPrFbAtomConcatenator1d(...
-                'NumberOfSymmetricChannels',nch(1),...
-                'NumberOfAntisymmetricChannels',nch(2));
-            set(testCase.module,'PolyPhaseOrder',ord);
-            
-            % Actual values
-            ordActual = get(testCase.module,'PolyPhaseOrder');
-            cfsActual = step(testCase.module,coefs,scale,pmCoefs);
-            
-            % Evaluation
-            testCase.verifyEqual(ordActual,ordExpctd);
-            testCase.verifyEqual(cfsActual,cfsExpctd,'RelTol',1e-10);
-            
-        end         
-
-        function testStepOrd4Ch23(testCase)
-
-            % Parameters
-            srclen = 16;
-            ord   = 4;
-            nch   = [ 2 3 ];
-            coefs = randn(sum(nch), srclen);
-            scale = srclen;
-            In = eye(nch(1));
-            Ix = eye(nch(2));
-            pmCoefs = [ 
-                In(:) ; 
-                Ix(:) ;
-                -In(:) ; 
-                Ix(:) ;                
-                -In(:) ; 
-                Ix(:) ];
-            
-            % Expected values
-            ordExpctd = ord;
-            cfsExpctd = coefs;
-                        
-            % Instantiation
-            import saivdr.dictionary.olpprfb.OLpPrFbAtomConcatenator1d
-            testCase.module = OLpPrFbAtomConcatenator1d(...
-                'NumberOfSymmetricChannels',nch(1),...
-                'NumberOfAntisymmetricChannels',nch(2));
-            set(testCase.module,'PolyPhaseOrder',ord);
-            
-            % Actual values
-            ordActual = get(testCase.module,'PolyPhaseOrder');
-            cfsActual = step(testCase.module,coefs,scale,pmCoefs);
-            
-            % Evaluation
-            testCase.verifyEqual(ordActual,ordExpctd);
-            testCase.verifyEqual(cfsActual,cfsExpctd,'RelTol',1e-10);
-            
-        end                 
-
-        function testStepOrd2Ch45(testCase)
-
-            % Parameters
-            srclen = 16;
-            ord   = 2;
-            nch   = [ 4 5 ];
-            coefs = randn(sum(nch), srclen);
-            scale = srclen;
-            In = eye(nch(1));
-            Ix = eye(nch(2));
-            pmCoefs = [ 
-                -In(:) ; 
-                Ix(:) ;
-                -In(:) ; 
-                Ix(:) ];
-            
-            % Expected values
-            ordExpctd = ord;
-            cfsExpctd = coefs;
-                        
-            % Instantiation
-            import saivdr.dictionary.olpprfb.OLpPrFbAtomConcatenator1d
-            testCase.module = OLpPrFbAtomConcatenator1d(...
-                'NumberOfSymmetricChannels',nch(1),...
-                'NumberOfAntisymmetricChannels',nch(2));
-            set(testCase.module,'PolyPhaseOrder',ord);
-            
-            % Actual values
-            ordActual = get(testCase.module,'PolyPhaseOrder');
-            cfsActual = step(testCase.module,coefs,scale,pmCoefs);
-            
-            % Evaluation
-            testCase.verifyEqual(ordActual,ordExpctd);
-            testCase.verifyEqual(cfsActual,cfsExpctd,'RelTol',1e-10);
-            
-        end                                                                                    
+%         function testStepOrd2Ch23(testCase)
+% 
+%             % Parameters
+%             srclen = 16;
+%             ord   = 2;
+%             nch   = [ 2 3 ];
+%             coefs = randn(sum(nch), srclen);
+%             scale = srclen;
+%             In = eye(nch(1));
+%             Ix = eye(nch(2));
+%             pmCoefs = [ -In(:) ; Ix(:) ; -In(:) ;  Ix(:) ];
+%             
+%             % Expected values
+%             ordExpctd = ord;
+%             cfsExpctd = coefs;
+%                         
+%             % Instantiation
+%             import saivdr.dictionary.olpprfb.OLpPrFbAtomConcatenator1d
+%             testCase.module = OLpPrFbAtomConcatenator1d(...
+%                 'NumberOfSymmetricChannels',nch(1),...
+%                 'NumberOfAntisymmetricChannels',nch(2));
+%             set(testCase.module,'PolyPhaseOrder',ord);
+%             
+%             % Actual values
+%             ordActual = get(testCase.module,'PolyPhaseOrder');
+%             cfsActual = step(testCase.module,coefs,scale,pmCoefs);
+%             
+%             % Evaluation
+%             testCase.verifyEqual(ordActual,ordExpctd);
+%             testCase.verifyEqual(cfsActual,cfsExpctd,'RelTol',1e-10);
+%             
+%         end       
+% 
+%         function testStepOrd2Ch23W0(testCase)
+% 
+%             % Parameters
+%             srclen = 16;
+%             ord   = 2;
+%             nch   = [ 2 3 ];
+%             coefs = randn(sum(nch), srclen);
+%             scale = srclen;
+%             In = eye(nch(1));
+%             Ix = eye(nch(2));
+%             W0 = dctmtx(nch(1));
+%             pmCoefs = [ 
+%                 W0(:) ;
+%                 Ix(:) ; 
+%                 -In(:) ; 
+%                 Ix(:) ];
+%             
+%             % Expected values
+%             ordExpctd = ord;
+%             cfsExpctd = coefs;
+%             cfsExpctd(1:nch(1),:) = -W0.'*cfsExpctd(1:nch(1),:);
+%                         
+%             % Instantiation
+%             import saivdr.dictionary.olpprfb.OLpPrFbAtomConcatenator1d
+%             testCase.module = OLpPrFbAtomConcatenator1d(...
+%                 'NumberOfSymmetricChannels',nch(1),...
+%                 'NumberOfAntisymmetricChannels',nch(2));
+%             set(testCase.module,'PolyPhaseOrder',ord);
+%             
+%             % Actual values
+%             ordActual = get(testCase.module,'PolyPhaseOrder');
+%             cfsActual = step(testCase.module,coefs,scale,pmCoefs);
+%             
+%             % Evaluation
+%             testCase.verifyEqual(ordActual,ordExpctd);
+%             testCase.verifyEqual(cfsActual,cfsExpctd,'RelTol',1e-10);
+%             
+%         end      
+% 
+%         function testStepOrd0Ch23(testCase)
+% 
+%             % Parameters
+%             srclen = 16;
+%             ord   = 0;
+%             nch   = [ 2 3 ];
+%             coefs = randn(sum(nch), srclen);
+%             scale = srclen;
+%             In = eye(nch(1));
+%             Ix = eye(nch(2));
+%             pmCoefs = [ 
+%                 In(:) ; 
+%                 Ix(:) ];
+%             
+%             % Expected values
+%             ordExpctd = ord;
+%             cfsExpctd = coefs;
+%                         
+%             % Instantiation
+%             import saivdr.dictionary.olpprfb.OLpPrFbAtomConcatenator1d
+%             testCase.module = OLpPrFbAtomConcatenator1d(...
+%                 'NumberOfSymmetricChannels',nch(1),...
+%                 'NumberOfAntisymmetricChannels',nch(2));
+%             set(testCase.module,'PolyPhaseOrder',ord);
+%             
+%             % Actual values
+%             ordActual = get(testCase.module,'PolyPhaseOrder');
+%             cfsActual = step(testCase.module,coefs,scale,pmCoefs);
+%             
+%             % Evaluation
+%             testCase.verifyEqual(ordActual,ordExpctd);
+%             testCase.verifyEqual(cfsActual,cfsExpctd,'RelTol',1e-10);
+%             
+%         end         
+% 
+%         function testStepOrd4Ch23(testCase)
+% 
+%             % Parameters
+%             srclen = 16;
+%             ord   = 4;
+%             nch   = [ 2 3 ];
+%             coefs = randn(sum(nch), srclen);
+%             scale = srclen;
+%             In = eye(nch(1));
+%             Ix = eye(nch(2));
+%             pmCoefs = [ 
+%                 In(:) ; 
+%                 Ix(:) ;
+%                 -In(:) ; 
+%                 Ix(:) ;                
+%                 -In(:) ; 
+%                 Ix(:) ];
+%             
+%             % Expected values
+%             ordExpctd = ord;
+%             cfsExpctd = coefs;
+%                         
+%             % Instantiation
+%             import saivdr.dictionary.olpprfb.OLpPrFbAtomConcatenator1d
+%             testCase.module = OLpPrFbAtomConcatenator1d(...
+%                 'NumberOfSymmetricChannels',nch(1),...
+%                 'NumberOfAntisymmetricChannels',nch(2));
+%             set(testCase.module,'PolyPhaseOrder',ord);
+%             
+%             % Actual values
+%             ordActual = get(testCase.module,'PolyPhaseOrder');
+%             cfsActual = step(testCase.module,coefs,scale,pmCoefs);
+%             
+%             % Evaluation
+%             testCase.verifyEqual(ordActual,ordExpctd);
+%             testCase.verifyEqual(cfsActual,cfsExpctd,'RelTol',1e-10);
+%             
+%         end                 
+% 
+%         function testStepOrd2Ch45(testCase)
+% 
+%             % Parameters
+%             srclen = 16;
+%             ord   = 2;
+%             nch   = [ 4 5 ];
+%             coefs = randn(sum(nch), srclen);
+%             scale = srclen;
+%             In = eye(nch(1));
+%             Ix = eye(nch(2));
+%             pmCoefs = [ 
+%                 -In(:) ; 
+%                 Ix(:) ;
+%                 -In(:) ; 
+%                 Ix(:) ];
+%             
+%             % Expected values
+%             ordExpctd = ord;
+%             cfsExpctd = coefs;
+%                         
+%             % Instantiation
+%             import saivdr.dictionary.olpprfb.OLpPrFbAtomConcatenator1d
+%             testCase.module = OLpPrFbAtomConcatenator1d(...
+%                 'NumberOfSymmetricChannels',nch(1),...
+%                 'NumberOfAntisymmetricChannels',nch(2));
+%             set(testCase.module,'PolyPhaseOrder',ord);
+%             
+%             % Actual values
+%             ordActual = get(testCase.module,'PolyPhaseOrder');
+%             cfsActual = step(testCase.module,coefs,scale,pmCoefs);
+%             
+%             % Evaluation
+%             testCase.verifyEqual(ordActual,ordExpctd);
+%             testCase.verifyEqual(cfsActual,cfsExpctd,'RelTol',1e-10);
+%             
+%         end                                                                                    
  
      end
  

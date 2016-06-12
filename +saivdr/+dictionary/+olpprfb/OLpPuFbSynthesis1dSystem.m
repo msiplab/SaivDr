@@ -128,6 +128,11 @@ classdef OLpPuFbSynthesis1dSystem  < ...
                 obj.NumberOfAntisymmetricChannels ];
             
             % Prepare MEX function
+            
+            %TODO: MEX‰»‚É‘Î‰ž‚µ‚½‚ç‰º‚Ì‚Qs‚ðíœ‚·‚é
+            mexFcn = [];
+            obj.isMexFcn = 1;
+            
             if obj.NumberOfSymmetricChannels == 1 || ...
                     obj.NumberOfAntisymmetricChannels == 1 
                 mexFcn = [];
@@ -136,6 +141,7 @@ classdef OLpPuFbSynthesis1dSystem  < ...
                 [mexFcn, obj.isMexFcn] = ...
                     fcn_autobuild_atomcnc1d(nch);
             end
+            
             if ~isempty(mexFcn)
                 obj.atomCncFcn = @(coefs,scale,pmcoefs,ord,fpe) ...
                     mexFcn(coefs,scale,pmcoefs,...
@@ -220,12 +226,14 @@ classdef OLpPuFbSynthesis1dSystem  < ...
 %                 subSeq(1:2:end) = (subCoef1+subCoef2)/sqrt(2);
 %                 subSeq(2:2:end) = (subCoef1-subCoef2)/sqrt(2);
             else
-                mc = ceil(dec_/2);
-                mf = floor(dec_/2);
-                hsdftCoefs = complex(zeros(dec_,size(arrayCoefs,2)));
-                hsdftCoefs(1:mc,:) = arrayCoefs(1:mc,:);
-                hsdftCoefs(mc+1:end,:) = arrayCoefs(ps+1:ps+mf,:);
-                subSeq = reshape(ihsdft_(obj, hsdftCoefs), [1 dec_*nBlks_]);
+%                 mc = ceil(dec_/2);
+%                 mf = floor(dec_/2);
+                %hsdftCoefs = complex(zeros(dec_,size(arrayCoefs,2)));
+%                 hsdftCoefs(1:mc,:) = arrayCoefs(1:mc,:);
+%                 hsdftCoefs(mc+1:end,:) = arrayCoefs(ps+1:ps+mf,:);
+                    hsdftCoefs=arrayCoefs(1:dec_,:);
+                    Edft = hsdftmtx_(obj,size(hsdftCoefs,1));
+                subSeq = reshape(Edft.'*hsdftCoefs, [1 dec_*nBlks_]);
             end
         end
         

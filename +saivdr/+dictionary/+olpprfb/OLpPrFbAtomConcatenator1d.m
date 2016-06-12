@@ -58,14 +58,10 @@ classdef OLpPrFbAtomConcatenator1d < ...
     methods ( Access = private )
         
         function arrayCoefs = finalStep_(obj,arrayCoefs)
-
-            hLenU = obj.NumberOfSymmetricChannels;
             %
             if ~isempty(obj.paramMtxCoefs)
-                W0 = getParamMtx_(obj,uint32(1)).';
-                U0 = getParamMtx_(obj,uint32(2)).';
-                arrayCoefs(1:hLenU,:)     = W0*arrayCoefs(1:hLenU,:);
-                arrayCoefs(hLenU+1:end,:) = U0*arrayCoefs(hLenU+1:end,:);
+                V0 = getParamMtx_(obj,uint32(1)).';
+                arrayCoefs = V0*arrayCoefs;
             end
             
         end
@@ -80,10 +76,14 @@ classdef OLpPrFbAtomConcatenator1d < ...
             hOrd = uint32(ord/2);
             if hOrd > 0
                 for iOrd = uint32(1):hOrd  
-                    paramMtx1 = getParamMtx_(obj,numOfPMtx-2*iOrd+2);
-                    paramMtx2 = getParamMtx_(obj,numOfPMtx-2*iOrd+1);
+                    paramMtx1 = getParamMtx_(obj,numOfPMtx-6*iOrd+4); % W2
+                    paramMtx2 = getParamMtx_(obj,numOfPMtx-6*iOrd+5); % U2
+                    paramMtx3 = getParamMtx_(obj,numOfPMtx-6*iOrd+6); % angB2
+                    paramMtx4 = getParamMtx_(obj,numOfPMtx-6*iOrd+1); % W1
+                    paramMtx5 = getParamMtx_(obj,numOfPMtx-6*iOrd+2); % U1
+                    paramMtx6 = getParamMtx_(obj,numOfPMtx-6*iOrd+3); % angB1
                     %
-                    arrayCoefs = atomCncTypeI_(obj,arrayCoefs,paramMtx1,paramMtx2,isPeriodicExt);
+                    arrayCoefs = atomCncTypeI_(obj,arrayCoefs,paramMtx1,paramMtx2,paramMtx3,paramMtx4,paramMtx5,paramMtx6,isPeriodicExt);
                 end
             end
             
@@ -100,116 +100,168 @@ classdef OLpPrFbAtomConcatenator1d < ...
             hOrd = uint32(ord/2);
             if hOrd > 0
                 for iOrd = uint32(1):hOrd 
-                    paramMtx1 = getParamMtx_(obj,numOfPMtx-2*iOrd+1); % W
-                    paramMtx2 = getParamMtx_(obj,numOfPMtx-2*iOrd+2); % U
+                    paramMtx1 = getParamMtx_(obj,numOfPMtx-6*iOrd+4); % W2
+                    paramMtx2 = getParamMtx_(obj,numOfPMtx-6*iOrd+5); % U2
+                    paramMtx3 = getParamMtx_(obj,numOfPMtx-6*iOrd+6); % angB2
+                    paramMtx4 = getParamMtx_(obj,numOfPMtx-6*iOrd+1); % W1
+                    paramMtx5 = getParamMtx_(obj,numOfPMtx-6*iOrd+2); % U1
+                    paramMtx6 = getParamMtx_(obj,numOfPMtx-6*iOrd+3); % angB1
                     %
-                    if isPsGtPa
-                        arrayCoefs = atomCncTypeIIPsGtPa_(obj,arrayCoefs,paramMtx1,paramMtx2,isPeriodicExt);
-                    else
-                        arrayCoefs = atomCncTypeIIPsLtPa_(obj,arrayCoefs,paramMtx1,paramMtx2,isPeriodicExt);                        
-                    end
+%                     if isPsGtPa
+                        arrayCoefs = atomCncTypeIIPsGtPa_(obj,arrayCoefs,paramMtx1,paramMtx2,paramMtx3,paramMtx4,paramMtx5,paramMtx6,isPeriodicExt);
+%                     else
+%                         arrayCoefs = atomCncTypeIIPsLtPa_(obj,arrayCoefs,paramMtx1,paramMtx2,isPeriodicExt);                        
+%                     end
                 end
             end
             
         end
        
-        function arrayCoefs = atomCncTypeI_(obj,arrayCoefs,paramMtx1,paramMtx2,isPeriodicExt)
+        function arrayCoefs = atomCncTypeI_(obj,arrayCoefs,paramMtx1,paramMtx2,paramMtx3,paramMtx4,paramMtx5,paramMtx6,isPeriodicExt)
             hLen = obj.NumberOfSymmetricChannels;
             
             % Phase 1
-            Ux2 = paramMtx1.';
+            Wx2 = paramMtx1.';
+            Ux2 = paramMtx2.';
+            B2 = butterflyMtx_(obj,paramMtx3);
+            cB2 = conj(B2);
+            
             % Lower channel rotation
+            arrayCoefs(1:hLen,:) = Wx2*arrayCoefs(1:hLen,:);
             arrayCoefs(hLen+1:end,:) = Ux2*arrayCoefs(hLen+1:end,:);
-            arrayCoefs = blockButterflyTypeI_(obj,arrayCoefs,[]);
+            %arrayCoefs = blockButterflyTypeI_(obj,arrayCoefs,[]);
+            arrayCoefs = cB2'*arrayCoefs;
             arrayCoefs = rightShiftUpperCoefs_(obj,arrayCoefs);
-            arrayCoefs = blockButterflyTypeI_(obj,arrayCoefs,[]);
-            arrayCoefs = arrayCoefs/2.0;
+            arrayCoefs = cB2*arrayCoefs;
+            %arrayCoefs = blockButterflyTypeI_(obj,arrayCoefs,[]);
+            %arrayCoefs = arrayCoefs/2.0;
             
             % Phase 2
-            Ux1 = paramMtx2.';
+            Wx1 = paramMtx4.';
+            Ux1 = paramMtx5.';
+            B1 = butterflyMtx_(obj, paramMtx6);
+            cB1 = conj(B1);
             % Lower channel rotation
             if isPeriodicExt
+                arrayCoefs(1:hLen,:) = Wx1*arrayCoefs(1:hLen,:);
                 arrayCoefs(hLen+1:end,:) = Ux1*arrayCoefs(hLen+1:end,:);
             else
-                arrayCoefs(hLen+1:end,1) = -arrayCoefs(hLen+1:end,1);                
+                % TODO:é¸ä˙ägí£ÇÃíËã`
+                arrayCoefs(1:hLen,:) = Wx1*arrayCoefs(1:hLen,:);
+                
+                arrayCoefs(hLen+1:end,1) = Ux1*arrayCoefs(hLen+1:end,1);                
                 arrayCoefs(hLen+1:end,2:end) = Ux1*arrayCoefs(hLen+1:end,2:end);                
             end
-            arrayCoefs = blockButterflyTypeI_(obj,arrayCoefs,[]);
+            %arrayCoefs = blockButterflyTypeI_(obj,arrayCoefs,[]);
+            arrayCoefs = cB1'*arrayCoefs;
             arrayCoefs = leftShiftLowerCoefs_(obj,arrayCoefs);
-            arrayCoefs = blockButterflyTypeI_(obj,arrayCoefs,[]);
-            arrayCoefs = arrayCoefs/2.0;
+            arrayCoefs = cB1*arrayCoefs;
+            %arrayCoefs = blockButterflyTypeI_(obj,arrayCoefs,[]);
+            %arrayCoefs = arrayCoefs/2.0;
         end
         
-        function arrayCoefs = atomCncTypeIIPsGtPa_(obj,arrayCoefs,paramMtx1,paramMtx2,isPeriodicExt)
+        function arrayCoefs = atomCncTypeIIPsGtPa_(obj,arrayCoefs,paramMtx1,paramMtx2,paramMtx3,paramMtx4,paramMtx5,paramMtx6,isPeriodicExt)
             hLen = obj.NumberOfSymmetricChannels;
             
             % Phase 1
-            Wx = paramMtx1.';
+            Wx2 = paramMtx1.';
+            Ux2 = paramMtx2.';
+            B2 = butterflyMtx_(obj,paramMtx3);
+            cB2 = conj(B2);
             % Upper channel rotation
-            arrayCoefs(1:hLen,:) = Wx*arrayCoefs(1:hLen,:);
-            arrayCoefs = blockButterflyTypeII_(obj,arrayCoefs,[]);
+            arrayCoefs(1:hLen,:) = Wx2*arrayCoefs(1:hLen,:);
+            arrayCoefs(hLen:end,:) = Ux2*arrayCoefs(hLen:end,:);
+            
+            %arrayCoefs = blockButterflyTypeII_(obj,arrayCoefs,[]);
+            arrayCoefs(1:end-1,:) = cB2'*arrayCoefs(1:end-1,:);
             arrayCoefs = rightShiftUpperCoefs_(obj,arrayCoefs);
-            arrayCoefs = blockButterflyTypeII_(obj,arrayCoefs,[]);
-            arrayCoefs = arrayCoefs/2.0;
+            arrayCoefs(1:end-1,:) = cB2*arrayCoefs(1:end-1,:);
+%             arrayCoefs = blockButterflyTypeII_(obj,arrayCoefs,[]);
+%             arrayCoefs = arrayCoefs/2.0;
             
             % Phase 2
-            Ux = paramMtx2.';
+            Wx1 = paramMtx4.';
+            Ux1 = paramMtx5.';
+            B1 = butterflyMtx_(obj,paramMtx6);
+            cB1 = conj(B1);
             % Lower channel rotation
-            if isPeriodicExt
-                 arrayCoefs(hLen+1:end,:) = Ux*arrayCoefs(hLen+1:end,:);
+            if isPeriodicExt % TODO:é¸ä˙ägí£ÇÃíËã`
+                arrayCoefs(1:hLen-1,:) = Wx1*arrayCoefs(1:hLen-1,:);
+                arrayCoefs(hLen:end-1,:) = Ux1*arrayCoefs(hLen:end-1,:);
             else
-                arrayCoefs(hLen+1:end,1) = -arrayCoefs(hLen+1:end,1);
-                arrayCoefs(hLen+1:end,2:end) = Ux*arrayCoefs(hLen+1:end,2:end);
+                arrayCoefs(1:hLen-1,:) = Wx1*arrayCoefs(1:hLen-1,:);
+                arrayCoefs(hLen:end-1,1) = Ux1*arrayCoefs(hLen:end-1,1);
+                arrayCoefs(hLen:end-1,2:end) = Ux1*arrayCoefs(hLen:end-1,2:end);
+                % TODO:é¸ä˙ägí£ÇÃíËã`
             end
-            arrayCoefs = blockButterflyTypeII_(obj,arrayCoefs,[]);
-            arrayCoefs = leftShiftLowerCoefs_(obj,arrayCoefs);
-            arrayCoefs = blockButterflyTypeII_(obj,arrayCoefs,[]);
-            arrayCoefs = arrayCoefs/2.0;
+            %arrayCoefs = blockButterflyTypeII_(obj,arrayCoefs,[]);
+            arrayCoefs(1:end-1,:) = cB1'*arrayCoefs(1:end-1,:);
+            arrayCoefs(1:end-1,:) = leftShiftLowerCoefs_(obj,arrayCoefs(1:end-1,:));
+            arrayCoefs(1:end-1,:) = cB1*arrayCoefs(1:end-1,:);
+            %arrayCoefs = blockButterflyTypeII_(obj,arrayCoefs,[]);
+            %arrayCoefs = arrayCoefs/2.0;
         end
         
-      function arrayCoefs = atomCncTypeIIPsLtPa_(obj,arrayCoefs,paramMtx1,paramMtx2,isPeriodicExt)
-            hLen = obj.NumberOfSymmetricChannels;
-            
-            % Phase 1
-            Ux = paramMtx2.';
-            % Lower channel rotation
-            arrayCoefs(hLen+1:end,:) = Ux*arrayCoefs(hLen+1:end,:);
-            arrayCoefs = blockButterflyTypeII_(obj,arrayCoefs,[]);
-            arrayCoefs = rightShiftUpperCoefs_(obj,arrayCoefs);
-            arrayCoefs = blockButterflyTypeII_(obj,arrayCoefs,[]);
-            arrayCoefs = arrayCoefs/2.0;
-            
-            % Phase 2
-            Wx = paramMtx1.';
-            % Upper channel rotation
-            if isPeriodicExt
-                 arrayCoefs(1:hLen,:) = Wx*arrayCoefs(1:hLen,:);
-            else
-                 arrayCoefs(1:hLen,1) = -arrayCoefs(1:hLen,1);
-                 arrayCoefs(1:hLen,2:end) = Wx*arrayCoefs(1:hLen,2:end);
-            end
-            arrayCoefs = blockButterflyTypeII_(obj,arrayCoefs,[]);
-            arrayCoefs = leftShiftLowerCoefs_(obj,arrayCoefs);
-            arrayCoefs = blockButterflyTypeII_(obj,arrayCoefs,[]);
-            arrayCoefs = arrayCoefs/2.0;
-        end        
+%       function arrayCoefs = atomCncTypeIIPsLtPa_(obj,arrayCoefs,paramMtx1,paramMtx2,isPeriodicExt)
+%             hLen = obj.NumberOfSymmetricChannels;
+%             
+%             % Phase 1
+%             Ux = paramMtx2.';
+%             % Lower channel rotation
+%             arrayCoefs(hLen+1:end,:) = Ux*arrayCoefs(hLen+1:end,:);
+%             arrayCoefs = blockButterflyTypeII_(obj,arrayCoefs,[]);
+%             arrayCoefs = rightShiftUpperCoefs_(obj,arrayCoefs);
+%             arrayCoefs = blockButterflyTypeII_(obj,arrayCoefs,[]);
+%             arrayCoefs = arrayCoefs/2.0;
+%             
+%             % Phase 2
+%             Wx = paramMtx1.';
+%             % Upper channel rotation
+%             if isPeriodicExt
+%                  arrayCoefs(1:hLen,:) = Wx*arrayCoefs(1:hLen,:);
+%             else
+%                  arrayCoefs(1:hLen,1) = -arrayCoefs(1:hLen,1);
+%                  arrayCoefs(1:hLen,2:end) = Wx*arrayCoefs(1:hLen,2:end);
+%             end
+%             arrayCoefs = blockButterflyTypeII_(obj,arrayCoefs,[]);
+%             arrayCoefs = leftShiftLowerCoefs_(obj,arrayCoefs);
+%             arrayCoefs = blockButterflyTypeII_(obj,arrayCoefs,[]);
+%             arrayCoefs = arrayCoefs/2.0;
+%         end        
         
         function arrayCoefs = leftShiftLowerCoefs_(obj,arrayCoefs)
             hLenMn = min([ obj.NumberOfSymmetricChannels
                 obj.NumberOfAntisymmetricChannels]);
             %
-            lowerCoefsPost = arrayCoefs(hLenMn+1:end,1);
+            lowerCoefsPre = arrayCoefs(hLenMn+1:end,1);
             arrayCoefs(hLenMn+1:end,1:end-1) = arrayCoefs(hLenMn+1:end,2:end);
-            arrayCoefs(hLenMn+1:end,end) = lowerCoefsPost;            
+            arrayCoefs(hLenMn+1:end,end) = lowerCoefsPre;            
         end
         
         function arrayCoefs = rightShiftUpperCoefs_(obj,arrayCoefs)
             hLenMx = max([ obj.NumberOfSymmetricChannels
                 obj.NumberOfAntisymmetricChannels]);
             %
-            upperCoefsPre = arrayCoefs(1:hLenMx,end);
+            upperCoefsPost = arrayCoefs(1:hLenMx,end);
             arrayCoefs(1:hLenMx,2:end) = arrayCoefs(1:hLenMx,1:end-1);
-            arrayCoefs(1:hLenMx,1) = upperCoefsPre;
+            arrayCoefs(1:hLenMx,1) = upperCoefsPost;
+        end
+        
+        function hB = butterflyMtx_(obj, angles)%TODO: ìØàÍÇÃä÷êîÇ™AbstBuildingBlock.mÇ≈é¿ëïÇ≥ÇÍÇƒÇ¢ÇÈÇÃÇ≈àÍâ”èäÇ…Ç‹Ç∆ÇﬂÇÈÅD
+            hchs = obj.NumberOfAntisymmetricChannels;
+            
+            hC = complex(eye(hchs));
+            hS = complex(eye(hchs));
+            for p = 1:floor(hchs/2)
+                tp = angles(p);
+                
+                hC(2*p-1:2*p, 2*p-1:2*p) = [ -1i*cos(tp), -1i*sin(tp);
+                    cos(tp) , -sin(tp)]; %c^
+                hS(2*p-1:2*p, 2*p-1:2*p) = [ -1i*sin(tp), -1i*cos(tp);
+                    sin(tp) , -cos(tp)]; %s^
+            end
+            
+            hB = [hC, conj(hC); 1i*hS, -1i*conj(hS)]/sqrt(2);
         end
     end
     
