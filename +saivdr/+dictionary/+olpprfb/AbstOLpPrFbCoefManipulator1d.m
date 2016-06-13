@@ -173,10 +173,10 @@ classdef AbstOLpPrFbCoefManipulator1d < matlab.System %#codegen
             for iOrd = 1:sum(ord)/2
                 obj.paramMtxSzTab(6*iOrd-4,:) = [ pa pa ];
                 obj.paramMtxSzTab(6*iOrd-3,:) = [ pa pa ];
-                obj.paramMtxSzTab(6*iOrd-2,:) = [ floor(ps/2) 1 ];
+                obj.paramMtxSzTab(6*iOrd-2,:) = [ floor(pa/2) 1 ];
                 obj.paramMtxSzTab(6*iOrd-1,:) = [ ps ps ];
                 obj.paramMtxSzTab(6*iOrd,:) = [ ps ps ];
-                obj.paramMtxSzTab(6*iOrd+1,:) = [ floor(ps/2) 1 ];
+                obj.paramMtxSzTab(6*iOrd+1,:) = [ floor(pa/2) 1 ];
             end
             %
             nPm = size(obj.paramMtxSzTab,1);
