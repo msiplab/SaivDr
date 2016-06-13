@@ -38,6 +38,7 @@ classdef AbstOvsdLpPuFb1dSystem < matlab.System %#codegen
     end
     
     properties (Hidden)
+        Symmetry = [];
         Angles = 0;
         Mus    = 1;   
     end
@@ -68,6 +69,7 @@ classdef AbstOvsdLpPuFb1dSystem < matlab.System %#codegen
         
         function atmshow(obj)
             % Show Atomic Images
+            % TODO : 複素画像の表示方法を検討する
             updateParameterMatrixSet_(obj);
             obj.mexFlag = false;            
             H = getAnalysisFilterBank_(obj);
@@ -110,6 +112,7 @@ classdef AbstOvsdLpPuFb1dSystem < matlab.System %#codegen
         end
         
         function output = stepImpl(obj,varargin) %TODO: Angles, Musの受け渡し方法を変更したのでドキュメントに明記する．
+            % TODO:Symmetryの設定方法を設計する
             
             if ~isempty(varargin{1})
                 obj.Angles = varargin{1};
@@ -121,6 +124,12 @@ classdef AbstOvsdLpPuFb1dSystem < matlab.System %#codegen
                 obj.Mus = obj.Mus(:);
                 updateMus_(obj);
             end
+            %TODO: Symmetryの変更方法を検討する
+%             if ~isempty(varargin{3})
+%                 obj.Symmetry = varargin{3};
+%                 obj.Symmetry = obj.Symmetry(:);
+%                 updateSymmetry_(obj);
+%             end
             
             updateParameterMatrixSet_(obj);
             updateCoefficients_(obj);
@@ -184,6 +193,15 @@ classdef AbstOvsdLpPuFb1dSystem < matlab.System %#codegen
             obj.Coefficients = coefs;
         end
         
+        function updateSymmetry_(obj)
+            if isempty(obj.Symmetry)
+                obj.Symmetry = ones(obj.NumberOfChannels,1);
+            end
+            if size(obj.Symmetry,1) ~= obj.NumberOfChannels
+                %TODO: 例外処理
+            end
+        end
+        
         function value = getMatrixE0_(obj)
             nCoefs = obj.DecimationFactor;
             nElmBi = nCoefs;
@@ -218,7 +236,6 @@ classdef AbstOvsdLpPuFb1dSystem < matlab.System %#codegen
         
         %TODO:同一の関数が2D,3Dでも定義されているので一箇所に集約する
         function value = hsdftmtx_(~, nDec) %Hermitian-Symmetric DFT matrix
-            %w = exp(-2*pi*1i/nDec);
             value = complex(zeros(nDec));
             for u = 0:nDec-1
                 for x =0:nDec-1

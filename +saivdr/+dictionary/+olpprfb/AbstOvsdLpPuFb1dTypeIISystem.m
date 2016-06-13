@@ -39,6 +39,7 @@ classdef AbstOvsdLpPuFb1dTypeIISystem < ...
             updateProperties_(obj);
             updateAngles_(obj);
             updateMus_(obj);
+            updateSymmetry_(obj);
         end
     end
 
@@ -239,6 +240,7 @@ classdef AbstOvsdLpPuFb1dTypeIISystem < ...
                 end
                 len = dec*(ord+1);
             end
+            value = diag(obj.Symmetry)*E;
             value = E.';
         end
 
