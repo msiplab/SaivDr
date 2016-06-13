@@ -148,12 +148,9 @@ classdef AbstOvsdLpPuFb1dTypeISystem < ...
             sizeOfMus = 2*nChL*obj.nStages;
             if isscalar(obj.Mus) && obj.Mus==1
                 %TODO:obj.Mus‚ð“KØ‚É’è‚ß‚é
-%                 obj.Mus = -ones(sizeOfMus);
-%                 obj.Mus(:,1) = ones(size(obj.Mus,1),1);
-%                 obj.Mus = obj.Mus(:);
-%                 sizeOfMus = prod(sizeOfMus);
                 obj.Mus = ones(sizeOfMus,1);
             end
+            % TODO: —áŠOˆ—
 %             if size(obj.Mus,1) ~= sizeOfMus(1) || ...
 %                     size(obj.Mus,2) ~= sizeOfMus(2)
             if size(obj.Mus) ~= sizeOfMus
@@ -182,8 +179,8 @@ classdef AbstOvsdLpPuFb1dTypeISystem < ...
             %
             E0 = obj.matrixE0;
             %
-            R = step(pmMtxSet_,[],uint32(1))*[eye(dec);zeros(nChs - dec, dec)];
-            E = R*E0;
+            V0 = step(pmMtxSet_,[],uint32(1));
+            E = V0*[ E0 ; zeros(nChs - dec, dec) ];
             iParamMtx = uint32(2);
 
             % Order extention

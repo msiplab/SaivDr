@@ -446,10 +446,9 @@ classdef OvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Expected values
             import saivdr.dictionary.utility.*            
             omgs = OrthonormalMatrixGenerationSystem();
-            matrixW0 = step(omgs,ang(1),1);
-            matrixU0 = step(omgs,ang(2),1);
+            matrixV0 = step(omgs,ang,1);
             coefExpctd = ...
-                blkdiag(matrixW0, matrixU0) * ...
+                matrixV0 * ...
                [
                  0.500000000000000 + 0.000000000000000i,  0.500000000000000 + 0.000000000000000i,...
                  0.500000000000000 + 0.000000000000000i,  0.500000000000000 + 0.000000000000000i;
@@ -623,7 +622,7 @@ classdef OvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 1 4 ];
             ord = 0;
-            ang = [ 0 0 ].';
+            ang = [ 0 0 0 0 0 0 ].';
             
             % Expected values
             coefExpctd(:,:,1) = [
@@ -655,15 +654,14 @@ classdef OvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 1 4 ];
             ord = 0;
-            ang = [ 0 pi/4 ].';
+            ang = [ 0 0 0 0 0 pi/4 ].';
             
             % Expected values
             import saivdr.dictionary.utility.*            
             omgs = OrthonormalMatrixGenerationSystem();
-            matrixW0 = step(omgs,ang(1),1);
-            matrixU0 = step(omgs,ang(2),1);
+            matrixV0 = step(omgs,ang,1);
             coefExpctd(:,:,1) = ...
-                blkdiag(matrixW0, matrixU0) * ...
+                matrixV0 * ...
                 [ 1 0 0 0 ].';
             
             % Instantiation of target class
@@ -2060,14 +2058,13 @@ classdef OvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
         function testParameterMatrixSet(testCase)
             
             % Preparation
-            mstab = [ 2 2 ; 2 2 ];
+            mstab = [ 4 4 ];
             
             % Expected value
             import saivdr.dictionary.utility.ParameterMatrixSet
             paramExpctd = ParameterMatrixSet(...
                 'MatrixSizeTable',mstab);
-            step(paramExpctd,eye(2),1);
-            step(paramExpctd,eye(2),2);
+            step(paramExpctd,eye(4),1);
             
             % Instantiation of target class
             import saivdr.dictionary.olpprfb.*

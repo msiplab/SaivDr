@@ -850,18 +850,29 @@ classdef OvsdLpPuFb1dTypeIVm1SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 4 2 2 ];
             ord = 4;
-            mstab = [ 2 2 ; 2 2 ; 2 2 ; 2 2 ; 2 2 ; 2 2 ];
+            mstab = [ 4 4 ; 
+                2 2 ; 2 2 ; 1 1 ;
+                2 2 ; 2 2 ; 1 1 ;
+                2 2 ; 2 2 ; 1 1 ;
+                2 2 ; 2 2 ; 1 1 ; ];
             
             % Expected values
             import saivdr.dictionary.utility.*
             paramMtxExpctd = ParameterMatrixSet(...
                 'MatrixSizeTable',mstab);
-            step(paramMtxExpctd, eye(mstab(1,:)),uint32(1)); % W0
-            step(paramMtxExpctd, eye(mstab(2,:)),uint32(2)); % U0
+            step(paramMtxExpctd, eye(mstab(1,:)),uint32(1)); % V0
+            step(paramMtxExpctd, eye(mstab(2,:)),uint32(2)); % W1
             step(paramMtxExpctd,-eye(mstab(3,:)),uint32(3)); % U1
-            step(paramMtxExpctd,-eye(mstab(4,:)),uint32(4)); % U2
-            step(paramMtxExpctd,-eye(mstab(5,:)),uint32(5)); % U3
-            step(paramMtxExpctd,-eye(mstab(6,:)),uint32(6)); % U4
+            step(paramMtxExpctd, pi/4*ones(mstab(4,:)),uint32(4)); % angB1
+            step(paramMtxExpctd, eye(mstab(5,:)),uint32(5)); % W2
+            step(paramMtxExpctd,-eye(mstab(6,:)),uint32(6)); % U2
+            step(paramMtxExpctd, pi/4*ones(mstab(3,:)),uint32(7)); % angB2
+            step(paramMtxExpctd, eye(mstab(8,:)),uint32(8)); % W3
+            step(paramMtxExpctd,-eye(mstab(9,:)),uint32(9)); % U3
+            step(paramMtxExpctd, pi/4*(mstab(10,:)),uint32(10)); % angB3
+            step(paramMtxExpctd, eye(mstab(11,:)),uint32(11)); % W3
+            step(paramMtxExpctd,-eye(mstab(12,:)),uint32(12)); % U3
+            step(paramMtxExpctd, pi/4*(mstab(13,:)),uint32(13)); % angB3
             coefExpctd = get(paramMtxExpctd,'Coefficients');
             
             % Instantiation of target class

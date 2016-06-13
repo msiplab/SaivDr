@@ -148,6 +148,7 @@ classdef AbstOvsdLpPuFb1dTypeIISystem < ...
                 obj.Angles = zeros(sizeOfAngles,1);
             end
             obj.Angles = obj.Angles(:);
+            % TODO : —áŠOˆ—
 %             if size(obj.Angles,1) ~= sizeOfAngles(1) || ...
 %                     size(obj.Angles,2) ~= sizeOfAngles(2)
             if size(obj.Angles) ~= sizeOfAngles
@@ -205,7 +206,6 @@ classdef AbstOvsdLpPuFb1dTypeIISystem < ...
             %
             nChs = obj.NumberOfChannels;
             dec  = obj.DecimationFactor;
-            nHalfDecs = prod(dec)/2;
             ord = obj.PolyPhaseOrder;
             pmMtxSt_ = obj.ParameterMatrixSet;
             mexFcn_  = obj.mexFcn;
@@ -213,15 +213,8 @@ classdef AbstOvsdLpPuFb1dTypeIISystem < ...
             %
             E0 = obj.matrixE0;
             %
-%             cM_2 = ceil(nHalfDecs);
-%             W = step(pmMtxSt_,[],uint32(1))*[ eye(cM_2) ;
-%                 zeros(ceil(nChs/2)-cM_2,cM_2)];
-%             fM_2 = floor(nHalfDecs);
-%             U = step(pmMtxSt_,[],uint32(2))*[ eye(fM_2);
-%                 zeros(floor(nChs/2)-fM_2,fM_2) ];
-%             R = blkdiag(W,U);
-            R = step(pmMtxSt_,[],uint32(1))*[eye(dec);zeros(nChs-dec,dec)];
-            E = R*E0;
+            V0 = step(pmMtxSt_,[],uint32(1));
+            E = V0*[ E0 ; zeros(nChs-dec,dec) ];
             iParamMtx = uint32(2);
 
             %TODO
@@ -229,17 +222,11 @@ classdef AbstOvsdLpPuFb1dTypeIISystem < ...
             if ord > 0
                 nShift = int32(dec);
                 for iOrd = 1:uint32(double(ord)/2)
-                    %W = step(pmMtxSt_,[],iParamMtx);
                     W = step(pmMtxSt_,[],iParamMtx);
-                    %U = step(pmMtxSt_,[],iParamMtx+1);
                     U = step(pmMtxSt_,[],iParamMtx+1);
-                    %angB1 = step(PmMtxSt_,[],iParamMtx+2);
                     angsB1 = step(pmMtxSt_,[],iParamMtx+2);
-                    %hW = step(pmMtxSt_,[],iParamMtx+3);
                     hW = step(pmMtxSt_,[],iParamMtx+3);
-                    %hU = step(pmMtxSt_,[],iParamMtx+4);
                     hU = step(pmMtxSt_,[],iParamMtx+4);
-                    %angB2 = step(PmMtxSt_,[],iParamMtx+5);
                     angsB2 = step(pmMtxSt_,[],iParamMtx+5);
                     if mexFlag_
                         E = mexFcn_(E, W, U, angsB1, hW, hU, angsB2, floor(nChs/2), nShift);

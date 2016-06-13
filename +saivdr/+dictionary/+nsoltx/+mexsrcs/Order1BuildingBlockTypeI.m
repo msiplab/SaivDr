@@ -25,8 +25,11 @@ classdef Order1BuildingBlockTypeI < saivdr.dictionary.nsoltx.mexsrcs.AbstBuildin
         end
 
 	    function output = stepImpl(obj,input,mtxW,mtxU,angles,~,nshift)
-            R = blkdiag(mtxW,mtxU);
-            output = R*processQ_(obj,angles,input,nshift);
+            output = processQ_(obj,angles,input,nshift);
+            
+            hCh = obj.nHalfChannels;
+            output(1:hCh,:) = mtxW*output(1:hCh,:);
+            output(hCh+1:end,:) = mtxU*output(hCh+1:end,:);
         end
     end
 

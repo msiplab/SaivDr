@@ -25,13 +25,17 @@ classdef Order2BuildingBlockTypeII < saivdr.dictionary.nsoltx.mexsrcs.AbstBuildi
             obj.I = eye(p);
         end
 
-        function output = stepImpl(obj,input,mtxW,mtxU,angB1,mtxHW,mtxHU,angB2,~,nshift)
-            R = blkdiag(mtxW,mtxU);
-            temp1 = R*processQ_(obj,angB1,input(1:end-1,:), nshift);
-            temp2u = processQ_(obj, angB2, temp1, nshift);
-            temp2b = horzcat(zeros(1,nshift),input(end,:), zeros(1,nshift));
-            R = blkdiag(mtxHW,obj.I)*blkdiag(obj.I,mtxHU);
-            output = R*[temp2u ; temp2b];
+        function output = stepImpl(obj,input,mtxWE,mtxUE,angB1,mtxWO,mtxHO,angB2,~,nshift)
+            hCh = obj.nHalfChannels;
+            tmp1 = processQ_(obj,angB1,input(1:end-1,:), nshift);
+            tmp1(1:hCh,:) = mtxWE * tmp1(1:hCh,:);
+            tmp1(hCh+1:end,:) = mtxUE * tmp1(hCh+1:end,:);
+            
+            tmp2u = processQ_(obj, angB2, tmp1, nshift);
+            tmp2l = horzcat(zeros(1,nshift),input(end,:), zeros(1,nshift));
+            output = [tmp2u ; tmp2l];
+            output(hCh+1:end,:) = mtxHO*output(hCh+1:end,:);
+            output(1:hCh+1,:) = mtxWO*output(1:hCh+1,:);
         end
 
     end
