@@ -40,7 +40,7 @@ classdef NsoltAnalysisSynthesisTestCase < matlab.unittest.TestCase
             height = 32;
             width  = 64;
             nLevels = 1;
-            srcImg = rand(height,width);
+            srcImg = rand(height,width) + 1i*rand(height,width);
             
             % Preparation
             vm = 1;
@@ -79,7 +79,7 @@ classdef NsoltAnalysisSynthesisTestCase < matlab.unittest.TestCase
             height = 32;
             width  = 64;
             nLevels = 1;
-            srcImg = rand(height,width);
+            srcImg = rand(height,width) + 1i*rand(height,width);
             
             % Preparation
             vm = 1;
@@ -118,7 +118,7 @@ classdef NsoltAnalysisSynthesisTestCase < matlab.unittest.TestCase
             height = 32;
             width  = 64;
             nLevels = 2;
-            srcImg = rand(height,width);
+            srcImg = rand(height,width) + 1i*rand(height,width);
             
             % Preparation
             vm = 1;
@@ -157,7 +157,7 @@ classdef NsoltAnalysisSynthesisTestCase < matlab.unittest.TestCase
             height = 32;
             width  = 64;
             nLevels = 2;
-            srcImg = rand(height,width);
+            srcImg = rand(height,width) + 1i*rand(height,width);
             
             % Preparation
             vm = 1;
@@ -196,7 +196,7 @@ classdef NsoltAnalysisSynthesisTestCase < matlab.unittest.TestCase
             height = 32;
             width  = 64;
             nLevels = 1;
-            srcImg = rand(height,width);
+            srcImg = rand(height,width) + 1i*rand(height,width);
             
             % Preparation
             vm = 1;
@@ -235,7 +235,7 @@ classdef NsoltAnalysisSynthesisTestCase < matlab.unittest.TestCase
             height = 32;
             width  = 64;
             nLevels = 1;
-            srcImg = rand(height,width);
+            srcImg = rand(height,width) + 1i*rand(height,width);
             
             % Preparation
             vm = 1;
@@ -274,7 +274,7 @@ classdef NsoltAnalysisSynthesisTestCase < matlab.unittest.TestCase
             height = 32;
             width  = 64;
             nLevels = 2;
-            srcImg = rand(height,width);
+            srcImg = rand(height,width) + 1i*rand(height,width);
             
             % Preparation
             vm = 1;
@@ -313,7 +313,7 @@ classdef NsoltAnalysisSynthesisTestCase < matlab.unittest.TestCase
             height = 32;
             width  = 64;
             nLevels = 2;
-            srcImg = rand(height,width);
+            srcImg = rand(height,width) + 1i*rand(height,width);
             
             % Preparation
             vm = 1;
@@ -672,7 +672,7 @@ classdef NsoltAnalysisSynthesisTestCase < matlab.unittest.TestCase
 %             height = 32;
 %             width  = 64;
 %             nLevels = 1;
-%             srcImg = rand(height,width);
+%             srcImg = rand(height,width) + 1i*rand(height,width);
 %             
 %             % Preparation
 %             vm = 1;
@@ -711,7 +711,7 @@ classdef NsoltAnalysisSynthesisTestCase < matlab.unittest.TestCase
 %             height = 32;
 %             width  = 64;
 %             nLevels = 1;
-%             srcImg = rand(height,width);
+%             srcImg = rand(height,width) + 1i*rand(height,width);
 %             
 %             % Preparation
 %             vm = 1;
@@ -750,7 +750,7 @@ classdef NsoltAnalysisSynthesisTestCase < matlab.unittest.TestCase
 %             height = 32;
 %             width  = 64;
 %             nLevels = 2;
-%             srcImg = rand(height,width);
+%             srcImg = rand(height,width) + 1i*rand(height,width);
 %             
 %             % Preparation
 %             vm = 1;
@@ -789,7 +789,7 @@ classdef NsoltAnalysisSynthesisTestCase < matlab.unittest.TestCase
 %             height = 32;
 %             width  = 64;
 %             nLevels = 2;
-%             srcImg = rand(height,width);
+%             srcImg = rand(height,width) + 1i*rand(height,width);
 %             
 %             % Preparation
 %             vm = 1;
@@ -989,7 +989,7 @@ classdef NsoltAnalysisSynthesisTestCase < matlab.unittest.TestCase
             height = 16;
             width  = 32;
             nLevels = 3;
-            srcImg = rand(height,width);
+            srcImg = rand(height,width) + 1i*rand(height,width);
             
             % Preparation
             vm = 1;

@@ -226,13 +226,8 @@ classdef OLpPuFbSynthesis1dSystem  < ...
 %                 subSeq(1:2:end) = (subCoef1+subCoef2)/sqrt(2);
 %                 subSeq(2:2:end) = (subCoef1-subCoef2)/sqrt(2);
             else
-%                 mc = ceil(dec_/2);
-%                 mf = floor(dec_/2);
-                %hsdftCoefs = complex(zeros(dec_,size(arrayCoefs,2)));
-%                 hsdftCoefs(1:mc,:) = arrayCoefs(1:mc,:);
-%                 hsdftCoefs(mc+1:end,:) = arrayCoefs(ps+1:ps+mf,:);
-                    hsdftCoefs=arrayCoefs(1:dec_,:);
-                    Edft = hsdftmtx_(obj,size(hsdftCoefs,1));
+                hsdftCoefs=arrayCoefs(1:dec_,:);
+                Edft = hsdftmtx_(obj,size(hsdftCoefs,1));
                 subSeq = reshape(Edft.'*hsdftCoefs, [1 dec_*nBlks_]);
             end
         end

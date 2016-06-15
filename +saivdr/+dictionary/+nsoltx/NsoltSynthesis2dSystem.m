@@ -136,6 +136,7 @@ classdef NsoltSynthesis2dSystem  < ...
             %TODO: MEX‰»‚É‘Î‰ž‚µ‚½‚ç‰º‚Ì2s‚ðíœ‚·‚é
             obj.isMexFcn = 1;
             mexFcn = [];
+            
             if ~obj.isMexFcn
                 import saivdr.dictionary.nsoltx.mexsrcs.fcn_autobuild_atomcnc2d
                 [mexFcn, obj.isMexFcn] = ...
@@ -158,7 +159,10 @@ classdef NsoltSynthesis2dSystem  < ...
         function recImg = stepImpl(obj, coefs, scales)
             pmMtx = step(obj.LpPuFb2d,[],[]);
             pmMtxCoefs = get(pmMtx,'Coefficients');
+            %coefs = conj(coefs); %TODO: íœ
             recImg = synthesize_(obj, coefs, scales, pmMtxCoefs);
+            %recImg = conj(recImg); %TODO: íœ
+            
         end
         
     end
@@ -274,8 +278,7 @@ classdef NsoltSynthesis2dSystem  < ...
                     mtx(u+1,v+1) = exp(-1i*pi*n/nDec)/sqrt(nDec);
                 end
             end
-            cmtx = conj(mtx);
-            value = (cmtx'*(cmtx'*x.data.').');
+            value = (mtx.'*(mtx.'*x.data).').';
         end
         
         function value = idct2_(x)

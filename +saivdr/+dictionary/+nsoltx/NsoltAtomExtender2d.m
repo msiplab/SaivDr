@@ -151,7 +151,7 @@ classdef NsoltAtomExtender2d <  ...
         end
         
         function arrayCoefs = supportExtTypeI_(obj,arrayCoefs,paramMtx1,paramMtx2,paramMtx3,paramMtx4,paramMtx5,paramMtx6,isPeriodicExt)
-            hLen = obj.NumberOfSymmetricChannels;
+            hLen = obj.NumberOfAntisymmetricChannels;
             nCols_ = obj.nCols;
             
             % Phase 1

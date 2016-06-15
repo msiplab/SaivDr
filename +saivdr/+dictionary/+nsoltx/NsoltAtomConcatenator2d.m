@@ -192,7 +192,6 @@ classdef NsoltAtomConcatenator2d < ...
                 end
             end
 %             arrayCoefs = blockButterflyTypeI_(obj,arrayCoefs);
-            arrayCoefs(1:hLen,:) = Wx1*arrayCoefs(1:hLen,:);
             arrayCoefs = Bx1'*arrayCoefs;
             arrayCoefs = leftShiftLowerCoefs_(obj,arrayCoefs);
             arrayCoefs = Bx1*arrayCoefs;

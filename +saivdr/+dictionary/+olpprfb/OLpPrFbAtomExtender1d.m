@@ -102,11 +102,11 @@ classdef OLpPrFbAtomExtender1d <  ...
             
             % Order extension
             for iOrd = uint32(1):uint32(ord/2)
-                paramMtx1 = getParamMtx_(obj,6*iOrd-4); % WE
-                paramMtx2 = getParamMtx_(obj,6*iOrd-3); % UE
+                paramMtx1 = getParamMtx_(obj,6*iOrd-4); % W
+                paramMtx2 = getParamMtx_(obj,6*iOrd-3); % U
                 paramMtx3 = getParamMtx_(obj,6*iOrd-2); % angB1
-                paramMtx4 = getParamMtx_(obj,6*iOrd-1); % WO
-                paramMtx5 = getParamMtx_(obj,6*iOrd+0); % UO
+                paramMtx4 = getParamMtx_(obj,6*iOrd-1); % hW
+                paramMtx5 = getParamMtx_(obj,6*iOrd+0); % hU
                 paramMtx6 = getParamMtx_(obj,6*iOrd+1); % angB2
                 %
                 %if isPsGtPa
@@ -121,47 +121,47 @@ classdef OLpPrFbAtomExtender1d <  ...
         end
         
         function arrayCoefs = supportExtTypeI_(obj,arrayCoefs,paramMtx1,paramMtx2,paramMtx3,paramMtx4,paramMtx5,paramMtx6,isPeriodicExt)
-            hLen = obj.NumberOfSymmetricChannels;
+            hLen = obj.NumberOfAntisymmetricChannels;
 
             % Phase 1
-            Wx = paramMtx1;
-            Ux = paramMtx2;
-            B = butterflyMtx_(obj,paramMtx3);
-            cB = conj(B);
+            Wx1 = paramMtx1;
+            Ux1 = paramMtx2;
+            B1 = butterflyMtx_(obj,paramMtx3);
+            cB1 = conj(B1);
             %TODO: ŽÀ‘•‚ÌŒø—¦‰»‚ðŒŸ“¢
             %arrayCoefs = blockButterflyTypeI_(obj,arrayCoefs,angB1);
-            arrayCoefs = cB'*arrayCoefs;
+            arrayCoefs = cB1'*arrayCoefs;
             arrayCoefs = leftShiftLowerCoefs_(obj,arrayCoefs);
-            arrayCoefs = cB*arrayCoefs;
+            arrayCoefs = cB1*arrayCoefs;
             %arrayCoefs = blockButterflyTypeI_(obj,arrayCoefs,angB1);
             %arrayCoefs = arrayCoefs/2.0;
             % Lower channel rotation
             if isPeriodicExt
-                arrayCoefs(1:hLen,:) = Wx*arrayCoefs(1:hLen,:);
-                arrayCoefs(hLen+1:end,:) = Ux*arrayCoefs(hLen+1:end,:);
+                arrayCoefs(1:hLen,:) = Wx1*arrayCoefs(1:hLen,:);
+                arrayCoefs(hLen+1:end,:) = Ux1*arrayCoefs(hLen+1:end,:);
             else % TODO:ŽüŠúŠg’£‚Å‚È‚¢ê‡‚Ì•ÏŠ·•û–@‚Ì‘Ã“–«‚ðŠm”F‚·‚é
-                arrayCoefs(1:hLen,:) = Wx*arrayCoefs(1:hLen,:);
+                arrayCoefs(1:hLen,:) = Wx1*arrayCoefs(1:hLen,:);
                 
-                arrayCoefs(hLen+1:end,1:end-1) = Ux*arrayCoefs(hLen+1:end,1:end-1);
+                arrayCoefs(hLen+1:end,1:end-1) = Ux1*arrayCoefs(hLen+1:end,1:end-1);
                 arrayCoefs(hLen+1:end,end) = -arrayCoefs(hLen+1:end,end);
             end
             
             % Phase 2
-            Wx = paramMtx4;
-            Ux = paramMtx5;
-            B = butterflyMtx_(obj,paramMtx6);
-            cB = conj(B);
+            Wx2 = paramMtx4;
+            Ux2 = paramMtx5;
+            B2 = butterflyMtx_(obj,paramMtx6);
+            cB2 = conj(B2);
             %B = eye(obj.NumberOfSymmetricChannels+obj.NumberOfAntisymmetricChannels);
             %TODO:
             %arrayCoefs = blockButterflyTypeI_(obj,arrayCoefs,angB2);
-            arrayCoefs = cB'*arrayCoefs;
+            arrayCoefs = cB2'*arrayCoefs;
             arrayCoefs = rightShiftUpperCoefs_(obj,arrayCoefs);
-            arrayCoefs = cB*arrayCoefs;
+            arrayCoefs = cB2*arrayCoefs;
             %arrayCoefs = blockButterflyTypeI_(obj,arrayCoefs,angB2);
             %arrayCoefs = arrayCoefs/2.0;
             % Lower channel rotation
-            arrayCoefs(hLen+1:end,:) = Ux*arrayCoefs(hLen+1:end,:);
-            arrayCoefs(1:hLen,:) = Wx*arrayCoefs(1:hLen,:);
+            arrayCoefs(hLen+1:end,:) = Ux2*arrayCoefs(hLen+1:end,:);
+            arrayCoefs(1:hLen,:) = Wx2*arrayCoefs(1:hLen,:);
             %arrayCoefs = conj(arrayCoefs);
         end
         

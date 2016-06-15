@@ -243,7 +243,7 @@ classdef NsoltAnalysis2dSystem < ...
             end
 
             % Prepare array
-            arrayCoefs = zeros(nChs,nRows_*nCols_);
+            arrayCoefs = complex(zeros(nChs,nRows_*nCols_));
             
             % Block DCT
             if decY_ == 1 && decX_ == 1

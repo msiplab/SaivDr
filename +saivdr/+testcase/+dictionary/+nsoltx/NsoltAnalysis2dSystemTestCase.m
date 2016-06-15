@@ -140,7 +140,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             ord = 0;
             height = 32;
             width = 32;
-            srcImg = rand(height,width);
+            srcImg = rand(height,width) + 1i*rand(height,width);
             nLevels = 1;
             
             % Preparation
@@ -199,7 +199,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             ord = 0;
             height = 32;
             width = 32;
-            srcImg = rand(height,width);
+            srcImg = rand(height,width) + 1i*rand(height,width);
             nLevels = 2;
             
             % Preparation
@@ -278,7 +278,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             ord = 0;
             height = 32;
             width = 32;
-            srcImg = rand(height,width);
+            srcImg = rand(height,width) + 1i*rand(height,width);
             nLevels = 2;
             
             % Preparation
@@ -357,7 +357,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             ord = 0;
             height = 32;
             width = 32;
-            srcImg = rand(height,width);
+            srcImg = rand(height,width) + 1i*rand(height,width);
             nLevels = 1;
             
             % Preparation
@@ -415,7 +415,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             ord = 0;
             height = 32;
             width = 32;
-            srcImg = rand(height,width);
+            srcImg = rand(height,width) + 1i*rand(height,width);
             nLevels = 2;
             
             % Preparation
@@ -495,7 +495,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             ord = 0;
             height = 32;
             width = 32;
-            srcImg = rand(height,width);
+            srcImg = rand(height,width) + 1i*rand(height,width);
             nLevels = 1;
             
             % Preparation
@@ -552,7 +552,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             ord = 0;
             height = 32;
             width = 32;
-            srcImg = rand(height,width);
+            srcImg = rand(height,width) + 1i*rand(height,width);
             nLevels = 2;
             
             % Preparation
@@ -635,7 +635,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             ord = 0;
             height = 32;
             width = 32;
-            srcImg = rand(height,width);
+            srcImg = rand(height,width) + 1i*rand(height,width);
             nLevels = 1;
             
             % Preparation
@@ -693,7 +693,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             ord = 0;
             height = 32;
             width = 32;
-            srcImg = rand(height,width);
+            srcImg = rand(height,width) + 1i*rand(height,width);
             nLevels = 2;
             
             % Preparation
@@ -780,7 +780,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             ord = 2;
             height = 32;
             width = 32;
-            srcImg = rand(height,width);
+            srcImg = rand(height,width) + 1i*rand(height,width);
             nLevels = 1;
             
             % Preparation
@@ -837,7 +837,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             ord = 2;
             height = 32;
             width = 32;
-            srcImg = rand(height,width);
+            srcImg = rand(height,width) + 1i*rand(height,width);
             nLevels = 2;
             
             % Preparation
@@ -915,7 +915,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             ord = 2;
             height = 32;
             width = 64;
-            srcImg = rand(height,width);
+            srcImg = rand(height,width) + 1i*rand(height,width);
             nLevels = 1;
             
             % Preparation
@@ -972,7 +972,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             ord = [ 0 2 ];
             height = 32;
             width = 64;
-            srcImg = rand(height,width);
+            srcImg = rand(height,width) + 1i*rand(height,width);
             nLevels = 1;
             
             % Preparation
@@ -1029,7 +1029,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             ord = [ 2 0 ];
             height = 32;
             width = 64;
-            srcImg = rand(height,width);
+            srcImg = rand(height,width) + 1i*rand(height,width);
             nLevels = 1;
             
             % Preparation
@@ -1086,7 +1086,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             ord = 2;
             height = 32;
             width = 32;
-            srcImg = rand(height,width);
+            srcImg = rand(height,width) + 1i*rand(height,width);
             nLevels = 2;
             
             % Preparation
@@ -1166,7 +1166,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             ord = 2;
             height = 32;
             width = 32;
-            srcImg = rand(height,width);
+            srcImg = rand(height,width) + 1i*rand(height,width);
             nLevels = 1;
             
             % Preparation
@@ -1224,7 +1224,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             ord = 2;
             height = 32;
             width = 32;
-            srcImg = rand(height,width);
+            srcImg = rand(height,width) + 1i*rand(height,width);
             nLevels = 2;
             
             % Preparation
@@ -1307,7 +1307,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             ord = 2;
             height = 32;
             width = 32;
-            srcImg = rand(height,width);
+            srcImg = rand(height,width) + 1i*rand(height,width);
             nLevels = 1;
             
             % Preparation
@@ -1366,7 +1366,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             ord = 2;
             height = 32;
             width = 32;
-            srcImg = rand(height,width);
+            srcImg = rand(height,width) + 1i*rand(height,width);
             nLevels = 2;
             
             % Preparation
@@ -1451,7 +1451,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             ord = 4;
             height = 64;
             width = 64;
-            srcImg = rand(height,width);
+            srcImg = rand(height,width) + 1i*rand(height,width);
             nLevels = 3;
             
             % Preparation
@@ -1553,7 +1553,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             height = 64;
             width = 64;
             nLevels = 1;
-            srcImg = rand(height,width);
+            srcImg = rand(height,width) + 1i*rand(height,width);
             
             % Preparation
             import saivdr.dictionary.nsoltx.*
@@ -1601,7 +1601,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             height = 64;
             width = 64;
             nLevels = 1;
-            srcImg = rand(height,width);
+            srcImg = rand(height,width) + 1i*rand(height,width);
             
             % Preparation
             import saivdr.dictionary.nsoltx.*
@@ -1649,7 +1649,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             height = 64;
             width = 64;
             nLevels = 1;
-            srcImg = rand(height,width);
+            srcImg = rand(height,width) + 1i*rand(height,width);
             
             % Preparation
             import saivdr.dictionary.nsoltx.*
@@ -1707,7 +1707,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             height = 64;
             width  = 64;
             nLevels = 1;
-            srcImg = rand(height,width);
+            srcImg = rand(height,width) + 1i*rand(height,width);
             
             % Preparation
             import saivdr.dictionary.nsoltx.*
@@ -1794,7 +1794,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             ord = 0;
             height = 32;
             width = 32;
-            srcImg = rand(height,width);
+            srcImg = rand(height,width) + 1i*rand(height,width);
             nLevels = 1;
             
             % Preparation
@@ -1855,7 +1855,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             ord = 0;
             height = 32;
             width = 32;
-            srcImg = rand(height,width);
+            srcImg = rand(height,width) + 1i*rand(height,width);
             nLevels = 1;
             
             % Preparation
@@ -1916,7 +1916,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             ord = 0;
             height = 32;
             width = 32;
-            srcImg = rand(height,width);
+            srcImg = rand(height,width) + 1i*rand(height,width);
             nLevels = 2;
             
             % Preparation
@@ -1998,7 +1998,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             ord = 0;
             height = 32;
             width = 32;
-            srcImg = rand(height,width);
+            srcImg = rand(height,width) + 1i*rand(height,width);
             nLevels = 2;
             
             % Preparation
@@ -2080,7 +2080,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             ord = 0;
             height = 32;
             width = 32;
-            srcImg = rand(height,width);
+            srcImg = rand(height,width) + 1i*rand(height,width);
             nLevels = 1;
             
             % Preparation
@@ -2138,7 +2138,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             ord = 2;
             height = 32;
             width = 32;
-            srcImg = rand(height,width);
+            srcImg = rand(height,width) + 1i*rand(height,width);
             nLevels = 1;
             
             % Preparation
@@ -2196,7 +2196,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             ord = 0;
             height = 32;
             width = 32;
-            srcImg = rand(height,width);
+            srcImg = rand(height,width) + 1i*rand(height,width);
             nLevels = 2;
             
             % Preparation
@@ -2278,7 +2278,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             ord = 0;
             height = 32;
             width = 32;
-            srcImg = rand(height,width);
+            srcImg = rand(height,width) + 1i*rand(height,width);
             nLevels = 1;
             
             % Preparation
@@ -2336,7 +2336,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             ord = 0;
             height = 32;
             width = 32;
-            srcImg = rand(height,width);
+            srcImg = rand(height,width) + 1i*rand(height,width);
             nLevels = 2;
             
             % Preparation
@@ -2423,7 +2423,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             ord = 0;
             height = 32;
             width = 32;
-            srcImg = rand(height,width);
+            srcImg = rand(height,width) + 1i*rand(height,width);
             nLevels = 1;
             
             % Preparation
@@ -2480,7 +2480,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             ord = 0;
             height = 32;
             width = 32;
-            srcImg = rand(height,width);
+            srcImg = rand(height,width) + 1i*rand(height,width);
             nLevels = 2;
             
             % Preparation
@@ -2571,7 +2571,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             ord = 2;
             height = 32;
             width = 32;
-            srcImg = rand(height,width);
+            srcImg = rand(height,width) + 1i*rand(height,width);
             nLevels = 1;
             
             % Preparation
@@ -2629,7 +2629,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             ord = 2;
             height = 32;
             width = 32;
-            srcImg = rand(height,width);
+            srcImg = rand(height,width) + 1i*rand(height,width);
             nLevels = 2;
             
             % Preparation
@@ -2712,7 +2712,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             ord = 2;
             height = 32;
             width = 32;
-            srcImg = rand(height,width);
+            srcImg = rand(height,width) + 1i*rand(height,width);
             nLevels = 1;
             
             % Preparation
@@ -2770,7 +2770,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             ord = 2;
             height = 32;
             width = 32;
-            srcImg = rand(height,width);
+            srcImg = rand(height,width) + 1i*rand(height,width);
             nLevels = 2;
             
             % Preparation
@@ -2853,7 +2853,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             ord = 2;
             height = 32;
             width = 32;
-            srcImg = rand(height,width);
+            srcImg = rand(height,width) + 1i*rand(height,width);
             nLevels = 1;
             
             % Preparation
@@ -2911,7 +2911,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             ord = 2;
             height = 32;
             width = 32;
-            srcImg = rand(height,width);
+            srcImg = rand(height,width) + 1i*rand(height,width);
             nLevels = 2;
             
             % Preparation
@@ -2998,7 +2998,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             ord = 2;
             height = 32;
             width = 32;
-            srcImg = rand(height,width);
+            srcImg = rand(height,width) + 1i*rand(height,width);
             nLevels = 1;
             
             % Preparation
@@ -3058,7 +3058,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             ord = 2;
             height = 32;
             width = 32;
-            srcImg = rand(height,width);
+            srcImg = rand(height,width) + 1i*rand(height,width);
             nLevels = 2;
             
             % Preparation
@@ -3150,7 +3150,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             ord = 8;
             height = 64;
             width = 64;
-            srcImg = rand(height,width);
+            srcImg = rand(height,width) + 1i*rand(height,width);
             nLevels = 3;
             
             % Preparation
@@ -3257,7 +3257,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             ord = 4;
             height = 64;
             width = 64;
-            srcImg = rand(height,width);
+            srcImg = rand(height,width) + 1i*rand(height,width);
             nLevels = 3;
             
             % Preparation
@@ -3362,7 +3362,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             ord = 2;
             height = 32;
             width = 32;
-            srcImg = rand(height,width);
+            srcImg = rand(height,width) + 1i*rand(height,width);
             nLevels = 1;
             
             % Preparation
@@ -3420,7 +3420,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             ord = 2;
             height = 32;
             width = 32;
-            srcImg = rand(height,width);
+            srcImg = rand(height,width) + 1i*rand(height,width);
             nLevels = 2;
             
             % Preparation
@@ -3500,7 +3500,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
 %             ord = 2;
 %             height = 32;
 %             width = 32;
-%             srcImg = rand(height,width);
+%             srcImg = rand(height,width) + 1i*rand(height,width);
 %             nLevels = 1;
 %             
 %             % Preparation
@@ -3557,7 +3557,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
 %             ord = 2;
 %             height = 32;
 %             width = 32;
-%             srcImg = rand(height,width);
+%             srcImg = rand(height,width) + 1i*rand(height,width);
 %             nLevels = 2;
 %             
 %             % Preparation
@@ -3641,7 +3641,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
 %             height = 64;
 %             width = 64;
 %             nLevels = 1;
-%             srcImg = rand(height,width);
+%             srcImg = rand(height,width) + 1i*rand(height,width);
 %             
 %             % Preparation
 %             import saivdr.dictionary.nsoltx.*
@@ -3689,7 +3689,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
 %             height = 64;
 %             width = 64;
 %             nLevels = 1;
-%             srcImg = rand(height,width);
+%             srcImg = rand(height,width) + 1i*rand(height,width);
 %             
 %             % Preparation
 %             import saivdr.dictionary.nsoltx.*
@@ -3747,7 +3747,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
 %             height = 64;
 %             width  = 64;
 %             nLevels = 1;
-%             srcImg = rand(height,width);
+%             srcImg = rand(height,width) + 1i*rand(height,width);
 %             
 %             % Preparation
 %             import saivdr.dictionary.nsoltx.*
@@ -3790,7 +3790,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
 %             ord = 8;
 %             height = 64;
 %             width = 64;
-%             srcImg = rand(height,width);
+%             srcImg = rand(height,width) + 1i*rand(height,width);
 %             nLevels = 3;
 %             
 %             % Preparation
@@ -3896,7 +3896,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
 %             ord = 4;
 %             height = 64;
 %             width = 64;
-%             srcImg = rand(height,width);
+%             srcImg = rand(height,width) + 1i*rand(height,width);
 %             nLevels = 3;
 %             
 %             % Preparation
@@ -4001,7 +4001,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
 %             ord = 2;
 %             height = 32;
 %             width = 32;
-%             srcImg = rand(height,width);
+%             srcImg = rand(height,width) + 1i*rand(height,width);
 %             nLevels = 1;
 %             
 %             % Preparation
@@ -4059,7 +4059,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
 %             ord = 2;
 %             height = 32;
 %             width = 32;
-%             srcImg = rand(height,width);
+%             srcImg = rand(height,width) + 1i*rand(height,width);
 %             nLevels = 2;
 %             
 %             % Preparation
@@ -4139,7 +4139,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
 %             ord = 2;
 %             height = 32;
 %             width = 32;
-%             srcImg = rand(height,width);
+%             srcImg = rand(height,width) + 1i*rand(height,width);
 %             nLevels = 1;
 %             
 %             % Preparation
@@ -4196,7 +4196,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
 %             ord = 2;
 %             height = 32;
 %             width = 32;
-%             srcImg = rand(height,width);
+%             srcImg = rand(height,width) + 1i*rand(height,width);
 %             nLevels = 2;
 %             
 %             % Preparation
@@ -4280,7 +4280,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
 %             height = 64;
 %             width = 64;
 %             nLevels = 1;
-%             srcImg = rand(height,width);
+%             srcImg = rand(height,width) + 1i*rand(height,width);
 %             
 %             % Preparation
 %             import saivdr.dictionary.nsoltx.*
@@ -4328,7 +4328,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             height = 64;
             width = 64;
             nLevels = 1;
-            srcImg = rand(height,width);
+            srcImg = rand(height,width) + 1i*rand(height,width);
             
             % Preparation
             import saivdr.dictionary.nsoltx.*
@@ -4376,7 +4376,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             height = 64;
             width = 64;
             nLevels = 1;
-            srcImg = rand(height,width);
+            srcImg = rand(height,width) + 1i*rand(height,width);
             
             % Preparation
             import saivdr.dictionary.nsoltx.*
@@ -4424,7 +4424,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
 %             height = 64;
 %             width = 64;
 %             nLevels = 1;
-%             srcImg = rand(height,width);
+%             srcImg = rand(height,width) + 1i*rand(height,width);
 %             
 %             % Preparation
 %             import saivdr.dictionary.nsoltx.*
@@ -4472,7 +4472,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
 %             height = 64;
 %             width = 64;
 %             nLevels = 1;
-%             srcImg = rand(height,width);
+%             srcImg = rand(height,width) + 1i*rand(height,width);
 %             
 %             % Preparation
 %             import saivdr.dictionary.nsoltx.*
@@ -4520,7 +4520,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             height = 64;
             width = 64;
             nLevels = 1;
-            srcImg = rand(height,width);
+            srcImg = rand(height,width) + 1i*rand(height,width);
             
             % Preparation
             import saivdr.dictionary.nsoltx.*
@@ -4568,7 +4568,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             height = 64;
             width = 64;
             nLevels = 1;
-            srcImg = rand(height,width);
+            srcImg = rand(height,width) + 1i*rand(height,width);
             
             % Preparation
             import saivdr.dictionary.nsoltx.*
