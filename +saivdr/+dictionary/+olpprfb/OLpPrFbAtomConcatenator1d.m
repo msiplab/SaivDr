@@ -92,7 +92,6 @@ classdef OLpPrFbAtomConcatenator1d < ...
         function arrayCoefs = fullAtomCncTypeII_(obj,arrayCoefs)
             %
             isPeriodicExt = obj.IsPeriodicExt; % BoundaryOperation = 'Circular';
-            isPsGtPa      = obj.IsPsGreaterThanPa;
             %
             ord = obj.PolyPhaseOrder;
             numOfPMtx = size(obj.paramMtxSzTab,1);
@@ -124,7 +123,6 @@ classdef OLpPrFbAtomConcatenator1d < ...
             Wx2 = paramMtx1.';
             Ux2 = paramMtx2.';
             B2 = butterflyMtx_(obj,paramMtx3);
-            %cB2 = conj(B2);
             
             % Lower channel rotation
             arrayCoefs(1:hLen,:) = Wx2*arrayCoefs(1:hLen,:);

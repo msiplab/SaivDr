@@ -59,15 +59,7 @@ classdef NsoltAtomExtender2d <  ...
         
         function arrayCoefs = initialStep_(obj,arrayCoefs)
             
-            %hLenU = obj.NumberOfSymmetricChannels;            
-            %
             if ~isempty(obj.paramMtxCoefs)
-%                 W0 = getParamMtx_(obj,uint32(1));
-%                 U0 = getParamMtx_(obj,uint32(2));
-%                 arrayCoefs(1:hLenU,:) ...
-%                      = W0*arrayCoefs(1:hLenU,:);
-%                 arrayCoefs(hLenU+1:end,:) = ...
-%                     U0*arrayCoefs(hLenU+1:end,:);
                 V0 = getParamMtx_(obj,uint32(1));
                 arrayCoefs = V0*arrayCoefs;
             end
@@ -118,8 +110,7 @@ classdef NsoltAtomExtender2d <  ...
         
         function arrayCoefs = fullAtomExtTypeII_(obj,arrayCoefs)
             %
-            isPeriodicExt = obj.IsPeriodicExt; % BoundaryOperation = 'Circular'
-            isPsGtPa      = obj.IsPsGreaterThanPa;            
+            isPeriodicExt = obj.IsPeriodicExt; % BoundaryOperation = 'Circular' 
             %
             ordY = obj.PolyPhaseOrder(saivdr.dictionary.utility.Direction.VERTICAL);
             ordX = obj.PolyPhaseOrder(saivdr.dictionary.utility.Direction.HORIZONTAL);
@@ -132,15 +123,11 @@ classdef NsoltAtomExtender2d <  ...
                 paramMtx4 = getParamMtx_(obj,6*iOrd-1); % WO
                 paramMtx5 = getParamMtx_(obj,6*iOrd+0); % UO
                 paramMtx6 = getParamMtx_(obj,6*iOrd+1); % angB2
-                %
-%                 if isPsGtPa
-                    arrayCoefs = supportExtTypeIIPsGtPa_(obj,arrayCoefs,...
-                        paramMtx1,paramMtx2,paramMtx3,...
-                        paramMtx4,paramMtx5,paramMtx6,...
-                        isPeriodicExt);
-%                 else
-%                     arrayCoefs = supportExtTypeIIPsLtPa_(obj,arrayCoefs,paramMtx1,paramMtx2,isPeriodicExt);
-%                 end
+                
+                arrayCoefs = supportExtTypeII_(obj,arrayCoefs,...
+                    paramMtx1,paramMtx2,paramMtx3,...
+                    paramMtx4,paramMtx5,paramMtx6,...
+                    isPeriodicExt);
             end
             
             % Height extension
@@ -153,15 +140,11 @@ classdef NsoltAtomExtender2d <  ...
                 paramMtx4 = getParamMtx_(obj,6*iOrd+3*ordX-1); % WO
                 paramMtx5 = getParamMtx_(obj,6*iOrd+3*ordX+0); % UO
                 paramMtx6 = getParamMtx_(obj,6*iOrd+3*ordX+1); % angB2
-                    %
-%                     if isPsGtPa
-                        arrayCoefs = supportExtTypeIIPsGtPa_(obj,arrayCoefs,...
-                            paramMtx1,paramMtx2,paramMtx3,...
-                            paramMtx4,paramMtx5,paramMtx6,...
-                            isPeriodicExt);
-%                     else
-%                         arrayCoefs = supportExtTypeIIPsLtPa_(obj,arrayCoefs,paramMtx1,paramMtx2,isPeriodicExt);
-%                     end
+                
+                arrayCoefs = supportExtTypeII_(obj,arrayCoefs,...
+                    paramMtx1,paramMtx2,paramMtx3,...
+                    paramMtx4,paramMtx5,paramMtx6,...
+                    isPeriodicExt);
                 end
                 arrayCoefs = ipermuteCoefs_(obj,arrayCoefs);
             end
@@ -217,7 +200,7 @@ classdef NsoltAtomExtender2d <  ...
             arrayCoefs(1:hLen,:) = Wx2*arrayCoefs(1:hLen,:);
         end
         
-        function arrayCoefs = supportExtTypeIIPsGtPa_(obj,arrayCoefs,paramMtx1,paramMtx2,paramMtx3,paramMtx4,paramMtx5,paramMtx6,isPeriodicExt)
+        function arrayCoefs = supportExtTypeII_(obj,arrayCoefs,paramMtx1,paramMtx2,paramMtx3,paramMtx4,paramMtx5,paramMtx6,isPeriodicExt)
             hLen = obj.NumberOfAntisymmetricChannels;
             nCols_ = obj.nCols;
             
@@ -265,64 +248,6 @@ classdef NsoltAtomExtender2d <  ...
             arrayCoefs(1:hLen+1,:) = Wx*arrayCoefs(1:hLen+1,:);
         end
         
-%         function arrayCoefs = supportExtTypeIIPsLtPa_(obj,arrayCoefs,paramMtx1,paramMtx2,isPeriodicExt)
-%             hLen = obj.NumberOfSymmetricChannels;
-%             nCols_ = obj.nCols;
-%             
-%             % Phase 1
-%             Wx = paramMtx1;
-%             I = eye(size(Wx));
-%             arrayCoefs = blockButterflyTypeII_(obj,arrayCoefs);
-%             arrayCoefs = rightShiftLowerCoefs_(obj,arrayCoefs);
-%             arrayCoefs = blockButterflyTypeII_(obj,arrayCoefs);
-%             arrayCoefs = arrayCoefs/2.0;
-%             % Upper channel rotation
-%             if isPeriodicExt
-%                 arrayCoefs(1:hLen,:) = Wx*arrayCoefs(1:hLen,:);
-%             else
-%                 for iCol = 1:nCols_
-%                     if iCol == 1
-%                         W = -I;
-%                     else
-%                         W = Wx;
-%                     end
-%                     arrayCoefs = upperBlockRot_(obj,arrayCoefs,iCol,W);
-%                 end
-%             end
-%             
-%             % Phase 2
-%             Ux = paramMtx2;
-%             arrayCoefs = blockButterflyTypeII_(obj,arrayCoefs);
-%             arrayCoefs = leftShiftUpperCoefs_(obj,arrayCoefs);
-%             arrayCoefs = blockButterflyTypeII_(obj,arrayCoefs);
-%             arrayCoefs = arrayCoefs/2.0;
-%             % Lower channel rotation
-%             arrayCoefs(hLen+1:end,:) = Ux*arrayCoefs(hLen+1:end,:);
-%         end
-        
-%         function arrayCoefs = leftShiftLowerCoefs_(obj,arrayCoefs)
-%             hLenMn = min([ obj.NumberOfSymmetricChannels
-%                 obj.NumberOfAntisymmetricChannels]);
-%             nRows_ = obj.nRows;
-%             %
-%             lowerCoefsPre = arrayCoefs(hLenMn+1:end,end-nRows_+1:end);
-%             arrayCoefs(hLenMn+1:end,nRows_+1:end) = ...
-%                 arrayCoefs(hLenMn+1:end,1:end-nRows_);
-%             arrayCoefs(hLenMn+1:end,1:nRows_) = ...
-%                 lowerCoefsPre;
-%         end
-%         
-%         function arrayCoefs = leftShiftUpperCoefs_(obj,arrayCoefs)
-%             hLenMx = min([ obj.NumberOfSymmetricChannels
-%                 obj.NumberOfAntisymmetricChannels]);
-%             nRows_ = obj.nRows;
-%             %
-%             upperCoefsPost = arrayCoefs(1:hLenMx,1:nRows_);
-%             arrayCoefs(1:hLenMx,1:end-nRows_) = ...
-%                 arrayCoefs(1:hLenMx,nRows_+1:end);
-%             arrayCoefs(1:hLenMx,end-nRows_+1:end) = ...
-%                 upperCoefsPost;            
-%         end       
         function arrayCoefs = leftShiftLowerCoefs_(obj,arrayCoefs)
             hLenMn = min([ obj.NumberOfSymmetricChannels
                 obj.NumberOfAntisymmetricChannels]);

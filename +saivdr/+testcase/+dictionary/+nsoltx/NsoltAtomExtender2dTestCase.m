@@ -100,7 +100,7 @@ classdef NsoltAtomExtender2dTestCase < matlab.unittest.TestCase
             width  = 16;
             nch   = [ 2 2 ];
             ord   = [ 0 0 ];
-            coefs = randn(sum(nch), height*width);
+            coefs = randn(sum(nch), height*width)+1i*randn(sum(nch), height*width);
             scale = [ height width ];
             I0 = eye(sum(nch));
             pmCoefs = I0;
@@ -135,7 +135,7 @@ classdef NsoltAtomExtender2dTestCase < matlab.unittest.TestCase
             width  = 16;
             ord   = [ 0 0 ];
             nch   = [ 3 2 ];
-            coefs = randn(sum(nch), height*width);
+            coefs = randn(sum(nch), height*width)+1i*randn(sum(nch), height*width);
             scale = [ height width ];
             I0 = eye(sum(nch));
             pmCoefs = I0;
@@ -170,7 +170,7 @@ classdef NsoltAtomExtender2dTestCase < matlab.unittest.TestCase
             width  = 16;
             ord   = [ 2 2 ];
             nch   = [ 2 2 ];
-            coefs = randn(sum(nch), height*width);
+            coefs = randn(sum(nch), height*width)+1i*randn(sum(nch), height*width);
             scale = [ height width ];
             I0 = eye(sum(nch));
             In = eye(nch(2));
@@ -211,7 +211,7 @@ classdef NsoltAtomExtender2dTestCase < matlab.unittest.TestCase
             width  = 16;
             ord   = [ 2 2 ];
             nch   = [ 2 2 ];
-            coefs = randn(sum(nch), height*width);
+            coefs = randn(sum(nch), height*width)+1i*randn(sum(nch), height*width);
             scale = [ height width ];
             U0 = dctmtx(sum(nch));
             In = eye(nch(2));
@@ -253,7 +253,7 @@ classdef NsoltAtomExtender2dTestCase < matlab.unittest.TestCase
             width  = 16;
             ord   = [ 2 0 ];
             nch   = [ 2 2 ];
-            coefs = randn(sum(nch), height*width);
+            coefs = randn(sum(nch), height*width)+1i*randn(sum(nch), height*width);
             scale = [ height width ];
             I0 = eye(sum(nch));
             In = eye(nch(2));
@@ -292,7 +292,7 @@ classdef NsoltAtomExtender2dTestCase < matlab.unittest.TestCase
             width  = 16;
             ord   = [ 0 2 ];
             nch   = [ 2 2 ];
-            coefs = randn(sum(nch), height*width);
+            coefs = randn(sum(nch), height*width)+1i*randn(sum(nch), height*width);
             scale = [ height width ];
             I0 = eye(sum(nch));
             In = eye(nch(2));
@@ -333,7 +333,7 @@ classdef NsoltAtomExtender2dTestCase < matlab.unittest.TestCase
             width  = 16;
             ord   = [ 4 4 ];
             nch   = [ 2 2 ];
-            coefs = randn(sum(nch), height*width);
+            coefs = randn(sum(nch), height*width)+1i*randn(sum(nch), height*width);
             scale = [ height width ];
             I0 = eye(sum(nch));
             In = eye(nch(2));
@@ -378,7 +378,7 @@ classdef NsoltAtomExtender2dTestCase < matlab.unittest.TestCase
             width  = 16;
             ord   = [ 4 2 ];
             nch   = [ 2 2 ];
-            coefs = randn(sum(nch), height*width);
+            coefs = randn(sum(nch), height*width)+1i*randn(sum(nch), height*width);
             scale = [ height width ];
             I0 = eye(sum(nch));
             In = eye(nch(2));
@@ -421,7 +421,7 @@ classdef NsoltAtomExtender2dTestCase < matlab.unittest.TestCase
             width  = 16;
             ord   = [ 2 4 ];
             nch   = [ 2 2 ];
-            coefs = randn(sum(nch), height*width);
+            coefs = randn(sum(nch), height*width)+1i*randn(sum(nch), height*width);
             scale = [ height width ];
             I0 = eye(sum(nch));
             In = eye(nch(2));
@@ -464,7 +464,7 @@ classdef NsoltAtomExtender2dTestCase < matlab.unittest.TestCase
             width  = 16;
             ord   = [ 2 2 ];
             nch   = [ 4 4 ];
-            coefs = randn(sum(nch), height*width);
+            coefs = randn(sum(nch), height*width)+1i*randn(sum(nch), height*width);
             scale = [ height width ];
             I0 = eye(sum(nch));
             In = eye(nch(2));
@@ -505,7 +505,7 @@ classdef NsoltAtomExtender2dTestCase < matlab.unittest.TestCase
             width  = 16;
             ord   = [ 2 2 ];
             nch   = [ 3 2 ];
-            coefs = randn(sum(nch), height*width);
+            coefs = randn(sum(nch), height*width)+1i*randn(sum(nch), height*width);
             scale = [ height width ];
             I0 = eye(sum(nch));
             Ix = eye(nch(1));
@@ -548,7 +548,7 @@ classdef NsoltAtomExtender2dTestCase < matlab.unittest.TestCase
             width  = 16;
             ord   = [ 2 2 ];
             nch   = [ 3 2 ];
-            coefs = randn(sum(nch), height*width);
+            coefs = randn(sum(nch), height*width)+1i*randn(sum(nch), height*width);
             scale = [ height width ];
             V0 = dctmtx(sum(nch));
             Ix = eye(nch(1));
@@ -592,7 +592,7 @@ classdef NsoltAtomExtender2dTestCase < matlab.unittest.TestCase
             width  = 16;
             ord   = [ 2 0 ];
             nch   = [ 3 2 ];
-            coefs = randn(sum(nch), height*width);
+            coefs = randn(sum(nch), height*width)+1i*randn(sum(nch), height*width);
             scale = [ height width ];
             I0 = eye(sum(nch));
             Ix = eye(nch(1));
@@ -633,7 +633,7 @@ classdef NsoltAtomExtender2dTestCase < matlab.unittest.TestCase
             width  = 16;
             ord   = [ 0 2 ];
             nch   = [ 3 2 ];
-            coefs = randn(sum(nch), height*width);
+            coefs = randn(sum(nch), height*width)+1i*randn(sum(nch), height*width);
             scale = [ height width ];
             I0 = eye(sum(nch));
             Ix = eye(nch(1));
@@ -674,7 +674,7 @@ classdef NsoltAtomExtender2dTestCase < matlab.unittest.TestCase
             width  = 16;
             ord   = [ 4 4 ];
             nch   = [ 3 2 ];
-            coefs = randn(sum(nch), height*width);
+            coefs = randn(sum(nch), height*width)+1i*randn(sum(nch), height*width);
             scale = [ height width ];
             I0 = eye(sum(nch));
             Ix = eye(nch(1));
@@ -721,7 +721,7 @@ classdef NsoltAtomExtender2dTestCase < matlab.unittest.TestCase
             width  = 16;
             ord   = [ 4 2 ];
             nch   = [ 3 2 ];
-            coefs = randn(sum(nch), height*width);
+            coefs = randn(sum(nch), height*width)+1i*randn(sum(nch), height*width);
             scale = [ height width ];
             I0 = eye(sum(nch));
             Ix = eye(nch(1));
@@ -766,7 +766,7 @@ classdef NsoltAtomExtender2dTestCase < matlab.unittest.TestCase
             width  = 16;
             ord   = [ 2 4 ];
             nch   = [ 3 2 ];
-            coefs = randn(sum(nch), height*width);
+            coefs = randn(sum(nch), height*width)+1i*randn(sum(nch), height*width);
             scale = [ height width ];
             I0 = eye(sum(nch));
             Ix = eye(nch(1));
@@ -811,7 +811,7 @@ classdef NsoltAtomExtender2dTestCase < matlab.unittest.TestCase
             width  = 16;
             ord   = [ 2 2 ];
             nch   = [ 5 4 ];
-            coefs = randn(sum(nch), height*width);
+            coefs = randn(sum(nch), height*width)+1i*randn(sum(nch), height*width);
             scale = [ height width ];
             I0 = eye(sum(nch));
             Ix = eye(nch(1));
