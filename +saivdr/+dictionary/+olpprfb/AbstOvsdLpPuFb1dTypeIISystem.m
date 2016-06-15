@@ -240,7 +240,7 @@ classdef AbstOvsdLpPuFb1dTypeIISystem < ...
                 end
                 len = dec*(ord+1);
             end
-            value = diag(obj.Symmetry)*E;
+            E = diag(obj.Symmetry)*E;
             value = E.';
         end
 

@@ -58,16 +58,10 @@ classdef OLpPrFbAtomExtender1d <  ...
     methods ( Access = private )
         
         function arrayCoefs = initialStep_(obj,arrayCoefs)
-            
-            %hLenU = obj.NumberOfSymmetricChannels;            
+
             %
             if ~isempty(obj.paramMtxCoefs)
-                %W0 = getParamMtx_(obj,uint32(1));
-                %U0 = getParamMtx_(obj,uint32(2));
                 V0 = getParamMtx_(obj,uint32(1));
-                %arrayCoefs(1:hLenU,:)     = W0*arrayCoefs(1:hLenU,:);
-                %arrayCoefs(hLenU+1:end,:) = U0*arrayCoefs(hLenU+1:end,:);
-                %nChs = obj.NumberOfSymmetricChannels+obj.NumberOfAntisymmetricChannels;
                 arrayCoefs = V0*arrayCoefs;
             end
 
@@ -102,17 +96,17 @@ classdef OLpPrFbAtomExtender1d <  ...
         function arrayCoefs = fullAtomExtTypeII_(obj,arrayCoefs)
             %
             isPeriodicExt = obj.IsPeriodicExt; % BoundaryOperation = 'Circular'
-            isPsGtPa      = obj.IsPsGreaterThanPa;            
+            %isPsGtPa      = obj.IsPsGreaterThanPa;            
             %
             ord = obj.PolyPhaseOrder;
             
             % Order extension
             for iOrd = uint32(1):uint32(ord/2)
-                paramMtx1 = getParamMtx_(obj,6*iOrd-4); % W
-                paramMtx2 = getParamMtx_(obj,6*iOrd-3); % U
+                paramMtx1 = getParamMtx_(obj,6*iOrd-4); % WE
+                paramMtx2 = getParamMtx_(obj,6*iOrd-3); % UE
                 paramMtx3 = getParamMtx_(obj,6*iOrd-2); % angB1
-                paramMtx4 = getParamMtx_(obj,6*iOrd-1); % HW
-                paramMtx5 = getParamMtx_(obj,6*iOrd+0); % HU
+                paramMtx4 = getParamMtx_(obj,6*iOrd-1); % WO
+                paramMtx5 = getParamMtx_(obj,6*iOrd+0); % UO
                 paramMtx6 = getParamMtx_(obj,6*iOrd+1); % angB2
                 %
                 %if isPsGtPa
@@ -134,7 +128,7 @@ classdef OLpPrFbAtomExtender1d <  ...
             Ux = paramMtx2;
             B = butterflyMtx_(obj,paramMtx3);
             cB = conj(B);
-            %TODO:
+            %TODO: ŽÀ‘•‚ÌŒø—¦‰»‚ðŒŸ“¢
             %arrayCoefs = blockButterflyTypeI_(obj,arrayCoefs,angB1);
             arrayCoefs = cB'*arrayCoefs;
             arrayCoefs = leftShiftLowerCoefs_(obj,arrayCoefs);
@@ -228,7 +222,7 @@ classdef OLpPrFbAtomExtender1d <  ...
             %
             upperCoefsPre = arrayCoefs(1:hLenMn,end);
             arrayCoefs(1:hLenMn,2:end) = arrayCoefs(1:hLenMn,1:end-1);
-            arrayCoefs(1:hLenMn,1) = upperCoefsPre;            
+            arrayCoefs(1:hLenMn,1) = upperCoefsPre;          
         end
         
         function hB = butterflyMtx_(obj, angles)%TODO: “¯ˆê‚ÌŠÖ”‚ªAbstBuildingBlock.m‚ÅŽÀ‘•‚³‚ê‚Ä‚¢‚é‚Ì‚Åˆê‰ÓŠ‚É‚Ü‚Æ‚ß‚éD

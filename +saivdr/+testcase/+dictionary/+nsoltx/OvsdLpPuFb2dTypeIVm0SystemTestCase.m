@@ -798,7 +798,7 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             dec = [ 2 2 ];
             ord = [ 0 0 ];
             ang = [ 0 0 0 0 0 0 ];
-            mus = [ 1; 1; -1; -1 ];
+            mus = [ 1; 1; 1; 1 ];
             
             % Expected values
             coefExpctd(:,:,1,1) = 1/2*[...
@@ -830,7 +830,7 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             dec = [ 2 2 ];
             ord = [ 2 2 ];
-            ang = [ 0 0 0 0 0 0 0 pi pi/4 0 pi pi/4 0 pi pi/4 0 pi pi/4];
+            ang = [ 0 0 0 0 0 0 0 0 pi/4 0 0 pi/4 0 0 pi/4 0 0 pi/4];
             
             % Expected values
             coefExpctd(:,:,1,1) = [

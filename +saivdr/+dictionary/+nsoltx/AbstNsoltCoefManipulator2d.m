@@ -69,14 +69,17 @@ classdef AbstNsoltCoefManipulator2d < matlab.System
             ps = obj.NumberOfSymmetricChannels;
             pa = obj.NumberOfAntisymmetricChannels;
             %
-            if ps > pa
-                obj.NsoltType = 'Type II';
-                obj.IsPsGreaterThanPa = true;
-            elseif ps < pa
-                obj.NsoltType = 'Type II';
-                obj.IsPsGreaterThanPa = false;
-            end            
+%             if ps > pa
+%                 obj.NsoltType = 'Type II';
+%                 obj.IsPsGreaterThanPa = true;
+%             elseif ps < pa
+%                 obj.NsoltType = 'Type II';
+%                 obj.IsPsGreaterThanPa = false;
+%             end            
             %
+            if ps ~= pa
+                obj.NsoltType = 'Type II';
+            end
         end
         
     end
@@ -168,19 +171,16 @@ classdef AbstNsoltCoefManipulator2d < matlab.System
             ps  = obj.NumberOfSymmetricChannels;
             pa  = obj.NumberOfAntisymmetricChannels;
             %
-            paramMtxSzTab_ = zeros(sum(ord)+2, 2);
-            paramMtxSzTab_(1,:) = [ ps ps ];
-            paramMtxSzTab_(2,:) = [ pa pa ];            
-            if strcmp(obj.NsoltType,'Type I')
-                for iOrd = 1:sum(ord)
-                    paramMtxSzTab_(iOrd+2,:) = [ pa pa ];
-                end
-            else
-                for iOrd = 1:sum(ord)/2
-                    paramMtxSzTab_(2*iOrd+1,:)   = [ ps ps ];
-                    paramMtxSzTab_(2*iOrd+2,:) = [ pa pa ];
-                end                
-            end            
+            paramMtxSzTab_ = zeros(3*sum(ord)+1, 2);
+            paramMtxSzTab_(1,:) = [ ps+pa, ps+pa ];
+            for iOrd = 1:sum(ord)/2
+                paramMtxSzTab_(6*iOrd-4,:) = [ pa pa ];
+                paramMtxSzTab_(6*iOrd-3,:) = [ pa pa ];
+                paramMtxSzTab_(6*iOrd-2,:) = [ floor(pa/2) 1 ];
+                paramMtxSzTab_(6*iOrd-1,:) = [ ps ps ];
+                paramMtxSzTab_(6*iOrd  ,:) = [ ps ps ];
+                paramMtxSzTab_(6*iOrd+1,:) = [ floor(pa/2) 1 ];
+            end
             %
             nRowsPm = size(paramMtxSzTab_,1);
             indexOfParamMtxSzTab_ = zeros(nRowsPm,3);
@@ -228,7 +228,7 @@ classdef AbstNsoltCoefManipulator2d < matlab.System
         end
         
         function arrayCoefs = lowerBlockRot_(obj,arrayCoefs,iCol,U)
-            hLen = obj.NumberOfSymmetricChannels;
+            hLen = obj.NumberOfAntisymmetricChannels;
             nRows_ = obj.nRows; 
             indexCol = (iCol-1)*nRows_;
             arrayCoefs(hLen+1:end,indexCol+1:indexCol+nRows_) = ...
@@ -236,7 +236,7 @@ classdef AbstNsoltCoefManipulator2d < matlab.System
         end
         
         function arrayCoefs = upperBlockRot_(obj,arrayCoefs,iCol,W)
-            hLen = obj.NumberOfSymmetricChannels;
+            hLen = obj.NumberOfAntisymmetricChannels;
             nRows_ = obj.nRows;
             indexCol = (iCol-1)*nRows_;
             arrayCoefs(1:hLen,indexCol+1:indexCol+nRows_) = ...

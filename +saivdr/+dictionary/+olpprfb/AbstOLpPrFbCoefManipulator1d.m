@@ -23,6 +23,7 @@ classdef AbstOLpPrFbCoefManipulator1d < matlab.System %#codegen
     end
     
     properties (Nontunable, PositiveInteger)
+        % TODO: –¼Ì‚Ì•ÏX‚ðŒŸ“¢‚·‚é
         NumberOfSymmetricChannels      = 2
         NumberOfAntisymmetricChannels  = 2
     end
@@ -68,14 +69,17 @@ classdef AbstOLpPrFbCoefManipulator1d < matlab.System %#codegen
             ps = obj.NumberOfSymmetricChannels;
             pa = obj.NumberOfAntisymmetricChannels;
             %
-            if ps > pa
-                obj.OLpPrFbType = 'Type II';
-                obj.IsPsGreaterThanPa = true;
-            elseif ps < pa
-                obj.OLpPrFbType = 'Type II';
-                obj.IsPsGreaterThanPa = false;
-            end            
+%             if ps > pa
+%                 obj.OLpPrFbType = 'Type II';
+%                 obj.IsPsGreaterThanPa = true;
+%             elseif ps < pa
+%                 obj.OLpPrFbType = 'Type II';
+%                 obj.IsPsGreaterThanPa = false;
+%             end            
             %
+            if ps ~= pa
+                obj.OLpPrFbType = 'Type II';
+            end
         end
         
     end
@@ -175,7 +179,7 @@ classdef AbstOLpPrFbCoefManipulator1d < matlab.System %#codegen
                 obj.paramMtxSzTab(6*iOrd-3,:) = [ pa pa ];
                 obj.paramMtxSzTab(6*iOrd-2,:) = [ floor(pa/2) 1 ];
                 obj.paramMtxSzTab(6*iOrd-1,:) = [ ps ps ];
-                obj.paramMtxSzTab(6*iOrd,:) = [ ps ps ];
+                obj.paramMtxSzTab(6*iOrd  ,:) = [ ps ps ];
                 obj.paramMtxSzTab(6*iOrd+1,:) = [ floor(pa/2) 1 ];
             end
             %
