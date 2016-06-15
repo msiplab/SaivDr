@@ -57,6 +57,7 @@ classdef OvsdLpPuFb2dTypeIVm0System < saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2dT
             
             angles = reshape(obj.Angles(nInitMtxAngs+1:end),[],obj.nStages-1);
             mus    = obj.Mus(:,2:end);
+            
             nParamMtxAngs = nch*(nch-2)/8;
             for iParamMtx = uint32(1):obj.nStages-1
                 % W

@@ -200,7 +200,7 @@ classdef OLpPuFbSynthesis1dSystem  < ...
         function subSeq = subSynthesize_(obj,arrayCoefs,pmCoefs)
             import saivdr.dictionary.utility.Direction
             %
-            ps = obj.NumberOfSymmetricChannels;
+            %ps = obj.NumberOfSymmetricChannels;
             nBlks_ = obj.nBlks;
             dec_ = obj.decimationFactor;
             %

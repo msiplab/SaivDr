@@ -92,8 +92,8 @@ classdef NsoltAnalysis2dSystem < ...
             obj.decimationFactor = get(obj.LpPuFb2d,'DecimationFactor');
             obj.polyPhaseOrder   = get(obj.LpPuFb2d,'PolyPhaseOrder');
             nch = get(obj.LpPuFb2d,'NumberOfChannels');
-            obj.NumberOfSymmetricChannels = nch(1);
-            obj.NumberOfAntisymmetricChannels = nch(2);
+            obj.NumberOfSymmetricChannels = ceil(nch/2);
+            obj.NumberOfAntisymmetricChannels = floor(nch/2);
         end
         
     end
@@ -153,6 +153,10 @@ classdef NsoltAnalysis2dSystem < ...
             obj.allScales = zeros(obj.nAllChs,obj.DATA_DIMENSION);
             
             % Prepare MEX function
+            %TODO: MEX‰»‚É‘Î‰ž‚µ‚½‚ç‰º‚Ì2s‚ðíœ‚·‚é
+            obj.isMexFcn = 1;
+            mexFcn = [];
+            
             if ~obj.isMexFcn
                 import saivdr.dictionary.nsoltx.mexsrcs.fcn_autobuild_atomext2d
                 [mexFcn, obj.isMexFcn] = ...
@@ -226,7 +230,7 @@ classdef NsoltAnalysis2dSystem < ...
             %
             nChs = obj.NumberOfSymmetricChannels ...
                 + obj.NumberOfAntisymmetricChannels;
-            ps = obj.NumberOfSymmetricChannels;
+            %ps = obj.NumberOfSymmetricChannels;
             nRows_ = obj.nRows;
             nCols_ = obj.nCols;            
             decY_  = obj.decimationFactor(Direction.VERTICAL);
@@ -245,35 +249,29 @@ classdef NsoltAnalysis2dSystem < ...
             if decY_ == 1 && decX_ == 1
                 coefs = im2col(subImg,blockSize,'distinct');
                 arrayCoefs(1,:) = coefs(1,:);
-            elseif decY_ == 2 && decX_ == 2
-                subImg1 = subImg(1:2:end,1:2:end);
-                subImg2 = subImg(2:2:end,1:2:end);
-                subImg3 = subImg(1:2:end,2:2:end);
-                subImg4 = subImg(2:2:end,2:2:end);
-                %
-                subImg1 = subImg1(:).';
-                subImg2 = subImg2(:).';
-                subImg3 = subImg3(:).';
-                subImg4 = subImg4(:).';
-                %                
-                arrayCoefs(1,:) = ...
-                    (subImg1+subImg2+subImg3+subImg4)/2;
-                arrayCoefs(2,:) = ...
-                    (subImg1-subImg2-subImg3+subImg4)/2;
-                arrayCoefs(ps+1,:) = ...
-                    (subImg1-subImg2+subImg3-subImg4)/2;
-                arrayCoefs(ps+2,:) = ...
-                    (subImg1+subImg2-subImg3-subImg4)/2;
+%             elseif decY_ == 2 && decX_ == 2
+%                 subImg1 = subImg(1:2:end,1:2:end);
+%                 subImg2 = subImg(2:2:end,1:2:end);
+%                 subImg3 = subImg(1:2:end,2:2:end);
+%                 subImg4 = subImg(2:2:end,2:2:end);
+%                 %
+%                 subImg1 = subImg1(:).';
+%                 subImg2 = subImg2(:).';
+%                 subImg3 = subImg3(:).';
+%                 subImg4 = subImg4(:).';
+%                 %                
+%                 arrayCoefs(1,:) = ...
+%                     (subImg1+subImg2+subImg3+subImg4)/2;
+%                 arrayCoefs(2,:) = ...
+%                     (subImg1-subImg2-subImg3+subImg4)/2;
+%                 arrayCoefs(ps+1,:) = ...
+%                     (subImg1-subImg2+subImg3-subImg4)/2;
+%                 arrayCoefs(ps+2,:) = ...
+%                     (subImg1+subImg2-subImg3-subImg4)/2;
             else
-                mc = ceil(decX_*decY_/2);
-                mf = floor(decX_*decY_/2);
-                dctCoefs = blockproc(subImg,blockSize,...
-                    @obj.dct2_);
-                dctCoefs = blockproc(dctCoefs,blockSize,...
-                    @obj.permuteDctCoefs_);
-                coefs = im2col(dctCoefs,blockSize,'distinct');
-                arrayCoefs(1:mc,:) = coefs(1:mc,:);
-                arrayCoefs(ps+1:ps+mf,:) = coefs(mc+1:end,:);
+                dftCoefs = blockproc(subImg,blockSize,@obj.conjhsdft2_);
+                coefs = im2col(dftCoefs,blockSize,'distinct');
+                arrayCoefs(1:decX_*decY_,:) = coefs;
             end
             
             % Atom extension
@@ -286,22 +284,24 @@ classdef NsoltAnalysis2dSystem < ...
         
     end
     
-    methods (Access = private, Static = true)
+    methods (Access = private, Static = true)        
+        %TODO:“¯ˆê‚ÌŠÖ”‚ªAbstOLpPuFb1dSystem‚Å‚à’è‹`‚³‚ê‚Ä‚¢‚é‚Ì‚Åˆê‰ÓŠ‚ÉW–ñ‚·‚é
+        
+        function value = conjhsdft2_(x) %conjgate-hsdft
+            nDec = size(x.data,1);
+            mtx = complex(zeros(nDec));
+            for u = 0:nDec-1
+                for v =0:nDec-1
+                    n = rem(u*(2*v+1),2*nDec);
+                    mtx(u+1,v+1) = exp(-1i*pi*n/nDec)/sqrt(nDec);
+                end
+            end
+            cmtx = conj(mtx);
+            value = (cmtx*(cmtx*x.data).').';
+        end
         
         function value = dct2_(x)
             value = dct2(x.data);
-        end
-        
-        function value = permuteDctCoefs_(x)
-            coefs = x.data;
-            decY_ = x.blockSize(1);
-            decX_ = x.blockSize(2);
-            cee = coefs(1:2:end,1:2:end);
-            coo = coefs(2:2:end,2:2:end);
-            coe = coefs(2:2:end,1:2:end);
-            ceo = coefs(1:2:end,2:2:end);
-            value = [ cee(:) ; coo(:) ; coe(:) ; ceo(:) ];
-            value = reshape(value,decY_,decX_);
         end
         
     end    

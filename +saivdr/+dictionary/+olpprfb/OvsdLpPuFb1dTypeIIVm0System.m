@@ -21,8 +21,8 @@ classdef OvsdLpPuFb1dTypeIIVm0System < ...
 
     properties (Access = private)
         omgsV0_
-        omgsWU_
-        omgsHWHU_
+        omgsE_
+        omgsO_
     end
     
     methods
@@ -31,8 +31,8 @@ classdef OvsdLpPuFb1dTypeIIVm0System < ...
             obj = obj@saivdr.dictionary.olpprfb.AbstOvsdLpPuFb1dTypeIISystem(...
                 varargin{:});
             obj.omgsV0_ = OrthonormalMatrixGenerationSystem();
-            obj.omgsWU_ = OrthonormalMatrixGenerationSystem();
-            obj.omgsHWHU_ = OrthonormalMatrixGenerationSystem();
+            obj.omgsE_ = OrthonormalMatrixGenerationSystem();
+            obj.omgsO_ = OrthonormalMatrixGenerationSystem();
         end
     end
     
@@ -41,14 +41,14 @@ classdef OvsdLpPuFb1dTypeIIVm0System < ...
         function s = saveObjectImpl(obj)
             s = saveObjectImpl@saivdr.dictionary.olpprfb.AbstOvsdLpPuFb1dTypeIISystem(obj);
             s.omgsV0_ = matlab.System.saveObject(obj.omgsV0_);
-            s.omgsWU_ = matlab.System.saveObject(obj.omgsWU_);
-            s.omgsHWHU_ = matlab.System.saveObject(obj.omgsHWHU_);
+            s.omgsE_ = matlab.System.saveObject(obj.omgsE_);
+            s.omgsO_ = matlab.System.saveObject(obj.omgsO_);
         end
         
         function loadObjectImpl(obj,s,wasLocked)
             obj.omgsV0_ = matlab.System.loadObject(s.omgsV0_);
-            obj.omgsWU_ = matlab.System.loadObject(s.omgsWU_);
-            obj.omgsHWHU_ = matlab.System.loadObject(s.omgsHWHU_);
+            obj.omgsE_ = matlab.System.loadObject(s.omgsE_);
+            obj.omgsO_ = matlab.System.loadObject(s.omgsO_);
             loadObjectImpl@saivdr.dictionary.olpprfb.AbstOvsdLpPuFb1dTypeIISystem(obj,s,wasLocked);
         end                
         
@@ -68,15 +68,16 @@ classdef OvsdLpPuFb1dTypeIIVm0System < ...
             nAngsB = floor(nChs/4);
             nMusW = floor(nChs/2);
             nMusHW = ceil(nChs/2);
-            omgsWU = obj.omgsWU_;
-            omgsHWHU = obj.omgsHWHU_;
+            omgsE = obj.omgsE_;
+            omgsO = obj.omgsO_;
             for iParamMtx = uint32(1):obj.nStages-1
+                % TODO: 分かりやすくリファクタリングする
                 % W
-                mtx = step(omgsWU,angles(1:nAngsW,iParamMtx),...
+                mtx = step(omgsE,angles(1:nAngsW,iParamMtx),...
                     mus(1:nMusW,iParamMtx));
                 step(pmMtxSt_,mtx,6*iParamMtx-4);
                 % U
-                mtx = step(omgsWU,angles(nAngsW+1:2*nAngsW,iParamMtx),...
+                mtx = step(omgsE,angles(nAngsW+1:2*nAngsW,iParamMtx),...
                         mus(nMusW+1:2*nMusW,iParamMtx));
                 step(pmMtxSt_,mtx,6*iParamMtx-3);
                 
@@ -84,11 +85,11 @@ classdef OvsdLpPuFb1dTypeIIVm0System < ...
                 step(pmMtxSt_,angles(2*nAngsW+1:2*nAngsW+nAngsB,iParamMtx),6*iParamMtx-2);
                 
                 % HW
-                mtx = step(omgsHWHU,angles(2*nAngsW+nAngsB+1:2*nAngsW+nAngsB+nAngsHW,iParamMtx),...
+                mtx = step(omgsO,angles(2*nAngsW+nAngsB+1:2*nAngsW+nAngsB+nAngsHW,iParamMtx),...
                     mus(2*nMusW+1:2*nMusW+nMusHW,iParamMtx));
                 step(pmMtxSt_,mtx,6*iParamMtx-1);
                 % HU
-                mtx = step(omgsHWHU,angles(2*nAngsW+nAngsB+nAngsHW+1:2*nAngsW+nAngsB+2*nAngsHW,iParamMtx),...
+                mtx = step(omgsO,angles(2*nAngsW+nAngsB+nAngsHW+1:2*nAngsW+nAngsB+2*nAngsHW,iParamMtx),...
                         mus(2*nMusW+nMusHW+1:end,iParamMtx));
                 step(pmMtxSt_,mtx,6*iParamMtx);
                 

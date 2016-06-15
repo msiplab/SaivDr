@@ -98,7 +98,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             lppufb = NsoltFactory.createOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec]);
             E0 = step(lppufb,[],[]);
-            fun = @(x) reshape(flipud(E0.'*x.data(:)),dec,dec);
+            fun = @(x) reshape(flipud(E0'*x.data(:)),dec,dec);
             imgExpctd = blockproc(subCoefs,[dec*dec 1],fun);
             
             % Instantiation of target class
@@ -140,7 +140,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             lppufb = NsoltFactory.createOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec]);
             E0 = step(lppufb,[],[]);
-            fun = @(x) reshape(flipud(E0.'*x.data(:)),dec,dec);
+            fun = @(x) reshape(flipud(E0'*x.data(:)),dec,dec);
             imgExpctd = blockproc(subCoefs,[dec*dec 1],fun);
             
             % Instantiation of target class
@@ -259,7 +259,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
-                'Actual image size is different from the expected one.');
+                'Actual image size is different from the expected onE');
             imgExpctd = imgExpctd(dec+1:end-dec,dec+1:end-dec); % ignore border
             imgActual = imgActual(dec+1:end-dec,dec+1:end-dec); % ignore border
             diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
@@ -555,7 +555,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 end
             end
             E0 = step(NsoltFactory.createOvsdLpPuFb2dSystem(),[],[]);
-            fun = @(x) reshape(flipud(E0.'*x.data(:)),dec,dec);
+            fun = @(x) reshape(flipud(E0'*x.data(:)),dec,dec);
             imgExpctd = blockproc(coefsExpctd,[dec dec],fun);
             
             % Instantiation of target class
@@ -614,7 +614,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             E0 = step(NsoltFactory.createOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec]),[],[]);
-            fun = @(x) reshape(flipud(E0.'*x.data(:)),dec,dec);
+            fun = @(x) reshape(flipud(E0'*x.data(:)),dec,dec);
             imgExpctd = blockproc(coefsExpctd,[dec dec],fun);
             
             % Instantiation of target class
@@ -923,7 +923,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 end
             end
             E0 = step(NsoltFactory.createOvsdLpPuFb2dSystem(),[],[]);
-            fun = @(x) reshape(flipud(E0.'*x.data(:)),dec,dec);
+            fun = @(x) reshape(flipud(E0'*x.data(:)),dec,dec);
             imgExpctd = blockproc(coefsExpctd,[dec dec],fun);
             
             % Instantiation of target class
@@ -986,7 +986,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 NsoltFactory.createOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec]),...
                 [],[]);
-            fun = @(x) reshape(flipud(E0.'*x.data(:)),dec,dec);
+            fun = @(x) reshape(flipud(E0'*x.data(:)),dec,dec);
             imgExpctd = blockproc(coefsExpctd,[dec dec],fun);
             
             % Instantiation of target class
@@ -1296,7 +1296,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             E0 = step(...
                 NsoltFactory.createOvsdLpPuFb2dSystem(),...
                 [],[]);
-            fun = @(x) reshape(flipud(E0.'*x.data(:)),dec,dec);
+            fun = @(x) reshape(flipud(E0'*x.data(:)),dec,dec);
             imgExpctd = blockproc(coefsExpctd,[dec dec],fun);
             
             % Instantiation of target class
@@ -1356,7 +1356,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             E0 = step(...
                 NsoltFactory.createOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec]),[],[]);
-            fun = @(x) reshape(flipud(E0.'*x.data(:)),dec,dec);
+            fun = @(x) reshape(flipud(E0'*x.data(:)),dec,dec);
             imgExpctd = blockproc(coefsExpctd,[dec dec],fun);
             
             % Instantiation of target class
@@ -5688,9 +5688,9 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             lppufb = NsoltFactory.createOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec]);
             E0 = step(lppufb,[],[]);
-            %fun = @(x) reshape(flipud(E0.'*x.data(:)),dec,dec);
+            %fun = @(x) reshape(flipud(E0'*x.data(:)),dec,dec);
             %imgExpctd = blockproc(subCoefs,[dec*dec 1],fun);
-            fun = @(x) reshape(flipud(E0.'*x.data(:)),dec,dec);
+            fun = @(x) reshape(flipud(E0'*x.data(:)),dec,dec);
             imgExpctd = blockproc(subCoefs,[dec*dec 1],fun);
             
             % Instantiation of target class
@@ -5732,7 +5732,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             lppufb = NsoltFactory.createOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec]);
             E0 = step(lppufb,[],[]);
-            fun = @(x) reshape(flipud(E0.'*x.data(:)),dec,dec);
+            fun = @(x) reshape(flipud(E0'*x.data(:)),dec,dec);
             imgExpctd = blockproc(subCoefs,[dec*dec 1],fun);
             
             % Instantiation of target class
@@ -5782,7 +5782,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             E = step(lppufb,[],[]);
             
             % Expected values
-            fun = @(x) reshape(flipud(E.'*x.data(:)),dec,dec);
+            fun = @(x) reshape(flipud(E'*x.data(:)),dec,dec);
             imgExpctd = blockproc(subCoefs,[nChs 1],fun);
             
             % Instantiation of target class
@@ -5832,7 +5832,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             E = step(lppufb,[],[]);
             
             % Expected values
-            fun = @(x) reshape(flipud(E.'*x.data(:)),dec,dec);
+            fun = @(x) reshape(flipud(E'*x.data(:)),dec,dec);
             imgExpctd = blockproc(subCoefs,[nChs 1],fun);
             
             % Instantiation of target class
@@ -6214,7 +6214,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             E0 = step(NsoltFactory.createOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec]),[],[]);
-            fun = @(x) reshape(flipud(E0.'*x.data(:)),dec,dec);
+            fun = @(x) reshape(flipud(E0'*x.data(:)),dec,dec);
             imgExpctd = blockproc(coefsExpctd,...
                 [dec dec],fun);
             
@@ -6274,7 +6274,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             E0 = step(NsoltFactory.createOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec]),[],[]);
-            fun = @(x) reshape(flipud(E0.'*x.data(:)),dec,dec);
+            fun = @(x) reshape(flipud(E0'*x.data(:)),dec,dec);
             imgExpctd = blockproc(coefsExpctd,...
                 [dec dec],fun);
             
@@ -6592,7 +6592,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             E0 = step(NsoltFactory.createOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec]),[],[]);
-            fun = @(x) reshape(flipud(E0.'*x.data(:)),dec,dec);
+            fun = @(x) reshape(flipud(E0'*x.data(:)),dec,dec);
             imgExpctd = blockproc(coefsExpctd,...
                 [dec dec],fun);
             
@@ -6652,7 +6652,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             E0 = step(NsoltFactory.createOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec]),[],[]);
-            fun = @(x) reshape(flipud(E0.'*x.data(:)),dec,dec);
+            fun = @(x) reshape(flipud(E0'*x.data(:)),dec,dec);
             imgExpctd = blockproc(coefsExpctd,...
                 [dec dec],fun);
             
@@ -6971,7 +6971,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             E0 = step(NsoltFactory.createOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec]),[],[]);
-            fun = @(x) reshape(flipud(E0.'*x.data(:)),dec,dec);
+            fun = @(x) reshape(flipud(E0'*x.data(:)),dec,dec);
             imgExpctd = blockproc(coefsExpctd,...
                 [dec dec],fun);
             
@@ -7031,7 +7031,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             E0 = step(NsoltFactory.createOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec]),[],[]);
-            fun = @(x) reshape(flipud(E0.'*x.data(:)),dec,dec);
+            fun = @(x) reshape(flipud(E0'*x.data(:)),dec,dec);
             imgExpctd = blockproc(coefsExpctd,...
                 [dec dec],fun);
             
@@ -11214,7 +11214,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             E = step(lppufb,[],[]);
             
             % Expected values
-            fun = @(x) reshape(flipud(E.'*x.data(:)),decch(1),decch(2));
+            fun = @(x) reshape(flipud(E'*x.data(:)),decch(1),decch(2));
             imgExpctd = blockproc(subCoefs,[nChs 1],fun);
             
             % Instantiation of target class
@@ -11528,7 +11528,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %             
 %             
 %             % Expected values
-%             fun = @(x) reshape(flipud(E.'*x.data(:)),decch(1),decch(2));
+%             fun = @(x) reshape(flipud(E'*x.data(:)),decch(1),decch(2));
 %             imgExpctd = blockproc(subCoefs,[nChs 1],fun);
 %             
 %             % Instantiation of target class
@@ -12304,7 +12304,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %             E = step(lppufb,[],[]);
 %             
 %             % Expected values
-%             fun = @(x) reshape(flipud(E.'*x.data(:)),decch(1),decch(2));
+%             fun = @(x) reshape(flipud(E'*x.data(:)),decch(1),decch(2));
 %             imgExpctd = blockproc(subCoefs,[nChs 1],fun);
 %             
 %             % Instantiation of target class
@@ -12613,7 +12613,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %             E = step(lppufb,[],[]);
 %             
 %             % Expected values
-%             fun = @(x) reshape(flipud(E.'*x.data(:)),decch(1),decch(2));
+%             fun = @(x) reshape(flipud(E'*x.data(:)),decch(1),decch(2));
 %             imgExpctd = blockproc(subCoefs,[nChs 1],fun);
 %             
 %             % Instantiation of target class

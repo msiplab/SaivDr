@@ -108,6 +108,7 @@ classdef AbstOvsdLpPuFb1dTypeIISystem < ...
                 obj.NumberOfChannels = 2*floor(nHalfDecs)+1;
             elseif isvector(obj.NumberOfChannels)
                 obj.NumberOfChannels = sum(obj.NumberOfChannels);
+                % TODO: —áŠOˆ—‚ð³‚µ‚­ŽÀ‘•‚·‚é
                 if mod(obj.NumberOfChannels,2) == 0
                     id = 'SaivDr:IllegalArgumentException';
                     msg = '#Channels must be odd.';
@@ -223,24 +224,24 @@ classdef AbstOvsdLpPuFb1dTypeIISystem < ...
             if ord > 0
                 nShift = int32(dec);
                 for iOrd = 1:uint32(double(ord)/2)
-                    W = step(pmMtxSt_,[],iParamMtx);
-                    U = step(pmMtxSt_,[],iParamMtx+1);
+                    WE = step(pmMtxSt_,[],iParamMtx);
+                    UE = step(pmMtxSt_,[],iParamMtx+1);
                     angsB1 = step(pmMtxSt_,[],iParamMtx+2);
-                    hW = step(pmMtxSt_,[],iParamMtx+3);
-                    hU = step(pmMtxSt_,[],iParamMtx+4);
+                    WO = step(pmMtxSt_,[],iParamMtx+3);
+                    UO = step(pmMtxSt_,[],iParamMtx+4);
                     angsB2 = step(pmMtxSt_,[],iParamMtx+5);
                     if mexFlag_
-                        E = mexFcn_(E, W, U, angsB1, hW, hU, angsB2, floor(nChs/2), nShift);
+                        E = mexFcn_(E, WE, UE, angsB1, WO, UO, angsB2, floor(nChs/2), nShift);
                     else
                         import saivdr.dictionary.nsoltx.mexsrcs.Order2BuildingBlockTypeII
                         hObb = Order2BuildingBlockTypeII();
-                        E = step(hObb, E, W, U, angsB1, hW, hU, angsB2, floor(nChs/2), nShift);
+                        E = step(hObb, E, WE, UE, angsB1, WO, UO, angsB2, floor(nChs/2), nShift);
                     end
                     iParamMtx = iParamMtx+6;
                 end
                 len = dec*(ord+1);
             end
-            E = diag(obj.Symmetry)*E;
+            %E = diag(obj.Symmetry)*E;
             value = E.';
         end
 

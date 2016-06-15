@@ -61,11 +61,11 @@ classdef OvsdLpPuFb1dTypeIIVm1System < ...
             import saivdr.dictionary.nsoltx.ChannelGroup
             nChs = obj.NumberOfChannels;
             nSts = obj.nStages;
-            pmMtxSt_ = obj.ParameterMatrixSet;
+            pmMtxSet_ = obj.ParameterMatrixSet;
             % V0
             mtx = step(obj.omgsV0_,obj.Angles(1:nChs*(nChs-1)/2),...
                 obj.Mus(1:nChs));
-            step(pmMtxSt_,mtx,uint32(1));
+            step(pmMtxSet_,mtx,uint32(1));
             
             angles = reshape(obj.Angles(nChs*(nChs-1)/2+1:end),[],obj.nStages-1);
             mus    = reshape(obj.Mus(nChs+1:end),[],obj.nStages-1);            
@@ -80,31 +80,30 @@ classdef OvsdLpPuFb1dTypeIIVm1System < ...
             % TODO: CNSOLT‚É‚¨‚¯‚éNo-DC-Leakage condition‚ð³‚µ‚­’è‹`‚·‚éD
             % No-DC-Leakage condition
             %W_ = eye(ceil(nChs/2)); 
-            pmMtxSet = obj.ParameterMatrixSet;
             for iParamMtx = uint32(1):nSts-1
                 % W
                 mtx = step(omgsWU,angles(1:nAngsW,iParamMtx),...
                     mus(1:nMusW,iParamMtx));
-                step(pmMtxSt_,mtx,6*iParamMtx-4);
+                step(pmMtxSet_,mtx,6*iParamMtx-4);
                 % U
                 mtx = step(omgsWU,angles(nAngsW+1:2*nAngsW,iParamMtx),...
                         mus(nMusW+1:2*nMusW,iParamMtx));
-                step(pmMtxSt_,mtx,6*iParamMtx-3);
+                step(pmMtxSet_,mtx,6*iParamMtx-3);
                 
                 % angsB1
-                step(pmMtxSt_,angles(2*nAngsW+1:2*nAngsW+nAngsB,iParamMtx),6*iParamMtx-2);
+                step(pmMtxSet_,angles(2*nAngsW+1:2*nAngsW+nAngsB,iParamMtx),6*iParamMtx-2);
                 
                 % HW
                 mtx = step(omgsHWHU,angles(2*nAngsW+nAngsB+1:2*nAngsW+nAngsB+nAngsHW,iParamMtx),...
                     mus(2*nMusW+1:2*nMusW+nMusHW,iParamMtx));
-                step(pmMtxSt_,mtx,6*iParamMtx-1);
+                step(pmMtxSet_,mtx,6*iParamMtx-1);
                 % HU
                 mtx = step(omgsHWHU,angles(2*nAngsW+nAngsB+nAngsHW+1:2*nAngsW+nAngsB+2*nAngsHW,iParamMtx),...
                         mus(2*nMusW+nMusHW+1:end,iParamMtx));
-                step(pmMtxSt_,mtx,6*iParamMtx);
+                step(pmMtxSet_,mtx,6*iParamMtx);
                 
                 % angsB2
-                step(pmMtxSt_,angles(2*nAngsW+1:2*nAngsW+nAngsB,iParamMtx),6*iParamMtx+1);
+                step(pmMtxSet_,angles(2*nAngsW+1:2*nAngsW+nAngsB,iParamMtx),6*iParamMtx+1);
 
                 %W_ = step(pmMtxSet,[],2*iParamMtx-1)*W_;
             end

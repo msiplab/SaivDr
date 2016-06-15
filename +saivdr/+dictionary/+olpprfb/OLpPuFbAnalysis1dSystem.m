@@ -227,7 +227,7 @@ classdef OLpPuFbAnalysis1dSystem < ...
             %
             nChs = obj.NumberOfSymmetricChannels ...
                 + obj.NumberOfAntisymmetricChannels;
-            ps = obj.NumberOfSymmetricChannels;
+            %ps = obj.NumberOfSymmetricChannels;
             nBlks_ = obj.nBlks;
             dec_  = obj.decimationFactor;
             %
@@ -270,7 +270,6 @@ classdef OLpPuFbAnalysis1dSystem < ...
         
         %TODO:“¯ˆê‚ÌŠÖ”‚ªAbstOLpPuFb1dSystem‚Å‚à’è‹`‚³‚ê‚Ä‚¢‚é‚Ì‚Åˆê‰ÓŠ‚ÉW–ñ‚·‚é
         function value = hsdftmtx_(~, nDec) %Hermitian-Symmetric DFT matrix
-            %w = exp(-2*pi*1i/nDec);
             value = complex(zeros(nDec));
             for u = 0:nDec-1
                 for x =0:nDec-1

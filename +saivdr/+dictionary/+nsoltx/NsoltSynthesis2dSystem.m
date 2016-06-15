@@ -88,8 +88,8 @@ classdef NsoltSynthesis2dSystem  < ...
             obj.decimationFactor = get(obj.LpPuFb2d,'DecimationFactor');
             obj.polyPhaseOrder   = get(obj.LpPuFb2d,'PolyPhaseOrder');
             nch = get(obj.LpPuFb2d,'NumberOfChannels');
-            obj.NumberOfSymmetricChannels = nch(1);
-            obj.NumberOfAntisymmetricChannels = nch(2);
+            obj.NumberOfSymmetricChannels = ceil(nch/2);
+            obj.NumberOfAntisymmetricChannels = floor(nch/2);
             %
             obj.FrameBound = 1;            
         end
@@ -133,6 +133,9 @@ classdef NsoltSynthesis2dSystem  < ...
                 obj.NumberOfAntisymmetricChannels ];
             
             % Prepare MEX function
+            %TODO: MEX‰»‚É‘Î‰ž‚µ‚½‚ç‰º‚Ì2s‚ðíœ‚·‚é
+            obj.isMexFcn = 1;
+            mexFcn = [];
             if ~obj.isMexFcn
                 import saivdr.dictionary.nsoltx.mexsrcs.fcn_autobuild_atomcnc2d
                 [mexFcn, obj.isMexFcn] = ...
@@ -199,7 +202,7 @@ classdef NsoltSynthesis2dSystem  < ...
         function subImg = subSynthesize_(obj,arrayCoefs,pmCoefs)
             import saivdr.dictionary.utility.Direction
             %
-            ps = obj.NumberOfSymmetricChannels;
+            %ps = obj.NumberOfSymmetricChannels;
             nRows_ = obj.nRows;
             nCols_ = obj.nCols;
             decY_ = obj.decimationFactor(Direction.VERTICAL);
@@ -225,63 +228,77 @@ classdef NsoltSynthesis2dSystem  < ...
                 coefs = zeros(nDec,nRows_*nCols_);
                 coefs(1,:) = arrayCoefs(1,:);
                 subImg = col2im(coefs,blockSize,scale,'distinct');
-            elseif decY_ == 2 && decX_ == 2
-                subImg = zeros(2*subScale);
-                subCoef1 = arrayCoefs(1,:);
-                subCoef2 = arrayCoefs(2,:);
-                subCoef3 = arrayCoefs(ps+1,:);
-                subCoef4 = arrayCoefs(ps+2,:);
-                %
-                subImg(1:2:end,1:2:end) = ...
-                    reshape(subCoef1+subCoef2+subCoef3+subCoef4,subScale);
-                subImg(2:2:end,1:2:end)  = ...
-                    reshape(subCoef1-subCoef2-subCoef3+subCoef4,subScale);
-                subImg(1:2:end,2:2:end)  = ...
-                    reshape(subCoef1-subCoef2+subCoef3-subCoef4,subScale);
-                subImg(2:2:end,2:2:end)  = ...
-                    reshape(subCoef1+subCoef2-subCoef3-subCoef4,subScale);
-                %
-                subImg = subImg/2;
+%             elseif decY_ == 2 && decX_ == 2
+%                 subImg = zeros(2*subScale);
+%                 subCoef1 = arrayCoefs(1,:);
+%                 subCoef2 = arrayCoefs(2,:);
+%                 subCoef3 = arrayCoefs(ps+1,:);
+%                 subCoef4 = arrayCoefs(ps+2,:);
+%                 %
+%                 subImg(1:2:end,1:2:end) = ...
+%                     reshape(subCoef1+subCoef2+subCoef3+subCoef4,subScale);
+%                 subImg(2:2:end,1:2:end)  = ...
+%                     reshape(subCoef1-subCoef2-subCoef3+subCoef4,subScale);
+%                 subImg(1:2:end,2:2:end)  = ...
+%                     reshape(subCoef1-subCoef2+subCoef3-subCoef4,subScale);
+%                 subImg(2:2:end,2:2:end)  = ...
+%                     reshape(subCoef1+subCoef2-subCoef3-subCoef4,subScale);
+%                 %
+%                 subImg = subImg/2;
             else 
-                mc = ceil(decX_*decY_/2);
-                mf = floor(decX_*decY_/2);
-                coefs = zeros(nDec,size(arrayCoefs,2));
-                coefs(1:mc,:) = arrayCoefs(1:mc,:);
-                coefs(mc+1:end,:) = arrayCoefs(ps+1:ps+mf,:);
+%                 mc = ceil(decX_*decY_/2);
+%                 mf = floor(decX_*decY_/2);
+                %coefs = zeros(nDec,size(arrayCoefs,2));
+                coefs = arrayCoefs(1:nDec,:);
                 scale = double(subScale) .* obj.decimationFactor;
                 dctCoefs = col2im(coefs,blockSize,scale,'distinct');
-                dctCoefs = blockproc(dctCoefs,blockSize,...
-                    @obj.permuteIdctCoefs_);
-                subImg = blockproc(dctCoefs,blockSize,...
-                    @obj.idct2_);
+%                 dctCoefs = blockproc(dctCoefs,blockSize,...
+%                     @obj.permuteIdctCoefs_);
+%                 subImg = blockproc(dctCoefs,blockSize,...
+%                     @obj.idct2_);
+                subImg = blockproc(dctCoefs,blockSize,@obj.conjihsdft2_);
             end
         end
         
     end
     
     methods (Access = private, Static = true)
+        %TODO:“¯ˆê‚ÌŠÖ”‚ªAbstOLpPuFb1dSystem‚Å‚à’è‹`‚³‚ê‚Ä‚¢‚é‚Ì‚Åˆê‰ÓŠ‚ÉW–ñ‚·‚é
+        
+        function value = conjihsdft2_(x) %conjgate-inverse hsdft
+            nDec = size(x.data,1);
+            mtx = complex(zeros(nDec));
+            for u = 0:nDec-1
+                for v =0:nDec-1
+                    n = rem(u*(2*v+1),2*nDec);
+                    mtx(u+1,v+1) = exp(-1i*pi*n/nDec)/sqrt(nDec);
+                end
+            end
+            cmtx = conj(mtx);
+            value = (cmtx'*(cmtx'*x.data.').');
+        end
         
         function value = idct2_(x)
             value = idct2(x.data);
         end
         
-        function value = permuteIdctCoefs_(x)
-            coefs = x.data;
-            decY_ = x.blockSize(1);
-            decX_ = x.blockSize(2);
-            nQDecsee = ceil(decY_/2)*ceil(decX_/2);
-            nQDecsoo = floor(decY_/2)*floor(decX_/2);
-            nQDecsoe = floor(decY_/2)*ceil(decX_/2);
-            cee = coefs(         1:  nQDecsee);
-            coo = coefs(nQDecsee+1:nQDecsee+nQDecsoo);
-            coe = coefs(nQDecsee+nQDecsoo+1:nQDecsee+nQDecsoo+nQDecsoe);
-            ceo = coefs(nQDecsee+nQDecsoo+nQDecsoe+1:end);
-            value = zeros(decY_,decX_);
-            value(1:2:decY_,1:2:decX_) = reshape(cee,ceil(decY_/2),ceil(decX_/2));
-            value(2:2:decY_,2:2:decX_) = reshape(coo,floor(decY_/2),floor(decX_/2));
-            value(2:2:decY_,1:2:decX_) = reshape(coe,floor(decY_/2),ceil(decX_/2));
-            value(1:2:decY_,2:2:decX_) = reshape(ceo,ceil(decY_/2),floor(decX_/2));
-        end
+%         function value = permuteIdctCoefs_(x)
+%             coefs = x.data;
+%             decY_ = x.blockSize(1);
+%             decX_ = x.blockSize(2);
+%             nQDecsee = ceil(decY_/2)*ceil(decX_/2);
+%             nQDecsoo = floor(decY_/2)*floor(decX_/2);
+%             nQDecsoe = floor(decY_/2)*ceil(decX_/2);
+%             cee = coefs(         1:  nQDecsee);
+%             coo = coefs(nQDecsee+1:nQDecsee+nQDecsoo);
+%             coe = coefs(nQDecsee+nQDecsoo+1:nQDecsee+nQDecsoo+nQDecsoe);
+%             ceo = coefs(nQDecsee+nQDecsoo+nQDecsoe+1:end);
+%             value = zeros(decY_,decX_);
+%             value(1:2:decY_,1:2:decX_) = reshape(cee,ceil(decY_/2),ceil(decX_/2));
+%             value(2:2:decY_,2:2:decX_) = reshape(coo,floor(decY_/2),floor(decX_/2));
+%             value(2:2:decY_,1:2:decX_) = reshape(coe,floor(decY_/2),ceil(decX_/2));
+%             value(1:2:decY_,2:2:decX_) = reshape(ceo,ceil(decY_/2),floor(decX_/2));
+%         end
         
     end
     

@@ -407,7 +407,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
         end
 
         % Test
-        function testStepDec22Ch4Ord00Level2eriodicExt(testCase)
+        function testStepDec22Ch4Ord00Level2PeriodicExt(testCase)
             
             dec = 2;
             nChs = [ 2 2 ];
@@ -963,7 +963,6 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             
         end
         
-      
         % Test
         function testStepDec22Ch22Ord02Level1PeridicExt(testCase)
             
@@ -1021,7 +1020,6 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             
         end
 
-      
         % Test
         function testStepDec22Ch22Ord20Level1PeridicExt(testCase)
             
@@ -1079,7 +1077,6 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             
         end
         
-
         % Test
         function testStepDec22Ch4Ord22Level2eriodicExt(testCase)
             

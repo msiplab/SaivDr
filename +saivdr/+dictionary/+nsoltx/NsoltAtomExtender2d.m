@@ -173,7 +173,7 @@ classdef NsoltAtomExtender2d <  ...
             else
                 arrayCoefs(1:hLen,:) = Wx1*arrayCoefs(1:hLen,:);
                 for iCol = 1:nCols_
-                    if iCol == 1 %&& ~isPeriodicExt
+                    if iCol == nCols_ %&& ~isPeriodicExt
                         U = -I;
                     else
                         U = Ux1;
@@ -223,7 +223,7 @@ classdef NsoltAtomExtender2d <  ...
             else
                 arrayCoefs(1:hLen,:) = Wx*arrayCoefs(1:hLen,:);
                 for iCol = 1:nCols_
-                    if iCol == 1
+                    if iCol == nCols_
                         U = -I;
                     else
                         U = Ux;
@@ -251,7 +251,6 @@ classdef NsoltAtomExtender2d <  ...
         function arrayCoefs = leftShiftLowerCoefs_(obj,arrayCoefs)
             hLenMn = min([ obj.NumberOfSymmetricChannels
                 obj.NumberOfAntisymmetricChannels]);
-            %TODO: nRows_の値の設定方法を確認する
             nRows_ = obj.nRows;
             %
             lowerCoefsPost = arrayCoefs(hLenMn+1:end,1:nRows_);
