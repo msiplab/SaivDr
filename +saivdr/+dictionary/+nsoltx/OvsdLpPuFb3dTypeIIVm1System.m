@@ -54,7 +54,7 @@ classdef OvsdLpPuFb3dTypeIIVm1System < ...
         end        
         
         function updateParameterMatrixSet_(obj)
-            import saivdr.dictionary.nsolt.ChannelGroup
+            import saivdr.dictionary.nsoltx.ChannelGroup
             nChs = obj.NumberOfChannels;
             angles = obj.Angles;
             mus    = obj.Mus;
