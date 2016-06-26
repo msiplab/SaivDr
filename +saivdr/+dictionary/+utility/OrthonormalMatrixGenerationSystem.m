@@ -1,12 +1,9 @@
 classdef OrthonormalMatrixGenerationSystem < matlab.System %#codegen
     %ORTHONORMALMATRIXGENERATIONSYSTEM Orthonormal matrix generator
     %
-    % SVN identifier:
-    % $Id: OrthonormalMatrixGenerationSystem.m 866 2015-11-24 04:29:42Z sho $
-    %
     % Requirements: MATLAB R2013b
     %
-    % Copyright (c) 2014-2015, Shogo MURAMATSU
+    % Copyright (c) 2014-2016, Shogo MURAMATSU
     %
     % All rights reserved.
     %

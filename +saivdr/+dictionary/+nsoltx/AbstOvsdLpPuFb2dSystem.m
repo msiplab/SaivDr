@@ -1,9 +1,6 @@
 classdef AbstOvsdLpPuFb2dSystem < matlab.System %#codegen
     %ABSTOVSDLPPUFB2DSYSTEM Abstract class 2-D OLPPUFB
     %
-    % SVN identifier:
-    % $Id: AbstOvsdLpPuFb2dSystem.m 866 2015-11-24 04:29:42Z sho $
-    %
     % Requirements: MATLAB R2013b
     %
     % Copyright (c) 2014-2015, Shogo MURAMATSU
@@ -88,11 +85,16 @@ classdef AbstOvsdLpPuFb2dSystem < matlab.System %#codegen
         end
         
         function loadObjectImpl(obj,s,wasLocked)
-            import saivdr.dictionary.utility.ParameterMatrixSet
+            import saivdr.dictionary.utility.ParameterMatrixContainer 
             obj.mexFlag = s.mexFlag;            
             obj.Coefficients = s.Coefficients;
             loadObjectImpl@matlab.System(obj,s,wasLocked);
             %
+            if strcmp(s.ParameterMatrixSet.ClassNameForLoadTimeEval,...
+                    'saivdr.dictionary.utility.ParameterMatrixSet')
+                s.ParameterMatrixSet.ClassNameForLoadTimeEval = ...
+                    'saivdr.dictionary.utility.ParameterMatrixContainer';
+            end
             obj.ParameterMatrixSet = matlab.System.loadObject(s.ParameterMatrixSet);
         end        
         

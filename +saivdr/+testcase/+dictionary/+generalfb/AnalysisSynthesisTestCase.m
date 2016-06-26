@@ -1,12 +1,9 @@
 classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
     %ANALYSISSYNTHESISTESTCASE Test case for AnalysisSynthesis
     %
-    % SVN identifier:
-    % $Id: AnalysisSynthesisTestCase.m 868 2015-11-25 02:33:11Z sho $
-    %
     % Requirements: MATLAB R2013b
     %
-    % Copyright (c) 2015, Shogo MURAMATSU
+    % Copyright (c) 2015-2016, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -2180,7 +2177,7 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
                 'AbsTol',1e-10,sprintf('diff = %g',diff));
             testCase.verifySize(recImg,[ height width depth ]);
             diff = max(abs(recImg(:)-srcImg(:))./abs(srcImg(:)));
-            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-8,...
+            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-7,...
                 sprintf('diff = %g',diff));
         end
         
@@ -2440,7 +2437,7 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
                 'AbsTol',1e-10,sprintf('diff = %g',diff));
             testCase.verifySize(recImg,[ height width ]);
             diff = max(abs(recImg(:)-srcImg(:))./abs(srcImg(:)));
-            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-10,...
+            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-9,...
                 sprintf('diff = %g',diff));
         end
                 

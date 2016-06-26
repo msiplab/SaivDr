@@ -6,12 +6,9 @@ function testRes = mytest(testCaseStr,isProfiling)
 %
 % http://www.mathworks.co.jp/jp/help/matlab/matlab-unit-test-framework.html
 %
-% SVN identifier:
-% $Id: mytest.m 868 2015-11-25 02:33:11Z sho $
-%
 % Requirements: MATLAB R2013a
 %
-% Copyright (c) 2014-2015, Shogo MURAMATSU
+% Copyright (c) 2014-2016, Shogo MURAMATSU
 %
 % All rights reserved.
 %

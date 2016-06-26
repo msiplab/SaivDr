@@ -1,12 +1,9 @@
-classdef ParameterMatrixSet < matlab.System %#codegen
-    %PARAMETERMATRIXSET Parameter matrix set
-    %
-    % SVN identifier:
-    % $Id: ParameterMatrixSet.m 683 2015-05-29 08:22:13Z sho $
+classdef ParameterMatrixContainer < matlab.System %#codegen
+    %PARAMETERMATRIXCONTAINER Parameter matrix set
     %
     % Requirements: MATLAB R2013b
     %
-    % Copyright (c) 2014-2015, Shogo MURAMATSU
+    % Copyright (c) 2014-2016, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -26,17 +23,17 @@ classdef ParameterMatrixSet < matlab.System %#codegen
         Coefficients
     end
     
-    properties (GetAccess = public, SetAccess = private, PositiveInteger)
+    properties (GetAccess = public, SetAccess = protected, PositiveInteger)
         NumberOfParameterMatrices
     end
-    
-    properties (Access = private)
+
+    properties (Access = protected)
         indexSizeTable
     end
 
     methods
              
-        function obj = ParameterMatrixSet(varargin)
+        function obj = ParameterMatrixContainer(varargin)
             setProperties(obj,nargin,varargin{:})
             mtxSzTab_ = obj.MatrixSizeTable;
             obj.Coefficients = zeros(sum(prod(mtxSzTab_,2)),1);

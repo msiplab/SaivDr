@@ -1,12 +1,9 @@
 classdef AprxErrorWithSparseRepTestCase < matlab.unittest.TestCase
     %APRXERRORWITHSPARSEREPTESTCASE Test case for AprxErrorWithSparseRep
     %
-    % SVN identifier:
-    % $Id: AprxErrorWithSparseRepTestCase.m 866 2015-11-24 04:29:42Z sho $
-    %
     % Requirements: MATLAB R2013b
     %
-    % Copyright (c) 2014-2015, Shogo MURAMATSU
+    % Copyright (c) 2014-2016, Shogo MURAMATSU
     %
     % All rights reserved.
     %
