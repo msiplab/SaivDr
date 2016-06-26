@@ -44,7 +44,7 @@ else
 end
 %
 if isConversion
-    warning('Upgrading ...')
+    warning('Temporary upgrading ...')
     dec = get(inputFb,'DecimationFactor');
     ord = get(inputFb,'PolyPhaseOrder');
     omd = get(inputFb,'OutputMode');
