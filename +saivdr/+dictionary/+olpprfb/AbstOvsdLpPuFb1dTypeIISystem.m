@@ -2,12 +2,9 @@ classdef AbstOvsdLpPuFb1dTypeIISystem < ...
         saivdr.dictionary.olpprfb.AbstOvsdLpPuFb1dSystem %#codegen
     %AbstOvsdLpPuFb1dTypeIISystem Abstract class 2-D Type-II OLPPUFB
     %
-    % SVN identifier:
-    % $Id: AbstOvsdLpPuFb1dTypeIISystem.m 653 2015-02-04 05:21:08Z sho $
-    %
     % Requirements: MATLAB R2013b
     %
-    % Copyright (c) 2014, Shogo MURAMATSU
+    % Copyright (c) 2014-2016, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -79,7 +76,7 @@ classdef AbstOvsdLpPuFb1dTypeIISystem < ...
         
         function updateProperties_(obj)
             import saivdr.dictionary.nsoltx.ChannelGroup
-            import saivdr.dictionary.utility.ParameterMatrixSet
+            import saivdr.dictionary.utility.ParameterMatrixContainer
             
             % Check DecimationFactor
             if ~isscalar(obj.DecimationFactor)
@@ -131,7 +128,7 @@ classdef AbstOvsdLpPuFb1dTypeIISystem < ...
                 [ obj.NumberOfChannels(ChannelGroup.UPPER) ;
                 obj.NumberOfChannels(ChannelGroup.LOWER) ],...
                 obj.nStages,2);
-            obj.ParameterMatrixSet = ParameterMatrixSet(...
+            obj.ParameterMatrixSet = ParameterMatrixContainer(...
                 'MatrixSizeTable',paramMtxSizeTab);          
         end
         
@@ -235,7 +232,7 @@ classdef AbstOvsdLpPuFb1dTypeIISystem < ...
                     end
                     iParamMtx = iParamMtx+2;
                 end
-                len = dec*(ord+1);                
+                %len = dec*(ord+1);                
             end
             %
             value = E.';
