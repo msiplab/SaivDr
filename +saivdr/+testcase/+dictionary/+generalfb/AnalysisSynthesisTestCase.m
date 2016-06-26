@@ -2697,7 +2697,7 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
                 'AbsTol',1e-10,sprintf('diff = %g',diff));
             testCase.verifySize(recImg,[ height width depth ]);
             diff = max(abs(recImg(:)-srcImg(:))./abs(srcImg(:)));
-            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-8,...
+            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-7,...
                 sprintf('diff = %g',diff));
         end
         
