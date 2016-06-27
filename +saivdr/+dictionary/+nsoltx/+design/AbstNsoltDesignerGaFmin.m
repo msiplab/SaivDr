@@ -1,9 +1,6 @@
 classdef AbstNsoltDesignerGaFmin < ...
         saivdr.dictionary.nsoltx.design.AbstNsoltDesigner
-    %ABSTNSOLTDESIGNER Abstract class of NSOLT Designer
-    %
-    % SVN identifier:
-    % $Id: AbstNsoltDesignerGaFmin.m 868 2015-11-25 02:33:11Z sho $
+    %ABSTNSOLTDESIGNERGAFMIN Abstract class of NSOLT Designer
     %
     % Requirements: MATLAB R2013b
     %
