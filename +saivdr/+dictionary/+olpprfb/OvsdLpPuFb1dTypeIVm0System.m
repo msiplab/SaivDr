@@ -2,12 +2,9 @@ classdef OvsdLpPuFb1dTypeIVm0System < ...
         saivdr.dictionary.olpprfb.AbstOvsdLpPuFb1dTypeISystem %#codegen
     %OVSDLPPUFBMDTYPEIVM0SYSTEM 2-D Type-I Oversapled LPPUFB without VM
     %
-    % SVN identifier:
-    % $Id: OvsdLpPuFb1dTypeIVm0System.m 653 2015-02-04 05:21:08Z sho $
-    %
     % Requirements: MATLAB R2013b
     %
-    % Copyright (c) 2014, Shogo MURAMATSU
+    % Copyright (c) 2014-2016, Shogo MURAMATSU
     %
     % All rights reserved.
     %

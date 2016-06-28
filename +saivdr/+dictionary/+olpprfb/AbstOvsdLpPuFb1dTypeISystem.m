@@ -1,13 +1,10 @@
 classdef AbstOvsdLpPuFb1dTypeISystem < ...
         saivdr.dictionary.olpprfb.AbstOvsdLpPuFb1dSystem %#codegen
     %ABSTOVSDLPPUFB1DTYPEISYSTEM Abstract class 2-D Type-I OLPPUFB 
-    % 
-    % SVN identifier:
-    % $Id: AbstOvsdLpPuFb1dTypeISystem.m 690 2015-06-09 09:37:49Z sho $
     %
     % Requirements: MATLAB R2013b
     %
-    % Copyright (c) 2014, Shogo MURAMATSU
+    % Copyright (c) 2014-2016, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -46,16 +43,21 @@ classdef AbstOvsdLpPuFb1dTypeISystem < ...
         
         function s = saveObjectImpl(obj)
             s = saveObjectImpl@saivdr.dictionary.olpprfb.AbstOvsdLpPuFb1dSystem(obj);
-            s.nStages = obj.nStages;
+            s.nStages  = obj.nStages;
             s.matrixE0 = obj.matrixE0;
             s.mexFcn   = obj.mexFcn;
         end
         
         function loadObjectImpl(obj,s,wasLocked)
             obj.mexFcn   = s.mexFcn;
-            obj.nStages = s.nStages;
+            obj.nStages  = s.nStages;
             obj.matrixE0 = s.matrixE0;
             loadObjectImpl@saivdr.dictionary.olpprfb.AbstOvsdLpPuFb1dSystem(obj,s,wasLocked);
+            % Check if exist mexFcn
+%             if exist(char(obj.mexFcn),'file') ~= 3
+%                 obj.mexFcn  = [];
+%                 obj.mexFlag = false;
+%             end            
         end
         
         function resetImpl(obj)

@@ -53,6 +53,11 @@ classdef AbstOvsdLpPuFb1dTypeIISystem < ...
             obj.nStages  = s.nStages;
             obj.matrixE0 = s.matrixE0;
             loadObjectImpl@saivdr.dictionary.olpprfb.AbstOvsdLpPuFb1dSystem(obj,s,wasLocked);
+            % Check if exist mexFcn
+%             if exist(char(obj.mexFcn),'file') ~= 3
+%                 obj.mexFcn  = [];
+%                 obj.mexFlag = false;
+%             end
         end
         
         function resetImpl(obj)
