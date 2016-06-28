@@ -44,10 +44,14 @@ classdef OrthonormalMatrixGenerationSystem < matlab.System %#codegen
         end
         
         function loadObjectImpl(obj,s,wasLocked)
-            obj.PartialDifference = s.PartialDifference;            
+            if isfield(s,'PartialDifference')
+                obj.PartialDifference = s.PartialDifference;
+            else
+                obj.PartialDifference = 'off';
+            end
             obj.NumberOfDimensions = s.NumberOfDimensions;
             loadObjectImpl@matlab.System(obj,s,wasLocked);
-        end         
+        end
         
         function setupImpl(obj,angles,~,~)
             if isempty(obj.NumberOfDimensions)
