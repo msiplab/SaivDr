@@ -40,9 +40,11 @@ classdef OrthonormalMatrixGenerationSystem < matlab.System %#codegen
         function s = saveObjectImpl(obj)
             s = saveObjectImpl@matlab.System(obj);
             s.NumberOfDimensions = obj.NumberOfDimensions;
+            s.PartialDifference = obj.PartialDifference;
         end
         
         function loadObjectImpl(obj,s,wasLocked)
+            obj.PartialDifference = s.PartialDifference;            
             obj.NumberOfDimensions = s.NumberOfDimensions;
             loadObjectImpl@matlab.System(obj,s,wasLocked);
         end         
