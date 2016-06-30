@@ -161,13 +161,17 @@ classdef NsGenLotFactoryTestCase < matlab.unittest.TestCase
             
             % Change angles
             angles = randn(size(get(cloneLpPuFb,'Angles')));
+            set(cloneLpPuFb,'Angles',angles);            
+            
+            % Original values
+            coefOriginal = step(testCase.obj,[],[]);            
             
             % Actual values
-            coefActual = step(cloneLpPuFb,angles,[]);
+            coefActual = step(cloneLpPuFb,[],[]);
             
             % Evaluation
             import matlab.unittest.constraints.IsGreaterThan
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
+            coefDist = max(abs(coefOriginal(:)-coefActual(:))./abs(coefOriginal(:)));
             testCase.verifyThat(coefDist,IsGreaterThan(1e-15),...
                 sprintf('%g',coefDist));
             
@@ -204,14 +208,18 @@ classdef NsGenLotFactoryTestCase < matlab.unittest.TestCase
             
             % Change angles
             angles = randn(size(get(cloneLpPuFb,'Angles')));
+            set(cloneLpPuFb,'Angles',angles);
+            
+            % Original values
+            coefOriginal = step(testCase.obj,[],[]);                        
             
             % Actual values
-            coefActual = step(cloneLpPuFb,angles,[]);
+            coefActual = step(cloneLpPuFb,[],[]);
             
             % Evaluation
             import matlab.unittest.constraints.IsGreaterThan
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./...
-                abs(coefExpctd(:)));
+            coefDist = max(abs(coefOriginal(:)-coefActual(:))./...
+                abs(coefOriginal(:)));
             testCase.verifyThat(coefDist,IsGreaterThan(1e-15),...
                 sprintf('%g',coefDist));
             
@@ -248,14 +256,18 @@ classdef NsGenLotFactoryTestCase < matlab.unittest.TestCase
             
             % Change angles
             angles = randn(size(get(cloneLpPuFb,'Angles')));
-                        
+            set(cloneLpPuFb,'Angles',angles);
+            
+            % Original values
+            coefOriginal = step(testCase.obj,[],[]);            
+            
             % Actual values
-            coefActual = step(cloneLpPuFb,angles,[]);
+            coefActual = step(cloneLpPuFb,[],[]);
             
             % Evaluation
             import matlab.unittest.constraints.IsGreaterThan
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./...
-                abs(coefExpctd(:)));
+            coefDist = max(abs(coefOriginal(:)-coefActual(:))./...
+                abs(coefOriginal(:)));
             testCase.verifyThat(coefDist,IsGreaterThan(1e-15),...
                 sprintf('%g',coefDist));
             
@@ -294,14 +306,18 @@ classdef NsGenLotFactoryTestCase < matlab.unittest.TestCase
             
             % Change angles
             angles = randn(size(get(cloneLpPuFb,'Angles')));
+            set(cloneLpPuFb,'Angles',angles);
+            
+            % Original values
+            coefOriginal = step(testCase.obj,[],[]);                        
             
             % Actual values
-            coefActual = step(cloneLpPuFb,angles,[]);
+            coefActual = step(cloneLpPuFb,[],[]);
             
             % Evaluation
             import matlab.unittest.constraints.IsGreaterThan
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./...
-                abs(coefExpctd(:)));
+            coefDist = max(abs(coefOriginal(:)-coefActual(:))./...
+                abs(coefOriginal(:)));
             testCase.verifyThat(coefDist,IsGreaterThan(1e-15),...
                 sprintf('%g',coefDist));
             
