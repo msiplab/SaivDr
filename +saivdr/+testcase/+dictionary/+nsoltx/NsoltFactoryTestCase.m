@@ -1,12 +1,9 @@
 classdef NsoltFactoryTestCase < matlab.unittest.TestCase
     %NSOLTFACTORYTESTCASE Test case for NsoltFactory
     %
-    % SVN identifier:
-    % $Id: NsoltFactoryTestCase.m 683 2015-05-29 08:22:13Z sho $
-    %
     % Requirements: MATLAB R2013b
     %
-    % Copyright (c) 2014-2015, Shogo MURAMATSU
+    % Copyright (c) 2014-2016, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -201,13 +198,16 @@ classdef NsoltFactoryTestCase < matlab.unittest.TestCase
             angles = randn(size(get(cloneObj,'Angles')));
             set(cloneObj,'Angles',angles);
             
+            % Original values
+            coefOriginal= step(testCase.obj,[],[]);
+            
             % Actual values
             coefActual = step(cloneObj,[],[]);
             
             % Evaluation
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
+            coefDist = max(abs(coefOriginal(:)-coefActual(:))./abs(coefOriginal(:)));
             import matlab.unittest.constraints.IsGreaterThan;
-            testCase.verifyThat(norm(coefExpctd(:)-coefActual(:)),IsGreaterThan(1e-15),sprintf('%g',coefDist));
+            testCase.verifyThat(norm(coefOriginal(:)-coefActual(:)),IsGreaterThan(1e-15),sprintf('%g',coefDist));
             
         end
         
@@ -236,14 +236,17 @@ classdef NsoltFactoryTestCase < matlab.unittest.TestCase
             % Change angles
             angles = randn(size(get(cloneObj,'Angles')));
             set(cloneObj,'Angles',angles);
+
+            % Original values
+            coefOriginal= step(testCase.obj,[],[]);            
             
             % Actual values
             coefActual = step(cloneObj,[],[]);
             
             % Evaluation
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
+            coefDist = max(abs(coefOriginal(:)-coefActual(:))./abs(coefOriginal(:)));
             import matlab.unittest.constraints.IsGreaterThan
-            testCase.verifyThat(norm(coefExpctd(:)-coefActual(:)),IsGreaterThan(1e-15),sprintf('%g',coefDist));
+            testCase.verifyThat(norm(coefOriginal(:)-coefActual(:)),IsGreaterThan(1e-15),sprintf('%g',coefDist));
             
         end
         
@@ -323,13 +326,16 @@ classdef NsoltFactoryTestCase < matlab.unittest.TestCase
             angles = randn(size(get(cloneObj,'Angles')));
             set(cloneObj,'Angles',angles);
             
+            % Original values
+            coefOriginal= step(testCase.obj,[],[]);            
+            
             % Actual values
             coefActual = step(cloneObj,[],[]);
             
             % Evaluation
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
+            coefDist = max(abs(coefOriginal(:)-coefActual(:))./abs(coefOriginal(:)));
             import matlab.unittest.constraints.IsGreaterThan;
-            testCase.verifyThat(norm(coefExpctd(:)-coefActual(:)),IsGreaterThan(1e-15),sprintf('%g',coefDist));
+            testCase.verifyThat(norm(coefOriginal(:)-coefActual(:)),IsGreaterThan(1e-15),sprintf('%g',coefDist));
             
             % Actual values
             classActual = class(testCase.obj);
@@ -367,13 +373,16 @@ classdef NsoltFactoryTestCase < matlab.unittest.TestCase
             angles = randn(size(get(cloneObj,'Angles')));
             set(cloneObj,'Angles',angles);
             
+            % Original values
+            coefOriginal = step(testCase.obj,[],[]);            
+            
             % Actual values
             coefActual = step(cloneObj,[],[]);
             
             % Evaluation
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
+            coefDist = max(abs(coefOriginal(:)-coefActual(:))./abs(coefOriginal(:)));
             import matlab.unittest.constraints.IsGreaterThan
-            testCase.verifyThat(norm(coefExpctd(:)-coefActual(:)),IsGreaterThan(1e-15),sprintf('%g',coefDist));
+            testCase.verifyThat(norm(coefOriginal(:)-coefActual(:)),IsGreaterThan(1e-15),sprintf('%g',coefDist));
             
             % Actual values
             classActual = class(testCase.obj);
@@ -460,13 +469,16 @@ classdef NsoltFactoryTestCase < matlab.unittest.TestCase
             angles = randn(size(get(cloneObj,'Angles')));
             set(cloneObj,'Angles',angles);
             
+            % Original values
+            coefOriginal = step(testCase.obj,[],[]);            
+            
             % Actual values
             coefActual = step(cloneObj,[],[]);
             
             % Evaluation
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
+            coefDist = max(abs(coefOriginal(:)-coefActual(:))./abs(coefOriginal(:)));
             import matlab.unittest.constraints.IsGreaterThan;
-            testCase.verifyThat(norm(coefExpctd(:)-coefActual(:)),IsGreaterThan(1e-15),sprintf('%g',coefDist));
+            testCase.verifyThat(norm(coefOriginal(:)-coefActual(:)),IsGreaterThan(1e-15),sprintf('%g',coefDist));
             
             % Actual values
             classActual = class(testCase.obj);
@@ -504,13 +516,16 @@ classdef NsoltFactoryTestCase < matlab.unittest.TestCase
             angles = randn(size(get(cloneObj,'Angles')));
             set(cloneObj,'Angles',angles);
             
+            % Original values
+            coefOriginal = step(testCase.obj,[],[]);            
+            
             % Actual values
             coefActual = step(cloneObj,[],[]);
             
             % Evaluation
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
+            coefDist = max(abs(coefOriginal(:)-coefActual(:))./abs(coefOriginal(:)));
             import matlab.unittest.constraints.IsGreaterThan;
-            testCase.verifyThat(norm(coefExpctd(:)-coefActual(:)),IsGreaterThan(1e-15),sprintf('%g',coefDist));
+            testCase.verifyThat(norm(coefOriginal(:)-coefActual(:)),IsGreaterThan(1e-15),sprintf('%g',coefDist));
             
             % Actual values
             classActual = class(testCase.obj);
@@ -1360,8 +1375,42 @@ classdef NsoltFactoryTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(classActual,classExpctd);
             testCase.verifyClass(testCase.obj,classExpctd);
             
-end
-              
+        end
+   
+        function testCreateOvsdLpPuFb3dDeepCopy(testCase)
+            
+            % Instantiation of target class
+            import saivdr.dictionary.nsoltx.*
+            testCase.obj = NsoltFactory.createOvsdLpPuFb3dSystem();
+            cloneObj = NsoltFactory.createOvsdLpPuFb3dSystem(testCase.obj);
+            
+            % Expected values
+            coefExpctd = step(testCase.obj,[],[]);
+            
+            % Actual values
+            coefActual = step(cloneObj,[],[]);
+            
+            % Evaluation
+            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
+            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-15,sprintf('%g',coefDist));
+            
+            % Change angles
+            angles = randn(size(get(cloneObj,'Angles')));
+            set(cloneObj,'Angles',angles);
+            
+            % Original values
+            coefOriginal= step(testCase.obj,[],[]);
+            
+            % Actual values
+            coefActual = step(cloneObj,[],[]);
+            
+            % Evaluation
+            coefDist = max(abs(coefOriginal(:)-coefActual(:))./abs(coefOriginal(:)));
+            import matlab.unittest.constraints.IsGreaterThan;
+            testCase.verifyThat(norm(coefOriginal(:)-coefActual(:)),IsGreaterThan(1e-15),sprintf('%g',coefDist));
+            
+        end
+        
     end
     
 end
