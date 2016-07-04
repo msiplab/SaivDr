@@ -96,7 +96,6 @@ classdef OLpPrFbAtomExtender1d <  ...
         function arrayCoefs = fullAtomExtTypeII_(obj,arrayCoefs)
             %
             isPeriodicExt = obj.IsPeriodicExt; % BoundaryOperation = 'Circular'
-            %isPsGtPa      = obj.IsPsGreaterThanPa;            
             %
             ord = obj.PolyPhaseOrder;
             
@@ -109,13 +108,9 @@ classdef OLpPrFbAtomExtender1d <  ...
                 paramMtx5 = getParamMtx_(obj,6*iOrd+0); % hU
                 paramMtx6 = getParamMtx_(obj,6*iOrd+1); % angB2
                 %
-                %if isPsGtPa
-                    arrayCoefs = supportExtTypeII_(obj,arrayCoefs,...
-                        paramMtx1,paramMtx2,paramMtx3,paramMtx4,paramMtx5,paramMtx6,...
-                        isPeriodicExt);
-                %else
-                %    arrayCoefs = supportExtTypeIIPsLtPa_(obj,arrayCoefs,paramMtx1,paramMtx2,[],isPeriodicExt);
-                %end
+                arrayCoefs = supportExtTypeII_(...
+                    obj,arrayCoefs,paramMtx1,paramMtx2,paramMtx3,...
+                    paramMtx4,paramMtx5,paramMtx6,isPeriodicExt);
             end
 
         end
@@ -151,7 +146,6 @@ classdef OLpPrFbAtomExtender1d <  ...
             Ux2 = paramMtx5;
             B2 = butterflyMtx_(obj,paramMtx6);
             cB2 = conj(B2);
-            %B = eye(obj.NumberOfSymmetricChannels+obj.NumberOfAntisymmetricChannels);
             %TODO:
             %arrayCoefs = blockButterflyTypeI_(obj,arrayCoefs,angB2);
             arrayCoefs = cB2'*arrayCoefs;
@@ -162,7 +156,6 @@ classdef OLpPrFbAtomExtender1d <  ...
             % Lower channel rotation
             arrayCoefs(hLen+1:end,:) = Ux2*arrayCoefs(hLen+1:end,:);
             arrayCoefs(1:hLen,:) = Wx2*arrayCoefs(1:hLen,:);
-            %arrayCoefs = conj(arrayCoefs);
         end
         
         function arrayCoefs = supportExtTypeII_(obj,arrayCoefs,paramMtx1,paramMtx2,paramMtx3,paramMtx4,paramMtx5,paramMtx6,isPeriodicExt)
@@ -222,7 +215,7 @@ classdef OLpPrFbAtomExtender1d <  ...
             %
             upperCoefsPre = arrayCoefs(1:hLenMn,end);
             arrayCoefs(1:hLenMn,2:end) = arrayCoefs(1:hLenMn,1:end-1);
-            arrayCoefs(1:hLenMn,1) = upperCoefsPre;          
+            arrayCoefs(1:hLenMn,1) = upperCoefsPre;
         end
         
         function hB = butterflyMtx_(obj, angles)%TODO: “¯ˆê‚ÌŠÖ”‚ªAbstBuildingBlock.m‚ÅŽÀ‘•‚³‚ê‚Ä‚¢‚é‚Ì‚Åˆê‰ÓŠ‚É‚Ü‚Æ‚ß‚éD

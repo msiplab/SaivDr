@@ -106,11 +106,9 @@ classdef OLpPrFbAtomConcatenator1d < ...
                     paramMtx5 = getParamMtx_(obj,numOfPMtx-6*iOrd+2); % U1
                     paramMtx6 = getParamMtx_(obj,numOfPMtx-6*iOrd+3); % angB1
                     %
-%                     if isPsGtPa
-                        arrayCoefs = atomCncTypeIIPsGtPa_(obj,arrayCoefs,paramMtx1,paramMtx2,paramMtx3,paramMtx4,paramMtx5,paramMtx6,isPeriodicExt);
-%                     else
-%                         arrayCoefs = atomCncTypeIIPsLtPa_(obj,arrayCoefs,paramMtx1,paramMtx2,isPeriodicExt);                        
-%                     end
+                    arrayCoefs = atomCncTypeII_(...
+                        obj,arrayCoefs,paramMtx1,paramMtx2,paramMtx3,...
+                        paramMtx4,paramMtx5,paramMtx6,isPeriodicExt);
                 end
             end
             
@@ -138,7 +136,6 @@ classdef OLpPrFbAtomConcatenator1d < ...
             Wx1 = paramMtx4.';
             Ux1 = paramMtx5.';
             B1 = butterflyMtx_(obj, paramMtx6);
-            %cB1 = conj(B1);
             % Lower channel rotation
             if isPeriodicExt
                  arrayCoefs(1:hLen,:) = Wx1*arrayCoefs(1:hLen,:);
@@ -157,14 +154,13 @@ classdef OLpPrFbAtomConcatenator1d < ...
             %arrayCoefs = arrayCoefs/2.0;
         end
         
-        function arrayCoefs = atomCncTypeIIPsGtPa_(obj,arrayCoefs,paramMtx1,paramMtx2,paramMtx3,paramMtx4,paramMtx5,paramMtx6,isPeriodicExt)
+        function arrayCoefs = atomCncTypeII_(obj,arrayCoefs,paramMtx1,paramMtx2,paramMtx3,paramMtx4,paramMtx5,paramMtx6,isPeriodicExt)
             hLen = obj.NumberOfSymmetricChannels;
             
             % Phase 1
             Wx2 = paramMtx1.';
             Ux2 = paramMtx2.';
             B2 = butterflyMtx_(obj,paramMtx3);
-            %cB2 = conj(B2);
             % Upper channel rotation
             arrayCoefs(1:hLen,:) = Wx2*arrayCoefs(1:hLen,:);
             arrayCoefs(hLen:end,:) = Ux2*arrayCoefs(hLen:end,:);
@@ -180,7 +176,6 @@ classdef OLpPrFbAtomConcatenator1d < ...
             Wx1 = paramMtx4.';
             Ux1 = paramMtx5.';
             B1 = butterflyMtx_(obj,paramMtx6);
-            %cB1 = conj(B1);
             % Lower channel rotation
             if isPeriodicExt % TODO:ŽüŠúŠg’£‚Ì’è‹`
                 arrayCoefs(1:hLen-1,:) = Wx1*arrayCoefs(1:hLen-1,:);

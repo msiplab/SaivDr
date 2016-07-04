@@ -118,10 +118,6 @@ classdef AbstOvsdLpPuFb1dTypeIISystem < ...
             end
 
             % Prepare ParameterMatrixSet
-%             paramMtxSizeTab = repmat(...
-%                 [ ceil(obj.NumberOfChannels/2) ;
-%                 floor(obj.NumberOfChannels/2) ],...
-%                 obj.nStages,2);
             paramMtxSizeTab = [obj.NumberOfChannels*ones(1,2);
                 repmat([floor(obj.NumberOfChannels/2)*ones(2,2);
                 floor(obj.NumberOfChannels/4),1;
@@ -219,23 +215,22 @@ classdef AbstOvsdLpPuFb1dTypeIISystem < ...
             E = V0*[ E0 ; zeros(nChs-dec,dec) ];
             iParamMtx = uint32(2);
 
-            %TODO
             % Order extension
             if ord > 0
                 nShift = int32(dec);
                 for iOrd = 1:uint32(double(ord)/2)
-                    WE = step(pmMtxSt_,[],iParamMtx);
-                    UE = step(pmMtxSt_,[],iParamMtx+1);
+                    W = step(pmMtxSt_,[],iParamMtx);
+                    U = step(pmMtxSt_,[],iParamMtx+1);
                     angsB1 = step(pmMtxSt_,[],iParamMtx+2);
-                    WO = step(pmMtxSt_,[],iParamMtx+3);
-                    UO = step(pmMtxSt_,[],iParamMtx+4);
+                    HW = step(pmMtxSt_,[],iParamMtx+3);
+                    HU = step(pmMtxSt_,[],iParamMtx+4);
                     angsB2 = step(pmMtxSt_,[],iParamMtx+5);
                     if mexFlag_
-                        E = mexFcn_(E, WE, UE, angsB1, WO, UO, angsB2, floor(nChs/2), nShift);
+                        E = mexFcn_(E, W, U, angsB1, HW, HU, angsB2, floor(nChs/2), nShift);
                     else
                         import saivdr.dictionary.nsoltx.mexsrcs.Order2BuildingBlockTypeII
                         hObb = Order2BuildingBlockTypeII();
-                        E = step(hObb, E, WE, UE, angsB1, WO, UO, angsB2, floor(nChs/2), nShift);
+                        E = step(hObb, E, W, U, angsB1, HW, HU, angsB2, floor(nChs/2), nShift);
                     end
                     iParamMtx = iParamMtx+6;
                 end

@@ -215,9 +215,11 @@ classdef OLpPuFbSynthesis1dSystem  < ...
             arrayCoefs = obj.atomCncFcn(arrayCoefs,subScale,pmCoefs,...
                 ord,fpe);
             
+            %TODO: IDCTではないので名称変更する
             % Block IDCT
             if dec_ == 1
                 subSeq = arrayCoefs(1,:);
+                %TODO: 下記のコードの削除を検討
 %             elseif dec_ == 2 
 %                 subSeq = zeros(1,2*subScale);
 %                 subCoef1 =  arrayCoefs(1,:);

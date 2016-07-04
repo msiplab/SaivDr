@@ -22,7 +22,6 @@ classdef OvsdLpPuFb1dTypeIVm0System < ...
     properties (Access = private)
         omgsV0_
         omgsWU_
-        %TODO: angles
     end
     
     methods
@@ -32,7 +31,6 @@ classdef OvsdLpPuFb1dTypeIVm0System < ...
                 varargin{:});
             obj.omgsV0_ = OrthonormalMatrixGenerationSystem();
             obj.omgsWU_ = OrthonormalMatrixGenerationSystem();
-            %TODO: angles
         end
     end
     
@@ -42,13 +40,11 @@ classdef OvsdLpPuFb1dTypeIVm0System < ...
             s = saveObjectImpl@saivdr.dictionary.olpprfb.AbstOvsdLpPuFb1dTypeISystem(obj);
             s.omgsV0_ = matlab.System.saveObject(obj.omgsV0_);
             s.omgsWU_ = matlab.System.saveObject(obj.omgsWU_);
-            %TODO: angles
         end
         
         function loadObjectImpl(obj,s,wasLocked)
             obj.omgsV0_ = matlab.System.loadObject(s.omgsV0_);
             obj.omgsWU_ = matlab.System.loadObject(s.omgsWU_);
-            %TODO: angles
             loadObjectImpl@saivdr.dictionary.olpprfb.AbstOvsdLpPuFb1dTypeISystem(obj,s,wasLocked);
         end
         
@@ -65,7 +61,6 @@ classdef OvsdLpPuFb1dTypeIVm0System < ...
             mus    = reshape(obj.Mus(nChs+1:end),[],obj.nStages-1);
             nAngs = hChs*(hChs-1)/2;
             nMus = hChs;
-            %pmMtxSt_ = obj.ParamteterMatrixSet;
             %TODO:
             for iParamMtx = uint32(1):obj.nStages-1
                 % W

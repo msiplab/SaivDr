@@ -120,6 +120,7 @@ classdef AbstOLpPrFbCoefManipulator1d < matlab.System %#codegen
                 error('%s:\n lentgh(PolyPhaseOrder) must be %d.',...
                     id, saivdr.dictionary.olpprfb.AbstOLpPrFbCoefManipulator1d.DATA_DIMENSION);
             end
+            %TODO: エラーメッセージを編集する
 %             if obj.NumberOfSymmetricChannels < 2
 %                 error('%s: NumberOfSymmetricChannels must be more than one.',...
 %                     id);

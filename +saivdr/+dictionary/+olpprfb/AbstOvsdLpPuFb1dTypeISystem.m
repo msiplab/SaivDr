@@ -122,9 +122,7 @@ classdef AbstOvsdLpPuFb1dTypeISystem < ...
             import saivdr.dictionary.nsoltx.ChannelGroup
             nChL = obj.NumberOfChannels/2;
             nAngsInitStg = obj.NumberOfChannels*(obj.NumberOfChannels-1)/2;
-            %nAngsPerStg = nChL*(nChL-1);
             nAngsPerStg = nChL*(nChL-1)+floor(nChL/2);
-            %sizeOfAngles = [2*nAngsPerStg obj.nStages];
             sizeOfAngles = nAngsInitStg+nAngsPerStg*(obj.nStages-1);
             if isscalar(obj.Angles) && obj.Angles==0
                 obj.Angles = zeros(sizeOfAngles,1);
