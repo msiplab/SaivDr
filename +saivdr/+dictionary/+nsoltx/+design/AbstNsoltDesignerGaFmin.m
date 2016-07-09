@@ -96,7 +96,9 @@ classdef AbstNsoltDesignerGaFmin < ...
                     problem.solver = 'fminunc';
                 end
             end
-            [optAngs, fval, exitflag] = obj.OptimizationFunction(problem);
+            %[optAngs, fval, exitflag] = obj.OptimizationFunction(problem);
+            [optAngs, fval, exitflag] = ...
+                eval(sprintf('%s(problem)',problem.solver));
             set(lppufb,'Angles',reshape(optAngs,obj.sizeAngles));
         end
         

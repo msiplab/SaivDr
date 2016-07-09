@@ -236,7 +236,7 @@ classdef NsoltDictionaryLearning < matlab.System
         
         function [ lppufb, fval, exitflag ] = stepImpl(obj,options,isOptMus)
             
-            if isa(options,'optim.options.Fminunc') || ...
+            if isa(options,'optim.options.Fminunc') || ... % TODO for SGD
                     isa(options,'optim.options.Fmincon')
                 options = optimoptions(options,'GradObj',obj.GradObj);
             end
