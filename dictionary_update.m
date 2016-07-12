@@ -53,7 +53,11 @@ nsolt = saivdr.dictionary.nsoltx.NsoltFactory.createOvsdLpPuFb2dSystem(...
     'PolyPhaseOrder', nOrd,...
     'NumberOfVanishingMoments',nVm);
 
-nItr = 1;
+angs = get(nsolt,'Angles');
+angs = 2*pi*rand(size(angs));
+set(nsolt,'Angles',angs);
+
+nItr = 50;
 nCoefs = 30000;
 
 for idx = 1:nItr

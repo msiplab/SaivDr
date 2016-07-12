@@ -52,7 +52,7 @@ classdef StepMonitoringSystem < matlab.System %#codegen
     end
 
     properties(Hidden)
-        PeakValue
+        PeakValue = 1
     end
 
     properties (SetAccess = private, GetAccess = public)
@@ -368,15 +368,16 @@ classdef StepMonitoringSystem < matlab.System %#codegen
         
         function value = mse_(obj,resImg)
             srcImg = obj.SourceImage;
-            value = sum((double(srcImg(:))-double(resImg(:))).^2)...
-                /numel(srcImg);
+%             value = sum((double(srcImg(:))-double(resImg(:))).^2)...
+%                 /numel(srcImg);
+            value = sum(abs(double(srcImg(:))-double(resImg(:))).^2);
         end
         
         function value = psnr_(obj,resImg)
             srcImg = obj.SourceImage;
             if verLessThan('images','9.0') || ...
                     ~obj.IsConversionToEvaluationType 
-                value = 10*log10(obj.PeakValue^2/mse_(obj,resImg));
+                value = 10*log10(abs(obj.PeakValue)^2/mse_(obj,resImg));
             else
                 value = psnr(srcImg,resImg);
             end

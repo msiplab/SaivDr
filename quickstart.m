@@ -52,8 +52,10 @@ orgImg = im2double(srcImg(py:py+height-1,px:px+width-1,:));
 % * saivdr.degradation.DegradationSystem
 
 import saivdr.degradation.linearprocess.BlurSystem
-blurtype = 'Gaussian';  % Blur type
-boundary = 'Symmetric'; % Boundary option
+%blurtype = 'Gaussian';  % Blur type
+blurtype = 'Identical';
+%boundary = 'Symmetric'; % Boundary option
+boundary = 'Circular';
 hsigma   = 2;           % Sigma for Gausian kernel
 blur = BlurSystem(...   % Instantiation of blur process
     'BlurType',              blurtype,...
@@ -76,7 +78,8 @@ dgrd = DegradationSystem(... % Integration of blur and AWGN
 % Then, let us generate an observed image $\mathbf{x}$ by the
 % DegradationSystem object, _dgrd_ , created in the previous step.
 
-obsImg = step(dgrd,orgImg);
+%obsImg = step(dgrd,orgImg);
+obsImg = orgImg;
 
 %% Create an NSOLT system object
 % In order to restore the clearn image $\mathbf{u}$, let us assume that
@@ -104,20 +107,51 @@ obsImg = step(dgrd,orgImg);
 % * ( _ROOT_OF_SAIVDR_ )/examples/quickdesign/main_quickdesign.m
 
 % Parameters for NSOLT
-nLevels = 4;     % # of wavelet tree levels
+%nLevels = 4;     % # of wavelet tree levels
+nLevels = 1;
 nDec    = [2 2]; % Decimation factor
 nChs    = [4 4]; % # of channels
-nOrd    = [4 4]; % Polyphase order
-nVm     = 1;     % # of vanishing moments
+nOrd    = [2 2]; % Polyphase order
+%nOrd = [0 0];
+nVm     = 0;     % # of vanishing moments
 
 % Location which containts a pre-designed NSOLT
 sdir = './examples/quickdesign/results';
 
-% Load a pre-designed dictionary from a MAT-file
-s = load(sprintf('%s/nsolt_d%dx%d_c%d+%d_o%d+%d_v%d_l%d_n%d_%s.mat',...
-    sdir,nDec(1),nDec(2),nChs(1),nChs(2),nOrd(1),nOrd(2),nVm,nLevels,...
-    2048,'peppers128x128'),'nsolt');
-nsolt = s.nsolt; % saivdr.dictionary.nsolt.OvsdLpPuFb2dTypeIVm1System
+% % Load a pre-designed dictionary from a MAT-file
+% s = load(sprintf('%s/nsolt_d%dx%d_c%d+%d_o%d+%d_v%d_l%d_n%d_%s.mat',...
+%     sdir,nDec(1),nDec(2),nChs(1),nChs(2),nOrd(1),nOrd(2),nVm,nLevels,...
+%     2048,'peppers128x128'),'nsolt');
+% nsolt = s.nsolt; % saivdr.dictionary.nsolt.OvsdLpPuFb2dTypeIVm1System
+
+angsV0 = 2*pi*rand(28,1);
+angsWx1 = 2*pi*rand(6,1);
+angsUx1 = 2*pi*rand(6,1);
+angsBx1 = pi/4*ones(floor(sum(nChs)/4),1);
+angsWx2 = 2*pi*rand(6,1);
+angsUx2 = 2*pi*rand(6,1);
+angsBx2 = pi/4*ones(floor(sum(nChs)/4),1);
+angsWy1 = 2*pi*rand(6,1);
+angsUy1 = 2*pi*rand(6,1);
+angsBy1 = pi/4*ones(floor(sum(nChs)/4),1);
+angsWy2 = 2*pi*rand(6,1);
+angsUy2 = 2*pi*rand(6,1);
+angsBy2 = pi/4*ones(floor(sum(nChs)/4),1);
+
+
+angles = [angsV0;angsWx1;angsUx1;angsBx1;angsWx2;angsUx2;angsBx2;angsWy1;angsUy1;angsBy1;angsWy2;angsUy2;angsBy2];
+mus = ones(8,5);
+% angles = angsV0;
+% mus = ones(8,1);
+
+nsolt = saivdr.dictionary.nsoltx.NsoltFactory.createOvsdLpPuFb2dSystem(...
+    'DecimationFactor',nDec,...
+    'NumberOfChannels',nChs,...
+    'PolyPhaseOrder', nOrd,...
+    'NumberOfVanishingMoments',nVm);
+
+set(nsolt,'Angles',angles);
+set(nsolt,'Mus',mus);
 
 % Conversion of nsolt to new package style
 % nsolt = saivdr.dictionary.utility.fcn_upgrade(nsolt);
@@ -277,7 +311,7 @@ blurKernel = get(blur,'BlurKernel');
 nsr = noise_var/var(orgImg(:));
 
 % Wiener filter deconvolution of Image Processing Toolbox
-wnfImg = deconvwnr(obsImg, blurKernel, nsr);
+%wnfImg = deconvwnr(obsImg, blurKernel, nsr);
 
 % Evaluation
 fprintf('\n Wiener')

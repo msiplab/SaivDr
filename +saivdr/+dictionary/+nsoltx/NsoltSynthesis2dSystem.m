@@ -159,10 +159,7 @@ classdef NsoltSynthesis2dSystem  < ...
         function recImg = stepImpl(obj, coefs, scales)
             pmMtx = step(obj.LpPuFb2d,[],[]);
             pmMtxCoefs = get(pmMtx,'Coefficients');
-            %coefs = conj(coefs); %TODO: íœ
             recImg = synthesize_(obj, coefs, scales, pmMtxCoefs);
-            %recImg = conj(recImg); %TODO: íœ
-            
         end
         
     end
