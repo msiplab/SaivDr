@@ -28,7 +28,10 @@ setpath
 % is described. As a preliminary, let us read an RGB picture as
 % the source image.
 
-srcImg = imread('peppers.png');
+%srcImg = imread('peppers.png');
+normap = imread('18_ibushi.normal.png');
+normap = im2double(normap);
+srcImg = 2*normap(:,:,1)-1 + 1i*(2*normap(:,:,2)-1);
 width  = 256; % Width
 height = 256; % Height
 px     = 64;  % Horizontal position of cropping
@@ -57,10 +60,13 @@ blurtype = 'Identical';
 %boundary = 'Symmetric'; % Boundary option
 boundary = 'Circular';
 hsigma   = 2;           % Sigma for Gausian kernel
-blur = BlurSystem(...   % Instantiation of blur process
-    'BlurType',              blurtype,...
-    'SigmaOfGaussianKernel', hsigma,...
-    'BoundaryOption',boundary);
+% blur = BlurSystem(...   % Instantiation of blur process
+%     'BlurType',              blurtype,...
+%     'SigmaOfGaussianKernel', hsigma,...
+%     'BoundaryOption',boundary);
+import saivdr.degradation.linearprocess.PixelLossSystem
+blur = PixelLossSystem(...
+    'Density',0.2);
 
 import saivdr.degradation.noiseprocess.AdditiveWhiteGaussianNoiseSystem
 nsigma    = 5;              % Sigma for AWGN for scale [0..255]
@@ -78,8 +84,8 @@ dgrd = DegradationSystem(... % Integration of blur and AWGN
 % Then, let us generate an observed image $\mathbf{x}$ by the
 % DegradationSystem object, _dgrd_ , created in the previous step.
 
-%obsImg = step(dgrd,orgImg);
-obsImg = orgImg;
+obsImg = step(dgrd,orgImg);
+%obsImg = orgImg;
 
 %% Create an NSOLT system object
 % In order to restore the clearn image $\mathbf{u}$, let us assume that
@@ -122,36 +128,8 @@ sdir = './examples/quickdesign/results';
 % s = load(sprintf('%s/nsolt_d%dx%d_c%d+%d_o%d+%d_v%d_l%d_n%d_%s.mat',...
 %     sdir,nDec(1),nDec(2),nChs(1),nChs(2),nOrd(1),nOrd(2),nVm,nLevels,...
 %     2048,'peppers128x128'),'nsolt');
-% nsolt = s.nsolt; % saivdr.dictionary.nsolt.OvsdLpPuFb2dTypeIVm1System
-
-angsV0 = 2*pi*rand(28,1);
-angsWx1 = 2*pi*rand(6,1);
-angsUx1 = 2*pi*rand(6,1);
-angsBx1 = pi/4*ones(floor(sum(nChs)/4),1);
-angsWx2 = 2*pi*rand(6,1);
-angsUx2 = 2*pi*rand(6,1);
-angsBx2 = pi/4*ones(floor(sum(nChs)/4),1);
-angsWy1 = 2*pi*rand(6,1);
-angsUy1 = 2*pi*rand(6,1);
-angsBy1 = pi/4*ones(floor(sum(nChs)/4),1);
-angsWy2 = 2*pi*rand(6,1);
-angsUy2 = 2*pi*rand(6,1);
-angsBy2 = pi/4*ones(floor(sum(nChs)/4),1);
-
-
-angles = [angsV0;angsWx1;angsUx1;angsBx1;angsWx2;angsUx2;angsBx2;angsWy1;angsUy1;angsBy1;angsWy2;angsUy2;angsBy2];
-mus = ones(8,5);
-% angles = angsV0;
-% mus = ones(8,1);
-
-nsolt = saivdr.dictionary.nsoltx.NsoltFactory.createOvsdLpPuFb2dSystem(...
-    'DecimationFactor',nDec,...
-    'NumberOfChannels',nChs,...
-    'PolyPhaseOrder', nOrd,...
-    'NumberOfVanishingMoments',nVm);
-
-set(nsolt,'Angles',angles);
-set(nsolt,'Mus',mus);
+s = load('CLpPuFb2dDec22Ch8Ord22.mat');
+nsolt = s.nsolt; % saivdr.dictionary.nsolt.OvsdLpPuFb2dTypeIVm1System
 
 % Conversion of nsolt to new package style
 % nsolt = saivdr.dictionary.utility.fcn_upgrade(nsolt);
@@ -240,7 +218,9 @@ ista = IstaImRestoration(...
     'AdjOfSynthesizer',   analyzer,...    % Analyzer (Adj. of dictionary)
     'LinearProcess',      blur,...        % Blur process
     'NumberOfTreeLevels', nLevels,...     % # of tree levels of NSOLT
-    'Lambda',             lambda);        % Parameter lambda
+    'Lambda',             lambda,...
+    'Eps0',               0,...
+    'MaxIter',            10000);        % Parameter lambda
 
 %% Create a step monitor system object
 % ISTA iteratively approaches to the optimum solution. In order to
@@ -305,7 +285,7 @@ stepmonitor = StepMonitoringSystem(...
     'IsVerbose', isverbose);
 
 % Use the same blur kernel as that applied to the observed image, obsImg
-blurKernel = get(blur,'BlurKernel');
+%blurKernel = get(blur,'BlurKernel');
 
 % Estimation of noise to signal ratio
 nsr = noise_var/var(orgImg(:));
@@ -321,6 +301,17 @@ psnr_wfdc = step(stepmonitor,wnfImg); % STEP method of StepMonitoringSystem
 % In order to compare the deblurring performances between two methods,
 % ISTA-based deblurring with NSOLT and Wiener filter, let us show
 % the original, observed and two results in one figure together.
+
+figure(4)
+subplot(2,1,1)
+subplot(2,2,1)
+imshow(real(obsImg)/2+0.5);
+subplot(2,2,2);
+imshow(imag(obsImg)/2+0.5);
+subplot(2,2,3);
+imshow(real(resImg)/2+0.5);
+subplot(2,2,4);
+imshow(imag(resImg)/2+0.5);
 
 hfig3 = figure(3);
 

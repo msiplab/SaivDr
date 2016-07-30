@@ -73,9 +73,9 @@ classdef AbstOvsdLpPuFb2dSystem < matlab.System %#codegen
             H = getAnalysisFilterBank_(obj);
             for ib=1:obj.NumberOfChannels
                 subplot(2,obj.NumberOfChannels,ib);
-                imshow(real(rot90(H(:,:,ib),2))+0.5);
+                imshow(real(H(:,:,ib))+0.5);
                 subplot(2,obj.NumberOfChannels,ib+obj.NumberOfChannels);
-                imshow(imag(rot90(H(:,:,ib),2))+0.5);
+                imshow(imag(H(:,:,ib))+0.5);
             end
         end
 
