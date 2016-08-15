@@ -174,7 +174,7 @@ classdef NsoltAtomExtender2dTestCase < matlab.unittest.TestCase
             scale = [ height width ];
             I0 = eye(sum(nch));
             In = eye(nch(2));
-            angsB = pi/4*ones(floor(nch(2)/2),1);
+            angsB = pi/2*ones(floor(nch(2)/2),1);
             pmCoefs = [ I0(:) ;
                 In(:) ; -In(:) ; angsB ;
                 In(:) ; -In(:) ; angsB ;
@@ -215,7 +215,7 @@ classdef NsoltAtomExtender2dTestCase < matlab.unittest.TestCase
             scale = [ height width ];
             U0 = dctmtx(sum(nch));
             In = eye(nch(2));
-            angsB = pi/4*ones(floor(nch(2)/2),1);
+            angsB = pi/2*ones(floor(nch(2)/2),1);
             pmCoefs = [ U0(:) ;
                 In(:) ; -In(:) ; angsB ;
                 In(:) ; -In(:) ; angsB ;
@@ -257,7 +257,7 @@ classdef NsoltAtomExtender2dTestCase < matlab.unittest.TestCase
             scale = [ height width ];
             I0 = eye(sum(nch));
             In = eye(nch(2));
-            angsB = pi/4*ones(floor(nch(2)/2),1);
+            angsB = pi/2*ones(floor(nch(2)/2),1);
             pmCoefs = [ I0(:) ;
                 In(:) ; -In(:) ; angsB ;
                 In(:) ; -In(:) ; angsB ; ];
@@ -296,7 +296,7 @@ classdef NsoltAtomExtender2dTestCase < matlab.unittest.TestCase
             scale = [ height width ];
             I0 = eye(sum(nch));
             In = eye(nch(2));
-            angsB = pi/4*ones(floor(nch(2)/2),1);
+            angsB = pi/2*ones(floor(nch(2)/2),1);
             pmCoefs = [ I0(:) ;
                 In(:) ; -In(:) ; angsB ;
                 In(:) ; -In(:) ; angsB ;
@@ -337,7 +337,7 @@ classdef NsoltAtomExtender2dTestCase < matlab.unittest.TestCase
             scale = [ height width ];
             I0 = eye(sum(nch));
             In = eye(nch(2));
-            angsB = pi/4*ones(floor(nch(2)/2),1);
+            angsB = pi/2*ones(floor(nch(2)/2),1);
             pmCoefs = [ I0(:) ;
                 In(:) ; -In(:) ; angsB ;
                 In(:) ; -In(:) ; angsB ;
@@ -382,7 +382,7 @@ classdef NsoltAtomExtender2dTestCase < matlab.unittest.TestCase
             scale = [ height width ];
             I0 = eye(sum(nch));
             In = eye(nch(2));
-            angsB = pi/4*ones(floor(nch(2)/2),1);
+            angsB = pi/2*ones(floor(nch(2)/2),1);
             pmCoefs = [ I0(:) ;
                 In(:) ; -In(:) ; angsB ;
                 In(:) ; -In(:) ; angsB ;
@@ -425,7 +425,7 @@ classdef NsoltAtomExtender2dTestCase < matlab.unittest.TestCase
             scale = [ height width ];
             I0 = eye(sum(nch));
             In = eye(nch(2));
-            angsB = pi/4*ones(floor(nch(2)/2),1);
+            angsB = pi/2*ones(floor(nch(2)/2),1);
             pmCoefs = [ I0(:) ;
                 In(:) ; -In(:) ; angsB ;
                 In(:) ; -In(:) ; angsB ;
@@ -468,7 +468,7 @@ classdef NsoltAtomExtender2dTestCase < matlab.unittest.TestCase
             scale = [ height width ];
             I0 = eye(sum(nch));
             In = eye(nch(2));
-            angsB = pi/4*ones(floor(nch(2)/2),1);
+            angsB = pi/2*ones(floor(nch(2)/2),1);
             pmCoefs = [ I0(:) ;
                 In(:) ; -In(:) ; angsB ;
                 In(:) ; -In(:) ; angsB ;
@@ -510,7 +510,7 @@ classdef NsoltAtomExtender2dTestCase < matlab.unittest.TestCase
             I0 = eye(sum(nch));
             Ix = eye(nch(1));
             In = eye(nch(2));
-            angsB = pi/4*ones(floor(nch(2)/2),1);
+            angsB = pi/2*ones(floor(nch(2)/2),1);
             pmCoefs = [ I0(:) ;
                 In(:) ; -In(:) ; angsB ;
                 Ix(:) ; -Ix(:) ; angsB ;
@@ -554,7 +554,7 @@ classdef NsoltAtomExtender2dTestCase < matlab.unittest.TestCase
             Ix = eye(nch(1));
             In = eye(nch(2));
             Ux = blkdiag(-In,1);
-            angsB = pi/4*ones(floor(nch(2)/2),1);
+            angsB = pi/2*ones(floor(nch(2)/2),1);
             pmCoefs = [ V0(:) ;
                 In(:) ; -In(:) ; angsB ;
                 Ix(:) ;  Ux(:) ; angsB ;
@@ -598,7 +598,7 @@ classdef NsoltAtomExtender2dTestCase < matlab.unittest.TestCase
             Ix = eye(nch(1));
             In = eye(nch(2));
             Ux = blkdiag(-In,1);
-            angsB = pi/4*ones(floor(nch(2)/2),1);
+            angsB = pi/2*ones(floor(nch(2)/2),1);
             pmCoefs = [ I0(:) ;
                 In(:) ; -In(:) ; angsB ;
                 Ix(:) ;  Ux(:) ; angsB ; ];
@@ -639,7 +639,7 @@ classdef NsoltAtomExtender2dTestCase < matlab.unittest.TestCase
             Ix = eye(nch(1));
             In = eye(nch(2));
             Ux = blkdiag(-In,1);
-            angsB = pi/4*ones(floor(nch(2)/2),1);
+            angsB = pi/2*ones(floor(nch(2)/2),1);
             pmCoefs = [ I0(:) ;
                 In(:) ; -In(:) ; angsB ;
                 Ix(:) ;  Ux(:) ; angsB ; ];
@@ -680,7 +680,7 @@ classdef NsoltAtomExtender2dTestCase < matlab.unittest.TestCase
             Ix = eye(nch(1));
             In = eye(nch(2));
             Ux = blkdiag(-In,1);
-            angsB = pi/4*ones(floor(nch(2)/2),1);
+            angsB = pi/2*ones(floor(nch(2)/2),1);
             pmCoefs = [ I0(:) ;
                 In(:) ; -In(:) ; angsB ;
                 Ix(:) ;  Ux(:) ; angsB ;
@@ -727,7 +727,7 @@ classdef NsoltAtomExtender2dTestCase < matlab.unittest.TestCase
             Ix = eye(nch(1));
             In = eye(nch(2));
             Ux = blkdiag(-In,1);
-            angsB = pi/4*ones(floor(nch(2)/2),1);
+            angsB = pi/2*ones(floor(nch(2)/2),1);
             pmCoefs = [ I0(:) ;
                 In(:) ; -In(:) ; angsB ;
                 Ix(:) ;  Ux(:) ; angsB ;
@@ -772,7 +772,7 @@ classdef NsoltAtomExtender2dTestCase < matlab.unittest.TestCase
             Ix = eye(nch(1));
             In = eye(nch(2));
             Ux = blkdiag(-In,1);
-            angsB = pi/4*ones(floor(nch(2)/2),1);
+            angsB = pi/2*ones(floor(nch(2)/2),1);
             pmCoefs = [ I0(:) ;
                 In(:) ; -In(:) ; angsB ;
                 Ix(:) ;  Ux(:) ; angsB ;
@@ -817,7 +817,7 @@ classdef NsoltAtomExtender2dTestCase < matlab.unittest.TestCase
             Ix = eye(nch(1));
             In = eye(nch(2));
             Ux = blkdiag(-In,1);
-            angsB = pi/4*ones(floor(nch(2)/2),1);
+            angsB = pi/2*ones(floor(nch(2)/2),1);
             pmCoefs = [ I0(:) ;
                 In(:) ; -In(:) ; angsB ;
                 Ix(:) ;  Ux(:) ; angsB ;

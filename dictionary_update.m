@@ -45,10 +45,10 @@ omfW = saivdr.dictionary.utility.OrthonormalMatrixFactorizationSystem();
 [angsUy1, musUy1] = step(omfW,Uy1);
 [angsUy2, musUy2] = step(omfW,Uy2);
 
-angsBx1 = pi/4;
-angsBx2 = pi/4;
-angsBy1 = pi/4;
-angsBy2 = pi/4;
+angsBx1 = pi/2;
+angsBx2 = pi/2;
+angsBy1 = pi/2;
+angsBy2 = pi/2;
 
 angs = [...
     angsV;...
@@ -75,10 +75,10 @@ nsolt = saivdr.dictionary.nsoltx.NsoltFactory.createOvsdLpPuFb2dSystem(...
 set(nsolt,'Angles',angs);
 set(nsolt,'Mus',mus);
 
-nsolt = tmp;
+%nsolt = tmp;
 
 nItr = 10;
-nCoefs = 20000;
+nCoefs = 10000;
 
 for idx = 1:nItr
     analyzer = saivdr.dictionary.nsoltx.NsoltAnalysis2dSystem('LpPuFb2d',nsolt);
@@ -92,7 +92,8 @@ for idx = 1:nItr
     options = optimoptions(@fminunc,...
         'Display','iter-detailed',...
         'Algorithm','quasi-newton',...
-        'MaxFunctionEvaluations',1000);
+        'GradObj','on');
+%        'MaxFunctionEvaluations',1000,...
     postangs = fminunc(@(xxx) hogehoge(orgImg(:,:,1),nsolt,xxx,coefvec,scales),preangs,options);
     
     set(nsolt,'Angles',postangs);
