@@ -7,7 +7,6 @@ function [value, grad] = hogehoge(img,nsolt,angs,coefs,scales)
     value = sum(abs(diff(:)).^2);
     
     grad = zeros(size(angs));
-
     for idx = 1:length(angs)
         dangs = angs;
         dangs(idx) = angs(idx)+pi/2;

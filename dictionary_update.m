@@ -21,13 +21,13 @@ nVm     = 0;     % # of vanishing moments
 %Parameter prepairation
 V = eye(nChs);
 
-Wx1 = eye(nChs/2);
+Wx1 = dctmtx(nChs/2);
 Wx2 = eye(nChs/2);
 Wy1 = eye(nChs/2);
-Wy2 = eye(nChs/2);
+Wy2 = dctmtx(nChs/2);
 
 Ux1 = -eye(nChs/2);
-Ux2 = eye(nChs/2);
+Ux2 = dctmtx(nChs/2);
 Uy1 = -eye(nChs/2);
 Uy2 = eye(nChs/2);
 
@@ -92,7 +92,8 @@ for idx = 1:nItr
     options = optimoptions(@fminunc,...
         'Display','iter-detailed',...
         'Algorithm','quasi-newton',...
-        'GradObj','on');
+        'GradObj','on',...
+        'DerivativeCheck','on');
 %        'MaxFunctionEvaluations',1000,...
     postangs = fminunc(@(xxx) hogehoge(orgImg(:,:,1),nsolt,xxx,coefvec,scales),preangs,options);
     
