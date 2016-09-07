@@ -51,6 +51,7 @@ classdef NsoltAtomExtender2d <  ...
                 arrayCoefs = fullAtomExtTypeII_(obj,arrayCoefs);
             end
             
+            arrayCoefs = finalStep_(obj,arrayCoefs);
         end
         
     end
@@ -60,10 +61,17 @@ classdef NsoltAtomExtender2d <  ...
         function arrayCoefs = initialStep_(obj,arrayCoefs)
             
             if ~isempty(obj.paramMtxCoefs)
-                V0 = getParamMtx_(obj,uint32(1));
+                V0 = getParamMtx_(obj,uint32(2));
                 arrayCoefs = V0*arrayCoefs;
             end
 
+        end
+        
+        function arrayCoefs = finalStep_(obj,arrayCoefs)
+            if ~isempty(obj.paramMtxCoefs)
+                S = conj(getParamMtx_(obj.uint32(1)));
+                arrayCoefs = S*arrayCoefs;
+            end
         end
         
         function arrayCoefs = fullAtomExtTypeI_(obj,arrayCoefs)
@@ -75,12 +83,12 @@ classdef NsoltAtomExtender2d <  ...
             
             % Width extension
             for iOrd = uint32(1):uint32(ordX/2)
-                paramMtxW1 = getParamMtx_(obj,6*iOrd-4);
-                paramMtxU1 = getParamMtx_(obj,6*iOrd-3);
-                paramAngB1 = getParamMtx_(obj,6*iOrd-2);
-                paramMtxW2 = getParamMtx_(obj,6*iOrd-1);
-                paramMtxU2 = getParamMtx_(obj,6*iOrd+0);
-                paramAngB2 = getParamMtx_(obj,6*iOrd+1);
+                paramMtxW1 = getParamMtx_(obj,6*iOrd-3);
+                paramMtxU1 = getParamMtx_(obj,6*iOrd-2);
+                paramAngB1 = getParamMtx_(obj,6*iOrd-1);
+                paramMtxW2 = getParamMtx_(obj,6*iOrd-0);
+                paramMtxU2 = getParamMtx_(obj,6*iOrd+1);
+                paramAngB2 = getParamMtx_(obj,6*iOrd+2);
                 %
                 arrayCoefs = supportExtTypeI_(obj,arrayCoefs,...
                     paramMtxW1,paramMtxU1,paramAngB1,...
@@ -92,12 +100,12 @@ classdef NsoltAtomExtender2d <  ...
             if ordY > 0
                 arrayCoefs = permuteCoefs_(obj,arrayCoefs);
                 for iOrd = uint32(1):uint32(ordY/2)
-                    paramMtxW1 = getParamMtx_(obj,6*iOrd+3*ordX-4);
-                    paramMtxU1 = getParamMtx_(obj,6*iOrd+3*ordX-3);
-                    paramAngB1 = getParamMtx_(obj,6*iOrd+3*ordX-2);
-                    paramMtxW2 = getParamMtx_(obj,6*iOrd+3*ordX-1);
-                    paramMtxU2 = getParamMtx_(obj,6*iOrd+3*ordX+0);
-                    paramAngB2 = getParamMtx_(obj,6*iOrd+3*ordX+1);
+                    paramMtxW1 = getParamMtx_(obj,6*iOrd+3*ordX-3);
+                    paramMtxU1 = getParamMtx_(obj,6*iOrd+3*ordX-2);
+                    paramAngB1 = getParamMtx_(obj,6*iOrd+3*ordX-1);
+                    paramMtxW2 = getParamMtx_(obj,6*iOrd+3*ordX-0);
+                    paramMtxU2 = getParamMtx_(obj,6*iOrd+3*ordX+1);
+                    paramAngB2 = getParamMtx_(obj,6*iOrd+3*ordX+2);
                     %
                     arrayCoefs = supportExtTypeI_(obj,arrayCoefs,...
                         paramMtxW1,paramMtxU1,paramAngB1,...
@@ -117,12 +125,12 @@ classdef NsoltAtomExtender2d <  ...
             
             % Width extension
             for iOrd = uint32(1):uint32(ordX/2)
-                paramMtx1 = getParamMtx_(obj,6*iOrd-4); % WE
-                paramMtx2 = getParamMtx_(obj,6*iOrd-3); % UE
-                paramMtx3 = getParamMtx_(obj,6*iOrd-2); % angB1
-                paramMtx4 = getParamMtx_(obj,6*iOrd-1); % WO
-                paramMtx5 = getParamMtx_(obj,6*iOrd+0); % UO
-                paramMtx6 = getParamMtx_(obj,6*iOrd+1); % angB2
+                paramMtx1 = getParamMtx_(obj,6*iOrd-3); % WE
+                paramMtx2 = getParamMtx_(obj,6*iOrd-2); % UE
+                paramMtx3 = getParamMtx_(obj,6*iOrd-1); % angB1
+                paramMtx4 = getParamMtx_(obj,6*iOrd-0); % WO
+                paramMtx5 = getParamMtx_(obj,6*iOrd+1); % UO
+                paramMtx6 = getParamMtx_(obj,6*iOrd+2); % angB2
                 
                 arrayCoefs = supportExtTypeII_(obj,arrayCoefs,...
                     paramMtx1,paramMtx2,paramMtx3,...
@@ -134,12 +142,12 @@ classdef NsoltAtomExtender2d <  ...
             if ordY > 0
                 arrayCoefs = permuteCoefs_(obj,arrayCoefs);
                 for iOrd = uint32(1):uint32(ordY/2)  % Vertical process
-                paramMtx1 = getParamMtx_(obj,6*iOrd+3*ordX-4); % WE
-                paramMtx2 = getParamMtx_(obj,6*iOrd+3*ordX-3); % UE
-                paramMtx3 = getParamMtx_(obj,6*iOrd+3*ordX-2); % angB1
-                paramMtx4 = getParamMtx_(obj,6*iOrd+3*ordX-1); % WO
-                paramMtx5 = getParamMtx_(obj,6*iOrd+3*ordX+0); % UO
-                paramMtx6 = getParamMtx_(obj,6*iOrd+3*ordX+1); % angB2
+                paramMtx1 = getParamMtx_(obj,6*iOrd+3*ordX-3); % WE
+                paramMtx2 = getParamMtx_(obj,6*iOrd+3*ordX-2); % UE
+                paramMtx3 = getParamMtx_(obj,6*iOrd+3*ordX-1); % angB1
+                paramMtx4 = getParamMtx_(obj,6*iOrd+3*ordX-0); % WO
+                paramMtx5 = getParamMtx_(obj,6*iOrd+3*ordX+1); % UO
+                paramMtx6 = getParamMtx_(obj,6*iOrd+3*ordX+2); % angB2
                 
                 arrayCoefs = supportExtTypeII_(obj,arrayCoefs,...
                     paramMtx1,paramMtx2,paramMtx3,...

@@ -138,6 +138,8 @@ classdef AbstOvsdLpPuFb2dSystem < matlab.System %#codegen
             elseif strcmp(obj.OutputMode,'SynthesisFilterAt')
                 idx = varargin{3};
                 H = getAnalysisFilterBank_(obj);
+                %S = diag(exp(-1i*obj.Angles(1:obj.NumberOfChannels));
+                %H = S*conj(H);
                 H = conj(H);
                 output = rot90(H(:,:,idx),2);
             elseif strcmp(obj.OutputMode,'SynthesisFilters')
@@ -241,6 +243,18 @@ classdef AbstOvsdLpPuFb2dSystem < matlab.System %#codegen
                     value(u+1,x+1) = exp(-1i*pi*n/nDec)/sqrt(nDec);
                 end
             end
+        end
+        
+        function [symAngles,initAngles,propAngles] = splitAngles_(obj)
+            nCh = obj.NumberOfChannels;
+            nInitAngles = nCh*(nCh-1)/2;
+            
+            %symAngles = zeros(1,nCh);
+            symAngles = obj.Angles(1:nCh);
+            
+            initAngles = obj.Angles(nCh+1:nCh+nInitAngles);
+            
+            propAngles = obj.Angles(nCh+nInitAngles+1:end);
         end
 
     end

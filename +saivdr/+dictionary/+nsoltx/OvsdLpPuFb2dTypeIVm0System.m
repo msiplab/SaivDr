@@ -50,26 +50,31 @@ classdef OvsdLpPuFb2dTypeIVm0System < saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2dT
         function obj = updateParameterMatrixSet_(obj)
             nch = sum(obj.NumberOfChannels);
             
-            % initial matrix
-            nInitMtxAngs = nch*(nch-1)/2;
-            mtx = step(obj.initOmgs_,obj.Angles(1:nInitMtxAngs),obj.Mus(:,1));
+            [symAngles, initAngles, propAngles] = splitAngles_(obj);
+            
+            % symmetric matrix
+            mtx = diag(exp(1i*symAngles));
             step(obj.ParameterMatrixSet,mtx,uint32(1));
             
-            angles = reshape(obj.Angles(nInitMtxAngs+1:end),[],obj.nStages-1);
+            % initial matrix
+            mtx = step(obj.initOmgs_,initAngles,obj.Mus(:,1));
+            step(obj.ParameterMatrixSet,mtx,uint32(2));
+            
+            angles = reshape(propAngles,[],obj.nStages-1);
             mus    = obj.Mus(:,2:end);
             
             nParamMtxAngs = nch*(nch-2)/8;
             for iParamMtx = uint32(1):obj.nStages-1
                 % W
                 mtx = step(obj.propOmgs_,angles(1:nParamMtxAngs,iParamMtx),mus(1:nch/2,iParamMtx));
-                step(obj.ParameterMatrixSet,mtx,3*iParamMtx-1);
+                step(obj.ParameterMatrixSet,mtx,3*iParamMtx);
                 
                 % U
                 mtx = step(obj.propOmgs_,angles(nParamMtxAngs+1:2*nParamMtxAngs,iParamMtx),mus(nch/2+1:end,iParamMtx));
-                step(obj.ParameterMatrixSet,mtx,3*iParamMtx);
+                step(obj.ParameterMatrixSet,mtx,3*iParamMtx+1);
                 
                 % angsB
-                step(obj.ParameterMatrixSet,angles(2*nParamMtxAngs+1:end,iParamMtx),3*iParamMtx+1);
+                step(obj.ParameterMatrixSet,angles(2*nParamMtxAngs+1:end,iParamMtx),3*iParamMtx+2);
             end
         end
         

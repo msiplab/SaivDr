@@ -129,12 +129,14 @@ classdef AbstOvsdLpPuFb2dTypeISystem < ...
 
             
             % Prepare ParameterMatrixSet
+            symmetricMtxSizeTab = obj.NumberOfChannels*ones(1,2);
             initParamMtxSizeTab = obj.NumberOfChannels*ones(1,2);
             propParamMtxSizeTab = [...
                 ceil(obj.NumberOfChannels/2)*ones(1,2);
                 floor(obj.NumberOfChannels/2)*ones(1,2);
                 floor(sum(obj.NumberOfChannels)/4),1 ];
             paramMtxSizeTab = [...
+                symmetricMtxSizeTab;
                 initParamMtxSizeTab;
                 repmat(propParamMtxSizeTab,obj.nStages-1,1)];
             obj.ParameterMatrixSet = ParameterMatrixSet(...
@@ -146,11 +148,17 @@ classdef AbstOvsdLpPuFb2dTypeISystem < ...
             import saivdr.dictionary.nsoltx.ChannelGroup
             import saivdr.dictionary.utility.Direction
             nCh = obj.NumberOfChannels;
+            nSymAngs = nCh;
             nInitAngs = nCh*(nCh-1)/2;
             nAngsPerStg = nCh*(nCh-2)/4+floor(nCh/4);
-            sizeOfAngles = nInitAngs + (obj.nStages-1)*nAngsPerStg;
+            sizeOfAngles = nSymAngs + nInitAngs + (obj.nStages-1)*nAngsPerStg;
             if isscalar(obj.Angles) && obj.Angles==0
-                obj.Angles = zeros(sizeOfAngles,1);
+                symAngs = zeros(nSymAngs,1);
+                initAngs = zeros(nInitAngs,1);
+                angsPerStg = zeros(nAngsPerStg,obj.nStages-1);
+                angsPerStg(end-floor(nCh/4)+1:end,:) = pi/2*ones(floor(nCh/4),obj.nStages-1);
+                obj.Angles = [symAngs ; initAngs; angsPerStg(:)];
+                %obj.Angles = zeros(sizeOfAngles,1);
             end
 %             if size(obj.Angles,1) ~= sizeOfAngles(1) || ...
 %                     size(obj.Angles,2) ~= sizeOfAngles(2)
@@ -176,6 +184,9 @@ classdef AbstOvsdLpPuFb2dTypeISystem < ...
 %                 obj.Mus = -ones(sizeOfMus);
 %                 obj.Mus(:,1:2) = ones(size(obj.Mus,1),2);
                 obj.Mus = ones(sizeOfMus);
+                tmp = -ones(floor(nCh/2),floor((obj.nStages-1)/2));
+                obj.Mus(floor(nCh/2)+1:end,2:2:obj.nStages) = tmp;
+                %mus = obj.Mus;
             end
             if size(obj.Mus,1) ~= sizeOfMus(1) || ...
                     size(obj.Mus,2) ~= sizeOfMus(2)
@@ -204,13 +215,15 @@ classdef AbstOvsdLpPuFb2dTypeISystem < ...
             pmMtxSet_  = obj.ParameterMatrixSet;
             mexFcn_ = obj.mexFcn;
             mexFlag_ = obj.mexFlag;
+            
+            S = step(pmMtxSet_,[],uint32(1));
             %
             E0 = obj.matrixE0;
             %
-            V0 = step(pmMtxSet_,[],uint32(1));
+            V0 = step(pmMtxSet_,[],uint32(2));
             E = V0*[ E0 ; zeros(nChs-prod(dec),prod(dec))];
             
-            iParamMtx = uint32(2);
+            iParamMtx = uint32(3);
             %TODO: iParamMtx = uint32(2);
             hChs = nChs/2;
 
@@ -259,6 +272,8 @@ classdef AbstOvsdLpPuFb2dTypeISystem < ...
 
                 E = ipermuteCoefs_(obj,E,lenY);
             end
+            
+            E = S*E;
             %
             nSubbands = size(E,1);
             value = zeros(lenY,lenX,nSubbands);
