@@ -148,16 +148,16 @@ classdef AbstOvsdLpPuFb2dTypeISystem < ...
             import saivdr.dictionary.nsoltx.ChannelGroup
             import saivdr.dictionary.utility.Direction
             nCh = obj.NumberOfChannels;
-            nSymAngs = nCh;
-            nInitAngs = nCh*(nCh-1)/2;
             nAngsPerStg = nCh*(nCh-2)/4+floor(nCh/4);
-            sizeOfAngles = nSymAngs + nInitAngs + (obj.nStages-1)*nAngsPerStg;
+            nAngsInit = nCh*(nCh-1)/2;
+            nAngsSym = nCh;
+            sizeOfAngles = nAngsSym + nAngsInit + (obj.nStages-1)*nAngsPerStg;
             if isscalar(obj.Angles) && obj.Angles==0
-                symAngs = zeros(nSymAngs,1);
-                initAngs = zeros(nInitAngs,1);
+                angsSym = zeros(nAngsSym,1);
+                angsInit = zeros(nAngsInit,1);
                 angsPerStg = zeros(nAngsPerStg,obj.nStages-1);
                 angsPerStg(end-floor(nCh/4)+1:end,:) = pi/2*ones(floor(nCh/4),obj.nStages-1);
-                obj.Angles = [symAngs ; initAngs; angsPerStg(:)];
+                obj.Angles = [angsSym ; angsInit; angsPerStg(:)];
                 %obj.Angles = zeros(sizeOfAngles,1);
             end
 %             if size(obj.Angles,1) ~= sizeOfAngles(1) || ...
@@ -175,7 +175,7 @@ classdef AbstOvsdLpPuFb2dTypeISystem < ...
 
         %TODO:@C³‚·‚é
         function updateMus_(obj)
-            import saivdr.dictionary.nsoltx.ChannelGroup
+            %import saivdr.dictionary.nsoltx.ChannelGroup
             import saivdr.dictionary.utility.Direction
             %nChL = obj.NumberOfChannels(ChannelGroup.LOWER);
             nCh = obj.NumberOfChannels;

@@ -69,7 +69,7 @@ classdef NsoltAtomExtender2d <  ...
         
         function arrayCoefs = finalStep_(obj,arrayCoefs)
             if ~isempty(obj.paramMtxCoefs)
-                S = conj(getParamMtx_(obj.uint32(1)));
+                S = conj(getParamMtx_(obj,uint32(1)));
                 arrayCoefs = S*arrayCoefs;
             end
         end

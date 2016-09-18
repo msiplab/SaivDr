@@ -249,7 +249,6 @@ classdef AbstOvsdLpPuFb2dSystem < matlab.System %#codegen
             nCh = obj.NumberOfChannels;
             nInitAngles = nCh*(nCh-1)/2;
             
-            %symAngles = zeros(1,nCh);
             symAngles = obj.Angles(1:nCh);
             
             initAngles = obj.Angles(nCh+1:nCh+nInitAngles);

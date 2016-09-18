@@ -48,9 +48,9 @@ classdef OvsdLpPuFb2dTypeIVm1System < saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2dT
         end        
         
         function updateParameterMatrixSet_(obj)
-            import saivdr.dictionary.nsoltx.ChannelGroup
+            %import saivdr.dictionary.nsoltx.ChannelGroup
             nch = sum(obj.NumberOfChannels);
-            
+
             [symAngles, initAngles, propAngles] = splitAngles_(obj);
             
             % symmetric matrix

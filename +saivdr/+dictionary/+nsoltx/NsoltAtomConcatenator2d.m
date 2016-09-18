@@ -43,7 +43,7 @@ classdef NsoltAtomConcatenator2d < ...
         function arrayCoefs = stepImpl(obj,arrayCoefs,subScale,pmCoefs)
             stepImpl@saivdr.dictionary.nsoltx.AbstNsoltCoefManipulator2d(obj,arrayCoefs,subScale,pmCoefs);
             
-            arrayCoefs = initialStep(obj,arrayCoefs);
+            arrayCoefs = initialStep_(obj,arrayCoefs);
             %
             if strcmp(obj.NsoltType,'Type I')
                 arrayCoefs = fullAtomCncTypeI_(obj,arrayCoefs);
@@ -85,12 +85,12 @@ classdef NsoltAtomConcatenator2d < ...
             if hOrdY > 0
                 arrayCoefs = permuteCoefs_(obj,arrayCoefs);
                 for iOrd = uint32(1):hOrdY  % Vertical process
-                    paramMtx1 = getParamMtx_(obj,numOfPMtx-6*iOrd+5); % Wy2
-                    paramMtx2 = getParamMtx_(obj,numOfPMtx-6*iOrd+6); % Uy2
-                    paramMtx3 = getParamMtx_(obj,numOfPMtx-6*iOrd+7); % angBy2
-                    paramMtx4 = getParamMtx_(obj,numOfPMtx-6*iOrd+2); % Wy1
-                    paramMtx5 = getParamMtx_(obj,numOfPMtx-6*iOrd+3); % Uy1
-                    paramMtx6 = getParamMtx_(obj,numOfPMtx-6*iOrd+4); % angBy1
+                    paramMtx1 = getParamMtx_(obj,numOfPMtx-6*iOrd+4); % Wy2
+                    paramMtx2 = getParamMtx_(obj,numOfPMtx-6*iOrd+5); % Uy2
+                    paramMtx3 = getParamMtx_(obj,numOfPMtx-6*iOrd+6); % angBy2
+                    paramMtx4 = getParamMtx_(obj,numOfPMtx-6*iOrd+1); % Wy1
+                    paramMtx5 = getParamMtx_(obj,numOfPMtx-6*iOrd+2); % Uy1
+                    paramMtx6 = getParamMtx_(obj,numOfPMtx-6*iOrd+3); % angBy1
                     %
                     arrayCoefs = atomCncTypeI_(obj,arrayCoefs,...
                         paramMtx1,paramMtx2,paramMtx3,...
@@ -102,12 +102,12 @@ classdef NsoltAtomConcatenator2d < ...
             %
             hOrdX = uint32(ordX/2);
             for iOrd = uint32(1):hOrdX % Horizontal process
-                paramMtx1 = getParamMtx_(obj,numOfPMtx-6*(hOrdY+iOrd)+5); % Wx2
-                paramMtx2 = getParamMtx_(obj,numOfPMtx-6*(hOrdY+iOrd)+6); % Ux2
-                paramMtx3 = getParamMtx_(obj,numOfPMtx-6*(hOrdY+iOrd)+7); % angBx2
-                paramMtx4 = getParamMtx_(obj,numOfPMtx-6*(hOrdY+iOrd)+2); % Wx1
-                paramMtx5 = getParamMtx_(obj,numOfPMtx-6*(hOrdY+iOrd)+3); % Ux1
-                paramMtx6 = getParamMtx_(obj,numOfPMtx-6*(hOrdY+iOrd)+4); % angBx1
+                paramMtx1 = getParamMtx_(obj,numOfPMtx-6*(hOrdY+iOrd)+4); % Wx2
+                paramMtx2 = getParamMtx_(obj,numOfPMtx-6*(hOrdY+iOrd)+5); % Ux2
+                paramMtx3 = getParamMtx_(obj,numOfPMtx-6*(hOrdY+iOrd)+6); % angBx2
+                paramMtx4 = getParamMtx_(obj,numOfPMtx-6*(hOrdY+iOrd)+1); % Wx1
+                paramMtx5 = getParamMtx_(obj,numOfPMtx-6*(hOrdY+iOrd)+2); % Ux1
+                paramMtx6 = getParamMtx_(obj,numOfPMtx-6*(hOrdY+iOrd)+3); % angBx1
                 %
                 arrayCoefs = atomCncTypeI_(obj,arrayCoefs,...
                     paramMtx1,paramMtx2,paramMtx3,...
@@ -129,12 +129,12 @@ classdef NsoltAtomConcatenator2d < ...
             if hOrdY > 0
                 arrayCoefs = permuteCoefs_(obj,arrayCoefs);
                 for iOrd = uint32(1):hOrdY % Vertical process
-                    paramMtx1 = getParamMtx_(obj,numOfPMtx-6*iOrd+5); % Wy2
-                    paramMtx2 = getParamMtx_(obj,numOfPMtx-6*iOrd+6); % Uy2
-                    paramMtx3 = getParamMtx_(obj,numOfPMtx-6*iOrd+7); % angBy2
-                    paramMtx4 = getParamMtx_(obj,numOfPMtx-6*iOrd+2); % Wy1
-                    paramMtx5 = getParamMtx_(obj,numOfPMtx-6*iOrd+3); % Uy1
-                    paramMtx6 = getParamMtx_(obj,numOfPMtx-6*iOrd+4); % angBy1
+                    paramMtx1 = getParamMtx_(obj,numOfPMtx-6*iOrd+4); % Wy2
+                    paramMtx2 = getParamMtx_(obj,numOfPMtx-6*iOrd+5); % Uy2
+                    paramMtx3 = getParamMtx_(obj,numOfPMtx-6*iOrd+6); % angBy2
+                    paramMtx4 = getParamMtx_(obj,numOfPMtx-6*iOrd+1); % Wy1
+                    paramMtx5 = getParamMtx_(obj,numOfPMtx-6*iOrd+2); % Uy1
+                    paramMtx6 = getParamMtx_(obj,numOfPMtx-6*iOrd+3); % angBy1
                     %
                     arrayCoefs = atomCncTypeIIPsGtPa_(obj,arrayCoefs,...
                         paramMtx1,paramMtx2,paramMtx3,...
@@ -147,12 +147,12 @@ classdef NsoltAtomConcatenator2d < ...
             %
             hOrdX = uint32(ordX/2);
             for iOrd = uint32(1):hOrdX % Horizontal process
-                paramMtx1 = getParamMtx_(obj,numOfPMtx-6*(hOrdY+iOrd)+5); % Wx2
-                paramMtx2 = getParamMtx_(obj,numOfPMtx-6*(hOrdY+iOrd)+6); % Ux2
-                paramMtx3 = getParamMtx_(obj,numOfPMtx-6*(hOrdY+iOrd)+7); % angBx2
-                paramMtx4 = getParamMtx_(obj,numOfPMtx-6*(hOrdY+iOrd)+2); % Wx1
-                paramMtx5 = getParamMtx_(obj,numOfPMtx-6*(hOrdY+iOrd)+3); % Ux1
-                paramMtx6 = getParamMtx_(obj,numOfPMtx-6*(hOrdY+iOrd)+4); % angBx1
+                paramMtx1 = getParamMtx_(obj,numOfPMtx-6*(hOrdY+iOrd)+4); % Wx2
+                paramMtx2 = getParamMtx_(obj,numOfPMtx-6*(hOrdY+iOrd)+5); % Ux2
+                paramMtx3 = getParamMtx_(obj,numOfPMtx-6*(hOrdY+iOrd)+6); % angBx2
+                paramMtx4 = getParamMtx_(obj,numOfPMtx-6*(hOrdY+iOrd)+1); % Wx1
+                paramMtx5 = getParamMtx_(obj,numOfPMtx-6*(hOrdY+iOrd)+2); % Ux1
+                paramMtx6 = getParamMtx_(obj,numOfPMtx-6*(hOrdY+iOrd)+3); % angBx1
                 %
                 arrayCoefs = atomCncTypeIIPsGtPa_(obj,arrayCoefs,...
                     paramMtx1,paramMtx2,paramMtx3,...

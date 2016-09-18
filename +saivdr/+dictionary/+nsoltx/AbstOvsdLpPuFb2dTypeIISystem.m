@@ -124,6 +124,7 @@ classdef AbstOvsdLpPuFb2dTypeIISystem < ...
 %                 obj.NumberOfChannels(ChannelGroup.LOWER) ],...
 %                 obj.nStages,2);
             paramMtxSizeTab = [obj.NumberOfChannels*ones(1,2);
+                obj.NumberOfChannels*ones(1,2);
                 repmat([floor(obj.NumberOfChannels/2)*ones(2,2);
                 floor(obj.NumberOfChannels/4),1;
                 ceil(obj.NumberOfChannels/2)*ones(2,2);
@@ -142,21 +143,27 @@ classdef AbstOvsdLpPuFb2dTypeIISystem < ...
 
         function updateAngles_(obj)
             import saivdr.dictionary.nsoltx.ChannelGroup
+            nCh = obj.NumberOfChannels;
             nAngsPerStg = zeros(3,1);
             %
             nAngsPerStg(1) = ...
-                floor(obj.NumberOfChannels/2) ...
-                *double(floor(obj.NumberOfChannels/2)-1);
+                floor(nCh/2) ...
+                *double(floor(nCh/2)-1);
             nAngsPerStg(2) = ...
-                ceil(obj.NumberOfChannels/2) ...
-                *double(ceil(obj.NumberOfChannels/2)-1);
-            nAngsPerStg(3) = 2*floor(obj.NumberOfChannels/4);
-            nAngsInit = obj.NumberOfChannels*(obj.NumberOfChannels-1)/2;
-            sizeOfAngles = nAngsInit + sum(nAngsPerStg)*(obj.nStages-1);
+                ceil(nCh/2) ...
+                *double(ceil(nCh/2)-1);
+            nAngsPerStg(3) = 2*floor(nCh/4);
+            nAngsInit = nCh*(nCh-1)/2;
+            nAngsSym = nCh;
+            sizeOfAngles = nAngsSym + nAngsInit + sum(nAngsPerStg)*(obj.nStages-1);
             %
-
             if isscalar(obj.Angles) && obj.Angles == 0
-                obj.Angles = zeros(sizeOfAngles,1);
+                angsSym = zeros(nAngsSym,1);
+                angsInit = zeros(nAngsInit,1);
+                angsPerStg = zeros(sum(nAngsPerStg),obj.nStages-1);
+                angsPerStg(nAngsPerStg(1)+1:nAngsPerStg(1)+floor(nCh/4),:) = pi/2*ones(floor(nCh/4),obj.nStages-1);
+                angsPerStg(end-floor(nCh/4)+1:end,:) = pi/2*ones(floor(nCh/4),obj.nStages-1);
+                obj.Angles = [angsSym ; angsInit; angsPerStg(:)];
             end
             obj.Angles = obj.Angles(:);
             % TODO : —áŠOˆ—
@@ -174,9 +181,23 @@ classdef AbstOvsdLpPuFb2dTypeIISystem < ...
 
         function updateMus_(obj)
             import saivdr.dictionary.nsoltx.ChannelGroup
+            nCh = obj.NumberOfChannels;
             %
 %             sizeOfMus = [ 2*sum(obj.NumberOfChannels) obj.nStages ];
-            sizeOfMus = obj.NumberOfChannels*(2*obj.nStages-1);
+            sizeOfMus = nCh*(2*obj.nStages-1);
+            
+            if isscalar(obj.Mus) && obj.Mus==1
+                musPerStg = [
+                    ones(floor(nCh/2),1);
+                    -ones(floor(nCh/2),1);
+                    ones(2*ceil(nCh/2),1) ];
+                    
+                %obj.Mus = ones(sizeOfMus,1);
+                tmp = repmat(musPerStg,obj.nStages-1,1);
+                obj.Mus = [ones(nCh,1); tmp];
+                %tmp = -ones(floor(nCh/2),floor((obj.nStages-1)/2));
+                %obj.Mus(floor(nCh/2)+1:end,2:2:obj.nStages) = tmp;
+            end
             %
 %             nChL = floor(obj.NumberOfChannels/2);
 %             nChU = ceil(obj.NumberOfChannels/2);
@@ -196,7 +217,6 @@ classdef AbstOvsdLpPuFb2dTypeIISystem < ...
 %                 end
 %                 sizeOfMus = prod(sizeOfMus);
 %             end
-            obj.Mus = ones(sizeOfMus,1);
 %             if size(obj.Mus,1) ~= sizeOfMus(1) || ...
 %                     size(obj.Mus,2) ~= sizeOfMus(2)
             if size(obj.Mus) ~= sizeOfMus
@@ -225,12 +245,15 @@ classdef AbstOvsdLpPuFb2dTypeIISystem < ...
             pmMtxSt_ = obj.ParameterMatrixSet;
             mexFcn_  = obj.mexFcn;
             mexFlag_ = obj.mexFlag;
+            
+            %
+            S = step(pmMtxSt_,[],uint32(1));
             %
             E0 = obj.matrixE0;
             %
-            V0 = step(pmMtxSt_,[],uint32(1));
+            V0 = step(pmMtxSt_,[],uint32(2));
             E = V0*[ E0 ; zeros(nChs-prod(dec),prod(dec))];
-            iParamMtx = uint32(2);
+            iParamMtx = uint32(3);
 
             % Horizontal extention
             lenY = decY;
@@ -278,6 +301,7 @@ classdef AbstOvsdLpPuFb2dTypeIISystem < ...
 
                 E = ipermuteCoefs_(obj,E,lenY);
             end
+            E = S*E;
             %
             nSubbands = size(E,1);
             value = zeros(lenY,lenX,nSubbands);
