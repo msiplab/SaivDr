@@ -218,8 +218,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             scales = zeros(dec*dec,2);
             sIdx = 1;
             for iSubband = 1:nDecs
-                %subImg = rand(height/dec,width/dec) + 1i*rand(height/dec,width/dec);
-                subImg = rand(height/dec,width/dec);
+                subImg = rand(height/dec,width/dec) + 1i*rand(height/dec,width/dec);
                 subCoefs{iSubband} = subImg;
                 eIdx = sIdx + numel(subImg) - 1;
                 coefs(sIdx:eIdx) = subImg(:).';
@@ -238,14 +237,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:nDecs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -300,14 +299,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');            
+            set(lppufb,'OutputMode','SynthesisFilterAt');            
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:nDecs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -362,14 +361,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 2; % for phase adjustment required experimentaly
             for iSubband = 1:nDecs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -425,14 +424,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             imgExpctd = zeros(height,width);
             phase = 2; % for phase adjustment required experimentaly
             for iSubband = 1:nDecs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -487,14 +486,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             imgExpctd = zeros(height,width);
             phase = 2; % for phase adjustment required experimentaly
             for iSubband = 1:nDecs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -546,7 +545,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             coefsExpctd = zeros(height,width);
             for iCol = 1:dec
                 for iRow = 1:dec
@@ -604,7 +603,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             coefsExpctd = zeros(height,width);
             for iCol = 1:dec
                 for iRow = 1:dec
@@ -666,14 +665,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:nDecs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -731,14 +730,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:nDecs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -793,14 +792,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 2; % for phase adjustment required experimentaly
             for iSubband = 1:nDecs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -856,14 +855,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             imgExpctd = zeros(height,width);
             phase = 2; % for phase adjustment required experimentaly
             for iSubband = 1:nDecs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -914,7 +913,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             coefsExpctd = zeros(height,width);
             for iCol = 1:dec
                 for iRow = 1:dec
@@ -974,7 +973,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             coefsExpctd = zeros(height,width);
             for iCol = 1:dec
                 for iRow = 1:dec
@@ -1040,14 +1039,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:nDecs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -1103,14 +1102,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:nDecs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -1164,14 +1163,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             imgExpctd = zeros(height,width);
             phase = 2; % for phase adjustment required experimentaly
             for iSubband = 1:nDecs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -1227,14 +1226,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             imgExpctd = zeros(height,width);
             phase = 2; % for phase adjustment required experimentaly
             for iSubband = 1:nDecs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -1285,7 +1284,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             coefsExpctd = zeros(height,width);
             for iCol = 1:dec
                 for iRow = 1:dec
@@ -1345,7 +1344,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             coefsExpctd = zeros(height,width);
             for iCol = 1:dec
                 for iRow = 1:dec
@@ -1409,14 +1408,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:nDecs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -1472,14 +1471,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             imgExpctd = zeros(height,width);
             phase = 2; % for phase adjustment required experimentaly
             for iSubband = 1:nDecs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -1536,14 +1535,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:nDecs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -1600,14 +1599,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             imgExpctd = zeros(height,width);
             phase = 2; % for phase adjustment required experimentaly
             for iSubband = 1:nDecs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -1663,14 +1662,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:nDecs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -1726,14 +1725,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             imgExpctd = zeros(height,width);
             phase = 2; % for phase adjustment required experimentaly
             for iSubband = 1:nDecs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -1790,14 +1789,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:nDecs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -1852,14 +1851,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             imgExpctd = zeros(height,width);
             phase = 2; % for phase adjustment required experimentaly
             for iSubband = 1:nDecs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -1915,14 +1914,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:nDecs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -1977,14 +1976,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             imgExpctd = zeros(height,width);
             phase = 2; % for phase adjustment required experimentaly
             for iSubband = 1:nDecs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -2039,14 +2038,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:nDecs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -2101,14 +2100,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             imgExpctd = zeros(height,width);
             phase = 2; % for phase adjustment required experimentaly
             for iSubband = 1:nDecs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -2163,14 +2162,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:nDecs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -2225,14 +2224,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             imgExpctd = zeros(height,width);
             phase = 2; % for phase adjustment required experimentaly
             for iSubband = 1:nDecs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -2288,14 +2287,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:nDecs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -2350,14 +2349,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             imgExpctd = zeros(height,width);
             phase = 2; % for phase adjustment required experimentaly
             for iSubband = 1:nDecs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -2412,14 +2411,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:nDecs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -2476,14 +2475,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             imgExpctd = zeros(height,width);
             phase = 2; % for phase adjustment required experimentaly
             for iSubband = 1:nDecs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -2539,14 +2538,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:nDecs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -2601,14 +2600,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             imgExpctd = zeros(height,width);
             phase = 2; % for phase adjustment required experimentaly
             for iSubband = 1:nDecs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -2663,14 +2662,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:nDecs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -2727,14 +2726,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             imgExpctd = zeros(height,width);
             phase = 2; % for phase adjustment required experimentaly
             for iSubband = 1:nDecs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -2791,14 +2790,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:nDecs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -2852,14 +2851,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             imgExpctd = zeros(height,width);
             phase = 2; % for phase adjustment required experimentaly
             for iSubband = 1:nDecs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -2915,14 +2914,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             imgExpctd = zeros(height,width);
             phase = 0; % for phase adjustment required experimentaly
             for iSubband = 1:ch
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -2978,14 +2977,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:ch
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -3041,14 +3040,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:ch
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -3104,14 +3103,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:ch
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -3167,14 +3166,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             imgExpctd = zeros(height,width);
             phase = 0; % for phase adjustment required experimentaly
             for iSubband = 1:ch
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -3232,14 +3231,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:ch
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -3298,14 +3297,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:ch
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -3364,14 +3363,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:ch
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -3430,14 +3429,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             imgExpctd = zeros(height,width);
             phase = 0; % for phase adjustment required experimentaly
             for iSubband = 1:ch
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -3496,14 +3495,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:ch
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -3561,14 +3560,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:ch
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -3627,14 +3626,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:ch
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -3693,14 +3692,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             imgExpctd = zeros(height,width);
             phase = 0; % for phase adjustment required experimentaly
             for iSubband = 1:ch
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -3759,14 +3758,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:ch
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -3823,14 +3822,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:ch
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -3888,14 +3887,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:ch
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -3952,14 +3951,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             imgExpctd = zeros(height,width);
             phase = 0; % for phase adjustment required experimentaly
             for iSubband = 1:ch
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -4018,14 +4017,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:ch
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -4084,14 +4083,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:ch
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -4150,14 +4149,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:ch
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -4216,14 +4215,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             imgExpctd = zeros(height,width);
             phase = 0; % for phase adjustment required experimentaly
             for iSubband = 1:ch
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -4280,14 +4279,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:ch
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -4344,14 +4343,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:ch
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -4407,14 +4406,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:ch
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -4477,7 +4476,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             phase = 0; % for phase adjustment required experimentaly
             subsubCoefs = cell(ch,1);
             subsubCoefs{1} = subCoefs{1};
@@ -4485,13 +4484,13 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 imgExpctd = imfilter(...
                     upsample(...
                     upsample(subsubCoefs{1}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],1),'cir');
+                    dec,phase),step(lppufb,[],[],1),'conv','cir');
                 for iSubSub = 2:ch
                     iSubband = (iLevel-1)*(ch-1)+iSubSub;
                     subbandImg = imfilter(...
                         upsample(...
                         upsample(subCoefs{iSubband}.',dec,phase).',...
-                        dec,phase),step(lppufb,[],[],iSubSub),'cir');
+                        dec,phase),step(lppufb,[],[],iSubSub),'conv','cir');
                     imgExpctd = imgExpctd + subbandImg;
                 end
                 subsubCoefs{1}=imgExpctd;
@@ -4556,7 +4555,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             phase = 1; % for phase adjustment required experimentaly
             subsubCoefs = cell(ch,1);
             subsubCoefs{1} = subCoefs{1};
@@ -4564,13 +4563,13 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 imgExpctd = imfilter(...
                     upsample(...
                     upsample(subsubCoefs{1}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],1),'cir');
+                    dec,phase),step(lppufb,[],[],1),'conv','cir');
                 for iSubSub = 2:ch
                     iSubband = (iLevel-1)*(ch-1)+iSubSub;
                     subbandImg = imfilter(...
                         upsample(...
                         upsample(subCoefs{iSubband}.',dec,phase).',...
-                        dec,phase),step(lppufb,[],[],iSubSub),'cir');
+                        dec,phase),step(lppufb,[],[],iSubSub),'conv','cir');
                     imgExpctd = imgExpctd + subbandImg;
                 end
                 subsubCoefs{1}=imgExpctd;
@@ -4639,7 +4638,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             phase = 1; % for phase adjustment required experimentaly
             subsubCoefs = cell(ch,1);
             subsubCoefs{1} = subCoefs{1};
@@ -4647,13 +4646,13 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 imgExpctd = imfilter(...
                     upsample(...
                     upsample(subsubCoefs{1}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],1),'cir');
+                    dec,phase),step(lppufb,[],[],1),'conv','cir');
                 for iSubSub = 2:ch
                     iSubband = (iLevel-1)*(ch-1)+iSubSub;
                     subbandImg = imfilter(...
                         upsample(...
                         upsample(subCoefs{iSubband}.',dec,phase).',...
-                        dec,phase),step(lppufb,[],[],iSubSub),'cir');
+                        dec,phase),step(lppufb,[],[],iSubSub),'conv','cir');
                     imgExpctd = imgExpctd + subbandImg;
                 end
                 subsubCoefs{1}=imgExpctd;
@@ -4725,7 +4724,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             phase = 1; % for phase adjustment required experimentaly
             subsubCoefs = cell(ch,1);
             subsubCoefs{1} = subCoefs{1};
@@ -4733,13 +4732,13 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 imgExpctd = imfilter(...
                     upsample(...
                     upsample(subsubCoefs{1}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],1),'cir');
+                    dec,phase),step(lppufb,[],[],1),'conv','cir');
                 for iSubSub = 2:ch
                     iSubband = (iLevel-1)*(ch-1)+iSubSub;
                     subbandImg = imfilter(...
                         upsample(...
                         upsample(subCoefs{iSubband}.',dec,phase).',...
-                        dec,phase),step(lppufb,[],[],iSubSub),'cir');
+                        dec,phase),step(lppufb,[],[],iSubSub),'conv','cir');
                     imgExpctd = imgExpctd + subbandImg;
                 end
                 subsubCoefs{1}=imgExpctd;
@@ -4797,14 +4796,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             imgExpctd = zeros(height,width);
             phase = 0; % for phase adjustment required experimentaly
             for iSubband = 1:ch
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -4863,14 +4862,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:ch
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -4928,14 +4927,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:ch
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -4994,14 +4993,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:ch
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -5066,7 +5065,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             phase = 0; % for phase adjustment required experimentaly
             subsubCoefs = cell(ch,1);
             subsubCoefs{1} = subCoefs{1};
@@ -5074,13 +5073,13 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 imgExpctd = imfilter(...
                     upsample(...
                     upsample(subsubCoefs{1}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],1),'cir');
+                    dec,phase),step(lppufb,[],[],1),'conv','cir');
                 for iSubSub = 2:ch
                     iSubband = (iLevel-1)*(ch-1)+iSubSub;
                     subbandImg = imfilter(...
                         upsample(...
                         upsample(subCoefs{iSubband}.',dec,phase).',...
-                        dec,phase),step(lppufb,[],[],iSubSub),'cir');
+                        dec,phase),step(lppufb,[],[],iSubSub),'conv','cir');
                     imgExpctd = imgExpctd + subbandImg;
                 end
                 subsubCoefs{1}=imgExpctd;
@@ -5145,7 +5144,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             phase = 1; % for phase adjustment required experimentaly
             subsubCoefs = cell(ch,1);
             subsubCoefs{1} = subCoefs{1};
@@ -5153,13 +5152,13 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 imgExpctd = imfilter(...
                     upsample(...
                     upsample(subsubCoefs{1}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],1),'cir');
+                    dec,phase),step(lppufb,[],[],1),'conv','cir');
                 for iSubSub = 2:ch
                     iSubband = (iLevel-1)*(ch-1)+iSubSub;
                     subbandImg = imfilter(...
                         upsample(...
                         upsample(subCoefs{iSubband}.',dec,phase).',...
-                        dec,phase),step(lppufb,[],[],iSubSub),'cir');
+                        dec,phase),step(lppufb,[],[],iSubSub),'conv','cir');
                     imgExpctd = imgExpctd + subbandImg;
                 end
                 subsubCoefs{1}=imgExpctd;
@@ -5226,7 +5225,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             phase = 1; % for phase adjustment required experimentaly
             subsubCoefs = cell(ch,1);
             subsubCoefs{1} = subCoefs{1};
@@ -5234,13 +5233,13 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 imgExpctd = imfilter(...
                     upsample(...
                     upsample(subsubCoefs{1}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],1),'cir');
+                    dec,phase),step(lppufb,[],[],1),'conv','cir');
                 for iSubSub = 2:ch
                     iSubband = (iLevel-1)*(ch-1)+iSubSub;
                     subbandImg = imfilter(...
                         upsample(...
                         upsample(subCoefs{iSubband}.',dec,phase).',...
-                        dec,phase),step(lppufb,[],[],iSubSub),'cir');
+                        dec,phase),step(lppufb,[],[],iSubSub),'conv','cir');
                     imgExpctd = imgExpctd + subbandImg;
                 end
                 subsubCoefs{1}=imgExpctd;
@@ -5313,7 +5312,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             phase = 1; % for phase adjustment required experimentaly
             subsubCoefs = cell(ch,1);
             subsubCoefs{1} = subCoefs{1};
@@ -5321,13 +5320,13 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 imgExpctd = imfilter(...
                     upsample(...
                     upsample(subsubCoefs{1}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],1),'cir');
+                    dec,phase),step(lppufb,[],[],1),'conv','cir');
                 for iSubSub = 2:ch
                     iSubband = (iLevel-1)*(ch-1)+iSubSub;
                     subbandImg = imfilter(...
                         upsample(...
                         upsample(subCoefs{iSubband}.',dec,phase).',...
-                        dec,phase),step(lppufb,[],[],iSubSub),'cir');
+                        dec,phase),step(lppufb,[],[],iSubSub),'conv','cir');
                     imgExpctd = imgExpctd + subbandImg;
                 end
                 subsubCoefs{1}=imgExpctd;
@@ -5406,7 +5405,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');        
+            set(lppufb,'OutputMode','SynthesisFilterAt');        
             phase = 1; % for phase adjustment required experimentaly
             subsubCoefs = cell(ch,1);
             subsubCoefs{1} = subCoefs{1};
@@ -5414,13 +5413,13 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 imgExpctd = imfilter(...
                     upsample(...
                     upsample(subsubCoefs{1}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],1),'cir');
+                    dec,phase),step(lppufb,[],[],1),'conv','cir');
                 for iSubSub = 2:ch
                     iSubband = (iLevel-1)*(ch-1)+iSubSub;
                     subbandImg = imfilter(...
                         upsample(...
                         upsample(subCoefs{iSubband}.',dec,phase).',...
-                        dec,phase),step(lppufb,[],[],iSubSub),'cir');
+                        dec,phase),step(lppufb,[],[],iSubSub),'conv','cir');
                     imgExpctd = imgExpctd + subbandImg;
                 end
                 subsubCoefs{1}=imgExpctd;
@@ -5887,14 +5886,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:nChs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -5952,14 +5951,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:nChs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -6017,14 +6016,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:nChs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -6081,14 +6080,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 2; % for phase adjustment required experimentaly
             for iSubband = 1:nChs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -6146,14 +6145,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 2; % for phase adjustment required experimentaly
             for iSubband = 1:nChs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -6330,14 +6329,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:nChs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -6395,14 +6394,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:nChs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -6459,14 +6458,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 2; % for phase adjustment required experimentaly
             for iSubband = 1:nChs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -6524,14 +6523,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 2; % for phase adjustment required experimentaly
             for iSubband = 1:nChs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -6708,14 +6707,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:nChs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -6773,14 +6772,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:nChs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -6837,14 +6836,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 2; % for phase adjustment required experimentaly
             for iSubband = 1:nChs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -6902,14 +6901,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 2; % for phase adjustment required experimentaly
             for iSubband = 1:nChs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -7086,14 +7085,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:nChs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -7150,14 +7149,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 2; % for phase adjustment required experimentaly
             for iSubband = 1:nChs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -7214,14 +7213,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:nChs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -7278,14 +7277,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 2; % for phase adjustment required experimentaly
             for iSubband = 1:nChs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -7342,14 +7341,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:nChs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -7406,14 +7405,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 2; % for phase adjustment required experimentaly
             for iSubband = 1:nChs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -7470,14 +7469,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:nChs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -7534,14 +7533,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 2; % for phase adjustment required experimentaly
             for iSubband = 1:nChs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -7598,14 +7597,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:nChs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -7661,14 +7660,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 2; % for phase adjustment required experimentaly
             for iSubband = 1:nChs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -7724,14 +7723,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:nChs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -7787,14 +7786,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 2; % for phase adjustment required experimentaly
             for iSubband = 1:nChs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -7850,14 +7849,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:nChs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -7913,14 +7912,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 2; % for phase adjustment required experimentaly
             for iSubband = 1:nChs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -7977,14 +7976,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:nChs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -8040,14 +8039,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 2; % for phase adjustment required experimentaly
             for iSubband = 1:nChs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -8103,14 +8102,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:nChs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -8167,14 +8166,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 2; % for phase adjustment required experimentaly
             for iSubband = 1:nChs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -8231,14 +8230,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:nChs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -8294,14 +8293,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 2; % for phase adjustment required experimentaly
             for iSubband = 1:nChs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -8357,14 +8356,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:nChs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -8421,14 +8420,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 2; % for phase adjustment required experimentaly
             for iSubband = 1:nChs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -8485,14 +8484,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:nChs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -8548,14 +8547,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 2; % for phase adjustment required experimentaly
             for iSubband = 1:nChs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -8612,14 +8611,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 0; % for phase adjustment required experimentaly
             for iSubband = 1:ch
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -8675,14 +8674,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:ch
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -8737,14 +8736,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:ch
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -8799,14 +8798,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:ch
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -8861,14 +8860,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 0; % for phase adjustment required experimentaly
             for iSubband = 1:ch
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -8926,14 +8925,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:ch
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -8992,14 +8991,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:ch
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -9058,14 +9057,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:ch
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -9124,14 +9123,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 0; % for phase adjustment required experimentaly
             for iSubband = 1:ch
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -9190,14 +9189,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:ch
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -9256,14 +9255,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:ch
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -9322,14 +9321,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:ch
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -9387,14 +9386,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 0; % for phase adjustment required experimentaly
             for iSubband = 1:ch
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -9453,14 +9452,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:ch
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -9519,14 +9518,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:ch
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -9585,14 +9584,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:ch
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -9651,14 +9650,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 0; % for phase adjustment required experimentaly
             for iSubband = 1:ch
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -9718,14 +9717,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:ch
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -9785,14 +9784,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:ch
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -9852,14 +9851,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 0; % for phase adjustment required experimentaly
             for iSubband = 1:ch
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -9914,14 +9913,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:ch
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -9976,14 +9975,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:nChs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -10039,14 +10038,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:ch
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -10109,7 +10108,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             phase = 0; % for phase adjustment required experimentaly
             subsubCoefs = cell(ch,1);
             subsubCoefs{1} = subCoefs{1};
@@ -10117,13 +10116,13 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 imgExpctd = imfilter(...
                     upsample(...
                     upsample(subsubCoefs{1}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],1),'cir');
+                    dec,phase),step(lppufb,[],[],1),'conv','cir');
                 for iSubSub = 2:ch
                     iSubband = (iLevel-1)*(ch-1)+iSubSub;
                     subbandImg = imfilter(...
                         upsample(...
                         upsample(subCoefs{iSubband}.',dec,phase).',...
-                        dec,phase),step(lppufb,[],[],iSubSub),'cir');
+                        dec,phase),step(lppufb,[],[],iSubSub),'conv','cir');
                     imgExpctd = imgExpctd + subbandImg;
                 end
                 subsubCoefs{1}=imgExpctd;
@@ -10188,7 +10187,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             phase = 1; % for phase adjustment required experimentaly
             subsubCoefs = cell(ch,1);
             subsubCoefs{1} = subCoefs{1};
@@ -10196,13 +10195,13 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 imgExpctd = imfilter(...
                     upsample(...
                     upsample(subsubCoefs{1}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],1),'cir');
+                    dec,phase),step(lppufb,[],[],1),'conv','cir');
                 for iSubSub = 2:ch
                     iSubband = (iLevel-1)*(ch-1)+iSubSub;
                     subbandImg = imfilter(...
                         upsample(...
                         upsample(subCoefs{iSubband}.',dec,phase).',...
-                        dec,phase),step(lppufb,[],[],iSubSub),'cir');
+                        dec,phase),step(lppufb,[],[],iSubSub),'conv','cir');
                     imgExpctd = imgExpctd + subbandImg;
                 end
                 subsubCoefs{1}=imgExpctd;
@@ -10272,7 +10271,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             phase = 1; % for phase adjustment required experimentaly
             subsubCoefs = cell(ch,1);
             subsubCoefs{1} = subCoefs{1};
@@ -10280,13 +10279,13 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 imgExpctd = imfilter(...
                     upsample(...
                     upsample(subsubCoefs{1}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],1),'cir');
+                    dec,phase),step(lppufb,[],[],1),'conv','cir');
                 for iSubSub = 2:ch
                     iSubband = (iLevel-1)*(ch-1)+iSubSub;
                     subbandImg = imfilter(...
                         upsample(...
                         upsample(subCoefs{iSubband}.',dec,phase).',...
-                        dec,phase),step(lppufb,[],[],iSubSub),'cir');
+                        dec,phase),step(lppufb,[],[],iSubSub),'conv','cir');
                     imgExpctd = imgExpctd + subbandImg;
                 end
                 subsubCoefs{1}=imgExpctd;
@@ -10359,7 +10358,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             phase = 1; % for phase adjustment required experimentaly
             subsubCoefs = cell(ch,1);
             subsubCoefs{1} = subCoefs{1};
@@ -10367,13 +10366,13 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 imgExpctd = imfilter(...
                     upsample(...
                     upsample(subsubCoefs{1}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],1),'cir');
+                    dec,phase),step(lppufb,[],[],1),'conv','cir');
                 for iSubSub = 2:ch
                     iSubband = (iLevel-1)*(ch-1)+iSubSub;
                     subbandImg = imfilter(...
                         upsample(...
                         upsample(subCoefs{iSubband}.',dec,phase).',...
-                        dec,phase),step(lppufb,[],[],iSubSub),'cir');
+                        dec,phase),step(lppufb,[],[],iSubSub),'conv','cir');
                     imgExpctd = imgExpctd + subbandImg;
                 end
                 subsubCoefs{1}=imgExpctd;
@@ -10431,14 +10430,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 0; % for phase adjustment required experimentaly
             for iSubband = 1:ch
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -10497,14 +10496,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:ch
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -10563,14 +10562,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:ch
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -10629,14 +10628,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:ch
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -10703,7 +10702,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             phase = 0; % for phase adjustment required experimentaly
             subsubCoefs = cell(ch,1);
             subsubCoefs{1} = subCoefs{1};
@@ -10711,13 +10710,13 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 imgExpctd = imfilter(...
                     upsample(...
                     upsample(subsubCoefs{1}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],1),'cir');
+                    dec,phase),step(lppufb,[],[],1),'conv','cir');
                 for iSubSub = 2:ch
                     iSubband = (iLevel-1)*(ch-1)+iSubSub;
                     subbandImg = imfilter(...
                         upsample(...
                         upsample(subCoefs{iSubband}.',dec,phase).',...
-                        dec,phase),step(lppufb,[],[],iSubSub),'cir');
+                        dec,phase),step(lppufb,[],[],iSubSub),'conv','cir');
                     imgExpctd = imgExpctd + subbandImg;
                 end
                 subsubCoefs{1}=imgExpctd;
@@ -10784,7 +10783,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             phase = 1; % for phase adjustment required experimentaly
             subsubCoefs = cell(ch,1);
             subsubCoefs{1} = subCoefs{1};
@@ -10792,13 +10791,13 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 imgExpctd = imfilter(...
                     upsample(...
                     upsample(subsubCoefs{1}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],1),'cir');
+                    dec,phase),step(lppufb,[],[],1),'conv','cir');
                 for iSubSub = 2:ch
                     iSubband = (iLevel-1)*(ch-1)+iSubSub;
                     subbandImg = imfilter(...
                         upsample(...
                         upsample(subCoefs{iSubband}.',dec,phase).',...
-                        dec,phase),step(lppufb,[],[],iSubSub),'cir');
+                        dec,phase),step(lppufb,[],[],iSubSub),'conv','cir');
                     imgExpctd = imgExpctd + subbandImg;
                 end
                 subsubCoefs{1}=imgExpctd;
@@ -10868,7 +10867,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             phase = 1; % for phase adjustment required experimentaly
             subsubCoefs = cell(ch,1);
             subsubCoefs{1} = subCoefs{1};
@@ -10876,13 +10875,13 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 imgExpctd = imfilter(...
                     upsample(...
                     upsample(subsubCoefs{1}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],1),'cir');
+                    dec,phase),step(lppufb,[],[],1),'conv','cir');
                 for iSubSub = 2:ch
                     iSubband = (iLevel-1)*(ch-1)+iSubSub;
                     subbandImg = imfilter(...
                         upsample(...
                         upsample(subCoefs{iSubband}.',dec,phase).',...
-                        dec,phase),step(lppufb,[],[],iSubSub),'cir');
+                        dec,phase),step(lppufb,[],[],iSubSub),'conv','cir');
                     imgExpctd = imgExpctd + subbandImg;
                 end
                 subsubCoefs{1}=imgExpctd;
@@ -10955,7 +10954,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             phase = 1; % for phase adjustment required experimentaly
             subsubCoefs = cell(ch,1);
             subsubCoefs{1} = subCoefs{1};
@@ -10963,13 +10962,13 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 imgExpctd = imfilter(...
                     upsample(...
                     upsample(subsubCoefs{1}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],1),'cir');
+                    dec,phase),step(lppufb,[],[],1),'conv','cir');
                 for iSubSub = 2:ch
                     iSubband = (iLevel-1)*(ch-1)+iSubSub;
                     subbandImg = imfilter(...
                         upsample(...
                         upsample(subCoefs{iSubband}.',dec,phase).',...
-                        dec,phase),step(lppufb,[],[],iSubSub),'cir');
+                        dec,phase),step(lppufb,[],[],iSubSub),'conv','cir');
                     imgExpctd = imgExpctd + subbandImg;
                 end
                 subsubCoefs{1}=imgExpctd;
@@ -11051,7 +11050,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             phase = 1; % for phase adjustment required experimentaly
             subsubCoefs = cell(ch,1);
             subsubCoefs{1} = subCoefs{1};
@@ -11059,13 +11058,13 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 imgExpctd = imfilter(...
                     upsample(...
                     upsample(subsubCoefs{1}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],1),'cir');
+                    dec,phase),step(lppufb,[],[],1),'conv','cir');
                 for iSubSub = 2:ch
                     iSubband = (iLevel-1)*(ch-1)+iSubSub;
                     subbandImg = imfilter(...
                         upsample(...
                         upsample(subCoefs{iSubband}.',dec,phase).',...
-                        dec,phase),step(lppufb,[],[],iSubSub),'cir');
+                        dec,phase),step(lppufb,[],[],iSubSub),'conv','cir');
                     imgExpctd = imgExpctd + subbandImg;
                 end
                 subsubCoefs{1}=imgExpctd;
@@ -11147,7 +11146,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             phase = 0; % for phase adjustment required experimentaly
             subsubCoefs = cell(ch,1);
             subsubCoefs{1} = subCoefs{1};
@@ -11155,13 +11154,13 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 imgExpctd = imfilter(...
                     upsample(...
                     upsample(subsubCoefs{1}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],1),'cir');
+                    dec,phase),step(lppufb,[],[],1),'conv','cir');
                 for iSubSub = 2:ch
                     iSubband = (iLevel-1)*(ch-1)+iSubSub;
                     subbandImg = imfilter(...
                         upsample(...
                         upsample(subCoefs{iSubband}.',dec,phase).',...
-                        dec,phase),step(lppufb,[],[],iSubSub),'cir');
+                        dec,phase),step(lppufb,[],[],iSubSub),'conv','cir');
                     imgExpctd = imgExpctd + subbandImg;
                 end
                 subsubCoefs{1}=imgExpctd;
@@ -11271,14 +11270,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:nChs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',decch(2),phase).',...
-                    decch(1),phase),step(lppufb,[],[],iSubband),'cir');
+                    decch(1),phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -11337,14 +11336,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:nChs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',decch(2),phase).',...
-                    decch(1),phase),step(lppufb,[],[],iSubband),'cir');
+                    decch(1),phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -11402,14 +11401,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:nChs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',decch(2),phase).',...
-                    decch(1),phase),step(lppufb,[],[],iSubband),'cir');
+                    decch(1),phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -11468,14 +11467,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:nChs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',decch(2),phase).',...
-                    decch(1),phase),step(lppufb,[],[],iSubband),'cir');
+                    decch(1),phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -11585,14 +11584,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %             
 %             % Expected values
 %             release(lppufb)
-%             set(lppufb,'OutputMode','AnalysisFilterAt');
+%             set(lppufb,'OutputMode','SynthesisFilterAt');
 %             imgExpctd = zeros(height,width);
 %             phase = 1; % for phase adjustment required experimentaly
 %             for iSubband = 1:nChs
 %                 subbandImg = imfilter(...
 %                     upsample(...
 %                     upsample(subCoefs{iSubband}.',decch(2),phase).',...
-%                     decch(1),phase),step(lppufb,[],[],iSubband),'cir');
+%                     decch(1),phase),step(lppufb,[],[],iSubband),'conv','cir');
 %                 imgExpctd = imgExpctd + subbandImg;
 %             end
 %             
@@ -11651,14 +11650,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %             
 %             % Expected values
 %             release(lppufb)
-%             set(lppufb,'OutputMode','AnalysisFilterAt');
+%             set(lppufb,'OutputMode','SynthesisFilterAt');
 %             imgExpctd = zeros(height,width);
 %             phase = 1; % for phase adjustment required experimentaly
 %             for iSubband = 1:nChs
 %                 subbandImg = imfilter(...
 %                     upsample(...
 %                     upsample(subCoefs{iSubband}.',decch(2),phase).',...
-%                     decch(1),phase),step(lppufb,[],[],iSubband),'cir');
+%                     decch(1),phase),step(lppufb,[],[],iSubband),'conv','cir');
 %                 imgExpctd = imgExpctd + subbandImg;
 %             end
 %             
@@ -11716,14 +11715,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %             
 %             % Expected values
 %             release(lppufb)
-%             set(lppufb,'OutputMode','AnalysisFilterAt');
+%             set(lppufb,'OutputMode','SynthesisFilterAt');
 %             imgExpctd = zeros(height,width);
 %             phase = 1; % for phase adjustment required experimentaly
 %             for iSubband = 1:nChs
 %                 subbandImg = imfilter(...
 %                     upsample(...
 %                     upsample(subCoefs{iSubband}.',decch(2),phase).',...
-%                     decch(1),phase),step(lppufb,[],[],iSubband),'cir');
+%                     decch(1),phase),step(lppufb,[],[],iSubband),'conv','cir');
 %                 imgExpctd = imgExpctd + subbandImg;
 %             end
 %             
@@ -11782,14 +11781,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %             
 %             % Expected values
 %             release(lppufb)
-%             set(lppufb,'OutputMode','AnalysisFilterAt');
+%             set(lppufb,'OutputMode','SynthesisFilterAt');
 %             imgExpctd = zeros(height,width);
 %             phase = 1; % for phase adjustment required experimentaly
 %             for iSubband = 1:nChs
 %                 subbandImg = imfilter(...
 %                     upsample(...
 %                     upsample(subCoefs{iSubband}.',decch(2),phase).',...
-%                     decch(1),phase),step(lppufb,[],[],iSubband),'cir');
+%                     decch(1),phase),step(lppufb,[],[],iSubband),'conv','cir');
 %                 imgExpctd = imgExpctd + subbandImg;
 %             end
 %             
@@ -11848,14 +11847,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = 1; % for phase adjustment required experimentaly
             for iSubband = 1:nChs
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',decch(2),phase).',...
-                    decch(1),phase),step(lppufb,[],[],iSubband),'cir');
+                    decch(1),phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -11923,7 +11922,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             phase = 1; % for phase adjustment required experimentaly
             subsubCoefs = cell(nChs,1);
             subsubCoefs{1} = subCoefs{1};
@@ -11931,13 +11930,13 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 imgExpctd = imfilter(...
                     upsample(...
                     upsample(subsubCoefs{1}.',decch(2),phase).',...
-                    decch(1),phase),step(lppufb,[],[],1),'cir');
+                    decch(1),phase),step(lppufb,[],[],1),'conv','cir');
                 for iSubSub = 2:nChs
                     iSubband = (iLevel-1)*(nChs-1)+iSubSub;
                     subbandImg = imfilter(...
                         upsample(...
                         upsample(subCoefs{iSubband}.',decch(2),phase).',...
-                        decch(2),phase),step(lppufb,[],[],iSubSub),'cir');
+                        decch(2),phase),step(lppufb,[],[],iSubSub),'conv','cir');
                     imgExpctd = imgExpctd + subbandImg;
                 end
                 subsubCoefs{1}=imgExpctd;
@@ -11997,14 +11996,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %             
 %             % Expected values
 %             release(lppufb)
-%             set(lppufb,'OutputMode','AnalysisFilterAt');
+%             set(lppufb,'OutputMode','SynthesisFilterAt');
 %             imgExpctd = zeros(height,width);
 %             phase = 1; % for phase adjustment required experimentaly
 %             for iSubband = 1:nChs
 %                 subbandImg = imfilter(...
 %                     upsample(...
 %                     upsample(subCoefs{iSubband}.',decch(2),phase).',...
-%                     decch(1),phase),step(lppufb,[],[],iSubband),'cir');
+%                     decch(1),phase),step(lppufb,[],[],iSubband),'conv','cir');
 %                 imgExpctd = imgExpctd + subbandImg;
 %             end
 %             
@@ -12073,7 +12072,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %             
 %             % Expected values
 %             release(lppufb)
-%             set(lppufb,'OutputMode','AnalysisFilterAt');
+%             set(lppufb,'OutputMode','SynthesisFilterAt');
 %             phase = 1; % for phase adjustment required experimentaly
 %             subsubCoefs = cell(nChs,1);
 %             subsubCoefs{1} = subCoefs{1};
@@ -12081,13 +12080,13 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %                 imgExpctd = imfilter(...
 %                     upsample(...
 %                     upsample(subsubCoefs{1}.',decch(2),phase).',...
-%                     decch(1),phase),step(lppufb,[],[],1),'cir');
+%                     decch(1),phase),step(lppufb,[],[],1),'conv','cir');
 %                 for iSubSub = 2:nChs
 %                     iSubband = (iLevel-1)*(nChs-1)+iSubSub;
 %                     subbandImg = imfilter(...
 %                         upsample(...
 %                         upsample(subCoefs{iSubband}.',decch(2),phase).',...
-%                         decch(2),phase),step(lppufb,[],[],iSubSub),'cir');
+%                         decch(2),phase),step(lppufb,[],[],iSubSub),'conv','cir');
 %                     imgExpctd = imgExpctd + subbandImg;
 %                 end
 %                 subsubCoefs{1}=imgExpctd;
@@ -12361,14 +12360,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %             
 %             % Expected values
 %             release(lppufb)
-%             set(lppufb,'OutputMode','AnalysisFilterAt');
+%             set(lppufb,'OutputMode','SynthesisFilterAt');
 %             imgExpctd = zeros(height,width);
 %             phase = 1; % for phase adjustment required experimentaly
 %             for iSubband = 1:nChs
 %                 subbandImg = imfilter(...
 %                     upsample(...
 %                     upsample(subCoefs{iSubband}.',decch(2),phase).',...
-%                     decch(1),phase),step(lppufb,[],[],iSubband),'cir');
+%                     decch(1),phase),step(lppufb,[],[],iSubband),'conv','cir');
 %                 imgExpctd = imgExpctd + subbandImg;
 %             end
 %             
@@ -12426,14 +12425,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %             
 %             % Expected values
 %             release(lppufb)
-%             set(lppufb,'OutputMode','AnalysisFilterAt');
+%             set(lppufb,'OutputMode','SynthesisFilterAt');
 %             imgExpctd = zeros(height,width);
 %             phase = 1; % for phase adjustment required experimentaly
 %             for iSubband = 1:nChs
 %                 subbandImg = imfilter(...
 %                     upsample(...
 %                     upsample(subCoefs{iSubband}.',decch(2),phase).',...
-%                     decch(1),phase),step(lppufb,[],[],iSubband),'cir');
+%                     decch(1),phase),step(lppufb,[],[],iSubband),'conv','cir');
 %                 imgExpctd = imgExpctd + subbandImg;
 %             end
 %             
@@ -12490,14 +12489,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %             
 %             % Expected values
 %             release(lppufb)
-%             set(lppufb,'OutputMode','AnalysisFilterAt');
+%             set(lppufb,'OutputMode','SynthesisFilterAt');
 %             imgExpctd = zeros(height,width);
 %             phase = 1; % for phase adjustment required experimentaly
 %             for iSubband = 1:nChs
 %                 subbandImg = imfilter(...
 %                     upsample(...
 %                     upsample(subCoefs{iSubband}.',decch(2),phase).',...
-%                     decch(1),phase),step(lppufb,[],[],iSubband),'cir');
+%                     decch(1),phase),step(lppufb,[],[],iSubband),'conv','cir');
 %                 imgExpctd = imgExpctd + subbandImg;
 %             end
 %             
@@ -12555,14 +12554,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %             
 %             % Expected values
 %             release(lppufb)
-%             set(lppufb,'OutputMode','AnalysisFilterAt');
+%             set(lppufb,'OutputMode','SynthesisFilterAt');
 %             imgExpctd = zeros(height,width);
 %             phase = 1; % for phase adjustment required experimentaly
 %             for iSubband = 1:nChs
 %                 subbandImg = imfilter(...
 %                     upsample(...
 %                     upsample(subCoefs{iSubband}.',decch(2),phase).',...
-%                     decch(1),phase),step(lppufb,[],[],iSubband),'cir');
+%                     decch(1),phase),step(lppufb,[],[],iSubband),'conv','cir');
 %                 imgExpctd = imgExpctd + subbandImg;
 %             end
 %             
@@ -12668,14 +12667,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %             
 %             % Expected values
 %             release(lppufb)
-%             set(lppufb,'OutputMode','AnalysisFilterAt');
+%             set(lppufb,'OutputMode','SynthesisFilterAt');
 %             imgExpctd = zeros(height,width);
 %             phase = 1; % for phase adjustment required experimentaly
 %             for iSubband = 1:nChs
 %                 subbandImg = imfilter(...
 %                     upsample(...
 %                     upsample(subCoefs{iSubband}.',decch(2),phase).',...
-%                     decch(1),phase),step(lppufb,[],[],iSubband),'cir');
+%                     decch(1),phase),step(lppufb,[],[],iSubband),'conv','cir');
 %                 imgExpctd = imgExpctd + subbandImg;
 %             end
 %             
@@ -12732,14 +12731,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %             
 %             % Expected values
 %             release(lppufb)
-%             set(lppufb,'OutputMode','AnalysisFilterAt');
+%             set(lppufb,'OutputMode','SynthesisFilterAt');
 %             imgExpctd = zeros(height,width);
 %             phase = 1; % for phase adjustment required experimentaly
 %             for iSubband = 1:nChs
 %                 subbandImg = imfilter(...
 %                     upsample(...
 %                     upsample(subCoefs{iSubband}.',decch(2),phase).',...
-%                     decch(1),phase),step(lppufb,[],[],iSubband),'cir');
+%                     decch(1),phase),step(lppufb,[],[],iSubband),'conv','cir');
 %                 imgExpctd = imgExpctd + subbandImg;
 %             end
 %             
@@ -12795,14 +12794,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %             
 %             % Expected values
 %             release(lppufb)
-%             set(lppufb,'OutputMode','AnalysisFilterAt');
+%             set(lppufb,'OutputMode','SynthesisFilterAt');
 %             imgExpctd = zeros(height,width);
 %             phase = 1; % for phase adjustment required experimentaly
 %             for iSubband = 1:nChs
 %                 subbandImg = imfilter(...
 %                     upsample(...
 %                     upsample(subCoefs{iSubband}.',decch(2),phase).',...
-%                     decch(1),phase),step(lppufb,[],[],iSubband),'cir');
+%                     decch(1),phase),step(lppufb,[],[],iSubband),'conv','cir');
 %                 imgExpctd = imgExpctd + subbandImg;
 %             end
 %             
@@ -12859,14 +12858,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %             
 %             % Expected values
 %             release(lppufb)
-%             set(lppufb,'OutputMode','AnalysisFilterAt');
+%             set(lppufb,'OutputMode','SynthesisFilterAt');
 %             imgExpctd = zeros(height,width);
 %             phase = 1; % for phase adjustment required experimentaly
 %             for iSubband = 1:nChs
 %                 subbandImg = imfilter(...
 %                     upsample(...
 %                     upsample(subCoefs{iSubband}.',decch(2),phase).',...
-%                     decch(1),phase),step(lppufb,[],[],iSubband),'cir');
+%                     decch(1),phase),step(lppufb,[],[],iSubband),'conv','cir');
 %                 imgExpctd = imgExpctd + subbandImg;
 %             end
 %             
@@ -12924,14 +12923,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %             
 %             % Expected values
 %             release(lppufb)
-%             set(lppufb,'OutputMode','AnalysisFilterAt');
+%             set(lppufb,'OutputMode','SynthesisFilterAt');
 %             imgExpctd = zeros(height,width);
 %             phase = 1; % for phase adjustment required experimentaly
 %             for iSubband = 1:nChs
 %                 subbandImg = imfilter(...
 %                     upsample(...
 %                     upsample(subCoefs{iSubband}.',decch(2),phase).',...
-%                     decch(1),phase),step(lppufb,[],[],iSubband),'cir');
+%                     decch(1),phase),step(lppufb,[],[],iSubband),'conv','cir');
 %                 imgExpctd = imgExpctd + subbandImg;
 %             end
 %             
@@ -12991,14 +12990,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = nDecs-1; % for phase adjustment required experimentaly
             for iSubband = 1:nch_
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',nDecs(2),phase(2)).',...
-                    nDecs(1),phase(1)),step(lppufb,[],[],iSubband),'cir');
+                    nDecs(1),phase(1)),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -13058,14 +13057,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = nDecs-1; % for phase adjustment required experimentaly
             for iSubband = 1:nch_
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',nDecs(2),phase(2)).',...
-                    nDecs(1),phase(1)),step(lppufb,[],[],iSubband),'cir');
+                    nDecs(1),phase(1)),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -13125,14 +13124,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %             
 %             % Expected values
 %             release(lppufb)
-%             set(lppufb,'OutputMode','AnalysisFilterAt');
+%             set(lppufb,'OutputMode','SynthesisFilterAt');
 %             imgExpctd = zeros(height,width);
 %             phase = nDecs-1; % for phase adjustment required experimentaly
 %             for iSubband = 1:nch_
 %                 subbandImg = imfilter(...
 %                     upsample(...
 %                     upsample(subCoefs{iSubband}.',nDecs(2),phase(2)).',...
-%                     nDecs(1),phase(1)),step(lppufb,[],[],iSubband),'cir');
+%                     nDecs(1),phase(1)),step(lppufb,[],[],iSubband),'conv','cir');
 %                 imgExpctd = imgExpctd + subbandImg;
 %             end
 %             
@@ -13192,14 +13191,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %             
 %             % Expected values
 %             release(lppufb)
-%             set(lppufb,'OutputMode','AnalysisFilterAt');
+%             set(lppufb,'OutputMode','SynthesisFilterAt');
 %             imgExpctd = zeros(height,width);
 %             phase = nDecs-1; % for phase adjustment required experimentaly
 %             for iSubband = 1:nch_
 %                 subbandImg = imfilter(...
 %                     upsample(...
 %                     upsample(subCoefs{iSubband}.',nDecs(2),phase(2)).',...
-%                     nDecs(1),phase(1)),step(lppufb,[],[],iSubband),'cir');
+%                     nDecs(1),phase(1)),step(lppufb,[],[],iSubband),'conv','cir');
 %                 imgExpctd = imgExpctd + subbandImg;
 %             end
 %             
@@ -13259,14 +13258,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = nDecs-1; % for phase adjustment required experimentaly
             for iSubband = 1:nch_
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',nDecs(2),phase(2)).',...
-                    nDecs(1),phase(1)),step(lppufb,[],[],iSubband),'cir');
+                    nDecs(1),phase(1)),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -13326,14 +13325,14 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             release(lppufb)
-            set(lppufb,'OutputMode','AnalysisFilterAt');
+            set(lppufb,'OutputMode','SynthesisFilterAt');
             imgExpctd = zeros(height,width);
             phase = nDecs-1; % for phase adjustment required experimentaly
             for iSubband = 1:nch_
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',nDecs(2),phase(2)).',...
-                    nDecs(1),phase(1)),step(lppufb,[],[],iSubband),'cir');
+                    nDecs(1),phase(1)),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             

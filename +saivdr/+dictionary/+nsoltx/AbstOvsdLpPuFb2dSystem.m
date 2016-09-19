@@ -136,15 +136,14 @@ classdef AbstOvsdLpPuFb2dSystem < matlab.System %#codegen
             elseif strcmp(obj.OutputMode,'AnalysisFilters')
                 output = getAnalysisFilterBank_(obj);
             elseif strcmp(obj.OutputMode,'SynthesisFilterAt')
-                % TODO:対称性を考慮する
+                % TODO: 本来は対称性を考慮しなければならないが，何故か正しく動作する．
+                %      動作原理を確認する．
                 idx = varargin{3};
                 H = getAnalysisFilterBank_(obj);
-                [symAngles,~,~] = splitAngles_(obj);
-                %H = exp(-2i*symAngles(idx))*conj(H);
                 H = conj(H);
                 output = rot90(H(:,:,idx),2);
             elseif strcmp(obj.OutputMode,'SynthesisFilters')
-                % TODO:対称性を考慮する
+                % TODO: SynthesisFilterAtを参照
                 H = getAnalysisFilterBank_(obj);
                 H = conj(H);
                 H = flip(H,1);
