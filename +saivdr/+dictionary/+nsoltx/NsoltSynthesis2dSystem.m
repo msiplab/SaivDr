@@ -202,8 +202,6 @@ classdef NsoltSynthesis2dSystem  < ...
         
         function subImg = subSynthesize_(obj,arrayCoefs,pmCoefs)
             import saivdr.dictionary.utility.Direction
-            %
-            %ps = obj.NumberOfSymmetricChannels;
             nRows_ = obj.nRows;
             nCols_ = obj.nCols;
             decY_ = obj.decimationFactor(Direction.VERTICAL);
@@ -246,17 +244,10 @@ classdef NsoltSynthesis2dSystem  < ...
 %                     reshape(subCoef1+subCoef2-subCoef3-subCoef4,subScale);
 %                 %
 %                 subImg = subImg/2;
-            else 
-%                 mc = ceil(decX_*decY_/2);
-%                 mf = floor(decX_*decY_/2);
-                %coefs = zeros(nDec,size(arrayCoefs,2));
+            else
                 coefs = arrayCoefs(1:nDec,:);
                 scale = double(subScale) .* obj.decimationFactor;
                 dctCoefs = col2im(coefs,blockSize,scale,'distinct');
-%                 dctCoefs = blockproc(dctCoefs,blockSize,...
-%                     @obj.permuteIdctCoefs_);
-%                 subImg = blockproc(dctCoefs,blockSize,...
-%                     @obj.idct2_);
                 subImg = blockproc(dctCoefs,blockSize,@obj.conjihsdft2_);
             end
         end
