@@ -59,7 +59,7 @@ classdef NsoltAtomConcatenator2d < ...
     methods ( Access = private )
         function arrayCoefs = initialStep_(obj,arrayCoefs)
             if ~isempty(obj.paramMtxCoefs)
-                S = getParamMtx_(obj,uint32(1)).';
+                S = getParamMtx_(obj,uint32(1))';
                 arrayCoefs = S*arrayCoefs;
             end
         end
@@ -76,6 +76,8 @@ classdef NsoltAtomConcatenator2d < ...
         function arrayCoefs = fullAtomCncTypeI_(obj,arrayCoefs)
             %
             isPeriodicExt = obj.IsPeriodicExt; % BoundaryOperation = 'Circular'
+            %TODO:
+            isPeriodicExt = true;
             %
             ordY = obj.PolyPhaseOrder(saivdr.dictionary.utility.Direction.VERTICAL);
             ordX = obj.PolyPhaseOrder(saivdr.dictionary.utility.Direction.HORIZONTAL);
@@ -120,6 +122,7 @@ classdef NsoltAtomConcatenator2d < ...
         function arrayCoefs = fullAtomCncTypeII_(obj,arrayCoefs)
             %
             isPeriodicExt = obj.IsPeriodicExt; % BoundaryOperation = 'Circular';
+            isPeriodicExt = true;
             %
             ordY = obj.PolyPhaseOrder(saivdr.dictionary.utility.Direction.VERTICAL);
             ordX = obj.PolyPhaseOrder(saivdr.dictionary.utility.Direction.HORIZONTAL);
@@ -136,7 +139,7 @@ classdef NsoltAtomConcatenator2d < ...
                     paramMtx5 = getParamMtx_(obj,numOfPMtx-6*iOrd+2); % Uy1
                     paramMtx6 = getParamMtx_(obj,numOfPMtx-6*iOrd+3); % angBy1
                     %
-                    arrayCoefs = atomCncTypeIIPsGtPa_(obj,arrayCoefs,...
+                    arrayCoefs = atomCncTypeII_(obj,arrayCoefs,...
                         paramMtx1,paramMtx2,paramMtx3,...
                         paramMtx4,paramMtx5,paramMtx6,...
                         isPeriodicExt);
@@ -154,7 +157,7 @@ classdef NsoltAtomConcatenator2d < ...
                 paramMtx5 = getParamMtx_(obj,numOfPMtx-6*(hOrdY+iOrd)+2); % Ux1
                 paramMtx6 = getParamMtx_(obj,numOfPMtx-6*(hOrdY+iOrd)+3); % angBx1
                 %
-                arrayCoefs = atomCncTypeIIPsGtPa_(obj,arrayCoefs,...
+                arrayCoefs = atomCncTypeII_(obj,arrayCoefs,...
                     paramMtx1,paramMtx2,paramMtx3,...
                     paramMtx4,paramMtx5,paramMtx6,...
                     isPeriodicExt);
@@ -207,7 +210,7 @@ classdef NsoltAtomConcatenator2d < ...
 %             arrayCoefs = arrayCoefs/2.0;
         end
         
-        function arrayCoefs = atomCncTypeIIPsGtPa_(obj,arrayCoefs,paramMtx1,paramMtx2,paramMtx3,paramMtx4,paramMtx5,paramMtx6,isPeriodicExt)
+        function arrayCoefs = atomCncTypeII_(obj,arrayCoefs,paramMtx1,paramMtx2,paramMtx3,paramMtx4,paramMtx5,paramMtx6,isPeriodicExt)
             hLen = obj.NumberOfSymmetricChannels;
             
             % Phase 1

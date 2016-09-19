@@ -180,7 +180,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.nsoltx.*
             lppufb = NsoltFactory.createOvsdLpPuFb2dSystem();
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             E = step(lppufb,[],[]);
             
@@ -218,7 +218,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             scales = zeros(dec*dec,2);
             sIdx = 1;
             for iSubband = 1:nDecs
-                subImg = rand(height/dec,width/dec) + 1i*rand(height/dec,width/dec);
+                %subImg = rand(height/dec,width/dec) + 1i*rand(height/dec,width/dec);
+                subImg = rand(height/dec,width/dec);
                 subCoefs{iSubband} = subImg;
                 eIdx = sIdx + numel(subImg) - 1;
                 coefs(sIdx:eIdx) = subImg(:).';
@@ -232,7 +233,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -294,7 +295,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -355,7 +356,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -419,7 +420,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'PolyPhaseOrder',[ord ord],...
                 'NumberOfVanishingMoments',0);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -481,7 +482,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'PolyPhaseOrder',[ord ord],...
                 'NumberOfVanishingMoments',1);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -660,7 +661,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -724,7 +725,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -787,7 +788,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
                
             % Expected values
@@ -850,7 +851,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -1034,7 +1035,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -1097,7 +1098,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -1158,7 +1159,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -1221,7 +1222,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -1403,7 +1404,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',[0 ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -1466,7 +1467,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',[0 ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -1530,7 +1531,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',[0 ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -1594,7 +1595,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',[0 ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -1657,7 +1658,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',[ord 0]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -1720,7 +1721,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',[ord 0]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -1784,7 +1785,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',[ord 0]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -1846,7 +1847,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',[ord 0]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -1909,7 +1910,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',[0 ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -1971,7 +1972,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',[0 ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -2033,7 +2034,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',[0 ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -2095,7 +2096,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',[0 ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -2157,7 +2158,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',[ord 0]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -2219,7 +2220,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',[ord 0]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -2282,7 +2283,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',[ord 0]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -2344,7 +2345,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',[ord 0]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -2406,7 +2407,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',ord);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -2470,7 +2471,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',ord);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -2533,7 +2534,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',ord);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -2595,7 +2596,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',ord);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -2657,7 +2658,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',ord);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -2721,7 +2722,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',ord);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -2785,7 +2786,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',ord);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -2846,7 +2847,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',ord);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -2909,7 +2910,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -2971,7 +2972,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -3034,7 +3035,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -3097,7 +3098,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -3160,7 +3161,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -3225,7 +3226,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -3291,7 +3292,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -3357,7 +3358,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -3423,7 +3424,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -3489,7 +3490,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -3554,7 +3555,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -3620,7 +3621,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -3686,7 +3687,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -3752,7 +3753,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -3817,7 +3818,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -3881,7 +3882,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -3946,7 +3947,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -4011,7 +4012,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -4077,7 +4078,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -4144,7 +4145,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -4210,7 +4211,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -4273,7 +4274,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -4337,7 +4338,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -4401,7 +4402,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -4470,7 +4471,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -4549,7 +4550,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -4632,7 +4633,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -4718,7 +4719,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -4790,7 +4791,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -4856,7 +4857,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -4921,7 +4922,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -4987,7 +4988,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -5059,7 +5060,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -5138,7 +5139,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -5220,7 +5221,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -5306,7 +5307,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -5400,7 +5401,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -5485,7 +5486,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Update lppufb
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             imgPst = step(testCase.synthesizer,coefs,scales);
             
@@ -5549,7 +5550,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Update lppufb
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Pst
@@ -5570,7 +5571,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Update lppufb
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Pst
@@ -5643,72 +5644,72 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testDefaultConstruction6plus2(testCase)
-            
-            % Preperation
-            nChs = [6 2];
-           
-            % Expected values
-            import saivdr.dictionary.nsoltx.*
-            lppufbExpctd = OvsdLpPuFb2dTypeIIVm1System(...
-                'NumberOfChannels',nChs,...
-                'OutputMode','ParameterMatrixSet');
-            
-            % Instantiation
-            import saivdr.dictionary.nsoltx.ChannelGroup
-            testCase.synthesizer = NsoltAnalysis2dSystem(...
-                'NumberOfSymmetricChannels',nChs(ChannelGroup.UPPER),...
-                'NumberOfAntisymmetricChannels',nChs(ChannelGroup.LOWER));
-            
-            % Actual value
-            lppufbActual = get(testCase.synthesizer,'LpPuFb2d');
-            
-            % Evaluation
-            testCase.assertEqual(lppufbActual,lppufbExpctd);
-        end
-        % Test for default construction
-        function testInverseBlockDctDec33(testCase)
-            
-            dec = 3;
-            height = 24;
-            width = 24;
-            subCoefs  = rand(height*dec,width/dec) + 1i*rand(height*dec,width/dec);
-            coefs = zeros(1,height*width);
-            scales = zeros(dec*dec,2);
-            sIdx = 1;
-            for iCh = 1:dec*dec
-                subImg = subCoefs(iCh:dec*dec:end,:);
-                eIdx = sIdx + numel(subImg) - 1;
-                coefs(sIdx:eIdx) = subImg(:).';
-                scales(iCh,:) = size(subImg);
-                sIdx = eIdx + 1;
-            end
-            
-            % Expected values
-            import saivdr.dictionary.nsoltx.*
-            lppufb = NsoltFactory.createOvsdLpPuFb2dSystem(...
-                'DecimationFactor',[dec dec]);
-            E0 = step(lppufb,[],[]);
-            %fun = @(x) reshape(flipud(E0'*x.data(:)),dec,dec);
-            %imgExpctd = blockproc(subCoefs,[dec*dec 1],fun);
-            fun = @(x) reshape(flipud(E0'*x.data(:)),dec,dec);
-            imgExpctd = blockproc(subCoefs,[dec*dec 1],fun);
-            
-            % Instantiation of target class
-            release(lppufb)
-            set(lppufb,'OutputMode','ParameterMatrixSet');
-            testCase.synthesizer = NsoltSynthesis2dSystem(....
-                'LpPuFb2d',lppufb);
-            
-            % Actual values
-            imgActual = ...
-                step(testCase.synthesizer,coefs,scales);
-            
-            % Evaluation
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
-            
-        end
+%         function testDefaultConstruction6plus2(testCase)
+%             
+%             % Preperation
+%             nChs = [6 2];
+%            
+%             % Expected values
+%             import saivdr.dictionary.nsoltx.*
+%             lppufbExpctd = OvsdLpPuFb2dTypeIIVm1System(...
+%                 'NumberOfChannels',nChs,...
+%                 'OutputMode','ParameterMatrixSet');
+%             
+%             % Instantiation
+%             import saivdr.dictionary.nsoltx.ChannelGroup
+%             testCase.synthesizer = NsoltAnalysis2dSystem(...
+%                 'NumberOfSymmetricChannels',nChs(ChannelGroup.UPPER),...
+%                 'NumberOfAntisymmetricChannels',nChs(ChannelGroup.LOWER));
+%             
+%             % Actual value
+%             lppufbActual = get(testCase.synthesizer,'LpPuFb2d');
+%             
+%             % Evaluation
+%             testCase.assertEqual(lppufbActual,lppufbExpctd);
+%         end
+%         % Test for default construction
+%         function testInverseBlockDctDec33(testCase)
+%             
+%             dec = 3;
+%             height = 24;
+%             width = 24;
+%             subCoefs  = rand(height*dec,width/dec) + 1i*rand(height*dec,width/dec);
+%             coefs = zeros(1,height*width);
+%             scales = zeros(dec*dec,2);
+%             sIdx = 1;
+%             for iCh = 1:dec*dec
+%                 subImg = subCoefs(iCh:dec*dec:end,:);
+%                 eIdx = sIdx + numel(subImg) - 1;
+%                 coefs(sIdx:eIdx) = subImg(:).';
+%                 scales(iCh,:) = size(subImg);
+%                 sIdx = eIdx + 1;
+%             end
+%             
+%             % Expected values
+%             import saivdr.dictionary.nsoltx.*
+%             lppufb = NsoltFactory.createOvsdLpPuFb2dSystem(...
+%                 'DecimationFactor',[dec dec]);
+%             E0 = step(lppufb,[],[]);
+%             %fun = @(x) reshape(flipud(E0'*x.data(:)),dec,dec);
+%             %imgExpctd = blockproc(subCoefs,[dec*dec 1],fun);
+%             fun = @(x) reshape(flipud(E0'*x.data(:)),dec,dec);
+%             imgExpctd = blockproc(subCoefs,[dec*dec 1],fun);
+%             
+%             % Instantiation of target class
+%             release(lppufb)
+%             set(lppufb,'OutputMode','ParameterMatrixSet');
+%             testCase.synthesizer = NsoltSynthesis2dSystem(....
+%                 'LpPuFb2d',lppufb);
+%             
+%             % Actual values
+%             imgActual = ...
+%                 step(testCase.synthesizer,coefs,scales);
+%             
+%             % Evaluation
+%             diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
+%             testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+%             
+%         end
         
         % Test
         function testInverseBlockDctDec55(testCase)
@@ -5778,7 +5779,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',nChs,...
                 'NumberOfVanishingMoments',0);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             E = step(lppufb,[],[]);
             
@@ -5828,7 +5829,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels', nChs,...
                 'NumberOfVanishingMoments',0);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             E = step(lppufb,[],[]);
             
@@ -5881,7 +5882,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'PolyPhaseOrder',[ord ord],...
                 'NumberOfVanishingMoments',0);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -5946,7 +5947,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'PolyPhaseOrder',[ord ord],...
                 'NumberOfVanishingMoments',1);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -6010,7 +6011,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',nChs,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -6074,7 +6075,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',nChs,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -6139,7 +6140,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',nChs,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -6323,7 +6324,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',nChs,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -6388,7 +6389,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',nChs,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -6452,7 +6453,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',nChs,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -6517,7 +6518,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',nChs,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -6701,7 +6702,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',nChs,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -6766,7 +6767,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',nChs,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -6830,7 +6831,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',nChs,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -6895,7 +6896,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',nChs,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -7080,7 +7081,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels', nChs,...
                 'PolyPhaseOrder',[0 ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -7144,7 +7145,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels', nChs,...
                 'PolyPhaseOrder',[0 ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -7208,7 +7209,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels', nChs,...
                 'PolyPhaseOrder',[0 ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -7272,7 +7273,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels', nChs,...
                 'PolyPhaseOrder',[0 ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -7336,7 +7337,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels', nChs,...
                 'PolyPhaseOrder',[ord 0]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -7400,7 +7401,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels', nChs,...
                 'PolyPhaseOrder',[ord 0]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -7464,7 +7465,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels', nChs,...
                 'PolyPhaseOrder',[ord 0]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -7528,7 +7529,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels', nChs,...
                 'PolyPhaseOrder',[ord 0]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -7592,7 +7593,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels', nChs,...
                 'PolyPhaseOrder',[0 ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -7655,7 +7656,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels', nChs,...
                 'PolyPhaseOrder',[0 ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -7718,7 +7719,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels', nChs,...
                 'PolyPhaseOrder',[0 ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -7781,7 +7782,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels', nChs,...
                 'PolyPhaseOrder',[0 ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -7844,7 +7845,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels', nChs,...
                 'PolyPhaseOrder',[ord 0]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -7907,7 +7908,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels', nChs,...
                 'PolyPhaseOrder',[ord 0]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -7971,7 +7972,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels', nChs,...
                 'PolyPhaseOrder',[ord 0]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -8034,7 +8035,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels', nChs,...
                 'PolyPhaseOrder',[ord 0]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -8097,7 +8098,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',nChs,...
                 'PolyPhaseOrder',ord);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -8161,7 +8162,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',nChs,...
                 'PolyPhaseOrder',ord);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -8225,7 +8226,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',nChs,...
                 'PolyPhaseOrder',ord);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -8288,7 +8289,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',nChs,...
                 'PolyPhaseOrder',ord);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -8351,7 +8352,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',nChs,...
                 'PolyPhaseOrder',ord);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -8415,7 +8416,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',nChs,...
                 'PolyPhaseOrder',ord);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -8479,7 +8480,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',nChs,...
                 'PolyPhaseOrder',ord);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -8542,7 +8543,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',nChs,...
                 'PolyPhaseOrder',ord);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -8605,7 +8606,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -8668,7 +8669,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -8730,7 +8731,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -8792,7 +8793,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -8854,7 +8855,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -8919,7 +8920,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -8985,7 +8986,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -9051,7 +9052,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -9117,7 +9118,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -9183,7 +9184,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -9249,7 +9250,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -9315,7 +9316,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -9380,7 +9381,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -9446,7 +9447,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -9512,7 +9513,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -9578,7 +9579,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -9644,7 +9645,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -9711,7 +9712,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -9778,7 +9779,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -9845,7 +9846,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -9907,7 +9908,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -9969,7 +9970,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',nChs,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -10032,7 +10033,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -10102,7 +10103,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -10181,7 +10182,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -10265,7 +10266,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -10352,7 +10353,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -10424,7 +10425,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -10490,7 +10491,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -10556,7 +10557,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -10622,7 +10623,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -10696,7 +10697,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -10777,7 +10778,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -10861,7 +10862,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -10949,7 +10950,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -11044,7 +11045,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -11140,7 +11141,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -11210,7 +11211,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'DecimationFactor',decch(1:2),...
                 'NumberOfChannels',decch(3:end));
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             E = step(lppufb,[],[]);
             
@@ -11264,7 +11265,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',decch(3:end),...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -11330,7 +11331,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',decch(3:end),...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -11395,7 +11396,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',decch(3:end),...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -11461,7 +11462,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',decch(3:end),...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -11523,7 +11524,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %                 'DecimationFactor',decch(1:2),...
 %                 'NumberOfChannels',decch(3:end));
 %             angs = get(lppufb,'Angles');
-%             angs = randn(size(angs));
+%             angs = 2*pi*randn(size(angs));
 %             set(lppufb,'Angles',angs);
 %             E = step(lppufb,[],[]);
 %             
@@ -11578,7 +11579,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %                 'NumberOfChannels',decch(3:end),...
 %                 'PolyPhaseOrder',[ord ord]);
 %             angs = get(lppufb,'Angles');
-%             angs = randn(size(angs));
+%             angs = 2*pi*randn(size(angs));
 %             set(lppufb,'Angles',angs);
 %             
 %             
@@ -11644,7 +11645,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %                 'NumberOfChannels',decch(3:end),...
 %                 'PolyPhaseOrder',[ord ord]);
 %             angs = get(lppufb,'Angles');
-%             angs = randn(size(angs));
+%             angs = 2*pi*randn(size(angs));
 %             set(lppufb,'Angles',angs);
 %             
 %             
@@ -11709,7 +11710,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %                 'NumberOfChannels',decch(3:end),...
 %                 'PolyPhaseOrder',[ord ord]);
 %             angs = get(lppufb,'Angles');
-%             angs = randn(size(angs));
+%             angs = 2*pi*randn(size(angs));
 %             set(lppufb,'Angles',angs);
 %             
 %             
@@ -11775,7 +11776,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %                 'NumberOfChannels',decch(3:end),...
 %                 'PolyPhaseOrder',[ord ord]);
 %             angs = get(lppufb,'Angles');
-%             angs = randn(size(angs));
+%             angs = 2*pi*randn(size(angs));
 %             set(lppufb,'Angles',angs);
 %             
 %             
@@ -11841,7 +11842,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',decch(3:end),...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -11916,7 +11917,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',decch(3:end),...
                 'PolyPhaseOrder',[ord ord]);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             
@@ -11990,7 +11991,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %                 'NumberOfChannels',decch(3:end),...
 %                 'PolyPhaseOrder',[ord ord]);
 %             angs = get(lppufb,'Angles');
-%             angs = randn(size(angs));
+%             angs = 2*pi*randn(size(angs));
 %             set(lppufb,'Angles',angs);
 %             
 %             
@@ -12066,7 +12067,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %                 'NumberOfChannels',decch(3:end),...
 %                 'PolyPhaseOrder',[ord ord]);
 %             angs = get(lppufb,'Angles');
-%             angs = randn(size(angs));
+%             angs = 2*pi*randn(size(angs));
 %             set(lppufb,'Angles',angs);
 %             
 %             
@@ -12151,7 +12152,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %             
 %               % Update lppufb
 %             angs = get(lppufb,'Angles');
-%             angs = randn(size(angs));
+%             angs = 2*pi*randn(size(angs));
 %             set(lppufb,'Angles',angs);
 %             imgPst = step(testCase.synthesizer,coefs,scales);
 %             
@@ -12212,7 +12213,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %             
 %             % Update lppufb
 %             angs = get(lppufb,'Angles');
-%             angs = randn(size(angs));
+%             angs = 2*pi*randn(size(angs));
 %             set(lppufb,'Angles',angs);
 %             imgPst = step(testCase.synthesizer,coefs,scales);
 %             
@@ -12300,7 +12301,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %                 'DecimationFactor',decch(1:2),...
 %                 'NumberOfChannels',decch(3:end));
 %             angs = get(lppufb,'Angles');
-%             angs = randn(size(angs));
+%             angs = 2*pi*randn(size(angs));
 %             set(lppufb,'Angles',angs);
 %             E = step(lppufb,[],[]);
 %             
@@ -12354,7 +12355,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %                 'NumberOfChannels',decch(3:end),...
 %                 'PolyPhaseOrder',[ord ord]);
 %             angs = get(lppufb,'Angles');
-%             angs = randn(size(angs));
+%             angs = 2*pi*randn(size(angs));
 %             set(lppufb,'Angles',angs);
 %             
 %             
@@ -12420,7 +12421,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %                 'NumberOfChannels',decch(3:end),...
 %                 'PolyPhaseOrder',[ord ord]);
 %             angs = get(lppufb,'Angles');
-%             angs = randn(size(angs));
+%             angs = 2*pi*randn(size(angs));
 %             set(lppufb,'Angles',angs);
 %             
 %             % Expected values
@@ -12484,7 +12485,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %                 'NumberOfChannels',decch(3:end),...
 %                 'PolyPhaseOrder',[ord ord]);
 %             angs = get(lppufb,'Angles');
-%             angs = randn(size(angs));
+%             angs = 2*pi*randn(size(angs));
 %             set(lppufb,'Angles',angs);
 %             
 %             % Expected values
@@ -12549,7 +12550,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %                 'NumberOfChannels',decch(3:end),...
 %                 'PolyPhaseOrder',[ord ord]);
 %             angs = get(lppufb,'Angles');
-%             angs = randn(size(angs));
+%             angs = 2*pi*randn(size(angs));
 %             set(lppufb,'Angles',angs);
 %             
 %             % Expected values
@@ -12609,7 +12610,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %                 'DecimationFactor',decch(1:2),...
 %                 'NumberOfChannels',decch(3:end));
 %             angs = get(lppufb,'Angles');
-%             angs = randn(size(angs));
+%             angs = 2*pi*randn(size(angs));
 %             set(lppufb,'Angles',angs);
 %             E = step(lppufb,[],[]);
 %             
@@ -12662,7 +12663,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %                 'NumberOfChannels',decch(3:end),...
 %                 'PolyPhaseOrder',[ord ord]);
 %             angs = get(lppufb,'Angles');
-%             angs = randn(size(angs));
+%             angs = 2*pi*randn(size(angs));
 %             set(lppufb,'Angles',angs);
 %             
 %             % Expected values
@@ -12726,7 +12727,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %                 'NumberOfChannels',decch(3:end),...
 %                 'PolyPhaseOrder',[ord ord]);
 %             angs = get(lppufb,'Angles');
-%             angs = randn(size(angs));
+%             angs = 2*pi*randn(size(angs));
 %             set(lppufb,'Angles',angs);
 %             
 %             % Expected values
@@ -12789,7 +12790,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %                 'NumberOfChannels',decch(3:end),...
 %                 'PolyPhaseOrder',[ord ord]);
 %             angs = get(lppufb,'Angles');
-%             angs = randn(size(angs));
+%             angs = 2*pi*randn(size(angs));
 %             set(lppufb,'Angles',angs);
 %             
 %             % Expected values
@@ -12853,7 +12854,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %                 'NumberOfChannels',decch(3:end),...
 %                 'PolyPhaseOrder',[ord ord]);
 %             angs = get(lppufb,'Angles');
-%             angs = randn(size(angs));
+%             angs = 2*pi*randn(size(angs));
 %             set(lppufb,'Angles',angs);
 %             
 %             % Expected values
@@ -12918,7 +12919,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %                 'NumberOfChannels',decch(3:end),...
 %                 'PolyPhaseOrder',[ord ord]);
 %             angs = get(lppufb,'Angles');
-%             angs = randn(size(angs));
+%             angs = 2*pi*randn(size(angs));
 %             set(lppufb,'Angles',angs);
 %             
 %             % Expected values
@@ -12985,7 +12986,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',nChs,...
                 'PolyPhaseOrder',nOrds);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -13052,7 +13053,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',nChs,...
                 'PolyPhaseOrder',nOrds);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -13119,7 +13120,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %                 'NumberOfChannels',nChs,...
 %                 'PolyPhaseOrder',nOrds);
 %             angs = get(lppufb,'Angles');
-%             angs = randn(size(angs));
+%             angs = 2*pi*randn(size(angs));
 %             set(lppufb,'Angles',angs);
 %             
 %             % Expected values
@@ -13186,7 +13187,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %                 'NumberOfChannels',nChs,...
 %                 'PolyPhaseOrder',nOrds);
 %             angs = get(lppufb,'Angles');
-%             angs = randn(size(angs));
+%             angs = 2*pi*randn(size(angs));
 %             set(lppufb,'Angles',angs);
 %             
 %             % Expected values
@@ -13253,7 +13254,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',nChs,...
                 'PolyPhaseOrder',nOrds);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -13320,7 +13321,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',nChs,...
                 'PolyPhaseOrder',nOrds);
             angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
+            angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
             
             % Expected values

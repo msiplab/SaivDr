@@ -219,7 +219,7 @@ classdef NsoltSynthesis2dSystem  < ...
             % Atom concatenation
             subScale  = [ nRows_ nCols_ ];
             ord  = uint32(obj.polyPhaseOrder);            
-            fpe = strcmp(obj.BoundaryOperation,'Circular');            
+            fpe = strcmp(obj.BoundaryOperation,'Circular');
             arrayCoefs = obj.atomCncFcn(arrayCoefs,subScale,pmCoefs,...
                 ord,fpe);
             

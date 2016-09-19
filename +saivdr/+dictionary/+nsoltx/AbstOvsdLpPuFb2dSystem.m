@@ -136,13 +136,15 @@ classdef AbstOvsdLpPuFb2dSystem < matlab.System %#codegen
             elseif strcmp(obj.OutputMode,'AnalysisFilters')
                 output = getAnalysisFilterBank_(obj);
             elseif strcmp(obj.OutputMode,'SynthesisFilterAt')
+                % TODO:‘ÎÌ«‚ðl—¶‚·‚é
                 idx = varargin{3};
                 H = getAnalysisFilterBank_(obj);
-                %S = diag(exp(-1i*obj.Angles(1:obj.NumberOfChannels));
-                %H = S*conj(H);
+                [symAngles,~,~] = splitAngles_(obj);
+                %H = exp(-2i*symAngles(idx))*conj(H);
                 H = conj(H);
                 output = rot90(H(:,:,idx),2);
             elseif strcmp(obj.OutputMode,'SynthesisFilters')
+                % TODO:‘ÎÌ«‚ðl—¶‚·‚é
                 H = getAnalysisFilterBank_(obj);
                 H = conj(H);
                 H = flip(H,1);
