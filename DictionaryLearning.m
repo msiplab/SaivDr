@@ -4,8 +4,9 @@ classdef DictionaryLearning
         orgImg
         nsolt
         NumberOfCoefs = 20000
-        NumberOfIteration = 3
+        Count = 10
         MaxFunctionEvaluations = 100000
+        MaxIterations = 1000
         Angles = []
     end
     
@@ -36,25 +37,30 @@ classdef DictionaryLearning
         function update(obj)
             
             angs = get(obj.nsolt,'Angles');
-            obj.Angles = zeros(length(angs),obj.NumberOfIteration);
+            obj.Angles = zeros(length(angs),obj.Count);
             
             opt = optimoptions(@fminunc,...
                 'Display','iter-detailed',...
                 'Algorithm','quasi-newton',...
                 'GradObj','off',...
-                'MaxFunctionEvaluations',obj.MaxFunctionEvaluations);
+                'MaxFunctionEvaluations',obj.MaxFunctionEvaluations,...
+                'MaxIterations',obj.MaxIterations);
             
-            for idx = 1:obj.NumberOfIteration
+            for idx = 1:obj.Count
                 % coefficients optimization
-                analyzer = saivdr.dictionary.nsoltx.NsoltAnalysis2dSystem('LpPuFb2d',obj.nsolt);
-                synthesizer = saivdr.dictionary.nsoltx.NsoltSynthesis2dSystem('LpPuFb2d',obj.nsolt);
+                import saivdr.dictionary.nsoltx.*
+                import saivdr.sparserep.*
+                analyzer = NsoltAnalysis2dSystem('LpPuFb2d',obj.nsolt);
+                synthesizer = NsoltSynthesis2dSystem('LpPuFb2d',obj.nsolt);
                 
-                iht = saivdr.sparserep.IterativeHardThresholding('Synthesizer',synthesizer,'AdjOfSynthesizer',analyzer);
+                iht = IterativeHardThresholding(...
+                    'Synthesizer',synthesizer,'AdjOfSynthesizer',analyzer);
                 [~,coefvec,scales] = step(iht,obj.orgImg,obj.NumberOfCoefs);
                 
                 %dictionary update
                 preangs = get(obj.nsolt,'Angles');
-                obj.Angles(:,idx) = fminunc(getObjFunc(obj,coefvec,scales),preangs,opt);
+                objFunc = getObjFunc(obj,coefvec,scales);
+                obj.Angles(:,idx) = fminunc(objFunc,preangs,opt);
                 set(obj.nsolt,'Angles',obj.Angles(:,idx));
                 
                 atmimshow(obj.nsolt);
@@ -69,7 +75,7 @@ classdef DictionaryLearning
                 synthesizer = saivdr.dictionary.nsoltx.NsoltSynthesis2dSystem('LpPuFb2d',obj.nsolt);
                 
                 diff = obj.orgImg - step(synthesizer,coefvec,scales);
-                value = sum(abs(diff(:)).^2);
+                value = sum(abs(diff(:)).^2)/numel(diff);
             end
             
             func = @objFunc;
