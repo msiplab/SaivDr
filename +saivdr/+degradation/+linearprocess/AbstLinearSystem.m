@@ -126,12 +126,12 @@ classdef AbstLinearSystem < matlab.System %#codegen
             lpre = 1.0;
             err_ = Inf;
             while ( err_ > obj.EpsOfPowerMethod ) % Power method
-                % upst = (P.'*P)*upre
+                % upst = (P'*P)*upre
                 upre = upst/norm(upst(:));
                 v    = normalStepImpl(obj,upre); % P
-                upst = adjointStepImpl(obj,v);  % P.'
-                n = (upst(:).'*upst(:));
-                d = (upst(:).'*upre(:));
+                upst = adjointStepImpl(obj,v);  % P'
+                n = (upst(:)'*upst(:));
+                d = (upst(:)'*upre(:));
                 lpst = n/d;
                 err_ = norm(lpst-lpre(:))^2;
                 lpre = lpst;

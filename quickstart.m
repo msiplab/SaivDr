@@ -55,21 +55,21 @@ orgImg = im2double(srcImg(py:py+height-1,px:px+width-1,:));
 % * saivdr.degradation.DegradationSystem
 
 import saivdr.degradation.linearprocess.BlurSystem
-%blurtype = 'Gaussian';  % Blur type
-blurtype = 'Identical';
+blurtype = 'Gaussian';  % Blur type
+%blurtype = 'Identical';
 %boundary = 'Symmetric'; % Boundary option
 boundary = 'Circular';
 hsigma   = 2;           % Sigma for Gausian kernel
-% blur = BlurSystem(...   % Instantiation of blur process
-%     'BlurType',              blurtype,...
-%     'SigmaOfGaussianKernel', hsigma,...
-%     'BoundaryOption',boundary);
-import saivdr.degradation.linearprocess.PixelLossSystem
-blur = PixelLossSystem(...
-    'Density',0.2);
+blur = BlurSystem(...   % Instantiation of blur process
+    'BlurType',              blurtype,...
+    'SigmaOfGaussianKernel', hsigma,...
+    'BoundaryOption',boundary);
+% import saivdr.degradation.linearprocess.PixelLossSystem
+% blur = PixelLossSystem(...
+%     'Density',0.2);
 
 import saivdr.degradation.noiseprocess.AdditiveWhiteGaussianNoiseSystem
-nsigma    = 5;              % Sigma for AWGN for scale [0..255]
+nsigma    =  0;              % Sigma for AWGN for scale [0..255]
 noise_var = (nsigma/255)^2; % Normalize sigma to scale [0..1]
 awgn = AdditiveWhiteGaussianNoiseSystem(... % Instantiation of AWGN
     'Mean',     0,...
@@ -128,8 +128,10 @@ sdir = './examples/quickdesign/results';
 % s = load(sprintf('%s/nsolt_d%dx%d_c%d+%d_o%d+%d_v%d_l%d_n%d_%s.mat',...
 %     sdir,nDec(1),nDec(2),nChs(1),nChs(2),nOrd(1),nOrd(2),nVm,nLevels,...
 %     2048,'peppers128x128'),'nsolt');
-s = load('CLpPuFb2dDec22Ch8Ord22.mat');
-nsolt = s.nsolt; % saivdr.dictionary.nsolt.OvsdLpPuFb2dTypeIVm1System
+%s = load('CLpPuFb2dDec22Ch8Ord22.mat');
+s = load('nsolt');
+nsolt = s.obj.nsolt; % saivdr.dictionary.nsolt.OvsdLpPuFb2dTypeIVm1System
+set(nsolt,'Angles',s.obj.Angles(:,1));
 
 % Conversion of nsolt to new package style
 % nsolt = saivdr.dictionary.utility.fcn_upgrade(nsolt);

@@ -385,7 +385,7 @@ classdef StepMonitoringSystem < matlab.System %#codegen
         
         function value = ssim_(obj,resImg)
             srcImg = obj.SourceImage;
-            if verLessThan('images','9.0');
+            if verLessThan('images','9.0')
                 value = ssim_index(resImg,srcImg);
             else
                 value = ssim(resImg,srcImg);

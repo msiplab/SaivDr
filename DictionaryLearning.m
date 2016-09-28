@@ -3,19 +3,25 @@ classdef DictionaryLearning
     properties
         orgImg
         nsolt
-        NumberOfCoefs = 10000
         StageCount
-        MaxStageCount = 10
+        Angles = []
+        ErrPerPix = []
+    end
+    
+    properties (Constant)
+        NumberOfCoefs = 20000
+        MaxStageCount = 20
         MaxFunctionEvaluations = 100000
         MaxIterations = 1000
-        Angles = []
     end
     
     methods
         function obj = DictionaryLearning()
             % Prepare a source image
-            srcImg = imread('peppers.png');
-            srcImg = rgb2gray(srcImg);
+            srcImg = imread('18_ibushi.normal.png');
+            srcImg = im2double(srcImg);
+            srcImg = srcImg(:,:,1) + 1i*srcImg(:,:,2);
+            
             width  = 256; % Width
             height = 256; % Height
             px     = 64;  % Horizontal position of cropping
@@ -35,10 +41,12 @@ classdef DictionaryLearning
                 'NumberOfVanishingMoments',nVm);
             
         end
+        
         function update(obj)
             
             angs = get(obj.nsolt,'Angles');
             obj.Angles = zeros(length(angs),obj.MaxStageCount);
+            obj.ErrPerPix = zeros(obj.MaxStageCount);
             
             opt = optimoptions(@fminunc,...
                 'Display','iter-detailed',...
@@ -46,7 +54,8 @@ classdef DictionaryLearning
                 'UseParallel',true,...
                 'GradObj','off',...
                 'DiffMaxChange',2*pi,...
-                'StepTolerance',10e-8,...
+                'OptimalityTolerance',1e-8,...
+                'StepTolerance',1e-7,...
                 'MaxFunctionEvaluations',obj.MaxFunctionEvaluations,...
                 'MaxIterations',obj.MaxIterations);
             
@@ -66,6 +75,7 @@ classdef DictionaryLearning
                 preangs = get(obj.nsolt,'Angles');
                 objFunc = getObjFunc(obj,coefvec,scales);
                 obj.Angles(:,idx) = fminunc(objFunc,preangs,opt);
+                obj.ErrPerPix(idx) = objFunc(obj.Angles(:,idx));
                 set(obj.nsolt,'Angles',obj.Angles(:,idx));
                 
                 atmimshow(obj.nsolt);
@@ -80,27 +90,10 @@ classdef DictionaryLearning
                 synthesizer = saivdr.dictionary.nsoltx.NsoltSynthesis2dSystem('LpPuFb2d',obj.nsolt);
                 
                 diff = obj.orgImg - step(synthesizer,coefvec,scales);
-                value = sum(abs(diff(:)).^2)/numel(diff);
+                sf = 10e6; % scaling factor
+                value = sf*sum(abs(diff(:)).^2)/numel(diff);
             end
             func = @objFunc;
         end
-        
-%         function func = getObjFuncWithGrad(obj,coefvec,scales)
-%             function [value, grad] = objFunc(angs)
-%                 value = getObjFunc(obj,coefvec,scales);
-%                 grad = zeros(size(angs));
-%                 for idx = 1:length(angs)
-%                     dangs = angs;
-%                     dangs(idx) = angs(idx)+pi/2;
-%                     release(obj.nsolt);
-%                     set(obj.nsolt,'Angles',dangs);
-%                     dsynth = saivdr.dictionary.nsoltx.NsoltSynthesis2dSystem('LpPuFb2d',obj.nsolt);
-%                     
-%                     tmp1 = conj(diff).*step(dsynth,coefs,scales);
-%                     grad(idx) = -2*real(sum(tmp1(:)))/numel(tmp1);
-%                 end
-%             end
-%             func = @objFunc;
-%         end
     end
 end
