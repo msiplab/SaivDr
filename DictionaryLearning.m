@@ -5,12 +5,13 @@ classdef DictionaryLearning
         nsolt
         StageCount
         Angles = []
+        Mus = []
         ErrPerPix = []
     end
     
     properties (Constant)
-        NumberOfCoefs = 20000
-        MaxStageCount = 20
+        NumberOfCoefs = 30000
+        MaxStageCount = 2
         MaxFunctionEvaluations = 100000
         MaxIterations = 1000
     end
@@ -40,12 +41,19 @@ classdef DictionaryLearning
                 'PolyPhaseOrder', nOrd,...
                 'NumberOfVanishingMoments',nVm);
             
+            angs = get(obj.nsolt,'Angles');
+            obj.Angles = zeros(length(angs),obj.MaxStageCount);
+            mus = get(obj.nsolt,'Mus');
+            sizeOfMus = size(mus);
+            obj.Mus = zeros(sizeOfMus(1),sizeOfMus(2),obj.MaxStageCount);
+            for idx = 1:obj.MaxStageCount
+                obj.Angles(:,idx) = angs;
+                obj.Mus(:,:,idx) = mus;
+            end
         end
         
         function update(obj)
             
-            angs = get(obj.nsolt,'Angles');
-            obj.Angles = zeros(length(angs),obj.MaxStageCount);
             obj.ErrPerPix = zeros(obj.MaxStageCount);
             
             opt = optimoptions(@fminunc,...
@@ -59,7 +67,7 @@ classdef DictionaryLearning
                 'MaxFunctionEvaluations',obj.MaxFunctionEvaluations,...
                 'MaxIterations',obj.MaxIterations);
             
-            for idx = 1:obj.MaxStageCount
+            for idx = 2:obj.MaxStageCount
                 obj.StageCount = idx;
                 % coefficients optimization
                 import saivdr.dictionary.nsoltx.*
@@ -94,6 +102,19 @@ classdef DictionaryLearning
                 value = sf*sum(abs(diff(:)).^2)/numel(diff);
             end
             func = @objFunc;
+        end
+        
+        function viewSparsity(obj,index)
+            import saivdr.dictionary.nsoltx.*
+            release(obj.nsolt);
+            set(obj.nsolt,'Angles',obj.Angles(:,index));
+            analyzer = NsoltAnalysis2dSystem('LpPuFb2d',obj.nsolt);
+            [coefvec,~] = step(analyzer,obj.orgImg,1);
+            absCoef = sort(abs(coefvec),'descend');
+            %figure(1)
+            hoge = sum(absCoef < 1e-3);
+            fprintf('[StageCount = %d] A number of null coefficients is %d (%.2f%%)\n',index,hoge,100*hoge/numel(absCoef));
+            plot(1:length(absCoef),absCoef);
         end
     end
 end

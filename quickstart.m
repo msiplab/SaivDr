@@ -59,7 +59,7 @@ blurtype = 'Gaussian';  % Blur type
 %blurtype = 'Identical';
 %boundary = 'Symmetric'; % Boundary option
 boundary = 'Circular';
-hsigma   = 2;           % Sigma for Gausian kernel
+hsigma   = 3;           % Sigma for Gausian kernel
 blur = BlurSystem(...   % Instantiation of blur process
     'BlurType',              blurtype,...
     'SigmaOfGaussianKernel', hsigma,...
@@ -131,7 +131,7 @@ sdir = './examples/quickdesign/results';
 %s = load('CLpPuFb2dDec22Ch8Ord22.mat');
 s = load('nsolt');
 nsolt = s.obj.nsolt; % saivdr.dictionary.nsolt.OvsdLpPuFb2dTypeIVm1System
-set(nsolt,'Angles',s.obj.Angles(:,1));
+set(nsolt,'Angles',s.obj.Angles(:,2));
 
 % Conversion of nsolt to new package style
 % nsolt = saivdr.dictionary.utility.fcn_upgrade(nsolt);
@@ -214,7 +214,7 @@ setFrameBound(synthesizer,1);
 
 % Instantiation of ISTA system object
 import saivdr.restoration.ista.IstaImRestoration
-lambda    = 0.00185;                      % lambda
+lambda    = 0.0000185;                      % lambda
 ista = IstaImRestoration(...
     'Synthesizer',        synthesizer,... % Synthesizer (Dictionary)
     'AdjOfSynthesizer',   analyzer,...    % Analyzer (Adj. of dictionary)
