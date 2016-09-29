@@ -11,7 +11,7 @@ classdef DictionaryLearning
     
     properties (Constant)
         NumberOfCoefs = 30000
-        MaxStageCount = 2
+        MaxStageCount = 10
         MaxFunctionEvaluations = 100000
         MaxIterations = 1000
     end
@@ -90,7 +90,7 @@ classdef DictionaryLearning
             end
         end
         
-        % –Ú“IŠÖ”‚ğ–ß‚è’l‚Æ‚·‚éƒNƒ[ƒWƒƒ
+        % ï¿½Ú“Iï¿½Öï¿½ï¿½ï¿½ß‚ï¿½lï¿½Æ‚ï¿½ï¿½ï¿½Nï¿½ï¿½ï¿½[ï¿½Wï¿½ï¿½
         function func = getObjFunc(obj,coefvec,scales)
             function value = objFunc(angs)
                 release(obj.nsolt);
@@ -110,11 +110,12 @@ classdef DictionaryLearning
             set(obj.nsolt,'Angles',obj.Angles(:,index));
             analyzer = NsoltAnalysis2dSystem('LpPuFb2d',obj.nsolt);
             [coefvec,~] = step(analyzer,obj.orgImg,1);
-            absCoef = sort(abs(coefvec),'descend');
-            %figure(1)
-            hoge = sum(absCoef < 1e-3);
-            fprintf('[StageCount = %d] A number of null coefficients is %d (%.2f%%)\n',index,hoge,100*hoge/numel(absCoef));
-            plot(1:length(absCoef),absCoef);
+            absCoef = abs(coefvec);
+            range = 0:0.001:2.5;
+            cdf = arrayfun(@(x) sum(absCoef <= x),range)/numel(absCoef)*100;
+            %fprintf('[StageCount = %d] A number of null coefficients is %d (%.2f%%)\n',index,hoge,100*hoge/numel(absCoef));
+            plot(range,cdf);
+            grid on
         end
     end
 end
