@@ -63,7 +63,7 @@ classdef IterativeHardThresholding < ...
             % Iteration
             while (diff > obj.TolRes && iIter < obj.MaxIter)
                 preresidual = residual;
-                % g = Phi.'*r
+                % g = Phi'*r
                 [gradvec,scales] = step(obj.AdjOfSynthesizer,...
                     residual,obj.NumberOfTreeLevels);
                 coefvec = coefvec + obj.Mu*gradvec;

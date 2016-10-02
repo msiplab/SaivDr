@@ -4,16 +4,17 @@ classdef DictionaryLearning
         orgImg
         nsolt
         StageCount
-        Angles = []
-        Mus = []
-        ErrPerPix = []
+        Angles
+        Mus
+        ErrPerPix
+        NumberOfChannels = 6
     end
     
     properties (Constant)
-        NumberOfCoefs = 30000
-        MaxStageCount = 2
-        MaxFunctionEvaluations = 100000
-        MaxIterations = 1000
+        NumberOfCoefs = 20000
+        MaxStageCount = 30
+%        MaxFunctionEvaluations = 100000
+%        MaxIterations = 3000
     end
     
     methods
@@ -31,7 +32,7 @@ classdef DictionaryLearning
             
             % Parameters for NSOLT
             nDec    = [2 2]; % Decimation factor
-            nChs    = 6; % # of channels
+            nChs    = obj.NumberOfChannels; % # of channels
             nOrd    = [2 2]; % Polyphase order
             nVm     = 0;     % # of vanishing moments
             
@@ -54,20 +55,18 @@ classdef DictionaryLearning
         
         function update(obj)
             
-            obj.ErrPerPix = zeros(obj.MaxStageCount);
+            obj.ErrPerPix = zeros(obj.MaxStageCount,1);
             
-            opt = optimoptions(@fminunc,...
+            opt = optimoptions(@lsqnonlin,...
+                'Algorithm','trust-region-reflective',...
                 'Display','iter-detailed',...
-                'Algorithm','quasi-newton',...
-                'UseParallel',true,...
-                'GradObj','off',...
                 'DiffMaxChange',2*pi,...
-                'OptimalityTolerance',1e-8,...
-                'StepTolerance',1e-7,...
-                'MaxFunctionEvaluations',obj.MaxFunctionEvaluations,...
-                'MaxIterations',obj.MaxIterations);
-            
-            for idx = 2:obj.MaxStageCount
+                'UseParallel',true);
+%                 'MaxFunctionEvaluations',obj.MaxFunctionEvaluations,...
+%                 'MaxIterations',obj.MaxIterations,...
+%                 'OptimalityTolerance',1e-8,...
+%                 'StepTolerance',1e-7,...     
+            for idx = 1:obj.MaxStageCount
                 obj.StageCount = idx;
                 % coefficients optimization
                 import saivdr.dictionary.nsoltx.*
@@ -80,26 +79,37 @@ classdef DictionaryLearning
                 [~,coefvec,scales] = step(iht,obj.orgImg,obj.NumberOfCoefs);
                 
                 %dictionary update
+                nch = obj.NumberOfChannels;
                 preangs = get(obj.nsolt,'Angles');
+                preangs = zeros(size(preangs));
+                preangs = preangs(nch+1:end);
                 objFunc = getObjFunc(obj,coefvec,scales);
-                obj.Angles(:,idx) = fminunc(objFunc,preangs,opt);
-                obj.ErrPerPix(idx) = objFunc(obj.Angles(:,idx));
+                %obj.Angles(nch+1:end,idx) = fminunc(objFunc,preangs,opt);
+                
+                lb = -pi*ones(size(preangs));
+                ub = pi*ones(size(preangs));
+                obj.Angles(nch+1:end,idx) = lsqnonlin(objFunc,preangs,lb,ub,opt);
+                obj.ErrPerPix(idx) = norm(objFunc(obj.Angles(nch+1:end,idx)));
                 set(obj.nsolt,'Angles',obj.Angles(:,idx));
                 
                 atmimshow(obj.nsolt);
+                
+                % save this DictionaryLearning object;
+                filename = ['dictionaries/','dic',datestr(now,'yyyymmdd_HHMMSS')];
+                dictionary = obj;
+                save(filename,'dictionary');
             end
         end
-        
-        % 目的関数を戻り値とするクロージャ
+
         function func = getObjFunc(obj,coefvec,scales)
             function value = objFunc(angs)
                 release(obj.nsolt);
+                angs = [zeros(obj.NumberOfChannels,1);angs];
                 set(obj.nsolt,'Angles',angs);
                 synthesizer = saivdr.dictionary.nsoltx.NsoltSynthesis2dSystem('LpPuFb2d',obj.nsolt);
                 
                 diff = obj.orgImg - step(synthesizer,coefvec,scales);
-                sf = 10e6; % scaling factor
-                value = sf*sum(abs(diff(:)).^2)/numel(diff);
+                value = [real(diff(:)),imag(diff(:))];
             end
             func = @objFunc;
         end
@@ -116,5 +126,6 @@ classdef DictionaryLearning
             fprintf('[StageCount = %d] A number of null coefficients is %d (%.2f%%)\n',index,hoge,100*hoge/numel(absCoef));
             plot(1:length(absCoef),absCoef);
         end
+        
     end
 end
