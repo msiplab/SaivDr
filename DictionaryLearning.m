@@ -13,8 +13,8 @@ classdef DictionaryLearning
     properties (Constant)
         NumberOfCoefs = 20000
         MaxStageCount = 30
-%        MaxFunctionEvaluations = 100000
-%        MaxIterations = 3000
+        MaxFunctionEvaluations = 20000
+        MaxIterations = 1000
     end
     
     methods
@@ -80,8 +80,13 @@ classdef DictionaryLearning
                 
                 %dictionary update
                 nch = obj.NumberOfChannels;
+                mus = get(obj.nsolt,'Mus');
+                mus = 2*(rand(size(mus)) >= 0.5) - 1;
+                obj.Mus(:,:,idx) = mus;
+                set(obj.nsolt,'Mus',mus);
+                
                 preangs = get(obj.nsolt,'Angles');
-                preangs = zeros(size(preangs));
+                preangs = pi*(2*rand(size(preangs))-ones(size(preangs)));
                 preangs = preangs(nch+1:end);
                 objFunc = getObjFunc(obj,coefvec,scales);
                 %obj.Angles(nch+1:end,idx) = fminunc(objFunc,preangs,opt);

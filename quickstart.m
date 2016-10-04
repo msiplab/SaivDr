@@ -59,7 +59,7 @@ blurtype = 'Gaussian';  % Blur type
 %blurtype = 'Identical';
 %boundary = 'Symmetric'; % Boundary option
 boundary = 'Circular';
-hsigma   = 3;           % Sigma for Gausian kernel
+hsigma   = 0.5;           % Sigma for Gausian kernel
 blur = BlurSystem(...   % Instantiation of blur process
     'BlurType',              blurtype,...
     'SigmaOfGaussianKernel', hsigma,...
@@ -69,7 +69,7 @@ blur = BlurSystem(...   % Instantiation of blur process
 %     'Density',0.2);
 
 import saivdr.degradation.noiseprocess.AdditiveWhiteGaussianNoiseSystem
-nsigma    =  0;              % Sigma for AWGN for scale [0..255]
+nsigma    =  5;              % Sigma for AWGN for scale [0..255]
 noise_var = (nsigma/255)^2; % Normalize sigma to scale [0..1]
 awgn = AdditiveWhiteGaussianNoiseSystem(... % Instantiation of AWGN
     'Mean',     0,...
@@ -129,9 +129,7 @@ sdir = './examples/quickdesign/results';
 %     sdir,nDec(1),nDec(2),nChs(1),nChs(2),nOrd(1),nOrd(2),nVm,nLevels,...
 %     2048,'peppers128x128'),'nsolt');
 %s = load('CLpPuFb2dDec22Ch8Ord22.mat');
-s = load('nsolt');
-nsolt = s.obj.nsolt; % saivdr.dictionary.nsolt.OvsdLpPuFb2dTypeIVm1System
-set(nsolt,'Angles',s.obj.Angles(:,2));
+nsolt = dictionary.nsolt;
 
 % Conversion of nsolt to new package style
 % nsolt = saivdr.dictionary.utility.fcn_upgrade(nsolt);
@@ -214,7 +212,7 @@ setFrameBound(synthesizer,1);
 
 % Instantiation of ISTA system object
 import saivdr.restoration.ista.IstaImRestoration
-lambda    = 0.0000185;                      % lambda
+lambda    = 0.0185;                      % lambda
 ista = IstaImRestoration(...
     'Synthesizer',        synthesizer,... % Synthesizer (Dictionary)
     'AdjOfSynthesizer',   analyzer,...    % Analyzer (Adj. of dictionary)
