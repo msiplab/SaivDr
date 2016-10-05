@@ -55,11 +55,11 @@ orgImg = im2double(srcImg(py:py+height-1,px:px+width-1,:));
 % * saivdr.degradation.DegradationSystem
 
 import saivdr.degradation.linearprocess.BlurSystem
-blurtype = 'Gaussian';  % Blur type
-%blurtype = 'Identical';
+%blurtype = 'Gaussian';  % Blur type
+blurtype = 'Identical';
 %boundary = 'Symmetric'; % Boundary option
 boundary = 'Circular';
-hsigma   = 0.5;           % Sigma for Gausian kernel
+hsigma   = 1;           % Sigma for Gausian kernel
 blur = BlurSystem(...   % Instantiation of blur process
     'BlurType',              blurtype,...
     'SigmaOfGaussianKernel', hsigma,...
@@ -69,7 +69,7 @@ blur = BlurSystem(...   % Instantiation of blur process
 %     'Density',0.2);
 
 import saivdr.degradation.noiseprocess.AdditiveWhiteGaussianNoiseSystem
-nsigma    =  5;              % Sigma for AWGN for scale [0..255]
+nsigma    =  50;              % Sigma for AWGN for scale [0..255]
 noise_var = (nsigma/255)^2; % Normalize sigma to scale [0..1]
 awgn = AdditiveWhiteGaussianNoiseSystem(... % Instantiation of AWGN
     'Mean',     0,...
@@ -212,7 +212,7 @@ setFrameBound(synthesizer,1);
 
 % Instantiation of ISTA system object
 import saivdr.restoration.ista.IstaImRestoration
-lambda    = 0.0185;                      % lambda
+lambda    = 0.000185;                      % lambda
 ista = IstaImRestoration(...
     'Synthesizer',        synthesizer,... % Synthesizer (Dictionary)
     'AdjOfSynthesizer',   analyzer,...    % Analyzer (Adj. of dictionary)

@@ -11,9 +11,9 @@ classdef DictionaryLearning
     end
     
     properties (Constant)
-        NumberOfCoefs = 20000
+        NumberOfCoefs = 24000
         MaxStageCount = 30
-        MaxFunctionEvaluations = 20000
+        MaxFunctionEvaluations = 4400
         MaxIterations = 1000
     end
     
@@ -57,18 +57,27 @@ classdef DictionaryLearning
             
             obj.ErrPerPix = zeros(obj.MaxStageCount,1);
             
+            nch = get(obj.nsolt,'NumberOfChannels');
+            angs = get(obj.nsolt,'Angles');
+            angs = angs(nch+1:end);
+            
             opt = optimoptions(@lsqnonlin,...
                 'Algorithm','trust-region-reflective',...
                 'Display','iter-detailed',...
                 'DiffMaxChange',2*pi,...
+                'FiniteDifferenceStepSize',1e+2*sqrt(eps),...
+                'MaxFunctionEvaluations',obj.MaxFunctionEvaluations,...
+                'MaxIterations',obj.MaxIterations,...
+                'OptimalityTolerance',1e-6,...
+                'StepTolerance',1e-6,...     
+                'TypicalX',pi/2*1e0*ones(size(angs)),...
                 'UseParallel',true);
-%                 'MaxFunctionEvaluations',obj.MaxFunctionEvaluations,...
-%                 'MaxIterations',obj.MaxIterations,...
-%                 'OptimalityTolerance',1e-8,...
-%                 'StepTolerance',1e-7,...     
+            
             for idx = 1:obj.MaxStageCount
                 obj.StageCount = idx;
+                fprintf('StageCount = %d\n',obj.StageCount);
                 % coefficients optimization
+                fprintf('start coefficients optimization stage.\n');
                 import saivdr.dictionary.nsoltx.*
                 import saivdr.sparserep.*
                 analyzer = NsoltAnalysis2dSystem('LpPuFb2d',obj.nsolt);
@@ -77,8 +86,9 @@ classdef DictionaryLearning
                 iht = IterativeHardThresholding(...
                     'Synthesizer',synthesizer,'AdjOfSynthesizer',analyzer);
                 [~,coefvec,scales] = step(iht,obj.orgImg,obj.NumberOfCoefs);
-                
+                fprintf('end coefficients optimization stage.\n');
                 %dictionary update
+                fprintf('start dictionary update stage.\n');
                 nch = obj.NumberOfChannels;
                 mus = get(obj.nsolt,'Mus');
                 mus = 2*(rand(size(mus)) >= 0.5) - 1;
@@ -89,14 +99,13 @@ classdef DictionaryLearning
                 preangs = pi*(2*rand(size(preangs))-ones(size(preangs)));
                 preangs = preangs(nch+1:end);
                 objFunc = getObjFunc(obj,coefvec,scales);
-                %obj.Angles(nch+1:end,idx) = fminunc(objFunc,preangs,opt);
                 
                 lb = -pi*ones(size(preangs));
                 ub = pi*ones(size(preangs));
                 obj.Angles(nch+1:end,idx) = lsqnonlin(objFunc,preangs,lb,ub,opt);
                 obj.ErrPerPix(idx) = norm(objFunc(obj.Angles(nch+1:end,idx)));
                 set(obj.nsolt,'Angles',obj.Angles(:,idx));
-                
+                fprintf('end dictionary update stage\n');
                 atmimshow(obj.nsolt);
                 
                 % save this DictionaryLearning object;
@@ -125,10 +134,11 @@ classdef DictionaryLearning
             set(obj.nsolt,'Angles',obj.Angles(:,index));
             analyzer = NsoltAnalysis2dSystem('LpPuFb2d',obj.nsolt);
             [coefvec,~] = step(analyzer,obj.orgImg,1);
-            absCoef = abs(coefvec);
-            range = 0:0.001:2.5;
-            cdf = arrayfun(@(x) sum(absCoef <= x),range)/numel(absCoef)*100;
-            %fprintf('[StageCount = %d] A number of null coefficients is %d (%.2f%%)\n',index,hoge,100*hoge/numel(absCoef));
+            absCoef = sort(abs(coefvec),'descend');
+            range = 0:0.1:100;
+            nCoef = numel(absCoef);
+            E = sum(absCoef);
+            cdf = arrayfun(@(x) sum(absCoef(1:floor(x/100*nCoef))),range)/E*100;
             plot(range,cdf);
             grid on
         end

@@ -153,7 +153,7 @@ classdef NsoltAnalysis2dSystem < ...
             obj.allScales = zeros(obj.nAllChs,obj.DATA_DIMENSION);
             
             % Prepare MEX function
-            %TODO: MEX‰»‚É‘Î‰ž‚µ‚½‚ç‰º‚Ì2s‚ðíœ‚·‚é
+            %TODO: MEX??????????????????2?s??????????
             obj.isMexFcn = 1;
             mexFcn = [];
             
@@ -285,9 +285,9 @@ classdef NsoltAnalysis2dSystem < ...
     end
     
     methods (Access = private, Static = true)        
-        %TODO:“¯ˆê‚ÌŠÖ”‚ªAbstOLpPuFb1dSystem‚Å‚à’è‹`‚³‚ê‚Ä‚¢‚é‚Ì‚Åˆê‰ÓŠ‚ÉW–ñ‚·‚é
+        %TODO:????????????AbstOLpPuFb1dSystem???????`???????????????????????W??????
         
-        function value = conjhsdft2_(x) %conjgate-hsdft
+        function value = conjhsdft2_(x) %conjugate-hsdft
             nDec = size(x.data,1);
             mtx = complex(zeros(nDec));
             for u = 0:nDec-1

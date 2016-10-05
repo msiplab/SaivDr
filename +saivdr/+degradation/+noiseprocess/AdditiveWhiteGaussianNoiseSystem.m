@@ -32,7 +32,9 @@ classdef AdditiveWhiteGaussianNoiseSystem < ...
     
     methods (Access = protected)
         function output = stepImpl(obj,input)
-            output = imnoise(input,'gaussian',obj.Mean,obj.Variance);
+            %output = imnoise(input,'gaussian',obj.Mean,obj.Variance);
+            output = imnoise(real(input),'gaussian',obj.Mean,obj.Variance)...
+                + 1i*imnoise(imag(input),'gaussian',obj.Mean,obj.Variance);
         end
     end
 end
