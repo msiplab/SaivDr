@@ -31,9 +31,9 @@ setpath
 %srcImg = imread('peppers.png');
 normap = imread('18_ibushi.normal.png');
 normap = im2double(normap);
-srcImg = 2*normap(:,:,1)-1 + 1i*(2*normap(:,:,2)-1);
-width  = 256; % Width
-height = 256; % Height
+srcImg = (normap(:,:,1) + 1i*normap(:,:,2))/sqrt(2);
+width  = 64; % Width
+height = 64; % Height
 px     = 64;  % Horizontal position of cropping
 py     = 64;  % Vertical position of cropping
 orgImg = im2double(srcImg(py:py+height-1,px:px+width-1,:));
@@ -55,8 +55,8 @@ orgImg = im2double(srcImg(py:py+height-1,px:px+width-1,:));
 % * saivdr.degradation.DegradationSystem
 
 import saivdr.degradation.linearprocess.BlurSystem
-%blurtype = 'Gaussian';  % Blur type
-blurtype = 'Identical';
+blurtype = 'Gaussian';  % Blur type
+%blurtype = 'Identical';
 %boundary = 'Symmetric'; % Boundary option
 boundary = 'Circular';
 hsigma   = 1;           % Sigma for Gausian kernel
@@ -69,7 +69,7 @@ blur = BlurSystem(...   % Instantiation of blur process
 %     'Density',0.2);
 
 import saivdr.degradation.noiseprocess.AdditiveWhiteGaussianNoiseSystem
-nsigma    =  50;              % Sigma for AWGN for scale [0..255]
+nsigma    =  3;              % Sigma for AWGN for scale [0..255]
 noise_var = (nsigma/255)^2; % Normalize sigma to scale [0..1]
 awgn = AdditiveWhiteGaussianNoiseSystem(... % Instantiation of AWGN
     'Mean',     0,...
@@ -114,9 +114,9 @@ obsImg = step(dgrd,orgImg);
 
 % Parameters for NSOLT
 %nLevels = 4;     % # of wavelet tree levels
-nLevels = 1;
+nLevels = 4;
 nDec    = [2 2]; % Decimation factor
-nChs    = [4 4]; % # of channels
+nChs    = 12; % # of channels
 nOrd    = [2 2]; % Polyphase order
 %nOrd = [0 0];
 nVm     = 0;     % # of vanishing moments
@@ -130,6 +130,12 @@ sdir = './examples/quickdesign/results';
 %     2048,'peppers128x128'),'nsolt');
 %s = load('CLpPuFb2dDec22Ch8Ord22.mat');
 nsolt = dictionary.nsolt;
+% nsolt = saivdr.dictionary.nsoltx.NsoltFactory.createOvsdLpPuFb2dSystem(...
+%     'DecimationFactor', nDec,...
+%     'NumberOfChannels', nChs,...
+%     'PolyPhaseOrder', nOrd,...
+%     'NumberOfVanishingMoments',nVm);
+    
 
 % Conversion of nsolt to new package style
 % nsolt = saivdr.dictionary.utility.fcn_upgrade(nsolt);
@@ -212,7 +218,7 @@ setFrameBound(synthesizer,1);
 
 % Instantiation of ISTA system object
 import saivdr.restoration.ista.IstaImRestoration
-lambda    = 0.000185;                      % lambda
+lambda    = 0.00285;                      % lambda
 ista = IstaImRestoration(...
     'Synthesizer',        synthesizer,... % Synthesizer (Dictionary)
     'AdjOfSynthesizer',   analyzer,...    % Analyzer (Adj. of dictionary)
@@ -220,7 +226,7 @@ ista = IstaImRestoration(...
     'NumberOfTreeLevels', nLevels,...     % # of tree levels of NSOLT
     'Lambda',             lambda,...
     'Eps0',               0,...
-    'MaxIter',            10000);        % Parameter lambda
+    'MaxIter',            100);        % Parameter lambda
 
 %% Create a step monitor system object
 % ISTA iteratively approaches to the optimum solution. In order to
