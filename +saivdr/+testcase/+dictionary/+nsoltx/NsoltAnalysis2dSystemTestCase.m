@@ -91,8 +91,13 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',nChs,...
                 'PolyPhaseOrder',[ord ord],...
                 'NumberOfVanishingMoments',0);
+            
+            symmetry = randn(1,sum(nChs));
+            set(lppufb,'Symmetry',symmetry);
+            
             angs = get(lppufb,'Angles');
             angs = randn(size(angs));
+            angs(1:sum(nChs)) = symmetry.'; % TODO: delete
             set(lppufb,'Angles',angs);
             
             % Expected values
@@ -150,6 +155,10 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',nChs,...
                 'PolyPhaseOrder',[ord ord],...
                 'NumberOfVanishingMoments',1);
+            
+            symmetry = randn(1,sum(nChs));
+            set(lppufb,'Symmetry',symmetry);
+            
             angs = get(lppufb,'Angles');
             angs = randn(size(angs));
             set(lppufb,'Angles',angs);
@@ -209,6 +218,10 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels', ch,...
                 'PolyPhaseOrder',[ord ord],...
                 'NumberOfVanishingMoments',0);
+            
+            symmetry = randn(1,sum(nChs));
+            set(lppufb,'Symmetry',symmetry);
+            
             angs = get(lppufb,'Angles');
             angs = randn(size(angs));
             set(lppufb,'Angles',angs);
@@ -288,6 +301,10 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels', ch,...
                 'PolyPhaseOrder',[ord ord],...
                 'NumberOfVanishingMoments',1);
+            
+            symmetry = randn(1,sum(nChs));
+            set(lppufb,'Symmetry',symmetry);
+            
             angs = get(lppufb,'Angles');
             angs = randn(size(angs));
             set(lppufb,'Angles',angs);
@@ -367,6 +384,9 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',nChs,...
                 'PolyPhaseOrder',[ord ord]);
             
+            symmetry = randn(1,sum(nChs));
+            set(lppufb,'Symmetry',symmetry);
+            
             angs = get(lppufb,'Angles');
             angs = randn(size(angs));
             set(lppufb,'Angles',angs);
@@ -424,6 +444,10 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels', ch,...
                 'PolyPhaseOrder',[ord ord]);
+            
+            symmetry = randn(1,sum(nChs));
+            set(lppufb,'Symmetry',symmetry);
+            
             angs = get(lppufb,'Angles');
             angs = randn(size(angs));
             set(lppufb,'Angles',angs);
@@ -504,6 +528,10 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels', nChs,...
                 'PolyPhaseOrder',[ord ord]);
+            
+            symmetry = randn(1,sum(nChs));
+            set(lppufb,'Symmetry',symmetry);
+            
             angs = get(lppufb,'Angles');
             angs = randn(size(angs));
             set(lppufb,'Angles',angs);
@@ -561,6 +589,10 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels', ch,...
                 'PolyPhaseOrder',[ord ord]);
+            
+            symmetry = randn(1,sum(nChs));
+            set(lppufb,'Symmetry',symmetry);
+            
             angs = get(lppufb,'Angles');
             angs = randn(size(angs));
             set(lppufb,'Angles',angs);
@@ -644,12 +676,16 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels', ch,...
                 'PolyPhaseOrder',[ord ord]);
+            
+            symmetry = randn(1,sum(nChs));
+            set(lppufb,'Symmetry',symmetry);
+            
             angs = get(lppufb,'Angles');
             angs = randn(size(angs));
             set(lppufb,'Angles',angs);
             
           % Expected values
-          release(lppufb)
+            release(lppufb)
             set(lppufb,'OutputMode','AnalysisFilterAt');
             nSubCoefs = numel(srcImg)/(dec*dec);
             coefsExpctd = zeros(1,ch*nSubCoefs);
@@ -702,6 +738,10 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels', nChs,...
                 'PolyPhaseOrder',[ord ord]);
+            
+            symmetry = randn(1,sum(nChs));
+            set(lppufb,'Symmetry',symmetry);
+            
             angs = get(lppufb,'Angles');
             angs = randn(size(angs));
             set(lppufb,'Angles',angs);
@@ -789,6 +829,10 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels', nChs,...
                 'PolyPhaseOrder',[ord ord]);
+            
+            symmetry = randn(1,sum(nChs));
+            set(lppufb,'Symmetry',symmetry);
+            
             angs = get(lppufb,'Angles');
             angs = randn(size(angs));
             set(lppufb,'Angles',angs);
@@ -846,6 +890,10 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels', nChs,...
                 'PolyPhaseOrder',[ord ord]);
+            
+            symmetry = randn(1,sum(nChs));
+            set(lppufb,'Symmetry',symmetry);
+            
             angs = get(lppufb,'Angles');
             angs = randn(size(angs));
             set(lppufb,'Angles',angs);
@@ -924,6 +972,10 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels', chs,...
                 'PolyPhaseOrder',[ord ord]);
+            
+            symmetry = randn(1,sum(nChs));
+            set(lppufb,'Symmetry',symmetry);
+            
             angs = get(lppufb,'Angles');
             angs = randn(size(angs));
             set(lppufb,'Angles',angs);
@@ -981,6 +1033,10 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels', chs,...
                 'PolyPhaseOrder',ord);
+            
+            symmetry = randn(1,sum(nChs));
+            set(lppufb,'Symmetry',symmetry);
+            
             angs = get(lppufb,'Angles');
             angs = randn(size(angs));
             set(lppufb,'Angles',angs);
@@ -1038,6 +1094,10 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels', chs,...
                 'PolyPhaseOrder',ord);
+            
+            symmetry = randn(1,sum(nChs));
+            set(lppufb,'Symmetry',symmetry);
+            
             angs = get(lppufb,'Angles');
             angs = randn(size(angs));
             set(lppufb,'Angles',angs);
@@ -1095,6 +1155,10 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels', nChs,...
                 'PolyPhaseOrder',[ord ord]);
+            
+            symmetry = randn(1,sum(nChs));
+            set(lppufb,'Symmetry',symmetry);
+            
             angs = get(lppufb,'Angles');
             angs = randn(size(angs));
             set(lppufb,'Angles',angs);
@@ -1175,6 +1239,10 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels', ch,...
                 'PolyPhaseOrder',[ord ord]);
+            
+            symmetry = randn(1,sum(nChs));
+            set(lppufb,'Symmetry',symmetry);
+            
             angs = get(lppufb,'Angles');
             angs = randn(size(angs));
             set(lppufb,'Angles',angs);
@@ -1233,6 +1301,10 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels', nChs,...
                 'PolyPhaseOrder',[ord ord]);
+            
+            symmetry = randn(1,sum(nChs));
+            set(lppufb,'Symmetry',symmetry);
+            
             angs = get(lppufb,'Angles');
             angs = randn(size(angs));
             set(lppufb,'Angles',angs);
@@ -1460,6 +1532,10 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels', ch,...
                 'PolyPhaseOrder',[ord ord]);
+            
+            symmetry = randn(1,sum(nChs));
+            set(lppufb,'Symmetry',symmetry);
+            
             angs = get(lppufb,'Angles');
             angs = randn(size(angs));
             set(lppufb,'Angles',angs);
@@ -1570,9 +1646,14 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
                 'BoundaryOperation','Termination');
             coefsPre = step(testCase.analyzer,srcImg,nLevels);
             %
+            
+            symmetry = randn(1,sum(ch));
+            set(lppufb,'Symmetry',symmetry);
+            
             angs = get(lppufb,'Angles');
             angs = randn(size(angs));
-            set(lppufb,'Angles',angs); 
+            set(lppufb,'Angles',angs);
+            
             coefsPst1 = step(testCase.analyzer,srcImg,nLevels);
             
             % Evaluation
@@ -1618,6 +1699,9 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
                 'BoundaryOperation','Termination');
             coefsPre = step(testCase.analyzer,srcImg,nLevels);
             %
+            symmetry = randn(1,sum(ch));
+            set(lppufb,'Symmetry',symmetry);
+            
             angs = get(lppufb,'Angles');
             angs = randn(size(angs));
             set(lppufb,'Angles',angs); 
@@ -1669,6 +1753,9 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             coefsPre1 = step(testCase.analyzer,srcImg,nLevels);
             
             % Pst
+            symmetry = randn(1,sum(ch));
+            set(lppufb,'Symmetry',symmetry);
+            
             angs = randn(size(get(lppufb,'Angles')));
             set(lppufb,'Angles',angs);
             coefsPst1 = step(testCase.analyzer,srcImg,nLevels);
@@ -1804,6 +1891,10 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',decch(3:end),...
                 'PolyPhaseOrder',[ord ord],...
                 'NumberOfVanishingMoments',0);
+            
+            symmetry = randn(1,sum(nChs));
+            set(lppufb,'Symmetry',symmetry);
+            
             angs = get(lppufb,'Angles');
             angs = randn(size(angs));
             set(lppufb,'Angles',angs);
@@ -1865,6 +1956,10 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',decch(3:end),...
                 'PolyPhaseOrder',[ord ord],...
                 'NumberOfVanishingMoments',1);
+            
+            symmetry = randn(1,sum(nChs));
+            set(lppufb,'Symmetry',symmetry);
+            
             angs = get(lppufb,'Angles');
             angs = randn(size(angs));
             set(lppufb,'Angles',angs);
@@ -1926,6 +2021,10 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels', decch(3:end),...
                 'PolyPhaseOrder',[ord ord],...
                 'NumberOfVanishingMoments',0);
+            
+            symmetry = randn(1,sum(nChs));
+            set(lppufb,'Symmetry',symmetry);
+            
             angs = get(lppufb,'Angles');
             angs = randn(size(angs));
             set(lppufb,'Angles',angs);
@@ -2008,6 +2107,10 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels', decch(3:end),...
                 'PolyPhaseOrder',[ord ord],...
                 'NumberOfVanishingMoments',1);
+            
+            symmetry = randn(1,sum(nChs));
+            set(lppufb,'Symmetry',symmetry);
+            
             angs = get(lppufb,'Angles');
             angs = randn(size(angs));
             set(lppufb,'Angles',angs);
@@ -2090,6 +2193,10 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',decch(3:end),...
                 'PolyPhaseOrder',[ord ord],...
                 'NumberOfVanishingMoments',0);
+            
+            symmetry = randn(1,sum(nChs));
+            set(lppufb,'Symmetry',symmetry);
+            
             angs = get(lppufb,'Angles');
             angs = randn(size(angs));
             set(lppufb,'Angles',angs);
@@ -2148,6 +2255,10 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',decch(3:end),...
                 'PolyPhaseOrder',[ord ord],...
                 'NumberOfVanishingMoments',0);
+            
+            symmetry = randn(1,sum(nChs));
+            set(lppufb,'Symmetry',symmetry);
+            
             angs = get(lppufb,'Angles');
             angs = randn(size(angs));
             set(lppufb,'Angles',angs);
@@ -2206,6 +2317,10 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord],...
                 'NumberOfVanishingMoments',0);
+            
+            symmetry = randn(1,sum(ch));
+            set(lppufb,'Symmetry',symmetry);
+            
             angs = get(lppufb,'Angles');
             angs = randn(size(angs));
             set(lppufb,'Angles',angs);
@@ -2288,6 +2403,10 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',decch(3:end),...
                 'PolyPhaseOrder',[ord ord],...
                 'NumberOfVanishingMoments',0);
+            
+            symmetry = randn(1,sum(nChs));
+            set(lppufb,'Symmetry',symmetry);
+            
             angs = get(lppufb,'Angles');
             angs = randn(size(angs));
             set(lppufb,'Angles',angs);
@@ -2346,6 +2465,10 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord],...
                 'NumberOfVanishingMoments',0);
+            
+            symmetry = randn(1,sum(ch));
+            set(lppufb,'Symmetry',symmetry);
+            
             angs = get(lppufb,'Angles');
             angs = randn(size(angs));
             set(lppufb,'Angles',angs);
@@ -2433,6 +2556,10 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',decch(3:end),...
                 'PolyPhaseOrder',[ord ord],...
                 'NumberOfVanishingMoments',0);
+            
+            symmetry = randn(1,sum(nChs));
+            set(lppufb,'Symmetry',symmetry);
+            
             angs = get(lppufb,'Angles');
             angs = randn(size(angs));
             set(lppufb,'Angles',angs);
@@ -2490,6 +2617,10 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord],...
                 'NumberOfVanishingMoments',0);
+            
+            symmetry = randn(1,sum(ch));
+            set(lppufb,'Symmetry',symmetry);
+            
             angs = get(lppufb,'Angles');
             angs = randn(size(angs));
             set(lppufb,'Angles',angs);
@@ -2581,6 +2712,10 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',decch(3:end),...
                 'PolyPhaseOrder',[ord ord],...
                 'NumberOfVanishingMoments',0);
+            
+            symmetry = randn(1,sum(nChs));
+            set(lppufb,'Symmetry',symmetry);
+            
             angs = get(lppufb,'Angles');
             angs = randn(size(angs));
             set(lppufb,'Angles',angs);
@@ -2639,6 +2774,10 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord],...
                 'NumberOfVanishingMoments',0);
+            
+            symmetry = randn(1,sum(ch));
+            set(lppufb,'Symmetry',symmetry);
+            
             angs = get(lppufb,'Angles');
             angs = randn(size(angs));
             set(lppufb,'Angles',angs);
@@ -2722,6 +2861,10 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',decch(3:end),...
                 'PolyPhaseOrder',[ord ord],...
                 'NumberOfVanishingMoments',0);
+            
+            symmetry = randn(1,sum(nChs));
+            set(lppufb,'Symmetry',symmetry);
+            
             angs = get(lppufb,'Angles');
             angs = randn(size(angs));
             set(lppufb,'Angles',angs);
@@ -2780,6 +2923,10 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord],...
                 'NumberOfVanishingMoments',0);
+            
+            symmetry = randn(1,sum(ch));
+            set(lppufb,'Symmetry',symmetry);
+            
             angs = get(lppufb,'Angles');
             angs = randn(size(angs));
             set(lppufb,'Angles',angs);
@@ -2863,6 +3010,10 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',decch(3:end),...
                 'PolyPhaseOrder',[ord ord],...
                 'NumberOfVanishingMoments',0);
+            
+            symmetry = randn(1,sum(nChs));
+            set(lppufb,'Symmetry',symmetry);
+            
             angs = get(lppufb,'Angles');
             angs = randn(size(angs));
             set(lppufb,'Angles',angs);
@@ -2921,6 +3072,10 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord],...
                 'NumberOfVanishingMoments',0);
+            
+            symmetry = randn(1,sum(ch));
+            set(lppufb,'Symmetry',symmetry);
+            
             angs = get(lppufb,'Angles');
             angs = randn(size(angs));
             set(lppufb,'Angles',angs);
@@ -3008,6 +3163,10 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels', decch(3:end),...
                 'PolyPhaseOrder',[ord ord],...
                 'NumberOfVanishingMoments',0);
+            
+            symmetry = randn(1,sum(nChs));
+            set(lppufb,'Symmetry',symmetry);
+            
             angs = get(lppufb,'Angles');
             angs = randn(size(angs));
             set(lppufb,'Angles',angs);
@@ -3068,6 +3227,10 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord],...
                 'NumberOfVanishingMoments',0);
+            
+            symmetry = randn(1,sum(nChs));
+            set(lppufb,'Symmetry',symmetry);
+            
             angs = get(lppufb,'Angles');
             angs = randn(size(angs));
             set(lppufb,'Angles',angs);
@@ -3160,6 +3323,10 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord],...
                 'NumberOfVanishingMoments',0);
+            
+            symmetry = randn(1,sum(nChs));
+            set(lppufb,'Symmetry',symmetry);
+            
             angs = get(lppufb,'Angles');
             angs = randn(size(angs));
             set(lppufb,'Angles',angs);
@@ -3267,6 +3434,10 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',ch,...
                 'PolyPhaseOrder',[ord ord],...
                 'NumberOfVanishingMoments',0);
+            
+            symmetry = randn(1,sum(nChs));
+            set(lppufb,'Symmetry',symmetry);
+            
             angs = get(lppufb,'Angles');
             angs = randn(size(angs));
             set(lppufb,'Angles',angs);
@@ -3372,6 +3543,10 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',decch(3:end),...
                 'PolyPhaseOrder',[ord ord],...
                 'NumberOfVanishingMoments',0);
+            
+            symmetry = randn(1,sum(nChs));
+            set(lppufb,'Symmetry',symmetry);
+            
             angs = get(lppufb,'Angles');
             angs = randn(size(angs));
             set(lppufb,'Angles',angs);
@@ -3430,6 +3605,10 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',decch(3:end),...
                 'PolyPhaseOrder',[ord ord],...
                 'NumberOfVanishingMoments',0);
+            
+            symmetry = randn(1,sum(nChs));
+            set(lppufb,'Symmetry',symmetry);
+            
             angs = get(lppufb,'Angles');
             angs = randn(size(angs));
             set(lppufb,'Angles',angs);
@@ -4345,6 +4524,9 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
                 'BoundaryOperation','Termination');
             coefsPre = step(testCase.analyzer,srcImg,nLevels);
             %
+            symmetry = randn(1,sum(ch));
+            set(lppufb,'Symmetry',symmetry);
+            
             angs = get(lppufb,'Angles');
             angs = randn(size(angs));
             set(lppufb,'Angles',angs);
@@ -4393,6 +4575,9 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
                 'BoundaryOperation','Termination');
             coefsPre = step(testCase.analyzer,srcImg,nLevels);
             %
+            symmetry = randn(1,sum(nChs));
+            set(lppufb,'Symmetry',symmetry);
+            
             angs = get(lppufb,'Angles');
             angs = randn(size(angs));
             set(lppufb,'Angles',angs);
@@ -4537,6 +4722,9 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
                 'BoundaryOperation','Termination');
             coefsPre = step(testCase.analyzer,srcImg,nLevels);
             %
+            symmetry = randn(1,sum(ch));
+            set(lppufb,'Symmetry',symmetry);
+            
             angs = get(lppufb,'Angles');
             angs = randn(size(angs));
             set(lppufb,'Angles',angs);
@@ -4585,6 +4773,9 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
                 'BoundaryOperation','Termination');
             coefsPre = step(testCase.analyzer,srcImg,nLevels);
             %
+            symmetry = randn(1,sum(ch));
+            set(lppufb,'Symmetry',symmetry);
+            
             angs = get(lppufb,'Angles');
             angs = randn(size(angs));
             set(lppufb,'Angles',angs);

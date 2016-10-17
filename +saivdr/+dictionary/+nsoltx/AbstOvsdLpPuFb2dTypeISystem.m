@@ -37,6 +37,7 @@ classdef AbstOvsdLpPuFb2dTypeISystem < ...
             obj = obj@saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2dSystem(...
                 varargin{:});
             updateProperties_(obj);
+            updateSymmetry_(obj);
             updateAngles_(obj);
             updateMus_(obj);
         end
@@ -103,7 +104,7 @@ classdef AbstOvsdLpPuFb2dTypeISystem < ...
 %                 obj.NumberOfChannels = 2*floor(nHalfDecs)+1;
 %             elseif isvector(obj.NumberOfChannels)
 %                 obj.NumberOfChannels = sum(obj.NumberOfChannels);
-%                 % TODO: 例外処理を正しく実装する
+%                 % TODO: ???O????????????????????
 %                 if mod(obj.NumberOfChannels,2) == 0
 %                     id = 'SaivDr:IllegalArgumentException';
 %                     msg = '#Channels must be odd.';
@@ -143,6 +144,15 @@ classdef AbstOvsdLpPuFb2dTypeISystem < ...
                 'MatrixSizeTable',paramMtxSizeTab);
 
         end
+        
+        function updateSymmetry_(obj)
+            nCh = obj.NumberOfChannels;
+            if isscalar(obj.Symmetry) && obj.Symmetry == 0
+                obj.Symmetry = zeros(1,nCh);
+            end
+            
+            % TODO: exception processing
+        end
 
         function updateAngles_(obj)
             import saivdr.dictionary.nsoltx.ChannelGroup
@@ -164,7 +174,7 @@ classdef AbstOvsdLpPuFb2dTypeISystem < ...
 %                     size(obj.Angles,2) ~= sizeOfAngles(2)
             if size(obj.Angles) ~= sizeOfAngles
                 id = 'SaivDr:IllegalArgumentException';
-                %TODO: エラーメッセージの設定
+                %TODO: ?G???[???b?Z?[?W??????
                 msg = sprintf(...
                     'Size of angles must be [ %d %d ]',...
                     sizeOfAngles(1), sizeOfAngles(2));
@@ -173,7 +183,7 @@ classdef AbstOvsdLpPuFb2dTypeISystem < ...
             end
         end
 
-        %TODO:　修正する
+        %TODO:?@?C??????
         function updateMus_(obj)
             %import saivdr.dictionary.nsoltx.ChannelGroup
             import saivdr.dictionary.utility.Direction
@@ -216,7 +226,8 @@ classdef AbstOvsdLpPuFb2dTypeISystem < ...
             mexFcn_ = obj.mexFcn;
             mexFlag_ = obj.mexFlag;
             
-            S = step(pmMtxSet_,[],uint32(1));
+            %S = step(pmMtxSet_,[],uint32(1));
+            S = diag(exp(1i*obj.Symmetry));
             %
             E0 = obj.matrixE0;
             %

@@ -159,14 +159,15 @@ classdef NsoltSynthesis2dSystem  < ...
         function recImg = stepImpl(obj, coefs, scales)
             pmMtx = step(obj.LpPuFb2d,[],[]);
             pmMtxCoefs = get(pmMtx,'Coefficients');
-            recImg = synthesize_(obj, coefs, scales, pmMtxCoefs);
+            symmetry = get(obj.LpPuFb2d,'Symmetry');
+            recImg = synthesize_(obj, coefs, scales, pmMtxCoefs,symmetry);
         end
         
     end
     
     methods (Access = private)
         
-        function recImg = synthesize_(obj,coefs,scales,pmCoefs)
+        function recImg = synthesize_(obj,coefs,scales,pmCoefs,symmetry)
             import saivdr.dictionary.utility.Direction
             %
             nChs = obj.NumberOfSymmetricChannels ...
@@ -189,7 +190,7 @@ classdef NsoltSynthesis2dSystem  < ...
                     eIdx = sIdx + prod(scales(iSubband,:))-1;
                     arrayCoefs(iCh,:) = coefs(sIdx:eIdx);
                 end
-                subImg = subSynthesize_(obj,arrayCoefs,pmCoefs);
+                subImg = subSynthesize_(obj,arrayCoefs,pmCoefs,symmetry);
                 if iLevel < nLevels
                     height = size(subImg,1);
                     width  = size(subImg,2);                    
@@ -200,7 +201,7 @@ classdef NsoltSynthesis2dSystem  < ...
             recImg = subImg;
         end
         
-        function subImg = subSynthesize_(obj,arrayCoefs,pmCoefs)
+        function subImg = subSynthesize_(obj,arrayCoefs,pmCoefs,symmetry)
             import saivdr.dictionary.utility.Direction
             nRows_ = obj.nRows;
             nCols_ = obj.nCols;
@@ -215,10 +216,11 @@ classdef NsoltSynthesis2dSystem  < ...
             end
             
             % Atom concatenation
+            S = diag(exp(-1i*symmetry));
             subScale  = [ nRows_ nCols_ ];
             ord  = uint32(obj.polyPhaseOrder);            
             fpe = strcmp(obj.BoundaryOperation,'Circular');
-            arrayCoefs = obj.atomCncFcn(arrayCoefs,subScale,pmCoefs,...
+            arrayCoefs = obj.atomCncFcn(S*arrayCoefs,subScale,pmCoefs,...
                 ord,fpe);
             
             % Block IDCT

@@ -61,11 +61,11 @@ classdef OvsdLpPuFb2dTypeIIVm1System < ...
             import saivdr.dictionary.nsoltx.ChannelGroup
             nCh = obj.NumberOfChannels;
             
-            [symAngles, initAngles, propAngles] = splitAngles_(obj);
+            [~, initAngles, propAngles] = splitAngles_(obj);
             
             pmMtxSt_ = obj.ParameterMatrixSet;
             % symmetric matrix
-            mtx = diag(exp(1i*symAngles));
+            mtx = diag(exp(1i*obj.Symmetry));
             step(obj.ParameterMatrixSet,mtx,uint32(1));
             % V0
             mtx = step(obj.omgsV_,initAngles,obj.Mus(1:nCh));
@@ -89,7 +89,7 @@ classdef OvsdLpPuFb2dTypeIIVm1System < ...
             for iParamMtx = uint32(1):obj.nStages-1
                 
                 
-                % TODO: 分かりやすくリファクタリングする
+                % TODO: ???????????????t?@?N?^?????O????
                 % W
                 mtx = step(omgsWU,angles(1:nAngsW,iParamMtx),...
                     mus(1:nMusW,iParamMtx));
@@ -116,7 +116,7 @@ classdef OvsdLpPuFb2dTypeIIVm1System < ...
 
                 % W_ = step(pmMtxSet,[],2*iParamMtx-1)*W_;
             end
-            %TODO: No-DC-Leakage conditionを正しく設定する
+            %TODO: No-DC-Leakage condition????????????????
 %             [angles_,mus_] = step(obj.omfs_,W_.');
 %             angles(1:nChs(ChannelGroup.UPPER)-1,nSts) = ...
 %                 angles_(1:nChs(ChannelGroup.UPPER)-1);

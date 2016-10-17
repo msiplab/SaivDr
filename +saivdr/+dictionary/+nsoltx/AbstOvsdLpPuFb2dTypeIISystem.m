@@ -37,6 +37,7 @@ classdef AbstOvsdLpPuFb2dTypeIISystem < ...
             obj = obj@saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2dSystem(...
                 varargin{:});
             updateProperties_(obj);
+            updateSymmetry_(obj);
             updateAngles_(obj);
             updateMus_(obj);
         end
@@ -109,7 +110,7 @@ classdef AbstOvsdLpPuFb2dTypeIISystem < ...
                 obj.NumberOfChannels = 2*floor(nHalfDecs)+1;
             elseif isvector(obj.NumberOfChannels)
                 obj.NumberOfChannels = sum(obj.NumberOfChannels);
-                % TODO: —áŠOˆ—‚ð³‚µ‚­ŽÀ‘•‚·‚é
+                % TODO: ???O????????????????????
                 if mod(obj.NumberOfChannels,2) == 0
                     id = 'SaivDr:IllegalArgumentException';
                     msg = '#Channels must be odd.';
@@ -140,6 +141,15 @@ classdef AbstOvsdLpPuFb2dTypeIISystem < ...
             end
 
         end
+        
+        function updateSymmetry_(obj)
+            nCh = obj.NumberOfChannels;
+            if isscalar(obj.Symmetry) && obj.Symmetry == 0
+                obj.Symmetry = zeros(1,nCh);
+            end
+            
+            % TODO: exception processing
+        end
 
         function updateAngles_(obj)
             import saivdr.dictionary.nsoltx.ChannelGroup
@@ -166,7 +176,7 @@ classdef AbstOvsdLpPuFb2dTypeIISystem < ...
                 obj.Angles = [angsSym ; angsInit; angsPerStg(:)];
             end
             obj.Angles = obj.Angles(:);
-            % TODO : —áŠOˆ—
+            % TODO : ???O????
 %             if size(obj.Angles,1) ~= sizeOfAngles(1) || ...
 %                     size(obj.Angles,2) ~= sizeOfAngles(2)
             if size(obj.Angles) ~= sizeOfAngles
@@ -202,7 +212,7 @@ classdef AbstOvsdLpPuFb2dTypeIISystem < ...
 %             nChL = floor(obj.NumberOfChannels/2);
 %             nChU = ceil(obj.NumberOfChannels/2);
 %             if isscalar(obj.Mus) && obj.Mus == 1
-                %TODO:obj.Mus‚ð“KØ‚ÉÝ’è‚·‚é
+                %TODO:obj.Mus???K????????????
 %                 if nChU > nChL
 %                     obj.Mus = repmat([
 %                         ones(nChU, obj.nStages);
@@ -247,7 +257,8 @@ classdef AbstOvsdLpPuFb2dTypeIISystem < ...
             mexFlag_ = obj.mexFlag;
             
             %
-            S = step(pmMtxSt_,[],uint32(1));
+            %S = step(pmMtxSt_,[],uint32(1));
+            S = diag(exp(1i*obj.Symmetry));
             %
             E0 = obj.matrixE0;
             %

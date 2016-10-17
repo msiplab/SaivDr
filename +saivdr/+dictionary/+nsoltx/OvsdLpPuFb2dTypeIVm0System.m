@@ -50,10 +50,10 @@ classdef OvsdLpPuFb2dTypeIVm0System < saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2dT
         function obj = updateParameterMatrixSet_(obj)
             nCh = sum(obj.NumberOfChannels);
             
-            [symAngles, initAngles, propAngles] = splitAngles_(obj);
+            [~, initAngles, propAngles] = splitAngles_(obj);
             
             % symmetric matrix
-            mtx = diag(exp(1i*symAngles));
+            mtx = diag(exp(1i*obj.Symmetry));
             step(obj.ParameterMatrixSet,mtx,uint32(1));
             
             % initial matrix

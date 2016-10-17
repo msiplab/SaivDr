@@ -51,10 +51,10 @@ classdef OvsdLpPuFb2dTypeIVm1System < saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2dT
             %import saivdr.dictionary.nsoltx.ChannelGroup
             nch = sum(obj.NumberOfChannels);
 
-            [symAngles, initAngles, propAngles] = splitAngles_(obj);
+            [~, initAngles, propAngles] = splitAngles_(obj);
             
             % symmetric matrix
-            mtx = diag(exp(1i*symAngles));
+            mtx = diag(exp(1i*obj.Symmetry));
             step(obj.ParameterMatrixSet,mtx,uint32(1));
             
             % initial matrix
@@ -72,7 +72,7 @@ classdef OvsdLpPuFb2dTypeIVm1System < saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2dT
             pmMtxSet = obj.ParameterMatrixSet;
             omgs     = obj.propOmgs_;
             for iParamMtx = uint32(1):obj.nStages-1
-                %TODO: No-DC-Leakage condition‚ðŽÀ‘•‚·‚é
+                %TODO: No-DC-Leakage condition??????????
                 % W
                 mtx = step(omgs,angles(1:nParamMtxAngs,iParamMtx),mus(1:nch/2,iParamMtx));
                 step(pmMtxSet,mtx,3*iParamMtx);
@@ -84,7 +84,7 @@ classdef OvsdLpPuFb2dTypeIVm1System < saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2dT
                 % angsB
                 step(pmMtxSet,angles(2*nParamMtxAngs+1:end,iParamMtx),3*iParamMtx+2);
             end
-            %TODO: No-DC-Leakage Condition‚ðŽÀ‘•
+            %TODO: No-DC-Leakage Condition??????
 %             obj.Angles = angles;
 %             obj.Mus = mus;
         end

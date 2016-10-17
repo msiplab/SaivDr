@@ -38,6 +38,7 @@ classdef AbstOvsdLpPuFb2dSystem < matlab.System %#codegen
     end
 
     properties (Hidden)
+        Symmetry = 0;
         Angles = 0;
         Mus    = 1;
     end
@@ -57,6 +58,7 @@ classdef AbstOvsdLpPuFb2dSystem < matlab.System %#codegen
     methods (Access = protected, Abstract = true)
         value = getAnalysisFilterBank_(obj)
         updateParameterMatrixSet_(obj)
+        updateSymmetry_(obj)
         updateAngles_(obj)
         updateMus_(obj)
     end
@@ -136,14 +138,14 @@ classdef AbstOvsdLpPuFb2dSystem < matlab.System %#codegen
             elseif strcmp(obj.OutputMode,'AnalysisFilters')
                 output = getAnalysisFilterBank_(obj);
             elseif strcmp(obj.OutputMode,'SynthesisFilterAt')
-                % TODO: 本来は対称性を考慮しなければならないが，何故か正しく動作する．
-                %      動作原理を確認する．
+                % TODO: ?{?????????????l???????????????????????C?????????????????????D
+                %      ???????????m?F?????D
                 idx = varargin{3};
                 H = getAnalysisFilterBank_(obj);
                 H = conj(H);
                 output = rot90(H(:,:,idx),2);
             elseif strcmp(obj.OutputMode,'SynthesisFilters')
-                % TODO: SynthesisFilterAtを参照
+                % TODO: SynthesisFilterAt???Q??
                 H = getAnalysisFilterBank_(obj);
                 H = conj(H);
                 H = flip(H,1);
@@ -234,7 +236,7 @@ classdef AbstOvsdLpPuFb2dSystem < matlab.System %#codegen
             end
         end
         
-        %TODO:同一の関数が1D,3Dでも定義されているので一箇所に集約する
+        %TODO:????????????1D,3D???????`???????????????????????W??????
         function value = hsdftmtx_(~, nDec) %Hermitian-Symmetric DFT matrix
             %w = exp(-2*pi*1i/nDec);
             value = complex(zeros(nDec));

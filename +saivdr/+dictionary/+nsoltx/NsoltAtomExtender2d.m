@@ -51,7 +51,7 @@ classdef NsoltAtomExtender2d <  ...
                 arrayCoefs = fullAtomExtTypeII_(obj,arrayCoefs);
             end
             
-            arrayCoefs = finalStep_(obj,arrayCoefs);
+%             arrayCoefs = finalStep_(obj,arrayCoefs);
         end
         
     end
@@ -67,12 +67,12 @@ classdef NsoltAtomExtender2d <  ...
 
         end
         
-        function arrayCoefs = finalStep_(obj,arrayCoefs)
-            if ~isempty(obj.paramMtxCoefs)
-                S = getParamMtx_(obj,uint32(1));
-                arrayCoefs = S*arrayCoefs;
-            end
-        end
+%         function arrayCoefs = finalStep_(obj,arrayCoefs)
+%             if ~isempty(obj.paramMtxCoefs)
+%                 S = getParamMtx_(obj,uint32(1));
+%                 arrayCoefs = S*arrayCoefs;
+%             end
+%         end
         
         function arrayCoefs = fullAtomExtTypeI_(obj,arrayCoefs)
             %
@@ -278,7 +278,7 @@ classdef NsoltAtomExtender2d <  ...
                 upperCoefsPost;
         end
         
-        function hB = butterflyMtx_(obj, angles)%TODO: “¯ˆê‚ÌŠÖ”‚ªAbstBuildingBlock.m‚ÅŽÀ‘•‚³‚ê‚Ä‚¢‚é‚Ì‚Åˆê‰ÓŠ‚É‚Ü‚Æ‚ß‚éD
+        function hB = butterflyMtx_(obj, angles)%TODO: ????????????AbstBuildingBlock.m?????????????????????????????????????D
             hchs = obj.NumberOfAntisymmetricChannels;
             
             hC = complex(eye(hchs));

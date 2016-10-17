@@ -55,6 +55,8 @@ classdef NsoltAnalysisSynthesisTestCase < matlab.unittest.TestCase
             angs = get(lppufb,'Angles');
             angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
+            symmetry = 2*pi*rand(1,sum(nChs));
+            set(lppufb,'Symmetry',symmetry);
             
             testCase.synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb,'BoundaryOperation','Termination');
@@ -98,6 +100,8 @@ classdef NsoltAnalysisSynthesisTestCase < matlab.unittest.TestCase
             angs = get(lppufb,'Angles');
             angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
+            symmetry = 2*pi*rand(1,sum(nChs));
+            set(lppufb,'Symmetry',symmetry);
             
             testCase.synthesizer = saivdr.dictionary.nsoltx.NsoltFactory.createSynthesis2dSystem(...
                 lppufb,'BoundaryOperation','Termination');
@@ -141,6 +145,8 @@ classdef NsoltAnalysisSynthesisTestCase < matlab.unittest.TestCase
             angs = get(lppufb,'Angles');
             angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
+            symmetry = 2*pi*rand(1,sum(nChs));
+            set(lppufb,'Symmetry',symmetry);
             
             testCase.synthesizer = saivdr.dictionary.nsoltx.NsoltFactory.createSynthesis2dSystem(...
                 lppufb,'BoundaryOperation','Termination');
@@ -184,6 +190,8 @@ classdef NsoltAnalysisSynthesisTestCase < matlab.unittest.TestCase
             angs = get(lppufb,'Angles');
             angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
+            symmetry = 2*pi*rand(1,sum(nChs));
+            set(lppufb,'Symmetry',symmetry);
             
             testCase.synthesizer = saivdr.dictionary.nsoltx.NsoltFactory.createSynthesis2dSystem(...
                 lppufb,'BoundaryOperation','Termination');
@@ -228,6 +236,8 @@ classdef NsoltAnalysisSynthesisTestCase < matlab.unittest.TestCase
             angs = get(lppufb,'Angles');
             angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
+            symmetry = 2*pi*rand(1,sum(nChs));
+            set(lppufb,'Symmetry',symmetry);
             
             testCase.synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb,'BoundaryOperation','Termination');
@@ -271,6 +281,8 @@ classdef NsoltAnalysisSynthesisTestCase < matlab.unittest.TestCase
             angs = get(lppufb,'Angles');
             angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
+            symmetry = 2*pi*rand(1,sum(nChs));
+            set(lppufb,'Symmetry',symmetry);
             
             testCase.synthesizer = saivdr.dictionary.nsoltx.NsoltFactory.createSynthesis2dSystem(...
                 lppufb,'BoundaryOperation','Termination');
@@ -314,6 +326,8 @@ classdef NsoltAnalysisSynthesisTestCase < matlab.unittest.TestCase
             angs = get(lppufb,'Angles');
             angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
+            symmetry = 2*pi*rand(1,sum(nChs));
+            set(lppufb,'Symmetry',symmetry);
             
             testCase.synthesizer = saivdr.dictionary.nsoltx.NsoltFactory.createSynthesis2dSystem(...
                 lppufb,'BoundaryOperation','Termination');
@@ -357,6 +371,8 @@ classdef NsoltAnalysisSynthesisTestCase < matlab.unittest.TestCase
             angs = get(lppufb,'Angles');
             angs = 2*pi*randn(size(angs));
             set(lppufb,'Angles',angs);
+            symmetry = 2*pi*rand(1,sum(nChs));
+            set(lppufb,'Symmetry',symmetry);
             
             testCase.synthesizer = saivdr.dictionary.nsoltx.NsoltFactory.createSynthesis2dSystem(...
                 lppufb,'BoundaryOperation','Termination');

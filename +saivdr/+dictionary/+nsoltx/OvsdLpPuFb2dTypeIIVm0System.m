@@ -55,11 +55,11 @@ classdef OvsdLpPuFb2dTypeIIVm0System < saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2d
             import saivdr.dictionary.nsoltx.ChannelGroup
             nCh = obj.NumberOfChannels;
             
-            [symAngles, initAngles, propAngles] = splitAngles_(obj);
+            [~, initAngles, propAngles] = splitAngles_(obj);
             
             pmMtxSt_ = obj.ParameterMatrixSet;
             % symmetric matrix
-            mtx = diag(exp(1i*symAngles));
+            mtx = diag(exp(1i*obj.Symmetry));
             step(obj.ParameterMatrixSet,mtx,uint32(1));
             % V0
             mtx = step(obj.omgsV0_,initAngles, obj.Mus(1:nCh));
@@ -75,7 +75,7 @@ classdef OvsdLpPuFb2dTypeIIVm0System < saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2d
             omgsE = obj.omgsE_;
             omgsO = obj.omgsO_;
             for iParamMtx = uint32(1):obj.nStages-1
-                % TODO: 分かりやすくリファクタリングする
+                % TODO: ???????????????t?@?N?^?????O????
                 % W
                 mtx = step(omgsE,angles(1:nAngsW,iParamMtx),...
                     mus(1:nMusW,iParamMtx));

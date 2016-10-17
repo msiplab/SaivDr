@@ -181,8 +181,9 @@ classdef NsoltAnalysis2dSystem < ...
             %else
                 pmMtx = step(obj.LpPuFb2d,[],[]);
                 pmMtxCoefs = get(pmMtx,'Coefficients');
+                symmetry = get(obj.LpPuFb2d,'Symmetry');
             %end
-            [ coefs, scales ] = analyze_(obj, srcImg, nLevels, pmMtxCoefs);
+            [ coefs, scales ] = analyze_(obj, srcImg, nLevels, pmMtxCoefs, symmetry);
         end
         
     end
@@ -190,7 +191,7 @@ classdef NsoltAnalysis2dSystem < ...
     methods (Access = private)
         
         function [ coefs, scales ] = ...
-                analyze_(obj, srcImg, nLevels, pmCoefs)
+                analyze_(obj, srcImg, nLevels, pmCoefs, symmetry)
             import saivdr.dictionary.utility.Direction            
             %
             nChs = obj.NumberOfSymmetricChannels ...
@@ -207,7 +208,7 @@ classdef NsoltAnalysis2dSystem < ...
                 width  = size(subImg,2);
                 obj.nRows = uint32(height/decY);
                 obj.nCols = uint32(width/decX);
-                arrayCoefs = subAnalyze_(obj,subImg,pmCoefs);
+                arrayCoefs = subAnalyze_(obj,subImg,pmCoefs,symmetry);
                 for iCh = nChs:-1:2
                     subbandCoefs = arrayCoefs(iCh,:);
                     obj.allScales(iSubband,:) = [ obj.nRows obj.nCols ];
@@ -225,7 +226,7 @@ classdef NsoltAnalysis2dSystem < ...
             coefs  = obj.allCoefs;
         end
         
-        function arrayCoefs = subAnalyze_(obj,subImg,pmCoefs)
+        function arrayCoefs = subAnalyze_(obj,subImg,pmCoefs,symmetry)
             import saivdr.dictionary.utility.Direction
             %
             nChs = obj.NumberOfSymmetricChannels ...
@@ -275,10 +276,11 @@ classdef NsoltAnalysis2dSystem < ...
             end
             
             % Atom extension
+            S = diag(exp(1i*symmetry));
             subScale = [ obj.nRows obj.nCols ];
             ord   = uint32(obj.polyPhaseOrder);            
             fpe = strcmp(obj.BoundaryOperation,'Circular');
-            arrayCoefs = obj.atomExtFcn(arrayCoefs,subScale,pmCoefs,...
+            arrayCoefs = S*obj.atomExtFcn(arrayCoefs,subScale,pmCoefs,...
                 ord,fpe);
         end        
         
