@@ -218,7 +218,7 @@ setFrameBound(synthesizer,1);
 
 % Instantiation of ISTA system object
 import saivdr.restoration.ista.IstaImRestoration
-lambda    = 0.00285;                      % lambda
+lambda    = 0.00185;                      % lambda
 ista = IstaImRestoration(...
     'Synthesizer',        synthesizer,... % Synthesizer (Dictionary)
     'AdjOfSynthesizer',   analyzer,...    % Analyzer (Adj. of dictionary)

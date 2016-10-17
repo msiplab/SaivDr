@@ -7,16 +7,16 @@ classdef DictionaryLearning
         Angles
         Mus
         ErrPerPix
-        NumberOfChannels = 8
+        NumberOfChannels = 6
         NumberOfTreeLevels = 4
     end
     
     properties (Constant)
-        CropSize = [64 64]
-        NumberOfCoefs = 1500
-        MaxStageCount = 50
+        CropSize = [32 32]
+        NumberOfCoefs = 150
+        MaxStageCount = 500
         PreviousDictionaryFile = ''
-        PreviousStageCount = 0
+        PreviousStageCount = 20
     end
     
     methods
@@ -25,12 +25,6 @@ classdef DictionaryLearning
             srcImg = imread('18_ibushi.normal.png');
             srcImg = im2double(srcImg);
             obj.orgImg = (srcImg(:,:,1) + 1i*srcImg(:,:,2))/sqrt(2);
-            
-%             width  = 64; % Width
-%             height = 64; % Height
-%             px     = 64;  % Horizontal position of cropping
-%             py     = 64;  % Vertical position of cropping
-%             obj.orgImg = im2double(srcImg(py:py+height-1,px:px+width-1,:));
             
             % Parameters for NSOLT
             nDec    = [2 2]; % Decimation factor
@@ -80,20 +74,13 @@ classdef DictionaryLearning
                 'Algorithm','trust-region-reflective',...
                 'Display','iter-detailed',...
                 'FiniteDifferenceStepSize',1e0*sqrt(eps),...
-                'FunctionTolerance', 1e-8,...
+                'FunctionTolerance', 1e-6,...
+                'MaxFunctionEvaluations',50000,...
+                'MaxIterations',2000,....
                 'OptimalityTolerance',1e-6,...
-                'StepTolerance',1e-8,...
-                'TypicalX',pi*1e0*ones(size(angs)),...
+                'StepTolerance',1e-6,...
+                'TypicalX',1e0*ones(size(angs)),...
                 'UseParallel',true);
-            
-            %             opt = optimoptions(@lsqnonlin,...
-            %                 'Algorithm','trust-region-reflective',...
-            %                 'Display','iter-detailed',...
-            %                 'Jacobian','on',...
-            %                 'MaxFunctionEvaluations',obj.MaxFunctionEvaluations,...
-            %                 'MaxIterations',obj.MaxIterations,...
-            %                 'StepTolerance',1e-8,...
-            %                 'UseParallel',true);
             
             for idx = 1:obj.MaxStageCount
                 obj.StageCount = idx;
@@ -106,33 +93,47 @@ classdef DictionaryLearning
                 px     = 64;  % Horizontal position of cropping
                 py     = 64;  % Vertical position of cropping
                 cropImg = im2double(obj.orgImg(py:py+obj.CropSize(1)-1,px:px+obj.CropSize(2)-1,:));
-%                 cropImg = obj.orgImg(p(1):p(1)+obj.CropSize(1)-1,p(2):p(2)+obj.CropSize(2)-1);
-%                 obsImg = imnoise(real(cropImg),'gaussian',0,(40/255)^2)...
-%                     + 1i*imnoise(imag(cropImg),'gaussian',0,(40/255)^2);
+                %                 cropImg = obj.orgImg(p(1):p(1)+obj.CropSize(1)-1,p(2):p(2)+obj.CropSize(2)-1);
+                %                 obsImg = imnoise(real(cropImg),'gaussian',0,(40/255)^2)...
+                %                     + 1i*imnoise(imag(cropImg),'gaussian',0,(40/255)^2);
                 obsImg = cropImg;
                 
                 import saivdr.dictionary.nsoltx.*
                 import saivdr.sparserep.*
+                import saivdr.degradation.linearprocess.*
+                import saivdr.restoration.ista.*
                 analyzer = NsoltAnalysis2dSystem('LpPuFb2d',obj.nsolt);
                 synthesizer = NsoltSynthesis2dSystem('LpPuFb2d',obj.nsolt);
                 
-                iht = IterativeHardThresholding(...
-                    'NumberOfTreeLevels',obj.NumberOfTreeLevels,...
-                    'Synthesizer',synthesizer,'AdjOfSynthesizer',analyzer);
-                [~,coefvec,scales] = step(iht,obsImg,obj.NumberOfCoefs);
+                %                 iht = IterativeHardThresholding(...
+                %                     'NumberOfTreeLevels',obj.NumberOfTreeLevels,...
+                %                     'Synthesizer',synthesizer,'AdjOfSynthesizer',analyzer);
+                %                 [~,coefvec,scales] = step(iht,obsImg,obj.NumberOfCoefs);
+                blur = BlurSystem('BlurType','Identical');
+                lambda    = 0.005;                      % lambda
+                ista = IstaImRestoration(...
+                    'Synthesizer',        synthesizer,... % Synthesizer (Dictionary)
+                    'AdjOfSynthesizer',   analyzer,...    % Analyzer (Adj. of dictionary)
+                    'LinearProcess',      blur,...        % Blur process
+                    'NumberOfTreeLevels', obj.NumberOfTreeLevels,...     % # of tree levels of NSOLT
+                    'Lambda',             lambda,...
+                    'Eps0',               1e-6,...
+                    'MaxIter',            10000);        % Parameter lambda
+                [~,coefvec,scales] = step(ista,obsImg);
+                admm = AdmmImRestoration(...
+                    'Synthesizer',        synthesizer,...
+                    'AdjOfSynthesizer',   analyzer,...
+                    'NumberOfTreeLevels', obj.NumberOfTreeLevels,...
+                    'Lambda',             lambda);
+                %[~,coefvec,scales] = step(admm,obsImg);
                 fprintf('end coefficients optimization stage.\n');
                 %dictionary update
                 fprintf('start dictionary update stage.\n');
                 nch = obj.NumberOfChannels;
-                %                 mus = get(obj.nsolt,'Mus');
-                %                 mus = 2*(rand(size(mus)) >= 0.5) - 1;
-                %                 obj.Mus(:,:,idx) = mus;
-                %                 set(obj.nsolt,'Mus',mus);
                 
-                %preangs = obj.Angles(:,idx);
                 preangs = get(obj.nsolt,'Angles');
-                %preangs = pi*(2*rand(size(preangs))-ones(size(preangs)));
                 preangs = preangs(nch+1:end);
+                %preangs = 2*pi*rand(size(preangs));
                 objFunc = getObjFunc(obj,coefvec,scales,cropImg);
                 
                 lb = [];

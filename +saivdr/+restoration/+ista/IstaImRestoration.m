@@ -150,7 +150,7 @@ classdef IstaImRestoration < matlab.System %~#codegen
             %            obj.valueL  = getLipschitzConstant_(obj);
         end
 
-        function resImg = stepImpl(obj,srcImg)
+        function [resImg,coefvec,scales] = stepImpl(obj,srcImg)
             % Initialization
             obj.x = srcImg;
             obj.nItr  = 0;
@@ -192,6 +192,10 @@ classdef IstaImRestoration < matlab.System %~#codegen
                 end
             end
             resImg = obj.hu;
+            if nargout > 1
+                coefvec = obj.y;
+                scales = obj.scales;
+            end
          end
 
         function N = getNumInputsImpl(~)
@@ -200,6 +204,7 @@ classdef IstaImRestoration < matlab.System %~#codegen
 
         function N = getNumOutputsimpl(~)
             N = 1;
+            %TODO:
         end
 
     end
@@ -275,13 +280,13 @@ classdef IstaImRestoration < matlab.System %~#codegen
             % Soft-thresholding shrinkage
             ln = abs(inputcf);
             
-%             outputcf = zeros(size(inputcf));
-%             for idx = 1:length(inputcf)
-%                 if ln(idx) > threshold
-%                     outputcf(idx) = (ln(idx)-threshold)/ln(idx)*inputcf(idx);
-%                 end
-%             end
-            outputcf = (ln > threshold).*(ln-threshold)./ln.*inputcf;
+            outputcf = complex(zeros(size(inputcf)));
+            for idx = 1:length(inputcf)
+                if ln(idx) > threshold
+                    outputcf(idx) = (ln(idx)-threshold)/ln(idx)*inputcf(idx);
+                end
+            end
+%             outputcf = (ln > threshold).*(ln-threshold)./ln.*inputcf;
         end
 
     end
