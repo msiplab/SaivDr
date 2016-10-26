@@ -43,7 +43,6 @@ classdef NsoltAtomConcatenator2d < ...
         function arrayCoefs = stepImpl(obj,arrayCoefs,subScale,pmCoefs)
             stepImpl@saivdr.dictionary.nsoltx.AbstNsoltCoefManipulator2d(obj,arrayCoefs,subScale,pmCoefs);
             
-            %arrayCoefs = initialStep_(obj,arrayCoefs);
             %
             if strcmp(obj.NsoltType,'Type I')
                 arrayCoefs = fullAtomCncTypeI_(obj,arrayCoefs);
@@ -57,17 +56,11 @@ classdef NsoltAtomConcatenator2d < ...
     end
     
     methods ( Access = private )
-%         function arrayCoefs = initialStep_(obj,arrayCoefs)
-%             if ~isempty(obj.paramMtxCoefs)
-%                 S = getParamMtx_(obj,uint32(1))';
-%                 arrayCoefs = S*arrayCoefs;
-%             end
-%         end
         
         function arrayCoefs = finalStep_(obj,arrayCoefs)
             %
             if ~isempty(obj.paramMtxCoefs)
-                V0 = getParamMtx_(obj,uint32(2)).';
+                V0 = getParamMtx_(obj,uint32(1)).';
                 arrayCoefs = V0*arrayCoefs;
             end
             

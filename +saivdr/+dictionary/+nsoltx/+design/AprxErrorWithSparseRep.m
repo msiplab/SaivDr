@@ -202,7 +202,7 @@ classdef AprxErrorWithSparseRep < matlab.System %#~codegen
             %
             aprxImg_ = step(synthesizer_,coefs_,scales_);
             %
-            cost  = sum((srcImg_(:)-aprxImg_(:)).^2);
+            cost  = sum(abs((srcImg_(:)-aprxImg_(:))).^2);
             %
             if strcmp(obj.Mse,'on')
                 cost = cost/numel(srcImg_);

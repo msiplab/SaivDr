@@ -125,7 +125,6 @@ classdef AbstOvsdLpPuFb2dTypeIISystem < ...
 %                 obj.NumberOfChannels(ChannelGroup.LOWER) ],...
 %                 obj.nStages,2);
             paramMtxSizeTab = [obj.NumberOfChannels*ones(1,2);
-                obj.NumberOfChannels*ones(1,2);
                 repmat([floor(obj.NumberOfChannels/2)*ones(2,2);
                 floor(obj.NumberOfChannels/4),1;
                 ceil(obj.NumberOfChannels/2)*ones(2,2);
@@ -164,16 +163,16 @@ classdef AbstOvsdLpPuFb2dTypeIISystem < ...
                 *double(ceil(nCh/2)-1);
             nAngsPerStg(3) = 2*floor(nCh/4);
             nAngsInit = nCh*(nCh-1)/2;
-            nAngsSym = nCh;
-            sizeOfAngles = nAngsSym + nAngsInit + sum(nAngsPerStg)*(obj.nStages-1);
+            %nAngsSym = nCh;
+            sizeOfAngles = nAngsInit + sum(nAngsPerStg)*(obj.nStages-1);
             %
             if isscalar(obj.Angles) && obj.Angles == 0
-                angsSym = zeros(nAngsSym,1);
+                %angsSym = zeros(nAngsSym,1);
                 angsInit = zeros(nAngsInit,1);
                 angsPerStg = zeros(sum(nAngsPerStg),obj.nStages-1);
                 angsPerStg(nAngsPerStg(1)+1:nAngsPerStg(1)+floor(nCh/4),:) = pi/2*ones(floor(nCh/4),obj.nStages-1);
                 angsPerStg(end-floor(nCh/4)+1:end,:) = pi/2*ones(floor(nCh/4),obj.nStages-1);
-                obj.Angles = [angsSym ; angsInit; angsPerStg(:)];
+                obj.Angles = [angsInit; angsPerStg(:)];
             end
             obj.Angles = obj.Angles(:);
             % TODO : ???O????
@@ -262,9 +261,9 @@ classdef AbstOvsdLpPuFb2dTypeIISystem < ...
             %
             E0 = obj.matrixE0;
             %
-            V0 = step(pmMtxSt_,[],uint32(2));
+            V0 = step(pmMtxSt_,[],uint32(1));
             E = V0*[ E0 ; zeros(nChs-prod(dec),prod(dec))];
-            iParamMtx = uint32(3);
+            iParamMtx = uint32(2);
 
             % Horizontal extention
             lenY = decY;

@@ -130,14 +130,13 @@ classdef AbstOvsdLpPuFb2dTypeISystem < ...
 
             
             % Prepare ParameterMatrixSet
-            symmetricMtxSizeTab = obj.NumberOfChannels*ones(1,2);
+            %symmetricMtxSizeTab = obj.NumberOfChannels*ones(1,2);
             initParamMtxSizeTab = obj.NumberOfChannels*ones(1,2);
             propParamMtxSizeTab = [...
                 ceil(obj.NumberOfChannels/2)*ones(1,2);
                 floor(obj.NumberOfChannels/2)*ones(1,2);
                 floor(sum(obj.NumberOfChannels)/4),1 ];
             paramMtxSizeTab = [...
-                symmetricMtxSizeTab;
                 initParamMtxSizeTab;
                 repmat(propParamMtxSizeTab,obj.nStages-1,1)];
             obj.ParameterMatrixSet = ParameterMatrixSet(...
@@ -160,14 +159,14 @@ classdef AbstOvsdLpPuFb2dTypeISystem < ...
             nCh = obj.NumberOfChannels;
             nAngsPerStg = nCh*(nCh-2)/4+floor(nCh/4);
             nAngsInit = nCh*(nCh-1)/2;
-            nAngsSym = nCh;
-            sizeOfAngles = nAngsSym + nAngsInit + (obj.nStages-1)*nAngsPerStg;
+            %nAngsSym = nCh;
+            sizeOfAngles = nAngsInit + (obj.nStages-1)*nAngsPerStg;
             if isscalar(obj.Angles) && obj.Angles==0
-                angsSym = zeros(nAngsSym,1);
+                %angsSym = zeros(nAngsSym,1);
                 angsInit = zeros(nAngsInit,1);
                 angsPerStg = zeros(nAngsPerStg,obj.nStages-1);
                 angsPerStg(end-floor(nCh/4)+1:end,:) = pi/2*ones(floor(nCh/4),obj.nStages-1);
-                obj.Angles = [angsSym ; angsInit; angsPerStg(:)];
+                obj.Angles = [angsInit; angsPerStg(:)];
                 %obj.Angles = zeros(sizeOfAngles,1);
             end
 %             if size(obj.Angles,1) ~= sizeOfAngles(1) || ...
@@ -231,10 +230,10 @@ classdef AbstOvsdLpPuFb2dTypeISystem < ...
             %
             E0 = obj.matrixE0;
             %
-            V0 = step(pmMtxSet_,[],uint32(2));
+            V0 = step(pmMtxSet_,[],uint32(1));
             E = V0*[ E0 ; zeros(nChs-prod(dec),prod(dec))];
             
-            iParamMtx = uint32(3);
+            iParamMtx = uint32(2);
             %TODO: iParamMtx = uint32(2);
             hChs = nChs/2;
 

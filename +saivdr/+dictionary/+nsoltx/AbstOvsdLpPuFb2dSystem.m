@@ -248,15 +248,13 @@ classdef AbstOvsdLpPuFb2dSystem < matlab.System %#codegen
             end
         end
         
-        function [symAngles,initAngles,propAngles] = splitAngles_(obj)
+        function [initAngles,propAngles] = splitAngles_(obj)
             nCh = obj.NumberOfChannels;
             nInitAngles = nCh*(nCh-1)/2;
             
-            symAngles = obj.Angles(1:nCh);
+            initAngles = obj.Angles(1:nInitAngles);
             
-            initAngles = obj.Angles(nCh+1:nCh+nInitAngles);
-            
-            propAngles = obj.Angles(nCh+nInitAngles+1:end);
+            propAngles = obj.Angles(nInitAngles+1:end);
         end
 
     end

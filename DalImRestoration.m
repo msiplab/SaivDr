@@ -109,7 +109,7 @@ classdef DalImRestoration < matlab.System
     methods (Access = private)
         function func = getObjectiveFunction(obj)
             function [value, grad] = objFunc(alpha)
-                ccfl = norm(alpha,2)^2/2 - dot(alpha,obj.y);
+                ccfl = norm(alpha,2)^2/2 - real(dot(alpha,obj.y));
                 py = hogehoge_(obj,alpha);
                 value = ccfl + norm(py,2)^2/(2*obj.eta);
                 if nargout > 1

@@ -184,11 +184,13 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 2 2 6 ];
             ord = [ 2 0 ];
-            ang = 2*pi*rand(6+15+2*7,1);
-            
-            % Expected values
             nCh = decch(3);
             nDec = decch(1)*decch(2);
+            
+            ang = randn(nCh*(nCh-1)/2+sum(ord)*(nCh*(nCh-2)/4+floor(nCh/4)),1);
+            sym = randn(1,nCh);
+            
+            % Expected values
             dimExpctd = [nCh nDec ord(1)+1]; 
             
             % Instantiation of target class
@@ -197,6 +199,7 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
                 'DecimationFactor',decch(1:2),...
                 'NumberOfChannels',decch(3:end),...
                 'PolyPhaseOrder',ord,...
+                'Symmetry',sym,...
                 'Angles',ang);
             
             % Actual values
@@ -208,9 +211,9 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Check symmetry
             import matlab.unittest.constraints.IsLessThan;
             coefPhaseShift = zeros(size(coefActual));
-            %TODO:整理する
+            %TODO:????????
             for idx = 1:nCh
-                coefPhaseShift(idx,:,:) = exp(-1i*ang(idx))*coefActual(idx,:,:);
+                coefPhaseShift(idx,:,:) = exp(-1i*sym(idx))*coefActual(idx,:,:);
             end
             coefDiff = coefPhaseShift(:,:)-fliplr(conj(coefPhaseShift(:,:)));
             coefDist = max(abs(coefDiff(:)));
@@ -233,12 +236,13 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 2 2 6 ];
             ord = [ 0 2 ];
-            ang = 2*pi*rand(6+15+2*7,1);
-            %ang(1:6) = zeros(6);
-            
-            % Expected values
             nCh = decch(3);
             nDec = decch(1)*decch(2);
+            
+            ang = randn(nCh*(nCh-1)/2+sum(ord)*(nCh*(nCh-2)/4+floor(nCh/4)),1);
+            sym = randn(1,nCh);
+            
+            % Expected values
             dimExpctd = [nCh nDec ord(1)+1 ord(2)+1];
             
             % Instantiation of target class
@@ -247,6 +251,7 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
                 'DecimationFactor',decch(1:2),...
                 'NumberOfChannels',decch(3:end),...
                 'PolyPhaseOrder',ord,...
+                'Symmetry',sym,...
                 'Angles',ang);
             
             % Actual values
@@ -258,9 +263,9 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Check symmetry
             import matlab.unittest.constraints.IsLessThan;
             coefPhaseShift = zeros(size(coefActual));
-            %TODO:整理する
+            %TODO:????????
             for idx = 1:nCh
-                coefPhaseShift(idx,:,:) = exp(-1i*ang(idx))*coefActual(idx,:,:);
+                coefPhaseShift(idx,:,:) = exp(-1i*sym(idx))*coefActual(idx,:,:);
             end
             coefDiff = coefPhaseShift(:,:)-fliplr(conj(coefPhaseShift(:,:)));
             coefDist = max(abs(coefDiff(:)));
@@ -284,11 +289,13 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 2 2 8 ];
             ord = [ 2 0 ];
-            ang = 2*pi*rand(8+28+2*14,1);
-            
-            % Expected values
             nCh = decch(3);
             nDec = decch(1)*decch(2);
+            
+            ang = randn(nCh*(nCh-1)/2+sum(ord)*(nCh*(nCh-2)/4+floor(nCh/4)),1);
+            sym = randn(1,nCh);
+            
+            % Expected values
             dimExpctd = [nCh nDec ord(1)+1 ];
             
             % Instantiation of target class
@@ -297,6 +304,7 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
                 'DecimationFactor',decch(1:2),...
                 'NumberOfChannels',decch(3:end),...
                 'PolyPhaseOrder',ord,...
+                'Symmetry',sym,...
                 'Angles',ang);
             
             % Actual values
@@ -308,9 +316,9 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Check symmetry
             import matlab.unittest.constraints.IsLessThan;
             coefPhaseShift = zeros(size(coefActual));
-            %TODO:整理する
+            %TODO:????????
             for idx = 1:nCh
-                coefPhaseShift(idx,:,:) = exp(-1i*ang(idx))*coefActual(idx,:,:);
+                coefPhaseShift(idx,:,:) = exp(-1i*sym(idx))*coefActual(idx,:,:);
             end
             coefDiff = coefPhaseShift(:,:)-fliplr(conj(coefPhaseShift(:,:)));
             coefDist = max(abs(coefDiff(:)));
@@ -333,11 +341,13 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 2 2 8 ];
             ord = [ 0 2 ];
-            ang = 2*pi*rand(8+28+2*14,1);
-            
-            % Expected values
             nCh = decch(3);
             nDec = decch(1)*decch(2);
+            
+            ang = randn(nCh*(nCh-1)/2+sum(ord)*(nCh*(nCh-2)/4+floor(nCh/4)),1);
+            sym = randn(1,nCh);
+            
+            % Expected values
             dimExpctd = [nCh nDec ord(1)+1 ord(2)+1];
             
             % Instantiation of target class
@@ -346,6 +356,7 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
                 'DecimationFactor',decch(1:2),...
                 'NumberOfChannels',decch(3:end),...
                 'PolyPhaseOrder',ord,...
+                'Symmetry',sym,...
                 'Angles',ang);
             
             % Actual values
@@ -357,9 +368,9 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Check symmetry
             import matlab.unittest.constraints.IsLessThan;
             coefPhaseShift = zeros(size(coefActual));
-            %TODO:整理する
+            %TODO:????????
             for idx = 1:nCh
-                coefPhaseShift(idx,:,:) = exp(-1i*ang(idx))*coefActual(idx,:,:);
+                coefPhaseShift(idx,:,:) = exp(-1i*sym(idx))*coefActual(idx,:,:);
             end
             coefDiff = coefPhaseShift(:,:)-fliplr(conj(coefPhaseShift(:,:)));
             coefDist = max(abs(coefDiff(:)));
@@ -453,7 +464,7 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 2 2 ];
             ord = [ 0 0 ];
-            ang = [ 0 0 0 0 0 0 0 0 0 0 ];
+            ang = [ 0 0 0 0 0 0 ];
             
             % Expected values
             coefExpctd(:,:,1,1) = 1/2*[...
@@ -480,18 +491,18 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
         end
         
         % Test for construction
-        %TODO: 検証内容を明確に定める
+        %TODO: ???????e?????m????????
         function testConstructorWithAng0Pi4(testCase)
             
             % Parameters
             decch = [ 2 2 ];
             ord = [ 0 0 ];
-            ang = [ 0 0 0 0 0 0 0 0 0 pi/2 ];
+            ang = [ 0 0 0 0 0 pi/2 ];
             
             % Expected values
             import saivdr.dictionary.utility.*            
             omgs = OrthonormalMatrixGenerationSystem();
-            matrixV0 = step(omgs,ang(4+1:end),1);
+            matrixV0 = step(omgs,ang,1);
             coefExpctd(:,:,1,1) = 1/2 * ...
                 matrixV0 *[...
                  1 ,  1 ,  1 ,  1 ;
@@ -522,9 +533,10 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             dec = [ 4 4 ];
             ord = [ 0 0 ];
-            ang = 2*pi*rand(16+8*15,1);
+            nCh = prod(dec);
             
-            nCh = sum(dec);
+            ang = randn(nCh*(nCh-1)/2+sum(ord)*(nCh*(nCh-2)/4+floor(nCh/4)),1);
+            sym = randn(1,nCh);
             
             % Expected values
             dimExpctd = [16 16];
@@ -534,6 +546,7 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             testCase.lppufb = OvsdLpPuFb2dTypeIVm0System(...
                 'DecimationFactor',dec,...
                 'PolyPhaseOrder',ord,...
+                'Symmetry',sym,...
                 'Angles',ang);
             
             % Actual values
@@ -545,9 +558,9 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Check symmetry
             import matlab.unittest.constraints.IsLessThan;
             coefPhaseShift = zeros(size(coefActual));
-            %TODO:整理する
+            %TODO:????????
             for idx = 1:nCh
-                coefPhaseShift(idx,:,:) = exp(-1i*ang(idx))*coefActual(idx,:,:);
+                coefPhaseShift(idx,:,:) = exp(-1i*sym(idx))*coefActual(idx,:,:);
             end
             coefDiff = coefPhaseShift(:,:)-fliplr(conj(coefPhaseShift(:,:)));
             coefDist = max(abs(coefDiff(:)));
@@ -565,9 +578,10 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 2 2 8 ];
             ord = [ 0 0 ];
-            ang = 2*pi*rand(8+28,1);
-            
             nCh = decch(3);
+            
+            ang = randn(nCh*(nCh-1)/2+sum(ord)*(nCh*(nCh-2)/4+floor(nCh/4)),1);
+            sym = randn(1,nCh);
             
             % Expected values
             dimExpctd = [8 4];
@@ -578,6 +592,7 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
                 'DecimationFactor',decch(1:2),...
                 'NumberOfChannels',decch(3:end),...
                 'PolyPhaseOrder',ord,...
+                'Symmetry',sym,...
                 'Angles',ang);
             
             % Actual values
@@ -589,9 +604,9 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Check symmetry
             import matlab.unittest.constraints.IsLessThan;
             coefPhaseShift = zeros(size(coefActual));
-            %TODO:整理する
+            %TODO:????????
             for idx = 1:nCh
-                coefPhaseShift(idx,:,:) = exp(-1i*ang(idx))*coefActual(idx,:,:);
+                coefPhaseShift(idx,:,:) = exp(-1i*sym(idx))*coefActual(idx,:,:);
             end
             coefDiff = coefPhaseShift(:,:)-fliplr(conj(coefPhaseShift(:,:)));
             coefDist = max(abs(coefDiff(:)));
@@ -609,9 +624,10 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 2 2 6 ];
             ord = [ 0 0 ];
-            ang = 2*pi*rand(6+15,1);
-            
             nCh = decch(3);
+            
+            ang = randn(nCh*(nCh-1)/2+sum(ord)*(nCh*(nCh-2)/4+floor(nCh/4)),1);
+            sym = randn(1,nCh);
             
             % Expected values
             dimExpctd = [6 4];
@@ -622,6 +638,7 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
                 'DecimationFactor',decch(1:2),...
                 'NumberOfChannels',decch(3:end),...
                 'PolyPhaseOrder',ord,...
+                'Symmetry',sym,...
                 'Angles',ang);
             
             % Actual values
@@ -633,9 +650,9 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Check symmetry
             import matlab.unittest.constraints.IsLessThan;
             coefPhaseShift = zeros(size(coefActual));
-            %TODO:整理する
+            %TODO:????????
             for idx = 1:nCh
-                coefPhaseShift(idx,:,:) = exp(-1i*ang(idx))*coefActual(idx,:,:);
+                coefPhaseShift(idx,:,:) = exp(-1i*sym(idx))*coefActual(idx,:,:);
             end
             coefDiff = coefPhaseShift(:,:)-fliplr(conj(coefPhaseShift(:,:)));
             coefDist = max(abs(coefDiff(:)));
@@ -683,7 +700,7 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 1 1 4 ];
             ord = [ 0 0 ];
-            ang = [ 0 0 0 0 0 0 0 0 0 0 ];
+            ang = [ 0 0 0 0 0 0 ];
             
             % Expected values
             coefExpctd(:,:,1,1) = [
@@ -711,13 +728,13 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
         end
           
          % Test for construction
-         %TODO: 検証方法を明確に定める．
+         %TODO: ???????@?????m?????????D
         function testConstructorWithDec11Ch4Ord00Ang0Pi4(testCase)
             
             % Parameters
             decch = [ 1 1 4 ];
             ord = [ 0 0 ];
-            ang = [ 0 0 0 0 0 0 0 0 0 pi/2 ];
+            ang = [ 0 0 0 0 0 pi/2 ];
             
             % Expected values
             import saivdr.dictionary.utility.*            
@@ -839,7 +856,8 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             dec = [ 2 2 ];
             ord = [ 0 0 ];
-            ang = [ 0 0 0 0 0 0 0 0 0 0 ];
+            sym = [ 0 0 0 0 ];
+            ang = [ 0 0 0 0 0 0 ];
             mus = [ 1; 1; 1; 1 ];
             
             % Expected values
@@ -854,6 +872,7 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             testCase.lppufb = OvsdLpPuFb2dTypeIVm0System(...
                 'DecimationFactor',dec,...
                 'PolyPhaseOrder',ord,...
+                'Symmetry',sym,...
                 'Angles',ang,...
                 'Mus',mus);
             
@@ -872,7 +891,7 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             dec = [ 2 2 ];
             ord = [ 2 2 ];
-            ang = [ 0 0 0 0 0 0 0 0 0 0 0 0 pi/2 0 0 pi/2 0 0 pi/2 0 0 pi/2];
+            ang = [ 0 0 0 0 0 0 0 0 pi/2 0 0 pi/2 0 0 pi/2 0 0 pi/2];
             
             % Expected values
             coefExpctd(:,:,1,1) = [
@@ -933,7 +952,7 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Evaluation
             %coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
             coefDist = max(abs(coefExpctd(:)-coefActual(:)));
-            %MEMO: RelTolからAbsTolに変更
+            %MEMO: RelTol????AbsTol?????X
             testCase.verifyEqual(coefActual,coefExpctd,'AbsTol',1e-14,sprintf('%g',coefDist));
             
         end
@@ -944,10 +963,9 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             dec = [ 2 2 ];
             ord = [ 4 4 ];
-            ang = 2*pi*rand(4+6+8*3,1);
+            nDecs = prod(dec);
             
             % Expected values
-            nDecs = prod(dec);
             dimExpctd = [nDecs nDecs ord(1)+1 ord(2)+1];
             
             % Instantiation of target class
@@ -957,7 +975,7 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
                 'PolyPhaseOrder',ord);
                             
             % Actual values
-            coefActual = step(testCase.lppufb,ang,[]);
+            coefActual = step(testCase.lppufb,[],[]);
             
             % Evaluation
             testCase.verifySize(coefActual,dimExpctd);
@@ -965,9 +983,9 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Check symmetry
             import matlab.unittest.constraints.IsLessThan;
             coefPhaseShift = zeros(size(coefActual));
-            %TODO:整理する
+            %TODO:????????
             for idx = 1:nDecs
-                coefPhaseShift(idx,:,:) = exp(-1i*ang(idx))*coefActual(idx,:,:);
+                coefPhaseShift(idx,:,:) = coefActual(idx,:,:);
             end
             coefDiff = coefPhaseShift(:,:)-fliplr(conj(coefPhaseShift(:,:)));
             coefDist = max(abs(coefDiff(:)));
@@ -1011,7 +1029,7 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             
             % Check symmetry
             import matlab.unittest.constraints.IsLessThan;
-                         coefPhaseShift = zeros(size(coefActual));             %TODO:整理する             for idx = 1:nCh                 coefPhaseShift(idx,:,:) = exp(-1i*ang(idx))*coefActual(idx,:,:);             end             coefDiff = coefPhaseShift(:,:)-fliplr(conj(coefPhaseShift(:,:)));
+                         coefPhaseShift = zeros(size(coefActual));             %TODO:????????             for idx = 1:nCh                 coefPhaseShift(idx,:,:) = exp(-1i*sym(idx))*coefActual(idx,:,:);             end             coefDiff = coefPhaseShift(:,:)-fliplr(conj(coefPhaseShift(:,:)));
             coefDist = max(abs(coefDiff(:)));
             testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));                 
             
@@ -1283,17 +1301,22 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             dec = [ 4 4 ];
             ord = [ 2 2 ];
-            ang = 2*pi*rand(16+8*15+4*60,1);
+            nDecs = prod(dec);
+            nCh = prod(dec);
+            
+            ang = randn(nCh*(nCh-1)/2+sum(ord)*(nCh*(nCh-2)/4+floor(nCh/4)),1);
+            sym = randn(1,nCh);
             
             % Expected values
-            nDecs = prod(dec);
             dimExpctd = [nDecs nDecs ord(1)+1 ord(2)+1];
             
             % Instantiation of target class
             import saivdr.dictionary.nsoltx.*            
             testCase.lppufb = OvsdLpPuFb2dTypeIVm0System(...
                 'DecimationFactor',dec,...
-                'PolyPhaseOrder',ord);
+                'PolyPhaseOrder',ord,...
+                'Symmetry',sym,...
+                'Angles',ang);
             
             % Actual values
             coefActual = step(testCase.lppufb,ang,[]);
@@ -1304,9 +1327,9 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Check symmetry
             import matlab.unittest.constraints.IsLessThan;
             coefPhaseShift = zeros(size(coefActual));
-            %TODO:整理する
+            %TODO:????????
             for idx = 1:nDecs
-                coefPhaseShift(idx,:,:) = exp(-1i*ang(idx))*coefActual(idx,:,:);
+                coefPhaseShift(idx,:,:) = exp(-1i*sym(idx))*coefActual(idx,:,:);
             end
             coefDiff = coefPhaseShift(:,:)-fliplr(conj(coefPhaseShift(:,:)));
             coefDist = max(abs(coefDiff(:)));
@@ -1330,7 +1353,11 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             dec = [ 4 4 ];
             ord = [ 4 4 ];
-            ang = 2*pi*rand(16+8*15+8*60,1);
+            nCh = prod(dec);
+            nDecs = prod(dec);
+            
+            ang = randn(nCh*(nCh-1)/2+sum(ord)*(nCh*(nCh-2)/4+floor(nCh/4)),1);
+            sym = randn(1,nCh);
             
             % Expected values
             nDecs = prod(dec);
@@ -1340,7 +1367,8 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.nsoltx.*            
             testCase.lppufb = OvsdLpPuFb2dTypeIVm0System(...
                 'DecimationFactor',dec,...
-                'PolyPhaseOrder',ord);
+                'PolyPhaseOrder',ord,...
+                'Symmetry',sym);
             
             % Actual values
             coefActual = step(testCase.lppufb,ang,[]);
@@ -1351,9 +1379,9 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Check symmetry
             import matlab.unittest.constraints.IsLessThan;
             coefPhaseShift = zeros(size(coefActual));
-            %TODO:整理する
+            %TODO:????????
             for idx = 1:nDecs
-                coefPhaseShift(idx,:,:) = exp(-1i*ang(idx))*coefActual(idx,:,:);
+                coefPhaseShift(idx,:,:) = exp(-1i*sym(idx))*coefActual(idx,:,:);
             end
             coefDiff = coefPhaseShift(:,:)-fliplr(conj(coefPhaseShift(:,:)));
             coefDist = max(abs(coefDiff(:)));
@@ -1376,8 +1404,8 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             dec = [ 2 2 ];
             ord = [ 0 0 ];
-            angPre = [ 0 0 0 0 pi/2 pi/2 pi/2 pi/2 pi/2 pi/2];
-            angPst = [ 0 0 0 0 0 0 0 0 0 0 ];
+            angPre = [ pi/2 pi/2 pi/2 pi/2 pi/2 pi/2];
+            angPst = [ 0 0 0 0 0 0 ];
             
             % Expected values
             coefExpctd(:,:,1,1) = 1/2 * [
@@ -1415,7 +1443,7 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             dec = [ 2 2 ];
             ord = [ 0 0 ];
-            ang = [ 0 0 0 0 0 0 0 0 0 0 ];
+            ang = [ 0 0 0 0 0 0 ];
             musPre = [ 1; 1; -1; -1 ];
             musPst = 1;
             
@@ -1777,17 +1805,21 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             dec = [ 2 2 ];
             ord = [ 0 2 ];
-            ang = 2*pi*rand(4+6+2*3,1);
+            nDecs = prod(dec);
+            nCh = prod(dec);
+            
+            ang = randn(nCh*(nCh-1)/2+sum(ord)*(nCh*(nCh-2)/4+floor(nCh/4)),1);
+            sym = randn(1,nCh);
             
             % Expected values
-            nDecs = prod(dec);
             dimExpctd = [nDecs nDecs ord(1)+1 ord(2)+1];
             
             % Instantiation of target class
             import saivdr.dictionary.nsoltx.*                        
             testCase.lppufb = OvsdLpPuFb2dTypeIVm0System(...
                 'DecimationFactor',dec,...
-                'PolyPhaseOrder',ord);
+                'PolyPhaseOrder',ord,...
+                'Symmetry',sym);
             
             % Actual values
             coefActual = step(testCase.lppufb,ang,[]);
@@ -1798,9 +1830,9 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Check symmetry
             import matlab.unittest.constraints.IsLessThan;
             coefPhaseShift = zeros(size(coefActual));
-            %TODO:整理する
+            %TODO:????????
             for idx = 1:nDecs
-                coefPhaseShift(idx,:,:) = exp(-1i*ang(idx))*coefActual(idx,:,:);
+                coefPhaseShift(idx,:,:) = exp(-1i*sym(idx))*coefActual(idx,:,:);
             end
             coefDiff = coefPhaseShift(:,:)-fliplr(conj(coefPhaseShift(:,:)));
             coefDist = max(abs(coefDiff(:)));
@@ -1908,17 +1940,21 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             dec = [ 2 2 ];
             ord = [ 2 0 ];
-            ang = 2*pi*rand(4+6+2*3,1);
+            nDecs = prod(dec);
+            nCh = prod(dec);
+            
+            ang = randn(nCh*(nCh-1)/2+sum(ord)*(nCh*(nCh-2)/4+floor(nCh/4)),1);
+            sym = randn(1,nCh);
             
             % Expected values
-            nDecs = prod(dec);
             dimExpctd = [nDecs nDecs ord(1)+1];
             
             % Instantiation of target class
             import saivdr.dictionary.nsoltx.*                        
             testCase.lppufb = OvsdLpPuFb2dTypeIVm0System(...
                 'DecimationFactor',dec,...
-                'PolyPhaseOrder',ord);
+                'PolyPhaseOrder',ord,...
+                'Symmetry',sym);
             
             % Actual values
             coefActual = step(testCase.lppufb,ang,[]);
@@ -1929,9 +1965,9 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Check symmetry
             import matlab.unittest.constraints.IsLessThan;
             coefPhaseShift = zeros(size(coefActual));
-            %TODO:整理する
+            %TODO:????????
             for idx = 1:nDecs
-                coefPhaseShift(idx,:,:) = exp(-1i*ang(idx))*coefActual(idx,:,:);
+                coefPhaseShift(idx,:,:) = exp(-1i*sym(idx))*coefActual(idx,:,:);
             end
             coefDiff = coefPhaseShift(:,:)-fliplr(conj(coefPhaseShift(:,:)));
             coefDist = max(abs(coefDiff(:)));
@@ -1954,7 +1990,7 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             dec = [ 2 2 ];
             ord = [ 2 2 ];
-            ang = [0 0 0 0 0 0 0 0 0 0 0 0 pi/2 0 0 pi/2 0 0 pi/2 0 0 pi/2];
+            ang = [ 0 0 0 0 0 0 0 0 pi/2 0 0 pi/2 0 0 pi/2 0 0 pi/2];
             
             % Expected values
             coefExpctd(:,:,1,1) = [
@@ -2033,17 +2069,21 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             dec = [ 2 2 ];
             ord = [ 2 2 ];
-            ang = 2*pi*rand(4+6+4*3,1);
+            nDecs = prod(dec);
+            nCh = prod(dec);
+            
+            ang = randn(nCh*(nCh-1)/2+sum(ord)*(nCh*(nCh-2)/4+floor(nCh/4)),1);
+            sym = randn(1,nCh);
             
             % Expected values
-            nDecs = prod(dec);
             dimExpctd = [nDecs nDecs ord(1)+1 ord(2)+1];
             
             % Instantiation of target class
             import saivdr.dictionary.nsoltx.*                        
             testCase.lppufb = OvsdLpPuFb2dTypeIVm0System(...
                 'DecimationFactor',dec,...
-                'PolyPhaseOrder',ord);
+                'PolyPhaseOrder',ord,...
+                'Symmetry',sym);
             
             % Actual values
             coefActual = step(testCase.lppufb,ang,[]);
@@ -2054,9 +2094,9 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Check symmetry
             import matlab.unittest.constraints.IsLessThan;
             coefPhaseShift = zeros(size(coefActual));
-            %TODO:整理する
+            %TODO:????????
             for idx = 1:nDecs
-                coefPhaseShift(idx,:,:) = exp(-1i*ang(idx))*coefActual(idx,:,:);
+                coefPhaseShift(idx,:,:) = exp(-1i*sym(idx))*coefActual(idx,:,:);
             end
             coefDiff = coefPhaseShift(:,:)-fliplr(conj(coefPhaseShift(:,:)));
             coefDist = max(abs(coefDiff(:)));
@@ -2079,12 +2119,14 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 1 1 4 ];
             ord = [ 4 4 ];
-            ang = 2*pi*rand(4+6+8*3,1);
+            nCh = decch(3);
+            nDec = decch(1)*decch(2);
+            
+            ang = randn(nCh*(nCh-1)/2+sum(ord)*(nCh*(nCh-2)/4+floor(nCh/4)),1);
+            sym = randn(1,nCh);
             
             % Expected values
               % Expected values
-            nCh = decch(3);
-            nDec = decch(1)*decch(2);
             dimExpctd = [nCh nDec ord(1)+1 ord(2)+1];
             
             % Instantiation of target class
@@ -2092,7 +2134,8 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             testCase.lppufb = OvsdLpPuFb2dTypeIVm0System(...
                 'DecimationFactor',decch(1:2),...
                 'NumberOfChannels',decch(3:end),...
-                'PolyPhaseOrder',ord);
+                'PolyPhaseOrder',ord,...
+                'Symmetry',sym);
             
             % Actual values
             coefActual = step(testCase.lppufb,ang,[]);
@@ -2103,9 +2146,9 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Check symmetry
             import matlab.unittest.constraints.IsLessThan;
             coefPhaseShift = zeros(size(coefActual));
-            %TODO:整理する
+            %TODO:????????
             for idx = 1:nCh
-                coefPhaseShift(idx,:,:) = exp(-1i*ang(idx))*coefActual(idx,:,:);
+                coefPhaseShift(idx,:,:) = exp(-1i*sym(idx))*coefActual(idx,:,:);
             end
             coefDiff = coefPhaseShift(:,:)-fliplr(conj(coefPhaseShift(:,:)));
             coefDist = max(abs(coefDiff(:)));
@@ -2129,12 +2172,14 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 2 2 4 ];
             ord = [ 2 2 ];
-            ang = 2*pi*rand(4+6+4*3,1);
+            nCh = decch(3);
+            nDec = decch(1)*decch(2);
+            
+            ang = randn(nCh*(nCh-1)/2+sum(ord)*(nCh*(nCh-2)/4+floor(nCh/4)),1);
+            sym = randn(1,nCh);
             
             % Expected values
               % Expected values
-            nCh = decch(3);
-            nDec = decch(1)*decch(2);
             dimExpctd = [nCh nDec ord(1)+1 ord(2)+1];
             
             % Instantiation of target class
@@ -2142,7 +2187,8 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             testCase.lppufb = OvsdLpPuFb2dTypeIVm0System(...
                 'DecimationFactor',decch(1:2),...
                 'NumberOfChannels',decch(3:end),...
-                'PolyPhaseOrder',ord);
+                'PolyPhaseOrder',ord,...
+                'Symmetry',sym);
             
             % Actual values
             coefActual = step(testCase.lppufb,ang,[]);
@@ -2153,9 +2199,9 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Check symmetry
             import matlab.unittest.constraints.IsLessThan;
             coefPhaseShift = zeros(size(coefActual));
-            %TODO:整理する
+            %TODO:????????
             for idx = 1:nCh
-                coefPhaseShift(idx,:,:) = exp(-1i*ang(idx))*coefActual(idx,:,:);
+                coefPhaseShift(idx,:,:) = exp(-1i*sym(idx))*coefActual(idx,:,:);
             end
             coefDiff = coefPhaseShift(:,:)-fliplr(conj(coefPhaseShift(:,:)));
             coefDist = max(abs(coefDiff(:)));
@@ -2233,17 +2279,21 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             dec = [ 2 2 ];
             ord = [ 0 4 ];
-            ang = 2*pi*rand(4+6+4*3,1);
+            nDecs = prod(dec);
+            nCh = prod(dec);
+            
+            ang = randn(nCh*(nCh-1)/2+sum(ord)*(nCh*(nCh-2)/4+floor(nCh/4)),1);
+            sym = randn(1,nCh);
             
             % Expected values
-            nDecs = prod(dec);
             dimExpctd = [nDecs nDecs ord(1)+1 ord(2)+1];
             
             % Instantiation of target class
             import saivdr.dictionary.nsoltx.*                        
             testCase.lppufb = OvsdLpPuFb2dTypeIVm0System(...
                 'DecimationFactor',dec,...
-                'PolyPhaseOrder',ord);
+                'PolyPhaseOrder',ord,...
+                'Symmetry',sym);
             
             % Actual values
             coefActual = step(testCase.lppufb,ang,[]);
@@ -2254,9 +2304,9 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Check symmetry
             import matlab.unittest.constraints.IsLessThan;
             coefPhaseShift = zeros(size(coefActual));
-            %TODO:整理する
+            %TODO:????????
             for idx = 1:nDecs
-                coefPhaseShift(idx,:,:) = exp(-1i*ang(idx))*coefActual(idx,:,:);
+                coefPhaseShift(idx,:,:) = exp(-1i*sym(idx))*coefActual(idx,:,:);
             end
             coefDiff = coefPhaseShift(:,:)-fliplr(conj(coefPhaseShift(:,:)));
             coefDist = max(abs(coefDiff(:)));
@@ -2334,17 +2384,21 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             dec = [ 2 2 ];
             ord = [ 4 0 ];
-            ang = 2*pi*rand(4+6+4*3,1);
+            nDecs = prod(dec);
+            nCh = prod(dec);
+            
+            ang = randn(nCh*(nCh-1)/2+sum(ord)*(nCh*(nCh-2)/4+floor(nCh/4)),1);
+            sym = randn(1,nCh);
             
             % Expected values
-            nDecs = prod(dec);
             dimExpctd = [nDecs nDecs ord(1)+1];
             
             % Instantiation of target class
             import saivdr.dictionary.nsoltx.*                        
             testCase.lppufb = OvsdLpPuFb2dTypeIVm0System(...
                 'DecimationFactor',dec,...
-                'PolyPhaseOrder',ord);
+                'PolyPhaseOrder',ord,...
+                'Symmetry',sym);
             
             % Actual values
             coefActual = step(testCase.lppufb,ang,[]);
@@ -2355,9 +2409,9 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Check symmetry
             import matlab.unittest.constraints.IsLessThan;
             coefPhaseShift = zeros(size(coefActual));
-            %TODO:整理する
+            %TODO:????????
             for idx = 1:nDecs
-                coefPhaseShift(idx,:,:) = exp(-1i*ang(idx))*coefActual(idx,:,:);
+                coefPhaseShift(idx,:,:) = exp(-1i*sym(idx))*coefActual(idx,:,:);
             end
             coefDiff = coefPhaseShift(:,:)-fliplr(conj(coefPhaseShift(:,:)));
             coefDist = max(abs(coefDiff(:)));
@@ -2555,17 +2609,21 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             dec = [ 2 2 ];
             ord = [ 4 4 ];
-            ang = 2*pi*rand(4+6+8*3,1);
+            nDecs = prod(dec);
+            nCh = prod(dec);
+            
+            ang = randn(nCh*(nCh-1)/2+sum(ord)*(nCh*(nCh-2)/4+floor(nCh/4)),1);
+            sym = randn(1,nCh);
             
             % Expected values
-            nDecs = prod(dec);
             dimExpctd = [nDecs nDecs ord(1)+1 ord(2)+1];
             
             % Instantiation of target class
             import saivdr.dictionary.nsoltx.*                        
             testCase.lppufb = OvsdLpPuFb2dTypeIVm0System(...
                 'DecimationFactor',dec,...
-                'PolyPhaseOrder',ord);
+                'PolyPhaseOrder',ord,...
+                'Symmetry',sym);
             
             % Actual values
             coefActual = step(testCase.lppufb,ang,[]);
@@ -2576,9 +2634,9 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Check symmetry
             import matlab.unittest.constraints.IsLessThan;
             coefPhaseShift = zeros(size(coefActual));
-            %TODO:整理する
+            %TODO:????????
             for idx = 1:nDecs
-                coefPhaseShift(idx,:,:) = exp(-1i*ang(idx))*coefActual(idx,:,:);
+                coefPhaseShift(idx,:,:) = exp(-1i*sym(idx))*coefActual(idx,:,:);
             end
             coefDiff = coefPhaseShift(:,:)-fliplr(conj(coefPhaseShift(:,:)));
             coefDist = max(abs(coefDiff(:)));
@@ -2701,17 +2759,21 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             dec = [ 4 4 ];
             ord = [ 0 2 ];
-            ang = 2*pi*rand(16+8*15+2*60,1);
+            nDecs = prod(dec);
+            nCh = prod(dec);
+            
+            ang = randn(nCh*(nCh-1)/2+sum(ord)*(nCh*(nCh-2)/4+floor(nCh/4)),1);
+            sym = randn(1,nCh);
             
             % Expected values
-            nDecs = prod(dec);
             dimExpctd = [nDecs nDecs ord(1)+1 ord(2)+1];
             
             % Instantiation of target class
             import saivdr.dictionary.nsoltx.*                        
             testCase.lppufb = OvsdLpPuFb2dTypeIVm0System(...
                 'DecimationFactor',dec,...
-                'PolyPhaseOrder',ord);
+                'PolyPhaseOrder',ord,...
+                'Symmetry',sym);
             
             % Actual values
             coefActual = step(testCase.lppufb,ang,[]);
@@ -2722,9 +2784,9 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Check symmetry
             import matlab.unittest.constraints.IsLessThan;
             coefPhaseShift = zeros(size(coefActual));
-            %TODO:整理する
+            %TODO:????????
             for idx = 1:nDecs
-                coefPhaseShift(idx,:,:) = exp(-1i*ang(idx))*coefActual(idx,:,:);
+                coefPhaseShift(idx,:,:) = exp(-1i*sym(idx))*coefActual(idx,:,:);
             end
             coefDiff = coefPhaseShift(:,:)-fliplr(conj(coefPhaseShift(:,:)));
             coefDist = max(abs(coefDiff(:)));
@@ -2847,17 +2909,21 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             dec = [ 4 4 ];
             ord = [ 2 0 ];
-            ang = 2*pi*rand(16+8*15+2*60,1);
+            nDecs = prod(dec);
+            nCh = prod(dec);
+            
+            ang = randn(nCh*(nCh-1)/2+sum(ord)*(nCh*(nCh-2)/4+floor(nCh/4)),1);
+            sym = randn(1,nCh);
             
             % Expected values
-            nDecs = prod(dec);
             dimExpctd = [nDecs nDecs ord(1)+1];
             
             % Instantiation of target class
             import saivdr.dictionary.nsoltx.*                        
             testCase.lppufb = OvsdLpPuFb2dTypeIVm0System(...
                 'DecimationFactor',dec,...
-                'PolyPhaseOrder',ord);
+                'PolyPhaseOrder',ord,...
+                'Symmetry',sym);
             
             % Actual values
             coefActual = step(testCase.lppufb,ang,[]);
@@ -2868,9 +2934,9 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Check symmetry
             import matlab.unittest.constraints.IsLessThan;
             coefPhaseShift = zeros(size(coefActual));
-            %TODO:整理する
+            %TODO:????????
             for idx = 1:nDecs
-                coefPhaseShift(idx,:,:) = exp(-1i*ang(idx))*coefActual(idx,:,:);
+                coefPhaseShift(idx,:,:) = exp(-1i*sym(idx))*coefActual(idx,:,:);
             end
             coefDiff = coefPhaseShift(:,:)-fliplr(conj(coefPhaseShift(:,:)));
             coefDist = max(abs(coefDiff(:)));
@@ -2997,17 +3063,21 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             dec = [ 4 4 ];
             ord = [ 0 4 ];
-            ang = 2*pi*rand(16+8*15+4*60,1);
+            nDecs = prod(dec);
+            nCh = prod(dec);
+            
+            ang = randn(nCh*(nCh-1)/2+sum(ord)*(nCh*(nCh-2)/4+floor(nCh/4)),1);
+            sym = randn(1,nCh);
             
             % Expected values
-            nDecs = prod(dec);
             dimExpctd = [nDecs nDecs ord(1)+1 ord(2)+1];
             
             % Instantiation of target class
             import saivdr.dictionary.nsoltx.*                        
             testCase.lppufb = OvsdLpPuFb2dTypeIVm0System(...
                 'DecimationFactor',dec,...
-                'PolyPhaseOrder',ord);
+                'PolyPhaseOrder',ord,...
+                'Symmetry',sym);
             
             % Actual values
             coefActual = step(testCase.lppufb,ang,[]);
@@ -3018,9 +3088,9 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Check symmetry
             import matlab.unittest.constraints.IsLessThan;
             coefPhaseShift = zeros(size(coefActual));
-            %TODO:整理する
+            %TODO:????????
             for idx = 1:nDecs
-                coefPhaseShift(idx,:,:) = exp(-1i*ang(idx))*coefActual(idx,:,:);
+                coefPhaseShift(idx,:,:) = exp(-1i*sym(idx))*coefActual(idx,:,:);
             end
             coefDiff = coefPhaseShift(:,:)-fliplr(conj(coefPhaseShift(:,:)));
             coefDist = max(abs(coefDiff(:)));
@@ -3147,17 +3217,21 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             dec = [ 4 4 ];
             ord = [ 4 0 ];
-            ang = 2*pi*rand(16+8*15+4*60,1);
+            nDecs = prod(dec);
+            nCh = prod(dec);
+            
+            ang = randn(nCh*(nCh-1)/2+sum(ord)*(nCh*(nCh-2)/4+floor(nCh/4)),1);
+            sym = randn(1,nCh);
             
             % Expected values
-            nDecs = prod(dec);
             dimExpctd = [nDecs nDecs ord(1)+1];
             
             % Instantiation of target class
             import saivdr.dictionary.nsoltx.*                        
             testCase.lppufb = OvsdLpPuFb2dTypeIVm0System(...
                 'DecimationFactor',dec,...
-                'PolyPhaseOrder',ord);
+                'PolyPhaseOrder',ord,...
+                'Symmetry',sym);
             
             % Actual values
             coefActual = step(testCase.lppufb,ang,[]);
@@ -3168,9 +3242,9 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Check symmetry
             import matlab.unittest.constraints.IsLessThan;
             coefPhaseShift = zeros(size(coefActual));
-            %TODO:整理する
+            %TODO:????????
             for idx = 1:nDecs
-                coefPhaseShift(idx,:,:) = exp(-1i*ang(idx))*coefActual(idx,:,:);
+                coefPhaseShift(idx,:,:) = exp(-1i*sym(idx))*coefActual(idx,:,:);
             end
             coefDiff = coefPhaseShift(:,:)-fliplr(conj(coefPhaseShift(:,:)));
             coefDist = max(abs(coefDiff(:)));
@@ -3251,10 +3325,13 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             dec = [ 2 2 ];
             ord = [ 2 4 ];
-            ang = 2*pi*rand(4+6+6*3,1);
+            nCh = prod(dec);
+            nDecs = prod(dec);
+            
+            ang = randn(nCh*(nCh-1)/2+sum(ord)*(nCh*(nCh-2)/4+floor(nCh/4)),1);
+            sym = randn(1,nCh);
             
             % Expected values
-            nDecs = prod(dec);
             dimExpctd = [nDecs nDecs ord(1)+1 ord(2)+1];
             
             % Instantiation of target class
@@ -3262,6 +3339,7 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             testCase.lppufb = OvsdLpPuFb2dTypeIVm0System(...
                 'DecimationFactor',dec,...
                 'PolyPhaseOrder',ord,...
+                'Symmetry',sym,...
                 'Angles',ang);
             
             % Actual values
@@ -3273,9 +3351,9 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Check symmetry
             import matlab.unittest.constraints.IsLessThan;
             coefPhaseShift = zeros(size(coefActual));
-            %TODO:整理する
+            %TODO:????????
             for idx = 1:nDecs
-                coefPhaseShift(idx,:,:) = exp(-1i*ang(idx))*coefActual(idx,:,:);
+                coefPhaseShift(idx,:,:) = exp(-1i*sym(idx))*coefActual(idx,:,:);
             end
             coefDiff = coefPhaseShift(:,:)-fliplr(conj(coefPhaseShift(:,:)));
             coefDist = max(abs(coefDiff(:)));
@@ -3422,17 +3500,21 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             dec = [ 4 4 ];
             ord = [ 2 4 ];
-            ang = 2*pi*rand(16+8*15+6*60,1);
+            nCh = prod(dec);
+            nDecs = prod(dec);
+            
+            ang = randn(nCh*(nCh-1)/2+sum(ord)*(nCh*(nCh-2)/4+floor(nCh/4)),1);
+            sym = randn(1,nCh);
             
             % Expected values
-            nDecs = prod(dec);
             dimExpctd = [nDecs nDecs ord(1)+1 ord(2)+1];
             
             % Instantiation of target class
             import saivdr.dictionary.nsoltx.*                        
             testCase.lppufb = OvsdLpPuFb2dTypeIVm0System(...
                 'DecimationFactor',dec,...
-                'PolyPhaseOrder',ord);
+                'PolyPhaseOrder',ord,...
+                'Symmetry',sym);
             
             % Actual values
             coefActual = step(testCase.lppufb,ang,[]);
@@ -3443,9 +3525,9 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Check symmetry
             import matlab.unittest.constraints.IsLessThan;
             coefPhaseShift = zeros(size(coefActual));
-            %TODO:整理する
+            %TODO:????????
             for idx = 1:nDecs
-                coefPhaseShift(idx,:,:) = exp(-1i*ang(idx))*coefActual(idx,:,:);
+                coefPhaseShift(idx,:,:) = exp(-1i*sym(idx))*coefActual(idx,:,:);
             end
             coefDiff = coefPhaseShift(:,:)-fliplr(conj(coefPhaseShift(:,:)));
             coefDist = max(abs(coefDiff(:)));
@@ -3526,17 +3608,21 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             dec = [ 2 2 ];
             ord = [ 4 2 ];
-            ang = 2*pi*rand(4+6+6*3,1);
+            nCh = prod(dec);
+            nDecs = prod(dec);
+            
+            ang = randn(nCh*(nCh-1)/2+sum(ord)*(nCh*(nCh-2)/4+floor(nCh/4)),1);
+            sym = randn(1,nCh);
             
             % Expected values
-            nDecs = prod(dec);
             dimExpctd = [nDecs nDecs ord(1)+1 ord(2)+1];
             
             % Instantiation of target class
             import saivdr.dictionary.nsoltx.*                        
             testCase.lppufb = OvsdLpPuFb2dTypeIVm0System(...
                 'DecimationFactor',dec,...
-                'PolyPhaseOrder',ord);
+                'PolyPhaseOrder',ord,...
+                'Symmetry',sym);
             
             % Actual values
             coefActual = step(testCase.lppufb,ang,[]);
@@ -3547,9 +3633,9 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Check symmetry
             import matlab.unittest.constraints.IsLessThan;
             coefPhaseShift = zeros(size(coefActual));
-            %TODO:整理する
+            %TODO:????????
             for idx = 1:nDecs
-                coefPhaseShift(idx,:,:) = exp(-1i*ang(idx))*coefActual(idx,:,:);
+                coefPhaseShift(idx,:,:) = exp(-1i*sym(idx))*coefActual(idx,:,:);
             end
             coefDiff = coefPhaseShift(:,:)-fliplr(conj(coefPhaseShift(:,:)));
             coefDist = max(abs(coefDiff(:)));
@@ -3696,17 +3782,21 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             dec = [ 4 4 ];
             ord = [ 4 2 ];
-            ang = 2*pi*rand(16+8*15+6*60,1);
+            nCh = prod(dec);
+            nDecs = prod(dec);
+            
+            ang = randn(nCh*(nCh-1)/2+sum(ord)*(nCh*(nCh-2)/4+floor(nCh/4)),1);
+            sym = randn(1,nCh);
             
             % Expected values
-            nDecs = prod(dec);
             dimExpctd = [nDecs nDecs ord(1)+1 ord(2)+1];
             
             % Instantiation of target class
             import saivdr.dictionary.nsoltx.*                        
             testCase.lppufb = OvsdLpPuFb2dTypeIVm0System(...
                 'DecimationFactor',dec,...
-                'PolyPhaseOrder',ord);
+                'PolyPhaseOrder',ord,...
+                'Symmetry',sym);
             
             % Actual values
             coefActual = step(testCase.lppufb,ang,[]);
@@ -3717,9 +3807,9 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Check symmetry
             import matlab.unittest.constraints.IsLessThan;
             coefPhaseShift = zeros(size(coefActual));
-            %TODO:整理する
+            %TODO:????????
             for idx = 1:nDecs
-                coefPhaseShift(idx,:,:) = exp(-1i*ang(idx))*coefActual(idx,:,:);
+                coefPhaseShift(idx,:,:) = exp(-1i*sym(idx))*coefActual(idx,:,:);
             end
             coefDiff = coefPhaseShift(:,:)-fliplr(conj(coefPhaseShift(:,:)));
             coefDist = max(abs(coefDiff(:)));
@@ -3742,11 +3832,13 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 2 2 4 ];
             ord = [ 4 4 ];
-            ang = 2*pi*rand(4+6+8*3,1);
-            
-            % Expected values
             nCh = decch(3);
             nDec = decch(1)*decch(2);
+            
+            ang = randn(nCh*(nCh-1)/2+sum(ord)*(nCh*(nCh-2)/4+floor(nCh/4)),1);
+            sym = randn(1,nCh);
+            
+            % Expected values
             dimExpctd = [nCh nDec ord(1)+1 ord(2)+1];
             
             % Instantiation of target class
@@ -3754,7 +3846,8 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             testCase.lppufb = OvsdLpPuFb2dTypeIVm0System(...
                 'DecimationFactor',decch(1:2),...
                 'NumberOfChannels',decch(3:end),...
-                'PolyPhaseOrder',ord);
+                'PolyPhaseOrder',ord,...
+                'Symmetry',sym);
             
             % Actual values
             coefActual = step(testCase.lppufb,ang,[]);
@@ -3765,9 +3858,9 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Check symmetry
             import matlab.unittest.constraints.IsLessThan;
             coefPhaseShift = zeros(size(coefActual));
-            %TODO:整理する
+            %TODO:????????
             for idx = 1:nCh
-                coefPhaseShift(idx,:,:) = exp(-1i*ang(idx))*coefActual(idx,:,:);
+                coefPhaseShift(idx,:,:) = exp(-1i*sym(idx))*coefActual(idx,:,:);
             end
             coefDiff = coefPhaseShift(:,:)-fliplr(conj(coefPhaseShift(:,:)));
             coefDist = max(abs(coefDiff(:)));
@@ -3790,11 +3883,13 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 2 2 6 ];
             ord = [ 2 2 ];
-            ang = 2*pi*rand(6+15+4*7,1);
-            
-            % Expected values
             nCh = decch(3);
             nDec = decch(1)*decch(2);
+            
+            ang = randn(nCh*(nCh-1)/2+sum(ord)*(nCh*(nCh-2)/4+floor(nCh/4)),1);
+            sym = randn(1,nCh);
+            
+            % Expected values
             dimExpctd = [nCh nDec ord(1)+1 ord(2)+1];
             
             % Instantiation of target class
@@ -3802,7 +3897,8 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             testCase.lppufb = OvsdLpPuFb2dTypeIVm0System(...
                 'DecimationFactor',decch(1:2),...
                 'NumberOfChannels',decch(3:end),...
-                'PolyPhaseOrder',ord);
+                'PolyPhaseOrder',ord,...
+                'Symmetry',sym);
             
             % Actual values
             coefActual = step(testCase.lppufb,ang,[]);
@@ -3813,9 +3909,9 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Check symmetry
             import matlab.unittest.constraints.IsLessThan;
             coefPhaseShift = zeros(size(coefActual));
-            %TODO:整理する
+            %TODO:????????
             for idx = 1:nCh
-                coefPhaseShift(idx,:,:) = exp(-1i*ang(idx))*coefActual(idx,:,:);
+                coefPhaseShift(idx,:,:) = exp(-1i*sym(idx))*coefActual(idx,:,:);
             end
             coefDiff = coefPhaseShift(:,:)-fliplr(conj(coefPhaseShift(:,:)));
             coefDist = max(abs(coefDiff(:)));
@@ -3838,11 +3934,13 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 2 2 6 ];
             ord = [ 4 4 ];
-            ang = 2*pi*rand(6+15+8*7,1);
-            
-            % Expected values
             nCh = decch(3);
             nDec = decch(1)*decch(2);
+            
+            ang = randn(nCh*(nCh-1)/2+sum(ord)*(nCh*(nCh-2)/4+floor(nCh/4)),1);
+            sym = randn(1,nCh);
+            
+            % Expected values
             dimExpctd = [nCh nDec ord(1)+1 ord(2)+1];
             
             % Instantiation of target class
@@ -3850,7 +3948,8 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             testCase.lppufb = OvsdLpPuFb2dTypeIVm0System(...
                 'DecimationFactor',decch(1:2),...
                 'NumberOfChannels',decch(3:end),...
-                'PolyPhaseOrder',ord);
+                'PolyPhaseOrder',ord,...
+                'Symmetry',sym);
             
             % Actual values
             coefActual = step(testCase.lppufb,ang,[]);
@@ -3861,9 +3960,9 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Check symmetry
             import matlab.unittest.constraints.IsLessThan;
             coefPhaseShift = zeros(size(coefActual));
-            %TODO:整理する
+            %TODO:????????
             for idx = 1:nCh
-                coefPhaseShift(idx,:,:) = exp(-1i*ang(idx))*coefActual(idx,:,:);
+                coefPhaseShift(idx,:,:) = exp(-1i*sym(idx))*coefActual(idx,:,:);
             end
             coefDiff = coefPhaseShift(:,:)-fliplr(conj(coefPhaseShift(:,:)));
             coefDist = max(abs(coefDiff(:)));
@@ -3886,11 +3985,13 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 2 2 8 ];
             ord = [ 2 2 ];
-            ang = 2*pi*rand(8+28+4*14,1);
-            
-            % Expected values
             nCh = decch(3);
             nDec = decch(1)*decch(2);
+            
+            ang = randn(nCh*(nCh-1)/2+sum(ord)*(nCh*(nCh-2)/4+floor(nCh/4)),1);
+            sym = randn(1,nCh);
+            
+            % Expected values
             dimExpctd = [nCh nDec ord(1)+1 ord(2)+1];
             
             % Instantiation of target class
@@ -3898,7 +3999,8 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             testCase.lppufb = OvsdLpPuFb2dTypeIVm0System(...
                 'DecimationFactor',decch(1:2),...
                 'NumberOfChannels',decch(3:end),...
-                'PolyPhaseOrder',ord);
+                'PolyPhaseOrder',ord,...
+                'Symmetry',sym);
             
             % Actual values
             coefActual = step(testCase.lppufb,ang,[]);
@@ -3909,9 +4011,9 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Check symmetry
             import matlab.unittest.constraints.IsLessThan;
             coefPhaseShift = zeros(size(coefActual));
-            %TODO:整理する
+            %TODO:????????
             for idx = 1:nCh
-                coefPhaseShift(idx,:,:) = exp(-1i*ang(idx))*coefActual(idx,:,:);
+                coefPhaseShift(idx,:,:) = exp(-1i*sym(idx))*coefActual(idx,:,:);
             end
             coefDiff = coefPhaseShift(:,:)-fliplr(conj(coefPhaseShift(:,:)));
             coefDist = max(abs(coefDiff(:)));
@@ -3934,11 +4036,13 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 2 2 8 ];
             ord = [ 4 4 ];
-            ang = 2*pi*rand(8+28+8*14,1);
-            
-            % Expected values
             nCh = decch(3);
             nDec = decch(1)*decch(2);
+            
+            ang = randn(nCh*(nCh-1)/2+sum(ord)*(nCh*(nCh-2)/4+floor(nCh/4)),1);
+            sym = randn(1,nCh);
+            
+            % Expected values
             dimExpctd = [nCh nDec ord(1)+1 ord(2)+1];
             
             % Instantiation of target class
@@ -3946,7 +4050,8 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             testCase.lppufb = OvsdLpPuFb2dTypeIVm0System(...
                 'DecimationFactor',decch(1:2),...
                 'NumberOfChannels',decch(3:end),...
-                'PolyPhaseOrder',ord);
+                'PolyPhaseOrder',ord,...
+                'Symmetry',sym);
             
             % Actual values
             coefActual = step(testCase.lppufb,ang,[]);
@@ -3957,9 +4062,9 @@ classdef OvsdLpPuFb2dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             % Check symmetry
             import matlab.unittest.constraints.IsLessThan;
             coefPhaseShift = zeros(size(coefActual));
-            %TODO:整理する
+            %TODO:????????
             for idx = 1:nCh
-                coefPhaseShift(idx,:,:) = exp(-1i*ang(idx))*coefActual(idx,:,:);
+                coefPhaseShift(idx,:,:) = exp(-1i*sym(idx))*coefActual(idx,:,:);
             end
             coefDiff = coefPhaseShift(:,:)-fliplr(conj(coefPhaseShift(:,:)));
             coefDist = max(abs(coefDiff(:)));

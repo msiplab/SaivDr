@@ -6,8 +6,8 @@
 % is described. As a preliminary, let us read an RGB picture as 
 % the source image.
 
-imgName = 'peppers128x128';
-srcImg = imread('peppers.png');
+imgName = 'ibushi128x128';
+srcImg = imread('18_ibushi.normal.png');
 width  = 128; % Width
 height = 128; % Height
 px     = 128; % Horizontal position of cropping
@@ -19,11 +19,13 @@ orgImg = im2double(srcImg(py+(1:height),px+(1:width),:));
 nLevels = 4;     % # of wavelet tree levels
 nDecs   = [2 2]; % Decimation factor
 nChs    = [4 4]; % # of channels
-nOrds   = [4 4]; % Polyphase order
-nVm     = 1;     % # of vanishing moments
+nOrds   = [2 2]; % Polyphase order
+%nVm     = 1;     % # of vanishing moments
+nVm = 0;
 
 % Design conditions
-trnImgs{1}   = im2double(rgb2gray(orgImg)); 
+%trnImgs{1}   = im2double(rgb2gray(orgImg)); 
+trnImgs{1}   = im2double(orgImg(:,:,1)+1i*orgImg(:,:,2));
 nIters       = 8;
 nCoefs       = numel(trnImgs{1})/8;
 optfcn       = @fminunc;
@@ -36,7 +38,8 @@ gradObj      = 'off'; % Available only for a single-level Type-I NSOLT
 % 
 options = optimoptions(optfcn);
 options = optimoptions(options,'Algorithm','quasi-newton');
-options = optimoptions(options,'Display','iter');
+options = optimoptions(options,'Display','iter-detailed');
+options = optimoptions(options,'UseParallel',true);
 
 % Instantiation of designer
 import saivdr.dictionary.nsoltx.design.NsoltDictionaryLearning

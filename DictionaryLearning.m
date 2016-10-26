@@ -13,10 +13,10 @@ classdef DictionaryLearning
     
     properties (Constant)
         CropSize = [32 32]
-        NumberOfCoefs = 150
-        MaxStageCount = 500
-        PreviousDictionaryFile = ''
-        PreviousStageCount = 20
+        NumberOfCoefs = 200
+        MaxStageCount = 50
+        PreviousDictionaryFile = 'dictionaries/dic20161017_232417.mat'
+        PreviousStageCount = 50
     end
     
     methods
@@ -66,17 +66,15 @@ classdef DictionaryLearning
             
             obj.ErrPerPix = zeros(obj.MaxStageCount,1);
             
-            nch = get(obj.nsolt,'NumberOfChannels');
             angs = get(obj.nsolt,'Angles');
-            angs = angs(nch+1:end);
             
             opt = optimoptions(@lsqnonlin,...
                 'Algorithm','trust-region-reflective',...
                 'Display','iter-detailed',...
                 'FiniteDifferenceStepSize',1e0*sqrt(eps),...
-                'FunctionTolerance', 1e-6,...
-                'MaxFunctionEvaluations',50000,...
-                'MaxIterations',2000,....
+                'FunctionTolerance', 1e-7,...
+                'MaxFunctionEvaluations',1000000,...
+                'MaxIterations',50000,....
                 'OptimalityTolerance',1e-6,...
                 'StepTolerance',1e-6,...
                 'TypicalX',1e0*ones(size(angs)),...
@@ -105,34 +103,26 @@ classdef DictionaryLearning
                 analyzer = NsoltAnalysis2dSystem('LpPuFb2d',obj.nsolt);
                 synthesizer = NsoltSynthesis2dSystem('LpPuFb2d',obj.nsolt);
                 
-                %                 iht = IterativeHardThresholding(...
-                %                     'NumberOfTreeLevels',obj.NumberOfTreeLevels,...
-                %                     'Synthesizer',synthesizer,'AdjOfSynthesizer',analyzer);
-                %                 [~,coefvec,scales] = step(iht,obsImg,obj.NumberOfCoefs);
-                blur = BlurSystem('BlurType','Identical');
-                lambda    = 0.005;                      % lambda
-                ista = IstaImRestoration(...
-                    'Synthesizer',        synthesizer,... % Synthesizer (Dictionary)
-                    'AdjOfSynthesizer',   analyzer,...    % Analyzer (Adj. of dictionary)
-                    'LinearProcess',      blur,...        % Blur process
-                    'NumberOfTreeLevels', obj.NumberOfTreeLevels,...     % # of tree levels of NSOLT
-                    'Lambda',             lambda,...
-                    'Eps0',               1e-6,...
-                    'MaxIter',            10000);        % Parameter lambda
-                [~,coefvec,scales] = step(ista,obsImg);
-                admm = AdmmImRestoration(...
-                    'Synthesizer',        synthesizer,...
-                    'AdjOfSynthesizer',   analyzer,...
-                    'NumberOfTreeLevels', obj.NumberOfTreeLevels,...
-                    'Lambda',             lambda);
-                %[~,coefvec,scales] = step(admm,obsImg);
+                iht = IterativeHardThresholding(...
+                    'NumberOfTreeLevels',obj.NumberOfTreeLevels,...
+                    'Synthesizer',synthesizer,'AdjOfSynthesizer',analyzer);
+                [~,coefvec,scales] = step(iht,obsImg,obj.NumberOfCoefs);
+%                 blur = BlurSystem('BlurType','Identical');
+%                 lambda    = 0.005;                      % lambda
+%                 ista = IstaImRestoration(...
+%                     'Synthesizer',        synthesizer,... % Synthesizer (Dictionary)
+%                     'AdjOfSynthesizer',   analyzer,...    % Analyzer (Adj. of dictionary)
+%                     'LinearProcess',      blur,...        % Blur process
+%                     'NumberOfTreeLevels', obj.NumberOfTreeLevels,...     % # of tree levels of NSOLT
+%                     'Lambda',             lambda,...
+%                     'Eps0',               1e-6,...
+%                     'MaxIter',            10000);        % Parameter lambda
+%                 [~,coefvec,scales] = step(ista,obsImg);
                 fprintf('end coefficients optimization stage.\n');
                 %dictionary update
                 fprintf('start dictionary update stage.\n');
-                nch = obj.NumberOfChannels;
                 
                 preangs = get(obj.nsolt,'Angles');
-                preangs = preangs(nch+1:end);
                 %preangs = 2*pi*rand(size(preangs));
                 objFunc = getObjFunc(obj,coefvec,scales,cropImg);
                 
@@ -140,8 +130,8 @@ classdef DictionaryLearning
                 ub = [];
                 %lb = -pi*ones(size(preangs));
                 %ub = pi*ones(size(preangs));
-                obj.Angles(nch+1:end,idx) = lsqnonlin(objFunc,preangs,lb,ub,opt);
-                obj.ErrPerPix(idx) = norm(objFunc(obj.Angles(nch+1:end,idx)));
+                obj.Angles(:,idx) = lsqnonlin(objFunc,preangs,lb,ub,opt);
+                obj.ErrPerPix(idx) = norm(objFunc(obj.Angles(:,idx)));
                 set(obj.nsolt,'Angles',obj.Angles(:,idx));
                 fprintf('end dictionary update stage\n');
                 
@@ -157,7 +147,7 @@ classdef DictionaryLearning
                 import saivdr.dictionary.nsoltx.*
                 release(ns);
                 
-                set(ns,'Angles',[zeros(obj.NumberOfChannels,1);angs]);
+                set(ns,'Angles',angs);
                 synthesizer = NsoltSynthesis2dSystem('LpPuFb2d',ns);
                 
                 diff = cropImg - step(synthesizer,coefvec,scales);
@@ -168,7 +158,7 @@ classdef DictionaryLearning
                     for idx = 1:length(angs)
                         dangs = angs;
                         dangs(idx) = angs(idx)+pi/2;
-                        set(ns,'Angles',[zeros(obj.NumberOfChannels,1);dangs]);
+                        set(ns,'Angles',dangs);
                         synthesizer = NsoltSynthesis2dSystem('LpPuFb2d',ns);
                         dimg = -step(synthesizer,coefvec,scales);
                         Jcmpx(:,idx) = dimg(:);
