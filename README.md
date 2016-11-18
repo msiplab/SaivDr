@@ -129,10 +129,19 @@ Information about SaivDr Package is given in Contents.m. The HELP command can be
  
 ## References
 
+* Shogo Muramatsu, Kosuke Furuya and Naotaka Yuki, "Multidimensional
+   Nonseparable Oversampled Lapped Transforms: Theory and Design,"
+   IEEE Trans. on Signal Process. (T-SP), to appear
+
+* Kota Horiuchi and Shogo Muramatsu, "Fast convolution technique for
+   non-separable oversampled lapped transforms," Proc. of Asia 
+    Pacific Signal and Information Proc. Assoc. Annual Summit and Conf.
+    (APSIPA ASC), Dec. 2016, to appear
+
 * Shogo Muramatsu, Masaki Ishii and Zhiyu Chen, "Efficient Parameter 
    Optimization for Example-Based Design of Non-separable Oversampled 
-   Lapped Transform," Proc. of 2016 IEEE Intl. Conf. on Image Processing 
-   (ICIP), Sept. 2016, to appear
+   Lapped Transform," Proc. of 2016 IEEE Intl. Conf. on Image Process. 
+   (ICIP),  pp.3618-3622, Sept. 2016
 
 * Shogo Muramatsu, "Structured Dictionary Learning with 2-D Non-
     separable Oversampled Lapped Transform," Proc. of 2014 IEEE 
@@ -146,17 +155,17 @@ Information about SaivDr Package is given in Contents.m. The HELP command can be
  
 * Shogo Muramatsu and Natsuki Aizawa, "Image Restoration with 2-D 
     Non-separable Oversampled Lapped Transforms," Proc. of 2013 IEEE 
-    International Conference on Image Processing (ICIP), pp.1051-1055, 
+    International Conference on Image Process. (ICIP), pp.1051-1055, 
     Sep. 2013 
  
 * Shogo Muramatsu and Natsuki Aizawa, "Lattice Structures for 2-D 
     Non-separable Oversampled Lapped Transforms, Proc. of 2013 IEEE 
-    International Conference on Acoustics, Speech and Signal Processing
+    International Conference on Acoustics, Speech and Signal Process.
     (ICASSP), pp.5632-5636, May 2013 
  
 ## Acknowledgement
  
-This project was supported by JSPS KAKENHI (23560443,26420347).
+This project was supported by JSPS KAKENHI (JP23560443,JP26420347).
  
 ## Contributors
 
