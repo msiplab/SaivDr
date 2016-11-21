@@ -134,7 +134,7 @@ Information about SaivDr Package is given in Contents.m. The HELP command can be
    IEEE Trans. on Signal Process. (T-SP), to appear
 
 * Kota Horiuchi and Shogo Muramatsu, "Fast convolution technique for
-   non-separable oversampled lapped transforms," Proc. of Asia 
+   Non-separable Oversampled Lapped Transforms," Proc. of Asia 
     Pacific Signal and Information Proc. Assoc. Annual Summit and Conf.
     (APSIPA ASC), Dec. 2016, to appear
 
