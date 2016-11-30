@@ -270,7 +270,8 @@ classdef NsoltAnalysis2dSystem < ...
 %                 arrayCoefs(ps+2,:) = ...
 %                     (subImg1+subImg2-subImg3-subImg4)/2;
             else
-                dftCoefs = blockproc(subImg,blockSize,@obj.conjhsdft2_);
+                dftCoefs = blockproc(subImg,blockSize,...
+                    @(x) saivdr.utility.HermitianSymmetricDFT.conjhsdft2(x.data));
                 coefs = im2col(dftCoefs,blockSize,'distinct');
                 arrayCoefs(1:decX_*decY_,:) = coefs;
             end
@@ -284,28 +285,6 @@ classdef NsoltAnalysis2dSystem < ...
                 ord,fpe);
         end        
         
-    end
-    
-    methods (Access = private, Static = true)        
-        %TODO:????????????AbstOLpPuFb1dSystem???????`???????????????????????W??????
-        
-        function value = conjhsdft2_(x) %conjugate-hsdft
-            nDec = size(x.data,1);
-            mtx = complex(zeros(nDec));
-            for u = 0:nDec-1
-                for v =0:nDec-1
-                    n = rem(u*(2*v+1),2*nDec);
-                    mtx(u+1,v+1) = exp(-1i*pi*n/nDec)/sqrt(nDec);
-                end
-            end
-            cmtx = conj(mtx);
-            value = (cmtx*(cmtx*x.data).').';
-        end
-        
-        function value = dct2_(x)
-            value = dct2(x.data);
-        end
-        
-    end    
+    end   
     
 end

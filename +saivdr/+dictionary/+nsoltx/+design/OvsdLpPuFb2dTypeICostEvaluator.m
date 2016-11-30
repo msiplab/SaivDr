@@ -100,7 +100,7 @@ classdef OvsdLpPuFb2dTypeICostEvaluator < ... %#codegen
             %
             [recImg,intrCoefs] = synthesize_(obj, coefs, scales, pmMtx);
             difImg = srcImg-recImg;
-            cost = sum(difImg(:).^2);
+            cost = sum(abs(difImg(:)).^2);
             %
             angs = get(obj.LpPuFb,'Angles');
             mus  = get(obj.LpPuFb,'Mus');
@@ -140,35 +140,38 @@ classdef OvsdLpPuFb2dTypeICostEvaluator < ... %#codegen
             if decY_ == 1 && decX_ == 1
                 coefs = im2col(difImg,blockSize,'distinct');
                 arrayCoefsC(1,:) = coefs(1,:);
-            elseif decY_ == 2 && decX_ == 2
-                difImg1 = difImg(1:2:end,1:2:end);
-                difImg2 = difImg(2:2:end,1:2:end);
-                difImg3 = difImg(1:2:end,2:2:end);
-                difImg4 = difImg(2:2:end,2:2:end);
-                %
-                difImg1 = difImg1(:).';
-                difImg2 = difImg2(:).';
-                difImg3 = difImg3(:).';
-                difImg4 = difImg4(:).';
-                %
-                arrayCoefsC(1,:) = ...
-                    (difImg1+difImg2+difImg3+difImg4)/2;
-                arrayCoefsC(2,:) = ...
-                    (difImg1-difImg2-difImg3+difImg4)/2;
-                arrayCoefsC(ps+1,:) = ...
-                    (difImg1-difImg2+difImg3-difImg4)/2;
-                arrayCoefsC(ps+2,:) = ...
-                    (difImg1+difImg2-difImg3-difImg4)/2;
+%             elseif decY_ == 2 && decX_ == 2
+%                 difImg1 = difImg(1:2:end,1:2:end);
+%                 difImg2 = difImg(2:2:end,1:2:end);
+%                 difImg3 = difImg(1:2:end,2:2:end);
+%                 difImg4 = difImg(2:2:end,2:2:end);
+%                 %
+%                 difImg1 = difImg1(:).';
+%                 difImg2 = difImg2(:).';
+%                 difImg3 = difImg3(:).';
+%                 difImg4 = difImg4(:).';
+%                 %
+%                 arrayCoefsC(1,:) = ...
+%                     (difImg1+difImg2+difImg3+difImg4)/2;
+%                 arrayCoefsC(2,:) = ...
+%                     (difImg1-difImg2-difImg3+difImg4)/2;
+%                 arrayCoefsC(ps+1,:) = ...
+%                     (difImg1-difImg2+difImg3-difImg4)/2;
+%                 arrayCoefsC(ps+2,:) = ...
+%                     (difImg1+difImg2-difImg3-difImg4)/2;
             else
-                mc = ceil(decX_*decY_/2);
-                mf = floor(decX_*decY_/2);
-                dctCoefs = blockproc(difImg,blockSize,...
-                    @obj.dct2_);
-                dctCoefs = blockproc(dctCoefs,blockSize,...
-                    @obj.permuteDctCoefs_);
-                coefs = im2col(dctCoefs,blockSize,'distinct');
-                arrayCoefsC(1:mc,:) = coefs(1:mc,:);
-                arrayCoefsC(ps+1:ps+mf,:) = coefs(mc+1:end,:);
+%                 mc = ceil(decX_*decY_/2);
+%                 mf = floor(decX_*decY_/2);
+%                 dctCoefs = blockproc(difImg,blockSize,...
+%                     @obj.dct2_);
+%                 dctCoefs = blockproc(dctCoefs,blockSize,...
+%                     @obj.permuteDctCoefs_);
+%                 coefs = im2col(dctCoefs,blockSize,'distinct');
+%                 arrayCoefsC(1:mc,:) = coefs(1:mc,:);
+%                 arrayCoefsC(ps+1:ps+mf,:) = coefs(mc+1:end,:);
+                dftCoefs = blockproc(difImg,blockSize,@obj.conjsdft2_);
+                coefs = im2col(dftCoefs,blockSize,'distinct');
+                arrayCoefsC(1:decX_*decY_,:) = coefs;
             end
             
             % Gradient calculation steps
@@ -200,7 +203,7 @@ classdef OvsdLpPuFb2dTypeICostEvaluator < ... %#codegen
                 arrayCoefs(iCh,:) = coefs(sIdx:eIdx);
             end
             %
-            ps = obj.NumberOfSymmetricChannels;
+%             ps = obj.NumberOfSymmetricChannels;
             nRows_ = uint32(height);
             nCols_ = uint32(width);
             decY_  = obj.decimationFactor(Direction.VERTICAL);
@@ -226,35 +229,39 @@ classdef OvsdLpPuFb2dTypeICostEvaluator < ... %#codegen
                 coefs = zeros(nDec,nRows_*nCols_);
                 coefs(1,:) = arrayCoefs(1,:);
                 recImg = col2im(coefs,blockSize,scale,'distinct');
-            elseif decY_ == 2 && decX_ == 2
-                recImg = zeros(2*subScale);
-                subCoef1 = arrayCoefs(1,:);
-                subCoef2 = arrayCoefs(2,:);
-                subCoef3 = arrayCoefs(ps+1,:);
-                subCoef4 = arrayCoefs(ps+2,:);
-                %
-                recImg(1:2:end,1:2:end) = ...
-                    reshape(subCoef1+subCoef2+subCoef3+subCoef4,subScale);
-                recImg(2:2:end,1:2:end)  = ...
-                    reshape(subCoef1-subCoef2-subCoef3+subCoef4,subScale);
-                recImg(1:2:end,2:2:end)  = ...
-                    reshape(subCoef1-subCoef2+subCoef3-subCoef4,subScale);
-                recImg(2:2:end,2:2:end)  = ...
-                    reshape(subCoef1+subCoef2-subCoef3-subCoef4,subScale);
-                %
-                recImg = recImg/2;
+%             elseif decY_ == 2 && decX_ == 2
+%                 recImg = zeros(2*subScale);
+%                 subCoef1 = arrayCoefs(1,:);
+%                 subCoef2 = arrayCoefs(2,:);
+%                 subCoef3 = arrayCoefs(ps+1,:);
+%                 subCoef4 = arrayCoefs(ps+2,:);
+%                 %
+%                 recImg(1:2:end,1:2:end) = ...
+%                     reshape(subCoef1+subCoef2+subCoef3+subCoef4,subScale);
+%                 recImg(2:2:end,1:2:end)  = ...
+%                     reshape(subCoef1-subCoef2-subCoef3+subCoef4,subScale);
+%                 recImg(1:2:end,2:2:end)  = ...
+%                     reshape(subCoef1-subCoef2+subCoef3-subCoef4,subScale);
+%                 recImg(2:2:end,2:2:end)  = ...
+%                     reshape(subCoef1+subCoef2-subCoef3-subCoef4,subScale);
+%                 %
+%                 recImg = recImg/2;
             else
-                mc = ceil(decX_*decY_/2);
-                mf = floor(decX_*decY_/2);
-                coefs = zeros(nDec,size(arrayCoefs,2));
-                coefs(1:mc,:) = arrayCoefs(1:mc,:);
-                coefs(mc+1:end,:) = arrayCoefs(ps+1:ps+mf,:);
+%                 mc = ceil(decX_*decY_/2);
+%                 mf = floor(decX_*decY_/2);
+%                 coefs = zeros(nDec,size(arrayCoefs,2));
+%                 coefs(1:mc,:) = arrayCoefs(1:mc,:);
+%                 coefs(mc+1:end,:) = arrayCoefs(ps+1:ps+mf,:);
+%                 scale = double(subScale) .* obj.decimationFactor;
+%                 dctCoefs = col2im(coefs,blockSize,scale,'distinct');
+%                 dctCoefs = blockproc(dctCoefs,blockSize,...
+%                     @obj.permuteIdctCoefs_);
+%                 recImg = blockproc(dctCoefs,blockSize,...
+%                     @obj.idct2_);
+                coefs = arrayCoefs(1:nDec,:);
                 scale = double(subScale) .* obj.decimationFactor;
-                dctCoefs = col2im(coefs,blockSize,scale,'distinct');
-                dctCoefs = blockproc(dctCoefs,blockSize,...
-                    @obj.permuteIdctCoefs_);
-                recImg = blockproc(dctCoefs,blockSize,...
-                    @obj.idct2_);
+                dftCoefs = col2im(coefs,blockSize,scale,'distinct');
+                recImg = blockproc(dftCoefs,blockSize,@obj.conjihsdft);
             end
         end
         
@@ -262,47 +269,47 @@ classdef OvsdLpPuFb2dTypeICostEvaluator < ... %#codegen
     
     methods (Access = private, Static = true)
         
-        function value = idct2_(x)
-            value = idct2(x.data);
-        end
-        
-        function value = permuteIdctCoefs_(x)
-            coefs = x.data;
-            decY_ = x.blockSize(1);
-            decX_ = x.blockSize(2);
-            nQDecsee = ceil(decY_/2)*ceil(decX_/2);
-            nQDecsoo = floor(decY_/2)*floor(decX_/2);
-            nQDecsoe = floor(decY_/2)*ceil(decX_/2);
-            cee = coefs(         1:  nQDecsee);
-            coo = coefs(nQDecsee+1:nQDecsee+nQDecsoo);
-            coe = coefs(nQDecsee+nQDecsoo+1:nQDecsee+nQDecsoo+nQDecsoe);
-            ceo = coefs(nQDecsee+nQDecsoo+nQDecsoe+1:end);
-            value = zeros(decY_,decX_);
-            value(1:2:decY_,1:2:decX_) = ...
-                reshape(cee,ceil(decY_/2),ceil(decX_/2));
-            value(2:2:decY_,2:2:decX_) = ...
-                reshape(coo,floor(decY_/2),floor(decX_/2));
-            value(2:2:decY_,1:2:decX_) = ...
-                reshape(coe,floor(decY_/2),ceil(decX_/2));
-            value(1:2:decY_,2:2:decX_) = ...
-                reshape(ceo,ceil(decY_/2),floor(decX_/2));
-        end
-        
-        function value = dct2_(x)
-            value = dct2(x.data);
-        end
-        
-        function value = permuteDctCoefs_(x)
-            coefs = x.data;
-            decY_ = x.blockSize(1);
-            decX_ = x.blockSize(2);
-            cee = coefs(1:2:end,1:2:end);
-            coo = coefs(2:2:end,2:2:end);
-            coe = coefs(2:2:end,1:2:end);
-            ceo = coefs(1:2:end,2:2:end);
-            value = [ cee(:) ; coo(:) ; coe(:) ; ceo(:) ];
-            value = reshape(value,decY_,decX_);
-        end
+%         function value = idct2_(x)
+%             value = idct2(x.data);
+%         end
+%         
+%         function value = permuteIdctCoefs_(x)
+%             coefs = x.data;
+%             decY_ = x.blockSize(1);
+%             decX_ = x.blockSize(2);
+%             nQDecsee = ceil(decY_/2)*ceil(decX_/2);
+%             nQDecsoo = floor(decY_/2)*floor(decX_/2);
+%             nQDecsoe = floor(decY_/2)*ceil(decX_/2);
+%             cee = coefs(         1:  nQDecsee);
+%             coo = coefs(nQDecsee+1:nQDecsee+nQDecsoo);
+%             coe = coefs(nQDecsee+nQDecsoo+1:nQDecsee+nQDecsoo+nQDecsoe);
+%             ceo = coefs(nQDecsee+nQDecsoo+nQDecsoe+1:end);
+%             value = zeros(decY_,decX_);
+%             value(1:2:decY_,1:2:decX_) = ...
+%                 reshape(cee,ceil(decY_/2),ceil(decX_/2));
+%             value(2:2:decY_,2:2:decX_) = ...
+%                 reshape(coo,floor(decY_/2),floor(decX_/2));
+%             value(2:2:decY_,1:2:decX_) = ...
+%                 reshape(coe,floor(decY_/2),ceil(decX_/2));
+%             value(1:2:decY_,2:2:decX_) = ...
+%                 reshape(ceo,ceil(decY_/2),floor(decX_/2));
+%         end
+%         
+%         function value = dct2_(x)
+%             value = dct2(x.data);
+%         end
+%         
+%         function value = permuteDctCoefs_(x)
+%             coefs = x.data;
+%             decY_ = x.blockSize(1);
+%             decX_ = x.blockSize(2);
+%             cee = coefs(1:2:end,1:2:end);
+%             coo = coefs(2:2:end,2:2:end);
+%             coe = coefs(2:2:end,1:2:end);
+%             ceo = coefs(1:2:end,2:2:end);
+%             value = [ cee(:) ; coo(:) ; coe(:) ; ceo(:) ];
+%             value = reshape(value,decY_,decX_);
+%         end
         
     end
     

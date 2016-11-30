@@ -200,11 +200,12 @@ classdef AbstOvsdLpPuFb2dSystem < matlab.System %#codegen
 
         function value = getMatrixE0_(obj)
             import saivdr.dictionary.utility.Direction
+            import saivdr.utility.HermitianSymmetricDFT
             nRows = obj.DecimationFactor(Direction.VERTICAL);
             nCols = obj.DecimationFactor(Direction.HORIZONTAL);
             nElmBi = nRows*nCols;
-            hsdftY = hsdftmtx_(obj, nRows);
-            hsdftX = hsdftmtx_(obj, nCols);
+            hsdftY = HermitianSymmetricDFT.hsdftmtx(nRows);
+            hsdftX = HermitianSymmetricDFT.hsdftmtx(nCols);
             coefs = complex(zeros(nElmBi));
             iElm = 1;
             for iCol = 1:nCols
@@ -233,18 +234,6 @@ classdef AbstOvsdLpPuFb2dSystem < matlab.System %#codegen
             value = zeros(size(arr_));
             for idx = 0:phs_-1
                 value(:,idx+1:phs_:end) = arr_(:,idx*len_+1:(idx+1)*len_);
-            end
-        end
-        
-        %TODO:????????????1D,3D???????`???????????????????????W??????
-        function value = hsdftmtx_(~, nDec) %Hermitian-Symmetric DFT matrix
-            %w = exp(-2*pi*1i/nDec);
-            value = complex(zeros(nDec));
-            for u = 0:nDec-1
-                for x =0:nDec-1
-                    n = rem(u*(2*x+1),2*nDec);
-                    value(u+1,x+1) = exp(-1i*pi*n/nDec)/sqrt(nDec);
-                end
             end
         end
         
