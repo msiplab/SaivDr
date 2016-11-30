@@ -79,7 +79,7 @@ classdef AbstOvsdLpPuFb2dTypeIISystem < ...
         function updateProperties_(obj)
             import saivdr.dictionary.nsoltx.ChannelGroup
             import saivdr.dictionary.utility.Direction
-            import saivdr.dictionary.utility.ParameterMatrixSet
+            import saivdr.dictionary.utility.ParameterMatrixContainer
 
             % Check DecimationFactor
             if length(obj.DecimationFactor) > 2
@@ -129,7 +129,7 @@ classdef AbstOvsdLpPuFb2dTypeIISystem < ...
                 floor(obj.NumberOfChannels/4),1;
                 ceil(obj.NumberOfChannels/2)*ones(2,2);
                 floor(obj.NumberOfChannels/4),1], obj.nStages-1, 1)];
-            obj.ParameterMatrixSet = ParameterMatrixSet(...
+            obj.ParameterMatrixSet = ParameterMatrixContainer(...
                 'MatrixSizeTable',paramMtxSizeTab);
 
             % Prepare MEX function

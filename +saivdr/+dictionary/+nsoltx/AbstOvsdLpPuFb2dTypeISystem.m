@@ -75,7 +75,7 @@ classdef AbstOvsdLpPuFb2dTypeISystem < ...
         function updateProperties_(obj)
             import saivdr.dictionary.nsoltx.ChannelGroup
             import saivdr.dictionary.utility.Direction
-            import saivdr.dictionary.utility.ParameterMatrixSet
+            import saivdr.dictionary.utility.ParameterMatrixContainer
            % import saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2dTypeISystem
 
             % Check DecimationFactor
@@ -139,7 +139,7 @@ classdef AbstOvsdLpPuFb2dTypeISystem < ...
             paramMtxSizeTab = [...
                 initParamMtxSizeTab;
                 repmat(propParamMtxSizeTab,obj.nStages-1,1)];
-            obj.ParameterMatrixSet = ParameterMatrixSet(...
+            obj.ParameterMatrixSet = ParameterMatrixContainer(...
                 'MatrixSizeTable',paramMtxSizeTab);
 
         end
