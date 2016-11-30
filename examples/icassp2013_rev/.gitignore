@@ -1,0 +1,7 @@
+/images/
+!/images/.emptyfolder
+/lmax/
+!/lmax/.emptyfolder
+/results/
+!/results/psnr_ssim_lena128_*.mat
+

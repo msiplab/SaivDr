@@ -1,0 +1,7 @@
+/images/
+!/images/.emptyfolder
+/lmax/
+!/lmax/.emptyfolder
+/results/
+!/results/psnrs_ssim_*.mat
+

@@ -1,5 +1,11 @@
 * Release notes on Sparsity-Aware Image and Volume Data Restoration Package
 
+- SaivDr20160610
+-- (Minor) Removed the dependency on Global Optimization Toolbox when GA is not used
+--- saivdr.dictionary.nsoltx.design.AbstNsoltDesignerGaFmin
+-- (Minor) Added new sample codes 
+--- examples/icip2016
+
 - SaivDr20160314
 -- (Minor) Clarified the array dimension for code generation in R2016a
 --- saivdr.dictionary.nsoltx.AbstNsoltCoefManipulator2d
@@ -81,9 +87,7 @@
 
 * Known issues
 
-- Script 'mytest.m' sometimes fails to generate mex codes at the first
-  trial.  Please try it twice. Then, the code generation may successfully
-  be finished.
+- Script 'mytest.m' sometimes fails to generate mex codes. 
+  Please try several times until the code generation is completed.
 
-% SVN identifier:
-% $Id: RELEASENOTES.txt 871 2015-11-26 09:04:01Z sho $
+---

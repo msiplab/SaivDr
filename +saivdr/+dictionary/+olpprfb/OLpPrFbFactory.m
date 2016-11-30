@@ -1,12 +1,9 @@
 classdef OLpPrFbFactory
     %OLpPrFbFactory Factory class of NSOLTs
     %
-    % SVN identifier:
-    % $Id: OLpPrFbFactory.m 657 2015-03-17 00:45:15Z sho $
-    %
     % Requirements: MATLAB R2013b
     %
-    % Copyright (c) 2014, Shogo MURAMATSU
+    % Copyright (c) 2014-2016, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -26,7 +23,7 @@ classdef OLpPrFbFactory
             if nargin < 1
                 value = OvsdLpPuFb1dTypeIVm1System();
             elseif isa(varargin{1},'saivdr.dictionary.olpprfb.AbstOvsdLpPuFb1dSystem')
-                value = varargin{1};
+                value = clone(varargin{1});
             else
                 p = inputParser;
                 addOptional(p,'DecimationFactor',4);

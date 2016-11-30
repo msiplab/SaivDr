@@ -1,9 +1,6 @@
 classdef OvsdLpPuFb2dTypeIVm1System < saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2dTypeISystem %#codegen
     %OVSDLPPUFBMDTYPEIVM1SYSTEM 2-D Type-I Oversampled LPPUFB with one VM
     %
-    % SVN identifier:
-    % $Id: OvsdLpPuFb2dTypeIVm1System.m 683 2015-05-29 08:22:13Z sho $
-    %
     % Requirements: MATLAB R2013b
     %
     % Copyright (c) 2014-2015, Shogo MURAMATSU

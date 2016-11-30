@@ -67,6 +67,8 @@ obsImg = support.fcn_observation(...
 
 %% Create dictionaries
 iDic = 0;
+synthesizer = cell(1);
+analyzer = cell(1);
 
 % NSOLT
 iDic = iDic+1;

@@ -1,12 +1,9 @@
 classdef OrthonormalMatrixGenerationSystem < matlab.System %#codegen
     %ORTHONORMALMATRIXGENERATIONSYSTEM Orthonormal matrix generator
     %
-    % SVN identifier:
-    % $Id: OrthonormalMatrixGenerationSystem.m 866 2015-11-24 04:29:42Z sho $
-    %
     % Requirements: MATLAB R2013b
     %
-    % Copyright (c) 2014-2015, Shogo MURAMATSU
+    % Copyright (c) 2014-2016, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -43,12 +40,18 @@ classdef OrthonormalMatrixGenerationSystem < matlab.System %#codegen
         function s = saveObjectImpl(obj)
             s = saveObjectImpl@matlab.System(obj);
             s.NumberOfDimensions = obj.NumberOfDimensions;
+            s.PartialDifference = obj.PartialDifference;
         end
         
         function loadObjectImpl(obj,s,wasLocked)
+            if isfield(s,'PartialDifference')
+                obj.PartialDifference = s.PartialDifference;
+            else
+                obj.PartialDifference = 'off';
+            end
             obj.NumberOfDimensions = s.NumberOfDimensions;
             loadObjectImpl@matlab.System(obj,s,wasLocked);
-        end         
+        end
         
         function setupImpl(obj,angles,~,~)
             if isempty(obj.NumberOfDimensions)

@@ -1,12 +1,9 @@
-classdef ParameterMatrixSetTestCase < matlab.unittest.TestCase
-    %PARAMETERMATRIXSETTESTCASE Test case for ParameterMatrixSet
-    %
-    % SVN identifier:
-    % $Id: ParameterMatrixSetTestCase.m 683 2015-05-29 08:22:13Z sho $
+classdef ParameterMatrixContainerTestCase < matlab.unittest.TestCase
+    %PARAMETERMATRIXCONTAINERTESTCASE Test case for ParameterMatrixContainer
     %
     % Requirements: MATLAB R2013b
     %
-    % Copyright (c) 2014-2015, Shogo MURAMATSU
+    % Copyright (c) 2014-2016, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -42,7 +39,7 @@ classdef ParameterMatrixSetTestCase < matlab.unittest.TestCase
             
             % Instantiation of target class
             import saivdr.dictionary.utility.*            
-            testCase.pms = ParameterMatrixSet(...
+            testCase.pms = ParameterMatrixContainer(...
                 'MatrixSizeTable',mstab);
             
             % Actual values
@@ -70,7 +67,7 @@ classdef ParameterMatrixSetTestCase < matlab.unittest.TestCase
             
             % Instantiation of target class
             import saivdr.dictionary.utility.*            
-            testCase.pms = ParameterMatrixSet(...
+            testCase.pms = ParameterMatrixContainer(...
                 'MatrixSizeTable',mstab);
             
             % Actual values
@@ -100,7 +97,7 @@ classdef ParameterMatrixSetTestCase < matlab.unittest.TestCase
             
             % Instantiation of target class
             import saivdr.dictionary.utility.*            
-            testCase.pms = ParameterMatrixSet(...
+            testCase.pms = ParameterMatrixContainer(...
                 'MatrixSizeTable',mstab);
             
             % Actual values
@@ -132,7 +129,7 @@ classdef ParameterMatrixSetTestCase < matlab.unittest.TestCase
                        
             % Instantiation of target class
             import saivdr.dictionary.utility.*            
-            testCase.pms = ParameterMatrixSet(...
+            testCase.pms = ParameterMatrixContainer(...
                 'MatrixSizeTable',mstab);
             
             % Actual values
@@ -166,7 +163,7 @@ classdef ParameterMatrixSetTestCase < matlab.unittest.TestCase
                        
             % Instantiation of target class
             import saivdr.dictionary.utility.*            
-            testCase.pms = ParameterMatrixSet(...
+            testCase.pms = ParameterMatrixContainer(...
                 'MatrixSizeTable',mstab);
             
             % Actual values
@@ -207,7 +204,7 @@ classdef ParameterMatrixSetTestCase < matlab.unittest.TestCase
                        
             % Instantiation of target class
             import saivdr.dictionary.utility.*            
-            testCase.pms = ParameterMatrixSet(...
+            testCase.pms = ParameterMatrixContainer(...
                 'MatrixSizeTable',mstab);
             
             % Actual values
@@ -241,7 +238,7 @@ classdef ParameterMatrixSetTestCase < matlab.unittest.TestCase
                        
             % Instantiation of target class
             import saivdr.dictionary.utility.*            
-            testCase.pms = ParameterMatrixSet(...
+            testCase.pms = ParameterMatrixContainer(...
                 'MatrixSizeTable',mstab);
             set(testCase.pms,'Coefficients',coefs);
             
@@ -275,7 +272,7 @@ classdef ParameterMatrixSetTestCase < matlab.unittest.TestCase
                        
             % Instantiation of target class
             import saivdr.dictionary.utility.*            
-            testCase.pms = ParameterMatrixSet(...
+            testCase.pms = ParameterMatrixContainer(...
                 'MatrixSizeTable',mstab);
             set(testCase.pms,'Coefficients',coefs);
             
@@ -318,7 +315,7 @@ classdef ParameterMatrixSetTestCase < matlab.unittest.TestCase
                        
             % Instantiation of target class
             import saivdr.dictionary.utility.*            
-            testCase.pms = ParameterMatrixSet(...
+            testCase.pms = ParameterMatrixContainer(...
                 'MatrixSizeTable',mstab);
             set(testCase.pms,'Coefficients',coefs);
             
@@ -362,7 +359,7 @@ classdef ParameterMatrixSetTestCase < matlab.unittest.TestCase
                        
             % Instantiation of target class
             import saivdr.dictionary.utility.*            
-            testCase.pms = ParameterMatrixSet(...
+            testCase.pms = ParameterMatrixContainer(...
                 'MatrixSizeTable',mstab);
             
             % Actual values

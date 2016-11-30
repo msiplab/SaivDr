@@ -19,6 +19,7 @@
 % 
 % LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627
 %
+close all
 
 %% Initial setting
 transition = 0.25;   % Transition band width

@@ -2,12 +2,9 @@ classdef AbstOvsdLpPuFb3dTypeISystem < ...
         saivdr.dictionary.nsoltx.AbstOvsdLpPuFb3dSystem %#codegen
     %ABSTOVSDLPPUFB3DTYPEISYSTEM Abstract class 3-D Type-I OLPPUFB
     %
-    % SVN identifier:
-    % $Id: AbstOvsdLpPuFb3dTypeISystem.m 690 2015-06-09 09:37:49Z sho $
-    %
     % Requirements: MATLAB R2013b
     %
-    % Copyright (c) 2014-2015, Shogo MURAMATSU
+    % Copyright (c) 2014-2016, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -74,7 +71,7 @@ classdef AbstOvsdLpPuFb3dTypeISystem < ...
         function updateProperties_(obj)
             import saivdr.dictionary.nsoltx.ChannelGroup
             import saivdr.dictionary.utility.Direction
-            import saivdr.dictionary.utility.ParameterMatrixSet
+            import saivdr.dictionary.utility.ParameterMatrixContainer
            % import saivdr.dictionary.nsoltx.AbstOvsdLpPuFb3dTypeISystem
 
             % Check DecimationFactor
@@ -130,7 +127,7 @@ classdef AbstOvsdLpPuFb3dTypeISystem < ...
             % Prepare ParameterMatrixSet
             paramMtxSizeTab = ...
                 obj.NumberOfChannels(ChannelGroup.LOWER)*ones(obj.nStages+1,2);
-            obj.ParameterMatrixSet = ParameterMatrixSet(...
+            obj.ParameterMatrixSet = ParameterMatrixContainer(...
                 'MatrixSizeTable',paramMtxSizeTab);
 
             % Prepare MEX function

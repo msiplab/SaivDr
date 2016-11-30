@@ -1,12 +1,9 @@
 classdef OLpPrFbAtomExtender1dTestCase < matlab.unittest.TestCase
     %OLPPRFBATOMEXTENDER1DTESTCASE Test case for OLpPrFbAtomExtender1d
     %
-    % SVN identifier:
-    % $Id: OLpPrFbAtomExtender1dTestCase.m 683 2015-05-29 08:22:13Z sho $
-    %
     % Requirements: MATLAB R2013b
     %
-    % Copyright (c) 2014-2015, Shogo MURAMATSU
+    % Copyright (c) 2014-2016, Shogo MURAMATSU
     %
     % All rights reserved.
     %

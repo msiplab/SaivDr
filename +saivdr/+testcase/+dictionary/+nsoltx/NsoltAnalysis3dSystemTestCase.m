@@ -1,12 +1,9 @@
 classdef NsoltAnalysis3dSystemTestCase < matlab.unittest.TestCase
     %NsoltAnalysis3dSystemTESTCASE Test case for NsoltAnalysis3dSystem
     %
-    % SVN identifier:
-    % $Id: NsoltAnalysis3dSystemTestCase.m 683 2015-05-29 08:22:13Z sho $
-    %
     % Requirements: MATLAB R2013b
     %
-    % Copyright (c) 2014-2015, Shogo MURAMATSU
+    % Copyright (c) 2014-2016, Shogo MURAMATSU
     %
     % All rights reserved.
     %

@@ -16,7 +16,7 @@ orgImg = im2double(srcImg(py+(1:height),px+(1:width),:));
 
 %% Design through dictionary learning 
 % Parameters for NSOLT
-nLevels = 4;     % # of wavelet tree levels
+nLevels = 4;     % # of wavelet tree levels (must be 1 when gradObj = 'on') 
 nDecs   = [2 2]; % Decimation factor
 nChs    = [4 4]; % # of channels
 nOrds   = [2 2]; % Polyphase order

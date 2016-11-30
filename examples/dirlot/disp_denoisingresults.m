@@ -5,9 +5,9 @@ set(0,'defaultAxesFontName','AvantGrade')
 set(0,'defaultTextFontName','AvantGrade')
 
 %% Prepare figure
-f1 = figure('Position',[60 60 600 400]);
-f2 = figure('Position',[120 60 600 400]);
-f3 = figure('Position',[180 60 600 400]);
+f1 = figure(); %('Position',[60 60 600 400]);
+f2 = figure(); %('Position',[120 60 600 400]);
+f3 = figure(); %('Position',[180 60 600 400]);
 cnames = { 'sym5' 'son4'  'udn4' };
 wlist = { 'sym5' 'son4' 'udn4' };
 cwidth = { 80 80 80 80 };
@@ -140,19 +140,20 @@ for itab = [ tmse tpsnr tssim ];
         if strcmp(crit(icrit),'MSE')
             axis([0 60 0 600]);
         elseif strcmp(crit(icrit),'PSNR')
-             axis([0 60 10 40]);
+            axis([0 60 10 40]);
         else
             axis([0 60 0.4 1]);
         end
         grid on
-        hold on;
+        hold on
         for iCol = 1:length(cnames)
-            xdat = [];
-            ydat = [];
-            p = plot(f);
-            set(p,'Color',lcol{iCol});
-            set(p,'Marker',lmrk{iCol});            
+            figure(f)
             jRow = iRow;
+            xdat = sigma(1);
+            ydat = str2double(dat{jRow,iCol});
+            p = plot(xdat,ydat);
+            set(p,'Color',lcol{iCol});
+            set(p,'Marker',lmrk{iCol});
             for iSigma = 1:nSigmas
                 xdat = [ xdat sigma(iSigma) ];
                 ydat = [ ydat str2double(dat{jRow,iCol}) ];
