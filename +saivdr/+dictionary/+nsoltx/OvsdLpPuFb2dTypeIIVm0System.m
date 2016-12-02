@@ -29,9 +29,9 @@ classdef OvsdLpPuFb2dTypeIIVm0System < saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2d
             import saivdr.dictionary.utility.OrthonormalMatrixGenerationSystem
             obj = obj@saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2dTypeIISystem(...
                 varargin{:});
-            obj.omgsV0_ = OrthonormalMatrixGenerationSystem();
-            obj.omgsE_ = OrthonormalMatrixGenerationSystem();
-            obj.omgsO_ = OrthonormalMatrixGenerationSystem();
+            obj.omgsV0_ = OrthonormalMatrixGenerationSystem('OrderOfProduction','Ascending');
+            obj.omgsE_ = OrthonormalMatrixGenerationSystem('OrderOfProduction','Ascending');
+            obj.omgsO_ = OrthonormalMatrixGenerationSystem('OrderOfProduction','Ascending');
         end
     end
     
