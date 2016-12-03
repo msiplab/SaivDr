@@ -32,7 +32,7 @@ optfcn       = @fminunc;
 sparseCoding = 'IterativeHardThresholding';
 isFixedCoefs = true;
 nUnfixedInitSteps = 0;
-isRandomInit = true;
+isRandomInit = false;
 stdOfAng     = pi/6;
 gradObj      = 'off'; % Available only for a single-level Type-I NSOLT
 % 

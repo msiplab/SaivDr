@@ -18,7 +18,6 @@ classdef OvsdLpPuFb2dTypeIVm1System < saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2dT
     properties (Access = private)
         initOmgs_
         propOmgs_
-        iniOmfs_
         propOmfs_
     end
     
@@ -30,7 +29,6 @@ classdef OvsdLpPuFb2dTypeIVm1System < saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2dT
                 varargin{:});
             obj.initOmgs_ = OrthonormalMatrixGenerationSystem('OrderOfProduction','Ascending');
             obj.propOmgs_ = OrthonormalMatrixGenerationSystem('OrderOfProduction','Ascending');
-            %obj.initOmfs_ = OrthonormalMatrixFactorizationSystem('OrderOfProduction','Ascending');
             obj.propOmfs_ = OrthonormalMatrixFactorizationSystem('OrderOfProduction','Ascending');
         end
     end
@@ -41,7 +39,6 @@ classdef OvsdLpPuFb2dTypeIVm1System < saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2dT
             s = saveObjectImpl@saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2dTypeISystem(obj);
             s.initOmgs_ = matlab.System.saveObject(obj.initOmgs_);
             s.propOmgs_ = matlab.System.saveObject(obj.propOmgs_);
-            %s.initOmfs_ = matlab.System.saveObject(obj.initOmfs_);
             s.propOmfs_ = matlab.System.saveObject(obj.propOmfs_);
         end
         
@@ -49,7 +46,6 @@ classdef OvsdLpPuFb2dTypeIVm1System < saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2dT
             loadObjectImpl@saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2dTypeISystem(obj,s,wasLocked);
             obj.initOmgs_ = matlab.System.loadObject(s.initOmgs_);
             obj.propOmgs_ = matlab.System.loadObject(s.propOmgs_);
-            %obj.initOmfs_ = matlab.System.loadObject(s.initOmfs_);
             obj.propOmfs_ = matlab.System.loadObject(s.propOmfs_);
         end        
         
@@ -63,17 +59,12 @@ classdef OvsdLpPuFb2dTypeIVm1System < saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2dT
             mus    = obj.Mus(:,2:end);
             
             nParamMtxAngs = nch*(nch-2)/8;
-%             % No-DC-Leackage condition
-%             angles(1:nChs(ChannelGroup.LOWER)-1,1) = ...
-%                 zeros(nChs(ChannelGroup.LOWER)-1,1);
-%             mus(1,1) = 1;
 
             W_ = eye(nch/2);
             
             pmMtxSet = obj.ParameterMatrixSet;
             omgs     = obj.propOmgs_;
             for iParamMtx = uint32(1):obj.nStages-1
-                %TODO: No-DC-Leakage condition??????????
                 % W
                 mtx = step(omgs,angles(1:nParamMtxAngs,iParamMtx),mus(1:nch/2,iParamMtx));
                 step(pmMtxSet,mtx,3*iParamMtx-1);
@@ -87,7 +78,7 @@ classdef OvsdLpPuFb2dTypeIVm1System < saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2dT
                 step(pmMtxSet,angles(2*nParamMtxAngs+1:end,iParamMtx),3*iParamMtx+1);
             end
             
-            % initial matrix
+            % Initial matrix with No-DC-leakage condition
             [angles_,~] = step(obj.propOmfs_,W_.');
             initAngles(1:nch/2-1) = angles_(1:nch/2-1);
             initAngles(nch/2:nch-1) = zeros(1,nch/2);

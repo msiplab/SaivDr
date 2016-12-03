@@ -78,57 +78,50 @@ classdef OvsdLpPuFb2dTypeIIVm1System < ...
             omgsWU = obj.omgsWU_;
             omgsHWHU = obj.omgsHWHU_;
             
-%             % No-DC-Leakage condition
-%             W_ = eye(nChs(ChannelGroup.UPPER)); 
-%             omgsW = obj.omgsW_;
-%             omgsU = obj.omgsU_;
-%             pmMtxSet = obj.ParameterMatrixSet;
+            V_ = eye(nCh);
+            
             for iParamMtx = uint32(1):obj.nStages-1
-                
-                
-                % TODO: ???????????????t?@?N?^?????O????
                 % W
                 mtx = step(omgsWU,angles(1:nAngsW,iParamMtx),...
                     mus(1:nMusW,iParamMtx));
                 step(pmMtxSt_,mtx,6*iParamMtx-4);
+                V_(1:floor(nCh/2),:) = mtx*V_(1:floor(nCh/2),:);
                 % U
                 mtx = step(omgsWU,angles(nAngsW+1:2*nAngsW,iParamMtx),...
                         mus(nMusW+1:2*nMusW,iParamMtx));
                 step(pmMtxSt_,mtx,6*iParamMtx-3);
+                V_(floor(nCh/2)+1:end-1,:) = mtx*V_(floor(nCh/2)+1:end-1,:);
                 
                 % angsB1
                 step(pmMtxSt_,angles(2*nAngsW+1:2*nAngsW+nAngsB,iParamMtx),6*iParamMtx-2);
+                
+                % HU
+                mtx = step(omgsHWHU,angles(2*nAngsW+nAngsB+nAngsHW+1:2*nAngsW+nAngsB+2*nAngsHW,iParamMtx),...
+                        mus(2*nMusW+nMusHW+1:end,iParamMtx));
+                step(pmMtxSt_,mtx,6*iParamMtx);
+                V_(ceil(nCh/2):end,:) = mtx*V_(ceil(nCh/2):end,:);
                 
                 % HW
                 mtx = step(omgsHWHU,angles(2*nAngsW+nAngsB+1:2*nAngsW+nAngsB+nAngsHW,iParamMtx),...
                     mus(2*nMusW+1:2*nMusW+nMusHW,iParamMtx));
                 step(pmMtxSt_,mtx,6*iParamMtx-1);
-                % HU
-                mtx = step(omgsHWHU,angles(2*nAngsW+nAngsB+nAngsHW+1:2*nAngsW+nAngsB+2*nAngsHW,iParamMtx),...
-                        mus(2*nMusW+nMusHW+1:end,iParamMtx));
-                step(pmMtxSt_,mtx,6*iParamMtx);
-                
+                V_(1:ceil(nCh/2),:) = mtx*V_(1:ceil(nCh/2),:);
+
                 % angsB2
                 step(pmMtxSt_,angles(2*nAngsW+1:2*nAngsW+nAngsB,iParamMtx),6*iParamMtx+1);
-
-                % W_ = step(pmMtxSet,[],2*iParamMtx-1)*W_;
             end
-            %TODO: No-DC-Leakage condition????????????????
-%             [angles_,mus_] = step(obj.omfs_,W_.');
-%             angles(1:nChs(ChannelGroup.UPPER)-1,nSts) = ...
-%                 angles_(1:nChs(ChannelGroup.UPPER)-1);
-%             mus(1,nSts) = mus_(1);
-%             % W
-%             mtx = step(omgsW,angles(1:nAngsW,nSts),...
-%                 mus(1:nMusW,nSts));            
-%             step(pmMtxSet,mtx,2*nSts-1); 
-%             % U
-%             mtx = step(omgsU,angles(nAngsW+1:end,nSts),...
-%                 mus(nMusW+1:end,nSts));
-%             step(pmMtxSet,mtx,2*nSts);
-%             %
-%             obj.Angles = angles;
-%             obj.Mus    = mus;
+            
+            % Initial matrix with No-DC-leakage condition
+            [angles_,~] = step(obj.omfs_,V_.');
+            initAngles(1:nCh-1) = angles_(1:nCh-1);
+            mtx = step(obj.omgsV_,initAngles,obj.Mus(1:nCh));
+            step(pmMtxSt_,mtx,uint32(1));
+            
+            angles = [initAngles; angles(:)];
+            mus = [obj.Mus(1:nCh) ; mus(:)];
+            
+            obj.Angles = angles;
+            obj.Mus    = mus;
         end
         
     end
