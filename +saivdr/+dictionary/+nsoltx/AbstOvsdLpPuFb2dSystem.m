@@ -74,8 +74,10 @@ classdef AbstOvsdLpPuFb2dSystem < matlab.System %#codegen
             obj.mexFlag = false;
             H = getAnalysisFilterBank_(obj);
             for ib=1:obj.NumberOfChannels
+                % Real Part
                 subplot(2,obj.NumberOfChannels,ib);
                 imshow(real(H(:,:,ib))+0.5);
+                % Imaginary Part
                 subplot(2,obj.NumberOfChannels,ib+obj.NumberOfChannels);
                 imshow(imag(H(:,:,ib))+0.5);
             end

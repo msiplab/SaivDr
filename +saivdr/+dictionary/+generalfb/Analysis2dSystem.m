@@ -33,6 +33,10 @@ classdef Analysis2dSystem < saivdr.dictionary.AbstAnalysisSystem
         BoundaryOperation = 'Circular'
         FilterDomain = 'Spatial'
     end
+    
+    properties (Nontunable, Logical)
+        IsRealValue = true
+    end
 
     properties (Hidden, Transient)
         BoundaryOperationSet = ...
@@ -75,6 +79,7 @@ classdef Analysis2dSystem < saivdr.dictionary.AbstAnalysisSystem
             s.allCoefs   = obj.allCoefs;
             s.AnalysisFilters = obj.AnalysisFilters;
             s.FilterDomain = obj.FilterDomain;
+            s.IsRealValue = obj.IsRealValue;
             s.freqRes = obj.freqRes;
         end
 
@@ -86,6 +91,7 @@ classdef Analysis2dSystem < saivdr.dictionary.AbstAnalysisSystem
             obj.nChs = s.nChs;
             obj.AnalysisFilters = s.AnalysisFilters;
             obj.FilterDomain = s.FilterDomain;
+            obj.IsRealValue = s.IsRealValue;
             obj.freqRes = s.freqRes;
             loadObjectImpl@matlab.System(obj,s,wasLocked);
         end
@@ -123,6 +129,7 @@ classdef Analysis2dSystem < saivdr.dictionary.AbstAnalysisSystem
             obj.nAllChs = nLevels*(nChs_-1)+1;
             obj.allCoefs  = zeros(1,obj.nAllCoefs);
             obj.allScales = zeros(obj.nAllChs,obj.DATA_DIMENSION);
+            obj.IsRealValue = isreal(srcImg);
 
             % Set up for frequency domain filtering
             if strcmp(obj.FilterDomain,'Frequency')
@@ -202,6 +209,9 @@ classdef Analysis2dSystem < saivdr.dictionary.AbstAnalysisSystem
                         end
                     end
                     subbandCoefs = ifft2(U)/((decY*decX)^iLevel);
+                    if obj.IsRealValue
+                        subbandCoefs = real(subbandCoefs);
+                    end
                     obj.allScales(iSubband,:) = [ nRows_ nCols_ ];
                     sIdx = eIdx - (nRows_*nCols_) + 1;
                     obj.allCoefs(sIdx:eIdx) = subbandCoefs(:).';
@@ -224,6 +234,9 @@ classdef Analysis2dSystem < saivdr.dictionary.AbstAnalysisSystem
                 end
             end
             subbandCoefs = ifft2(U)/((decY*decX)^nLevels);
+            if obj.IsRealValue
+                subbandCoefs = real(subbandCoefs);
+            end
             %
             obj.allScales(1,:) = [ nRows_ nCols_ ];
             obj.allCoefs(1:nRows_*nCols_) = subbandCoefs(:).';

@@ -119,7 +119,7 @@ nDec    = [2 2]; % Decimation factor
 nChs    = 12; % # of channels
 nOrd    = [2 2]; % Polyphase order
 %nOrd = [0 0];
-nVm     = 0;     % # of vanishing moments
+nVm     = 1;     % # of vanishing moments
 
 % Location which containts a pre-designed NSOLT
 sdir = './examples/quickdesign/results';
@@ -128,15 +128,18 @@ sdir = './examples/quickdesign/results';
 % s = load(sprintf('%s/nsolt_d%dx%d_c%d+%d_o%d+%d_v%d_l%d_n%d_%s.mat',...
 %     sdir,nDec(1),nDec(2),nChs(1),nChs(2),nOrd(1),nOrd(2),nVm,nLevels,...
 %     2048,'peppers128x128'),'nsolt');
-%s = load('CLpPuFb2dDec22Ch8Ord22.mat');
-%nsolt = dictionary.nsolt;
+
 nsolt = saivdr.dictionary.nsoltx.NsoltFactory.createOvsdLpPuFb2dSystem(...
     'DecimationFactor', nDec,...
     'NumberOfChannels', nChs,...
     'PolyPhaseOrder', nOrd,...
     'NumberOfVanishingMoments',nVm);
-    
 
+release(nsolt);
+angs = get(nsolt,'Angles');
+angs = 2*pi*rand(size(angs));
+set(nsolt,'Angles',angs);
+    
 % Conversion of nsolt to new package style
 % nsolt = saivdr.dictionary.utility.fcn_upgrade(nsolt);
 

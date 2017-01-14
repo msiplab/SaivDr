@@ -29,6 +29,10 @@ classdef Synthesis3dSystem < saivdr.dictionary.AbstSynthesisSystem
         BoundaryOperation = 'Circular'
         FilterDomain = 'Spatial'
     end
+    
+    properties (Nontunable, Logical)
+        IsRealValue = true
+    end
 
     properties (Hidden, Transient)
         BoundaryOperationSet = ...
@@ -66,6 +70,7 @@ classdef Synthesis3dSystem < saivdr.dictionary.AbstSynthesisSystem
             s.nChs = obj.nChs;
             s.SynthesisFilters = obj.SynthesisFilters;
             s.FilterDomain = obj.FilterDomain;
+            s.IsRealValue = obj.IsRealValue;
             s.freqRes = obj.freqRes;
         end
 
@@ -73,6 +78,7 @@ classdef Synthesis3dSystem < saivdr.dictionary.AbstSynthesisSystem
             obj.nChs = s.nChs;
             obj.SynthesisFilters = s.SynthesisFilters;
             obj.FilterDomain = s.FilterDomain;
+            obj.IsRealValue = s.IsRealValue;
             obj.freqRes = s.freqRes;
             loadObjectImpl@matlab.System(obj,s,wasLocked);
         end
@@ -85,8 +91,9 @@ classdef Synthesis3dSystem < saivdr.dictionary.AbstSynthesisSystem
             end
         end
 
-        function setupImpl(obj,~,scales)
+        function setupImpl(obj,coefs,scales)
             import saivdr.dictionary.utility.Direction
+            obj.IsRealValue = isreal(coefs);
 
             % Set up for frequency domain filtering
             if strcmp(obj.FilterDomain,'Frequency')
@@ -171,6 +178,9 @@ classdef Synthesis3dSystem < saivdr.dictionary.AbstSynthesisSystem
                 end
             end
             recImg = ifftn(recImgFreq);
+            if obj.IsRealValue
+                recImg = real(recImg);
+            end
         end
 
         function recImg = synthesizeSpatial_(obj,coefs,scales)

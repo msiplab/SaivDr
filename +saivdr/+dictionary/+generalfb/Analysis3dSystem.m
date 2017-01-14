@@ -33,6 +33,10 @@ classdef Analysis3dSystem < saivdr.dictionary.AbstAnalysisSystem
         BoundaryOperation = 'Circular'
         FilterDomain = 'Spatial'
     end
+    
+    properties (Nontunable, Logical)
+        IsRealValue = true
+    end
 
     properties (Hidden, Transient)
         BoundaryOperationSet = ...
@@ -75,6 +79,7 @@ classdef Analysis3dSystem < saivdr.dictionary.AbstAnalysisSystem
             s.allCoefs   = obj.allCoefs;
             s.AnalysisFilters = obj.AnalysisFilters;
             s.FilterDomain = obj.FilterDomain;
+            s.IsRealValue = obj.IsRealValue;
             s.freqRes = obj.freqRes;
         end
 
@@ -86,6 +91,7 @@ classdef Analysis3dSystem < saivdr.dictionary.AbstAnalysisSystem
             obj.nChs = s.nChs;
             obj.AnalysisFilters = s.AnalysisFilters;
             obj.FilterDomain = s.FilterDomain;
+            obj.IsRealValue = s.IsRealValue;
             obj.freqRes = s.freqRes;
             loadObjectImpl@matlab.System(obj,s,wasLocked);
         end
@@ -215,6 +221,9 @@ classdef Analysis3dSystem < saivdr.dictionary.AbstAnalysisSystem
                         end
                     end
                     subbandCoefs = ifftn(U)/((decY*decX*decZ)^iLevel);
+                    if obj.IsRealValue
+                        subbandCoefs = real(subbandCoefs);
+                    end
                     %
                     obj.allScales(iSubband,:) = [ nRows_ nCols_ nLays_];
                     sIdx = eIdx - (nRows_*nCols_*nLays_) + 1;
@@ -245,7 +254,10 @@ classdef Analysis3dSystem < saivdr.dictionary.AbstAnalysisSystem
                     end
                 end
             end
-            subbandCoefs = real(ifftn(U))/((decY*decX*decZ)^nLevels);
+            subbandCoefs = ifftn(U)/((decY*decX*decZ)^nLevels);
+            if obj.IsRealValue
+                subbandCoefs = real(subbandCoefs);
+            end
             %
             obj.allScales(1,:) = [ nRows_ nCols_ nLays_];
             obj.allCoefs(1:nRows_*nCols_*nLays_) = subbandCoefs(:).';

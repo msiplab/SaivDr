@@ -12,7 +12,8 @@ width  = 64; % Width
 height = 64; % Height
 px     = 128; % Horizontal position of cropping
 py     = 128; % Vertical position of cropping
-orgImg = im2double(srcImg(py+(1:height),px+(1:width),:));
+%orgImg = im2double(srcImg(py+(1:height),px+(1:width),:));
+orgImg = cropImg;
 
 %% Design through dictionary learning 
 % Parameters for NSOLT
@@ -25,7 +26,8 @@ nVm     = 1;     % # of vanishing moments
 
 % Design conditions
 %trnImgs{1}   = im2double(rgb2gray(orgImg)); 
-trnImgs{1}   = im2double(orgImg(:,:,1)+1i*orgImg(:,:,2));
+%trnImgs{1}   = im2double(orgImg(:,:,1)+1i*orgImg(:,:,2));
+trnImgs{1} = orgImg;
 nIters       = 8;
 nCoefs       = numel(trnImgs{1})/8;
 optfcn       = @fminunc;
