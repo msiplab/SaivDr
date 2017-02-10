@@ -241,7 +241,7 @@ classdef AbstCplxOvsdLpPuFb2dTypeIISystem < ...
         function value = getAnalysisFilterBank_(obj)
             import saivdr.dictionary.utility.Direction
             import saivdr.dictionary.nsoltx.ChannelGroup
-            import saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2dTypeIISystem
+            import saivdr.dictionary.nsoltx.AbstCplxOvsdLpPuFb2dTypeIISystem
             import saivdr.dictionary.nsoltx.mexsrcs.*
 
             %

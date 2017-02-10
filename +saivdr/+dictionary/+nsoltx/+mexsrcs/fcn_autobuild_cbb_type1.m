@@ -23,7 +23,7 @@ function [fcnhandler,flag] = fcn_autobuild_cbb_type1(hChs)
 %     isAutoBuildBbType1Locked = false;
 % end
 
-bsfname = 'fcn_Order1ComplexBuildingBlockTypeI';
+bsfname = 'fcn_Order1CplxBuildingBlockTypeI';
 mexname = sprintf('%s_%d_%d_mex',bsfname,hChs,hChs);
 
 ftypemex = exist(mexname, 'file');

@@ -183,7 +183,7 @@ classdef AbstCplxOvsdLpPuFb3dTypeISystem < ...
         function value = getAnalysisFilterBank_(obj)
             import saivdr.dictionary.nsoltx.ChannelGroup
             import saivdr.dictionary.utility.Direction
-            import saivdr.dictionary.nsoltx.AbstOvsdLpPuFb3dTypeISystem
+            import saivdr.dictionary.nsoltx.AbstCplxOvsdLpPuFb3dTypeISystem
             %
             nChs = obj.NumberOfChannels;
             dec  = obj.DecimationFactor;
