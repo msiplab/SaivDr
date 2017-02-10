@@ -8,12 +8,12 @@
 
 imgName = 'ibushi64x64';
 srcImg = imread('18_ibushi.normal.png');
-width  = 64; % Width
-height = 64; % Height
+width  = 32; % Width
+height = 32; % Height
 px     = 128; % Horizontal position of cropping
 py     = 128; % Vertical position of cropping
-%orgImg = im2double(srcImg(py+(1:height),px+(1:width),:));
-orgImg = cropImg;
+orgImg = im2double(srcImg(py+(1:height),px+(1:width),:));
+%orgImg = cropImg;
 
 %% Design through dictionary learning 
 % Parameters for NSOLT
@@ -58,6 +58,7 @@ designer = NsoltDictionaryLearning(...
     'SparseCoding',sparseCoding,...
     'IsFixedCoefs',isFixedCoefs,...
     'IsRandomInit',isRandomInit,...
+    'IsRealValue',false,...
     'GradObj',gradObj);
 set(designer,'NumberOfUnfixedInitialSteps',nUnfixedInitSteps);
 set(designer,'StdOfAngRandomInit',stdOfAng);
