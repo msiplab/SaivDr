@@ -1,4 +1,4 @@
-classdef OvsdLpPuFb3dTypeIIVm0System < saivdr.dictionary.nsoltx.AbstOvsdLpPuFb3dTypeIISystem
+classdef CplxOvsdLpPuFb3dTypeIIVm0System < saivdr.dictionary.nsoltx.AbstCplxOvsdLpPuFb3dTypeIISystem
     %OVSDLPPUFBMDTYPEIIVM0SYSTEM 3-D Type-II Oversampled LPPUFB without VM
     %
     % SVN identifier:
@@ -24,9 +24,9 @@ classdef OvsdLpPuFb3dTypeIIVm0System < saivdr.dictionary.nsoltx.AbstOvsdLpPuFb3d
     end
     
     methods
-        function obj = OvsdLpPuFb3dTypeIIVm0System(varargin)
+        function obj = CplxOvsdLpPuFb3dTypeIIVm0System(varargin)
             import saivdr.dictionary.utility.OrthonormalMatrixGenerationSystem
-            obj = obj@saivdr.dictionary.nsoltx.AbstOvsdLpPuFb3dTypeIISystem(...
+            obj = obj@saivdr.dictionary.nsoltx.AbstCplxOvsdLpPuFb3dTypeIISystem(...
                 varargin{:});
             obj.omgsW_ = OrthonormalMatrixGenerationSystem();
             obj.omgsU_ = OrthonormalMatrixGenerationSystem();
@@ -36,7 +36,7 @@ classdef OvsdLpPuFb3dTypeIIVm0System < saivdr.dictionary.nsoltx.AbstOvsdLpPuFb3d
     methods (Access = protected)
         
         function s = saveObjectImpl(obj)
-            s = saveObjectImpl@saivdr.dictionary.nsoltx.AbstOvsdLpPuFb3dTypeIISystem(obj);
+            s = saveObjectImpl@saivdr.dictionary.nsoltx.AbstCplxOvsdLpPuFb3dTypeIISystem(obj);
             s.omgsW_ = matlab.System.saveObject(obj.omgsW_);
             s.omgsU_ = matlab.System.saveObject(obj.omgsU_);
         end
@@ -44,7 +44,7 @@ classdef OvsdLpPuFb3dTypeIIVm0System < saivdr.dictionary.nsoltx.AbstOvsdLpPuFb3d
         function loadObjectImpl(obj,s,wasLocked)
             obj.omgsW_ = matlab.System.loadObject(s.omgsW_);
             obj.omgsU_ = matlab.System.loadObject(s.omgsU_);
-            loadObjectImpl@saivdr.dictionary.nsoltx.AbstOvsdLpPuFb3dTypeIISystem(obj,s,wasLocked);
+            loadObjectImpl@saivdr.dictionary.nsoltx.AbstCplxOvsdLpPuFb3dTypeIISystem(obj,s,wasLocked);
         end                
         
         function updateParameterMatrixSet_(obj)

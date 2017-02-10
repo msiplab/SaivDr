@@ -62,17 +62,17 @@ classdef AbstCplxOvsdLpPuFb2dTypeIISystem < ...
         function resetImpl(obj)
             resetImpl@saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2dSystem(obj);
             % Build MEX
-            import saivdr.dictionary.nsoltx.mexsrcs.fcn_autobuild_bb_type2
+            import saivdr.dictionary.nsoltx.mexsrcs.fcn_autobuild_cbb_type2
             import saivdr.dictionary.nsoltx.ChannelGroup
-            [obj.mexFcn, obj.mexFlag] = fcn_autobuild_bb_type2(...
+            [obj.mexFcn, obj.mexFlag] = fcn_autobuild_cbb_type2(...
                 floor(obj.NumberOfChannels/2));
         end
 
         function setupImpl(obj,varargin)
             % Prepare MEX function
             import saivdr.dictionary.nsoltx.ChannelGroup
-            import saivdr.dictionary.nsoltx.mexsrcs.fcn_autobuild_bb_type2
-            [obj.mexFcn, obj.mexFlag] = fcn_autobuild_bb_type2(...
+            import saivdr.dictionary.nsoltx.mexsrcs.fcn_autobuild_bcb_type2
+            [obj.mexFcn, obj.mexFlag] = fcn_autobuild_cbb_type2(...
                 floor(obj.NumberOfChannels/2));
         end
 
@@ -134,8 +134,8 @@ classdef AbstCplxOvsdLpPuFb2dTypeIISystem < ...
 
             % Prepare MEX function
             if ~obj.mexFlag
-                import saivdr.dictionary.nsoltx.mexsrcs.fcn_autobuild_bb_type2
-                [obj.mexFcn, obj.mexFlag] = fcn_autobuild_bb_type2(...
+                import saivdr.dictionary.nsoltx.mexsrcs.fcn_autobuild_cbb_type2
+                [obj.mexFcn, obj.mexFlag] = fcn_autobuild_cbb_type2(...
                     floor(obj.NumberOfChannels/2));
             end
 
@@ -279,8 +279,8 @@ classdef AbstCplxOvsdLpPuFb2dTypeIISystem < ...
                 if mexFlag_
                     E = mexFcn_(E, W, U, angsB1, hW, hU, angsB2, floor(nChs/2), nShift);
                 else
-                    import saivdr.dictionary.nsoltx.mexsrcs.Order2BuildingBlockTypeII
-                    hObb = Order2BuildingBlockTypeII();
+                    import saivdr.dictionary.nsoltx.mexsrcs.Order2CplxBuildingBlockTypeII
+                    hObb = Order2CplxBuildingBlockTypeII();
                     E = step(hObb, E, W, U, angsB1, hW, hU, angsB2, floor(nChs/2), nShift);
                 end
                 iParamMtx = iParamMtx+6;
@@ -301,8 +301,8 @@ classdef AbstCplxOvsdLpPuFb2dTypeIISystem < ...
                     if mexFlag_
                         E = mexFcn_(E, W, U, angsB1, hW, hU, angsB2, floor(nChs/2), nShift);
                     else
-                        import saivdr.dictionary.nsoltx.mexsrcs.Order2BuildingBlockTypeII
-                        hObb = Order2BuildingBlockTypeII();
+                        import saivdr.dictionary.nsoltx.mexsrcs.Order2CplxBuildingBlockTypeII
+                        hObb = Order2CplxBuildingBlockTypeII();
                         E = step(hObb, E, W, U, angsB1, hW, hU, angsB2, floor(nChs/2), nShift);
                     end
                     iParamMtx = iParamMtx+6;

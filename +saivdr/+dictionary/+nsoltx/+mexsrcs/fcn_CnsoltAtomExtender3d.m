@@ -1,8 +1,9 @@
-function output = fcn_Order1ComplexBuildingBlockTypeI( input, mtxW, mtxU, angles, p, nshift ) %#codegen
+function coefs = fcn_NsoltAtomExtender3d( coefs, scale, pmcoefs, ...
+    nch, ord, fpe ) %#codegen
 % FCN_NSOLTX_SUPEXT_TYPE1
 %
 % SVN identifier:
-% $Id: fcn_Order1BuildingBlockTypeI.m 683 2015-05-29 08:22:13Z sho $
+% $Id: fcn_NsoltAtomExtender3d.m 683 2015-05-29 08:22:13Z sho $
 %
 % Requirements: MATLAB R2013b
 %
@@ -19,7 +20,11 @@ function output = fcn_Order1ComplexBuildingBlockTypeI( input, mtxW, mtxU, angles
 %
 persistent h;
 if isempty(h)
-    h = saivdr.dictionary.nsoltx.mexsrcs.Order1BuildingBlockTypeI();
+    h = saivdr.dictionary.nsoltx.NsoltAtomExtender3d(...
+        'NumberOfSymmetricChannels',nch(1),...
+        'NumberOfAntisymmetricChannels',nch(2));
 end
-output = step(h, input, mtxW, mtxU, angles, p, nshift);
+set(h,'IsPeriodicExt',fpe);
+set(h,'PolyPhaseOrder',ord);
+coefs = step(h, coefs, scale, pmcoefs);
 end

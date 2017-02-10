@@ -1,4 +1,4 @@
-classdef OvsdLpPuFb2dTypeIIVm0System < saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2dTypeIISystem
+classdef CplxOvsdLpPuFb2dTypeIIVm0System < saivdr.dictionary.nsoltx.AbstCplxOvsdLpPuFb2dTypeIISystem
     %OVSDLPPUFBMDTYPEIIVM0SYSTEM M-D Type-II Oversampled LPPUFB without VM
     %
     % SVN identifier:
@@ -25,9 +25,9 @@ classdef OvsdLpPuFb2dTypeIIVm0System < saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2d
     end
     
     methods
-        function obj = OvsdLpPuFb2dTypeIIVm0System(varargin)
+        function obj = CplxOvsdLpPuFb2dTypeIIVm0System(varargin)
             import saivdr.dictionary.utility.OrthonormalMatrixGenerationSystem
-            obj = obj@saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2dTypeIISystem(...
+            obj = obj@saivdr.dictionary.nsoltx.AbstCplxOvsdLpPuFb2dTypeIISystem(...
                 varargin{:});
             obj.omgsV0_ = OrthonormalMatrixGenerationSystem('OrderOfProduction','Ascending');
             obj.omgsE_ = OrthonormalMatrixGenerationSystem('OrderOfProduction','Ascending');
@@ -38,7 +38,7 @@ classdef OvsdLpPuFb2dTypeIIVm0System < saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2d
     methods (Access = protected)
         
         function s = saveObjectImpl(obj)
-            s = saveObjectImpl@saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2dTypeIISystem(obj);
+            s = saveObjectImpl@saivdr.dictionary.nsoltx.AbstCplxOvsdLpPuFb2dTypeIISystem(obj);
             s.omgsV0_ = matlab.System.saveObject(obj.omgsV0_);
             s.omgsE_ = matlab.System.saveObject(obj.omgsE_);
             s.omgsO_ = matlab.System.saveObject(obj.omgsO_);
@@ -48,7 +48,7 @@ classdef OvsdLpPuFb2dTypeIIVm0System < saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2d
             obj.omgsV0_ = matlab.System.loadObject(s.omgsV0_);
             obj.omgsE_ = matlab.System.loadObject(s.omgsE_);
             obj.omgsO_ = matlab.System.loadObject(s.omgsO_);
-            loadObjectImpl@saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2dTypeIISystem(obj,s,wasLocked);
+            loadObjectImpl@saivdr.dictionary.nsoltx.AbstCplxOvsdLpPuFb2dTypeIISystem(obj,s,wasLocked);
         end                
         
         function updateParameterMatrixSet_(obj)

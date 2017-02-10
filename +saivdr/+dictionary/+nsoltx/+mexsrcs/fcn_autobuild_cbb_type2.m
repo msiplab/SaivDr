@@ -1,8 +1,8 @@
-function [fcnhandler,flag] = fcn_autobuild_cbb_type1(hChs)
-%FCN_AUTOBUILD_BB_TYPE1
+function [fcnhandler,flag] = fcn_autobuild_cbb_type2(fhChs)
+%FCN_AUTOBUILD_BB_TYPE2
 %
 % SVN identifier:
-% $Id: fcn_autobuild_bb_type1.m 683 2015-05-29 08:22:13Z sho $
+% $Id: fcn_autobuild_bb_type2.m 683 2015-05-29 08:22:13Z sho $
 %
 % Requirements: MATLAB R2013b
 %
@@ -18,13 +18,13 @@ function [fcnhandler,flag] = fcn_autobuild_cbb_type1(hChs)
 % LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627
 %
 
-% global isAutoBuildBbType1Locked
-% if isempty(isAutoBuildBbType1Locked)
-%     isAutoBuildBbType1Locked = false;
+% global isAutoBuildBbType2Locked
+% if isempty(isAutoBuildBbType2Locked)
+%     isAutoBuildBbType2Locked = false;
 % end
 
-bsfname = 'fcn_Order1ComplexBuildingBlockTypeI';
-mexname = sprintf('%s_%d_%d_mex',bsfname,hChs,hChs);
+bsfname = 'fcn_Order2ComplexBuildingBlockTypeII';
+mexname = sprintf('%s_%d_%d_mex',bsfname,fhChs+1,fhChs);
 
 ftypemex = exist(mexname, 'file');
 if exist('getCurrentTask','file') == 2
@@ -33,8 +33,8 @@ else
     task = [];
 end
 if isempty(task) || task.ID == 1
-% if ~isAutoBuildBbType1Locked
-%     isAutoBuildBbType1Locked = true;
+% if ~isAutoBuildBbType2Locked
+%     isAutoBuildBbType2Locked = true;
     if ftypemex ~= 3  && ... % MEX file doesn't exist
             license('checkout','matlab_coder') % Coder is available
         cdir = pwd;
@@ -49,17 +49,20 @@ if isempty(task) || task.ID == 1
             %
             maxNCfs = 518400;
             %
-            arrayCoefs = coder.typeof(complex(0),[2*hChs maxNCfs],[0 1]); %#ok
-            paramMtxW = coder.typeof(double(0),hChs*[1 1],[0 0]); %#ok
-            paramMtxU = coder.typeof(double(0),hChs*[1 1],[0 0]); %#ok
-            paramAngles = coder.typeof(double(0), [floor(hChs/2),1],[0 0]); %#ok
-            constHChs = coder.Constant(hChs); %#ok
+            arrayCoefs = coder.typeof(complex(0),[(2*fhChs+1) maxNCfs],[0 1]); %#ok
+            paramMtxW = coder.typeof(double(0),fhChs*[1 1],[0 0]); %#ok
+            paramMtxU = coder.typeof(double(0),fhChs*[1 1],[0 0]); %#ok
+            paramAngB1 = coder.typeof(double(0),[floor(fhChs/2),1],[0 0]); %#ok
+            paramMtxHW = coder.typeof(double(0),(fhChs+1)*[1 1],[0 0]); %#ok
+            paramMtxHU = coder.typeof(double(0),(fhChs+1)*[1 1],[0 0]); %#ok
+            paramAngB2 = coder.typeof(double(0),[floor(fhChs/2),1],[0 0]); %#ok
+            constP = coder.Constant(fhChs); %#ok
             nshift = coder.typeof(int32(0),[1 1],[0 0]); %#ok
             % build mex
             cfg = coder.config('mex');
             cfg.DynamicMemoryAllocation = 'Threshold';
             cfg.GenerateReport = true;
-            args = '{ arrayCoefs, paramMtxW, paramMtxU, paramAngles, constHChs, nshift }';
+            args = '{ arrayCoefs, paramMtxW, paramMtxU, paramAngB1, paramMtxHW, paramMtxHU, paramAngB2, constP, nshift }';
             seval = [ 'codegen -config cfg ' ' -o ' outputdir '/' mexname ' ' ...
                 packagedir '/' bsfname '.m -args ' args];
 
@@ -73,7 +76,7 @@ if isempty(task) || task.ID == 1
         cd(cdir)
     end
     ftypemex = exist(mexname, 'file');
-    %isAutoBuildBbType1Locked = false;
+    %isAutoBuildBbType2Locked = false;
 end
 
 if ftypemex == 3 % MEX file exists

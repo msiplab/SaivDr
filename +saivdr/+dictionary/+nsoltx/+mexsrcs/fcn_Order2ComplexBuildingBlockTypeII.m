@@ -1,4 +1,4 @@
-function output = fcn_Order2BuildingBlockTypeII( input, mtxW, mtxU, angB1, mtxHW, mtxHU, angB2, p, nshift ) %#codegen
+function output = fcn_Order2ComplexBuildingBlockTypeII( input, mtxW, mtxU, angB1, mtxHW, mtxHU, angB2, p, nshift ) %#codegen
 % FCN_NSOLTX_SUPEXT_TYPE2
 %
 % SVN identifier:

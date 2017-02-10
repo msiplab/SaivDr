@@ -1,8 +1,8 @@
-function [fcnhandler,flag] = fcn_autobuild_cbb_type1(hChs)
-%FCN_AUTOBUILD_BB_TYPE1
+function [fcnhandler,flag] = fcn_autobuild_catomext3d(nch)
+%FCN_AUTOBUILD_ATOMEXT3D
 %
 % SVN identifier:
-% $Id: fcn_autobuild_bb_type1.m 683 2015-05-29 08:22:13Z sho $
+% $Id: fcn_autobuild_atomext3d.m 683 2015-05-29 08:22:13Z sho $
 %
 % Requirements: MATLAB R2013b
 %
@@ -18,13 +18,14 @@ function [fcnhandler,flag] = fcn_autobuild_cbb_type1(hChs)
 % LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627
 %
 
-% global isAutoBuildBbType1Locked
-% if isempty(isAutoBuildBbType1Locked)
-%     isAutoBuildBbType1Locked = false;
+% global isAutoBuildAtomExt3dLocked
+% if isempty(isAutoBuildAtomExt3dLocked)
+%     isAutoBuildAtomExt3dLocked = false;
 % end
 
-bsfname = 'fcn_Order1ComplexBuildingBlockTypeI';
-mexname = sprintf('%s_%d_%d_mex',bsfname,hChs,hChs);
+bsfname = 'fcn_CnsoltAtomExtender3d';
+mexname = sprintf('%s_%d_%d_mex',bsfname,...
+    nch(1),nch(2));
 
 ftypemex = exist(mexname, 'file');
 if exist('getCurrentTask','file') == 2
@@ -33,8 +34,8 @@ else
     task = [];
 end
 if isempty(task) || task.ID == 1
-% if ~isAutoBuildBbType1Locked
-%     isAutoBuildBbType1Locked = true;
+% if ~isAutoBuildAtomExt3dLocked
+%     isAutoBuildAtomExt3dLocked = true;
     if ftypemex ~= 3  && ... % MEX file doesn't exist
             license('checkout','matlab_coder') % Coder is available
         cdir = pwd;
@@ -42,46 +43,47 @@ if isempty(task) || task.ID == 1
         cd(saivdr_root)
         packagedir = './+saivdr/+dictionary/+nsoltx/+mexsrcs';
         fbsfile = exist([packagedir '/' bsfname '.m'],'file');
-
+        
         if fbsfile == 2
-
+            
             outputdir = fullfile(saivdr_root,'mexcodes');
             %
-            maxNCfs = 518400;
+            %maxNCfs = 518400;
+            %nPmCoefs = (nch(1)^2 +nch(2)^2)*(sum(ord)/2+1);
             %
-            arrayCoefs = coder.typeof(complex(0),[2*hChs maxNCfs],[0 1]); %#ok
-            paramMtxW = coder.typeof(double(0),hChs*[1 1],[0 0]); %#ok
-            paramMtxU = coder.typeof(double(0),hChs*[1 1],[0 0]); %#ok
-            paramAngles = coder.typeof(double(0), [floor(hChs/2),1],[0 0]); %#ok
-            constHChs = coder.Constant(hChs); %#ok
-            nshift = coder.typeof(int32(0),[1 1],[0 0]); %#ok
+            aCoefs   = coder.typeof(double(0),[sum(nch) Inf],[0 1]); %#ok
+            aScale   = coder.typeof(uint32(0),[1 3],[0 0]); %#ok
+            aPmCoefs = coder.typeof(double(0),[Inf 1],[1 0]); %#ok 
+            cNch = coder.Constant(nch); %#ok
+            aOrd = coder.typeof(uint32(0),[1 3],[0 0]); %#ok
+            aFpe = coder.typeof(logical(0),[1 1],[0 0]); %#ok
             % build mex
             cfg = coder.config('mex');
-            cfg.DynamicMemoryAllocation = 'Threshold';
+            cfg.DynamicMemoryAllocation = 'AllVariableSizeArrays';%'Threshold';%'Off';
             cfg.GenerateReport = true;
-            args = '{ arrayCoefs, paramMtxW, paramMtxU, paramAngles, constHChs, nshift }';
+            args = '{ aCoefs, aScale, aPmCoefs, cNch, aOrd, aFpe }';
             seval = [ 'codegen -config cfg ' ' -o ' outputdir '/' mexname ' ' ...
                 packagedir '/' bsfname '.m -args ' args];
-
+            
             disp(seval)
             eval(seval)
-
+            
         else
             error('SaivDr: Invalid argument')
         end
-
+        
         cd(cdir)
     end
     ftypemex = exist(mexname, 'file');
-    %isAutoBuildBbType1Locked = false;
+    %isAutoBuildAtomExt3dLocked = false;
 end
 
 if ftypemex == 3 % MEX file exists
-
+    
     fcnhandler = str2func(mexname);
     flag       = true;
-
-else
+    
+else 
 
     fcnhandler = [];
     flag       = false;

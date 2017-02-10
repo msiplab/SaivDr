@@ -1,4 +1,4 @@
-classdef AbstOvsdLpPuFb3dTypeIISystem < ...
+classdef AbstCplxOvsdLpPuFb3dTypeIISystem < ...
         saivdr.dictionary.nsoltx.AbstOvsdLpPuFb3dSystem %#codegen
     %ABSTOVSDLPPUFB3DTYPEIISYSTEM Abstract class 3-D Type-II OLPPUFB
     %
@@ -30,7 +30,7 @@ classdef AbstOvsdLpPuFb3dTypeIISystem < ...
     end
 
     methods
-        function obj = AbstOvsdLpPuFb3dTypeIISystem(varargin)
+        function obj = AbstCplxOvsdLpPuFb3dTypeIISystem(varargin)
             obj = obj@saivdr.dictionary.nsoltx.AbstOvsdLpPuFb3dSystem(...
                 varargin{:});
             updateProperties_(obj);
@@ -59,8 +59,9 @@ classdef AbstOvsdLpPuFb3dTypeIISystem < ...
             resetImpl@saivdr.dictionary.nsoltx.AbstOvsdLpPuFb3dSystem(obj);
             % Prepare MEX function
             import saivdr.dictionary.nsoltx.ChannelGroup
-            import saivdr.dictionary.nsoltx.mexsrcs.fcn_autobuild_bb_type2
-            %TODO: 綣信罩            [obj.mexFcn, obj.mexFlag] = fcn_autobuild_bb_type2(...
+            import saivdr.dictionary.nsoltx.mexsrcs.fcn_autobuild_cbb_type2
+            %TODO:
+            [obj.mexFcn, obj.mexFlag] = fcn_autobuild_cbb_type2(...
                 obj.NumberOfChannels(ChannelGroup.LOWER));
         end
 

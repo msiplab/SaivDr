@@ -1,4 +1,4 @@
-classdef AbstOvsdLpPuFb2dTypeISystem < ...
+classdef AbstCplxOvsdLpPuFb2dTypeISystem < ...
         saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2dSystem %#codegen
     %ABSTOVSDLPPUFB2DTYPEISYSTEM Abstract class 2-D Type-I OLPPUFB
     %
@@ -33,7 +33,7 @@ classdef AbstOvsdLpPuFb2dTypeISystem < ...
     end
 
     methods
-        function obj = AbstOvsdLpPuFb2dTypeISystem(varargin)
+        function obj = AbstCplxOvsdLpPuFb2dTypeISystem(varargin)
             obj = obj@saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2dSystem(...
                 varargin{:});
             updateProperties_(obj);
@@ -62,14 +62,14 @@ classdef AbstOvsdLpPuFb2dTypeISystem < ...
         function resetImpl(obj)
             resetImpl@saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2dSystem(obj);
             % Prepare MEX function
-            import saivdr.dictionary.nsoltx.mexsrcs.fcn_autobuild_bb_type1
-            [obj.mexFcn, obj.mexFlag] = fcn_autobuild_bb_type1(floor(obj.NumberOfChannels/2));
+            import saivdr.dictionary.nsoltx.mexsrcs.fcn_autobuild_cbb_type1
+            [obj.mexFcn, obj.mexFlag] = fcn_autobuild_cbb_type1(floor(obj.NumberOfChannels/2));
         end
 
         function setupImpl(obj,varargin)
             % Prepare MEX function
-            import saivdr.dictionary.nsoltx.mexsrcs.fcn_autobuild_bb_type1
-            [obj.mexFcn, obj.mexFlag] = fcn_autobuild_bb_type1(floor(obj.NumberOfChannels/2));
+            import saivdr.dictionary.nsoltx.mexsrcs.fcn_autobuild_cbb_type1
+            [obj.mexFcn, obj.mexFlag] = fcn_autobuild_cbb_type1(floor(obj.NumberOfChannels/2));
         end
 
         function updateProperties_(obj)
@@ -253,7 +253,7 @@ classdef AbstOvsdLpPuFb2dTypeISystem < ...
                 if mexFlag_
                     E = mexFcn_(E, W, U, angsB, hChs, nShift);
                 else
-                    import saivdr.dictionary.nsoltx.mexsrcs.Order1BuildingBlockTypeI
+                    import saivdr.dictionary.nsoltx.mexsrcs.Order1CplxBuildingBlockTypeI
                     hObb = Order1BuildingBlockTypeI();
                     E = step(hObb, E, W, U, angsB, hChs, nShift);
                 end
@@ -272,7 +272,7 @@ classdef AbstOvsdLpPuFb2dTypeISystem < ...
                     if mexFlag_
                         E = mexFcn_(E, W, U, angsB, hChs, nShift);
                     else
-                        import saivdr.dictionary.nsoltx.mexsrcs.Order1BuildingBlockTypeI
+                        import saivdr.dictionary.nsoltx.mexsrcs.Order1CplxBuildingBlockTypeI
                         hObb = Order1BuildingBlockTypeI();
                         E = step(hObb, E, W, U, angsB, hChs, nShift);
                     end

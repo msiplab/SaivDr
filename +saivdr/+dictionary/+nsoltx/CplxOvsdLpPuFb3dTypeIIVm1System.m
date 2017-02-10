@@ -1,5 +1,5 @@
-classdef OvsdLpPuFb3dTypeIIVm1System < ...
-        saivdr.dictionary.nsoltx.AbstOvsdLpPuFb3dTypeIISystem %#codegen
+classdef CplxOvsdLpPuFb3dTypeIIVm1System < ...
+        saivdr.dictionary.nsoltx.AbstCplxOvsdLpPuFb3dTypeIISystem %#codegen
     %OVSDLPPUFB2DTYPEIIVM1SYSTEM 3-D Type-II Oversampled LPPUFB with one VM
     %
     % SVN identifier:
@@ -26,10 +26,10 @@ classdef OvsdLpPuFb3dTypeIIVm1System < ...
     end
       
     methods        
-        function obj = OvsdLpPuFb3dTypeIIVm1System(varargin)
+        function obj = CplxOvsdLpPuFb3dTypeIIVm1System(varargin)
             import saivdr.dictionary.utility.OrthonormalMatrixFactorizationSystem
             import saivdr.dictionary.utility.OrthonormalMatrixGenerationSystem
-            obj = obj@saivdr.dictionary.nsoltx.AbstOvsdLpPuFb3dTypeIISystem(...
+            obj = obj@saivdr.dictionary.nsoltx.AbstCplxOvsdLpPuFb3dTypeIISystem(...
                 varargin{:});
             obj.omfs_  = OrthonormalMatrixFactorizationSystem();
             obj.omgsW_ = OrthonormalMatrixGenerationSystem();
@@ -40,14 +40,14 @@ classdef OvsdLpPuFb3dTypeIIVm1System < ...
     methods (Access = protected)
             
         function s = saveObjectImpl(obj)
-            s = saveObjectImpl@saivdr.dictionary.nsoltx.AbstOvsdLpPuFb3dTypeIISystem(obj);
+            s = saveObjectImpl@saivdr.dictionary.nsoltx.AbstCplxOvsdLpPuFb3dTypeIISystem(obj);
             s.omfs_  = matlab.System.saveObject(obj.omfs_);            
             s.omgsW_ = matlab.System.saveObject(obj.omgsW_);            
             s.omgsU_ = matlab.System.saveObject(obj.omgsU_);            
         end
         
         function loadObjectImpl(obj,s,wasLocked)
-            loadObjectImpl@saivdr.dictionary.nsoltx.AbstOvsdLpPuFb3dTypeIISystem(obj,s,wasLocked);
+            loadObjectImpl@saivdr.dictionary.nsoltx.AbstCplxOvsdLpPuFb3dTypeIISystem(obj,s,wasLocked);
             obj.omfs_ = matlab.System.loadObject(s.omfs_);
             obj.omgsW_ = matlab.System.loadObject(s.omgsW_);            
             obj.omgsU_ = matlab.System.loadObject(s.omgsU_);            
