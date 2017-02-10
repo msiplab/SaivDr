@@ -269,7 +269,7 @@ classdef AbstCplxOvsdLpPuFb3dTypeIISystem < ...
                     E = obj.mexFcn(E, hW, hU, angles2, W, U, angles1, nChs(ChannelGroup.LOWER), nShift);
                 else
                     import saivdr.dictionary.nsoltx.mexsrcs.Order2CplxBuildingBlockTypeII
-                    hObb = Order2BuildingBlockTypeII();
+                    hObb = Order2CplxBuildingBlockTypeII();
                     E = step(hObb, E, hW, hU, angles2, W, U, angles1, nChs(ChannelGroup.LOWER), nShift);
                 end
                 iParamMtx = iParamMtx+2;
@@ -298,7 +298,7 @@ classdef AbstCplxOvsdLpPuFb3dTypeIISystem < ...
                     E = obj.mexFcn(E, hW, hU, angles2, W, U, angles1, nChs(ChannelGroup.LOWER), nShift);
                 else
                     import saivdr.dictionary.nsoltx.mexsrcs.Order2CplxBuildingBlockTypeII
-                    hObb = Order2BuildingBlockTypeII();
+                    hObb = Order2CplxBuildingBlockTypeII();
                     E = step(hObb, E, hW, hU, angles2, W, U, angles1, nChs(ChannelGroup.LOWER), nShift);
                 end
                 iParamMtx = iParamMtx+2;
@@ -327,7 +327,7 @@ classdef AbstCplxOvsdLpPuFb3dTypeIISystem < ...
                     E = obj.mexFcn(E, hW, hU, angles2, W, U, angles1, nChs(ChannelGroup.LOWER), nShift);
                 else
                     import saivdr.dictionary.nsoltx.mexsrcs.Order2CplxBuildingBlockTypeII
-                    hObb = Order2BuildingBlockTypeII();
+                    hObb = Order2CplxBuildingBlockTypeII();
                     E = step(hObb, E, hW, hU, angles2, W, U, angles1, nChs(ChannelGroup.LOWER), nShift);
                 end
                 iParamMtx = iParamMtx+2;

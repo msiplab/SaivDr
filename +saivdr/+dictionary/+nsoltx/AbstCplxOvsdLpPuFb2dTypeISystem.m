@@ -254,7 +254,7 @@ classdef AbstCplxOvsdLpPuFb2dTypeISystem < ...
                     E = mexFcn_(E, W, U, angsB, hChs, nShift);
                 else
                     import saivdr.dictionary.nsoltx.mexsrcs.Order1CplxBuildingBlockTypeI
-                    hObb = Order1BuildingBlockTypeI();
+                    hObb = Order1CplxBuildingBlockTypeI();
                     E = step(hObb, E, W, U, angsB, hChs, nShift);
                 end
                 iParamMtx = iParamMtx+3;
@@ -273,7 +273,7 @@ classdef AbstCplxOvsdLpPuFb2dTypeISystem < ...
                         E = mexFcn_(E, W, U, angsB, hChs, nShift);
                     else
                         import saivdr.dictionary.nsoltx.mexsrcs.Order1CplxBuildingBlockTypeI
-                        hObb = Order1BuildingBlockTypeI();
+                        hObb = Order1CplxBuildingBlockTypeI();
                         E = step(hObb, E, W, U, angsB, hChs, nShift);
                     end
                     iParamMtx = iParamMtx+3;
