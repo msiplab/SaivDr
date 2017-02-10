@@ -1,5 +1,5 @@
-classdef NsoltAtomConcatenator3d < ...
-        saivdr.dictionary.nsoltx.AbstNsoltCoefManipulator3d %#codegen
+classdef CnsoltAtomConcatenator3d < ...
+        saivdr.dictionary.nsoltx.AbstCnsoltCoefManipulator3d %#codegen
     %NSOLTSYNTHESIZER3D 3-D NSOLT Synthesizer
     %
     % SVN identifier:
@@ -22,8 +22,8 @@ classdef NsoltAtomConcatenator3d < ...
     methods
         
         % Constructor
-        function obj = NsoltAtomConcatenator3d(varargin)
-            obj = obj@saivdr.dictionary.nsoltx.AbstNsoltCoefManipulator3d(varargin{:});
+        function obj = CnsoltAtomConcatenator3d(varargin)
+            obj = obj@saivdr.dictionary.nsoltx.AbstCnsoltCoefManipulator3d(varargin{:});
         end
         
     end
@@ -32,16 +32,16 @@ classdef NsoltAtomConcatenator3d < ...
         
         function s = saveObjectImpl(obj)
             % Call the base class method
-            s = saveObjectImpl@saivdr.dictionary.nsoltx.AbstNsoltCoefManipulator3d(obj);
+            s = saveObjectImpl@saivdr.dictionary.nsoltx.AbstCnsoltCoefManipulator3d(obj);
         end
         
         function loadObjectImpl(obj,s,wasLocked)
             % Call base class method to load public properties
-            loadObjectImpl@saivdr.dictionary.nsoltx.AbstNsoltCoefManipulator3d(obj,s,wasLocked);
+            loadObjectImpl@saivdr.dictionary.nsoltx.AbstCnsoltCoefManipulator3d(obj,s,wasLocked);
         end
 
         function arrayCoefs = stepImpl(obj,arrayCoefs,subScale,pmCoefs)
-            stepImpl@saivdr.dictionary.nsoltx.AbstNsoltCoefManipulator3d(obj,arrayCoefs,subScale,pmCoefs);
+            stepImpl@saivdr.dictionary.nsoltx.AbstCnsoltCoefManipulator3d(obj,arrayCoefs,subScale,pmCoefs);
             %
             if strcmp(obj.NsoltType,'Type I')
                 arrayCoefs = fullAtomCncTypeI_(obj,arrayCoefs);

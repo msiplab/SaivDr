@@ -71,7 +71,7 @@ classdef AbstCplxOvsdLpPuFb2dTypeIISystem < ...
         function setupImpl(obj,varargin)
             % Prepare MEX function
             import saivdr.dictionary.nsoltx.ChannelGroup
-            import saivdr.dictionary.nsoltx.mexsrcs.fcn_autobuild_bcb_type2
+            import saivdr.dictionary.nsoltx.mexsrcs.fcn_autobuild_cbb_type2
             [obj.mexFcn, obj.mexFlag] = fcn_autobuild_cbb_type2(...
                 floor(obj.NumberOfChannels/2));
         end

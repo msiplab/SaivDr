@@ -1,5 +1,5 @@
-classdef NsoltAtomExtender2d <  ...
-        saivdr.dictionary.nsoltx.AbstNsoltCoefManipulator2d %#codegen
+classdef CnsoltAtomExtender2d <  ...
+        saivdr.dictionary.nsoltx.AbstCnsoltCoefManipulator2d %#codegen
     %NSOLTATOMEXTENDER2D 2-D Atom Extender for NSOLT
     %
     % SVN identifier:
@@ -22,8 +22,8 @@ classdef NsoltAtomExtender2d <  ...
     methods
         
         % Constructor
-        function obj = NsoltAtomExtender2d(varargin)
-            obj = obj@saivdr.dictionary.nsoltx.AbstNsoltCoefManipulator2d(varargin{:});
+        function obj = CnsoltAtomExtender2d(varargin)
+            obj = obj@saivdr.dictionary.nsoltx.AbstCnsoltCoefManipulator2d(varargin{:});
         end
         
     end
@@ -32,16 +32,16 @@ classdef NsoltAtomExtender2d <  ...
         
         function s = saveObjectImpl(obj)
             % Call the base class method
-            s = saveObjectImpl@saivdr.dictionary.nsoltx.AbstNsoltCoefManipulator2d(obj);
+            s = saveObjectImpl@saivdr.dictionary.nsoltx.AbstCnsoltCoefManipulator2d(obj);
         end
         
         function loadObjectImpl(obj,s,wasLocked)
             % Call base class method to load public properties
-            loadObjectImpl@saivdr.dictionary.nsoltx.AbstNsoltCoefManipulator2d(obj,s,wasLocked);
+            loadObjectImpl@saivdr.dictionary.nsoltx.AbstCnsoltCoefManipulator2d(obj,s,wasLocked);
         end
         
         function arrayCoefs = stepImpl(obj, arrayCoefs, subScale, pmCoefs)
-            stepImpl@saivdr.dictionary.nsoltx.AbstNsoltCoefManipulator2d(obj,arrayCoefs,subScale,pmCoefs);        
+            stepImpl@saivdr.dictionary.nsoltx.AbstCnsoltCoefManipulator2d(obj,arrayCoefs,subScale,pmCoefs);        
             %
             arrayCoefs = initialStep_(obj,arrayCoefs);
             %

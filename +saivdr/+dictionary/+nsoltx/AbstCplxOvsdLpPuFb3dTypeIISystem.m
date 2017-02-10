@@ -68,21 +68,16 @@ classdef AbstCplxOvsdLpPuFb3dTypeIISystem < ...
         function setupImpl(obj,varargin)
             % Prepare MEX function
             import saivdr.dictionary.nsoltx.ChannelGroup
-            import saivdr.dictionary.nsoltx.mexsrcs.fcn_autobuild_bb_type2
-            %TODO: 綣信罩            [obj.mexFcn, obj.mexFlag] = fcn_autobuild_bb_type2(...
+            import saivdr.dictionary.nsoltx.mexsrcs.fcn_autobuild_cbb_type2
+            %TODO:            
+            [obj.mexFcn, obj.mexFlag] = fcn_autobuild_cbb_type2(...
                 obj.NumberOfChannels(ChannelGroup.LOWER));
         end
 
         function updateProperties_(obj)
             import saivdr.dictionary.nsoltx.ChannelGroup
             import saivdr.dictionary.utility.Direction
-<<<<<<< HEAD
-            import saivdr.dictionary.utility.ParameterMatrixSet
-
-=======
             import saivdr.dictionary.utility.ParameterMatrixContainer
-            
->>>>>>> murasho/master
             % Check DecimationFactor
             if length(obj.DecimationFactor) > 3
                 error('Dimension of DecimationFactor must be less than or equal to three.');

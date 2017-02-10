@@ -168,13 +168,8 @@ classdef AbstOvsdLpPuFb3dSystem < matlab.System %#codegen
         end
 
         function loadObjectImpl(obj,s,wasLocked)
-<<<<<<< HEAD
-            import saivdr.dictionary.utility.ParameterMatrixSet
-            obj.mexFlag = s.mexFlag;
-=======
             import saivdr.dictionary.utility.ParameterMatrixContainer
-            obj.mexFlag = s.mexFlag;                        
->>>>>>> murasho/master
+            obj.mexFlag = s.mexFlag;   
             obj.Coefficients = s.Coefficients;
             loadObjectImpl@matlab.System(obj,s,wasLocked);
             %
