@@ -41,7 +41,7 @@ classdef CnsoltAtomExtender2dTestCase < matlab.unittest.TestCase
             typExpctd = 'Type I';
             
             % Instantiation
-            import saivdr.dictionary.nsoltx.CnsoltAtomExtender2d
+            import saivdr.dictionary.cnsoltx.CnsoltAtomExtender2d
             testCase.module = CnsoltAtomExtender2d();
             
             % Actual values
@@ -69,7 +69,7 @@ classdef CnsoltAtomExtender2dTestCase < matlab.unittest.TestCase
             typExpctd = 'Type II';
             
             % Instantiation
-            import saivdr.dictionary.nsoltx.CnsoltAtomExtender2d
+            import saivdr.dictionary.cnsoltx.CnsoltAtomExtender2d
             testCase.module = CnsoltAtomExtender2d(...
                 'NumberOfSymmetricChannels',nchExpctd(1),...
                 'NumberOfAntisymmetricChannels',nchExpctd(2));
@@ -108,7 +108,7 @@ classdef CnsoltAtomExtender2dTestCase < matlab.unittest.TestCase
             cfsExpctd = coefs;
                         
             % Instantiation
-            import saivdr.dictionary.nsoltx.CnsoltAtomExtender2d
+            import saivdr.dictionary.cnsoltx.CnsoltAtomExtender2d
             testCase.module = CnsoltAtomExtender2d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -143,7 +143,7 @@ classdef CnsoltAtomExtender2dTestCase < matlab.unittest.TestCase
             cfsExpctd = coefs;
                         
             % Instantiation
-            import saivdr.dictionary.nsoltx.CnsoltAtomExtender2d
+            import saivdr.dictionary.cnsoltx.CnsoltAtomExtender2d
             testCase.module = CnsoltAtomExtender2d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -184,7 +184,7 @@ classdef CnsoltAtomExtender2dTestCase < matlab.unittest.TestCase
             cfsExpctd = coefs;
                         
             % Instantiation
-            import saivdr.dictionary.nsoltx.CnsoltAtomExtender2d
+            import saivdr.dictionary.cnsoltx.CnsoltAtomExtender2d
             testCase.module = CnsoltAtomExtender2d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -226,7 +226,7 @@ classdef CnsoltAtomExtender2dTestCase < matlab.unittest.TestCase
             cfsExpctd = U0*cfsExpctd;
                         
             % Instantiation
-            import saivdr.dictionary.nsoltx.CnsoltAtomExtender2d
+            import saivdr.dictionary.cnsoltx.CnsoltAtomExtender2d
             testCase.module = CnsoltAtomExtender2d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -265,7 +265,7 @@ classdef CnsoltAtomExtender2dTestCase < matlab.unittest.TestCase
             cfsExpctd = coefs;
                         
             % Instantiation
-            import saivdr.dictionary.nsoltx.CnsoltAtomExtender2d
+            import saivdr.dictionary.cnsoltx.CnsoltAtomExtender2d
             testCase.module = CnsoltAtomExtender2d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -306,7 +306,7 @@ classdef CnsoltAtomExtender2dTestCase < matlab.unittest.TestCase
             cfsExpctd = coefs;
                         
             % Instantiation
-            import saivdr.dictionary.nsoltx.CnsoltAtomExtender2d
+            import saivdr.dictionary.cnsoltx.CnsoltAtomExtender2d
             testCase.module = CnsoltAtomExtender2d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -351,7 +351,7 @@ classdef CnsoltAtomExtender2dTestCase < matlab.unittest.TestCase
             cfsExpctd = coefs;
                         
             % Instantiation
-            import saivdr.dictionary.nsoltx.CnsoltAtomExtender2d
+            import saivdr.dictionary.cnsoltx.CnsoltAtomExtender2d
             testCase.module = CnsoltAtomExtender2d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -394,7 +394,7 @@ classdef CnsoltAtomExtender2dTestCase < matlab.unittest.TestCase
             cfsExpctd = coefs;
                         
             % Instantiation
-            import saivdr.dictionary.nsoltx.CnsoltAtomExtender2d
+            import saivdr.dictionary.cnsoltx.CnsoltAtomExtender2d
             testCase.module = CnsoltAtomExtender2d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -437,7 +437,7 @@ classdef CnsoltAtomExtender2dTestCase < matlab.unittest.TestCase
             cfsExpctd = coefs;
                         
             % Instantiation
-            import saivdr.dictionary.nsoltx.CnsoltAtomExtender2d
+            import saivdr.dictionary.cnsoltx.CnsoltAtomExtender2d
             testCase.module = CnsoltAtomExtender2d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -478,7 +478,7 @@ classdef CnsoltAtomExtender2dTestCase < matlab.unittest.TestCase
             cfsExpctd = coefs;
                         
             % Instantiation
-            import saivdr.dictionary.nsoltx.CnsoltAtomExtender2d
+            import saivdr.dictionary.cnsoltx.CnsoltAtomExtender2d
             testCase.module = CnsoltAtomExtender2d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -520,7 +520,7 @@ classdef CnsoltAtomExtender2dTestCase < matlab.unittest.TestCase
             cfsExpctd = coefs;
                         
             % Instantiation
-            import saivdr.dictionary.nsoltx.CnsoltAtomExtender2d
+            import saivdr.dictionary.cnsoltx.CnsoltAtomExtender2d
             testCase.module = CnsoltAtomExtender2d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -565,7 +565,7 @@ classdef CnsoltAtomExtender2dTestCase < matlab.unittest.TestCase
             cfsExpctd = V0*cfsExpctd;
                         
             % Instantiation
-            import saivdr.dictionary.nsoltx.CnsoltAtomExtender2d
+            import saivdr.dictionary.cnsoltx.CnsoltAtomExtender2d
             testCase.module = CnsoltAtomExtender2d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -606,7 +606,7 @@ classdef CnsoltAtomExtender2dTestCase < matlab.unittest.TestCase
             cfsExpctd = coefs;
                         
             % Instantiation
-            import saivdr.dictionary.nsoltx.CnsoltAtomExtender2d
+            import saivdr.dictionary.cnsoltx.CnsoltAtomExtender2d
             testCase.module = CnsoltAtomExtender2d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -647,7 +647,7 @@ classdef CnsoltAtomExtender2dTestCase < matlab.unittest.TestCase
             cfsExpctd = coefs;
                         
             % Instantiation
-            import saivdr.dictionary.nsoltx.CnsoltAtomExtender2d
+            import saivdr.dictionary.cnsoltx.CnsoltAtomExtender2d
             testCase.module = CnsoltAtomExtender2d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -694,7 +694,7 @@ classdef CnsoltAtomExtender2dTestCase < matlab.unittest.TestCase
             cfsExpctd = coefs;
                         
             % Instantiation
-            import saivdr.dictionary.nsoltx.CnsoltAtomExtender2d
+            import saivdr.dictionary.cnsoltx.CnsoltAtomExtender2d
             testCase.module = CnsoltAtomExtender2d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -739,7 +739,7 @@ classdef CnsoltAtomExtender2dTestCase < matlab.unittest.TestCase
             cfsExpctd = coefs;
                         
             % Instantiation
-            import saivdr.dictionary.nsoltx.CnsoltAtomExtender2d
+            import saivdr.dictionary.cnsoltx.CnsoltAtomExtender2d
             testCase.module = CnsoltAtomExtender2d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -784,7 +784,7 @@ classdef CnsoltAtomExtender2dTestCase < matlab.unittest.TestCase
             cfsExpctd = coefs;
                         
             % Instantiation
-            import saivdr.dictionary.nsoltx.CnsoltAtomExtender2d
+            import saivdr.dictionary.cnsoltx.CnsoltAtomExtender2d
             testCase.module = CnsoltAtomExtender2d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -827,7 +827,7 @@ classdef CnsoltAtomExtender2dTestCase < matlab.unittest.TestCase
             cfsExpctd = coefs;
                         
             % Instantiation
-            import saivdr.dictionary.nsoltx.CnsoltAtomExtender2d
+            import saivdr.dictionary.cnsoltx.CnsoltAtomExtender2d
             testCase.module = CnsoltAtomExtender2d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -863,7 +863,7 @@ classdef CnsoltAtomExtender2dTestCase < matlab.unittest.TestCase
 %             cfsExpctd = coefs;
 %                         
 %             % Instantiation
-%             import saivdr.dictionary.nsoltx.CnsoltAtomExtender2d
+%             import saivdr.dictionary.cnsoltx.CnsoltAtomExtender2d
 %             testCase.module = CnsoltAtomExtender2d(...
 %                 'NumberOfSymmetricChannels',nch(1),...
 %                 'NumberOfAntisymmetricChannels',nch(2));
@@ -901,7 +901,7 @@ classdef CnsoltAtomExtender2dTestCase < matlab.unittest.TestCase
 %             cfsExpctd(1:nch(1),:) = W0*cfsExpctd(1:nch(1),:);
 %                         
 %             % Instantiation
-%             import saivdr.dictionary.nsoltx.CnsoltAtomExtender2d
+%             import saivdr.dictionary.cnsoltx.CnsoltAtomExtender2d
 %             testCase.module = CnsoltAtomExtender2d(...
 %                 'NumberOfSymmetricChannels',nch(1),...
 %                 'NumberOfAntisymmetricChannels',nch(2));
@@ -941,7 +941,7 @@ classdef CnsoltAtomExtender2dTestCase < matlab.unittest.TestCase
 %             cfsExpctd = coefs;
 %                         
 %             % Instantiation
-%             import saivdr.dictionary.nsoltx.CnsoltAtomExtender2d
+%             import saivdr.dictionary.cnsoltx.CnsoltAtomExtender2d
 %             testCase.module = CnsoltAtomExtender2d(...
 %                 'NumberOfSymmetricChannels',nch(1),...
 %                 'NumberOfAntisymmetricChannels',nch(2));
@@ -981,7 +981,7 @@ classdef CnsoltAtomExtender2dTestCase < matlab.unittest.TestCase
 %             cfsExpctd = coefs;
 %                         
 %             % Instantiation
-%             import saivdr.dictionary.nsoltx.CnsoltAtomExtender2d
+%             import saivdr.dictionary.cnsoltx.CnsoltAtomExtender2d
 %             testCase.module = CnsoltAtomExtender2d(...
 %                 'NumberOfSymmetricChannels',nch(1),...
 %                 'NumberOfAntisymmetricChannels',nch(2));
@@ -1027,7 +1027,7 @@ classdef CnsoltAtomExtender2dTestCase < matlab.unittest.TestCase
 %             cfsExpctd = coefs;
 %                         
 %             % Instantiation
-%             import saivdr.dictionary.nsoltx.CnsoltAtomExtender2d
+%             import saivdr.dictionary.cnsoltx.CnsoltAtomExtender2d
 %             testCase.module = CnsoltAtomExtender2d(...
 %                 'NumberOfSymmetricChannels',nch(1),...
 %                 'NumberOfAntisymmetricChannels',nch(2));
@@ -1071,7 +1071,7 @@ classdef CnsoltAtomExtender2dTestCase < matlab.unittest.TestCase
 %             cfsExpctd = coefs;
 %                         
 %             % Instantiation
-%             import saivdr.dictionary.nsoltx.CnsoltAtomExtender2d
+%             import saivdr.dictionary.cnsoltx.CnsoltAtomExtender2d
 %             testCase.module = CnsoltAtomExtender2d(...
 %                 'NumberOfSymmetricChannels',nch(1),...
 %                 'NumberOfAntisymmetricChannels',nch(2));
@@ -1115,7 +1115,7 @@ classdef CnsoltAtomExtender2dTestCase < matlab.unittest.TestCase
 %             cfsExpctd = coefs;
 %                         
 %             % Instantiation
-%             import saivdr.dictionary.nsoltx.CnsoltAtomExtender2d
+%             import saivdr.dictionary.cnsoltx.CnsoltAtomExtender2d
 %             testCase.module = CnsoltAtomExtender2d(...
 %                 'NumberOfSymmetricChannels',nch(1),...
 %                 'NumberOfAntisymmetricChannels',nch(2));
@@ -1157,7 +1157,7 @@ classdef CnsoltAtomExtender2dTestCase < matlab.unittest.TestCase
 %             cfsExpctd = coefs;
 %                         
 %             % Instantiation
-%             import saivdr.dictionary.nsoltx.CnsoltAtomExtender2d
+%             import saivdr.dictionary.cnsoltx.CnsoltAtomExtender2d
 %             testCase.module = CnsoltAtomExtender2d(...
 %                 'NumberOfSymmetricChannels',nch(1),...
 %                 'NumberOfAntisymmetricChannels',nch(2));

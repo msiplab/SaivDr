@@ -1,5 +1,5 @@
 classdef CplxOvsdLpPuFb2dTypeIIVm1System < ...
-        saivdr.dictionary.nsoltx.AbstCplxOvsdLpPuFb2dTypeIISystem %#codegen
+        saivdr.dictionary.cnsoltx.AbstCplxOvsdLpPuFb2dTypeIISystem %#codegen
     %OVSDLPPUFB2DTYPEIIVM1SYSTEM 2-D Type-II Oversampled LPPUFB with one VM
     %
     % SVN identifier:
@@ -30,7 +30,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1System < ...
         function obj = CplxOvsdLpPuFb2dTypeIIVm1System(varargin)
             import saivdr.dictionary.utility.OrthonormalMatrixFactorizationSystem
             import saivdr.dictionary.utility.OrthonormalMatrixGenerationSystem
-            obj = obj@saivdr.dictionary.nsoltx.AbstCplxOvsdLpPuFb2dTypeIISystem(...
+            obj = obj@saivdr.dictionary.cnsoltx.AbstCplxOvsdLpPuFb2dTypeIISystem(...
                 varargin{:});
             obj.omfs_  = OrthonormalMatrixFactorizationSystem('OrderOfProduction','Ascending');
             obj.omgsV_ = OrthonormalMatrixGenerationSystem('OrderOfProduction','Ascending');
@@ -42,7 +42,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1System < ...
     methods (Access = protected)
             
         function s = saveObjectImpl(obj)
-            s = saveObjectImpl@saivdr.dictionary.nsoltx.AbstCplxOvsdLpPuFb2dTypeIISystem(obj);
+            s = saveObjectImpl@saivdr.dictionary.cnsoltx.AbstCplxOvsdLpPuFb2dTypeIISystem(obj);
             s.omfs_  = matlab.System.saveObject(obj.omfs_);
             s.omgsV_ = matlab.System.saveObject(obj.omgsV_);
             s.omgsWU_ = matlab.System.saveObject(obj.omgsWU_);            
@@ -50,7 +50,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1System < ...
         end
         
         function loadObjectImpl(obj,s,wasLocked)
-            loadObjectImpl@saivdr.dictionary.nsoltx.AbstCplxOvsdLpPuFb2dTypeIISystem(obj,s,wasLocked);
+            loadObjectImpl@saivdr.dictionary.cnsoltx.AbstCplxOvsdLpPuFb2dTypeIISystem(obj,s,wasLocked);
             obj.omfs_ = matlab.System.loadObject(s.omfs_);
             obj.omgsV_ = matlab.System.loadObject(s.omgsV_);
             obj.omgsWU_ = matlab.System.loadObject(s.omgsWU_);            
@@ -58,7 +58,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1System < ...
         end        
         
         function updateParameterMatrixSet_(obj)
-            import saivdr.dictionary.nsoltx.ChannelGroup
+            import saivdr.dictionary.cnsoltx.ChannelGroup
             nCh = obj.NumberOfChannels;
             
             [initAngles, propAngles] = splitAngles_(obj);

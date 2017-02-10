@@ -32,10 +32,10 @@ classdef OLpPrFbFactoryTestCase < matlab.unittest.TestCase
             % Parameters
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.olpprfb.OvsdLpPuFb1dTypeIVm1System';
+            classExpctd = 'saivdr.dictionary.colpprfb.OvsdLpPuFb1dTypeIVm1System';
             
             % Instantiation of target class
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.colpprfb.*
             testCase.obj = OLpPrFbFactory.createOvsdLpPuFb1dSystem();
             
             % Actual values
@@ -52,10 +52,10 @@ classdef OLpPrFbFactoryTestCase < matlab.unittest.TestCase
             dec = 5;
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.olpprfb.OvsdLpPuFb1dTypeIIVm1System';
+            classExpctd = 'saivdr.dictionary.colpprfb.OvsdLpPuFb1dTypeIIVm1System';
             
             % Instantiation of target class
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.colpprfb.*
             testCase.obj = OLpPrFbFactory.createOvsdLpPuFb1dSystem(...
                 'DecimationFactor',dec);
             
@@ -73,10 +73,10 @@ classdef OLpPrFbFactoryTestCase < matlab.unittest.TestCase
             dec = 4;
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.olpprfb.OvsdLpPuFb1dTypeIVm1System';
+            classExpctd = 'saivdr.dictionary.colpprfb.OvsdLpPuFb1dTypeIVm1System';
             
             % Instantiation of target class
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.colpprfb.*
             testCase.obj = OLpPrFbFactory.createOvsdLpPuFb1dSystem(...
                 'DecimationFactor',dec);
             
@@ -94,10 +94,10 @@ classdef OLpPrFbFactoryTestCase < matlab.unittest.TestCase
             decch = [1 4];
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.olpprfb.OvsdLpPuFb1dTypeIVm1System';
+            classExpctd = 'saivdr.dictionary.colpprfb.OvsdLpPuFb1dTypeIVm1System';
             
             % Instantiation of target class
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.colpprfb.*
             testCase.obj = OLpPrFbFactory.createOvsdLpPuFb1dSystem(...
                 'DecimationFactor',decch(1),...
                 'NumberOfChannels',decch(2:end));
@@ -116,10 +116,10 @@ classdef OLpPrFbFactoryTestCase < matlab.unittest.TestCase
             decch = [1 5];
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.olpprfb.OvsdLpPuFb1dTypeIIVm1System';
+            classExpctd = 'saivdr.dictionary.colpprfb.OvsdLpPuFb1dTypeIIVm1System';
             
             % Instantiation of target class
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.colpprfb.*
             testCase.obj = OLpPrFbFactory.createOvsdLpPuFb1dSystem(...
                 'DecimationFactor',decch(1),...
                 'NumberOfChannels',decch(2:end));
@@ -138,10 +138,10 @@ classdef OLpPrFbFactoryTestCase < matlab.unittest.TestCase
             decch = [4 4];
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.olpprfb.OvsdLpPuFb1dTypeIVm1System';
+            classExpctd = 'saivdr.dictionary.colpprfb.OvsdLpPuFb1dTypeIVm1System';
             
             % Instantiation of target class
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.colpprfb.*
             testCase.obj = OLpPrFbFactory.createOvsdLpPuFb1dSystem(...
                 'DecimationFactor',decch(1),...
                 'NumberOfChannels',decch(2:end));
@@ -160,10 +160,10 @@ classdef OLpPrFbFactoryTestCase < matlab.unittest.TestCase
             decch = [4 5];
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.olpprfb.OvsdLpPuFb1dTypeIIVm1System';
+            classExpctd = 'saivdr.dictionary.colpprfb.OvsdLpPuFb1dTypeIIVm1System';
             
             % Instantiation of target class
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.colpprfb.*
             testCase.obj = OLpPrFbFactory.createOvsdLpPuFb1dSystem(...
                 'DecimationFactor',decch(1),...
                 'NumberOfChannels',decch(2:end));
@@ -180,7 +180,7 @@ classdef OLpPrFbFactoryTestCase < matlab.unittest.TestCase
         function testCreateOvsdLpPuFb1dDeepCopy(testCase)
             
             % Instantiation of target class
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.colpprfb.*
             testCase.obj = OLpPrFbFactory.createOvsdLpPuFb1dSystem();
             cloneObj = OLpPrFbFactory.createOvsdLpPuFb1dSystem(testCase.obj);
             
@@ -217,7 +217,7 @@ classdef OLpPrFbFactoryTestCase < matlab.unittest.TestCase
             decch = [5 5];
             
             % Instantiation of target class
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.colpprfb.*
             testCase.obj = OLpPrFbFactory.createOvsdLpPuFb1dSystem(...
                 'DecimationFactor',decch(1),...
                 'NumberOfChannels',decch(2:end));
@@ -257,10 +257,10 @@ classdef OLpPrFbFactoryTestCase < matlab.unittest.TestCase
             vm = 0;
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.olpprfb.OvsdLpPuFb1dTypeIVm0System';
+            classExpctd = 'saivdr.dictionary.colpprfb.OvsdLpPuFb1dTypeIVm0System';
             
             % Instantiation of target class
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.colpprfb.*
             testCase.obj = OLpPrFbFactory.createOvsdLpPuFb1dSystem(...
                 'DecimationFactor',decch(1),...
                 'NumberOfChannels',decch(2:end),...
@@ -282,10 +282,10 @@ classdef OLpPrFbFactoryTestCase < matlab.unittest.TestCase
             vm = 0;
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.olpprfb.OvsdLpPuFb1dTypeIIVm0System';
+            classExpctd = 'saivdr.dictionary.colpprfb.OvsdLpPuFb1dTypeIIVm0System';
             
             % Instantiation of target class
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.colpprfb.*
             testCase.obj = OLpPrFbFactory.createOvsdLpPuFb1dSystem(...
                 'DecimationFactor',decch(1),...
                 'NumberOfChannels',decch(2:end),...
@@ -305,7 +305,7 @@ classdef OLpPrFbFactoryTestCase < matlab.unittest.TestCase
             vm = 0;
             
             % Instantiation of target class
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.colpprfb.*
             testCase.obj = OLpPrFbFactory.createOvsdLpPuFb1dSystem(...
                 'DecimationFactor',4,...
                 'NumberOfVanishingMoments',vm);
@@ -313,7 +313,7 @@ classdef OLpPrFbFactoryTestCase < matlab.unittest.TestCase
             
             % Expected values
             coefExpctd = step(testCase.obj,[],[]);
-            classExpctd = 'saivdr.dictionary.olpprfb.OvsdLpPuFb1dTypeIVm0System';
+            classExpctd = 'saivdr.dictionary.colpprfb.OvsdLpPuFb1dTypeIVm0System';
             
             % Actual values
             coefActual = step(cloneObj,[],[]);
@@ -351,7 +351,7 @@ classdef OLpPrFbFactoryTestCase < matlab.unittest.TestCase
             vm = 0;
             
             % Instantiation of target class
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.colpprfb.*
             testCase.obj = OLpPrFbFactory.createOvsdLpPuFb1dSystem(...
                 'DecimationFactor',4,...
                 'NumberOfChannels',5,...
@@ -360,7 +360,7 @@ classdef OLpPrFbFactoryTestCase < matlab.unittest.TestCase
             
             % Expected values
             coefExpctd = step(testCase.obj,[],[]);
-            classExpctd = 'saivdr.dictionary.olpprfb.OvsdLpPuFb1dTypeIIVm0System';
+            classExpctd = 'saivdr.dictionary.colpprfb.OvsdLpPuFb1dTypeIIVm0System';
             
             % Actual values
             coefActual = step(cloneObj,[],[]);
@@ -400,10 +400,10 @@ classdef OLpPrFbFactoryTestCase < matlab.unittest.TestCase
             vm = 1;
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.olpprfb.OvsdLpPuFb1dTypeIVm1System';
+            classExpctd = 'saivdr.dictionary.colpprfb.OvsdLpPuFb1dTypeIVm1System';
             
             % Instantiation of target class
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.colpprfb.*
             testCase.obj = OLpPrFbFactory.createOvsdLpPuFb1dSystem(...
                 'DecimationFactor',decch(1),...
                 'NumberOfChannels',decch(2:end),...
@@ -425,10 +425,10 @@ classdef OLpPrFbFactoryTestCase < matlab.unittest.TestCase
             vm = 1;
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.olpprfb.OvsdLpPuFb1dTypeIIVm1System';
+            classExpctd = 'saivdr.dictionary.colpprfb.OvsdLpPuFb1dTypeIIVm1System';
             
             % Instantiation of target class
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.colpprfb.*
             testCase.obj = OLpPrFbFactory.createOvsdLpPuFb1dSystem(...
                 'DecimationFactor',decch(1),...
                 'NumberOfChannels',decch(2:end),...
@@ -448,7 +448,7 @@ classdef OLpPrFbFactoryTestCase < matlab.unittest.TestCase
             vm = 1;
             
             % Instantiation of target class
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.colpprfb.*
             testCase.obj = OLpPrFbFactory.createOvsdLpPuFb1dSystem(...
                 'DecimationFactor',4,...
                 'NumberOfVanishingMoments',vm);
@@ -456,7 +456,7 @@ classdef OLpPrFbFactoryTestCase < matlab.unittest.TestCase
             
             % Expected values
             coefExpctd = step(testCase.obj,[],[]);
-            classExpctd = 'saivdr.dictionary.olpprfb.OvsdLpPuFb1dTypeIVm1System';
+            classExpctd = 'saivdr.dictionary.colpprfb.OvsdLpPuFb1dTypeIVm1System';
             
             % Actual values
             coefActual = step(cloneObj,[],[]);
@@ -494,7 +494,7 @@ classdef OLpPrFbFactoryTestCase < matlab.unittest.TestCase
             vm = 1;
             
             % Instantiation of target class
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.colpprfb.*
             testCase.obj = OLpPrFbFactory.createOvsdLpPuFb1dSystem(...
                 'DecimationFactor',4,...
                 'NumberOfChannels',5,...
@@ -503,7 +503,7 @@ classdef OLpPrFbFactoryTestCase < matlab.unittest.TestCase
             
             % Expected values
             coefExpctd = step(testCase.obj,[],[]);
-            classExpctd = 'saivdr.dictionary.olpprfb.OvsdLpPuFb1dTypeIIVm1System';
+            classExpctd = 'saivdr.dictionary.colpprfb.OvsdLpPuFb1dTypeIIVm1System';
             
             % Actual values
             coefActual = step(cloneObj,[],[]);
@@ -542,10 +542,10 @@ classdef OLpPrFbFactoryTestCase < matlab.unittest.TestCase
             % Parameters
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.olpprfb.NsoltAnalysis1dSystem';
+            classExpctd = 'saivdr.dictionary.colpprfb.NsoltAnalysis1dSystem';
             
             % Instantiation of target class
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.colpprfb.*
             testCase.obj = OLpPrFbFactory.createAnalysis1dSystem();
             
             % Actual values
@@ -562,10 +562,10 @@ classdef OLpPrFbFactoryTestCase < matlab.unittest.TestCase
             decch = [3 3];
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.olpprfb.NsoltAnalysis1dSystem';
+            classExpctd = 'saivdr.dictionary.colpprfb.NsoltAnalysis1dSystem';
             
             % Instantiation of target class
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.colpprfb.*
             lppufb = OLpPrFbFactory.createOvsdLpPuFb1dSystem(...
                 'DecimationFactor',decch(1),...
                 'NumberOfChannels',decch(2:end));
@@ -585,10 +585,10 @@ classdef OLpPrFbFactoryTestCase < matlab.unittest.TestCase
             decch = [2 2];
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.olpprfb.NsoltAnalysis1dSystem';
+            classExpctd = 'saivdr.dictionary.colpprfb.NsoltAnalysis1dSystem';
             
             % Instantiation of target class
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.colpprfb.*
             lppufb = OLpPrFbFactory.createOvsdLpPuFb1dSystem(...
                 'DecimationFactor',decch(1),...
                 'NumberOfChannels',decch(2:end));
@@ -608,10 +608,10 @@ classdef OLpPrFbFactoryTestCase < matlab.unittest.TestCase
             decch = [1 1 4];
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.olpprfb.NsoltAnalysis1dSystem';
+            classExpctd = 'saivdr.dictionary.colpprfb.NsoltAnalysis1dSystem';
             
             % Instantiation of target class
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.colpprfb.*
             lppufb = OLpPrFbFactory.createOvsdLpPuFb1dSystem(...
                 'DecimationFactor',decch(1),...
                 'NumberOfChannels',decch(2:end));
@@ -631,10 +631,10 @@ classdef OLpPrFbFactoryTestCase < matlab.unittest.TestCase
             decch = [1 1 5];
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.olpprfb.NsoltAnalysis1dSystem';
+            classExpctd = 'saivdr.dictionary.colpprfb.NsoltAnalysis1dSystem';
             
             % Instantiation of target class
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.colpprfb.*
             lppufb = OLpPrFbFactory.createOvsdLpPuFb1dSystem(...
                 'DecimationFactor',decch(1),...
                 'NumberOfChannels',decch(2:end));
@@ -655,10 +655,10 @@ classdef OLpPrFbFactoryTestCase < matlab.unittest.TestCase
             decch = [2 2 4];
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.olpprfb.NsoltAnalysis1dSystem';
+            classExpctd = 'saivdr.dictionary.colpprfb.NsoltAnalysis1dSystem';
             
             % Instantiation of target class
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.colpprfb.*
             lppufb = OLpPrFbFactory.createOvsdLpPuFb1dSystem(...
                 'DecimationFactor',decch(1),...
                 'NumberOfChannels',decch(2:end));
@@ -679,10 +679,10 @@ classdef OLpPrFbFactoryTestCase < matlab.unittest.TestCase
             decch = [2 2 5];
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.olpprfb.NsoltAnalysis1dSystem';
+            classExpctd = 'saivdr.dictionary.colpprfb.NsoltAnalysis1dSystem';
             
             % Instantiation of target class
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.colpprfb.*
             lppufb = OLpPrFbFactory.createOvsdLpPuFb1dSystem(...
                 'DecimationFactor',decch(1),...
                 'NumberOfChannels',decch(2:end));
@@ -701,14 +701,14 @@ classdef OLpPrFbFactoryTestCase < matlab.unittest.TestCase
         function testCreateAnalysis1dSystemLpPuFb1d(testCase)
             
             %
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.colpprfb.*
             lppufb = OLpPrFbFactory.createOvsdLpPuFb1dSystem();
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.olpprfb.NsoltAnalysis1dSystem';
+            classExpctd = 'saivdr.dictionary.colpprfb.NsoltAnalysis1dSystem';
             
             % Instantiation of target class
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.colpprfb.*
             testCase.obj = OLpPrFbFactory.createAnalysis1dSystem(lppufb);
             
             % Actual values
@@ -724,16 +724,16 @@ classdef OLpPrFbFactoryTestCase < matlab.unittest.TestCase
             
             %
             decch = [ 3 3 ];
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.colpprfb.*
             lppufb = OLpPrFbFactory.createOvsdLpPuFb1dSystem(...
                 'DecimationFactor',decch(1),...
                 'NumberOfChannels',decch(2:end));
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.olpprfb.NsoltAnalysis1dSystem';
+            classExpctd = 'saivdr.dictionary.colpprfb.NsoltAnalysis1dSystem';
             
             % Instantiation of target class
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.colpprfb.*
             testCase.obj = OLpPrFbFactory.createAnalysis1dSystem(lppufb);
             
             % Actual values
@@ -750,10 +750,10 @@ classdef OLpPrFbFactoryTestCase < matlab.unittest.TestCase
             % Parameters
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.olpprfb.NsoltSynthesis1dSystem';
+            classExpctd = 'saivdr.dictionary.colpprfb.NsoltSynthesis1dSystem';
             
             % Instantiation of target class
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.colpprfb.*
             testCase.obj = OLpPrFbFactory.createSynthesis1dSystem();
             
             % Actual values
@@ -770,10 +770,10 @@ classdef OLpPrFbFactoryTestCase < matlab.unittest.TestCase
             decch = [3 3];
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.olpprfb.NsoltSynthesis1dSystem';
+            classExpctd = 'saivdr.dictionary.colpprfb.NsoltSynthesis1dSystem';
             
             % Instantiation of target class
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.colpprfb.*
             lppufb = OLpPrFbFactory.createOvsdLpPuFb1dSystem(...
                 'DecimationFactor',decch(1),...
                 'NumberOfChannels',decch(2:end));
@@ -794,10 +794,10 @@ classdef OLpPrFbFactoryTestCase < matlab.unittest.TestCase
             decch = [2 2];
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.olpprfb.NsoltSynthesis1dSystem';
+            classExpctd = 'saivdr.dictionary.colpprfb.NsoltSynthesis1dSystem';
             
             % Instantiation of target class
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.colpprfb.*
             lppufb = OLpPrFbFactory.createOvsdLpPuFb1dSystem(...
                 'DecimationFactor',decch(1),...
                 'NumberOfChannels',decch(2:end));
@@ -817,10 +817,10 @@ classdef OLpPrFbFactoryTestCase < matlab.unittest.TestCase
             decch = [1 1 4];
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.olpprfb.NsoltSynthesis1dSystem';
+            classExpctd = 'saivdr.dictionary.colpprfb.NsoltSynthesis1dSystem';
             
             % Instantiation of target class
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.colpprfb.*
             lppufb = OLpPrFbFactory.createOvsdLpPuFb1dSystem(...
                 'DecimationFactor',decch(1),...
                 'NumberOfChannels',decch(2:end));
@@ -840,10 +840,10 @@ classdef OLpPrFbFactoryTestCase < matlab.unittest.TestCase
             decch = [1 1 5];
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.olpprfb.NsoltSynthesis1dSystem';
+            classExpctd = 'saivdr.dictionary.colpprfb.NsoltSynthesis1dSystem';
             
             % Instantiation of target class
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.colpprfb.*
             lppufb = OLpPrFbFactory.createOvsdLpPuFb1dSystem(...
                 'DecimationFactor',decch(1),...
                 'NumberOfChannels',decch(2:end));
@@ -863,10 +863,10 @@ classdef OLpPrFbFactoryTestCase < matlab.unittest.TestCase
             decch = [2 2 4];
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.olpprfb.NsoltSynthesis1dSystem';
+            classExpctd = 'saivdr.dictionary.colpprfb.NsoltSynthesis1dSystem';
             
             % Instantiation of target class
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.colpprfb.*
             lppufb = OLpPrFbFactory.createOvsdLpPuFb1dSystem(...
                 'DecimationFactor',decch(1),...
                 'NumberOfChannels',decch(2:end));
@@ -886,10 +886,10 @@ classdef OLpPrFbFactoryTestCase < matlab.unittest.TestCase
             decch = [2 2 5];
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.olpprfb.NsoltSynthesis1dSystem';
+            classExpctd = 'saivdr.dictionary.colpprfb.NsoltSynthesis1dSystem';
             
             % Instantiation of target class
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.colpprfb.*
             lppufb = OLpPrFbFactory.createOvsdLpPuFb1dSystem(...
                 'DecimationFactor',decch(1),...
                 'NumberOfChannels',decch(2:end));
@@ -907,11 +907,11 @@ classdef OLpPrFbFactoryTestCase < matlab.unittest.TestCase
         function testCreateSynthesis1dSystemLpPuFb1d(testCase)
             
             %
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.colpprfb.*
             lppufb = OLpPrFbFactory.createOvsdLpPuFb1dSystem();
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.olpprfb.NsoltSynthesis1dSystem';
+            classExpctd = 'saivdr.dictionary.colpprfb.NsoltSynthesis1dSystem';
             
             % Instantiation of target class
             testCase.obj = OLpPrFbFactory.createSynthesis1dSystem(lppufb);
@@ -929,13 +929,13 @@ classdef OLpPrFbFactoryTestCase < matlab.unittest.TestCase
             
             %
             decch = [ 3 3 ];
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.colpprfb.*
             lppufb = OLpPrFbFactory.createOvsdLpPuFb1dSystem(...
                 'DecimationFactor',decch(1),...
                 'NumberOfChannels',decch(2:end));
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.olpprfb.NsoltSynthesis1dSystem';
+            classExpctd = 'saivdr.dictionary.colpprfb.NsoltSynthesis1dSystem';
             
             % Instantiation of target class
             testCase.obj = OLpPrFbFactory.createSynthesis1dSystem(lppufb);
@@ -952,7 +952,7 @@ classdef OLpPrFbFactoryTestCase < matlab.unittest.TestCase
         function testCreateSynthesis1dSystemLpPuFb1dParameterMatrixSet(testCase)
             
             %
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.colpprfb.*
             lppufb = OLpPrFbFactory.createOvsdLpPuFb1dSystem(...
                 'OutputMode','ParameterMatrixSet');
             % Expected values
@@ -972,7 +972,7 @@ classdef OLpPrFbFactoryTestCase < matlab.unittest.TestCase
         function testCreateSynthesis1dSystemLpPuFb1dWithoutOutputMode(testCase)
             
             %
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.colpprfb.*
             lppufb = OLpPrFbFactory.createOvsdLpPuFb1dSystem();
             % Expected values
             outputExpctd = 'Coefficients';
@@ -991,7 +991,7 @@ classdef OLpPrFbFactoryTestCase < matlab.unittest.TestCase
         function testCreateSynthesis1dSystemIsCloneLpPuFb1dFalse(testCase)
             
             %
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.colpprfb.*
             
             % Instantiation of target class
             lppufb = OLpPrFbFactory.createOvsdLpPuFb1dSystem();
@@ -1009,7 +1009,7 @@ classdef OLpPrFbFactoryTestCase < matlab.unittest.TestCase
         function testCreateAnalysis1dSystemIsCloneLpPuFb1dFalse(testCase)
             
             %
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.colpprfb.*
             
             % Instantiation of target class
             lppufb = OLpPrFbFactory.createOvsdLpPuFb1dSystem();
@@ -1029,10 +1029,10 @@ classdef OLpPrFbFactoryTestCase < matlab.unittest.TestCase
             % Parameters
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.olpprfb.OvsdLpPuFb3dTypeIVm1System';
+            classExpctd = 'saivdr.dictionary.colpprfb.OvsdLpPuFb3dTypeIVm1System';
             
             % Instantiation of target class
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.colpprfb.*
             testCase.obj = OLpPrFbFactory.createOvsdLpPuFb3dSystem();
             
             % Actual values
@@ -1050,10 +1050,10 @@ classdef OLpPrFbFactoryTestCase < matlab.unittest.TestCase
             % Parameters
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.olpprfb.NsoltAnalysis3dSystem';
+            classExpctd = 'saivdr.dictionary.colpprfb.NsoltAnalysis3dSystem';
             
             % Instantiation of target class
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.colpprfb.*
             testCase.obj = OLpPrFbFactory.createAnalysis3dSystem();
             
             % Actual values
@@ -1070,10 +1070,10 @@ classdef OLpPrFbFactoryTestCase < matlab.unittest.TestCase
             % Parameters
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.olpprfb.NsoltSynthesis3dSystem';
+            classExpctd = 'saivdr.dictionary.colpprfb.NsoltSynthesis3dSystem';
             
             % Instantiation of target class
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.colpprfb.*
             testCase.obj = OLpPrFbFactory.createSynthesis3dSystem();
             
             % Actual values
@@ -1092,10 +1092,10 @@ classdef OLpPrFbFactoryTestCase < matlab.unittest.TestCase
             chs = [3 2];
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.olpprfb.OvsdLpPuFb1dTypeIIVm1System';
+            classExpctd = 'saivdr.dictionary.colpprfb.OvsdLpPuFb1dTypeIIVm1System';
             
             % Instantiation of target class
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.colpprfb.*
             testCase.obj = OLpPrFbFactory.createOvsdLpPuFb1dSystem(...
                 'DecimationFactor',dec,...
                 'NumberOfChannels',chs);
@@ -1116,10 +1116,10 @@ classdef OLpPrFbFactoryTestCase < matlab.unittest.TestCase
             chs = [2 3];
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.olpprfb.OvsdLpPuFb1dTypeIIVm1System';
+            classExpctd = 'saivdr.dictionary.colpprfb.OvsdLpPuFb1dTypeIIVm1System';
             
             % Instantiation of target class
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.colpprfb.*
             testCase.obj = OLpPrFbFactory.createOvsdLpPuFb1dSystem(...
                 'DecimationFactor',dec,...
                 'NumberOfChannels',chs);
@@ -1140,10 +1140,10 @@ classdef OLpPrFbFactoryTestCase < matlab.unittest.TestCase
             chs = [5 4];
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.olpprfb.OvsdLpPuFb3dTypeIIVm1System';
+            classExpctd = 'saivdr.dictionary.colpprfb.OvsdLpPuFb3dTypeIIVm1System';
             
             % Instantiation of target class
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.colpprfb.*
             testCase.obj = OLpPrFbFactory.createOvsdLpPuFb3dSystem(...
                 'DecimationFactor',dec,...
                 'NumberOfChannels',chs);
@@ -1164,10 +1164,10 @@ classdef OLpPrFbFactoryTestCase < matlab.unittest.TestCase
             chs = [4 5];
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.olpprfb.OvsdLpPuFb3dTypeIIVm1System';
+            classExpctd = 'saivdr.dictionary.colpprfb.OvsdLpPuFb3dTypeIIVm1System';
             
             % Instantiation of target class
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.colpprfb.*
             testCase.obj = OLpPrFbFactory.createOvsdLpPuFb3dSystem(...
                 'DecimationFactor',dec,...
                 'NumberOfChannels',chs);
@@ -1188,10 +1188,10 @@ classdef OLpPrFbFactoryTestCase < matlab.unittest.TestCase
             chs = [3 2];
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.olpprfb.NsoltAnalysis1dSystem';
+            classExpctd = 'saivdr.dictionary.colpprfb.NsoltAnalysis1dSystem';
             
             % Instantiation of target class
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.colpprfb.*
             lppufb = OLpPrFbFactory.createOvsdLpPuFb1dSystem(...
                 'DecimationFactor',dec,...
                 'NumberOfChannels',chs);
@@ -1213,10 +1213,10 @@ classdef OLpPrFbFactoryTestCase < matlab.unittest.TestCase
             chs = [2 3];
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.olpprfb.NsoltAnalysis1dSystem';
+            classExpctd = 'saivdr.dictionary.colpprfb.NsoltAnalysis1dSystem';
             
             % Instantiation of target class
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.colpprfb.*
             lppufb = OLpPrFbFactory.createOvsdLpPuFb1dSystem(...
                 'DecimationFactor',dec,...
                 'NumberOfChannels',chs);

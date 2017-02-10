@@ -19,7 +19,7 @@ function output = fcn_Order1CplxBuildingBlockTypeI( input, mtxW, mtxU, angles, p
 %
 persistent h;
 if isempty(h)
-    h = saivdr.dictionary.nsoltx.mexsrcs.Order1CplxBuildingBlockTypeI();
+    h = saivdr.dictionary.cnsoltx.mexsrcs.Order1CplxBuildingBlockTypeI();
 end
 output = step(h, input, mtxW, mtxU, angles, p, nshift);
 end

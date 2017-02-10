@@ -1,5 +1,5 @@
 classdef CplxOLpPrFbAtomExtender1d <  ...
-        saivdr.dictionary.olpprfb.AbstCplxOLpPrFbCoefManipulator1d %#codegen
+        saivdr.dictionary.colpprfb.AbstCplxOLpPrFbCoefManipulator1d %#codegen
     %OLPPRFBATOMEXTENDER1D 1-D Atom Extender for OLPPRFB
     %
     % SVN identifier:
@@ -23,7 +23,7 @@ classdef CplxOLpPrFbAtomExtender1d <  ...
         
         % Constructor
         function obj = CplxOLpPrFbAtomExtender1d(varargin)
-            obj = obj@saivdr.dictionary.olpprfb.AbstCplxOLpPrFbCoefManipulator1d(varargin{:});
+            obj = obj@saivdr.dictionary.colpprfb.AbstCplxOLpPrFbCoefManipulator1d(varargin{:});
         end
         
     end
@@ -32,16 +32,16 @@ classdef CplxOLpPrFbAtomExtender1d <  ...
         
         function s = saveObjectImpl(obj)
             % Call the base class method
-            s = saveObjectImpl@saivdr.dictionary.olpprfb.AbstCplxOLpPrFbCoefManipulator1d(obj);
+            s = saveObjectImpl@saivdr.dictionary.colpprfb.AbstCplxOLpPrFbCoefManipulator1d(obj);
         end
         
         function loadObjectImpl(obj,s,wasLocked)
             % Call base class method to load public properties
-            loadObjectImpl@saivdr.dictionary.olpprfb.AbstCplxOLpPrFbCoefManipulator1d(obj,s,wasLocked);
+            loadObjectImpl@saivdr.dictionary.colpprfb.AbstCplxOLpPrFbCoefManipulator1d(obj,s,wasLocked);
         end
         
         function arrayCoefs = stepImpl(obj, arrayCoefs, subScale, pmCoefs)
-            stepImpl@saivdr.dictionary.olpprfb.AbstCplxOLpPrFbCoefManipulator1d(obj,arrayCoefs,subScale,pmCoefs);        
+            stepImpl@saivdr.dictionary.colpprfb.AbstCplxOLpPrFbCoefManipulator1d(obj,arrayCoefs,subScale,pmCoefs);        
             %
             arrayCoefs = initialStep_(obj,arrayCoefs);
             %

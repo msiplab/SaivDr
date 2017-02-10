@@ -42,7 +42,7 @@ classdef CplxOvsdLpPuFb1dTypeIVm1SystemTestCase < matlab.unittest.TestCase
                  0.353553390593274 + 0.353553390593274i, -0.353553390593274 + 0.353553390593274i];
             
             % Instantiation of target class
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.colpprfb.*
             testCase.lppufb = CplxOvsdLpPuFb1dTypeIVm1System();
             
             % Actual values
@@ -60,7 +60,7 @@ classdef CplxOvsdLpPuFb1dTypeIVm1SystemTestCase < matlab.unittest.TestCase
         function testConstructorWithDeepCopy(testCase)
             
             % Instantiation of target class
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.colpprfb.*
             testCase.lppufb = CplxOvsdLpPuFb1dTypeIVm1System();
             cloneLpPuFb = clone(testCase.lppufb);
 
@@ -115,7 +115,7 @@ classdef CplxOvsdLpPuFb1dTypeIVm1SystemTestCase < matlab.unittest.TestCase
                  0.353553390593274 + 0.353553390593274i, -0.353553390593274 + 0.353553390593274i];
             
             % Instantiation of target class
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.colpprfb.*
             testCase.lppufb = CplxOvsdLpPuFb1dTypeIVm1System(...
                 'DecimationFactor',dec,...
                 'PolyPhaseOrder',ord);
@@ -141,7 +141,7 @@ classdef CplxOvsdLpPuFb1dTypeIVm1SystemTestCase < matlab.unittest.TestCase
             dimExpctd = [8 8];
             
             % Instantiation of target class
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.colpprfb.*
             testCase.lppufb = CplxOvsdLpPuFb1dTypeIVm1System(...
                 'DecimationFactor',dec,...
                 'PolyPhaseOrder',ord);
@@ -186,7 +186,7 @@ classdef CplxOvsdLpPuFb1dTypeIVm1SystemTestCase < matlab.unittest.TestCase
                  0.353553390593274 + 0.353553390593274i, -0.353553390593274 + 0.353553390593274i];
             
             % Instantiation of target class
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.colpprfb.*
             testCase.lppufb = CplxOvsdLpPuFb1dTypeIVm1System(...
                 'DecimationFactor',decch(1),...
                 'NumberOfChannels',decch(2:end),...
@@ -216,7 +216,7 @@ classdef CplxOvsdLpPuFb1dTypeIVm1SystemTestCase < matlab.unittest.TestCase
             dimExpctd = [nChs nDec ord+1]; 
             
             % Instantiation of target class
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.colpprfb.*
             testCase.lppufb = CplxOvsdLpPuFb1dTypeIVm1System(...
                 'DecimationFactor',decch(1),...
                 'NumberOfChannels',decch(2:end),...
@@ -259,7 +259,7 @@ classdef CplxOvsdLpPuFb1dTypeIVm1SystemTestCase < matlab.unittest.TestCase
             dimExpctd = [nChs nDec ord+1 ];
             
             % Instantiation of target class
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.colpprfb.*
             testCase.lppufb = CplxOvsdLpPuFb1dTypeIVm1System(...
                 'DecimationFactor',decch(1),...
                 'NumberOfChannels',decch(2:end),...
@@ -299,7 +299,7 @@ classdef CplxOvsdLpPuFb1dTypeIVm1SystemTestCase < matlab.unittest.TestCase
             dimExpctd = [8 4];
             
             % Instantiation of target class
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.colpprfb.*
             testCase.lppufb = CplxOvsdLpPuFb1dTypeIVm1System(...
                 'DecimationFactor',decch(1),...
                 'NumberOfChannels',decch(2:end),...
@@ -336,7 +336,7 @@ classdef CplxOvsdLpPuFb1dTypeIVm1SystemTestCase < matlab.unittest.TestCase
             dimExpctd = [6 4];
             
             % Instantiation of target class
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.colpprfb.*
             testCase.lppufb = CplxOvsdLpPuFb1dTypeIVm1System(...
                 'DecimationFactor',decch(1),...
                 'NumberOfChannels',decch(2:end),...
@@ -382,7 +382,7 @@ classdef CplxOvsdLpPuFb1dTypeIVm1SystemTestCase < matlab.unittest.TestCase
                  0.353553390593274 + 0.353553390593274i, -0.353553390593274 + 0.353553390593274i];
             
             % Instantiation of target class
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.colpprfb.*
             testCase.lppufb = CplxOvsdLpPuFb1dTypeIVm1System(...
                 'DecimationFactor',dec,...
                 'PolyPhaseOrder',ord);
@@ -423,7 +423,7 @@ classdef CplxOvsdLpPuFb1dTypeIVm1SystemTestCase < matlab.unittest.TestCase
                  0.353553390593274 + 0.353553390593274i, -0.353553390593274 + 0.353553390593274i];
             
             % Instantiation of target class
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.colpprfb.*
             testCase.lppufb = CplxOvsdLpPuFb1dTypeIVm1System(...
                 'DecimationFactor',dec,...
                 'PolyPhaseOrder',ord);
@@ -450,7 +450,7 @@ classdef CplxOvsdLpPuFb1dTypeIVm1SystemTestCase < matlab.unittest.TestCase
             dimExpctd = [8 8];
             
             % Instantiation of target class
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.colpprfb.*
             testCase.lppufb = CplxOvsdLpPuFb1dTypeIVm1System(...
                 'DecimationFactor',dec,...
                 'PolyPhaseOrder',ord);
@@ -488,7 +488,7 @@ classdef CplxOvsdLpPuFb1dTypeIVm1SystemTestCase < matlab.unittest.TestCase
             dimExpctd = [8 4];
             
             % Instantiation of target class
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.colpprfb.*
             testCase.lppufb = CplxOvsdLpPuFb1dTypeIVm1System(...
                 'DecimationFactor',decch(1),...
                 'NumberOfChannels',decch(2:end),...
@@ -529,7 +529,7 @@ classdef CplxOvsdLpPuFb1dTypeIVm1SystemTestCase < matlab.unittest.TestCase
             dimExpctd = [nChs nDec ord+1];
             
             % Instantiation of target class
-            import saivdr.dictionary.olpprfb.*            
+            import saivdr.dictionary.colpprfb.*            
             testCase.lppufb = CplxOvsdLpPuFb1dTypeIVm1System(...
                 'DecimationFactor',decch(1),...
                 'NumberOfChannels',decch(2:end),...
@@ -567,7 +567,7 @@ classdef CplxOvsdLpPuFb1dTypeIVm1SystemTestCase < matlab.unittest.TestCase
             dimExpctd = [nChs nDec ord+1];
             
             % Instantiation of target class
-            import saivdr.dictionary.olpprfb.*            
+            import saivdr.dictionary.colpprfb.*            
             testCase.lppufb = CplxOvsdLpPuFb1dTypeIVm1System(...
                 'DecimationFactor',decch(1),...
                 'NumberOfChannels',decch(2:end),...
@@ -605,7 +605,7 @@ classdef CplxOvsdLpPuFb1dTypeIVm1SystemTestCase < matlab.unittest.TestCase
             dimExpctd = [nChs nDec ord+1];
             
             % Instantiation of target class
-            import saivdr.dictionary.olpprfb.*            
+            import saivdr.dictionary.colpprfb.*            
             testCase.lppufb = CplxOvsdLpPuFb1dTypeIVm1System(...
                 'DecimationFactor',decch(1),...
                 'NumberOfChannels',decch(2:end),...
@@ -642,7 +642,7 @@ classdef CplxOvsdLpPuFb1dTypeIVm1SystemTestCase < matlab.unittest.TestCase
             step(paramExpctd,eye(4),1);
             
             % Instantiation of target class
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.colpprfb.*
             testCase.lppufb = CplxOvsdLpPuFb1dTypeIVm0System(...
                 'OutputMode','ParameterMatrixSet');
             
@@ -682,7 +682,7 @@ classdef CplxOvsdLpPuFb1dTypeIVm1SystemTestCase < matlab.unittest.TestCase
             coefExpctd = get(paramMtxExpctd,'Coefficients');
             
             % Instantiation of target class
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.colpprfb.*
             testCase.lppufb = CplxOvsdLpPuFb1dTypeIVm1System(...
                 'DecimationFactor',decch(1),...
                 'NumberOfChannels',decch(2:end),...
@@ -782,7 +782,7 @@ classdef CplxOvsdLpPuFb1dTypeIVm1SystemTestCase < matlab.unittest.TestCase
             coefExpctd = get(paramMtxExpctd,'Coefficients');
             
             % Instantiation of target class
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.colpprfb.*
             testCase.lppufb = CplxOvsdLpPuFb1dTypeIVm1System(...
                 'DecimationFactor',decch(1),...
                 'NumberOfChannels',decch(2:end),...
@@ -873,7 +873,7 @@ classdef CplxOvsdLpPuFb1dTypeIVm1SystemTestCase < matlab.unittest.TestCase
             coefExpctd = get(paramMtxExpctd,'Coefficients');
             
             % Instantiation of target class
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.colpprfb.*
             testCase.lppufb = CplxOvsdLpPuFb1dTypeIVm1System(...
                 'DecimationFactor',decch(1),...
                 'NumberOfChannels',decch(2:end),...

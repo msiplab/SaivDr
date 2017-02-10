@@ -1,5 +1,5 @@
 classdef CplxOvsdLpPuFb1dTypeIIVm0System < ...
-        saivdr.dictionary.olpprfb.AbstCplxOvsdLpPuFb1dTypeIISystem
+        saivdr.dictionary.colpprfb.AbstCplxOvsdLpPuFb1dTypeIISystem
     %OVSDLPPUFBMDTYPEIIVM0SYSTEM M-D Type-II Oversampled LPPUFB without VM
     %
     % SVN identifier:
@@ -28,7 +28,7 @@ classdef CplxOvsdLpPuFb1dTypeIIVm0System < ...
     methods
         function obj = CplxOvsdLpPuFb1dTypeIIVm0System(varargin)
             import saivdr.dictionary.utility.OrthonormalMatrixGenerationSystem
-            obj = obj@saivdr.dictionary.olpprfb.AbstCplxOvsdLpPuFb1dTypeIISystem(...
+            obj = obj@saivdr.dictionary.colpprfb.AbstCplxOvsdLpPuFb1dTypeIISystem(...
                 varargin{:});
             obj.omgsV0_ = OrthonormalMatrixGenerationSystem();
             obj.omgsE_ = OrthonormalMatrixGenerationSystem();
@@ -39,7 +39,7 @@ classdef CplxOvsdLpPuFb1dTypeIIVm0System < ...
     methods (Access = protected)
         
         function s = saveObjectImpl(obj)
-            s = saveObjectImpl@saivdr.dictionary.olpprfb.AbstCplxOvsdLpPuFb1dTypeIISystem(obj);
+            s = saveObjectImpl@saivdr.dictionary.colpprfb.AbstCplxOvsdLpPuFb1dTypeIISystem(obj);
             s.omgsV0_ = matlab.System.saveObject(obj.omgsV0_);
             s.omgsE_ = matlab.System.saveObject(obj.omgsE_);
             s.omgsO_ = matlab.System.saveObject(obj.omgsO_);
@@ -49,11 +49,11 @@ classdef CplxOvsdLpPuFb1dTypeIIVm0System < ...
             obj.omgsV0_ = matlab.System.loadObject(s.omgsV0_);
             obj.omgsE_ = matlab.System.loadObject(s.omgsE_);
             obj.omgsO_ = matlab.System.loadObject(s.omgsO_);
-            loadObjectImpl@saivdr.dictionary.olpprfb.AbstCplxOvsdLpPuFb1dTypeIISystem(obj,s,wasLocked);
+            loadObjectImpl@saivdr.dictionary.colpprfb.AbstCplxOvsdLpPuFb1dTypeIISystem(obj,s,wasLocked);
         end                
         
         function updateParameterMatrixSet_(obj)
-            import saivdr.dictionary.nsoltx.ChannelGroup
+            import saivdr.dictionary.cnsoltx.ChannelGroup
             nChs = obj.NumberOfChannels;
             pmMtxSt_ = obj.ParameterMatrixSet;
             % V0

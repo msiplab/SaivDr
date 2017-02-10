@@ -1,4 +1,4 @@
-classdef CplxOvsdLpPuFb3dTypeIIVm0System < saivdr.dictionary.nsoltx.AbstCplxOvsdLpPuFb3dTypeIISystem
+classdef CplxOvsdLpPuFb3dTypeIIVm0System < saivdr.dictionary.cnsoltx.AbstCplxOvsdLpPuFb3dTypeIISystem
     %OVSDLPPUFBMDTYPEIIVM0SYSTEM 3-D Type-II Oversampled LPPUFB without VM
     %
     % SVN identifier:
@@ -26,7 +26,7 @@ classdef CplxOvsdLpPuFb3dTypeIIVm0System < saivdr.dictionary.nsoltx.AbstCplxOvsd
     methods
         function obj = CplxOvsdLpPuFb3dTypeIIVm0System(varargin)
             import saivdr.dictionary.utility.OrthonormalMatrixGenerationSystem
-            obj = obj@saivdr.dictionary.nsoltx.AbstCplxOvsdLpPuFb3dTypeIISystem(...
+            obj = obj@saivdr.dictionary.cnsoltx.AbstCplxOvsdLpPuFb3dTypeIISystem(...
                 varargin{:});
             obj.omgsW_ = OrthonormalMatrixGenerationSystem();
             obj.omgsU_ = OrthonormalMatrixGenerationSystem();
@@ -36,7 +36,7 @@ classdef CplxOvsdLpPuFb3dTypeIIVm0System < saivdr.dictionary.nsoltx.AbstCplxOvsd
     methods (Access = protected)
         
         function s = saveObjectImpl(obj)
-            s = saveObjectImpl@saivdr.dictionary.nsoltx.AbstCplxOvsdLpPuFb3dTypeIISystem(obj);
+            s = saveObjectImpl@saivdr.dictionary.cnsoltx.AbstCplxOvsdLpPuFb3dTypeIISystem(obj);
             s.omgsW_ = matlab.System.saveObject(obj.omgsW_);
             s.omgsU_ = matlab.System.saveObject(obj.omgsU_);
         end
@@ -44,11 +44,11 @@ classdef CplxOvsdLpPuFb3dTypeIIVm0System < saivdr.dictionary.nsoltx.AbstCplxOvsd
         function loadObjectImpl(obj,s,wasLocked)
             obj.omgsW_ = matlab.System.loadObject(s.omgsW_);
             obj.omgsU_ = matlab.System.loadObject(s.omgsU_);
-            loadObjectImpl@saivdr.dictionary.nsoltx.AbstCplxOvsdLpPuFb3dTypeIISystem(obj,s,wasLocked);
+            loadObjectImpl@saivdr.dictionary.cnsoltx.AbstCplxOvsdLpPuFb3dTypeIISystem(obj,s,wasLocked);
         end                
         
         function updateParameterMatrixSet_(obj)
-            import saivdr.dictionary.nsoltx.ChannelGroup
+            import saivdr.dictionary.cnsoltx.ChannelGroup
             nChs = obj.NumberOfChannels;
             angles = obj.Angles;
             mus    = obj.Mus;            

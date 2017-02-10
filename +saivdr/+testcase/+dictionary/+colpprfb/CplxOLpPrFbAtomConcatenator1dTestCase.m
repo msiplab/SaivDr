@@ -44,7 +44,7 @@ classdef CplxOLpPrFbAtomConcatenator1dTestCase < matlab.unittest.TestCase
             ordExpctd = 0;
             
             % Instantiation
-            import saivdr.dictionary.olpprfb.CplxOLpPrFbAtomConcatenator1d
+            import saivdr.dictionary.colpprfb.CplxOLpPrFbAtomConcatenator1d
             testCase.module = CplxOLpPrFbAtomConcatenator1d();
             
             % Actual values
@@ -72,7 +72,7 @@ classdef CplxOLpPrFbAtomConcatenator1dTestCase < matlab.unittest.TestCase
             ordExpctd = 0;
             
             % Instantiation
-            import saivdr.dictionary.olpprfb.CplxOLpPrFbAtomConcatenator1d
+            import saivdr.dictionary.colpprfb.CplxOLpPrFbAtomConcatenator1d
             testCase.module = CplxOLpPrFbAtomConcatenator1d(...
                 'NumberOfSymmetricChannels',nchExpctd(1),...
                 'NumberOfAntisymmetricChannels',nchExpctd(2));
@@ -109,7 +109,7 @@ classdef CplxOLpPrFbAtomConcatenator1dTestCase < matlab.unittest.TestCase
             cfsExpctd = coefs;            
                         
             % Instantiation
-            import saivdr.dictionary.olpprfb.CplxOLpPrFbAtomConcatenator1d
+            import saivdr.dictionary.colpprfb.CplxOLpPrFbAtomConcatenator1d
             testCase.module = CplxOLpPrFbAtomConcatenator1d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -141,7 +141,7 @@ classdef CplxOLpPrFbAtomConcatenator1dTestCase < matlab.unittest.TestCase
             cfsExpctd = coefs;
                         
             % Instantiation
-            import saivdr.dictionary.olpprfb.CplxOLpPrFbAtomConcatenator1d
+            import saivdr.dictionary.colpprfb.CplxOLpPrFbAtomConcatenator1d
             testCase.module = CplxOLpPrFbAtomConcatenator1d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -176,7 +176,7 @@ classdef CplxOLpPrFbAtomConcatenator1dTestCase < matlab.unittest.TestCase
             cfsExpctd = coefs;
                         
             % Instantiation
-            import saivdr.dictionary.olpprfb.CplxOLpPrFbAtomConcatenator1d
+            import saivdr.dictionary.colpprfb.CplxOLpPrFbAtomConcatenator1d
             testCase.module = CplxOLpPrFbAtomConcatenator1d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -217,7 +217,7 @@ classdef CplxOLpPrFbAtomConcatenator1dTestCase < matlab.unittest.TestCase
             cfsExpctd = V0*cfsExpctd;
                         
             % Instantiation
-            import saivdr.dictionary.olpprfb.CplxOLpPrFbAtomConcatenator1d
+            import saivdr.dictionary.colpprfb.CplxOLpPrFbAtomConcatenator1d
             testCase.module = CplxOLpPrFbAtomConcatenator1d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -249,7 +249,7 @@ classdef CplxOLpPrFbAtomConcatenator1dTestCase < matlab.unittest.TestCase
             cfsExpctd = coefs;
                         
             % Instantiation
-            import saivdr.dictionary.olpprfb.CplxOLpPrFbAtomConcatenator1d
+            import saivdr.dictionary.colpprfb.CplxOLpPrFbAtomConcatenator1d
             testCase.module = CplxOLpPrFbAtomConcatenator1d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -297,7 +297,7 @@ classdef CplxOLpPrFbAtomConcatenator1dTestCase < matlab.unittest.TestCase
             cfsExpctd = coefs;
                         
             % Instantiation
-            import saivdr.dictionary.olpprfb.CplxOLpPrFbAtomConcatenator1d
+            import saivdr.dictionary.colpprfb.CplxOLpPrFbAtomConcatenator1d
             testCase.module = CplxOLpPrFbAtomConcatenator1d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -333,7 +333,7 @@ classdef CplxOLpPrFbAtomConcatenator1dTestCase < matlab.unittest.TestCase
             cfsExpctd = coefs;
                         
             % Instantiation
-            import saivdr.dictionary.olpprfb.CplxOLpPrFbAtomConcatenator1d
+            import saivdr.dictionary.colpprfb.CplxOLpPrFbAtomConcatenator1d
             testCase.module = CplxOLpPrFbAtomConcatenator1d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -377,7 +377,7 @@ classdef CplxOLpPrFbAtomConcatenator1dTestCase < matlab.unittest.TestCase
             cfsExpctd = coefs;
                         
             % Instantiation
-            import saivdr.dictionary.olpprfb.CplxOLpPrFbAtomConcatenator1d
+            import saivdr.dictionary.colpprfb.CplxOLpPrFbAtomConcatenator1d
             testCase.module = CplxOLpPrFbAtomConcatenator1d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -422,7 +422,7 @@ classdef CplxOLpPrFbAtomConcatenator1dTestCase < matlab.unittest.TestCase
             cfsExpctd = U0.'*cfsExpctd;
                         
             % Instantiation
-            import saivdr.dictionary.olpprfb.CplxOLpPrFbAtomConcatenator1d
+            import saivdr.dictionary.colpprfb.CplxOLpPrFbAtomConcatenator1d
             testCase.module = CplxOLpPrFbAtomConcatenator1d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -454,7 +454,7 @@ classdef CplxOLpPrFbAtomConcatenator1dTestCase < matlab.unittest.TestCase
             cfsExpctd = coefs;
                         
             % Instantiation
-            import saivdr.dictionary.olpprfb.CplxOLpPrFbAtomConcatenator1d
+            import saivdr.dictionary.colpprfb.CplxOLpPrFbAtomConcatenator1d
             testCase.module = CplxOLpPrFbAtomConcatenator1d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -505,7 +505,7 @@ classdef CplxOLpPrFbAtomConcatenator1dTestCase < matlab.unittest.TestCase
             cfsExpctd = coefs;
                         
             % Instantiation
-            import saivdr.dictionary.olpprfb.CplxOLpPrFbAtomConcatenator1d
+            import saivdr.dictionary.colpprfb.CplxOLpPrFbAtomConcatenator1d
             testCase.module = CplxOLpPrFbAtomConcatenator1d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -549,7 +549,7 @@ classdef CplxOLpPrFbAtomConcatenator1dTestCase < matlab.unittest.TestCase
             cfsExpctd = coefs;
                         
             % Instantiation
-            import saivdr.dictionary.olpprfb.CplxOLpPrFbAtomConcatenator1d
+            import saivdr.dictionary.colpprfb.CplxOLpPrFbAtomConcatenator1d
             testCase.module = CplxOLpPrFbAtomConcatenator1d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -582,7 +582,7 @@ classdef CplxOLpPrFbAtomConcatenator1dTestCase < matlab.unittest.TestCase
 %             cfsExpctd = coefs;
 %                         
 %             % Instantiation
-%             import saivdr.dictionary.olpprfb.CplxOLpPrFbAtomConcatenator1d
+%             import saivdr.dictionary.colpprfb.CplxOLpPrFbAtomConcatenator1d
 %             testCase.module = CplxOLpPrFbAtomConcatenator1d(...
 %                 'NumberOfSymmetricChannels',nch(1),...
 %                 'NumberOfAntisymmetricChannels',nch(2));
@@ -621,7 +621,7 @@ classdef CplxOLpPrFbAtomConcatenator1dTestCase < matlab.unittest.TestCase
 %             cfsExpctd(1:nch(1),:) = -W0.'*cfsExpctd(1:nch(1),:);
 %                         
 %             % Instantiation
-%             import saivdr.dictionary.olpprfb.CplxOLpPrFbAtomConcatenator1d
+%             import saivdr.dictionary.colpprfb.CplxOLpPrFbAtomConcatenator1d
 %             testCase.module = CplxOLpPrFbAtomConcatenator1d(...
 %                 'NumberOfSymmetricChannels',nch(1),...
 %                 'NumberOfAntisymmetricChannels',nch(2));
@@ -656,7 +656,7 @@ classdef CplxOLpPrFbAtomConcatenator1dTestCase < matlab.unittest.TestCase
 %             cfsExpctd = coefs;
 %                         
 %             % Instantiation
-%             import saivdr.dictionary.olpprfb.CplxOLpPrFbAtomConcatenator1d
+%             import saivdr.dictionary.colpprfb.CplxOLpPrFbAtomConcatenator1d
 %             testCase.module = CplxOLpPrFbAtomConcatenator1d(...
 %                 'NumberOfSymmetricChannels',nch(1),...
 %                 'NumberOfAntisymmetricChannels',nch(2));
@@ -695,7 +695,7 @@ classdef CplxOLpPrFbAtomConcatenator1dTestCase < matlab.unittest.TestCase
 %             cfsExpctd = coefs;
 %                         
 %             % Instantiation
-%             import saivdr.dictionary.olpprfb.CplxOLpPrFbAtomConcatenator1d
+%             import saivdr.dictionary.colpprfb.CplxOLpPrFbAtomConcatenator1d
 %             testCase.module = CplxOLpPrFbAtomConcatenator1d(...
 %                 'NumberOfSymmetricChannels',nch(1),...
 %                 'NumberOfAntisymmetricChannels',nch(2));
@@ -732,7 +732,7 @@ classdef CplxOLpPrFbAtomConcatenator1dTestCase < matlab.unittest.TestCase
 %             cfsExpctd = coefs;
 %                         
 %             % Instantiation
-%             import saivdr.dictionary.olpprfb.CplxOLpPrFbAtomConcatenator1d
+%             import saivdr.dictionary.colpprfb.CplxOLpPrFbAtomConcatenator1d
 %             testCase.module = CplxOLpPrFbAtomConcatenator1d(...
 %                 'NumberOfSymmetricChannels',nch(1),...
 %                 'NumberOfAntisymmetricChannels',nch(2));

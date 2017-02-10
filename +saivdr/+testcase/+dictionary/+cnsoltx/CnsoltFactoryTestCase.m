@@ -32,10 +32,10 @@ classdef CnsoltFactoryTestCase < matlab.unittest.TestCase
             % Parameters
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.nsoltx.CplxOvsdLpPuFb2dTypeIVm1System';
+            classExpctd = 'saivdr.dictionary.cnsoltx.CplxOvsdLpPuFb2dTypeIVm1System';
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             testCase.obj = CnsoltFactory.createCplxOvsdLpPuFb2dSystem();
             
             % Actual values
@@ -52,10 +52,10 @@ classdef CnsoltFactoryTestCase < matlab.unittest.TestCase
             dec = [3 3];
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.nsoltx.CplxOvsdLpPuFb2dTypeIIVm1System';
+            classExpctd = 'saivdr.dictionary.cnsoltx.CplxOvsdLpPuFb2dTypeIIVm1System';
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             testCase.obj = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',dec);
             
@@ -73,10 +73,10 @@ classdef CnsoltFactoryTestCase < matlab.unittest.TestCase
             dec = [2 2];
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.nsoltx.CplxOvsdLpPuFb2dTypeIVm1System';
+            classExpctd = 'saivdr.dictionary.cnsoltx.CplxOvsdLpPuFb2dTypeIVm1System';
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             testCase.obj = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',dec);
             
@@ -94,10 +94,10 @@ classdef CnsoltFactoryTestCase < matlab.unittest.TestCase
             decch = [1 1 4];
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.nsoltx.CplxOvsdLpPuFb2dTypeIVm1System';
+            classExpctd = 'saivdr.dictionary.cnsoltx.CplxOvsdLpPuFb2dTypeIVm1System';
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             testCase.obj = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',decch(1:2),...
                 'NumberOfChannels',decch(3:end));
@@ -116,10 +116,10 @@ classdef CnsoltFactoryTestCase < matlab.unittest.TestCase
             decch = [1 1 5];
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.nsoltx.CplxOvsdLpPuFb2dTypeIIVm1System';
+            classExpctd = 'saivdr.dictionary.cnsoltx.CplxOvsdLpPuFb2dTypeIIVm1System';
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             testCase.obj = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',decch(1:2),...
                 'NumberOfChannels',decch(3:end));
@@ -138,10 +138,10 @@ classdef CnsoltFactoryTestCase < matlab.unittest.TestCase
             decch = [2 2 4];
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.nsoltx.CplxOvsdLpPuFb2dTypeIVm1System';
+            classExpctd = 'saivdr.dictionary.cnsoltx.CplxOvsdLpPuFb2dTypeIVm1System';
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             testCase.obj = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',decch(1:2),...
                 'NumberOfChannels',decch(3:end));
@@ -160,10 +160,10 @@ classdef CnsoltFactoryTestCase < matlab.unittest.TestCase
             decch = [2 2 5];
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.nsoltx.CplxOvsdLpPuFb2dTypeIIVm1System';
+            classExpctd = 'saivdr.dictionary.cnsoltx.CplxOvsdLpPuFb2dTypeIIVm1System';
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             testCase.obj = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',decch(1:2),...
                 'NumberOfChannels',decch(3:end));
@@ -180,7 +180,7 @@ classdef CnsoltFactoryTestCase < matlab.unittest.TestCase
         function testCreateCplxOvsdLpPuFb2dDeepCopy(testCase)
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             testCase.obj = CnsoltFactory.createCplxOvsdLpPuFb2dSystem();
             cloneObj = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(testCase.obj);
             
@@ -217,7 +217,7 @@ classdef CnsoltFactoryTestCase < matlab.unittest.TestCase
             decch = [3 3];
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             testCase.obj = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',decch(1:2),...
                 'NumberOfChannels',decch(3:end));
@@ -257,10 +257,10 @@ classdef CnsoltFactoryTestCase < matlab.unittest.TestCase
             vm = 0;
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.nsoltx.CplxOvsdLpPuFb2dTypeIVm0System';
+            classExpctd = 'saivdr.dictionary.cnsoltx.CplxOvsdLpPuFb2dTypeIVm0System';
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             testCase.obj = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',decch(1:2),...
                 'NumberOfChannels',decch(3:end),...
@@ -282,10 +282,10 @@ classdef CnsoltFactoryTestCase < matlab.unittest.TestCase
             vm = 0;
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.nsoltx.CplxOvsdLpPuFb2dTypeIIVm0System';
+            classExpctd = 'saivdr.dictionary.cnsoltx.CplxOvsdLpPuFb2dTypeIIVm0System';
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             testCase.obj = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',decch(1:2),...
                 'NumberOfChannels',decch(3:end),...
@@ -305,7 +305,7 @@ classdef CnsoltFactoryTestCase < matlab.unittest.TestCase
             vm = 0;
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             testCase.obj = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[2 2],...
                 'NumberOfVanishingMoments',vm);
@@ -313,7 +313,7 @@ classdef CnsoltFactoryTestCase < matlab.unittest.TestCase
             
             % Expected values
             coefExpctd = step(testCase.obj,[],[]);
-            classExpctd = 'saivdr.dictionary.nsoltx.CplxOvsdLpPuFb2dTypeIVm0System';
+            classExpctd = 'saivdr.dictionary.cnsoltx.CplxOvsdLpPuFb2dTypeIVm0System';
             
             % Actual values
             coefActual = step(cloneObj,[],[]);
@@ -351,7 +351,7 @@ classdef CnsoltFactoryTestCase < matlab.unittest.TestCase
             vm = 0;
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             testCase.obj = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[2 2],...
                 'NumberOfChannels',5,...
@@ -360,7 +360,7 @@ classdef CnsoltFactoryTestCase < matlab.unittest.TestCase
             
             % Expected values
             coefExpctd = step(testCase.obj,[],[]);
-            classExpctd = 'saivdr.dictionary.nsoltx.CplxOvsdLpPuFb2dTypeIIVm0System';
+            classExpctd = 'saivdr.dictionary.cnsoltx.CplxOvsdLpPuFb2dTypeIIVm0System';
             
             % Actual values
             coefActual = step(cloneObj,[],[]);
@@ -400,10 +400,10 @@ classdef CnsoltFactoryTestCase < matlab.unittest.TestCase
             vm = 1;
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.nsoltx.CplxOvsdLpPuFb2dTypeIVm1System';
+            classExpctd = 'saivdr.dictionary.cnsoltx.CplxOvsdLpPuFb2dTypeIVm1System';
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             testCase.obj = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',decch(1:2),...
                 'NumberOfChannels',decch(3:end),...
@@ -425,10 +425,10 @@ classdef CnsoltFactoryTestCase < matlab.unittest.TestCase
             vm = 1;
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.nsoltx.CplxOvsdLpPuFb2dTypeIIVm1System';
+            classExpctd = 'saivdr.dictionary.cnsoltx.CplxOvsdLpPuFb2dTypeIIVm1System';
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             testCase.obj = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',decch(1:2),...
                 'NumberOfChannels',decch(3:end),...
@@ -448,7 +448,7 @@ classdef CnsoltFactoryTestCase < matlab.unittest.TestCase
             vm = 1;
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             testCase.obj = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[ 2 2 ],...
                 'NumberOfVanishingMoments',vm);
@@ -456,7 +456,7 @@ classdef CnsoltFactoryTestCase < matlab.unittest.TestCase
             
             % Expected values
             coefExpctd = step(testCase.obj,[],[]);
-            classExpctd = 'saivdr.dictionary.nsoltx.CplxOvsdLpPuFb2dTypeIVm1System';
+            classExpctd = 'saivdr.dictionary.cnsoltx.CplxOvsdLpPuFb2dTypeIVm1System';
             
             % Actual values
             coefActual = step(cloneObj,[],[]);
@@ -494,7 +494,7 @@ classdef CnsoltFactoryTestCase < matlab.unittest.TestCase
             vm = 1;
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             testCase.obj = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[2 2],...
                 'NumberOfChannels',5,...
@@ -503,7 +503,7 @@ classdef CnsoltFactoryTestCase < matlab.unittest.TestCase
             
             % Expected values
             coefExpctd = step(testCase.obj,[],[]);
-            classExpctd = 'saivdr.dictionary.nsoltx.CplxOvsdLpPuFb2dTypeIIVm1System';
+            classExpctd = 'saivdr.dictionary.cnsoltx.CplxOvsdLpPuFb2dTypeIIVm1System';
             
             % Actual values
             coefActual = step(cloneObj,[],[]);
@@ -541,10 +541,10 @@ classdef CnsoltFactoryTestCase < matlab.unittest.TestCase
             % Parameters
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.nsoltx.CnsoltAnalysis2dSystem';
+            classExpctd = 'saivdr.dictionary.cnsoltx.CnsoltAnalysis2dSystem';
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             testCase.obj = CnsoltFactory.createAnalysis2dSystem();
             
             % Actual values
@@ -561,10 +561,10 @@ classdef CnsoltFactoryTestCase < matlab.unittest.TestCase
             decch = [3 3];
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.nsoltx.CnsoltAnalysis2dSystem';
+            classExpctd = 'saivdr.dictionary.cnsoltx.CnsoltAnalysis2dSystem';
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',decch(1:2),...
                 'NumberOfChannels',decch(3:end));
@@ -584,10 +584,10 @@ classdef CnsoltFactoryTestCase < matlab.unittest.TestCase
             decch = [2 2];
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.nsoltx.CnsoltAnalysis2dSystem';
+            classExpctd = 'saivdr.dictionary.cnsoltx.CnsoltAnalysis2dSystem';
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',decch(1:2),...
                 'NumberOfChannels',decch(3:end));
@@ -607,10 +607,10 @@ classdef CnsoltFactoryTestCase < matlab.unittest.TestCase
             decch = [1 1 4];
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.nsoltx.CnsoltAnalysis2dSystem';
+            classExpctd = 'saivdr.dictionary.cnsoltx.CnsoltAnalysis2dSystem';
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',decch(1:2),...
                 'NumberOfChannels',decch(3:end));
@@ -630,10 +630,10 @@ classdef CnsoltFactoryTestCase < matlab.unittest.TestCase
             decch = [1 1 5];
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.nsoltx.CnsoltAnalysis2dSystem';
+            classExpctd = 'saivdr.dictionary.cnsoltx.CnsoltAnalysis2dSystem';
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',decch(1:2),...
                 'NumberOfChannels',decch(3:end));
@@ -654,10 +654,10 @@ classdef CnsoltFactoryTestCase < matlab.unittest.TestCase
             decch = [2 2 4];
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.nsoltx.CnsoltAnalysis2dSystem';
+            classExpctd = 'saivdr.dictionary.cnsoltx.CnsoltAnalysis2dSystem';
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',decch(1:2),...
                 'NumberOfChannels',decch(3:end));
@@ -678,10 +678,10 @@ classdef CnsoltFactoryTestCase < matlab.unittest.TestCase
             decch = [2 2 5];
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.nsoltx.CnsoltAnalysis2dSystem';
+            classExpctd = 'saivdr.dictionary.cnsoltx.CnsoltAnalysis2dSystem';
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',decch(1:2),...
                 'NumberOfChannels',decch(3:end));
@@ -700,14 +700,14 @@ classdef CnsoltFactoryTestCase < matlab.unittest.TestCase
         function testCreateAnalysis2dSystemLpPuFb2d(testCase)
             
             %
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem();
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.nsoltx.CnsoltAnalysis2dSystem';
+            classExpctd = 'saivdr.dictionary.cnsoltx.CnsoltAnalysis2dSystem';
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             testCase.obj = CnsoltFactory.createAnalysis2dSystem(lppufb);
             
             % Actual values
@@ -723,16 +723,16 @@ classdef CnsoltFactoryTestCase < matlab.unittest.TestCase
             
             %
             decch = [ 3 3 ];
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',decch(1:2),...
                 'NumberOfChannels',decch(3:end));
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.nsoltx.CnsoltAnalysis2dSystem';
+            classExpctd = 'saivdr.dictionary.cnsoltx.CnsoltAnalysis2dSystem';
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             testCase.obj = CnsoltFactory.createAnalysis2dSystem(lppufb);
             
             % Actual values
@@ -749,10 +749,10 @@ classdef CnsoltFactoryTestCase < matlab.unittest.TestCase
             % Parameters
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.nsoltx.CnsoltSynthesis2dSystem';
+            classExpctd = 'saivdr.dictionary.cnsoltx.CnsoltSynthesis2dSystem';
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             testCase.obj = CnsoltFactory.createSynthesis2dSystem();
             
             % Actual values
@@ -769,10 +769,10 @@ classdef CnsoltFactoryTestCase < matlab.unittest.TestCase
             decch = [3 3];
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.nsoltx.CnsoltSynthesis2dSystem';
+            classExpctd = 'saivdr.dictionary.cnsoltx.CnsoltSynthesis2dSystem';
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',decch(1:2),...
                 'NumberOfChannels',decch(3:end));
@@ -793,10 +793,10 @@ classdef CnsoltFactoryTestCase < matlab.unittest.TestCase
             decch = [2 2];
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.nsoltx.CnsoltSynthesis2dSystem';
+            classExpctd = 'saivdr.dictionary.cnsoltx.CnsoltSynthesis2dSystem';
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',decch(1:2),...
                 'NumberOfChannels',decch(3:end));
@@ -816,10 +816,10 @@ classdef CnsoltFactoryTestCase < matlab.unittest.TestCase
             decch = [1 1 4];
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.nsoltx.CnsoltSynthesis2dSystem';
+            classExpctd = 'saivdr.dictionary.cnsoltx.CnsoltSynthesis2dSystem';
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',decch(1:2),...
                 'NumberOfChannels',decch(3:end));
@@ -839,10 +839,10 @@ classdef CnsoltFactoryTestCase < matlab.unittest.TestCase
             decch = [1 1 5];
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.nsoltx.CnsoltSynthesis2dSystem';
+            classExpctd = 'saivdr.dictionary.cnsoltx.CnsoltSynthesis2dSystem';
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',decch(1:2),...
                 'NumberOfChannels',decch(3:end));
@@ -862,10 +862,10 @@ classdef CnsoltFactoryTestCase < matlab.unittest.TestCase
             decch = [2 2 4];
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.nsoltx.CnsoltSynthesis2dSystem';
+            classExpctd = 'saivdr.dictionary.cnsoltx.CnsoltSynthesis2dSystem';
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',decch(1:2),...
                 'NumberOfChannels',decch(3:end));
@@ -885,10 +885,10 @@ classdef CnsoltFactoryTestCase < matlab.unittest.TestCase
             decch = [2 2 5];
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.nsoltx.CnsoltSynthesis2dSystem';
+            classExpctd = 'saivdr.dictionary.cnsoltx.CnsoltSynthesis2dSystem';
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',decch(1:2),...
                 'NumberOfChannels',decch(3:end));
@@ -906,11 +906,11 @@ classdef CnsoltFactoryTestCase < matlab.unittest.TestCase
         function testCreateSynthesis2dSystemLpPuFb2d(testCase)
             
             %
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem();
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.nsoltx.CnsoltSynthesis2dSystem';
+            classExpctd = 'saivdr.dictionary.cnsoltx.CnsoltSynthesis2dSystem';
             
             % Instantiation of target class
             testCase.obj = CnsoltFactory.createSynthesis2dSystem(lppufb);
@@ -928,13 +928,13 @@ classdef CnsoltFactoryTestCase < matlab.unittest.TestCase
             
             %
             decch = [ 3 3 ];
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',decch(1:2),...
                 'NumberOfChannels',decch(3:end));
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.nsoltx.CnsoltSynthesis2dSystem';
+            classExpctd = 'saivdr.dictionary.cnsoltx.CnsoltSynthesis2dSystem';
             
             % Instantiation of target class
             testCase.obj = CnsoltFactory.createSynthesis2dSystem(lppufb);
@@ -951,7 +951,7 @@ classdef CnsoltFactoryTestCase < matlab.unittest.TestCase
         function testCreateSynthesis2dSystemLpPuFb2dParameterMatrixSet(testCase)
             
             %
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'OutputMode','ParameterMatrixSet');
             % Expected values
@@ -971,7 +971,7 @@ classdef CnsoltFactoryTestCase < matlab.unittest.TestCase
         function testCreateSynthesis2dSystemLpPuFb2dWithoutOutputMode(testCase)
             
             %
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem();
             % Expected values
             outputExpctd = 'Coefficients';
@@ -990,7 +990,7 @@ classdef CnsoltFactoryTestCase < matlab.unittest.TestCase
         function testCreateSynthesis2dSystemIsCloneLpPuFb2dFalse(testCase)
             
             %
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             
             % Instantiation of target class
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem();
@@ -1008,7 +1008,7 @@ classdef CnsoltFactoryTestCase < matlab.unittest.TestCase
         function testCreateAnalysis2dSystemIsCloneLpPuFb2dFalse(testCase)
             
             %
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             
             % Instantiation of target class
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem();
@@ -1028,10 +1028,10 @@ classdef CnsoltFactoryTestCase < matlab.unittest.TestCase
             % Parameters
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.nsoltx.CplxOvsdLpPuFb3dTypeIVm1System';
+            classExpctd = 'saivdr.dictionary.cnsoltx.CplxOvsdLpPuFb3dTypeIVm1System';
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             testCase.obj = CnsoltFactory.createCplxOvsdLpPuFb3dSystem();
             
             % Actual values
@@ -1049,10 +1049,10 @@ classdef CnsoltFactoryTestCase < matlab.unittest.TestCase
             % Parameters
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.nsoltx.CnsoltAnalysis3dSystem';
+            classExpctd = 'saivdr.dictionary.cnsoltx.CnsoltAnalysis3dSystem';
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             testCase.obj = CnsoltFactory.createAnalysis3dSystem();
             
             % Actual values
@@ -1069,10 +1069,10 @@ classdef CnsoltFactoryTestCase < matlab.unittest.TestCase
             % Parameters
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.nsoltx.CnsoltSynthesis3dSystem';
+            classExpctd = 'saivdr.dictionary.cnsoltx.CnsoltSynthesis3dSystem';
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             testCase.obj = CnsoltFactory.createSynthesis3dSystem();
             
             % Actual values
@@ -1091,10 +1091,10 @@ classdef CnsoltFactoryTestCase < matlab.unittest.TestCase
             chs = [3 2];
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.nsoltx.CplxOvsdLpPuFb2dTypeIIVm1System';
+            classExpctd = 'saivdr.dictionary.cnsoltx.CplxOvsdLpPuFb2dTypeIIVm1System';
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             testCase.obj = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',dec,...
                 'NumberOfChannels',chs);
@@ -1115,10 +1115,10 @@ classdef CnsoltFactoryTestCase < matlab.unittest.TestCase
             chs = [2 3];
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.nsoltx.CplxOvsdLpPuFb2dTypeIIVm1System';
+            classExpctd = 'saivdr.dictionary.cnsoltx.CplxOvsdLpPuFb2dTypeIIVm1System';
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             testCase.obj = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',dec,...
                 'NumberOfChannels',chs);
@@ -1139,10 +1139,10 @@ classdef CnsoltFactoryTestCase < matlab.unittest.TestCase
             chs = [5 4];
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.nsoltx.CplxOvsdLpPuFb3dTypeIIVm1System';
+            classExpctd = 'saivdr.dictionary.cnsoltx.CplxOvsdLpPuFb3dTypeIIVm1System';
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             testCase.obj = CnsoltFactory.createCplxOvsdLpPuFb3dSystem(...
                 'DecimationFactor',dec,...
                 'NumberOfChannels',chs);
@@ -1163,10 +1163,10 @@ classdef CnsoltFactoryTestCase < matlab.unittest.TestCase
             chs = [4 5];
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.nsoltx.CplxOvsdLpPuFb3dTypeIIVm1System';
+            classExpctd = 'saivdr.dictionary.cnsoltx.CplxOvsdLpPuFb3dTypeIIVm1System';
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             testCase.obj = CnsoltFactory.createCplxOvsdLpPuFb3dSystem(...
                 'DecimationFactor',dec,...
                 'NumberOfChannels',chs);
@@ -1187,10 +1187,10 @@ classdef CnsoltFactoryTestCase < matlab.unittest.TestCase
             chs = [3 2];
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.nsoltx.CnsoltAnalysis2dSystem';
+            classExpctd = 'saivdr.dictionary.cnsoltx.CnsoltAnalysis2dSystem';
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',dec,...
                 'NumberOfChannels',chs);
@@ -1212,10 +1212,10 @@ classdef CnsoltFactoryTestCase < matlab.unittest.TestCase
             chs = [2 3];
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.nsoltx.CnsoltAnalysis2dSystem';
+            classExpctd = 'saivdr.dictionary.cnsoltx.CnsoltAnalysis2dSystem';
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',dec,...
                 'NumberOfChannels',chs);
@@ -1237,10 +1237,10 @@ classdef CnsoltFactoryTestCase < matlab.unittest.TestCase
             chs = [5 4];
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.nsoltx.CnsoltAnalysis3dSystem';
+            classExpctd = 'saivdr.dictionary.cnsoltx.CnsoltAnalysis3dSystem';
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb3dSystem(...
                 'DecimationFactor',dec,...
                 'NumberOfChannels',chs);
@@ -1262,10 +1262,10 @@ classdef CnsoltFactoryTestCase < matlab.unittest.TestCase
             chs = [4 5];
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.nsoltx.CnsoltAnalysis3dSystem';
+            classExpctd = 'saivdr.dictionary.cnsoltx.CnsoltAnalysis3dSystem';
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb3dSystem(...
                 'DecimationFactor',dec,...
                 'NumberOfChannels',chs);
@@ -1287,10 +1287,10 @@ classdef CnsoltFactoryTestCase < matlab.unittest.TestCase
             chs = [3 2];
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.nsoltx.CnsoltSynthesis2dSystem';
+            classExpctd = 'saivdr.dictionary.cnsoltx.CnsoltSynthesis2dSystem';
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',dec,...
                 'NumberOfChannels',chs);
@@ -1311,10 +1311,10 @@ classdef CnsoltFactoryTestCase < matlab.unittest.TestCase
             chs = [2 3];
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.nsoltx.CnsoltSynthesis2dSystem';
+            classExpctd = 'saivdr.dictionary.cnsoltx.CnsoltSynthesis2dSystem';
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',dec,...
                 'NumberOfChannels',chs);
@@ -1335,10 +1335,10 @@ classdef CnsoltFactoryTestCase < matlab.unittest.TestCase
             chs = [5 4];
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.nsoltx.CnsoltSynthesis3dSystem';
+            classExpctd = 'saivdr.dictionary.cnsoltx.CnsoltSynthesis3dSystem';
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb3dSystem(...
                 'DecimationFactor',dec,...
                 'NumberOfChannels',chs);
@@ -1359,10 +1359,10 @@ classdef CnsoltFactoryTestCase < matlab.unittest.TestCase
             chs = [4 5];
             
             % Expected values
-            classExpctd = 'saivdr.dictionary.nsoltx.CnsoltSynthesis3dSystem';
+            classExpctd = 'saivdr.dictionary.cnsoltx.CnsoltSynthesis3dSystem';
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb3dSystem(...
                 'DecimationFactor',dec,...
                 'NumberOfChannels',chs);
@@ -1380,7 +1380,7 @@ classdef CnsoltFactoryTestCase < matlab.unittest.TestCase
         function testCreateCplxOvsdLpPuFb3dDeepCopy(testCase)
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             testCase.obj = CnsoltFactory.createCplxOvsdLpPuFb3dSystem();
             cloneObj = CnsoltFactory.createCplxOvsdLpPuFb3dSystem(testCase.obj);
             

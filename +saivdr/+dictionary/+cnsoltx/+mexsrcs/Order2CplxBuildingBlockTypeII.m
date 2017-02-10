@@ -1,4 +1,4 @@
-classdef Order2CplxBuildingBlockTypeII < saivdr.dictionary.nsoltx.mexsrcs.AbstBuildingBlock
+classdef Order2CplxBuildingBlockTypeII < saivdr.dictionary.cnsoltx.mexsrcs.AbstBuildingBlock
     %ORDER2BUILDINGBLOCKTYPEII Type-II building block with order 2
     %
     % SVN identifier:

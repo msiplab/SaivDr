@@ -44,7 +44,7 @@ classdef CnsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             ordExpctd = [ 0 0 0 ];
             
             % Instantiation
-            import saivdr.dictionary.nsoltx.CnsoltAtomConcatenator3d
+            import saivdr.dictionary.cnsoltx.CnsoltAtomConcatenator3d
             testCase.module = CnsoltAtomConcatenator3d();
             
             % Actual values
@@ -72,7 +72,7 @@ classdef CnsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             ordExpctd = [ 0 0 0 ];
             
             % Instantiation
-            import saivdr.dictionary.nsoltx.CnsoltAtomConcatenator3d
+            import saivdr.dictionary.cnsoltx.CnsoltAtomConcatenator3d
             testCase.module = CnsoltAtomConcatenator3d(...
                 'NumberOfSymmetricChannels',nchExpctd(1),...
                 'NumberOfAntisymmetricChannels',nchExpctd(2));
@@ -112,7 +112,7 @@ classdef CnsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             cfsExpctd = coefs;            
                         
             % Instantiation
-            import saivdr.dictionary.nsoltx.CnsoltAtomConcatenator3d
+            import saivdr.dictionary.cnsoltx.CnsoltAtomConcatenator3d
             testCase.module = CnsoltAtomConcatenator3d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -147,7 +147,7 @@ classdef CnsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             cfsExpctd = coefs;
                         
             % Instantiation
-            import saivdr.dictionary.nsoltx.CnsoltAtomConcatenator3d
+            import saivdr.dictionary.cnsoltx.CnsoltAtomConcatenator3d
             testCase.module = CnsoltAtomConcatenator3d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -190,7 +190,7 @@ classdef CnsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             cfsExpctd = coefs;
                         
             % Instantiation
-            import saivdr.dictionary.nsoltx.CnsoltAtomConcatenator3d
+            import saivdr.dictionary.cnsoltx.CnsoltAtomConcatenator3d
             testCase.module = CnsoltAtomConcatenator3d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -229,7 +229,7 @@ classdef CnsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             cfsExpctd = coefs;
             
             % Instantiation
-            import saivdr.dictionary.nsoltx.CnsoltAtomConcatenator3d
+            import saivdr.dictionary.cnsoltx.CnsoltAtomConcatenator3d
             testCase.module = CnsoltAtomConcatenator3d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -268,7 +268,7 @@ classdef CnsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             cfsExpctd = coefs;
             
             % Instantiation
-            import saivdr.dictionary.nsoltx.CnsoltAtomConcatenator3d
+            import saivdr.dictionary.cnsoltx.CnsoltAtomConcatenator3d
             testCase.module = CnsoltAtomConcatenator3d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -309,7 +309,7 @@ classdef CnsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             cfsExpctd = coefs;
             
             % Instantiation
-            import saivdr.dictionary.nsoltx.CnsoltAtomConcatenator3d
+            import saivdr.dictionary.cnsoltx.CnsoltAtomConcatenator3d
             testCase.module = CnsoltAtomConcatenator3d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -352,7 +352,7 @@ classdef CnsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             cfsExpctd = coefs;
             
             % Instantiation
-            import saivdr.dictionary.nsoltx.CnsoltAtomConcatenator3d
+            import saivdr.dictionary.cnsoltx.CnsoltAtomConcatenator3d
             testCase.module = CnsoltAtomConcatenator3d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -393,7 +393,7 @@ classdef CnsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             cfsExpctd = coefs;
             
             % Instantiation
-            import saivdr.dictionary.nsoltx.CnsoltAtomConcatenator3d
+            import saivdr.dictionary.cnsoltx.CnsoltAtomConcatenator3d
             testCase.module = CnsoltAtomConcatenator3d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -434,7 +434,7 @@ classdef CnsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             cfsExpctd = coefs;
             
             % Instantiation
-            import saivdr.dictionary.nsoltx.CnsoltAtomConcatenator3d
+            import saivdr.dictionary.cnsoltx.CnsoltAtomConcatenator3d
             testCase.module = CnsoltAtomConcatenator3d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -479,7 +479,7 @@ classdef CnsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             cfsExpctd = coefs;
             
             % Instantiation
-            import saivdr.dictionary.nsoltx.CnsoltAtomConcatenator3d
+            import saivdr.dictionary.cnsoltx.CnsoltAtomConcatenator3d
             testCase.module = CnsoltAtomConcatenator3d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -524,7 +524,7 @@ classdef CnsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             cfsExpctd = coefs;
             
             % Instantiation
-            import saivdr.dictionary.nsoltx.CnsoltAtomConcatenator3d
+            import saivdr.dictionary.cnsoltx.CnsoltAtomConcatenator3d
             testCase.module = CnsoltAtomConcatenator3d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -571,7 +571,7 @@ classdef CnsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             cfsExpctd = coefs;
             
             % Instantiation
-            import saivdr.dictionary.nsoltx.CnsoltAtomConcatenator3d
+            import saivdr.dictionary.cnsoltx.CnsoltAtomConcatenator3d
             testCase.module = CnsoltAtomConcatenator3d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -618,7 +618,7 @@ classdef CnsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             cfsExpctd = coefs;
             
             % Instantiation
-            import saivdr.dictionary.nsoltx.CnsoltAtomConcatenator3d
+            import saivdr.dictionary.cnsoltx.CnsoltAtomConcatenator3d
             testCase.module = CnsoltAtomConcatenator3d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -667,7 +667,7 @@ classdef CnsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             cfsExpctd(nch(1)+1:end,:) = U0.'*cfsExpctd(nch(1)+1:end,:);
             
             % Instantiation
-            import saivdr.dictionary.nsoltx.CnsoltAtomConcatenator3d
+            import saivdr.dictionary.cnsoltx.CnsoltAtomConcatenator3d
             testCase.module = CnsoltAtomConcatenator3d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -712,7 +712,7 @@ classdef CnsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             cfsExpctd = coefs;
                         
             % Instantiation
-            import saivdr.dictionary.nsoltx.CnsoltAtomConcatenator3d
+            import saivdr.dictionary.cnsoltx.CnsoltAtomConcatenator3d
             testCase.module = CnsoltAtomConcatenator3d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -751,7 +751,7 @@ classdef CnsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             cfsExpctd = coefs;
                         
             % Instantiation
-            import saivdr.dictionary.nsoltx.CnsoltAtomConcatenator3d
+            import saivdr.dictionary.cnsoltx.CnsoltAtomConcatenator3d
             testCase.module = CnsoltAtomConcatenator3d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -792,7 +792,7 @@ classdef CnsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             cfsExpctd = coefs;
                         
             % Instantiation
-            import saivdr.dictionary.nsoltx.CnsoltAtomConcatenator3d
+            import saivdr.dictionary.cnsoltx.CnsoltAtomConcatenator3d
             testCase.module = CnsoltAtomConcatenator3d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -833,7 +833,7 @@ classdef CnsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             cfsExpctd = coefs;
                         
             % Instantiation
-            import saivdr.dictionary.nsoltx.CnsoltAtomConcatenator3d
+            import saivdr.dictionary.cnsoltx.CnsoltAtomConcatenator3d
             testCase.module = CnsoltAtomConcatenator3d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -876,7 +876,7 @@ classdef CnsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             cfsExpctd = coefs;
                         
             % Instantiation
-            import saivdr.dictionary.nsoltx.CnsoltAtomConcatenator3d
+            import saivdr.dictionary.cnsoltx.CnsoltAtomConcatenator3d
             testCase.module = CnsoltAtomConcatenator3d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -919,7 +919,7 @@ classdef CnsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             cfsExpctd = coefs;
                         
             % Instantiation
-            import saivdr.dictionary.nsoltx.CnsoltAtomConcatenator3d
+            import saivdr.dictionary.cnsoltx.CnsoltAtomConcatenator3d
             testCase.module = CnsoltAtomConcatenator3d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -962,7 +962,7 @@ classdef CnsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             cfsExpctd = coefs;
                         
             % Instantiation
-            import saivdr.dictionary.nsoltx.CnsoltAtomConcatenator3d
+            import saivdr.dictionary.cnsoltx.CnsoltAtomConcatenator3d
             testCase.module = CnsoltAtomConcatenator3d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -1007,7 +1007,7 @@ classdef CnsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             cfsExpctd = coefs;
                         
             % Instantiation
-            import saivdr.dictionary.nsoltx.CnsoltAtomConcatenator3d
+            import saivdr.dictionary.cnsoltx.CnsoltAtomConcatenator3d
             testCase.module = CnsoltAtomConcatenator3d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -1054,7 +1054,7 @@ classdef CnsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             cfsExpctd = coefs;
                         
             % Instantiation
-            import saivdr.dictionary.nsoltx.CnsoltAtomConcatenator3d
+            import saivdr.dictionary.cnsoltx.CnsoltAtomConcatenator3d
             testCase.module = CnsoltAtomConcatenator3d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -1101,7 +1101,7 @@ classdef CnsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             cfsExpctd = coefs;
                         
             % Instantiation
-            import saivdr.dictionary.nsoltx.CnsoltAtomConcatenator3d
+            import saivdr.dictionary.cnsoltx.CnsoltAtomConcatenator3d
             testCase.module = CnsoltAtomConcatenator3d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -1148,7 +1148,7 @@ classdef CnsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             cfsExpctd = coefs;
                         
             % Instantiation
-            import saivdr.dictionary.nsoltx.CnsoltAtomConcatenator3d
+            import saivdr.dictionary.cnsoltx.CnsoltAtomConcatenator3d
             testCase.module = CnsoltAtomConcatenator3d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -1197,7 +1197,7 @@ classdef CnsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             cfsExpctd(nch(1)+1:end,:) = U0.'*cfsExpctd(nch(1)+1:end,:);
             
             % Instantiation
-            import saivdr.dictionary.nsoltx.CnsoltAtomConcatenator3d
+            import saivdr.dictionary.cnsoltx.CnsoltAtomConcatenator3d
             testCase.module = CnsoltAtomConcatenator3d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -1270,7 +1270,7 @@ classdef CnsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             cfsExpctd = coefs_;
             
             % Instantiation
-            import saivdr.dictionary.nsoltx.CnsoltAtomConcatenator3d
+            import saivdr.dictionary.cnsoltx.CnsoltAtomConcatenator3d
             testCase.module = CnsoltAtomConcatenator3d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2),...
@@ -1353,7 +1353,7 @@ classdef CnsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             cfsExpctd = coefs_;
             
             % Instantiation
-            import saivdr.dictionary.nsoltx.CnsoltAtomConcatenator3d
+            import saivdr.dictionary.cnsoltx.CnsoltAtomConcatenator3d
             testCase.module = CnsoltAtomConcatenator3d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2),...
@@ -1400,7 +1400,7 @@ classdef CnsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             cfsExpctd = coefs;
                         
             % Instantiation
-            import saivdr.dictionary.nsoltx.CnsoltAtomConcatenator3d
+            import saivdr.dictionary.cnsoltx.CnsoltAtomConcatenator3d
             testCase.module = CnsoltAtomConcatenator3d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -1439,7 +1439,7 @@ classdef CnsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             cfsExpctd = coefs;
                         
             % Instantiation
-            import saivdr.dictionary.nsoltx.CnsoltAtomConcatenator3d
+            import saivdr.dictionary.cnsoltx.CnsoltAtomConcatenator3d
             testCase.module = CnsoltAtomConcatenator3d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -1480,7 +1480,7 @@ classdef CnsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             cfsExpctd = coefs;
                         
             % Instantiation
-            import saivdr.dictionary.nsoltx.CnsoltAtomConcatenator3d
+            import saivdr.dictionary.cnsoltx.CnsoltAtomConcatenator3d
             testCase.module = CnsoltAtomConcatenator3d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -1521,7 +1521,7 @@ classdef CnsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             cfsExpctd = coefs;
                         
             % Instantiation
-            import saivdr.dictionary.nsoltx.CnsoltAtomConcatenator3d
+            import saivdr.dictionary.cnsoltx.CnsoltAtomConcatenator3d
             testCase.module = CnsoltAtomConcatenator3d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -1564,7 +1564,7 @@ classdef CnsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             cfsExpctd = coefs;
                         
             % Instantiation
-            import saivdr.dictionary.nsoltx.CnsoltAtomConcatenator3d
+            import saivdr.dictionary.cnsoltx.CnsoltAtomConcatenator3d
             testCase.module = CnsoltAtomConcatenator3d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -1607,7 +1607,7 @@ classdef CnsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             cfsExpctd = coefs;
                         
             % Instantiation
-            import saivdr.dictionary.nsoltx.CnsoltAtomConcatenator3d
+            import saivdr.dictionary.cnsoltx.CnsoltAtomConcatenator3d
             testCase.module = CnsoltAtomConcatenator3d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -1650,7 +1650,7 @@ classdef CnsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             cfsExpctd = coefs;
                         
             % Instantiation
-            import saivdr.dictionary.nsoltx.CnsoltAtomConcatenator3d
+            import saivdr.dictionary.cnsoltx.CnsoltAtomConcatenator3d
             testCase.module = CnsoltAtomConcatenator3d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -1695,7 +1695,7 @@ classdef CnsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             cfsExpctd = coefs;
                         
             % Instantiation
-            import saivdr.dictionary.nsoltx.CnsoltAtomConcatenator3d
+            import saivdr.dictionary.cnsoltx.CnsoltAtomConcatenator3d
             testCase.module = CnsoltAtomConcatenator3d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -1742,7 +1742,7 @@ classdef CnsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             cfsExpctd = coefs;
                         
             % Instantiation
-            import saivdr.dictionary.nsoltx.CnsoltAtomConcatenator3d
+            import saivdr.dictionary.cnsoltx.CnsoltAtomConcatenator3d
             testCase.module = CnsoltAtomConcatenator3d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -1789,7 +1789,7 @@ classdef CnsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             cfsExpctd = coefs;
                         
             % Instantiation
-            import saivdr.dictionary.nsoltx.CnsoltAtomConcatenator3d
+            import saivdr.dictionary.cnsoltx.CnsoltAtomConcatenator3d
             testCase.module = CnsoltAtomConcatenator3d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -1836,7 +1836,7 @@ classdef CnsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             cfsExpctd = coefs;
                         
             % Instantiation
-            import saivdr.dictionary.nsoltx.CnsoltAtomConcatenator3d
+            import saivdr.dictionary.cnsoltx.CnsoltAtomConcatenator3d
             testCase.module = CnsoltAtomConcatenator3d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -1885,7 +1885,7 @@ classdef CnsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             cfsExpctd(1:nch(1),:) = W0.'*cfsExpctd(1:nch(1),:);
             
             % Instantiation
-            import saivdr.dictionary.nsoltx.CnsoltAtomConcatenator3d
+            import saivdr.dictionary.cnsoltx.CnsoltAtomConcatenator3d
             testCase.module = CnsoltAtomConcatenator3d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2));
@@ -1966,7 +1966,7 @@ classdef CnsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             cfsExpctd = coefs_;
             
             % Instantiation
-            import saivdr.dictionary.nsoltx.CnsoltAtomConcatenator3d
+            import saivdr.dictionary.cnsoltx.CnsoltAtomConcatenator3d
             testCase.module = CnsoltAtomConcatenator3d(...
                 'NumberOfSymmetricChannels',nch(1),...
                 'NumberOfAntisymmetricChannels',nch(2),...

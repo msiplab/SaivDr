@@ -114,9 +114,9 @@ classdef AbstCnsoltCoefManipulator3d < matlab.System
             %
             id = 'SaivDr:IllegalArgumentException';
             lenOrd = length(obj.PolyPhaseOrder);
-            if lenOrd ~= saivdr.dictionary.nsoltx.AbstCnsoltCoefManipulator3d.DATA_DIMENSION
+            if lenOrd ~= saivdr.dictionary.cnsoltx.AbstCnsoltCoefManipulator3d.DATA_DIMENSION
                 error('%s:\n lentgh(PolyPhaseOrder) must be %d.',...
-                    id, saivdr.dictionary.nsoltx.AbstCnsoltCoefManipulator3d.DATA_DIMENSION);
+                    id, saivdr.dictionary.cnsoltx.AbstCnsoltCoefManipulator3d.DATA_DIMENSION);
             end
             
         end

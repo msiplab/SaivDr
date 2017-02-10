@@ -1,5 +1,5 @@
 classdef CplxOvsdLpPuFb1dTypeIVm1System < ...
-        saivdr.dictionary.olpprfb.AbstCplxOvsdLpPuFb1dTypeISystem %#codegen
+        saivdr.dictionary.colpprfb.AbstCplxOvsdLpPuFb1dTypeISystem %#codegen
     %OVSDLPPUFBMDTYPEIVM1SYSTEM 2-D Type-I Oversampled LPPUFB with one VM
     %
     % SVN identifier:
@@ -27,7 +27,7 @@ classdef CplxOvsdLpPuFb1dTypeIVm1System < ...
     methods
         function obj = CplxOvsdLpPuFb1dTypeIVm1System(varargin)
             import saivdr.dictionary.utility.OrthonormalMatrixGenerationSystem
-            obj = obj@saivdr.dictionary.olpprfb.AbstCplxOvsdLpPuFb1dTypeISystem(...
+            obj = obj@saivdr.dictionary.colpprfb.AbstCplxOvsdLpPuFb1dTypeISystem(...
                 varargin{:});
             obj.omgsV0_ = OrthonormalMatrixGenerationSystem();
             obj.omgsWU_ = OrthonormalMatrixGenerationSystem();
@@ -37,19 +37,19 @@ classdef CplxOvsdLpPuFb1dTypeIVm1System < ...
     methods (Access = protected)
 
         function s = saveObjectImpl(obj)
-            s = saveObjectImpl@saivdr.dictionary.olpprfb.AbstCplxOvsdLpPuFb1dTypeISystem(obj);
+            s = saveObjectImpl@saivdr.dictionary.colpprfb.AbstCplxOvsdLpPuFb1dTypeISystem(obj);
             s.omgsV0_ = matlab.System.saveObject(obj.omgsV0_);
             s.omgsWU_ = matlab.System.saveObject(obj.omgsWU_);
         end
         
         function loadObjectImpl(obj,s,wasLocked)
-            loadObjectImpl@saivdr.dictionary.olpprfb.AbstCplxOvsdLpPuFb1dTypeISystem(obj,s,wasLocked);
+            loadObjectImpl@saivdr.dictionary.colpprfb.AbstCplxOvsdLpPuFb1dTypeISystem(obj,s,wasLocked);
             obj.omgsV0_ = matlab.System.loadObject(s.omgsV0_);
             obj.omgsWU_ = matlab.System.loadObject(s.omgsWU_);
         end        
         
         function updateParameterMatrixSet_(obj)
-            import saivdr.dictionary.nsoltx.ChannelGroup
+            import saivdr.dictionary.cnsoltx.ChannelGroup
             nChs = obj.NumberOfChannels;
             hChs = nChs/2;
             angles = obj.Angles;

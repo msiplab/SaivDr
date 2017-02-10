@@ -33,7 +33,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
         function testDefaultConstruction(testCase)
             
             % Expected values
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufbExpctd = CplxOvsdLpPuFb2dTypeIVm1System(...
                 'OutputMode','ParameterMatrixSet');
             frmbdExpctd  = 1;
@@ -57,13 +57,13 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             nChs = [4 4];
             
             % Expected values
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufbExpctd = CplxOvsdLpPuFb2dTypeIVm1System(...
                 'NumberOfChannels',nChs,...
                 'OutputMode','ParameterMatrixSet');
             
             % Instantiation
-            import saivdr.dictionary.nsoltx.ChannelGroup
+            import saivdr.dictionary.cnsoltx.ChannelGroup
             testCase.synthesizer = CnsoltAnalysis2dSystem(...
                 'NumberOfSymmetricChannels',nChs(ChannelGroup.UPPER),...
                 'NumberOfAntisymmetricChannels',nChs(ChannelGroup.LOWER));
@@ -95,7 +95,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Expected values
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec]);
             E0 = step(lppufb,[],[]);
@@ -137,7 +137,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Expected values
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec]);
             E0 = step(lppufb,[],[]);
@@ -177,7 +177,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem();
             angs = get(lppufb,'Angles');
             angs = 2*pi*randn(size(angs));
@@ -227,7 +227,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end                 
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',[ord ord]);
@@ -289,7 +289,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end                        
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',[ord ord]);
@@ -350,7 +350,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',[ord ord]);
@@ -413,7 +413,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',[ord ord],...
@@ -475,7 +475,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',[ord ord],...
@@ -538,7 +538,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',[ord ord]);
@@ -596,7 +596,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',[ord ord]);
@@ -655,7 +655,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',[ord ord]);
@@ -719,7 +719,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',[ord ord]);
@@ -782,7 +782,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',[ord ord]);
@@ -845,7 +845,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',[ord ord]);
@@ -906,7 +906,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',[ord ord]);
@@ -966,7 +966,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',[ord ord]);
@@ -1029,7 +1029,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',[ord ord]);
@@ -1092,7 +1092,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',[ord ord]);
@@ -1153,7 +1153,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',[ord ord]);
@@ -1216,7 +1216,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',[ord ord]);
@@ -1277,7 +1277,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',[ord ord]);
@@ -1337,7 +1337,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 sIdx = eIdx + 1;
             end               
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',[ord ord]);
@@ -1398,7 +1398,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
 
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',[0 ord]);
@@ -1461,7 +1461,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',[0 ord]);
@@ -1525,7 +1525,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',[0 ord]);
@@ -1589,7 +1589,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',[0 ord]);
@@ -1652,7 +1652,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',[ord 0]);
@@ -1715,7 +1715,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',[ord 0]);
@@ -1779,7 +1779,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',[ord 0]);
@@ -1841,7 +1841,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',[ord 0]);
@@ -1904,7 +1904,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',[0 ord]);
@@ -1966,7 +1966,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',[0 ord]);
@@ -2028,7 +2028,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',[0 ord]);
@@ -2090,7 +2090,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',[0 ord]);
@@ -2152,7 +2152,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',[ord 0]);
@@ -2214,7 +2214,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',[ord 0]);
@@ -2277,7 +2277,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',[ord 0]);
@@ -2339,7 +2339,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',[ord 0]);
@@ -2401,7 +2401,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',ord);
@@ -2465,7 +2465,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',ord);
@@ -2528,7 +2528,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',ord);
@@ -2590,7 +2590,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',ord);
@@ -2652,7 +2652,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',ord);
@@ -2716,7 +2716,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',ord);
@@ -2780,7 +2780,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',ord);
@@ -2841,7 +2841,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',ord);
@@ -2903,7 +2903,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -2965,7 +2965,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -3028,7 +3028,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -3091,7 +3091,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -3154,7 +3154,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -3219,7 +3219,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -3285,7 +3285,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -3351,7 +3351,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -3417,7 +3417,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -3483,7 +3483,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -3548,7 +3548,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -3614,7 +3614,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -3680,7 +3680,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -3746,7 +3746,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -3811,7 +3811,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -3875,7 +3875,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -3940,7 +3940,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -4005,7 +4005,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -4071,7 +4071,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -4138,7 +4138,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -4204,7 +4204,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
                         
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -4267,7 +4267,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -4331,7 +4331,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -4395,7 +4395,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -4464,7 +4464,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -4543,7 +4543,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -4626,7 +4626,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -4712,7 +4712,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -4784,7 +4784,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -4850,7 +4850,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -4915,7 +4915,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -4981,7 +4981,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end   
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -5053,7 +5053,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -5132,7 +5132,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -5214,7 +5214,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -5300,7 +5300,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -5394,7 +5394,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -5469,7 +5469,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',decch(1:2),...
                 'NumberOfChannels',decch(3:end),...
@@ -5532,7 +5532,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -5594,7 +5594,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             scales = repmat([height/dec(1) width/dec(2)],[sum(ch) 1]);
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',dec,...
                 'NumberOfChannels',ch,...
@@ -5627,7 +5627,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
         function testConstructionTypeII(testCase)
             
             % Expected values
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufbExpctd = CplxOvsdLpPuFb2dTypeIIVm1System(...
                 'OutputMode','ParameterMatrixSet');
             
@@ -5649,13 +5649,13 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %             nChs = [6 2];
 %            
 %             % Expected values
-%             import saivdr.dictionary.nsoltx.*
+%             import saivdr.dictionary.cnsoltx.*
 %             lppufbExpctd = CplxOvsdLpPuFb2dTypeIIVm1System(...
 %                 'NumberOfChannels',nChs,...
 %                 'OutputMode','ParameterMatrixSet');
 %             
 %             % Instantiation
-%             import saivdr.dictionary.nsoltx.ChannelGroup
+%             import saivdr.dictionary.cnsoltx.ChannelGroup
 %             testCase.synthesizer = CnsoltAnalysis2dSystem(...
 %                 'NumberOfSymmetricChannels',nChs(ChannelGroup.UPPER),...
 %                 'NumberOfAntisymmetricChannels',nChs(ChannelGroup.LOWER));
@@ -5685,7 +5685,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %             end
 %             
 %             % Expected values
-%             import saivdr.dictionary.nsoltx.*
+%             import saivdr.dictionary.cnsoltx.*
 %             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
 %                 'DecimationFactor',[dec dec]);
 %             E0 = step(lppufb,[],[]);
@@ -5729,7 +5729,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Expected values
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec]);
             E0 = step(lppufb,[],[]);
@@ -5772,7 +5772,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',nChs,...
@@ -5822,7 +5822,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels', nChs,...
@@ -5874,7 +5874,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',nChs,...
@@ -5900,7 +5900,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Instantiation of target class
             release(lppufb)
             set(lppufb,'OutputMode','ParameterMatrixSet');
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             testCase.synthesizer = CnsoltSynthesis2dSystem(....
                 'LpPuFb2d',lppufb);
             
@@ -5939,7 +5939,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',nChs,...
@@ -5965,7 +5965,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Instantiation of target class
             release(lppufb)
             set(lppufb,'OutputMode','ParameterMatrixSet');
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             testCase.synthesizer = CnsoltSynthesis2dSystem(....
                 'LpPuFb2d',lppufb);
             
@@ -6004,7 +6004,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',nChs,...
@@ -6068,7 +6068,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',nChs,...
@@ -6133,7 +6133,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',nChs,...
@@ -6197,7 +6197,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',[ord ord]);
@@ -6257,7 +6257,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',[ord ord]);
@@ -6317,7 +6317,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',nChs,...
@@ -6382,7 +6382,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',nChs,...
@@ -6446,7 +6446,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',nChs,...
@@ -6511,7 +6511,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',nChs,...
@@ -6575,7 +6575,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',[ord ord]);
@@ -6635,7 +6635,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',[ord ord]);
@@ -6695,7 +6695,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',nChs,...
@@ -6760,7 +6760,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',nChs,...
@@ -6824,7 +6824,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',nChs,...
@@ -6889,7 +6889,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',nChs,...
@@ -6953,7 +6953,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',nChs,...
@@ -7014,7 +7014,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'PolyPhaseOrder',[ord ord]);
@@ -7074,7 +7074,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels', nChs,...
@@ -7138,7 +7138,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels', nChs,...
@@ -7202,7 +7202,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels', nChs,...
@@ -7266,7 +7266,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels', nChs,...
@@ -7330,7 +7330,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels', nChs,...
@@ -7394,7 +7394,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels', nChs,...
@@ -7458,7 +7458,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels', nChs,...
@@ -7522,7 +7522,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels', nChs,...
@@ -7586,7 +7586,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels', nChs,...
@@ -7649,7 +7649,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels', nChs,...
@@ -7712,7 +7712,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels', nChs,...
@@ -7775,7 +7775,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels', nChs,...
@@ -7838,7 +7838,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels', nChs,...
@@ -7901,7 +7901,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels', nChs,...
@@ -7965,7 +7965,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels', nChs,...
@@ -8028,7 +8028,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels', nChs,...
@@ -8091,7 +8091,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',nChs,...
@@ -8155,7 +8155,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',nChs,...
@@ -8219,7 +8219,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',nChs,...
@@ -8282,7 +8282,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',nChs,...
@@ -8345,7 +8345,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',nChs,...
@@ -8409,7 +8409,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',nChs,...
@@ -8473,7 +8473,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',nChs,...
@@ -8536,7 +8536,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',nChs,...
@@ -8599,7 +8599,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -8662,7 +8662,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -8724,7 +8724,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -8786,7 +8786,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -8848,7 +8848,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -8913,7 +8913,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -8979,7 +8979,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -9045,7 +9045,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -9111,7 +9111,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -9177,7 +9177,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -9243,7 +9243,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -9309,7 +9309,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -9374,7 +9374,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -9440,7 +9440,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -9506,7 +9506,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -9572,7 +9572,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -9638,7 +9638,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -9705,7 +9705,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -9772,7 +9772,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -9839,7 +9839,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end  ;
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -9901,7 +9901,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -9963,7 +9963,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',nChs,...
@@ -10026,7 +10026,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -10096,7 +10096,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -10175,7 +10175,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -10259,7 +10259,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -10346,7 +10346,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -10418,7 +10418,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -10484,7 +10484,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -10550,7 +10550,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -10616,7 +10616,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -10690,7 +10690,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -10771,7 +10771,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -10855,7 +10855,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -10943,7 +10943,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -11038,7 +11038,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -11134,7 +11134,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',[dec dec],...
                 'NumberOfChannels',ch,...
@@ -11205,7 +11205,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',decch(1:2),...
                 'NumberOfChannels',decch(3:end));
@@ -11258,7 +11258,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',decch(1:2),...
                 'NumberOfChannels',decch(3:end),...
@@ -11324,7 +11324,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',decch(1:2),...
                 'NumberOfChannels',decch(3:end),...
@@ -11389,7 +11389,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',decch(1:2),...
                 'NumberOfChannels',decch(3:end),...
@@ -11455,7 +11455,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',decch(1:2),...
                 'NumberOfChannels',decch(3:end),...
@@ -11518,7 +11518,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %             end
 %             
 %             % Preparation
-%             import saivdr.dictionary.nsoltx.*
+%             import saivdr.dictionary.cnsoltx.*
 %             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
 %                 'DecimationFactor',decch(1:2),...
 %                 'NumberOfChannels',decch(3:end));
@@ -11572,7 +11572,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %             end
 %             
 %             % Preparation
-%             import saivdr.dictionary.nsoltx.*
+%             import saivdr.dictionary.cnsoltx.*
 %             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
 %                 'DecimationFactor',decch(1:2),...
 %                 'NumberOfChannels',decch(3:end),...
@@ -11638,7 +11638,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %             end
 %             
 %             % Preparation
-%             import saivdr.dictionary.nsoltx.*
+%             import saivdr.dictionary.cnsoltx.*
 %             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
 %                 'DecimationFactor',decch(1:2),...
 %                 'NumberOfChannels',decch(3:end),...
@@ -11703,7 +11703,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %             end
 %             
 %             % Preparation
-%             import saivdr.dictionary.nsoltx.*
+%             import saivdr.dictionary.cnsoltx.*
 %             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
 %                 'DecimationFactor',decch(1:2),...
 %                 'NumberOfChannels',decch(3:end),...
@@ -11769,7 +11769,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %             end
 %             
 %             % Preparation
-%             import saivdr.dictionary.nsoltx.*
+%             import saivdr.dictionary.cnsoltx.*
 %             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
 %                 'DecimationFactor',decch(1:2),...
 %                 'NumberOfChannels',decch(3:end),...
@@ -11835,7 +11835,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',decch(1:2),...
                 'NumberOfChannels',decch(3:end),...
@@ -11910,7 +11910,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',decch(1:2),...
                 'NumberOfChannels',decch(3:end),...
@@ -11984,7 +11984,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %             end
 %             
 %             % Preparation
-%             import saivdr.dictionary.nsoltx.*
+%             import saivdr.dictionary.cnsoltx.*
 %             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
 %                 'DecimationFactor',decch(1:2),...
 %                 'NumberOfChannels',decch(3:end),...
@@ -12060,7 +12060,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %             end
 %             
 %             % Preparation
-%             import saivdr.dictionary.nsoltx.*
+%             import saivdr.dictionary.cnsoltx.*
 %             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
 %                 'DecimationFactor',decch(1:2),...
 %                 'NumberOfChannels',decch(3:end),...
@@ -12136,7 +12136,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %             end
 %             
 %             % Preparation
-%             import saivdr.dictionary.nsoltx.*
+%             import saivdr.dictionary.cnsoltx.*
 %             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
 %                 'DecimationFactor',[dec dec],...
 %                 'NumberOfChannels',ch,...
@@ -12197,7 +12197,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %             end
 %             
 %             % Preparation
-%             import saivdr.dictionary.nsoltx.*
+%             import saivdr.dictionary.cnsoltx.*
 %             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
 %                 'DecimationFactor',[dec dec],...
 %                 'NumberOfChannels',ch,...
@@ -12245,7 +12245,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %             scales = repmat([height/dec(1) width/dec(2)],[sum(ch) 1]);
 %             
 %             % Preparation
-%             import saivdr.dictionary.nsoltx.*
+%             import saivdr.dictionary.cnsoltx.*
 %             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
 %                 'DecimationFactor',dec,...
 %                 'NumberOfChannels',ch,...
@@ -12295,7 +12295,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %             end
 %             
 %             % Preparation
-%             import saivdr.dictionary.nsoltx.*
+%             import saivdr.dictionary.cnsoltx.*
 %             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
 %                 'DecimationFactor',decch(1:2),...
 %                 'NumberOfChannels',decch(3:end));
@@ -12348,7 +12348,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %             end
 %             
 %             % Preparation
-%             import saivdr.dictionary.nsoltx.*
+%             import saivdr.dictionary.cnsoltx.*
 %             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
 %                 'DecimationFactor',decch(1:2),...
 %                 'NumberOfChannels',decch(3:end),...
@@ -12414,7 +12414,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %             end
 %             
 %             % Preparation
-%             import saivdr.dictionary.nsoltx.*
+%             import saivdr.dictionary.cnsoltx.*
 %             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
 %                 'DecimationFactor',decch(1:2),...
 %                 'NumberOfChannels',decch(3:end),...
@@ -12478,7 +12478,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %             end
 %             
 %             % Preparation
-%             import saivdr.dictionary.nsoltx.*
+%             import saivdr.dictionary.cnsoltx.*
 %             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
 %                 'DecimationFactor',decch(1:2),...
 %                 'NumberOfChannels',decch(3:end),...
@@ -12543,7 +12543,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %             end
 %             
 %             % Preparation
-%             import saivdr.dictionary.nsoltx.*
+%             import saivdr.dictionary.cnsoltx.*
 %             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
 %                 'DecimationFactor',decch(1:2),...
 %                 'NumberOfChannels',decch(3:end),...
@@ -12604,7 +12604,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %             end
 %             
 %             % Preparation
-%             import saivdr.dictionary.nsoltx.*
+%             import saivdr.dictionary.cnsoltx.*
 %             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
 %                 'DecimationFactor',decch(1:2),...
 %                 'NumberOfChannels',decch(3:end));
@@ -12656,7 +12656,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %             end
 %             
 %             % Preparation
-%             import saivdr.dictionary.nsoltx.*
+%             import saivdr.dictionary.cnsoltx.*
 %             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
 %                 'DecimationFactor',decch(1:2),...
 %                 'NumberOfChannels',decch(3:end),...
@@ -12720,7 +12720,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %             end
 %             
 %             % Preparation
-%             import saivdr.dictionary.nsoltx.*
+%             import saivdr.dictionary.cnsoltx.*
 %             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
 %                 'DecimationFactor',decch(1:2),...
 %                 'NumberOfChannels',decch(3:end),...
@@ -12783,7 +12783,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %             end
 %             
 %             % Preparation
-%             import saivdr.dictionary.nsoltx.*
+%             import saivdr.dictionary.cnsoltx.*
 %             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
 %                 'DecimationFactor',decch(1:2),...
 %                 'NumberOfChannels',decch(3:end),...
@@ -12847,7 +12847,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %             end
 %             
 %             % Preparation
-%             import saivdr.dictionary.nsoltx.*
+%             import saivdr.dictionary.cnsoltx.*
 %             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
 %                 'DecimationFactor',decch(1:2),...
 %                 'NumberOfChannels',decch(3:end),...
@@ -12912,7 +12912,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %             end
 %             
 %             % Preparation
-%             import saivdr.dictionary.nsoltx.*
+%             import saivdr.dictionary.cnsoltx.*
 %             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
 %                 'DecimationFactor',decch(1:2),...
 %                 'NumberOfChannels',decch(3:end),...
@@ -12979,7 +12979,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',nDecs,...
                 'NumberOfChannels',nChs,...
@@ -13046,7 +13046,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',nDecs,...
                 'NumberOfChannels',nChs,...
@@ -13113,7 +13113,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %             end
 %             
 %             % Preparation
-%             import saivdr.dictionary.nsoltx.*
+%             import saivdr.dictionary.cnsoltx.*
 %             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
 %                 'DecimationFactor',nDecs,...
 %                 'NumberOfChannels',nChs,...
@@ -13180,7 +13180,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
 %             end
 %             
 %             % Preparation
-%             import saivdr.dictionary.nsoltx.*
+%             import saivdr.dictionary.cnsoltx.*
 %             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
 %                 'DecimationFactor',nDecs,...
 %                 'NumberOfChannels',nChs,...
@@ -13247,7 +13247,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',nDecs,...
                 'NumberOfChannels',nChs,...
@@ -13314,7 +13314,7 @@ classdef CnsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             end
             
             % Preparation
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor',nDecs,...
                 'NumberOfChannels',nChs,...

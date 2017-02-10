@@ -1,4 +1,4 @@
-classdef CplxOvsdLpPuFb3dTypeIVm1System < saivdr.dictionary.nsoltx.AbstCplxOvsdLpPuFb3dTypeISystem %#codegen
+classdef CplxOvsdLpPuFb3dTypeIVm1System < saivdr.dictionary.cnsoltx.AbstCplxOvsdLpPuFb3dTypeISystem %#codegen
     %OVSDLPPUFBMDTYPEIVM1SYSTEM M-D Type-I Oversampled LPPUFB with one VM
     %
     % SVN identifier:
@@ -25,7 +25,7 @@ classdef CplxOvsdLpPuFb3dTypeIVm1System < saivdr.dictionary.nsoltx.AbstCplxOvsdL
     methods
         function obj = CplxOvsdLpPuFb3dTypeIVm1System(varargin)
             import saivdr.dictionary.utility.OrthonormalMatrixGenerationSystem
-            obj = obj@saivdr.dictionary.nsoltx.AbstCplxOvsdLpPuFb3dTypeISystem(...
+            obj = obj@saivdr.dictionary.cnsoltx.AbstCplxOvsdLpPuFb3dTypeISystem(...
                 varargin{:});
             obj.omgs_ = OrthonormalMatrixGenerationSystem();
         end
@@ -34,17 +34,17 @@ classdef CplxOvsdLpPuFb3dTypeIVm1System < saivdr.dictionary.nsoltx.AbstCplxOvsdL
     methods (Access = protected)
 
         function s = saveObjectImpl(obj)
-            s = saveObjectImpl@saivdr.dictionary.nsoltx.AbstCplxOvsdLpPuFb3dTypeISystem(obj);
+            s = saveObjectImpl@saivdr.dictionary.cnsoltx.AbstCplxOvsdLpPuFb3dTypeISystem(obj);
             s.omgs_ = matlab.System.saveObject(obj.omgs_);
         end
         
         function loadObjectImpl(obj,s,wasLocked)
-            loadObjectImpl@saivdr.dictionary.nsoltx.AbstCplxOvsdLpPuFb3dTypeISystem(obj,s,wasLocked);
+            loadObjectImpl@saivdr.dictionary.cnsoltx.AbstCplxOvsdLpPuFb3dTypeISystem(obj,s,wasLocked);
             obj.omgs_ = matlab.System.loadObject(s.omgs_);
         end        
         
         function updateParameterMatrixSet_(obj)
-            import saivdr.dictionary.nsoltx.ChannelGroup
+            import saivdr.dictionary.cnsoltx.ChannelGroup
             nChs = obj.NumberOfChannels;
             angles = obj.Angles;
             mus    = obj.Mus;

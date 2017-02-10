@@ -113,9 +113,9 @@ classdef AbstCplxOLpPrFbCoefManipulator1d < matlab.System %#codegen
             %
             id = 'SaivDr:IllegalPropertyException';
             lenOrd = length(obj.PolyPhaseOrder);
-            if lenOrd ~= saivdr.dictionary.olpprfb.AbstCplxOLpPrFbCoefManipulator1d.DATA_DIMENSION
+            if lenOrd ~= saivdr.dictionary.colpprfb.AbstCplxOLpPrFbCoefManipulator1d.DATA_DIMENSION
                 error('%s:\n lentgh(PolyPhaseOrder) must be %d.',...
-                    id, saivdr.dictionary.olpprfb.AbstCplxOLpPrFbCoefManipulator1d.DATA_DIMENSION);
+                    id, saivdr.dictionary.colpprfb.AbstCplxOLpPrFbCoefManipulator1d.DATA_DIMENSION);
             end
             %TODO: エラーメッセージを編集する
 %             if obj.NumberOfSymmetricChannels < 2

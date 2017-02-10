@@ -1,5 +1,5 @@
 classdef AbstCplxOvsdLpPuFb1dTypeISystem < ...
-        saivdr.dictionary.olpprfb.AbstOvsdLpPuFb1dSystem %#codegen
+        saivdr.dictionary.colpprfb.AbstOvsdLpPuFb1dSystem %#codegen
     %ABSTOVSDLPPUFB1DTYPEISYSTEM Abstract class 2-D Type-I OLPPUFB
     %
     % SVN identifier:
@@ -34,7 +34,7 @@ classdef AbstCplxOvsdLpPuFb1dTypeISystem < ...
 
     methods
         function obj = AbstCplxOvsdLpPuFb1dTypeISystem(varargin)
-            obj = obj@saivdr.dictionary.olpprfb.AbstOvsdLpPuFb1dSystem(...
+            obj = obj@saivdr.dictionary.colpprfb.AbstOvsdLpPuFb1dSystem(...
                 varargin{:});
             updateProperties_(obj);
             updateAngles_(obj);
@@ -46,7 +46,7 @@ classdef AbstCplxOvsdLpPuFb1dTypeISystem < ...
     methods (Access = protected)
 
         function s = saveObjectImpl(obj)
-            s = saveObjectImpl@saivdr.dictionary.olpprfb.AbstOvsdLpPuFb1dSystem(obj);
+            s = saveObjectImpl@saivdr.dictionary.colpprfb.AbstOvsdLpPuFb1dSystem(obj);
             s.nStages = obj.nStages;
             s.matrixE0 = obj.matrixE0;
             s.mexFcn   = obj.mexFcn;
@@ -56,26 +56,26 @@ classdef AbstCplxOvsdLpPuFb1dTypeISystem < ...
             obj.mexFcn   = s.mexFcn;
             obj.nStages = s.nStages;
             obj.matrixE0 = s.matrixE0;
-            loadObjectImpl@saivdr.dictionary.olpprfb.AbstOvsdLpPuFb1dSystem(obj,s,wasLocked);
+            loadObjectImpl@saivdr.dictionary.colpprfb.AbstOvsdLpPuFb1dSystem(obj,s,wasLocked);
         end
 
         function resetImpl(obj)
-            resetImpl@saivdr.dictionary.olpprfb.AbstOvsdLpPuFb1dSystem(obj);
+            resetImpl@saivdr.dictionary.colpprfb.AbstOvsdLpPuFb1dSystem(obj);
             % Prepare MEX function
-            import saivdr.dictionary.nsoltx.mexsrcs.fcn_autobuild_cbb_type1
+            import saivdr.dictionary.cnsoltx.mexsrcs.fcn_autobuild_cbb_type1
             [obj.mexFcn, obj.mexFlag] = fcn_autobuild_cbb_type1(obj.NumberOfChannels/2);
         end
 
         function setupImpl(obj,varargin)
             % Prepare MEX function
-            import saivdr.dictionary.nsoltx.mexsrcs.fcn_autobuild_cbb_type1
+            import saivdr.dictionary.cnsoltx.mexsrcs.fcn_autobuild_cbb_type1
             [obj.mexFcn, obj.mexFlag] = fcn_autobuild_cbb_type1(obj.NumberOfChannels/2);
         end
 
         function updateProperties_(obj)
-            import saivdr.dictionary.nsoltx.ChannelGroup
+            import saivdr.dictionary.cnsoltx.ChannelGroup
             import saivdr.dictionary.utility.ParameterMatrixContainer
-           % import saivdr.dictionary.olpprfb.AbstCplxOvsdLpPuFb1dTypeISystem
+           % import saivdr.dictionary.colpprfb.AbstCplxOvsdLpPuFb1dTypeISystem
 
             % Check DecimationFactor
             if ~isscalar(obj.DecimationFactor)
@@ -119,7 +119,7 @@ classdef AbstCplxOvsdLpPuFb1dTypeISystem < ...
         end
 
         function updateAngles_(obj)
-            import saivdr.dictionary.nsoltx.ChannelGroup
+            import saivdr.dictionary.cnsoltx.ChannelGroup
             nChL = obj.NumberOfChannels/2;
             nAngsInitStg = obj.NumberOfChannels*(obj.NumberOfChannels-1)/2;
             nAngsPerStg = nChL*(nChL-1)+floor(nChL/2);
@@ -141,7 +141,7 @@ classdef AbstCplxOvsdLpPuFb1dTypeISystem < ...
         end
 
         function updateMus_(obj)
-            import saivdr.dictionary.nsoltx.ChannelGroup
+            import saivdr.dictionary.cnsoltx.ChannelGroup
             nChL = obj.NumberOfChannels/2;
             %sizeOfMus = [ 2*nChL obj.nStages ];
             sizeOfMus = 2*nChL*obj.nStages;
@@ -164,9 +164,9 @@ classdef AbstCplxOvsdLpPuFb1dTypeISystem < ...
         end
 
         function value = getAnalysisFilterBank_(obj)
-            import saivdr.dictionary.nsoltx.ChannelGroup
-            import saivdr.dictionary.olpprfb.AbstCplxOvsdLpPuFb1dTypeISystem
-            %import saivdr.dictionary.nsoltx.mexsrcs.*
+            import saivdr.dictionary.cnsoltx.ChannelGroup
+            import saivdr.dictionary.colpprfb.AbstCplxOvsdLpPuFb1dTypeISystem
+            %import saivdr.dictionary.cnsoltx.mexsrcs.*
             %
             nChs = obj.NumberOfChannels;
             dec  = obj.DecimationFactor;
@@ -192,7 +192,7 @@ classdef AbstCplxOvsdLpPuFb1dTypeISystem < ...
                     if mexFlag_
                         E = mexFcn_(E, W, U, angsB, hChs, nShift);
                     else
-                        import saivdr.dictionary.nsoltx.mexsrcs.Order1CplxBuildingBlockTypeI
+                        import saivdr.dictionary.cnsoltx.mexsrcs.Order1CplxBuildingBlockTypeI
                         hObb = Order1CplxBuildingBlockTypeI();
                         E = step(hObb, E, W, U, angsB, hChs, nShift);
                     end

@@ -19,7 +19,7 @@ function output = fcn_Order2CplxBuildingBlockTypeII( input, mtxW, mtxU, angB1, m
 %
 persistent h;
 if isempty(h)
-    h = saivdr.dictionary.nsoltx.mexsrcs.Order2CplxBuildingBlockTypeII();
+    h = saivdr.dictionary.cnsoltx.mexsrcs.Order2CplxBuildingBlockTypeII();
 end
 
 output = step(h, input, mtxW, mtxU, angB1, mtxHW, mtxHU, angB2, p, nshift);

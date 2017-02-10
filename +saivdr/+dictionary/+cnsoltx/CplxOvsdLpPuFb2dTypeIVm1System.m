@@ -1,4 +1,4 @@
-classdef CplxOvsdLpPuFb2dTypeIVm1System < saivdr.dictionary.nsoltx.AbstCplxOvsdLpPuFb2dTypeISystem %#codegen
+classdef CplxOvsdLpPuFb2dTypeIVm1System < saivdr.dictionary.cnsoltx.AbstCplxOvsdLpPuFb2dTypeISystem %#codegen
     %OVSDLPPUFBMDTYPEIVM1SYSTEM 2-D Type-I Oversampled LPPUFB with one VM
     %
     % Requirements: MATLAB R2013b
@@ -25,7 +25,7 @@ classdef CplxOvsdLpPuFb2dTypeIVm1System < saivdr.dictionary.nsoltx.AbstCplxOvsdL
         function obj = CplxOvsdLpPuFb2dTypeIVm1System(varargin)
             import saivdr.dictionary.utility.OrthonormalMatrixGenerationSystem
             import saivdr.dictionary.utility.OrthonormalMatrixFactorizationSystem
-            obj = obj@saivdr.dictionary.nsoltx.AbstCplxOvsdLpPuFb2dTypeISystem(...
+            obj = obj@saivdr.dictionary.cnsoltx.AbstCplxOvsdLpPuFb2dTypeISystem(...
                 varargin{:});
             obj.initOmgs_ = OrthonormalMatrixGenerationSystem('OrderOfProduction','Ascending');
             obj.propOmgs_ = OrthonormalMatrixGenerationSystem('OrderOfProduction','Ascending');
@@ -36,21 +36,21 @@ classdef CplxOvsdLpPuFb2dTypeIVm1System < saivdr.dictionary.nsoltx.AbstCplxOvsdL
     methods (Access = protected)
 
         function s = saveObjectImpl(obj)
-            s = saveObjectImpl@saivdr.dictionary.nsoltx.AbstCplxOvsdLpPuFb2dTypeISystem(obj);
+            s = saveObjectImpl@saivdr.dictionary.cnsoltx.AbstCplxOvsdLpPuFb2dTypeISystem(obj);
             s.initOmgs_ = matlab.System.saveObject(obj.initOmgs_);
             s.propOmgs_ = matlab.System.saveObject(obj.propOmgs_);
             s.propOmfs_ = matlab.System.saveObject(obj.propOmfs_);
         end
         
         function loadObjectImpl(obj,s,wasLocked)
-            loadObjectImpl@saivdr.dictionary.nsoltx.AbstCplxOvsdLpPuFb2dTypeISystem(obj,s,wasLocked);
+            loadObjectImpl@saivdr.dictionary.cnsoltx.AbstCplxOvsdLpPuFb2dTypeISystem(obj,s,wasLocked);
             obj.initOmgs_ = matlab.System.loadObject(s.initOmgs_);
             obj.propOmgs_ = matlab.System.loadObject(s.propOmgs_);
             obj.propOmfs_ = matlab.System.loadObject(s.propOmfs_);
         end        
         
         function updateParameterMatrixSet_(obj)
-            %import saivdr.dictionary.nsoltx.ChannelGroup
+            %import saivdr.dictionary.cnsoltx.ChannelGroup
             nch = sum(obj.NumberOfChannels);
 
             [initAngles, propAngles] = splitAngles_(obj);

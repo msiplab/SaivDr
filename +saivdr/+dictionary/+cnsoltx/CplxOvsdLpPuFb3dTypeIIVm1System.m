@@ -1,5 +1,5 @@
 classdef CplxOvsdLpPuFb3dTypeIIVm1System < ...
-        saivdr.dictionary.nsoltx.AbstCplxOvsdLpPuFb3dTypeIISystem %#codegen
+        saivdr.dictionary.cnsoltx.AbstCplxOvsdLpPuFb3dTypeIISystem %#codegen
     %OVSDLPPUFB2DTYPEIIVM1SYSTEM 3-D Type-II Oversampled LPPUFB with one VM
     %
     % SVN identifier:
@@ -29,7 +29,7 @@ classdef CplxOvsdLpPuFb3dTypeIIVm1System < ...
         function obj = CplxOvsdLpPuFb3dTypeIIVm1System(varargin)
             import saivdr.dictionary.utility.OrthonormalMatrixFactorizationSystem
             import saivdr.dictionary.utility.OrthonormalMatrixGenerationSystem
-            obj = obj@saivdr.dictionary.nsoltx.AbstCplxOvsdLpPuFb3dTypeIISystem(...
+            obj = obj@saivdr.dictionary.cnsoltx.AbstCplxOvsdLpPuFb3dTypeIISystem(...
                 varargin{:});
             obj.omfs_  = OrthonormalMatrixFactorizationSystem();
             obj.omgsW_ = OrthonormalMatrixGenerationSystem();
@@ -40,21 +40,21 @@ classdef CplxOvsdLpPuFb3dTypeIIVm1System < ...
     methods (Access = protected)
             
         function s = saveObjectImpl(obj)
-            s = saveObjectImpl@saivdr.dictionary.nsoltx.AbstCplxOvsdLpPuFb3dTypeIISystem(obj);
+            s = saveObjectImpl@saivdr.dictionary.cnsoltx.AbstCplxOvsdLpPuFb3dTypeIISystem(obj);
             s.omfs_  = matlab.System.saveObject(obj.omfs_);            
             s.omgsW_ = matlab.System.saveObject(obj.omgsW_);            
             s.omgsU_ = matlab.System.saveObject(obj.omgsU_);            
         end
         
         function loadObjectImpl(obj,s,wasLocked)
-            loadObjectImpl@saivdr.dictionary.nsoltx.AbstCplxOvsdLpPuFb3dTypeIISystem(obj,s,wasLocked);
+            loadObjectImpl@saivdr.dictionary.cnsoltx.AbstCplxOvsdLpPuFb3dTypeIISystem(obj,s,wasLocked);
             obj.omfs_ = matlab.System.loadObject(s.omfs_);
             obj.omgsW_ = matlab.System.loadObject(s.omgsW_);            
             obj.omgsU_ = matlab.System.loadObject(s.omgsU_);            
         end        
         
         function updateParameterMatrixSet_(obj)
-            import saivdr.dictionary.nsoltx.ChannelGroup
+            import saivdr.dictionary.cnsoltx.ChannelGroup
             nChs = obj.NumberOfChannels;
             angles = obj.Angles;
             mus    = obj.Mus;

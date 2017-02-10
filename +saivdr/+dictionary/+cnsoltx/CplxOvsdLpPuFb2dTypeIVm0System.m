@@ -1,4 +1,4 @@
-classdef CplxOvsdLpPuFb2dTypeIVm0System < saivdr.dictionary.nsoltx.AbstCplxOvsdLpPuFb2dTypeISystem %#codegen
+classdef CplxOvsdLpPuFb2dTypeIVm0System < saivdr.dictionary.cnsoltx.AbstCplxOvsdLpPuFb2dTypeISystem %#codegen
     %OVSDLPPUFBMDTYPEIVM0SYSTEM 2-D Type-I Oversapled LPPUFB without VM
     %
     % Requirements: MATLAB R2013b
@@ -23,7 +23,7 @@ classdef CplxOvsdLpPuFb2dTypeIVm0System < saivdr.dictionary.nsoltx.AbstCplxOvsdL
     methods
         function obj = CplxOvsdLpPuFb2dTypeIVm0System(varargin)
             import saivdr.dictionary.utility.OrthonormalMatrixGenerationSystem
-            obj = obj@saivdr.dictionary.nsoltx.AbstCplxOvsdLpPuFb2dTypeISystem(...
+            obj = obj@saivdr.dictionary.cnsoltx.AbstCplxOvsdLpPuFb2dTypeISystem(...
                 varargin{:});
             obj.initOmgs_ = OrthonormalMatrixGenerationSystem('OrderOfProduction','Ascending');
             obj.propOmgs_ = OrthonormalMatrixGenerationSystem('OrderOfProduction','Ascending');
@@ -33,7 +33,7 @@ classdef CplxOvsdLpPuFb2dTypeIVm0System < saivdr.dictionary.nsoltx.AbstCplxOvsdL
     methods (Access = protected)
         
         function s = saveObjectImpl(obj)
-            s = saveObjectImpl@saivdr.dictionary.nsoltx.AbstCplxOvsdLpPuFb2dTypeISystem(obj);
+            s = saveObjectImpl@saivdr.dictionary.cnsoltx.AbstCplxOvsdLpPuFb2dTypeISystem(obj);
             s.initOmgs_ = matlab.System.saveObject(obj.initOmgs_);
             s.propOmgs_ = matlab.System.saveObject(obj.propOmgs_);
         end
@@ -41,7 +41,7 @@ classdef CplxOvsdLpPuFb2dTypeIVm0System < saivdr.dictionary.nsoltx.AbstCplxOvsdL
         function loadObjectImpl(obj,s,wasLocked)
             obj.initOmgs_ = matlab.System.loadObject(s.initOmgs_);
             obj.propOmgs_ = matlab.System.loadObject(s.propOmgs_);
-            loadObjectImpl@saivdr.dictionary.nsoltx.AbstCplxOvsdLpPuFb2dTypeISystem(obj,s,wasLocked);
+            loadObjectImpl@saivdr.dictionary.cnsoltx.AbstCplxOvsdLpPuFb2dTypeISystem(obj,s,wasLocked);
         end
         
         function obj = updateParameterMatrixSet_(obj)

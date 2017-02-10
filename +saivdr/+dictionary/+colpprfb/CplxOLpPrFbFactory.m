@@ -18,11 +18,11 @@ classdef CplxOLpPrFbFactory
     methods (Static = true)
 
         function value = createCplxOvsdLpPuFb1dSystem(varargin)
-            import saivdr.dictionary.nsoltx.ChannelGroup
-            import saivdr.dictionary.olpprfb.*
+            import saivdr.dictionary.cnsoltx.ChannelGroup
+            import saivdr.dictionary.colpprfb.*
             if nargin < 1
                 value = CplxOvsdLpPuFb1dTypeIVm1System();
-            elseif isa(varargin{1},'saivdr.dictionary.olpprfb.AbstOvsdLpPuFb1dSystem')
+            elseif isa(varargin{1},'saivdr.dictionary.colpprfb.AbstOvsdLpPuFb1dSystem')
                 value = clone(varargin{1});
             else
                 p = inputParser;
@@ -75,12 +75,12 @@ classdef CplxOLpPrFbFactory
         end
 
         function value = createAnalysis1dSystem(varargin)
-            import saivdr.dictionary.olpprfb.CplxOLpPuFbAnalysis1dSystem
-            import saivdr.dictionary.olpprfb.CplxOLpPrFbFactory
+            import saivdr.dictionary.colpprfb.CplxOLpPuFbAnalysis1dSystem
+            import saivdr.dictionary.colpprfb.CplxOLpPrFbFactory
             if nargin < 1
                 value = CplxOLpPuFbAnalysis1dSystem();
             elseif isa(varargin{1},...
-                    'saivdr.dictionary.olpprfb.AbstOvsdLpPuFb1dSystem')
+                    'saivdr.dictionary.colpprfb.AbstOvsdLpPuFb1dSystem')
                 value = CplxOLpPuFbAnalysis1dSystem('LpPuFb1d',varargin{:});
             else
                 error('SaivDr: Invalid arguments');
@@ -88,12 +88,12 @@ classdef CplxOLpPrFbFactory
         end
 
         function value = createSynthesis1dSystem(varargin)
-            import saivdr.dictionary.olpprfb.CplxOLpPuFbSynthesis1dSystem
-            import saivdr.dictionary.olpprfb.CplxOLpPrFbFactory
+            import saivdr.dictionary.colpprfb.CplxOLpPuFbSynthesis1dSystem
+            import saivdr.dictionary.colpprfb.CplxOLpPrFbFactory
             if nargin < 1
                 value = CplxOLpPuFbSynthesis1dSystem();
             elseif isa(varargin{1},...
-                    'saivdr.dictionary.olpprfb.AbstOvsdLpPuFb1dSystem')
+                    'saivdr.dictionary.colpprfb.AbstOvsdLpPuFb1dSystem')
                 value = CplxOLpPuFbSynthesis1dSystem('LpPuFb1d',varargin{:});
             else
                 error('SaivDr: Invalid arguments');
