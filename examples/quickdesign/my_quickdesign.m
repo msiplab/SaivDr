@@ -6,37 +6,42 @@
 % is described. As a preliminary, let us read an RGB picture as 
 % the source image.
 
-imgName = 'peppers128x128';
-srcImg = imread('peppers.png');
-width  = 128; % Width
-height = 128; % Height
+imgName = 'ibushi64x64';
+srcImg = imread('18_ibushi.normal.png');
+width  = 32; % Width
+height = 32; % Height
 px     = 128; % Horizontal position of cropping
 py     = 128; % Vertical position of cropping
 orgImg = im2double(srcImg(py+(1:height),px+(1:width),:));
+%orgImg = cropImg;
 
 %% Design through dictionary learning 
 % Parameters for NSOLT
 nLevels = 4;     % # of wavelet tree levels (must be 1 when gradObj = 'on') 
 nDecs   = [2 2]; % Decimation factor
 nChs    = [4 4]; % # of channels
-nOrds   = [4 4]; % Polyphase order
+nOrds   = [2 2]; % Polyphase order
 nVm     = 1;     % # of vanishing moments
+%nVm = 0;
 
 % Design conditions
-trnImgs{1}   = im2double(rgb2gray(orgImg)); 
+%trnImgs{1}   = im2double(rgb2gray(orgImg)); 
+%trnImgs{1}   = im2double(orgImg(:,:,1)+1i*orgImg(:,:,2));
+trnImgs{1} = orgImg;
 nIters       = 8;
 nCoefs       = numel(trnImgs{1})/8;
 optfcn       = @fminunc;
 sparseCoding = 'IterativeHardThresholding';
 isFixedCoefs = true;
 nUnfixedInitSteps = 0;
-isRandomInit = true;
+isRandomInit = false;
 stdOfAng     = pi/6;
 gradObj      = 'off'; % Available only for a single-level Type-I NSOLT
 % 
 options = optimoptions(optfcn);
 options = optimoptions(options,'Algorithm','quasi-newton');
-options = optimoptions(options,'Display','iter');
+options = optimoptions(options,'Display','iter-detailed');
+options = optimoptions(options,'UseParallel',true);
 
 % Instantiation of designer
 import saivdr.dictionary.nsoltx.design.NsoltDictionaryLearning
@@ -53,6 +58,7 @@ designer = NsoltDictionaryLearning(...
     'SparseCoding',sparseCoding,...
     'IsFixedCoefs',isFixedCoefs,...
     'IsRandomInit',isRandomInit,...
+    'IsRealValue',false,...
     'GradObj',gradObj);
 set(designer,'NumberOfUnfixedInitialSteps',nUnfixedInitSteps);
 set(designer,'StdOfAngRandomInit',stdOfAng);
