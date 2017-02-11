@@ -22,7 +22,7 @@ classdef CplxOLpPrFbFactory
             import saivdr.dictionary.colpprfb.*
             if nargin < 1
                 value = CplxOvsdLpPuFb1dTypeIVm1System();
-            elseif isa(varargin{1},'saivdr.dictionary.colpprfb.AbstOvsdLpPuFb1dSystem')
+            elseif isa(varargin{1},'saivdr.dictionary.colpprfb.AbstCplxOvsdLpPuFb1dSystem')
                 value = clone(varargin{1});
             else
                 p = inputParser;
@@ -80,7 +80,7 @@ classdef CplxOLpPrFbFactory
             if nargin < 1
                 value = CplxOLpPuFbAnalysis1dSystem();
             elseif isa(varargin{1},...
-                    'saivdr.dictionary.colpprfb.AbstOvsdLpPuFb1dSystem')
+                    'saivdr.dictionary.colpprfb.AbstCplxOvsdLpPuFb1dSystem')
                 value = CplxOLpPuFbAnalysis1dSystem('LpPuFb1d',varargin{:});
             else
                 error('SaivDr: Invalid arguments');
@@ -93,7 +93,7 @@ classdef CplxOLpPrFbFactory
             if nargin < 1
                 value = CplxOLpPuFbSynthesis1dSystem();
             elseif isa(varargin{1},...
-                    'saivdr.dictionary.colpprfb.AbstOvsdLpPuFb1dSystem')
+                    'saivdr.dictionary.colpprfb.AbstCplxOvsdLpPuFb1dSystem')
                 value = CplxOLpPuFbSynthesis1dSystem('LpPuFb1d',varargin{:});
             else
                 error('SaivDr: Invalid arguments');

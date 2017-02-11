@@ -1,4 +1,4 @@
-classdef AbstOvsdLpPuFb3dSystem < matlab.System %#codegen
+classdef AbstCplxOvsdLpPuFb3dSystem < matlab.System %#codegen
     %ABSTOVSDLPPUFBMDSYSTEM Abstract class M-D OLPPUFB
     %
     % Requirements: MATLAB R2013b
@@ -60,7 +60,7 @@ classdef AbstOvsdLpPuFb3dSystem < matlab.System %#codegen
     end
 
     methods
-        function obj = AbstOvsdLpPuFb3dSystem(varargin)
+        function obj = AbstCplxOvsdLpPuFb3dSystem(varargin)
             setProperties(obj,nargin,varargin{:});
         end
 

@@ -1,5 +1,5 @@
 classdef AbstCplxOvsdLpPuFb3dTypeISystem < ...
-        saivdr.dictionary.cnsoltx.AbstOvsdLpPuFb3dSystem %#codegen
+        saivdr.dictionary.cnsoltx.AbstCplxOvsdLpPuFb3dSystem %#codegen
     %ABSTOVSDLPPUFB3DTYPEISYSTEM Abstract class 3-D Type-I OLPPUFB
     %
     % Requirements: MATLAB R2013b
@@ -31,7 +31,7 @@ classdef AbstCplxOvsdLpPuFb3dTypeISystem < ...
 
     methods
         function obj = AbstCplxOvsdLpPuFb3dTypeISystem(varargin)
-            obj = obj@saivdr.dictionary.cnsoltx.AbstOvsdLpPuFb3dSystem(...
+            obj = obj@saivdr.dictionary.cnsoltx.AbstCplxOvsdLpPuFb3dSystem(...
                 varargin{:});
             updateProperties_(obj);
             updateAngles_(obj);
@@ -42,7 +42,7 @@ classdef AbstCplxOvsdLpPuFb3dTypeISystem < ...
     methods (Access = protected)
 
         function s = saveObjectImpl(obj)
-            s = saveObjectImpl@saivdr.dictionary.cnsoltx.AbstOvsdLpPuFb3dSystem(obj);
+            s = saveObjectImpl@saivdr.dictionary.cnsoltx.AbstCplxOvsdLpPuFb3dSystem(obj);
             s.nStages = obj.nStages;
             s.matrixE0 = obj.matrixE0;
             s.mexFcn   = obj.mexFcn;
@@ -52,11 +52,11 @@ classdef AbstCplxOvsdLpPuFb3dTypeISystem < ...
             obj.mexFcn   = s.mexFcn;
             obj.nStages = s.nStages;
             obj.matrixE0 = s.matrixE0;
-            loadObjectImpl@saivdr.dictionary.cnsoltx.AbstOvsdLpPuFb3dSystem(obj,s,wasLocked);
+            loadObjectImpl@saivdr.dictionary.cnsoltx.AbstCplxOvsdLpPuFb3dSystem(obj,s,wasLocked);
         end
 
         function resetImpl(obj)
-            resetImpl@saivdr.dictionary.cnsoltx.AbstOvsdLpPuFb3dSystem(obj);
+            resetImpl@saivdr.dictionary.cnsoltx.AbstCplxOvsdLpPuFb3dSystem(obj);
             % Prepare MEX function
             import saivdr.dictionary.cnsoltx.mexsrcs.fcn_autobuild_cbb_type1
             [obj.mexFcn, obj.mexFlag] = fcn_autobuild_cbb_type1(obj.NumberOfChannels(1));
@@ -72,7 +72,7 @@ classdef AbstCplxOvsdLpPuFb3dTypeISystem < ...
             import saivdr.dictionary.cnsoltx.ChannelGroup
             import saivdr.dictionary.utility.Direction
             import saivdr.dictionary.utility.ParameterMatrixContainer
-           % import saivdr.dictionary.cnsoltx.AbstOvsdLpPuFb3dTypeISystem
+           % import saivdr.dictionary.cnsoltx.AbstCplxOvsdLpPuFb3dTypeISystem
 
             % Check DecimationFactor
             if length(obj.DecimationFactor) > 3

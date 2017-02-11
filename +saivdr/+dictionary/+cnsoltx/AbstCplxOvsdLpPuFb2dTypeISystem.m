@@ -1,9 +1,9 @@
 classdef AbstCplxOvsdLpPuFb2dTypeISystem < ...
-        saivdr.dictionary.cnsoltx.AbstOvsdLpPuFb2dSystem %#codegen
+        saivdr.dictionary.cnsoltx.AbstCplxOvsdLpPuFb2dSystem %#codegen
     %ABSTOVSDLPPUFB2DTYPEISYSTEM Abstract class 2-D Type-I OLPPUFB
     %
     % SVN identifier:
-    % $Id: AbstOvsdLpPuFb2dTypeISystem.m 690 2015-06-09 09:37:49Z sho $
+    % $Id: AbstCplxOvsdLpPuFb2dTypeISystem.m 690 2015-06-09 09:37:49Z sho $
     %
     % Requirements: MATLAB R2013b
     %
@@ -34,7 +34,7 @@ classdef AbstCplxOvsdLpPuFb2dTypeISystem < ...
 
     methods
         function obj = AbstCplxOvsdLpPuFb2dTypeISystem(varargin)
-            obj = obj@saivdr.dictionary.cnsoltx.AbstOvsdLpPuFb2dSystem(...
+            obj = obj@saivdr.dictionary.cnsoltx.AbstCplxOvsdLpPuFb2dSystem(...
                 varargin{:});
             updateProperties_(obj);
             updateSymmetry_(obj);
@@ -46,7 +46,7 @@ classdef AbstCplxOvsdLpPuFb2dTypeISystem < ...
     methods (Access = protected)
 
         function s = saveObjectImpl(obj)
-            s = saveObjectImpl@saivdr.dictionary.cnsoltx.AbstOvsdLpPuFb2dSystem(obj);
+            s = saveObjectImpl@saivdr.dictionary.cnsoltx.AbstCplxOvsdLpPuFb2dSystem(obj);
             s.nStages = obj.nStages;
             s.matrixE0 = obj.matrixE0;
             s.mexFcn   = obj.mexFcn;
@@ -56,11 +56,11 @@ classdef AbstCplxOvsdLpPuFb2dTypeISystem < ...
             obj.mexFcn   = s.mexFcn;
             obj.nStages = s.nStages;
             obj.matrixE0 = s.matrixE0;
-            loadObjectImpl@saivdr.dictionary.cnsoltx.AbstOvsdLpPuFb2dSystem(obj,s,wasLocked);
+            loadObjectImpl@saivdr.dictionary.cnsoltx.AbstCplxOvsdLpPuFb2dSystem(obj,s,wasLocked);
         end
 
         function resetImpl(obj)
-            resetImpl@saivdr.dictionary.cnsoltx.AbstOvsdLpPuFb2dSystem(obj);
+            resetImpl@saivdr.dictionary.cnsoltx.AbstCplxOvsdLpPuFb2dSystem(obj);
             % Prepare MEX function
             import saivdr.dictionary.cnsoltx.mexsrcs.fcn_autobuild_cbb_type1
             [obj.mexFcn, obj.mexFlag] = fcn_autobuild_cbb_type1(floor(obj.NumberOfChannels/2));
@@ -76,7 +76,7 @@ classdef AbstCplxOvsdLpPuFb2dTypeISystem < ...
             import saivdr.dictionary.cnsoltx.ChannelGroup
             import saivdr.dictionary.utility.Direction
             import saivdr.dictionary.utility.ParameterMatrixContainer
-           % import saivdr.dictionary.cnsoltx.AbstOvsdLpPuFb2dTypeISystem
+           % import saivdr.dictionary.cnsoltx.AbstCplxOvsdLpPuFb2dTypeISystem
 
             % Check DecimationFactor
             if length(obj.DecimationFactor) > 2

@@ -21,7 +21,7 @@ classdef CnsoltFactory
             import saivdr.dictionary.cnsoltx.*
             if nargin < 1
                 value = CplxOvsdLpPuFb2dTypeIVm1System();
-            elseif isa(varargin{1},'saivdr.dictionary.cnsoltx.AbstOvsdLpPuFb2dSystem')
+            elseif isa(varargin{1},'saivdr.dictionary.cnsoltx.AbstCplxOvsdLpPuFb2dSystem')
                 value = clone(varargin{1});
             else
                 p = inputParser;
@@ -77,7 +77,7 @@ classdef CnsoltFactory
             import saivdr.dictionary.cnsoltx.*
             if nargin < 1
                 value = CplxOvsdLpPuFb3dTypeIVm1System();
-            elseif isa(varargin{1},'saivdr.dictionary.cnsoltx.AbstOvsdLpPuFb3dSystem')
+            elseif isa(varargin{1},'saivdr.dictionary.cnsoltx.AbstCplxOvsdLpPuFb3dSystem')
                 value = clone(varargin{1});
             else
                 p = inputParser;
@@ -135,7 +135,7 @@ classdef CnsoltFactory
             if nargin < 1
                 value = CnsoltAnalysis2dSystem();
             elseif isa(varargin{1},...
-                    'saivdr.dictionary.cnsoltx.AbstOvsdLpPuFb2dSystem')
+                    'saivdr.dictionary.cnsoltx.AbstCplxOvsdLpPuFb2dSystem')
                 value = CnsoltAnalysis2dSystem('LpPuFb2d',varargin{:});
             else
                 error('SaivDr: Invalid arguments');
@@ -148,7 +148,7 @@ classdef CnsoltFactory
             if nargin < 1
                 value = CnsoltSynthesis2dSystem();
             elseif isa(varargin{1},...
-                    'saivdr.dictionary.cnsoltx.AbstOvsdLpPuFb2dSystem')
+                    'saivdr.dictionary.cnsoltx.AbstCplxOvsdLpPuFb2dSystem')
                 value = CnsoltSynthesis2dSystem('LpPuFb2d',varargin{:});
             else
                 error('SaivDr: Invalid arguments');
@@ -161,7 +161,7 @@ classdef CnsoltFactory
             if nargin < 1
                 value = CnsoltAnalysis3dSystem();
             elseif isa(varargin{1},...
-                    'saivdr.dictionary.cnsoltx.AbstOvsdLpPuFb3dSystem')
+                    'saivdr.dictionary.cnsoltx.AbstCplxOvsdLpPuFb3dSystem')
                 value = CnsoltAnalysis3dSystem('LpPuFb3d',varargin{:});
             else
                 error('SaivDr: Invalid arguments');
@@ -174,7 +174,7 @@ classdef CnsoltFactory
             if nargin < 1
                 value = CnsoltSynthesis3dSystem();
             elseif isa(varargin{1},...
-                    'saivdr.dictionary.cnsoltx.AbstOvsdLpPuFb3dSystem')
+                    'saivdr.dictionary.cnsoltx.AbstCplxOvsdLpPuFb3dSystem')
                 value = CnsoltSynthesis3dSystem('LpPuFb3d',varargin{:});
             else
                 error('SaivDr: Invalid arguments');

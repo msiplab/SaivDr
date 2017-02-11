@@ -1,5 +1,5 @@
 classdef AbstCplxOvsdLpPuFb2dTypeIISystem < ...
-        saivdr.dictionary.cnsoltx.AbstOvsdLpPuFb2dSystem %#codegen
+        saivdr.dictionary.cnsoltx.AbstCplxOvsdLpPuFb2dSystem %#codegen
     %AbstCplxOvsdLpPuFb2dTypeIISystem Abstract class 2-D Type-II OLPPUFB
     %
     % SVN identifier:
@@ -34,7 +34,7 @@ classdef AbstCplxOvsdLpPuFb2dTypeIISystem < ...
 
     methods
         function obj = AbstCplxOvsdLpPuFb2dTypeIISystem(varargin)
-            obj = obj@saivdr.dictionary.cnsoltx.AbstOvsdLpPuFb2dSystem(...
+            obj = obj@saivdr.dictionary.cnsoltx.AbstCplxOvsdLpPuFb2dSystem(...
                 varargin{:});
             updateProperties_(obj);
             updateSymmetry_(obj);
@@ -46,7 +46,7 @@ classdef AbstCplxOvsdLpPuFb2dTypeIISystem < ...
     methods (Access = protected)
 
         function s = saveObjectImpl(obj)
-            s = saveObjectImpl@saivdr.dictionary.cnsoltx.AbstOvsdLpPuFb2dSystem(obj);
+            s = saveObjectImpl@saivdr.dictionary.cnsoltx.AbstCplxOvsdLpPuFb2dSystem(obj);
             s.nStages  = obj.nStages;
             s.matrixE0 = obj.matrixE0;
             s.mexFcn   = obj.mexFcn;
@@ -56,11 +56,11 @@ classdef AbstCplxOvsdLpPuFb2dTypeIISystem < ...
             obj.mexFcn   = s.mexFcn;
             obj.nStages  = s.nStages;
             obj.matrixE0 = s.matrixE0;
-            loadObjectImpl@saivdr.dictionary.cnsoltx.AbstOvsdLpPuFb2dSystem(obj,s,wasLocked);
+            loadObjectImpl@saivdr.dictionary.cnsoltx.AbstCplxOvsdLpPuFb2dSystem(obj,s,wasLocked);
         end
 
         function resetImpl(obj)
-            resetImpl@saivdr.dictionary.cnsoltx.AbstOvsdLpPuFb2dSystem(obj);
+            resetImpl@saivdr.dictionary.cnsoltx.AbstCplxOvsdLpPuFb2dSystem(obj);
             % Build MEX
             import saivdr.dictionary.cnsoltx.mexsrcs.fcn_autobuild_cbb_type2
             import saivdr.dictionary.cnsoltx.ChannelGroup
