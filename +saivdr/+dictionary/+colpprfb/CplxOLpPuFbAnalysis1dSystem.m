@@ -71,7 +71,7 @@ classdef CplxOLpPuFbAnalysis1dSystem < ...
             %
             if isempty(obj.LpPuFb1d)
                 import saivdr.dictionary.colpprfb.CplxOLpPrFbFactory
-                obj.LpPuFb1d = OLpPrFbFactory.createCplxOvsdLpPuFb1dSystem(...
+                obj.LpPuFb1d = CplxOLpPrFbFactory.createCplxOvsdLpPuFb1dSystem(...
                     'NumberOfChannels', ...
                     [ obj.NumberOfSymmetricChannels ...
                       obj.NumberOfAntisymmetricChannels ], ...
@@ -154,8 +154,8 @@ classdef CplxOLpPuFbAnalysis1dSystem < ...
             % Prepare MEX function
             %TODO: MEX化に対応したら下のコードを削除する
             obj.isMexFcn = 1;
-            
             mexFcn = [];
+            
             if obj.NumberOfSymmetricChannels == 1 || ...
                     obj.NumberOfAntisymmetricChannels == 1 
                 mexFcn = [];
@@ -170,7 +170,7 @@ classdef CplxOLpPuFbAnalysis1dSystem < ...
                     nch,ord,fpe);
             else
                 import saivdr.dictionary.colpprfb.mexsrcs.fcn_CplxOLpPrFbAtomExtender1d
-                %clear fcn_OLpPrFbAtomExtender1d
+                clear fcn_CplxOLpPrFbAtomExtender1d
                 obj.atomExtFcn = @(coefs,scale,pmcoefs,ord,fpe) ...
                     fcn_CplxOLpPrFbAtomExtender1d(coefs,scale,pmcoefs,...
                     nch,ord,fpe);
@@ -253,7 +253,8 @@ classdef CplxOLpPuFbAnalysis1dSystem < ...
             else
                 %mc = ceil(dec_/2);
                 %mf = floor(dec_/2);
-                Edft = hsdftmtx_(obj,dec_);
+                import saivdr.utility.HermitianSymmetricDFT
+                Edft = HermitianSymmetricDFT.hsdftmtx(dec_);
                 hsdftCoefs = conj(Edft)*reshape(subSeq,[dec_, nBlks_]);
                 %arrayCoefs(1:mc,:) = dctCoefs(1:mc,:) ;
                 %arrayCoefs(ps+1:ps+mf,:) = dctCoefs(mc+1:end,:);
@@ -268,21 +269,21 @@ classdef CplxOLpPuFbAnalysis1dSystem < ...
                 ord,fpe);
         end
         
-        %TODO:同一の関数がAbstCplxOLpPuFb1dSystemでも定義されているので一箇所に集約する
-        function value = hsdftmtx_(~, nDec) %Hermitian-Symmetric DFT matrix
-            value = complex(zeros(nDec));
-            for u = 0:nDec-1
-                for x =0:nDec-1
-                    n = rem(u*(2*x+1),2*nDec);
-                    value(u+1,x+1) = exp(-1i*pi*n/nDec)/sqrt(nDec);
-                end
-            end
-        end
-        
-        function value = hsdft_(obj, X)
-            mtx = hsdftmtx_(obj,size(X,1));
-            value = mtx*X;
-        end
+%         %TODO:同一の関数がAbstCplxOLpPuFb1dSystemでも定義されているので一箇所に集約する
+%         function value = hsdftmtx_(~, nDec) %Hermitian-Symmetric DFT matrix
+%             value = complex(zeros(nDec));
+%             for u = 0:nDec-1
+%                 for x =0:nDec-1
+%                     n = rem(u*(2*x+1),2*nDec);
+%                     value(u+1,x+1) = exp(-1i*pi*n/nDec)/sqrt(nDec);
+%                 end
+%             end
+%         end
+%         
+%         function value = hsdft_(obj, X)
+%             mtx = hsdftmtx_(obj,size(X,1));
+%             value = mtx*X;
+%         end
         
     end
 

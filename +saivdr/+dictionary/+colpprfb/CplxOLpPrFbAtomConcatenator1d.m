@@ -143,7 +143,7 @@ classdef CplxOLpPrFbAtomConcatenator1d < ...
             else
                 % TODO:ŽüŠúŠg’£‚Ì’è‹`
                 arrayCoefs(1:hLen,:) = Wx1*arrayCoefs(1:hLen,:);
-                arrayCoefs(hLen+1:end,1) = -arrayCoefs(hLen+1:end,1);
+                arrayCoefs(hLen+1:end,1) = Ux1*arrayCoefs(hLen+1:end,1);
                 arrayCoefs(hLen+1:end,2:end) = Ux1*arrayCoefs(hLen+1:end,2:end);
             end
             %arrayCoefs = blockButterflyTypeI_(obj,arrayCoefs,[]);
@@ -183,7 +183,7 @@ classdef CplxOLpPrFbAtomConcatenator1d < ...
             else
                 arrayCoefs(1:hLen-1,:) = Wx1*arrayCoefs(1:hLen-1,:);
                 
-                arrayCoefs(hLen:end-1,1) = -arrayCoefs(hLen:end-1,1);
+                arrayCoefs(hLen:end-1,1) = Ux1*arrayCoefs(hLen:end-1,1);
                 arrayCoefs(hLen:end-1,2:end) = Ux1*arrayCoefs(hLen:end-1,2:end);
             end
             %arrayCoefs = blockButterflyTypeII_(obj,arrayCoefs,[]);

@@ -40,7 +40,7 @@ if isempty(task) || task.ID == 1
         cdir = pwd;
         saivdr_root = getenv('SAIVDR_ROOT');
         cd(saivdr_root)
-        packagedir = './+saivdr/+dictionary/+nsoltx/+mexsrcs';
+        packagedir = './+saivdr/+dictionary/+cnsoltx/+mexsrcs';
         fbsfile = exist([packagedir '/' bsfname '.m'],'file');
 
         if fbsfile == 2
