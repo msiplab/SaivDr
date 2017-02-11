@@ -72,7 +72,6 @@ classdef CplxOvsdLpPuFb2dTypeIIVm0System < saivdr.dictionary.cnsoltx.AbstCplxOvs
             omgsE = obj.omgsE_;
             omgsO = obj.omgsO_;
             for iParamMtx = uint32(1):obj.nStages-1
-                % TODO: ???????????????t?@?N?^?????O????
                 % W
                 mtx = step(omgsE,angles(1:nAngsW,iParamMtx),...
                     mus(1:nMusW,iParamMtx));

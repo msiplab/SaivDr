@@ -4575,7 +4575,7 @@ classdef CnsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
                 'BoundaryOperation','Termination');
             coefsPre = step(testCase.analyzer,srcImg,nLevels);
             %
-            symmetry = randn(1,sum(nChs));
+            symmetry = randn(1,sum(ch));
             set(lppufb,'Symmetry',symmetry);
             
             angs = get(lppufb,'Angles');

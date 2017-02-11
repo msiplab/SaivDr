@@ -10,29 +10,32 @@ classdef HermitianSymmetricDFT
             end
         end
         
-        function value = hsdft2(x) %hsdft
-            nDec = size(x,1);
-            mtx = saivdr.utility.HermitianSymmetricDFT.hsdftmtx(nDec);
-            value = (mtx*(mtx*x).').';
+        function value = hsdft2(v) %hsdft
+            [decY,decX] = size(v);
+            mtxY = saivdr.utility.HermitianSymmetricDFT.hsdftmtx(decY);
+            mtxX = saivdr.utility.HermitianSymmetricDFT.hsdftmtx(decX);
+            value = (mtxX*(mtxY*v).').';
         end
         
-        function value = ihsdft2(x) %inverse hsdft
-            nDec = size(x,1);
-            mtx = saivdr.utility.HermitianSymmetricDFT.hsdftmtx(nDec);
-            value = (mtx'*(mtx'*x).').';
+        function value = ihsdft2(v) %inverse hsdft
+            [decY,decX] = size(v);
+            mtxY = saivdr.utility.HermitianSymmetricDFT.hsdftmtx(decY);
+            mtxX = saivdr.utility.HermitianSymmetricDFT.hsdftmtx(decX);
+            value = (mtxX'*(mtxY'*v).').';
         end
         
-        function value = conjhsdft2(x) %conjugate-hsdft
-            nDec = size(x,1);
-            mtx = saivdr.utility.HermitianSymmetricDFT.hsdftmtx(nDec);
-            cmtx = conj(mtx);
-            value = (cmtx*(cmtx*x).').';
+        function value = conjhsdft2(v) %conjugate-hsdft
+            [decY,decX] = size(v);
+            mtxY = saivdr.utility.HermitianSymmetricDFT.hsdftmtx(decY);
+            mtxX = saivdr.utility.HermitianSymmetricDFT.hsdftmtx(decX);
+            value = (conj(mtxX)*(conj(mtxY)*v).').';
         end
         
-        function value = conjihsdft2(x) %conjugate-inverse hsdft
-            nDec = size(x,1);
-            mtx = saivdr.utility.HermitianSymmetricDFT.hsdftmtx(nDec);
-            value = (mtx.'*(mtx.'*x).').';
+        function value = conjihsdft2(v) %conjugate-inverse hsdft
+            [decY,decX] = size(v);
+            mtxY = saivdr.utility.HermitianSymmetricDFT.hsdftmtx(decY);
+            mtxX = saivdr.utility.HermitianSymmetricDFT.hsdftmtx(decX);
+            value = (mtxX.'*(mtxY.'*v).').';
         end
     end
 end

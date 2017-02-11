@@ -158,7 +158,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 2 2 5 ];
             ord = [ 0 2 ];
-            ang = 2*pi*rand(5+10+10,1);
+            ang = 2*pi*rand(10+10,1);
             
             % Expected values
             nCh = decch(3);
@@ -206,7 +206,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 2 2 5 ];
             ord = [ 2 0 ];
-            ang = 2*pi*rand(5+10+10,1);
+            ang = 2*pi*rand(10+10,1);
             
             % Expected values
             nCh = decch(3);
@@ -254,7 +254,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 2 2 5 ];
             ord = [ 2 2 ];
-            ang = 2*pi*rand(5+10+4*5,1);
+            ang = 2*pi*rand(10+4*5,1);
             
             % Expected values
             nCh = decch(3);
@@ -554,7 +554,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 3 3 9 ];
             ord = [ 0 0 ];
-            angV = 2*pi*rand(9+36,1);
+            angV = 2*pi*rand(36,1);
             
             % Expected values
             import saivdr.dictionary.utility.*
@@ -640,7 +640,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
             decch = [ 2 2 7 ];
             ord = [ 0 0 ];
             nCh = decch(3);
-            ang = 2*pi*rand(7+21,1);
+            ang = 2*pi*rand(21,1);
             
             % Expected values
             dimExpctd = [7 4];
@@ -683,7 +683,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
             decch = [ 2 2 9 ];
             ord = [ 0 0 ];
             nCh = decch(3);
-            ang = 2*pi*rand(9+36,1);
+            ang = 2*pi*rand(36,1);
             
             % Expected values
             dimExpctd = [9 4];
@@ -726,7 +726,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
             decch = [ 3 3 11 ];
             ord = [ 0 0 ];
             nCh = decch(3);
-            ang = 2*pi*rand(11+55,1);
+            ang = 2*pi*rand(55,1);
             
             % Expected values
             dimExpctd = [11 9];
@@ -1016,7 +1016,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
             decch = [ 2 2 5 ];
             ord = [ 4 4 ];
             nCh = decch(3);
-            ang = 2*pi*rand(5+10+8*5,1);
+            ang = 2*pi*rand(10+8*5,1);
             
             % Expected values
             nDecs = prod(decch(1:2));
@@ -1107,7 +1107,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 2 2 7 ];
             ord = [ 2 2 ];
-            ang = 2*pi*rand(7+21+4*10,1);
+            ang = 2*pi*rand(21+4*10,1);
             
             % Expected values
             nDecs = prod(decch(1:2));
@@ -1155,7 +1155,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 3 3 9 ];
             ord = [ 4 4 ];
-            ang = 2*pi*rand(9+36+8*18,1);
+            ang = 2*pi*rand(36+8*18,1);
             
             % Expected values
             nDecs = prod(decch(1:2));
@@ -1741,7 +1741,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 2 2 5 ];
             ord = [ 0 4 ];
-            ang = 2*pi*rand(5+10+4*5,1);
+            ang = 2*pi*rand(10+4*5,1);
             
             % Expected values
             nDecs = prod(decch(1:2));
@@ -1849,7 +1849,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 2 2 5 ];
             ord = [ 4 0 ];
-            ang = 2*pi*rand(5+10+4*5,1);
+            ang = 2*pi*rand(10+4*5,1);
             
             % Expected values
             nDecs = prod(decch(1:2));
@@ -2098,7 +2098,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 2 2 5 ];
             ord = [ 6 6 ];
-            ang = 2*pi*rand(5+10+12*5,1);
+            ang = 2*pi*rand(10+12*5,1);
             
             % Expected values
             nCh = decch(3);
@@ -2147,7 +2147,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 2 2 9 ];
             ord = [ 2 2 ];
-            ang = 2*pi*rand(9+36+4*18,1);
+            ang = 2*pi*rand(36+4*18,1);
             
             % Expected values
             nCh = decch(3);
@@ -2195,7 +2195,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 2 2 9 ];
             ord = [ 4 4 ];
-            ang = 2*pi*rand(9+36+8*18,1);
+            ang = 2*pi*rand(36+8*18,1);
             
             % Expected values
             nCh = decch(3);
@@ -2243,7 +2243,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 2 2 11 ];
             ord = [ 4 4 ];
-            ang = 2*pi*rand(11+55+8*27,1);
+            ang = 2*pi*rand(55+8*27,1);
             
             % Expected values
             nCh = decch(3);
@@ -2291,7 +2291,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 3 3 11 ];
             ord = [ 2 2 ];
-            ang = 2*pi*rand(11+55+4*27,1);
+            ang = 2*pi*rand(55+4*27,1);
             
             % Expected values
             nCh = decch(3);
@@ -2339,7 +2339,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 3 3 11 ];
             ord = [ 4 4 ];
-            ang = 2*pi*rand(11+ 55+8*27,1);
+            ang = 2*pi*rand(55+8*27,1);
             
             % Expected values
             nCh = decch(3);
@@ -2387,7 +2387,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 1 1 5 ];
             ord = [ 2 2 ];
-            ang = 2*pi*rand(5+ 10+4*5,1);
+            ang = 2*pi*rand(10+4*5,1);
             
             % Expected values
             nCh = decch(3);
@@ -2435,7 +2435,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 1 1 5 ];
             ord = [ 4 4 ];
-            ang = 2*pi*rand(5+10+8*5,1);
+            ang = 2*pi*rand(10+8*5,1);
             
             % Expected values
             nCh = decch(3);
@@ -2483,7 +2483,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 1 1 7 ];
             ord = [ 4 4 ];
-            ang = 2*pi*rand(7+21+8*10,1);
+            ang = 2*pi*rand(21+8*10,1);
             
             % Expected values
             nCh = decch(3);
@@ -2531,7 +2531,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 1 1 7 ];
             ord = [ 6 6 ];
-            ang = 2*pi*rand(7+21+12*10,1);
+            ang = 2*pi*rand(21+12*10,1);
             
             % Expected values
             nCh = decch(3);
@@ -3688,7 +3688,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
           % Parameters
             decch = [ 2 2 3 2 ];
             ord = [ 2 2 ];
-            ang = 2*pi*rand(5+10+4*5,1);
+            ang = 2*pi*rand(10+4*5,1);
             
             % Expected values
             nDec = prod(decch(1:2));
@@ -3736,7 +3736,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 2 2 3 2 ];
             ord = [ 4 4 ];
-            ang = 2*pi*rand(5+10+8*5,1);
+            ang = 2*pi*rand(10+8*5,1);
             
             % Expected values
             nDecs = prod(decch(1:2));

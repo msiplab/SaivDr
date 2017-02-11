@@ -686,7 +686,7 @@ classdef CplxOvsdLpPuFb2dTypeIVm1SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 1 1 4 ];
             ord = [ 0 0 ];
-            ang = [ 0 0 ];
+            ang = [ 0 0 0 0 0 0];
             
             % Expected values
             coefExpctd(:,:,1,1) = [
@@ -720,7 +720,7 @@ classdef CplxOvsdLpPuFb2dTypeIVm1SystemTestCase < matlab.unittest.TestCase
             dec = [ 1 1 ];
             ch = 4;
             ord = [ 0 0 ];
-            ang = [ 0 pi/4 ];
+            ang = [ 0 0 0 0 0 pi/4 ];
             
             % Expected values
             import saivdr.dictionary.utility.*
@@ -817,7 +817,7 @@ classdef CplxOvsdLpPuFb2dTypeIVm1SystemTestCase < matlab.unittest.TestCase
             % Parameters
             dec = [ 2 2 ];
             ord = [ 0 0 ];
-            ang = [ 0 0 ];
+            ang = [ 0 0 0 0 0 0 ];
             mus = [ 1 1 ; -1 -1 ];
             
             % Expected values
