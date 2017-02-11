@@ -29,7 +29,7 @@ classdef CplxOvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
     end
     
     methods (Test)
-
+        
         % Test for default construction
         function testConstructor(testCase)
             
@@ -2061,8 +2061,8 @@ classdef CplxOvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             mstab = [ 4 4 ];
             
             % Expected value
-            import saivdr.dictionary.utility.ParameterMatrixSet
-            paramExpctd = ParameterMatrixSet(...
+            import saivdr.dictionary.utility.ParameterMatrixContainer
+            paramExpctd = ParameterMatrixContainer(...
                 'MatrixSizeTable',mstab);
             step(paramExpctd,eye(4),1);
             

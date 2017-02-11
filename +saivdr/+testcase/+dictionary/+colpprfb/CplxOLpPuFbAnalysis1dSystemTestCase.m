@@ -29,6 +29,44 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
     
     methods (Test)
         
+%         % Test
+%         function testStepDec4Ch4Ord0Level1Vm0(testCase)
+%             
+%             dec = 4;
+%             srcSeq = rand(1,dec);
+%             nLevels = 1;
+%             
+%             % Preparation
+%             import saivdr.dictionary.colpprfb.*
+%             lppufb = CplxOLpPrFbFactory.createCplxOvsdLpPuFb1dSystem(...
+%                 'DecimationFactor',dec,...
+%                 'NumberOfVanishingMoments',0);
+%             
+%             % Expected values
+%             import saivdr.utility.HermitianSymmetricDFT
+%             dftmtx = HermitianSymmetricDFT.hsdftmtx(dec);
+%             coefsExpctd = (dftmtx*srcSeq.').';
+%             
+%             % Instantiation of target class
+%             release(lppufb)
+%             set(lppufb,'OutputMode','ParameterMatrixSet');
+%             testCase.analyzer = CplxOLpPuFbAnalysis1dSystem(...
+%                 'LpPuFb1d',lppufb,...
+%                 'NumberOfSymmetricChannels',dec/2,...
+%                 'NumberOfAntisymmetricChannels',dec/2,...
+%                 'BoundaryOperation','Circular');
+%             
+%             % Actual values
+%             [coefsActual, ~] = step(testCase.analyzer,srcSeq,nLevels);
+%             
+%             % Evaluation
+%             %testCase.verifyEqual(scalesActual,scalesExpctd);
+%             diff = max(abs(coefsExpctd - coefsActual)./abs(coefsExpctd));
+%             testCase.verifyEqual(coefsActual,coefsExpctd,'RelTol',1e-7,...
+%                 sprintf('%g',diff));
+%             
+%         end
+        
         % Test
         function testDefaultConstructionTypeI(testCase)
             
@@ -101,7 +139,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             coefsExpctd = zeros(1,ch*nSubCoefs);
             for iSubband = 1:ch
                 subCoef = downsample(...
-                    cconv(srcSeq',step(lppufb,[],[],iSubband),nLen),...
+                    cconv(srcSeq.',step(lppufb,[],[],iSubband),nLen),...
                     dec);
                 coefsExpctd((iSubband-1)*nSubCoefs+1:iSubband*nSubCoefs) = ...
                     subCoef(:).';

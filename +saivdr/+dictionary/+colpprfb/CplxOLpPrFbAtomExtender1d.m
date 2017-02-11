@@ -71,6 +71,7 @@ classdef CplxOLpPrFbAtomExtender1d <  ...
             %
             isPeriodicExt = obj.IsPeriodicExt; % BoundaryOperation = 'Circular'
             %
+            isPeriodiExt = true;
             ord = obj.PolyPhaseOrder;
     
             % Order extension
@@ -224,7 +225,7 @@ classdef CplxOLpPrFbAtomExtender1d <  ...
             hC = complex(eye(hchs));
             hS = complex(eye(hchs));
             for p = 1:floor(hchs/2)
-                tp = angles(p);
+                tp = angles(p)/2;
                 
                 hC(2*p-1:2*p, 2*p-1:2*p) = [ -1i*cos(tp), -1i*sin(tp);
                     cos(tp) , -sin(tp)]; %c^

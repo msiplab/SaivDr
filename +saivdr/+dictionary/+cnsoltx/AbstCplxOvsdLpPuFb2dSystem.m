@@ -140,14 +140,12 @@ classdef AbstCplxOvsdLpPuFb2dSystem < matlab.System %#codegen
             elseif strcmp(obj.OutputMode,'AnalysisFilters')
                 output = getAnalysisFilterBank_(obj);
             elseif strcmp(obj.OutputMode,'SynthesisFilterAt')
-                % TODO: ?{?????????????l???????????????????????C?????????????????????D
-                %      ???????????m?F?????D
                 idx = varargin{3};
                 H = getAnalysisFilterBank_(obj);
                 H = conj(H);
                 output = rot90(H(:,:,idx),2);
             elseif strcmp(obj.OutputMode,'SynthesisFilters')
-                % TODO: SynthesisFilterAt???Q??
+                % TODO: SynthesisFilterAt
                 H = getAnalysisFilterBank_(obj);
                 H = conj(H);
                 H = flip(H,1);
@@ -214,7 +212,7 @@ classdef AbstCplxOvsdLpPuFb2dSystem < matlab.System %#codegen
                 for iRow = 1:nRows
                     hsdftCoef = zeros(nRows,nCols);
                     hsdftCoef(iRow,iCol) = 1;
-                    basisImage = hsdftY.'*hsdftCoef*hsdftX;
+                    basisImage = conj(hsdftY).'*hsdftCoef*conj(hsdftX);
                     coefs(iElm,:) = basisImage(:).';
                     iElm = iElm + 1;
                 end

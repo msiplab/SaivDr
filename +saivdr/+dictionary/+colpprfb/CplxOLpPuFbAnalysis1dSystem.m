@@ -255,7 +255,7 @@ classdef CplxOLpPuFbAnalysis1dSystem < ...
                 %mf = floor(dec_/2);
                 import saivdr.utility.HermitianSymmetricDFT
                 Edft = HermitianSymmetricDFT.hsdftmtx(dec_);
-                hsdftCoefs = conj(Edft)*reshape(subSeq,[dec_, nBlks_]);
+                hsdftCoefs = Edft*reshape(subSeq,[dec_, nBlks_]);
                 %arrayCoefs(1:mc,:) = dctCoefs(1:mc,:) ;
                 %arrayCoefs(ps+1:ps+mf,:) = dctCoefs(mc+1:end,:);
                 arrayCoefs(1:dec_,:) = hsdftCoefs;
@@ -268,22 +268,6 @@ classdef CplxOLpPuFbAnalysis1dSystem < ...
             arrayCoefs = obj.atomExtFcn(arrayCoefs,subScale,pmCoefs,...
                 ord,fpe);
         end
-        
-%         %TODO:“¯ˆê‚ÌŠÖ”‚ªAbstCplxOLpPuFb1dSystem‚Å‚à’è‹`‚³‚ê‚Ä‚¢‚é‚Ì‚Åˆê‰ÓŠ‚ÉW–ñ‚·‚é
-%         function value = hsdftmtx_(~, nDec) %Hermitian-Symmetric DFT matrix
-%             value = complex(zeros(nDec));
-%             for u = 0:nDec-1
-%                 for x =0:nDec-1
-%                     n = rem(u*(2*x+1),2*nDec);
-%                     value(u+1,x+1) = exp(-1i*pi*n/nDec)/sqrt(nDec);
-%                 end
-%             end
-%         end
-%         
-%         function value = hsdft_(obj, X)
-%             mtx = hsdftmtx_(obj,size(X,1));
-%             value = mtx*X;
-%         end
         
     end
 

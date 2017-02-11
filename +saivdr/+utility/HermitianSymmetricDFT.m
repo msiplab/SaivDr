@@ -10,6 +10,18 @@ classdef HermitianSymmetricDFT
             end
         end
         
+        function value = hsdft2(x) %hsdft
+            nDec = size(x,1);
+            mtx = saivdr.utility.HermitianSymmetricDFT.hsdftmtx(nDec);
+            value = (mtx*(mtx*x).').';
+        end
+        
+        function value = ihsdft2(x) %inverse hsdft
+            nDec = size(x,1);
+            mtx = saivdr.utility.HermitianSymmetricDFT.hsdftmtx(nDec);
+            value = (mtx'*(mtx'*x).').';
+        end
+        
         function value = conjhsdft2(x) %conjugate-hsdft
             nDec = size(x,1);
             mtx = saivdr.utility.HermitianSymmetricDFT.hsdftmtx(nDec);

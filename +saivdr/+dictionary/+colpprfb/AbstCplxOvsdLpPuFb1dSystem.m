@@ -200,47 +200,48 @@ classdef AbstCplxOvsdLpPuFb1dSystem < matlab.System %#codegen
         end
         
         function value = getMatrixE0_(obj)
+            import saivdr.utility.HermitianSymmetricDFT
             nCoefs = obj.DecimationFactor;
             nElmBi = nCoefs;
-            hsdftMtx = hsdftmtx_(obj, nCoefs);
+            hsdftMtx = HermitianSymmetricDFT.hsdftmtx(nCoefs);
             coefs = complex(zeros(nElmBi));
             iElm = 1;
             for iCoef = 1:nCoefs
                 hsdftCoef = complex(zeros(nCoefs,1));
                 hsdftCoef(iCoef) = 1;
-                basisVector = hsdftMtx.'*hsdftCoef;
+                basisVector = hsdftMtx'*hsdftCoef;
                 coefs(iElm,:) = basisVector(:).';
                 iElm = iElm + 1;
             end
             value = coefs;
         end
         
-        function value = permuteCoefs_(~,arr_,phs_)
-            len_ = size(arr_,2)/phs_;
-            value = zeros(size(arr_));
-            for idx = 0:phs_-1
-                value(:,idx*len_+1:(idx+1)*len_) = arr_(:,idx+1:phs_:end);
-            end
-        end
+%         function value = permuteCoefs_(~,arr_,phs_)
+%             len_ = size(arr_,2)/phs_;
+%             value = zeros(size(arr_));
+%             for idx = 0:phs_-1
+%                 value(:,idx*len_+1:(idx+1)*len_) = arr_(:,idx+1:phs_:end);
+%             end
+%         end
+%         
+%         function value = ipermuteCoefs_(~,arr_,phs_)
+%             len_ = size(arr_,2)/phs_;
+%             value = zeros(size(arr_));
+%             for idx = 0:phs_-1
+%                 value(:,idx+1:phs_:end) = arr_(:,idx*len_+1:(idx+1)*len_);
+%             end
+%         end
         
-        function value = ipermuteCoefs_(~,arr_,phs_)
-            len_ = size(arr_,2)/phs_;
-            value = zeros(size(arr_));
-            for idx = 0:phs_-1
-                value(:,idx+1:phs_:end) = arr_(:,idx*len_+1:(idx+1)*len_);
-            end
-        end
-        
-        %TODO:同一の関数が2D,3Dでも定義されているので一箇所に集約する
-        function value = hsdftmtx_(~, nDec) %Hermitian-Symmetric DFT matrix
-            value = complex(zeros(nDec));
-            for u = 0:nDec-1
-                for x =0:nDec-1
-                    n = rem(u*(2*x+1),2*nDec);
-                    value(u+1,x+1) = exp(-1i*pi*n/nDec)/sqrt(nDec);
-                end
-            end
-        end
+%         %TODO:同一の関数が2D,3Dでも定義されているので一箇所に集約する
+%         function value = hsdftmtx_(~, nDec) %Hermitian-Symmetric DFT matrix
+%             value = complex(zeros(nDec));
+%             for u = 0:nDec-1
+%                 for x =0:nDec-1
+%                     n = rem(u*(2*x+1),2*nDec);
+%                     value(u+1,x+1) = exp(-1i*pi*n/nDec)/sqrt(nDec);
+%                 end
+%             end
+%         end
         
     end
     

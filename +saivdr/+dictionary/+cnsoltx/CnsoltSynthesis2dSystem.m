@@ -251,7 +251,7 @@ classdef CnsoltSynthesis2dSystem  < ...
                 scale = double(subScale) .* obj.decimationFactor;
                 dctCoefs = col2im(coefs,blockSize,scale,'distinct');
                 subImg = blockproc(dctCoefs,blockSize,...
-                    @(x) saivdr.utility.HermitianSymmetricDFT.conjihsdft2(x.data));
+                    @(x) saivdr.utility.HermitianSymmetricDFT.ihsdft2(x.data));
             end
         end
         

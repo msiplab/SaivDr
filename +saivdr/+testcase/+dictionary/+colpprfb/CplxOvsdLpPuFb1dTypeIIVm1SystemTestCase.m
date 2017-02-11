@@ -394,8 +394,8 @@ classdef CplxOvsdLpPuFb1dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             mstab = [ 5 5 ];
             
             % Expected value
-            import saivdr.dictionary.utility.ParameterMatrixSet
-            paramExpctd = ParameterMatrixSet(...
+            import saivdr.dictionary.utility.ParameterMatrixContainer
+            paramExpctd = ParameterMatrixContainer(...
                 'MatrixSizeTable',mstab);
             step(paramExpctd,eye(5),1);
             
@@ -422,7 +422,7 @@ classdef CplxOvsdLpPuFb1dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             import saivdr.dictionary.utility.*
-            paramMtxExpctd = ParameterMatrixSet(...
+            paramMtxExpctd = ParameterMatrixContainer(...
                 'MatrixSizeTable',mstab);
             step(paramMtxExpctd, eye(mstab(1,:)),uint32(1)); % W0
             step(paramMtxExpctd, eye(mstab(2,:)),uint32(2)); % U0

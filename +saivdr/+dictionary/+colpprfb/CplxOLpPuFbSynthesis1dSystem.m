@@ -228,27 +228,28 @@ classdef CplxOLpPuFbSynthesis1dSystem  < ...
 %                 subSeq(1:2:end) = (subCoef1+subCoef2)/sqrt(2);
 %                 subSeq(2:2:end) = (subCoef1-subCoef2)/sqrt(2);
             else
+                import saivdr.utility.HermitianSymmetricDFT
                 hsdftCoefs=arrayCoefs(1:dec_,:);
-                Edft = hsdftmtx_(obj,size(hsdftCoefs,1));
-                subSeq = reshape(Edft.'*hsdftCoefs, [1 dec_*nBlks_]);
+                Edft = HermitianSymmetricDFT.hsdftmtx(size(hsdftCoefs,1));
+                subSeq = reshape(Edft'*hsdftCoefs, [1 dec_*nBlks_]);
             end
         end
         
-        function value = hsdftmtx_(~, nDec) %Hermitian-Symmetric DFT matrix
-            w = exp(-2*pi*1i/nDec);
-            value = complex(zeros(nDec));
-            for u = 0:nDec-1
-                for x =0:nDec-1
-                    value(u+1,x+1) = w^(u*(x+0.5))/sqrt(nDec);
-                end
-            end
-        end
-        
-        function value = ihsdft_(obj, X)
-            mtx = hsdftmtx_(obj,size(X,1))';
-            value = mtx*X;
-        end
-        
+%         function value = hsdftmtx_(~, nDec) %Hermitian-Symmetric DFT matrix
+%             w = exp(-2*pi*1i/nDec);
+%             value = complex(zeros(nDec));
+%             for u = 0:nDec-1
+%                 for x =0:nDec-1
+%                     value(u+1,x+1) = w^(u*(x+0.5))/sqrt(nDec);
+%                 end
+%             end
+%         end
+%         
+%         function value = ihsdft_(obj, X)
+%             mtx = hsdftmtx_(obj,size(X,1))';
+%             value = mtx*X;
+%         end
+%         
     end
     
 end

@@ -153,7 +153,6 @@ classdef CnsoltAnalysis2dSystem < ...
             obj.allScales = zeros(obj.nAllChs,obj.DATA_DIMENSION);
             
             % Prepare MEX function
-            %TODO: MEX??????????????????2?s??????????
             obj.isMexFcn = 1;
             mexFcn = [];
             
@@ -271,7 +270,7 @@ classdef CnsoltAnalysis2dSystem < ...
 %                     (subImg1+subImg2-subImg3-subImg4)/2;
             else
                 dftCoefs = blockproc(subImg,blockSize,...
-                    @(x) saivdr.utility.HermitianSymmetricDFT.conjhsdft2(x.data));
+                    @(x) saivdr.utility.HermitianSymmetricDFT.hsdft2(x.data));
                 coefs = im2col(dftCoefs,blockSize,'distinct');
                 arrayCoefs(1:decX_*decY_,:) = coefs;
             end
