@@ -81,7 +81,7 @@ classdef CplxOvsdLpPuFb2dTypeIVm1System < saivdr.dictionary.cnsoltx.AbstCplxOvsd
             
             % Initial matrix with No-DC-leakage condition
             [angles_,~] = step(obj.propOmfs_,W_.');
-            initAngles(1:nch/2-1) = angles_(1:nch/2-1);
+            initAngles(1:nch/2-1) = angles_(1:nch/2-1).';
             initAngles(nch/2:nch-1) = zeros(1,nch/2);
             mtx = step(obj.initOmgs_,initAngles,obj.Mus(1:nch));
             step(obj.ParameterMatrixSet,mtx,uint32(1));

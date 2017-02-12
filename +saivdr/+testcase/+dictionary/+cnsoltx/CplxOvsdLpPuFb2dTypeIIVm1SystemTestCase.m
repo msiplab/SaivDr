@@ -34,12 +34,12 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
         function testConstructor(testCase)
             
             % Expected values
-            coefExpctd = 1/2 * [
-                1  1  1  1 ;
-                1 -1 -1  1 ;
-                0  0  0  0 ;
-                -1  1 -1  1 ;
-                -1 -1  1  1 ];
+            coefExpctd = 1/2*[
+                 1 ,  1 ,  1 ,  1 ;
+                 1i, -1i,  1i, -1i;
+                 1i,  1i, -1i, -1i;
+                -1 ,  1 ,  1 , -1 ;
+                 0 ,  0 ,  0 ,  0 ;];
             
             % Instantiation of target class
             import saivdr.dictionary.cnsoltx.*
@@ -137,12 +137,12 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             ord = [ 0 0 ];
             
             % Expected values
-            coefExpctd(:,:,1,1) = 1/2 * [
-                1  1  1  1 ;
-                1 -1 -1  1 ;
-                0  0  0  0 ;
-                -1  1 -1  1 ;
-                -1 -1  1  1 ];
+            coefExpctd(:,:,1,1) = 1/2*[
+                 1 ,  1 ,  1 ,  1 ;
+                 1i, -1i,  1i, -1i;
+                 1i,  1i, -1i, -1i;
+                -1 ,  1 ,  1 , -1 ;
+                 0 ,  0 ,  0 ,  0 ;];
             
             % Instantiation of target class
             import saivdr.dictionary.cnsoltx.*
@@ -163,7 +163,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 2 2 5 ];
             ord = [ 0 2 ];
-            ang = 2*pi*rand(4,2);
+            ang = 2*pi*rand(1,10+10);
             
             % Expected values
             nChs = decch(3);
@@ -206,7 +206,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 2 2 5 ];
             ord = [ 2 0 ];
-            ang = 2*pi*rand(4,2);
+            ang = 2*pi*rand(1,10+10);
             
             % Expected values
             nChs = decch(3);
@@ -249,7 +249,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 2 2 5 ];
             ord = [ 2 2 ];
-            ang = 2*pi*rand(4,3);
+            ang = 2*pi*rand(10+20);
             
             % Expected values
             nChs = decch(3);
@@ -293,7 +293,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             % Parameters
             dec = [ 3 3 ];
             ord = [ 0 2 ];
-            ang = 2*pi*rand(16,2);
+            ang = 2*pi*rand(1,36+36);
             
             % Expected values
             nDec = dec(1)*dec(2);
@@ -336,7 +336,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             % Parameters
             dec = [ 3 3 ];
             ord = [ 2 0 ];
-            ang = 2*pi*rand(16,2);
+            ang = 2*pi*rand(1,36+36);
             
             % Expected values
             nDec = dec(1)*dec(2);
@@ -379,7 +379,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             % Parameters
             dec = [ 3 3 ];
             ord = [ 2 2 ];
-            ang = 2*pi*rand(16,3);
+            ang = 2*pi*rand(1,36+72);
             
             % Expected values
             nDec = dec(1)*dec(2);
@@ -490,7 +490,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 3 3 9 ];
             ord = [ 0 0 ];
-            ang = 0;
+            ang = [];
             
             % Expected values
             coefExpctd(:,:,1,1) = [0.333333333333333,0.333333333333333,0.333333333333333,0.333333333333333,0.333333333333333,0.333333333333333,0.333333333333333,0.333333333333333,0.333333333333333;0.235702260395516,-0.471404520791032,0.235702260395516,0.235702260395516,-0.471404520791032,0.235702260395516,0.235702260395516,-0.471404520791032,0.235702260395516;0.235702260395516,0.235702260395516,0.235702260395516,-0.471404520791032,-0.471404520791032,-0.471404520791032,0.235702260395516,0.235702260395516,0.235702260395516;0.166666666666667,-0.333333333333333,0.166666666666667,-0.333333333333333,0.666666666666667,-0.333333333333333,0.166666666666667,-0.333333333333333,0.166666666666667;0.500000000000000,3.53525079574969e-17,-0.500000000000000,3.53525079574969e-17,2.49959963776976e-33,-3.53525079574969e-17,-0.500000000000000,-3.53525079574969e-17,0.500000000000000;-0.408248290463863,-2.88652018745164e-17,0.408248290463863,-0.408248290463863,-2.88652018745164e-17,0.408248290463863,-0.408248290463863,-2.88652018745164e-17,0.408248290463863;-0.288675134594813,-2.04107799857892e-17,0.288675134594813,0.577350269189626,4.08215599715784e-17,-0.577350269189626,-0.288675134594813,-2.04107799857892e-17,0.288675134594813;-0.408248290463863,-0.408248290463863,-0.408248290463863,-2.88652018745164e-17,-2.88652018745164e-17,-2.88652018745164e-17,0.408248290463863,0.408248290463863,0.408248290463863;-0.288675134594813,0.577350269189626,-0.288675134594813,-2.04107799857892e-17,4.08215599715784e-17,-2.04107799857892e-17,0.288675134594813,-0.577350269189626,0.288675134594813;];
@@ -512,39 +512,39 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
         end
         
         % Test for construction
-        function testConstructorWithDec33Ch9Ord00Ang(testCase)
-            
-            % Parameters
-            decch = [ 3 3 9 ];
-            ord = [ 0 0 ];
-            angW = zeros(10,1);
-            angU = 2*pi*rand(6,1);
-            
-            % Expected values
-            import saivdr.dictionary.utility.*
-            omgsW = OrthonormalMatrixGenerationSystem();
-            omgsU = OrthonormalMatrixGenerationSystem();
-            matrixW0 = step(omgsW,angW,1);
-            matrixU0 = step(omgsU,angU,1);
-            coefExpctd(:,:,1,1) = ...
-                blkdiag(matrixW0, matrixU0) * ...
-                [0.333333333333333,0.333333333333333,0.333333333333333,0.333333333333333,0.333333333333333,0.333333333333333,0.333333333333333,0.333333333333333,0.333333333333333;0.235702260395516,-0.471404520791032,0.235702260395516,0.235702260395516,-0.471404520791032,0.235702260395516,0.235702260395516,-0.471404520791032,0.235702260395516;0.235702260395516,0.235702260395516,0.235702260395516,-0.471404520791032,-0.471404520791032,-0.471404520791032,0.235702260395516,0.235702260395516,0.235702260395516;0.166666666666667,-0.333333333333333,0.166666666666667,-0.333333333333333,0.666666666666667,-0.333333333333333,0.166666666666667,-0.333333333333333,0.166666666666667;0.500000000000000,3.53525079574969e-17,-0.500000000000000,3.53525079574969e-17,2.49959963776976e-33,-3.53525079574969e-17,-0.500000000000000,-3.53525079574969e-17,0.500000000000000;-0.408248290463863,-2.88652018745164e-17,0.408248290463863,-0.408248290463863,-2.88652018745164e-17,0.408248290463863,-0.408248290463863,-2.88652018745164e-17,0.408248290463863;-0.288675134594813,-2.04107799857892e-17,0.288675134594813,0.577350269189626,4.08215599715784e-17,-0.577350269189626,-0.288675134594813,-2.04107799857892e-17,0.288675134594813;-0.408248290463863,-0.408248290463863,-0.408248290463863,-2.88652018745164e-17,-2.88652018745164e-17,-2.88652018745164e-17,0.408248290463863,0.408248290463863,0.408248290463863;-0.288675134594813,0.577350269189626,-0.288675134594813,-2.04107799857892e-17,4.08215599715784e-17,-2.04107799857892e-17,0.288675134594813,-0.577350269189626,0.288675134594813;];
-            
-            % Instantiation of target class
-            import saivdr.dictionary.cnsoltx.*
-            testCase.lppufb = CplxOvsdLpPuFb2dTypeIIVm1System(...
-                'DecimationFactor',decch(1:2),...
-                'NumberOfChannels',decch(3:end),...
-                'PolyPhaseOrder',ord);
-                
-            % Actual values
-            coefActual = step(testCase.lppufb,[angW;angU],[]);
-            
-            % Evaluation
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-11,sprintf('%g',coefDist));
-            
-        end
+%         function testConstructorWithDec33Ch9Ord00Ang(testCase)
+%             
+%             % Parameters
+%             decch = [ 3 3 9 ];
+%             ord = [ 0 0 ];
+%             angW = zeros(10,1);
+%             angU = 2*pi*rand(6,1);
+%             
+%             % Expected values
+%             import saivdr.dictionary.utility.*
+%             omgsW = OrthonormalMatrixGenerationSystem();
+%             omgsU = OrthonormalMatrixGenerationSystem();
+%             matrixW0 = step(omgsW,angW,1);
+%             matrixU0 = step(omgsU,angU,1);
+%             coefExpctd(:,:,1,1) = ...
+%                 blkdiag(matrixW0, matrixU0) * ...
+%                 [0.333333333333333,0.333333333333333,0.333333333333333,0.333333333333333,0.333333333333333,0.333333333333333,0.333333333333333,0.333333333333333,0.333333333333333;0.235702260395516,-0.471404520791032,0.235702260395516,0.235702260395516,-0.471404520791032,0.235702260395516,0.235702260395516,-0.471404520791032,0.235702260395516;0.235702260395516,0.235702260395516,0.235702260395516,-0.471404520791032,-0.471404520791032,-0.471404520791032,0.235702260395516,0.235702260395516,0.235702260395516;0.166666666666667,-0.333333333333333,0.166666666666667,-0.333333333333333,0.666666666666667,-0.333333333333333,0.166666666666667,-0.333333333333333,0.166666666666667;0.500000000000000,3.53525079574969e-17,-0.500000000000000,3.53525079574969e-17,2.49959963776976e-33,-3.53525079574969e-17,-0.500000000000000,-3.53525079574969e-17,0.500000000000000;-0.408248290463863,-2.88652018745164e-17,0.408248290463863,-0.408248290463863,-2.88652018745164e-17,0.408248290463863,-0.408248290463863,-2.88652018745164e-17,0.408248290463863;-0.288675134594813,-2.04107799857892e-17,0.288675134594813,0.577350269189626,4.08215599715784e-17,-0.577350269189626,-0.288675134594813,-2.04107799857892e-17,0.288675134594813;-0.408248290463863,-0.408248290463863,-0.408248290463863,-2.88652018745164e-17,-2.88652018745164e-17,-2.88652018745164e-17,0.408248290463863,0.408248290463863,0.408248290463863;-0.288675134594813,0.577350269189626,-0.288675134594813,-2.04107799857892e-17,4.08215599715784e-17,-2.04107799857892e-17,0.288675134594813,-0.577350269189626,0.288675134594813;];
+%             
+%             % Instantiation of target class
+%             import saivdr.dictionary.cnsoltx.*
+%             testCase.lppufb = CplxOvsdLpPuFb2dTypeIIVm1System(...
+%                 'DecimationFactor',decch(1:2),...
+%                 'NumberOfChannels',decch(3:end),...
+%                 'PolyPhaseOrder',ord);
+%                 
+%             % Actual values
+%             coefActual = step(testCase.lppufb,[angW;angU],[]);
+%             
+%             % Evaluation
+%             coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
+%             testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-11,sprintf('%g',coefDist));
+%             
+%         end
         
         % Test for construction
         function testConstructorWithDec22Ch5Ord00Ang(testCase)
@@ -552,7 +552,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 2 2 5 ];
             ord = [ 0 0 ];
-            ang = 2*pi*rand(4,1);
+            ang = 2*pi*rand(1,10);
             
             % Expected values
             dimExpctd = [5 4];
@@ -589,7 +589,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 2 2 7 ];
             ord = [ 0 0 ];
-            ang = 2*pi*rand(9,1);
+            ang = 2*pi*rand(1,21);
             
             % Expected values
             dimExpctd = [7 4];
@@ -626,7 +626,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 2 2 9 ];
             ord = [ 0 0 ];
-            ang = 2*pi*rand(16,1);
+            ang = 2*pi*rand(1,36);
             
             % Expected values
             dimExpctd = [9 4];
@@ -663,7 +663,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 3 3 11 ];
             ord = [ 0 0 ];
-            ang = 2*pi*rand(25,1);
+            ang = 2*pi*rand(1,55);
             
             % Expected values
             dimExpctd = [11 9];
@@ -729,7 +729,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 1 1 5 ];
             ord = [ 0 0 ];
-            ang = 0;
+            ang = [];
             
             % Expected values
             coefExpctd(:,:,1,1) = [
@@ -761,17 +761,14 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 1 1 5 ];
             ord = [ 0 0 ];
-            angW = zeros(3,1);
-            angU = pi/3;
+            angsV = [0 0 0 0 0 0 0 0 0 pi/3];
             
             % Expected values
             import saivdr.dictionary.utility.*
-            omgsW = OrthonormalMatrixGenerationSystem();
-            omgsU = OrthonormalMatrixGenerationSystem();
-            matrixW0 = step(omgsW,angW,1);
-            matrixU0 = step(omgsU,angU,1);
+            omgsV = OrthonormalMatrixGenerationSystem('OrderOfProduction','Ascending');
+            matrixV0 = step(omgsV,angsV,1);
             coefExpctd(:,:,1,1) = ...
-                blkdiag(matrixW0, matrixU0) * ...
+                matrixV0 * ...
                 [ 1 0 0 0 0 ].';
             
             % Instantiation of target class
@@ -782,7 +779,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
                 'PolyPhaseOrder',ord);
                 
             % Actual values
-            coefActual = step(testCase.lppufb,[angW;angU],[]);
+            coefActual = step(testCase.lppufb,angsV,[]);
             
             % Evaluation
             coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
@@ -836,12 +833,12 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             mus = [ 1 1 1 -1 -1 ].';
             
             % Expected values
-            coefExpctd(:,:,1,1) = 1/2 * [
-                1  1  1  1 ;
-                1 -1 -1  1 ;
-                0  0  0  0 ;
-                1 -1  1 -1 ;
-                1  1 -1 -1 ];
+            coefExpctd(:,:,1,1) = 1/2*[
+                 1 ,  1 ,  1 ,  1 ;
+                 1i, -1i,  1i, -1i;
+                 1i,  1i, -1i, -1i;
+                -1 ,  1 ,  1 , -1 ;
+                 0 ,  0 ,  0 ,  0 ;];
             
             % Instantiation of target class
             import saivdr.dictionary.cnsoltx.*
@@ -865,7 +862,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 2 2 5 ];
             ord = [ 2 2 ];
-            ang = 0;
+            ang = [];
             
             % Expected values
             coefExpctd(:,:,1,1) = [
@@ -892,12 +889,12 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
                 0     0     0     0
                 0     0     0     0
                 0     0     0     0 ];
-            coefExpctd(:,:,2,2) = [
-                0.5000    0.5000    0.5000    0.5000
-                0.5000   -0.5000   -0.5000    0.5000
-                0     0     0     0
-                -0.5000    0.5000   -0.5000    0.5000
-                -0.5000   -0.5000    0.5000    0.5000 ];
+            coefExpctd(:,:,2,2) = 1/2*[
+                 1 ,  1 ,  1 ,  1 ;
+                 1i, -1i,  1i, -1i;
+                 1i,  1i, -1i, -1i;
+                -1 ,  1 ,  1 , -1 ;
+                 0 ,  0 ,  0 ,  0 ;];
             coefExpctd(:,:,3,2) = [
                 0     0     0     0
                 0     0     0     0
@@ -945,7 +942,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 2 2 5 ];
             ord = [ 4 4 ];
-            ang = 2*pi*rand(4,5);
+            ang = 2*pi*rand(1,10+40);
             
             % Expected values
             nDecs = prod(decch(1:2));
@@ -987,7 +984,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 3 3 9 ];
             ord = [ 2 2 ];
-            ang = 0;
+            ang = [];
             
             % Expected values
             coefExpctd(:,:,1,1) = zeros(9);
@@ -1022,7 +1019,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 2 2 7 ];
             ord = [ 2 2 ];
-            ang = 2*pi*rand(9,3);
+            ang = 2*pi*rand(1,21+40);
             
             % Expected values
             nDecs = prod(decch(1:2));
@@ -1065,7 +1062,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 3 3 9 ];
             ord = [ 4 4 ];
-            ang = 2*pi*rand(16,5);
+            ang = 2*pi*rand(1,36+4*36);
             
             % Expected values
             nDecs = prod(decch(1:2));
@@ -1112,12 +1109,12 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             angPst = [ 0 0 0 0 ].';
             
             % Expected values
-            coefExpctd(:,:,1,1) = 1/2 * [
-                1  1  1  1 ;
-                1 -1 -1  1 ;
-                0 0 0 0 ;
-                -1  1 -1  1 ;
-                -1 -1  1  1 ];
+            coefExpctd(:,:,1,1) = 1/2*[
+                 1 ,  1 ,  1 ,  1 ;
+                 1i, -1i,  1i, -1i;
+                 1i,  1i, -1i, -1i;
+                -1 ,  1 ,  1 , -1 ;
+                 0 ,  0 ,  0 ,  0 ;];
             
             % Instantiation of target class
             import saivdr.dictionary.cnsoltx.*
@@ -1154,12 +1151,12 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             musPst = 1;
             
             % Expected values
-            coefExpctd(:,:,1,1) = 1/2 * [
-                1  1  1  1 ;
-                1 -1 -1  1 ;
-                0 0 0 0 ;
-                -1  1 -1  1 ;
-                -1 -1  1  1 ];
+            coefExpctd(:,:,1,1) = 1/2*[
+                 1 ,  1 ,  1 ,  1 ;
+                 1i, -1i,  1i, -1i;
+                 1i,  1i, -1i, -1i;
+                -1 ,  1 ,  1 , -1 ;
+                 0 ,  0 ,  0 ,  0 ;];
             
             % Instantiation of target class
             import saivdr.dictionary.cnsoltx.*
@@ -1189,11 +1186,11 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
         function testAnalysisFilterAt(testCase)
             
             % Expected value
-            anFiltExpctd1 = 1/2*[ 1 1 ;  1 1 ];
-            anFiltExpctd2 = 1/2*[ 1 -1 ; -1 1 ];
-            anFiltExpctd3 = [0 0 ; 0 0 ];
-            anFiltExpctd4 = 1/2*[-1 -1 ;  1  1 ];
-            anFiltExpctd5 = 1/2*[-1  1 ; -1  1 ];
+            anFiltExpctd1 = 1/2*[  1   1  ;  1   1  ];
+            anFiltExpctd2 = 1/2*[  1i  1i ; -1i -1i ];
+            anFiltExpctd3 = 1/2*[  1i -1i ;  1i -1i ];
+            anFiltExpctd4 = 1/2*[ -1   1  ;  1  -1  ];
+            anFiltExpctd5 = [ 0 0 ; 0 0 ];
             
             % Instantiation of target class
             import saivdr.dictionary.cnsoltx.*
@@ -1225,11 +1222,11 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
         function testAnalysisFilters(testCase)
             
             % Expected value
-            anFiltExpctd1 = 1/2*[ 1 1 ;  1 1 ];
-            anFiltExpctd2 = 1/2*[ 1 -1 ; -1 1 ];
-            anFiltExpctd3 = [0 0 ; 0 0 ];
-            anFiltExpctd4 = 1/2*[-1 -1 ;  1  1 ];
-            anFiltExpctd5 = 1/2*[-1  1 ; -1  1 ];
+            anFiltExpctd1 = 1/2*[  1   1  ;  1   1  ];
+            anFiltExpctd2 = 1/2*[  1i  1i ; -1i -1i ];
+            anFiltExpctd3 = 1/2*[  1i -1i ;  1i -1i ];
+            anFiltExpctd4 = 1/2*[ -1   1  ;  1  -1  ];
+            anFiltExpctd5 = [ 0 0 ; 0 0 ];
             
             % Instantiation of target class
             import saivdr.dictionary.cnsoltx.*
@@ -1265,7 +1262,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 2 2 5 ];
             ord = [ 0 2 ];
-            ang = 0;
+            ang = [];
             
             % Expected values
             coefExpctd(:,:,1,1) = [
@@ -1275,12 +1272,12 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
                 0  0  0  0 ;
                 0  0  0  0 ];
             
-            coefExpctd(:,:,1,2) = 1/2 * [
-                1  1  1  1 ;
-                1 -1 -1  1 ;
-                0  0  0  0 ;
-               -1  1 -1  1 ;
-               -1 -1  1  1 ];
+            coefExpctd(:,:,1,2) = 1/2*[
+                 1 ,  1 ,  1 ,  1 ;
+                 1i, -1i,  1i, -1i;
+                 1i,  1i, -1i, -1i;
+                -1 ,  1 ,  1 , -1 ;
+                 0 ,  0 ,  0 ,  0 ;];
             
             coefExpctd(:,:,1,3) = [
                 0  0  0  0 ;
@@ -1300,8 +1297,8 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             coefActual = step(testCase.lppufb,ang,[]);
             
             % Evaluation
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',coefDist));
+            coefDist = max(abs(coefExpctd(:)-coefActual(:)));
+            testCase.verifyEqual(coefActual,coefExpctd,'AbsTol',1e-14,sprintf('%g',coefDist));
             
         end
         
@@ -1311,7 +1308,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 1 1 5 ];
             ord = [ 0 2 ];
-            ang = 0;
+            ang = [];
             
             % Expected values
             coefExpctd(:,:,1,1) = [
@@ -1346,8 +1343,8 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             coefActual = step(testCase.lppufb,ang,[]);
             
             % Evaluation
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',coefDist));
+            coefDist = max(abs(coefExpctd(:)-coefActual(:)));
+            testCase.verifyEqual(coefActual,coefExpctd,'AbsTol',1e-14,sprintf('%g',coefDist));
             
         end
         
@@ -1357,7 +1354,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 1 1 5 ];
             ord = [ 2 2 ];
-            ang = 0;
+            ang = [];
             
             % Expected values
             coefExpctd(:,:,1,1) = [...
@@ -1431,8 +1428,8 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             coefActual = step(testCase.lppufb,[],[]);
             
             % Evaluation
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',coefDist));
+            coefDist = max(abs(coefExpctd(:)-coefActual(:)));
+            testCase.verifyEqual(coefActual,coefExpctd,'AbsTol',1e-14,sprintf('%g',coefDist));
             
         end
         
@@ -1442,7 +1439,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 2 2 5 ];
             ord = [ 2 0 ];
-            ang = 0;
+            ang = [];
             
             % Expected values
             coefExpctd(:,:,1,1) = [
@@ -1452,12 +1449,12 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
                 0  0  0  0 ;
                 0  0  0  0 ];
             
-            coefExpctd(:,:,2,1) = 1/2 * [
-                1  1  1  1 ;
-                1 -1 -1  1 ;
-                0  0  0  0 ;
-               -1  1 -1  1 ;
-               -1 -1  1  1 ];
+            coefExpctd(:,:,2,1) = 1/2*[
+                 1 ,  1 ,  1 ,  1 ;
+                 1i, -1i,  1i, -1i;
+                 1i,  1i, -1i, -1i;
+                -1 ,  1 ,  1 , -1 ;
+                 0 ,  0 ,  0 ,  0 ;];
             
             coefExpctd(:,:,3,1) = [
                 0  0  0  0 ;
@@ -1477,8 +1474,8 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             coefActual = step(testCase.lppufb,ang,[]);
             
             % Evaluation
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',coefDist));
+            coefDist = max(abs(coefExpctd(:)-coefActual(:)));
+            testCase.verifyEqual(coefActual,coefExpctd,'AbsTol',1e-14,sprintf('%g',coefDist));
             
         end
         
@@ -1488,7 +1485,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 2 2 5 ];
             ord = [ 2 2 ];
-            ang = 0;
+            ang = [];
             
             % Expected values
             coefExpctd(:,:,1,1) = [
@@ -1519,12 +1516,12 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
                 0  0  0  0 ;
                 0  0  0  0 ];
             
-            coefExpctd(:,:,2,2) = 1/2 * [
-                1  1  1  1 ;
-                1 -1 -1  1 ;
-                0  0  0  0 ;
-                -1  1 -1  1 ;
-                -1 -1  1  1 ];
+            coefExpctd(:,:,2,2) = 1/2*[
+                 1 ,  1 ,  1 ,  1 ;
+                 1i, -1i,  1i, -1i;
+                 1i,  1i, -1i, -1i;
+                -1 ,  1 ,  1 , -1 ;
+                 0 ,  0 ,  0 ,  0 ;];
             
             coefExpctd(:,:,3,2) = [
                 0  0  0  0 ;
@@ -1565,8 +1562,8 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             coefActual = step(testCase.lppufb,ang,[]);
             
             % Evaluation
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',coefDist));
+            coefDist = max(abs(coefExpctd(:)-coefActual(:)));
+            testCase.verifyEqual(coefActual,coefExpctd,'AbsTol',1e-14,sprintf('%g',coefDist));
             
         end
         
@@ -1576,7 +1573,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 2 2 5 ];
             ord = [ 0 4 ];
-            ang = 0;
+            ang = [];
             
             % Expected values
             coefExpctd(:,:,1,1) = [
@@ -1593,12 +1590,12 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
                 0  0  0  0 ;
                 0  0  0  0 ];
             
-            coefExpctd(:,:,1,3) = 1/2 * [
-                1  1  1  1 ;
-                1 -1 -1  1 ;
-                0  0  0  0 ;
-                -1  1 -1  1 ;
-                -1 -1  1  1 ];
+            coefExpctd(:,:,1,3) = 1/2*[
+                 1 ,  1 ,  1 ,  1 ;
+                 1i, -1i,  1i, -1i;
+                 1i,  1i, -1i, -1i;
+                -1 ,  1 ,  1 , -1 ;
+                 0 ,  0 ,  0 ,  0 ;];
             
             coefExpctd(:,:,1,4) = [
                 0  0  0  0 ;
@@ -1625,8 +1622,8 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             coefActual = step(testCase.lppufb,ang,[]);
             
             % Evaluation
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',coefDist));
+            coefDist = max(abs(coefExpctd(:)-coefActual(:)));
+            testCase.verifyEqual(coefActual,coefExpctd,'AbsTol',1e-14,sprintf('%g',coefDist));
             
         end
         
@@ -1636,7 +1633,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 2 2 5 ];
             ord = [ 0 4 ];
-            ang = 2*pi*rand(4,3);
+            ang = 2*pi*rand(1,10+20);
             
             % Expected values
             nDecs = prod(decch(1:2));
@@ -1680,7 +1677,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 2 2 5 ];
             ord = [ 4 0 ];
-            ang = 0;
+            ang = [];
             
             % Expected values
             coefExpctd(:,:,1) = [
@@ -1697,12 +1694,12 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
                 0  0  0  0 ;
                 0  0  0  0 ];
             
-            coefExpctd(:,:,3) = 1/2 * [
-                1  1  1  1 ;
-                1 -1 -1  1 ;
-                0  0  0  0 ;
-                -1  1 -1  1 ;
-                -1 -1  1  1 ];
+            coefExpctd(:,:,3) = 1/2*[
+                 1 ,  1 ,  1 ,  1 ;
+                 1i, -1i,  1i, -1i;
+                 1i,  1i, -1i, -1i;
+                -1 ,  1 ,  1 , -1 ;
+                 0 ,  0 ,  0 ,  0 ;];
             
             coefExpctd(:,:,4) = [
                 0  0  0  0 ;
@@ -1729,8 +1726,8 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             coefActual = step(testCase.lppufb,ang,[]);
             
             % Evaluation
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',coefDist));
+            coefDist = max(abs(coefExpctd(:)-coefActual(:)));
+            testCase.verifyEqual(coefActual,coefExpctd,'AbsTol',1e-14,sprintf('%g',coefDist));
             
         end
         
@@ -1740,7 +1737,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 2 2 5 ];
             ord = [ 4 0 ];
-            ang = 2*pi*rand(4,3);
+            ang = 2*pi*rand(1,10+20);
             
             % Expected values
             nDecs = prod(decch(1:2));
@@ -1784,7 +1781,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 2 2 5 ];
             ord = [ 4 4 ];
-            ang = 0;
+            ang = [];
             
             % Expected values
             coefExpctd(:,:,1,1) = [
@@ -1871,12 +1868,12 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
                 0  0  0  0 ;
                 0  0  0  0 ];
             
-            coefExpctd(:,:,3,3) = 1/2 * [
-                1  1  1  1 ;
-                1 -1 -1  1 ;
-                0  0  0  0 ;
-                -1  1 -1  1 ;
-                -1 -1  1  1 ];
+            coefExpctd(:,:,3,3) = 1/2*[
+                 1 ,  1 ,  1 ,  1 ;
+                 1i, -1i,  1i, -1i;
+                 1i,  1i, -1i, -1i;
+                -1 ,  1 ,  1 , -1 ;
+                 0 ,  0 ,  0 ,  0 ;];
             
             coefExpctd(:,:,4,3) = [
                 0  0  0  0 ;
@@ -1973,8 +1970,8 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             coefActual = step(testCase.lppufb,ang,[]);
             
             % Evaluation
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',coefDist));
+            coefDist = max(abs(coefExpctd(:)-coefActual(:)));
+            testCase.verifyEqual(coefActual,coefExpctd,'AbsTol',1e-14,sprintf('%g',coefDist));
             
         end
         
@@ -1985,7 +1982,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 2 2 5 ];
             ord = [ 6 6 ];
-            ang = 2*pi*rand(4,7);
+            ang = 2*pi*rand(1,10+60);
             
             % Expected values
             nChs = decch(3);
@@ -2028,7 +2025,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 2 2 9 ];
             ord = [ 2 2 ];
-            ang = 2*pi*rand(16,3);
+            ang = 2*pi*rand(1,36+72);
             
             % Expected values
             nChs = decch(3);
@@ -2070,7 +2067,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 2 2 9 ];
             ord = [ 4 4 ];
-            ang = 2*pi*rand(16,5);
+            ang = 2*pi*rand(1,36+4*36);
             
             % Expected values
             nChs = decch(3);
@@ -2112,8 +2109,8 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             
             % Parameters
             decch = [ 2 2 11 ];
-            ord = [ 2 2 ];
-            ang = 2*pi*rand(25,3);
+            ord = [ 4 4 ];
+            ang = 2*pi*rand(1,55+4*54);
             
             % Expected values
             nChs = decch(3);
@@ -2156,7 +2153,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 3 3 11 ];
             ord = [ 2 2 ];
-            ang = 2*pi*rand(25,3);
+            ang = 2*pi*rand(1,55+108);
             
             % Expected values
             nChs = decch(3);
@@ -2198,7 +2195,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 3 3 11 ];
             ord = [ 4 4 ];
-            ang = 2*pi*rand(25,5);
+            ang = 2*pi*rand(1,55+4*54);
             
             % Expected values
             nChs = decch(3);
@@ -2240,7 +2237,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 1 1 5 ];
             ord = [ 2 2 ];
-            ang = 2*pi*rand(4,3);
+            ang = 2*pi*rand(1,10+20);
             
             % Expected values
             nChs = decch(3);
@@ -2283,7 +2280,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 1 1 5 ];
             ord = [ 4 4 ];
-            ang = 2*pi*rand(4,5);
+            ang = 2*pi*rand(1,10+40);
             
             % Expected values
             nChs = decch(3);
@@ -2325,7 +2322,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 1 1 7 ];
             ord = [ 4 4 ];
-            ang = 2*pi*rand(9,5);
+            ang = 2*pi*rand(1,21+80);
             
             % Expected values
             nChs = decch(3);
@@ -2367,7 +2364,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 1 1 7 ];
             ord = [ 6 6 ];
-            ang = 2*pi*rand(9,7);
+            ang = 2*pi*rand(1,21+120);
             
             % Expected values
             nChs = decch(3);
@@ -2411,12 +2408,12 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             ord = [ 0 0 ];
             
             % Expected values
-            coefExpctd(:,:,1,1) = 1/2 * [
-                1  1  1  1 ;
-                1 -1 -1  1 ;
-                0  0  0  0 ;
-                -1  1 -1  1 ;
-                -1 -1  1  1 ];
+            coefExpctd(:,:,1,1) = 1/2*[
+                 1 ,  1 ,  1 ,  1 ;
+                 1i, -1i,  1i, -1i;
+                 1i,  1i, -1i, -1i;
+                -1 ,  1 ,  1 , -1 ;
+                 0 ,  0 ,  0 ,  0 ;];
             
             % Instantiation of target class
             import saivdr.dictionary.cnsoltx.*
@@ -2426,8 +2423,8 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             coefActual = step(testCase.lppufb,[],[]);
             
             % Evaluation
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',coefDist));
+            coefDist = max(abs(coefExpctd(:)-coefActual(:)));
+            testCase.verifyEqual(coefActual,coefExpctd,'AbsTol',1e-14,sprintf('%g',coefDist));
             
         end
 %         
@@ -2468,14 +2465,14 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             ord = [ 0 0 ];
             
             % Expected values
-            coefExpctd(:,:,1,1) = 1/2 * [
-                1  1  1  1 ;
-                1 -1 -1  1 ;
-                0  0  0  0 ;
-                0  0  0  0 ;
-                -1  1 -1  1 ;
-                -1 -1  1  1 ;
-                0  0  0  0  ];
+            coefExpctd(:,:,1,1) = 1/2*[
+                 1 ,  1 ,  1 ,  1 ;
+                 1i, -1i,  1i, -1i;
+                 1i,  1i, -1i, -1i;
+                -1 ,  1 ,  1 , -1 ;
+                 0 ,  0 ,  0 ,  0 ;
+                 0 ,  0 ,  0 ,  0 ;
+                 0 ,  0 ,  0 ,  0 ;];
             
             % Instantiation of target class
             import saivdr.dictionary.cnsoltx.*
@@ -2557,7 +2554,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 2 2 3 2 ];
             ord = [ 2 2 ];
-            ang = 0;
+            ang = [];
             
             % Expected values
             coefExpctd(:,:,1,1) = [
@@ -2588,12 +2585,12 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
                 0  0  0  0 ;
                 0  0  0  0 ];
             
-            coefExpctd(:,:,2,2) = 1/2 * [
-                1  1  1  1 ;
-                1 -1 -1  1 ;
-                0  0  0  0 ;
-                -1  1 -1  1 ;
-                -1 -1  1  1 ];
+            coefExpctd(:,:,2,2) = 1/2*[
+                 1 ,  1 ,  1 ,  1 ;
+                 1i, -1i,  1i, -1i;
+                 1i,  1i, -1i, -1i;
+                -1 ,  1 ,  1 , -1 ;
+                 0 ,  0 ,  0 ,  0 ;];
             
             coefExpctd(:,:,3,2) = [
                 0  0  0  0 ;
@@ -2634,8 +2631,8 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             coefActual = step(testCase.lppufb,ang,[]);
             
             % Evaluation
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',coefDist));
+            coefDist = max(abs(coefExpctd(:)-coefActual(:)));
+            testCase.verifyEqual(coefActual,coefExpctd,'AbsTol',1e-14,sprintf('%g',coefDist));
             
         end
         
@@ -2645,7 +2642,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
 %             % Parameters
 %             decch = [ 2 2 4 2 ];
 %             ord = [ 2 2 ];
-%             ang = 0;
+%             ang = [];
 %             
 %             % Expected values
 %             coefExpctd(:,:,1,1) = [
@@ -2742,7 +2739,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
 %             % Parameters
 %             decch = [ 2 2 5 2 ];
 %             ord = [ 2 2 ];
-%             ang = 0;
+%             ang = [];
 %             
 %             % Expected values
 %             coefExpctd(:,:,1,1) = [
@@ -2848,7 +2845,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
 %             % Parameters
 %             decch = [ 2 2 5 3 ];
 %             ord = [ 2 2 ];
-%             ang = 0;
+%             ang = [];
 %             
 %             % Expected values
 %             coefExpctd(:,:,1,1) = [
@@ -2963,7 +2960,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
 %             % Parameters
 %             decch = [ 2 2 6 2 ];
 %             ord = [ 2 2 ];
-%             ang = 0;
+%             ang = [];
 %             
 %             % Expected values
 %             coefExpctd(:,:,1,1) = [
@@ -3078,7 +3075,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
 %             % Parameters
 %             decch = [ 2 2 3 2 ];
 %             ord = [ 4 4 ];
-%             ang = 0;
+%             ang = [];
 %             
 %             % Expected values
 %             coefExpctd(:,:,1,1) = [
@@ -3278,7 +3275,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
 %             % Parameters
 %             decch = [ 2 2 4 2 ];
 %             ord = [ 4 4 ];
-%             ang = 0;
+%             ang = [];
 %             
 %             % Expected values
 %             coefExpctd(:,:,1,1) = [
@@ -3503,7 +3500,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
           % Parameters
             decch = [ 2 2 3 2 ];
             ord = [ 2 2 ];
-            ang = 2*pi*rand(4,3);
+            ang = 2*pi*rand(1,10+20);
             
             % Expected values
             nDec = prod(decch(1:2));
@@ -3546,7 +3543,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 2 2 3 2 ];
             ord = [ 4 4 ];
-            ang = 2*pi*rand(4,5);
+            ang = 2*pi*rand(1,10+40);
             
             % Expected values
             nDecs = prod(decch(1:2));
@@ -3675,7 +3672,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 2 2 5 ];
             ord = [ 2 2 ];
-            ang = 2*pi*rand(4,3);
+            ang = 2*pi*rand(1,10+20);
             
             % Expected values
             nChs = decch(3);
@@ -3713,7 +3710,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 2 2 5 ];
             ord = [ 4 4 ];
-            ang = 2*pi*rand(4,5);
+            ang = 2*pi*rand(1,10+40);
             
             % Expected values
             nChs = decch(3);
@@ -3737,7 +3734,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             release(testCase.lppufb)
             import matlab.unittest.constraints.IsLessThan
             set(testCase.lppufb,'OutputMode','AnalysisFilterAt');
-            for iSubband = 2:nChs;
+            for iSubband = 2:nChs
                 H = step(testCase.lppufb,[],[],iSubband);
                 dc = abs(sum(H(:)));
                 testCase.verifyThat(dc,IsLessThan(1e-14),sprintf('%g',dc));
@@ -3790,8 +3787,8 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             mstab = [ 3 3 ; 2 2 ];
             
             % Expected value
-            import saivdr.dictionary.utility.ParameterMatrixSet
-            paramExpctd = ParameterMatrixSet(...
+            import saivdr.dictionary.utility.ParameterMatrixContainer
+            paramExpctd = ParameterMatrixContainer(...
                 'MatrixSizeTable',mstab);
             step(paramExpctd,eye(3),1);
             step(paramExpctd,eye(2),2);
@@ -3819,7 +3816,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             import saivdr.dictionary.utility.*
-            paramMtxExpctd = ParameterMatrixSet(...
+            paramMtxExpctd = ParameterMatrixContainer(...
                 'MatrixSizeTable',mstab);
             step(paramMtxExpctd, eye(mstab(1,:)),uint32(1)); % W0
             step(paramMtxExpctd, eye(mstab(2,:)),uint32(2)); % U0
@@ -4167,7 +4164,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
 %             % Parameters
 %             decch = [ 2 2 2 3 ];
 %             ord = [ 2 2 ];
-%             ang = 0;
+%             ang = [];
 %             
 %             % Expected values
 %             coefExpctd(:,:,1,1) = [
@@ -4255,7 +4252,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
 %             % Parameters
 %             decch = [ 2 2 2 4 ];
 %             ord = [ 2 2 ];
-%             ang = 0;
+%             ang = [];
 %             
 %             % Expected values
 %             coefExpctd(:,:,1,1) = [
@@ -4352,7 +4349,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
 %             % Parameters
 %             decch = [ 2 2 2 5 ];
 %             ord = [ 2 2 ];
-%             ang = 0;
+%             ang = [];
 %             
 %             % Expected values
 %             coefExpctd(:,:,1,1) = [
@@ -4458,7 +4455,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
 %             % Parameters
 %             decch = [ 2 2 3 5 ];
 %             ord = [ 2 2 ];
-%             ang = 0;
+%             ang = [];
 %             
 %             % Expected values
 %             coefExpctd(:,:,1,1) = [
@@ -4573,7 +4570,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
 %             % Parameters
 %             decch = [ 2 2 2 6 ];
 %             ord = [ 2 2 ];
-%             ang = 0;
+%             ang = [];
 %             
 %             % Expected values
 %             coefExpctd(:,:,1,1) = [
@@ -4688,7 +4685,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
 %             % Parameters
 %             decch = [ 2 2 2 3 ];
 %             ord = [ 4 4 ];
-%             ang = 0;
+%             ang = [];
 %             
 %             % Expected values
 %             coefExpctd(:,:,1,1) = [
@@ -4888,7 +4885,7 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
 %             % Parameters
 %             decch = [ 2 2 2 4 ];
 %             ord = [ 4 4 ];
-%             ang = 0;
+%             ang = [];
 %             
 %             % Expected values
 %             coefExpctd(:,:,1,1) = [

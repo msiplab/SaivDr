@@ -161,15 +161,15 @@ classdef AbstCplxOvsdLpPuFb2dTypeISystem < ...
             nAngsInit = nCh*(nCh-1)/2;
             sizeOfAngles = nAngsInit + (obj.nStages-1)*nAngsPerStg;
             if isempty(obj.Angles)
-                angsInit = zeros(1,nAngsInit);
-                angsPerStg = zeros(nAngsPerStg,obj.nStages-1);
-                angsPerStg(end-floor(nCh/4)+1:end,:) = pi/2*ones(floor(nCh/4),obj.nStages-1);
-                obj.Angles = [angsInit angsPerStg(:).'];
+%                 angsInit = zeros(1,nAngsInit);
+%                 angsPerStg = zeros(nAngsPerStg,obj.nStages-1);
+%                 angsPerStg(end-floor(nCh/4)+1:end,:) = pi/2*ones(floor(nCh/4),obj.nStages-1);
+                obj.Angles = zeros(1,sizeOfAngles);
                 %obj.Angles = zeros(sizeOfAngles,1);
             end
 %             if size(obj.Angles,1) ~= sizeOfAngles(1) || ...
 %                     size(obj.Angles,2) ~= sizeOfAngles(2)
-            if size(obj.Angles) ~= sizeOfAngles
+            if length(obj.Angles) ~= sizeOfAngles
                 id = 'SaivDr:IllegalArgumentException';
                 %TODO:
                 msg = sprintf(...
@@ -197,7 +197,7 @@ classdef AbstCplxOvsdLpPuFb2dTypeISystem < ...
             end
 %             if size(obj.Mus,1) ~= sizeOfMus(1) || ...
 %                     size(obj.Mus,2) ~= sizeOfMus(2)
-            if size(obj.Mus) ~= sizeOfMus
+            if length(obj.Mus) ~= sizeOfMus
                 id = 'SaivDr:IllegalArgumentException';
                 msg = sprintf(...
                     'Size of mus must be [ %d %d ]',...

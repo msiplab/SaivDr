@@ -50,7 +50,7 @@ classdef CplxOvsdLpPuFb2dTypeIVm0System < saivdr.dictionary.cnsoltx.AbstCplxOvsd
             [initAngles, propAngles] = splitAngles_(obj);
             
             % initial matrix
-            mtx = step(obj.initOmgs_,initAngles,obj.Mus(:,1));
+            mtx = step(obj.initOmgs_,initAngles,obj.Mus(1:nCh));
             step(obj.ParameterMatrixSet,mtx,uint32(1));
             
             angles = reshape(propAngles,[],obj.nStages-1);
