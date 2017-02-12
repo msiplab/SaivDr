@@ -244,7 +244,7 @@ classdef CplxOvsdLpPuFb1dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 4 3 2 ];
             ord = 4;
-            ang = 0;
+            ang = [];
             
             % Expected values
             coefExpctd  = zeros(5,4,5);

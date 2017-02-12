@@ -36,8 +36,8 @@ classdef AbstCplxOvsdLpPuFb1dSystem < matlab.System %#codegen
     
     properties (Hidden)
         Symmetry = [];
-        Angles = 0;
-        Mus    = 1;   
+        Angles = [];
+        Mus    = [];   
     end
 
     properties (GetAccess = public, SetAccess = protected)
@@ -217,34 +217,6 @@ classdef AbstCplxOvsdLpPuFb1dSystem < matlab.System %#codegen
             end
             value = coefs;
         end
-        
-%         function value = permuteCoefs_(~,arr_,phs_)
-%             len_ = size(arr_,2)/phs_;
-%             value = zeros(size(arr_));
-%             for idx = 0:phs_-1
-%                 value(:,idx*len_+1:(idx+1)*len_) = arr_(:,idx+1:phs_:end);
-%             end
-%         end
-%         
-%         function value = ipermuteCoefs_(~,arr_,phs_)
-%             len_ = size(arr_,2)/phs_;
-%             value = zeros(size(arr_));
-%             for idx = 0:phs_-1
-%                 value(:,idx+1:phs_:end) = arr_(:,idx*len_+1:(idx+1)*len_);
-%             end
-%         end
-        
-%         %TODO:“¯ˆê‚ÌŠÖ”‚ª2D,3D‚Å‚à’è‹`‚³‚ê‚Ä‚¢‚é‚Ì‚Åˆê‰ÓŠ‚ÉW–ñ‚·‚é
-%         function value = hsdftmtx_(~, nDec) %Hermitian-Symmetric DFT matrix
-%             value = complex(zeros(nDec));
-%             for u = 0:nDec-1
-%                 for x =0:nDec-1
-%                     n = rem(u*(2*x+1),2*nDec);
-%                     value(u+1,x+1) = exp(-1i*pi*n/nDec)/sqrt(nDec);
-%                 end
-%             end
-%         end
-        
     end
     
 end

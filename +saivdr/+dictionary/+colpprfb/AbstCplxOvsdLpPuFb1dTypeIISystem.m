@@ -142,9 +142,10 @@ classdef AbstCplxOvsdLpPuFb1dTypeIISystem < ...
             sizeOfAngles = nAngsInit + sum(nAngsPerStg)*(obj.nStages-1);
             %
 
-            if isscalar(obj.Angles) && obj.Angles == 0
-                obj.Angles = zeros(sizeOfAngles,1);
+            if isempty(obj.Angles)
+                obj.Angles = zeros(1,sizeOfAngles);
             end
+            
             obj.Angles = obj.Angles(:);
             % TODO : —áŠOˆ—
 %             if size(obj.Angles,1) ~= sizeOfAngles(1) || ...
@@ -152,8 +153,8 @@ classdef AbstCplxOvsdLpPuFb1dTypeIISystem < ...
             if size(obj.Angles) ~= sizeOfAngles
                 id = 'SaivDr:IllegalArgumentException';
                 msg = sprintf(...
-                    'Size of angles must be [ %d %d ]',...
-                    sizeOfAngles(1), sizeOfAngles(2));
+                    'Size of angles must be %d %d',...
+                    sizeOfAngles);
                 me = MException(id, msg);
                 throw(me);
             end
@@ -165,25 +166,14 @@ classdef AbstCplxOvsdLpPuFb1dTypeIISystem < ...
 %             sizeOfMus = [ 2*sum(obj.NumberOfChannels) obj.nStages ];
             sizeOfMus = obj.NumberOfChannels*(2*obj.nStages-1);
             %
-%             nChL = floor(obj.NumberOfChannels/2);
-%             nChU = ceil(obj.NumberOfChannels/2);
-%             if isscalar(obj.Mus) && obj.Mus == 1
-                %TODO:obj.Mus‚ð“KØ‚ÉÝ’è‚·‚é
-%                 if nChU > nChL
-%                     obj.Mus = repmat([
-%                         ones(nChU, obj.nStages);
-%                         -ones(nChL, obj.nStages) ],2,1);
-%                 else
-%                     obj.Mus = repmat([
-%                         -ones(nChU, obj.nStages);
-%                         ones(nChL, obj.nStages) ],2,1);
-%                 end
-%                 if mod(obj.nStages,2) == 1
-%                     obj.Mus(:,1) = ones(size(obj.Mus,1),1);
-%                 end
-%                 sizeOfMus = prod(sizeOfMus);
-%             end
-            obj.Mus = ones(sizeOfMus,1);
+            nChL = floor(obj.NumberOfChannels/2);
+            nChU = ceil(obj.NumberOfChannels/2);
+            if isempty(obj.Mus)
+                obj.Mus = [ ones(1,obj.NumberOfChannels),...
+                    repmat([ ones(1,nChL), -1*ones(1,nChL),...
+                    ones(1,nChU), -1*ones(1,nChL), 1 ], 1, obj.nStages-1)];
+            end
+            %obj.Mus = ones(1,sizeOfMus);
 %             if size(obj.Mus,1) ~= sizeOfMus(1) || ...
 %                     size(obj.Mus,2) ~= sizeOfMus(2)
             if size(obj.Mus) ~= sizeOfMus

@@ -124,7 +124,7 @@ classdef AbstCplxOvsdLpPuFb1dTypeISystem < ...
             nAngsInitStg = obj.NumberOfChannels*(obj.NumberOfChannels-1)/2;
             nAngsPerStg = nChL*(nChL-1)+floor(nChL/2);
             sizeOfAngles = nAngsInitStg+nAngsPerStg*(obj.nStages-1);
-            if isscalar(obj.Angles) && obj.Angles==0
+            if isempty(obj.Angles)
                 obj.Angles = zeros(sizeOfAngles,1);
             end
             obj.Angles = obj.Angles(:);
@@ -145,7 +145,7 @@ classdef AbstCplxOvsdLpPuFb1dTypeISystem < ...
             nChL = obj.NumberOfChannels/2;
             %sizeOfMus = [ 2*nChL obj.nStages ];
             sizeOfMus = 2*nChL*obj.nStages;
-            if isscalar(obj.Mus) && obj.Mus==1
+            if isempty(obj.Mus)
                 %TODO:obj.Mus‚ð“KØ‚É’è‚ß‚é
                 musMat = ones(2*nChL,obj.nStages);
                 musMat(nChL+1:end,2:end) = -1*ones(nChL,obj.nStages-1);
