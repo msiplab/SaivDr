@@ -168,7 +168,7 @@ classdef CplxOLpPrFbAtomConcatenator1dTestCase < matlab.unittest.TestCase
             V0 = eye(sum(nch));
             Ix = eye(nch(1));
             In = eye(nch(2));
-            angB = pi/4*ones(floor(nch(1)/2),1);
+            angB = zeros(floor(nch(1)/2),1);
             pmCoefs = [ V0(:); In(:) ; -In(:) ; angB(:) ; Ix(:) ; -Ix(:) ; angB(:) ];
             
             % Expected values
@@ -207,7 +207,7 @@ classdef CplxOLpPrFbAtomConcatenator1dTestCase < matlab.unittest.TestCase
             V0 = eye(sum(nch));
             Ix = eye(nch(1));
             In = eye(nch(2));
-            angB = pi/4*ones(floor(nch(1)/2),1);
+            angB = zeros(floor(nch(1)/2),1);
             pmCoefs = [ V0(:); In(:) ; -In(:) ; angB(:) ; Ix(:) ; -Ix(:) ; angB(:) ];
             
             % Expected values
@@ -276,7 +276,7 @@ classdef CplxOLpPrFbAtomConcatenator1dTestCase < matlab.unittest.TestCase
             V0 = eye(sum(nch));
             Ix = eye(nch(1));
             In = eye(nch(2));
-            angB = pi/4*ones(floor(nch(1)/2),1);
+            angB = zeros(floor(nch(1)/2),1);
             pmCoefs = [ 
                 V0(:) ;
                 In(:) ; 
@@ -325,7 +325,7 @@ classdef CplxOLpPrFbAtomConcatenator1dTestCase < matlab.unittest.TestCase
             V0 = eye(sum(nch));
             Ix = eye(nch(1));
             In = eye(nch(2));
-            angB = pi/4*ones(floor(nch(1)/2),1);
+            angB = zeros(floor(nch(1)/2),1);
             pmCoefs = [ V0(:); In(:) ; -In(:) ; angB(:) ; Ix(:) ; -Ix(:) ; angB(:) ];
             
             % Expected values
@@ -362,7 +362,7 @@ classdef CplxOLpPrFbAtomConcatenator1dTestCase < matlab.unittest.TestCase
             Ix = eye(nch(1));
             In = eye(nch(2));
             Ux = blkdiag(-In,1);
-            angB = pi/4*ones(floor(sum(nch)/4),1);
+            angB = zeros(floor(sum(nch)/4),1);
             pmCoefs = [
                 I0(:) ;
                 In(:) ;
@@ -406,7 +406,7 @@ classdef CplxOLpPrFbAtomConcatenator1dTestCase < matlab.unittest.TestCase
             Ix = eye(nch(1));
             In = eye(nch(2));
             Ux = blkdiag(-In,1);
-            angB = pi/4*ones(floor(sum(nch)/4),1);
+            angB = zeros(floor(sum(nch)/4),1);
             pmCoefs = [
                 U0(:) ;
                 In(:) ;
@@ -483,7 +483,7 @@ classdef CplxOLpPrFbAtomConcatenator1dTestCase < matlab.unittest.TestCase
             Ix = eye(nch(1));
             In = eye(nch(2));
             Ux = blkdiag(-In,1);
-            angB = pi/4*ones(floor(sum(nch)/4),1);
+            angB = zeros(floor(sum(nch)/4),1);
             pmCoefs = [
                 I0(:) ;
                 In(:) ;
@@ -534,7 +534,7 @@ classdef CplxOLpPrFbAtomConcatenator1dTestCase < matlab.unittest.TestCase
             Ix = eye(nch(1));
             In = eye(nch(2));
             Ux = blkdiag(-In,1);
-            angB = pi/4*ones(floor(sum(nch)/4),1);
+            angB = zeros(floor(sum(nch)/4),1);
             pmCoefs = [
                 I0(:) ;
                 In(:) ;

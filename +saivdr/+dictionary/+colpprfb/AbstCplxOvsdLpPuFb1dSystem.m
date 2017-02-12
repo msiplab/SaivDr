@@ -71,8 +71,10 @@ classdef AbstCplxOvsdLpPuFb1dSystem < matlab.System %#codegen
             obj.mexFlag = false;            
             H = getAnalysisFilterBank_(obj);
             for ib=1:sum(obj.NumberOfChannels)
-                subplot(2,obj.NumberOfChannels(1),ib);
-                impz(flipud(H(:,ib)));
+                subplot(2,sum(obj.NumberOfChannels),ib);
+                impz(real(flipud(H(:,ib))));
+                subplot(2,sum(obj.NumberOfChannels),ib+sum(obj.NumberOfChannels));
+                impz(imag(flipud(H(:,ib))));
             end
         end
 

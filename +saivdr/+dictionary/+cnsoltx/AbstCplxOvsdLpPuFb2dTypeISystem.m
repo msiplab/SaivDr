@@ -188,13 +188,13 @@ classdef AbstCplxOvsdLpPuFb2dTypeISystem < ...
             import saivdr.dictionary.utility.Direction
             %nChL = obj.NumberOfChannels(ChannelGroup.LOWER);
             nCh = obj.NumberOfChannels;
+            nChL = nCh/2;
             sizeOfMus = [ nCh obj.nStages];
             if isscalar(obj.Mus) && obj.Mus==1
-%                 obj.Mus = -ones(sizeOfMus);
-%                 obj.Mus(:,1:2) = ones(size(obj.Mus,1),2);
-                obj.Mus = ones(sizeOfMus);
-                tmp = -ones(floor(nCh/2),floor((obj.nStages-1)/2));
-                obj.Mus(floor(nCh/2)+1:end,2:2:obj.nStages) = tmp;
+                musMat = ones(2*nChL,obj.nStages);
+                musMat(nChL+1:end,2:end) = -1*ones(nChL,obj.nStages-1);
+                %obj.Mus = musMat(:);
+                obj.Mus = musMat;
                 %mus = obj.Mus;
             end
             if size(obj.Mus,1) ~= sizeOfMus(1) || ...

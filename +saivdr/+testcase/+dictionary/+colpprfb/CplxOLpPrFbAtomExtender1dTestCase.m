@@ -170,7 +170,7 @@ classdef CplxOLpPrFbAtomExtender1dTestCase < matlab.unittest.TestCase
             I0 = eye(sum(nch));
             Ix = eye(nch(1));
             In = eye(nch(2));
-            angB = pi/4*ones(floor(sum(nch)/4),1);
+            angB = zeros(floor(sum(nch)/4),1);
             pmCoefs = [ I0(:) ; Ix(:) ; -In(:) ; angB ; In(:) ; -In(:) ; angB ];
             
             % Expected values
@@ -206,7 +206,7 @@ classdef CplxOLpPrFbAtomExtender1dTestCase < matlab.unittest.TestCase
             scale = srclen;
             V0 = dctmtx(sum(nch));
             In = eye(nch(2));
-            angB = pi/4*ones(floor(sum(nch)/4),1);
+            angB = zeros(floor(sum(nch)/4),1);
             pmCoefs = [ V0(:) ; In(:) ; -In(:) ; angB; In(:) ; -In(:) ; angB];
             
             % Expected values
@@ -242,7 +242,7 @@ classdef CplxOLpPrFbAtomExtender1dTestCase < matlab.unittest.TestCase
             scale = srclen;
             I0 = eye(sum(nch));
             In = eye(nch(2));
-            angB = pi/4*ones(floor(sum(nch)/4),1);
+            angB = zeros(floor(sum(nch)/4),1);
             pmCoefs = [
                 I0(:) ;
                 In(:) ;
@@ -290,7 +290,7 @@ classdef CplxOLpPrFbAtomExtender1dTestCase < matlab.unittest.TestCase
             scale = srclen;
             I0 = eye(sum(nch));
             In = eye(nch(2));
-            angB = pi/4*ones(floor(sum(nch)/4),1);
+            angB = zeros(floor(sum(nch)/4),1);
             pmCoefs = [
                 I0(:) ;
                 In(:) ;
@@ -341,7 +341,7 @@ classdef CplxOLpPrFbAtomExtender1dTestCase < matlab.unittest.TestCase
             Ix = eye(nch(1));
             In = eye(nch(2));
             Ux = blkdiag(-In,1);
-            angB = pi/4*ones(floor(sum(nch)/4),1);
+            angB = zeros(floor(sum(nch)/4),1);
             pmCoefs = [ I0(:) ; In(:); -In(:); angB; Ix(:); Ux(:) ; angB ];
             
             % Expected values
@@ -379,7 +379,7 @@ classdef CplxOLpPrFbAtomExtender1dTestCase < matlab.unittest.TestCase
             In = eye(nch(2));
             Ux = blkdiag(-In,1);
             V0 = dctmtx(sum(nch));
-            angB = pi/4*ones(floor(sum(nch)/4),1);
+            angB = zeros(floor(sum(nch)/4),1);
             pmCoefs = [ V0(:) ; In(:) ; -In(:) ; angB ; Ix(:) ; Ux(:) ; angB];
             
             % Expected values
@@ -451,7 +451,7 @@ classdef CplxOLpPrFbAtomExtender1dTestCase < matlab.unittest.TestCase
             Ix = eye(nch(1));
             In = eye(nch(2));
             Ux = blkdiag(-In,1);
-            angB = pi/4*ones(floor(sum(nch)/4),1);
+            angB = zeros(floor(sum(nch)/4),1);
             pmCoefs = [
                 I0(:) ;
                 In(:) ;
@@ -502,7 +502,7 @@ classdef CplxOLpPrFbAtomExtender1dTestCase < matlab.unittest.TestCase
             Ix = eye(nch(1));
             In = eye(nch(2));
             Ux = blkdiag(-In,1);
-            angB = pi/4*ones(floor(sum(nch)/4),1);
+            angB = zeros(floor(sum(nch)/4),1);
             pmCoefs = [
                 I0(:) ;
                 In(:) ;

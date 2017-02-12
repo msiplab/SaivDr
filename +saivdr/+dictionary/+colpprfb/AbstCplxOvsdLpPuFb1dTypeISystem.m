@@ -147,7 +147,9 @@ classdef AbstCplxOvsdLpPuFb1dTypeISystem < ...
             sizeOfMus = 2*nChL*obj.nStages;
             if isscalar(obj.Mus) && obj.Mus==1
                 %TODO:obj.Mus‚ð“KØ‚É’è‚ß‚é
-                obj.Mus = ones(sizeOfMus,1);
+                musMat = ones(2*nChL,obj.nStages);
+                musMat(nChL+1:end,2:end) = -1*ones(nChL,obj.nStages-1);
+                obj.Mus = musMat(:);
             end
             % TODO: —áŠOˆ—
 %             if size(obj.Mus,1) ~= sizeOfMus(1) || ...

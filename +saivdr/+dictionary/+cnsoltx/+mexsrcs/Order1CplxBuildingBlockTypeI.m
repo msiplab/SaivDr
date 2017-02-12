@@ -1,4 +1,4 @@
-classdef Order1CplxBuildingBlockTypeI < saivdr.dictionary.cnsoltx.mexsrcs.AbstBuildingBlock  %#codegen
+classdef Order1CplxBuildingBlockTypeI < saivdr.dictionary.cnsoltx.mexsrcs.AbstCplxBuildingBlock  %#codegen
     %ORDER1BUILDINGBLOCKTYPEI  Type-I building block with order 1
     %
     % SVN identifier:

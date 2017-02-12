@@ -71,7 +71,6 @@ classdef CplxOLpPrFbAtomExtender1d <  ...
             %
             isPeriodicExt = obj.IsPeriodicExt; % BoundaryOperation = 'Circular'
             %
-            isPeriodiExt = true;
             ord = obj.PolyPhaseOrder;
     
             % Order extension
@@ -118,11 +117,12 @@ classdef CplxOLpPrFbAtomExtender1d <  ...
         
         function arrayCoefs = supportExtTypeI_(obj,arrayCoefs,paramMtx1,paramMtx2,paramMtx3,paramMtx4,paramMtx5,paramMtx6,isPeriodicExt)
             hLen = obj.NumberOfAntisymmetricChannels;
+            import saivdr.dictionary.cnsoltx.mexsrcs.AbstCplxBuildingBlock
 
             % Phase 1
             Wx1 = paramMtx1;
             Ux1 = paramMtx2;
-            B1 = butterflyMtx_(obj,paramMtx3);
+            B1 = AbstCplxBuildingBlock.butterflyMtx(hLen,paramMtx3);
             %cB1 = conj(B1);
             %TODO: ŽÀ‘•‚ÌŒø—¦‰»‚ðŒŸ“¢
             %arrayCoefs = blockButterflyTypeI_(obj,arrayCoefs,angB1);
@@ -145,7 +145,7 @@ classdef CplxOLpPrFbAtomExtender1d <  ...
             % Phase 2
             Wx2 = paramMtx4;
             Ux2 = paramMtx5;
-            B2 = butterflyMtx_(obj,paramMtx6);
+            B2 = AbstCplxBuildingBlock.butterflyMtx(hLen,paramMtx6);
             %cB2 = conj(B2);
             %TODO:
             %arrayCoefs = blockButterflyTypeI_(obj,arrayCoefs,angB2);
@@ -161,11 +161,12 @@ classdef CplxOLpPrFbAtomExtender1d <  ...
         
         function arrayCoefs = supportExtTypeII_(obj,arrayCoefs,paramMtx1,paramMtx2,paramMtx3,paramMtx4,paramMtx5,paramMtx6,isPeriodicExt)
             hLen = obj.NumberOfAntisymmetricChannels;
+            import saivdr.dictionary.cnsoltx.mexsrcs.AbstCplxBuildingBlock
             
             % Phase 1
             Wx = paramMtx1;
             Ux = paramMtx2;
-            B = butterflyMtx_(obj,paramMtx3);
+            B = AbstCplxBuildingBlock.butterflyMtx(hLen,paramMtx3);
             %cB = conj(B);
             %arrayCoefs = blockButterflyTypeII_(obj,arrayCoefs,[]);
             arrayCoefs(1:end-1,:) = B'*arrayCoefs(1:end-1,:);
@@ -188,7 +189,7 @@ classdef CplxOLpPrFbAtomExtender1d <  ...
             % Phase 2
             Wx = paramMtx4;
             Ux = paramMtx5;
-            B = butterflyMtx_(obj,paramMtx6);
+            B = AbstCplxBuildingBlock.butterflyMtx(hLen,paramMtx6);
             %cB = conj(B);
             %arrayCoefs = blockButterflyTypeII_(obj,arrayCoefs,[]);
             arrayCoefs(1:end-1,:) = B'*arrayCoefs(1:end-1,:);
@@ -219,22 +220,22 @@ classdef CplxOLpPrFbAtomExtender1d <  ...
             arrayCoefs(1:hLenMn,end) = upperCoefsPost;
         end
         
-        function hB = butterflyMtx_(obj, angles)%TODO: “¯ˆê‚ÌŠÖ”‚ªAbstBuildingBlock.m‚ÅŽÀ‘•‚³‚ê‚Ä‚¢‚é‚Ì‚Åˆê‰ÓŠ‚É‚Ü‚Æ‚ß‚éD
-            hchs = obj.NumberOfAntisymmetricChannels;
-            
-            hC = complex(eye(hchs));
-            hS = complex(eye(hchs));
-            for p = 1:floor(hchs/2)
-                tp = angles(p)/2;
-                
-                hC(2*p-1:2*p, 2*p-1:2*p) = [ -1i*cos(tp), -1i*sin(tp);
-                    cos(tp) , -sin(tp)]; %c^
-                hS(2*p-1:2*p, 2*p-1:2*p) = [ -1i*sin(tp), -1i*cos(tp);
-                    sin(tp) , -cos(tp)]; %s^
-            end
-            
-            hB = [hC, conj(hC); 1i*hS, -1i*conj(hS)]/sqrt(2);
-        end
+%         function hB = butterflyMtx_(obj, angles)%TODO: “¯ˆê‚ÌŠÖ”‚ªAbstBuildingBlock.m‚ÅŽÀ‘•‚³‚ê‚Ä‚¢‚é‚Ì‚Åˆê‰ÓŠ‚É‚Ü‚Æ‚ß‚éD
+%             hchs = obj.NumberOfAntisymmetricChannels;
+%             
+%             hC = complex(eye(hchs));
+%             hS = complex(eye(hchs));
+%             for p = 1:floor(hchs/2)
+%                 tp = angles(p)/2;
+%                 
+%                 hC(2*p-1:2*p, 2*p-1:2*p) = [ -1i*cos(tp), -1i*sin(tp);
+%                     cos(tp) , -sin(tp)]; %c^
+%                 hS(2*p-1:2*p, 2*p-1:2*p) = [ -1i*sin(tp), -1i*cos(tp);
+%                     sin(tp) , -cos(tp)]; %s^
+%             end
+%             
+%             hB = [hC, conj(hC); 1i*hS, -1i*conj(hS)]/sqrt(2);
+%         end
     end
     
 end

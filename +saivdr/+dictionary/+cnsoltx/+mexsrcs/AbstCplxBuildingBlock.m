@@ -28,7 +28,7 @@ classdef AbstCplxBuildingBlock < matlab.System  %#codegen
         function value = processQ_(obj,angles,x,nZ_)
             hChs = obj.nHalfChannels;
             nLen = size(x,2);
-            B = butterflyMtx_(obj, angles);
+            B = saivdr.dictionary.cnsoltx.mexsrcs.AbstCplxBuildingBlock.butterflyMtx(hChs,angles);
             x = B'*x;
             value = complex(zeros([2*hChs nLen+nZ_]));
             value(1:hChs,1:nLen) = x(1:hChs,:);
@@ -38,14 +38,12 @@ classdef AbstCplxBuildingBlock < matlab.System  %#codegen
 
     end
     
-    methods (Access = private)
-        function hB = butterflyMtx_(obj, angles)%TODO:???\????????MEX??
-            hchs = obj.nHalfChannels;
-            
-            hC = complex(eye(hchs));
-            hS = complex(eye(hchs));
-            for p = 1:floor(hchs/2)
-                tp = angles(p)/2;
+    methods (Static = true)
+        function hB = butterflyMtx(hch, angles)
+            hC = complex(eye(hch));
+            hS = complex(eye(hch));
+            for p = 1:floor(hch/2)
+                tp = angles(p)/2 + pi/4;
                 
                 hC(2*p-1:2*p, 2*p-1:2*p) = [-1i*cos(tp), -1i*sin(tp);
                     cos(tp) , -sin(tp)]; %c^
