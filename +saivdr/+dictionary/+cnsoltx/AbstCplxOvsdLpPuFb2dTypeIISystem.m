@@ -110,7 +110,7 @@ classdef AbstCplxOvsdLpPuFb2dTypeIISystem < ...
                 obj.NumberOfChannels = 2*floor(nHalfDecs)+1;
             elseif isvector(obj.NumberOfChannels)
                 obj.NumberOfChannels = sum(obj.NumberOfChannels);
-                % TODO: ???O????????????????????
+                % TODO: ?
                 if mod(obj.NumberOfChannels,2) == 0
                     id = 'SaivDr:IllegalArgumentException';
                     msg = '#Channels must be odd.';
@@ -120,10 +120,6 @@ classdef AbstCplxOvsdLpPuFb2dTypeIISystem < ...
             end
 
             % Prepare ParameterMatrixSet
-%             paramMtxSizeTab = repmat(...
-%                 [ obj.NumberOfChannels(ChannelGroup.UPPER) ;
-%                 obj.NumberOfChannels(ChannelGroup.LOWER) ],...
-%                 obj.nStages,2);
             paramMtxSizeTab = [obj.NumberOfChannels*ones(1,2);
                 repmat([floor(obj.NumberOfChannels/2)*ones(2,2);
                 floor(obj.NumberOfChannels/4),1;
@@ -143,7 +139,7 @@ classdef AbstCplxOvsdLpPuFb2dTypeIISystem < ...
         
         function updateSymmetry_(obj)
             nCh = obj.NumberOfChannels;
-            if isscalar(obj.Symmetry) && obj.Symmetry == 0
+            if isempty(obj.Symmetry)
                 obj.Symmetry = zeros(1,nCh);
             end
             
@@ -163,19 +159,12 @@ classdef AbstCplxOvsdLpPuFb2dTypeIISystem < ...
                 *double(ceil(nCh/2)-1);
             nAngsPerStg(3) = 2*floor(nCh/4);
             nAngsInit = nCh*(nCh-1)/2;
-            %nAngsSym = nCh;
             sizeOfAngles = nAngsInit + sum(nAngsPerStg)*(obj.nStages-1);
             %
-            if isscalar(obj.Angles) && obj.Angles == 0
-                %angsSym = zeros(nAngsSym,1);
-                angsInit = zeros(nAngsInit,1);
-                angsPerStg = zeros(sum(nAngsPerStg),obj.nStages-1);
-                angsPerStg(nAngsPerStg(1)+1:nAngsPerStg(1)+floor(nCh/4),:) = pi/2*ones(floor(nCh/4),obj.nStages-1);
-                angsPerStg(end-floor(nCh/4)+1:end,:) = pi/2*ones(floor(nCh/4),obj.nStages-1);
-                obj.Angles = [angsInit; angsPerStg(:)];
+            if isempty(obj.Angles)
+                obj.Angles = zeros(1,sizeOfAngles);
             end
-            obj.Angles = obj.Angles(:);
-            % TODO : ???O????
+            % TODO :
 %             if size(obj.Angles,1) ~= sizeOfAngles(1) || ...
 %                     size(obj.Angles,2) ~= sizeOfAngles(2)
             if size(obj.Angles) ~= sizeOfAngles
@@ -191,43 +180,16 @@ classdef AbstCplxOvsdLpPuFb2dTypeIISystem < ...
         function updateMus_(obj)
             import saivdr.dictionary.cnsoltx.ChannelGroup
             nCh = obj.NumberOfChannels;
+            nChU = ceil(nCh/2);
+            nChL = floor(nCh/2);
             %
-%             sizeOfMus = [ 2*sum(obj.NumberOfChannels) obj.nStages ];
             sizeOfMus = nCh*(2*obj.nStages-1);
             
-            if isscalar(obj.Mus) && obj.Mus==1
-                musPerStg = [
-                    ones(floor(nCh/2),1);
-                    -ones(floor(nCh/2),1);
-                    ones(2*ceil(nCh/2),1) ];
-                    
-                %obj.Mus = ones(sizeOfMus,1);
-                tmp = repmat(musPerStg,obj.nStages-1,1);
-                obj.Mus = [ones(nCh,1); tmp];
-                %tmp = -ones(floor(nCh/2),floor((obj.nStages-1)/2));
-                %obj.Mus(floor(nCh/2)+1:end,2:2:obj.nStages) = tmp;
+            if isempty(obj.Mus)
+                obj.Mus = [ ones(1,obj.NumberOfChannels),...
+                    repmat([ ones(1,nChL), -1*ones(1,nChL),...
+                    ones(1,nChU), -1*ones(1,nChL), 1 ], 1, obj.nStages-1)];
             end
-            %
-%             nChL = floor(obj.NumberOfChannels/2);
-%             nChU = ceil(obj.NumberOfChannels/2);
-%             if isscalar(obj.Mus) && obj.Mus == 1
-                %TODO:obj.Mus???K????????????
-%                 if nChU > nChL
-%                     obj.Mus = repmat([
-%                         ones(nChU, obj.nStages);
-%                         -ones(nChL, obj.nStages) ],2,1);
-%                 else
-%                     obj.Mus = repmat([
-%                         -ones(nChU, obj.nStages);
-%                         ones(nChL, obj.nStages) ],2,1);
-%                 end
-%                 if mod(obj.nStages,2) == 1
-%                     obj.Mus(:,1) = ones(size(obj.Mus,1),1);
-%                 end
-%                 sizeOfMus = prod(sizeOfMus);
-%             end
-%             if size(obj.Mus,1) ~= sizeOfMus(1) || ...
-%                     size(obj.Mus,2) ~= sizeOfMus(2)
             if size(obj.Mus) ~= sizeOfMus
                 id = 'SaivDr:IllegalArgumentException';
                 msg = sprintf(...
@@ -256,8 +218,7 @@ classdef AbstCplxOvsdLpPuFb2dTypeIISystem < ...
             mexFlag_ = obj.mexFlag;
             
             %
-            %S = step(pmMtxSt_,[],uint32(1));
-            S = diag(exp(1i*obj.Symmetry));
+            Phi = diag(exp(1i*obj.Symmetry));
             %
             E0 = obj.matrixE0;
             %
@@ -311,7 +272,7 @@ classdef AbstCplxOvsdLpPuFb2dTypeIISystem < ...
 
                 E = ipermuteCoefs_(obj,E,lenY);
             end
-            E = S*E;
+            E = Phi*E;
             %
             nSubbands = size(E,1);
             value = zeros(lenY,lenX,nSubbands);

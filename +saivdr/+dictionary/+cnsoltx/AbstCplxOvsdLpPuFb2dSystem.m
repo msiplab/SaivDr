@@ -38,9 +38,9 @@ classdef AbstCplxOvsdLpPuFb2dSystem < matlab.System %#codegen
     end
 
     properties (Hidden)
-        Symmetry = 0;
-        Angles = 0;
-        Mus    = 1;
+        Symmetry = [];
+        Angles = [];
+        Mus    = [];
     end
 
     properties (GetAccess = public, SetAccess = protected)
@@ -145,7 +145,6 @@ classdef AbstCplxOvsdLpPuFb2dSystem < matlab.System %#codegen
                 H = conj(H);
                 output = rot90(H(:,:,idx),2);
             elseif strcmp(obj.OutputMode,'SynthesisFilters')
-                % TODO: SynthesisFilterAt
                 H = getAnalysisFilterBank_(obj);
                 H = conj(H);
                 H = flip(H,1);

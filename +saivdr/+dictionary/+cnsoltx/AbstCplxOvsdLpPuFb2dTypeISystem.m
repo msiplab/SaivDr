@@ -146,7 +146,7 @@ classdef AbstCplxOvsdLpPuFb2dTypeISystem < ...
         
         function updateSymmetry_(obj)
             nCh = obj.NumberOfChannels;
-            if isscalar(obj.Symmetry) && obj.Symmetry == 0
+            if isempty(obj.Symmetry)
                 obj.Symmetry = zeros(1,nCh);
             end
             
@@ -159,21 +159,19 @@ classdef AbstCplxOvsdLpPuFb2dTypeISystem < ...
             nCh = obj.NumberOfChannels;
             nAngsPerStg = nCh*(nCh-2)/4+floor(nCh/4);
             nAngsInit = nCh*(nCh-1)/2;
-            %nAngsSym = nCh;
             sizeOfAngles = nAngsInit + (obj.nStages-1)*nAngsPerStg;
-            if isscalar(obj.Angles) && obj.Angles==0
-                %angsSym = zeros(nAngsSym,1);
-                angsInit = zeros(nAngsInit,1);
+            if isempty(obj.Angles)
+                angsInit = zeros(1,nAngsInit);
                 angsPerStg = zeros(nAngsPerStg,obj.nStages-1);
                 angsPerStg(end-floor(nCh/4)+1:end,:) = pi/2*ones(floor(nCh/4),obj.nStages-1);
-                obj.Angles = [angsInit; angsPerStg(:)];
+                obj.Angles = [angsInit angsPerStg(:).'];
                 %obj.Angles = zeros(sizeOfAngles,1);
             end
 %             if size(obj.Angles,1) ~= sizeOfAngles(1) || ...
 %                     size(obj.Angles,2) ~= sizeOfAngles(2)
             if size(obj.Angles) ~= sizeOfAngles
                 id = 'SaivDr:IllegalArgumentException';
-                %TODO: ?G???[???b?Z?[?W??????
+                %TODO:
                 msg = sprintf(...
                     'Size of angles must be [ %d %d ]',...
                     sizeOfAngles(1), sizeOfAngles(2));
@@ -189,16 +187,17 @@ classdef AbstCplxOvsdLpPuFb2dTypeISystem < ...
             %nChL = obj.NumberOfChannels(ChannelGroup.LOWER);
             nCh = obj.NumberOfChannels;
             nChL = nCh/2;
-            sizeOfMus = [ nCh obj.nStages];
-            if isscalar(obj.Mus) && obj.Mus==1
+            %sizeOfMus = [ nCh obj.nStages];
+            sizeOfMus = nCh*obj.nStages;
+            if isempty(obj.Mus)
                 musMat = ones(2*nChL,obj.nStages);
                 musMat(nChL+1:end,2:end) = -1*ones(nChL,obj.nStages-1);
-                %obj.Mus = musMat(:);
-                obj.Mus = musMat;
-                %mus = obj.Mus;
+                obj.Mus = musMat(:);
+                %obj.Mus = musMat;
             end
-            if size(obj.Mus,1) ~= sizeOfMus(1) || ...
-                    size(obj.Mus,2) ~= sizeOfMus(2)
+%             if size(obj.Mus,1) ~= sizeOfMus(1) || ...
+%                     size(obj.Mus,2) ~= sizeOfMus(2)
+            if size(obj.Mus) ~= sizeOfMus
                 id = 'SaivDr:IllegalArgumentException';
                 msg = sprintf(...
                     'Size of mus must be [ %d %d ]',...
@@ -225,8 +224,7 @@ classdef AbstCplxOvsdLpPuFb2dTypeISystem < ...
             mexFcn_ = obj.mexFcn;
             mexFlag_ = obj.mexFlag;
             
-            %S = step(pmMtxSet_,[],uint32(1));
-            S = diag(exp(1i*obj.Symmetry));
+            Phi = diag(exp(1i*obj.Symmetry));
             %
             E0 = obj.matrixE0;
             %
@@ -234,7 +232,6 @@ classdef AbstCplxOvsdLpPuFb2dTypeISystem < ...
             E = V0*[ E0 ; zeros(nChs-prod(dec),prod(dec))];
             
             iParamMtx = uint32(2);
-            %TODO: iParamMtx = uint32(2);
             hChs = nChs/2;
 
             %
@@ -283,7 +280,7 @@ classdef AbstCplxOvsdLpPuFb2dTypeISystem < ...
                 E = ipermuteCoefs_(obj,E,lenY);
             end
             
-            E = S*E;
+            E = Phi*E;
             %
             nSubbands = size(E,1);
             value = zeros(lenY,lenX,nSubbands);

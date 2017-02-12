@@ -117,11 +117,10 @@ classdef CplxOvsdLpPuFb2dTypeIIVm1System < ...
             mtx = step(obj.omgsV_,initAngles,obj.Mus(1:nCh));
             step(pmMtxSt_,mtx,uint32(1));
             
-            angles = [initAngles; angles(:)];
-            mus = [obj.Mus(1:nCh) ; mus(:)];
+            angles = [initAngles angles(:).'];
             
             obj.Angles = angles;
-            obj.Mus    = mus;
+            obj.Mus(nCh+1:end)    = mus(:).';
         end
         
     end

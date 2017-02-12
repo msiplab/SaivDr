@@ -56,7 +56,8 @@ classdef CplxOvsdLpPuFb2dTypeIVm1System < saivdr.dictionary.cnsoltx.AbstCplxOvsd
             [initAngles, propAngles] = splitAngles_(obj);
             
             angles = reshape(propAngles,[],obj.nStages-1);
-            mus    = obj.Mus(:,2:end);
+            %mus    = obj.Mus(:,2:end);
+            mus    = reshape(obj.Mus(nch+1:end),[],obj.nStages-1);
             
             nParamMtxAngs = nch*(nch-2)/8;
 
@@ -82,14 +83,13 @@ classdef CplxOvsdLpPuFb2dTypeIVm1System < saivdr.dictionary.cnsoltx.AbstCplxOvsd
             [angles_,~] = step(obj.propOmfs_,W_.');
             initAngles(1:nch/2-1) = angles_(1:nch/2-1);
             initAngles(nch/2:nch-1) = zeros(1,nch/2);
-            mtx = step(obj.initOmgs_,initAngles,obj.Mus(:,1));
+            mtx = step(obj.initOmgs_,initAngles,obj.Mus(1:nch));
             step(obj.ParameterMatrixSet,mtx,uint32(1));
             
-            angles = [initAngles; angles(:)];
-            mus = [obj.Mus(:,1), mus];
+            angles = [initAngles angles(:).'];
             
             obj.Angles = angles;
-            obj.Mus = mus;
+            obj.Mus(nch+1:end) = mus(:).';
         end
         
     end

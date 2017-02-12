@@ -54,7 +54,7 @@ classdef CplxOvsdLpPuFb2dTypeIVm0System < saivdr.dictionary.cnsoltx.AbstCplxOvsd
             step(obj.ParameterMatrixSet,mtx,uint32(1));
             
             angles = reshape(propAngles,[],obj.nStages-1);
-            mus    = obj.Mus(:,2:end);
+            mus    = reshape(obj.Mus(nCh+1:end),[],obj.nStages-1);
             
             nParamMtxAngs = nCh*(nCh-2)/8;
             for iParamMtx = uint32(1):obj.nStages-1
