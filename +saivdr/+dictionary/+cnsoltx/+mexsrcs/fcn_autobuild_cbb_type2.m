@@ -24,7 +24,7 @@ function [fcnhandler,flag] = fcn_autobuild_cbb_type2(fhChs)
 % end
 
 bsfname = 'fcn_Order2CplxBuildingBlockTypeII';
-mexname = sprintf('%s_%d_%d_mex',bsfname,fhChs+1,fhChs);
+mexname = sprintf('%s_%d_mex',bsfname,2*fhChs+1);
 
 ftypemex = exist(mexname, 'file');
 if exist('getCurrentTask','file') == 2
