@@ -54,46 +54,27 @@ classdef CplxOvsdLpPuFb1dTypeIVm1System < ...
         end        
         
         function updateParameterMatrixSet_(obj)
-            %import saivdr.dictionary.cnsoltx.ChannelGroup
-            nch = obj.NumberOfChannels;
-            %hChs = nch/2;
-%             angles = obj.Angles;
-%             mus    = obj.Mus;
-%             % No-DC-Leakage condition
-%             angles(1:nch-1) = ...
-%                 zeros(nch-1,1);
-%             mus(1) = 1;
-%             % V0 with No-DC-Leakage condition
-%             mtx = step(obj.omgsV0_,angles(1:nch*(nch-1)/2),mus(1:nch));
-%             step(obj.ParameterMatrixSet,mtx,uint32(1));
-%             
-%             obj.Angles = angles;
-%             obj.Mus = mus;
-%             
-%             angles = reshape(angles(nch*(nch-1)/2+1:end),[],obj.nStages-1);
-%             mus    = reshape(mus(nch+1:end),[],obj.nStages-1);
-%             nAngs = hChs*(hChs-1)/2;
-%             nMus = hChs;
+            nCh = obj.NumberOfChannels;
+            hCh = nCh/2;
 
             [initAngles, propAngles] = splitAngles_(obj);
             
             angles = reshape(propAngles,[],obj.nStages-1);
-            mus    = reshape(obj.Mus(nch+1:end),[],obj.nStages-1);
+            mus    = reshape(obj.Mus(nCh+1:end),[],obj.nStages-1);
             
-            nParamMtxAngs = nch*(nch-2)/8;
+            nParamMtxAngs = nCh*(nCh-2)/8;
 
-            W_ = eye(nch/2);
+            W_ = eye(hCh);
             
             pmMtxSet = obj.ParameterMatrixSet;
-            omgs     = obj.propOmgs_;
             for iParamMtx = uint32(1):obj.nStages-1
                 % W
-                mtx = step(omgs,angles(1:nParamMtxAngs,iParamMtx),mus(1:nch/2,iParamMtx));
+                mtx = step(obj.propOmgs_,angles(1:nParamMtxAngs,iParamMtx),mus(1:hCh,iParamMtx));
                 step(pmMtxSet,mtx,3*iParamMtx-1);
                 W_ = mtx*W_;
                 
                 % U
-                mtx = step(omgs,angles(nParamMtxAngs+1:2*nParamMtxAngs,iParamMtx),mus(nch/2+1:end,iParamMtx));
+                mtx = step(obj.propOmgs_,angles(nParamMtxAngs+1:2*nParamMtxAngs,iParamMtx),mus(hCh+1:end,iParamMtx));
                 step(pmMtxSet,mtx,3*iParamMtx);
                 
                 % angsB
@@ -102,15 +83,13 @@ classdef CplxOvsdLpPuFb1dTypeIVm1System < ...
             
             % Initial matrix with No-DC-leakage condition
             [angles_,~] = step(obj.propOmfs_,W_.');
-            initAngles(1:nch/2-1) = angles_(1:nch/2-1).';
-            initAngles(nch/2:nch-1) = zeros(1,nch/2);
-            mtx = step(obj.initOmgs_,initAngles,obj.Mus(1:nch));
-            step(obj.ParameterMatrixSet,mtx,uint32(1));
+            initAngles(1:hCh-1) = angles_(1:hCh-1);
+            initAngles(hCh:nCh-1) = zeros(hCh,1);
+            mtx = step(obj.initOmgs_,initAngles,obj.Mus(1:nCh));
+            step(pmMtxSet,mtx,uint32(1));
             
-            angles = [initAngles angles(:).'];
-            
-            obj.Angles = angles;
-            obj.Mus(nch+1:end) = mus(:).';
+            obj.Angles = [initAngles ; angles(:)];
+            obj.Mus(nCh+1:end) = mus(:);
         end
         
     end

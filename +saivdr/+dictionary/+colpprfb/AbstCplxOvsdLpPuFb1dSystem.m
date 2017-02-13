@@ -194,7 +194,7 @@ classdef AbstCplxOvsdLpPuFb1dSystem < matlab.System %#codegen
         
         function updateSymmetry_(obj)
             if isempty(obj.Symmetry)
-                obj.Symmetry = zeros(1,obj.NumberOfChannels);
+                obj.Symmetry = zeros(obj.NumberOfChannels,1);
             end
             if length(obj.Symmetry) ~= obj.NumberOfChannels
                 %TODO: —áŠOˆ—

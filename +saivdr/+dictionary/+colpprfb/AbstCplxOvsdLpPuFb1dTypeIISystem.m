@@ -142,14 +142,14 @@ classdef AbstCplxOvsdLpPuFb1dTypeIISystem < ...
             %
 
             if isempty(obj.Angles)
-                obj.Angles = zeros(1,sizeOfAngles);
+                obj.Angles = zeros(sizeOfAngles,1);
             end
             
-            obj.Angles = obj.Angles(:).';
+            obj.Angles = obj.Angles(:);
             if length(obj.Angles) ~= sizeOfAngles
                 id = 'SaivDr:IllegalArgumentException';
                 msg = sprintf(...
-                    'Size of angles must be [ 1 %d ]',...
+                    'Length of angles must be %d',...
                     sizeOfAngles);
                 me = MException(id, msg);
                 throw(me);
@@ -168,11 +168,11 @@ classdef AbstCplxOvsdLpPuFb1dTypeIISystem < ...
                     repmat([ ones(1,nChL), -1*ones(1,nChL),...
                     ones(1,nChU), -1*ones(1,nChL), 1 ], 1, obj.nStages-1)];
             end
-            obj.Mus = obj.Mus(:).';
+            obj.Mus = obj.Mus(:);
             if length(obj.Mus) ~= sizeOfMus
                 id = 'SaivDr:IllegalArgumentException';
                 msg = sprintf(...
-                    'Size of mus must be [ 1 %d ]',...
+                    'Length of mus must be %d',...
                     sizeOfMus);
                 me = MException(id, msg);
                 throw(me);

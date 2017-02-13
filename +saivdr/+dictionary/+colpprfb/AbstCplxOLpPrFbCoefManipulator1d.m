@@ -20,9 +20,6 @@ classdef AbstCplxOLpPrFbCoefManipulator1d < matlab.System %#codegen
     end
     
     properties (Nontunable, PositiveInteger)
-        % TODO: –¼Ì‚Ì•ÏX‚ðŒŸ“¢‚·‚é
-%         NumberOfSymmetricChannels      = 2
-%         NumberOfAntisymmetricChannels  = 2
         NumberOfChannels = 4
         NumberOfHalfChannels = 2
     end
