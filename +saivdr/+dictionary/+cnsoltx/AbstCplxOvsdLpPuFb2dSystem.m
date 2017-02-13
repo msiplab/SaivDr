@@ -58,7 +58,6 @@ classdef AbstCplxOvsdLpPuFb2dSystem < matlab.System %#codegen
     methods (Access = protected, Abstract = true)
         value = getAnalysisFilterBank_(obj)
         updateParameterMatrixSet_(obj)
-        updateSymmetry_(obj)
         updateAngles_(obj)
         updateMus_(obj)
     end
@@ -195,6 +194,15 @@ classdef AbstCplxOvsdLpPuFb2dSystem < matlab.System %#codegen
                 end
             end
             obj.Coefficients = coefs;
+        end
+        
+        function updateSymmetry_(obj)
+            if isempty(obj.Symmetry)
+                obj.Symmetry = zeros(obj.NumberOfChannels,1);
+            end
+            if length(obj.Symmetry) ~= obj.NumberOfChannels
+                %TODO: —áŠOˆ—
+            end
         end
 
         function value = getMatrixE0_(obj)

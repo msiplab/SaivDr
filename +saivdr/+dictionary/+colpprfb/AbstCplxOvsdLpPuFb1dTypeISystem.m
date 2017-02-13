@@ -73,7 +73,6 @@ classdef AbstCplxOvsdLpPuFb1dTypeISystem < ...
         end
 
         function updateProperties_(obj)
-            import saivdr.dictionary.cnsoltx.ChannelGroup
             import saivdr.dictionary.utility.ParameterMatrixContainer
            % import saivdr.dictionary.colpprfb.AbstCplxOvsdLpPuFb1dTypeISystem
 
@@ -123,10 +122,9 @@ classdef AbstCplxOvsdLpPuFb1dTypeISystem < ...
         end
 
         function updateAngles_(obj)
-            import saivdr.dictionary.cnsoltx.ChannelGroup
-            nChL = obj.NumberOfChannels/2;
+            hCh = obj.NumberOfChannels/2;
             nAngsInitStg = obj.NumberOfChannels*(obj.NumberOfChannels-1)/2;
-            nAngsPerStg = nChL*(nChL-1)+floor(nChL/2);
+            nAngsPerStg = hCh*(hCh-1)+floor(hCh/2);
             sizeOfAngles = nAngsInitStg+nAngsPerStg*(obj.nStages-1);
             if isempty(obj.Angles)
                 obj.Angles = zeros(sizeOfAngles,1);
@@ -142,7 +140,6 @@ classdef AbstCplxOvsdLpPuFb1dTypeISystem < ...
         end
 
         function updateMus_(obj)
-            import saivdr.dictionary.cnsoltx.ChannelGroup
             nChL = obj.NumberOfChannels/2;
             sizeOfMus = 2*nChL*obj.nStages;
             if isempty(obj.Mus)
@@ -158,11 +155,9 @@ classdef AbstCplxOvsdLpPuFb1dTypeISystem < ...
                 me = MException(id, msg);
                 throw(me);
             end
-
         end
 
         function value = getAnalysisFilterBank_(obj)
-            import saivdr.dictionary.cnsoltx.ChannelGroup
             import saivdr.dictionary.colpprfb.AbstCplxOvsdLpPuFb1dTypeISystem
             %import saivdr.dictionary.cnsoltx.mexsrcs.*
             %
@@ -197,7 +192,8 @@ classdef AbstCplxOvsdLpPuFb1dTypeISystem < ...
                     iParamMtx = iParamMtx+3;
                 end
             end
-            E = diag(exp(1i*obj.Symmetry))*E;
+            Phi = diag(exp(1i*obj.Symmetry));
+            E = Phi*E;
             value = E.';
         end
 

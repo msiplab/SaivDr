@@ -106,7 +106,7 @@ classdef CplxOvsdLpPuFb1dTypeIIVm1System < ...
                 step(pmMtxSt_,angles(2*nAngs1st+1:2*nAngs1st+nAngsB,iParamMtx),6*iParamMtx+1);
             end
             
-            % Initial matrix with No-DC-leakage condition
+            % Initial matrix V0 with No-DC-leakage condition
             [angles_,~] = step(obj.omfs_,V_.');
             initAngles(1:nCh-1) = angles_(1:nCh-1);
             mtx = step(obj.initOmgs_,initAngles,obj.Mus(1:nCh));

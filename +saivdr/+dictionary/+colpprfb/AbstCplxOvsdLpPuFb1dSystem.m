@@ -115,12 +115,10 @@ classdef AbstCplxOvsdLpPuFb1dSystem < matlab.System %#codegen
             
             if ~isempty(varargin{1})
                 obj.Angles = varargin{1};
-                obj.Angles = obj.Angles(:);
                 updateAngles_(obj);
             end
             if ~isempty(varargin{2})
                 obj.Mus = varargin{2};
-                obj.Mus = obj.Mus(:);
                 updateMus_(obj);
             end
             %TODO: Symmetry‚Ì•ÏX•û–@‚ðŒŸ“¢‚·‚é

@@ -63,21 +63,18 @@ classdef AbstCplxOvsdLpPuFb1dTypeIISystem < ...
             resetImpl@saivdr.dictionary.colpprfb.AbstCplxOvsdLpPuFb1dSystem(obj);
             % Build MEX
             import saivdr.dictionary.cnsoltx.mexsrcs.fcn_autobuild_cbb_type2
-            import saivdr.dictionary.cnsoltx.ChannelGroup
             [obj.mexFcn, obj.mexFlag] = fcn_autobuild_cbb_type2(...
                 floor(obj.NumberOfChannels/2));
         end
 
         function setupImpl(obj,varargin)
             % Prepare MEX function
-            import saivdr.dictionary.cnsoltx.ChannelGroup
             import saivdr.dictionary.cnsoltx.mexsrcs.fcn_autobuild_cbb_type2
             [obj.mexFcn, obj.mexFlag] = fcn_autobuild_cbb_type2(...
                 floor(obj.NumberOfChannels/2));
         end
 
         function updateProperties_(obj)
-            import saivdr.dictionary.cnsoltx.ChannelGroup
             import saivdr.dictionary.utility.ParameterMatrixContainer
 
             % Check DecimationFactor
@@ -124,10 +121,16 @@ classdef AbstCplxOvsdLpPuFb1dTypeIISystem < ...
                 floor(obj.NumberOfChannels/4),1], obj.nStages-1, 1)];
             obj.ParameterMatrixSet = ParameterMatrixContainer(...
                 'MatrixSizeTable',paramMtxSizeTab);
+
+            % Prepare MEX function
+            if ~obj.mexFlag
+                import saivdr.dictionary.cnsoltx.mexsrcs.fcn_autobuild_cbb_type2
+                [obj.mexFcn, obj.mexFlag] = fcn_autobuild_cbb_type2(...
+                    floor(obj.NumberOfChannels/2));
+            end
         end
 
         function updateAngles_(obj)
-            import saivdr.dictionary.cnsoltx.ChannelGroup
             nAngsPerStg = zeros(3,1);
             %
             nAngsPerStg(1) = ...
@@ -157,7 +160,6 @@ classdef AbstCplxOvsdLpPuFb1dTypeIISystem < ...
         end
 
         function updateMus_(obj)
-            import saivdr.dictionary.cnsoltx.ChannelGroup
             %
             sizeOfMus = obj.NumberOfChannels*(2*obj.nStages-1);
             %
@@ -180,7 +182,6 @@ classdef AbstCplxOvsdLpPuFb1dTypeIISystem < ...
         end
 
         function value = getAnalysisFilterBank_(obj)
-            import saivdr.dictionary.cnsoltx.ChannelGroup
             import saivdr.dictionary.colpprfb.AbstCplxOvsdLpPuFb1dTypeIISystem
             import saivdr.dictionary.cnsoltx.mexsrcs.*
 
@@ -191,6 +192,7 @@ classdef AbstCplxOvsdLpPuFb1dTypeIISystem < ...
             pmMtxSt_ = obj.ParameterMatrixSet;
             mexFcn_  = obj.mexFcn;
             mexFlag_ = obj.mexFlag;
+            
             %
             E0 = obj.matrixE0;
             %
@@ -219,7 +221,8 @@ classdef AbstCplxOvsdLpPuFb1dTypeIISystem < ...
                 end
                 len = dec*(ord+1);
             end
-            E = diag(exp(1i*obj.Symmetry))*E;
+            Phi = diag(exp(1i*obj.Symmetry));
+            E = Phi*E;
             value = E.';
         end
 

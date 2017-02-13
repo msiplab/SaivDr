@@ -81,7 +81,7 @@ classdef CplxOvsdLpPuFb1dTypeIVm1System < ...
                 step(pmMtxSet,angles(2*nParamMtxAngs+1:end,iParamMtx),3*iParamMtx+1);
             end
             
-            % Initial matrix with No-DC-leakage condition
+            % Initial matrix V0 with No-DC-leakage condition
             [angles_,~] = step(obj.propOmfs_,W_.');
             initAngles(1:hCh-1) = angles_(1:hCh-1);
             initAngles(hCh:nCh-1) = zeros(hCh,1);

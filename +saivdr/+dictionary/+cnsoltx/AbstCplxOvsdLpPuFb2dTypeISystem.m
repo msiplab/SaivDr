@@ -37,9 +37,9 @@ classdef AbstCplxOvsdLpPuFb2dTypeISystem < ...
             obj = obj@saivdr.dictionary.cnsoltx.AbstCplxOvsdLpPuFb2dSystem(...
                 varargin{:});
             updateProperties_(obj);
-            updateSymmetry_(obj);
             updateAngles_(obj);
             updateMus_(obj);
+            updateSymmetry_(obj);
         end
     end
 
@@ -96,22 +96,6 @@ classdef AbstCplxOvsdLpPuFb2dTypeISystem < ...
             obj.nStages = uint32(1+ordX+ordY);
             obj.matrixE0 = getMatrixE0_(obj);
 
-%             % Check NumberOfChannels
-%             if length(obj.NumberOfChannels) > 2
-%                 error('Dimension of NumberOfChannels must be less than or equal to two.');
-%             end
-%             if isempty(obj.NumberOfChannels)
-%                 obj.NumberOfChannels = 2*floor(nHalfDecs)+1;
-%             elseif isvector(obj.NumberOfChannels)
-%                 obj.NumberOfChannels = sum(obj.NumberOfChannels);
-%                 % TODO: ???O????????????????????
-%                 if mod(obj.NumberOfChannels,2) == 0
-%                     id = 'SaivDr:IllegalArgumentException';
-%                     msg = '#Channels must be odd.';
-%                     me = MException(id, msg);
-%                     throw(me);
-%                 end
-%             end
             % Check NumberOfChannels
             if length(obj.NumberOfChannels) > 2
                 error('Dimension of NumberOfChannels must be less than or equal to two.');
@@ -130,86 +114,55 @@ classdef AbstCplxOvsdLpPuFb2dTypeISystem < ...
 
             
             % Prepare ParameterMatrixSet
-            %symmetricMtxSizeTab = obj.NumberOfChannels*ones(1,2);
-            initParamMtxSizeTab = obj.NumberOfChannels*ones(1,2);
-            propParamMtxSizeTab = [...
-                ceil(obj.NumberOfChannels/2)*ones(1,2);
-                floor(obj.NumberOfChannels/2)*ones(1,2);
-                floor(sum(obj.NumberOfChannels)/4),1 ];
-            paramMtxSizeTab = [...
-                initParamMtxSizeTab;
-                repmat(propParamMtxSizeTab,obj.nStages-1,1)];
+            paramMtxSizeTab = [
+                obj.NumberOfChannels*ones(1,2);
+                repmat([
+                    obj.NumberOfChannels/2*ones(2,2);
+                    floor(obj.NumberOfChannels/4),1],...
+                    obj.nStages-1, 1)];
             obj.ParameterMatrixSet = ParameterMatrixContainer(...
                 'MatrixSizeTable',paramMtxSizeTab);
 
         end
-        
-        function updateSymmetry_(obj)
-            nCh = obj.NumberOfChannels;
-            if isempty(obj.Symmetry)
-                obj.Symmetry = zeros(1,nCh);
-            end
-            
-            % TODO: exception processing
-        end
 
         function updateAngles_(obj)
             import saivdr.dictionary.cnsoltx.ChannelGroup
-            import saivdr.dictionary.utility.Direction
-            nCh = obj.NumberOfChannels;
-            nAngsPerStg = nCh*(nCh-2)/4+floor(nCh/4);
-            nAngsInit = nCh*(nCh-1)/2;
-            sizeOfAngles = nAngsInit + (obj.nStages-1)*nAngsPerStg;
+            nChL = obj.NumberOfChannels/2;
+            nAngsInitStg = obj.NumberOfChannels*(obj.NumberOfChannels-1)/2;
+            nAngsPerStg = nChL*(nChL-1)+floor(nChL/2);
+            sizeOfAngles = nAngsInitStg+nAngsPerStg*(obj.nStages-1);
             if isempty(obj.Angles)
-%                 angsInit = zeros(1,nAngsInit);
-%                 angsPerStg = zeros(nAngsPerStg,obj.nStages-1);
-%                 angsPerStg(end-floor(nCh/4)+1:end,:) = pi/2*ones(floor(nCh/4),obj.nStages-1);
-                obj.Angles = zeros(1,sizeOfAngles);
-                %obj.Angles = zeros(sizeOfAngles,1);
+                obj.Angles = zeros(sizeOfAngles,1);
             end
-%             if size(obj.Angles,1) ~= sizeOfAngles(1) || ...
-%                     size(obj.Angles,2) ~= sizeOfAngles(2)
+            obj.Angles = obj.Angles(:);
             if length(obj.Angles) ~= sizeOfAngles
                 id = 'SaivDr:IllegalArgumentException';
-                %TODO:
                 msg = sprintf(...
-                    'Size of angles must be [ %d %d ]',...
-                    sizeOfAngles(1), sizeOfAngles(2));
+                    'Length of angles must be %d',sizeOfAngles);
                 me = MException(id, msg);
                 throw(me);
             end
         end
 
-        %TODO:
         function updateMus_(obj)
-            %import saivdr.dictionary.cnsoltx.ChannelGroup
-            import saivdr.dictionary.utility.Direction
-            %nChL = obj.NumberOfChannels(ChannelGroup.LOWER);
-            nCh = obj.NumberOfChannels;
-            nChL = nCh/2;
-            %sizeOfMus = [ nCh obj.nStages];
-            sizeOfMus = nCh*obj.nStages;
+            nChL = obj.NumberOfChannels/2;
+            sizeOfMus = 2*nChL*obj.nStages;
             if isempty(obj.Mus)
                 musMat = ones(2*nChL,obj.nStages);
                 musMat(nChL+1:end,2:end) = -1*ones(nChL,obj.nStages-1);
                 obj.Mus = musMat(:);
-                %obj.Mus = musMat;
             end
-%             if size(obj.Mus,1) ~= sizeOfMus(1) || ...
-%                     size(obj.Mus,2) ~= sizeOfMus(2)
+            obj.Mus = obj.Mus(:);
             if length(obj.Mus) ~= sizeOfMus
                 id = 'SaivDr:IllegalArgumentException';
                 msg = sprintf(...
-                    'Size of mus must be [ %d %d ]',...
-                    sizeOfMus(1), sizeOfMus(2));
+                    'Length of mus must be %d',sizeOfMus);
                 me = MException(id, msg);
                 throw(me);
             end
-
         end
 
         function value = getAnalysisFilterBank_(obj)
-            import saivdr.dictionary.cnsoltx.ChannelGroup
             import saivdr.dictionary.utility.Direction
             import saivdr.dictionary.cnsoltx.AbstCplxOvsdLpPuFb2dTypeISystem
             %import saivdr.dictionary.cnsoltx.mexsrcs.*
@@ -224,7 +177,6 @@ classdef AbstCplxOvsdLpPuFb2dTypeISystem < ...
             mexFcn_ = obj.mexFcn;
             mexFlag_ = obj.mexFlag;
             
-            Phi = diag(exp(1i*obj.Symmetry));
             %
             E0 = obj.matrixE0;
             %
@@ -243,7 +195,6 @@ classdef AbstCplxOvsdLpPuFb2dTypeISystem < ...
             % Horizontal extention
             nShift = int32(lenY*lenX);
             for iOrdX = initOrdX:ordX
-                %TODO:
                 W = step(pmMtxSet_,[],iParamMtx);
                 U = step(pmMtxSet_,[],iParamMtx+1);
                 angsB = step(pmMtxSet_,[],iParamMtx+2);
@@ -280,6 +231,7 @@ classdef AbstCplxOvsdLpPuFb2dTypeISystem < ...
                 E = ipermuteCoefs_(obj,E,lenY);
             end
             
+            Phi = diag(exp(1i*obj.Symmetry));
             E = Phi*E;
             %
             nSubbands = size(E,1);
