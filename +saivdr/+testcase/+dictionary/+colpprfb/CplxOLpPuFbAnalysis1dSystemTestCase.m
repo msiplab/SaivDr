@@ -52,7 +52,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
 %             set(lppufb,'OutputMode','ParameterMatrixSet');
 %             testCase.analyzer = CplxOLpPuFbAnalysis1dSystem(...
 %                 'LpPuFb1d',lppufb,...
-%                 'NumberOfSymmetricChannels',dec/2,...
+%                 'NumberOfChannels',dec/2,...
 %                 'NumberOfAntisymmetricChannels',dec/2,...
 %                 'BoundaryOperation','Circular');
 %             
@@ -86,22 +86,21 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testDefaultConstruction4plus4(testCase)
+        function testDefaultConstruction8(testCase)
             
             % Preperation
-            nChs = [4 4];
+            ch = 8;
             
             % Expected values
             import saivdr.dictionary.colpprfb.*
             lppufbExpctd = CplxOvsdLpPuFb1dTypeIVm1System(...
-                'NumberOfChannels',nChs,...
+                'NumberOfChannels',ch,...
                 'OutputMode','ParameterMatrixSet');
             
             % Instantiation
             import saivdr.dictionary.nsoltx.ChannelGroup
             testCase.analyzer = CplxOLpPuFbAnalysis1dSystem(...
-                'NumberOfSymmetricChannels',nChs(ChannelGroup.UPPER),...
-                'NumberOfAntisymmetricChannels',nChs(ChannelGroup.LOWER));
+                'NumberOfChannels',ch);
             
             % Actual value
             lppufbActual = get(testCase.analyzer,'LpPuFb1d');
@@ -111,11 +110,10 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testStepDec1Ch22Ord0Level1Vm0(testCase)
+        function testStepDec1Ch4Ord0Level1Vm0(testCase)
             
             dec = 1;
-            nChs = [ 2 2 ];
-            ch = sum(nChs);
+            ch = 4;
             ord = 0;
             nLen = 32;
             srcSeq = rand(1,nLen);
@@ -125,7 +123,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.colpprfb.*
             lppufb = CplxOLpPrFbFactory.createCplxOvsdLpPuFb1dSystem(...
                 'DecimationFactor',dec,...
-                'NumberOfChannels',nChs,...
+                'NumberOfChannels',ch,...
                 'PolyPhaseOrder',ord,...
                 'NumberOfVanishingMoments',0);
             angs = get(lppufb,'Angles');
@@ -151,8 +149,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = CplxOLpPuFbAnalysis1dSystem(...
                 'LpPuFb1d',lppufb,...
-                'NumberOfSymmetricChannels',nChs(1),...
-                'NumberOfAntisymmetricChannels',nChs(2),...
+                'NumberOfChannels',ch,...
                 'BoundaryOperation','Circular');
             
             % Actual values
@@ -167,11 +164,10 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testStepDec1Ch22Ord00Level1Vm1(testCase)
+        function testStepDec1Ch4Ord00Level1Vm1(testCase)
             
             dec = 1;
-            nChs = [ 2 2 ];
-            ch = sum(nChs);
+            ch = 4;
             ord = 0;
             nLen = 32;
             srcSeq = rand(1,nLen);
@@ -181,7 +177,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.colpprfb.*
             lppufb = CplxOLpPrFbFactory.createCplxOvsdLpPuFb1dSystem(...
                 'DecimationFactor',dec,...
-                'NumberOfChannels',nChs,...
+                'NumberOfChannels',ch,...
                 'PolyPhaseOrder',ord,...
                 'NumberOfVanishingMoments',1);
             angs = get(lppufb,'Angles');
@@ -208,8 +204,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = CplxOLpPuFbAnalysis1dSystem(...
                 'LpPuFb1d',lppufb,...
-                'NumberOfSymmetricChannels',nChs(1),...
-                'NumberOfAntisymmetricChannels',nChs(2),...
+                'NumberOfChannels',ch,...
                 'BoundaryOperation','Circular');
             
             % Actual values
@@ -224,11 +219,11 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testStepDec1Ch22Ord0Level2PeriodicExtVm0(testCase)
+        function testStepDec1Ch4Ord0Level2PeriodicExtVm0(testCase)
             
             dec = 1;
-            nChs = [ 2 2 ];
-            ch = sum(nChs);
+            ch = 4;
+            ch = sum(ch);
             ord = 0;
             nLen = 32;
             srcSeq = rand(1,nLen);
@@ -284,8 +279,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = CplxOLpPuFbAnalysis1dSystem(...
                 'LpPuFb1d',lppufb,...
-                'NumberOfSymmetricChannels',nChs(1),...
-                'NumberOfAntisymmetricChannels',nChs(2),...
+                'NumberOfChannels',ch,...
                 'BoundaryOperation','Circular');
             
             % Actual values
@@ -300,11 +294,10 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testStepDec1Ch22Ord0Level2PeriodicExtVm1(testCase)
+        function testStepDec1Ch4Ord0Level2PeriodicExtVm1(testCase)
             
             dec = 1;
-            nChs = [ 2 2 ];
-            ch = sum(nChs);
+            ch = 4;
             ord = 0;
             nLen = 32;
             srcSeq = rand(1,nLen);
@@ -360,8 +353,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = CplxOLpPuFbAnalysis1dSystem(...
                 'LpPuFb1d',lppufb,...
-                'NumberOfSymmetricChannels',nChs(1),...
-                'NumberOfAntisymmetricChannels',nChs(2),...
+                'NumberOfChannels',ch,...
                 'BoundaryOperation','Circular');
             
             % Actual values
@@ -376,11 +368,10 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testStepDec2Ch22Ord0Level1PeriodicExt(testCase)
+        function testStepDec2Ch4Ord0Level1PeriodicExt(testCase)
             
             dec = 2;
-            nChs = [ 2 2 ];
-            ch = sum(nChs);
+            ch = 4;
             ord = 0;
             nLen = 32;
             srcSeq = rand(1,nLen);
@@ -390,7 +381,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.colpprfb.*
             lppufb = CplxOLpPrFbFactory.createCplxOvsdLpPuFb1dSystem(...
                 'DecimationFactor',dec,...
-                'NumberOfChannels',nChs,...
+                'NumberOfChannels',ch,...
                 'PolyPhaseOrder',ord);
             
             angs = get(lppufb,'Angles');
@@ -418,8 +409,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = CplxOLpPuFbAnalysis1dSystem(...
                 'LpPuFb1d',lppufb,...
-                'NumberOfSymmetricChannels',nChs(1),...
-                'NumberOfAntisymmetricChannels',nChs(2),...
+                'NumberOfChannels',ch,...
                 'BoundaryOperation','Circular');
             
             % Actual values
@@ -433,11 +423,11 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testStepDec2Ch22Ord0Level2PeriodicExt(testCase)
+        function testStepDec2Ch4Ord0Level2PeriodicExt(testCase)
             
             dec = 2;
-            nChs = [ 2 2 ];
-            ch = sum(nChs);
+            ch = 4;
+            ch = sum(ch);
             ord = 0;
             nLen = 32;
             srcSeq = rand(1,nLen);
@@ -493,8 +483,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = CplxOLpPuFbAnalysis1dSystem(...
                 'LpPuFb1d',lppufb,...
-                'NumberOfSymmetricChannels',nChs(1),...
-                'NumberOfAntisymmetricChannels',nChs(2),...
+                'NumberOfChannels',ch,...
                 'BoundaryOperation','Circular');
             
             % Actual values
@@ -509,11 +498,10 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testStepDec2Ch33Ord0Level1(testCase)
+        function testStepDec2Ch6Ord0Level1(testCase)
             
             dec = 2;
-            nChs = [ 3 3 ];
-            ch = sum(nChs);
+            ch = 6;
             ord = 0;
             nLen = 32;
             srcSeq = rand(1,nLen);
@@ -523,7 +511,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.colpprfb.*
             lppufb = CplxOLpPrFbFactory.createCplxOvsdLpPuFb1dSystem(...
                 'DecimationFactor',dec,...
-                'NumberOfChannels', nChs,...
+                'NumberOfChannels', ch,...
                 'PolyPhaseOrder',ord);
             angs = get(lppufb,'Angles');
             angs = randn(size(angs));
@@ -550,8 +538,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = CplxOLpPuFbAnalysis1dSystem(...
                 'LpPuFb1d',lppufb,...
-                'NumberOfSymmetricChannels',nChs(1),...
-                'NumberOfAntisymmetricChannels',nChs(2),...
+                'NumberOfChannels',ch,...
                 'BoundaryOperation','Circular');
             
             % Actual values
@@ -565,11 +552,10 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testIterDecompDec2Ch33Ord0Level2PeriodicExt(testCase)
+        function testIterDecompDec2Ch6Ord0Level2PeriodicExt(testCase)
             
             dec = 2;
-            nChs = [ 3 3 ];
-            ch = sum(nChs);
+            ch = 6;
             ord = 0;
             nLen = 32;
             srcSeq = rand(1,nLen);
@@ -629,8 +615,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = CplxOLpPuFbAnalysis1dSystem(...
                 'LpPuFb1d',lppufb,...
-                'NumberOfSymmetricChannels',nChs(1),...
-                'NumberOfAntisymmetricChannels',nChs(2),...
+                'NumberOfChannels',ch,...
                 'BoundaryOperation','Circular');
             
             % Actual values
@@ -645,11 +630,10 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testStepDec2Ch44Ord0Level1PeriodicExt(testCase)
+        function testStepDec2Ch8Ord0Level1PeriodicExt(testCase)
             
             dec = 2;
-            nChs = [ 4 4 ];
-            ch = sum(nChs);
+            ch = 8;
             ord = 0;
             nLen = 32;
             srcSeq = rand(1,nLen);
@@ -686,8 +670,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = CplxOLpPuFbAnalysis1dSystem(...
                 'LpPuFb1d',lppufb,...
-                'NumberOfSymmetricChannels',nChs(1),...
-                'NumberOfAntisymmetricChannels',nChs(2),...
+                'NumberOfChannels',ch,...
                 'BoundaryOperation','Circular');
             
             % Actual values
@@ -702,11 +685,10 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testStepDec2Ch44Ord0Level2PeriodicExt(testCase)
+        function testStepDec2Ch8Ord0Level2PeriodicExt(testCase)
             
             dec = 2;
-            nChs = [ 4 4 ];
-            ch = sum(nChs);
+            ch = 8;
             ord = 0;
             nLen = 32;
             srcSeq = rand(1,nLen);
@@ -716,7 +698,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.colpprfb.*
             lppufb = CplxOLpPrFbFactory.createCplxOvsdLpPuFb1dSystem(...
                 'DecimationFactor',dec,...
-                'NumberOfChannels', nChs,...
+                'NumberOfChannels', ch,...
                 'PolyPhaseOrder',ord);
             angs = get(lppufb,'Angles');
             angs = randn(size(angs));
@@ -770,8 +752,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = CplxOLpPuFbAnalysis1dSystem(...
                 'LpPuFb1d',lppufb,...
-                'NumberOfSymmetricChannels',nChs(1),...
-                'NumberOfAntisymmetricChannels',nChs(2),...
+                'NumberOfChannels',ch,...
                 'BoundaryOperation','Circular');
             
             % Actual values
@@ -786,11 +767,10 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testStepDec1Ch22Ord2Level1(testCase)
+        function testStepDec1Ch4Ord2Level1(testCase)
             
             dec = 1;
-            nChs = [ 2 2 ];
-            ch = sum(nChs);
+            ch = 4;
             ord = 2;
             nLen = 32;
             srcSeq = rand(1,nLen);
@@ -801,7 +781,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.colpprfb.*
             lppufb = CplxOLpPrFbFactory.createCplxOvsdLpPuFb1dSystem(...
                 'DecimationFactor',dec,...
-                'NumberOfChannels',nChs,...
+                'NumberOfChannels',ch,...
                 'PolyPhaseOrder',ord);
             angs = get(lppufb,'Angles');
             angs = randn(size(angs));
@@ -830,8 +810,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = CplxOLpPuFbAnalysis1dSystem(...
                 'LpPuFb1d',lppufb,...
-                'NumberOfSymmetricChannels',nChs(1),...
-                'NumberOfAntisymmetricChannels',nChs(2),...
+                'NumberOfChannels',ch,...
                 'BoundaryOperation','Circular');
             
             % Actual values
@@ -845,11 +824,10 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testStepDec1Ch22Ord2Level2PeriodicExt(testCase)
+        function testStepDec1Ch4Ord2Level2PeriodicExt(testCase)
             
             dec = 1;
-            nChs = [ 2 2 ];
-            ch = sum(nChs);
+            ch = 4;
             ord = 2;
             nLen = 32;
             srcSeq = rand(1,nLen);
@@ -859,7 +837,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.colpprfb.*
             lppufb = CplxOLpPrFbFactory.createCplxOvsdLpPuFb1dSystem(...
                 'DecimationFactor',dec,...
-                'NumberOfChannels', nChs,...
+                'NumberOfChannels', ch,...
                 'PolyPhaseOrder',ord,...
                 'NumberOfVanishingMoments',0);
             angs = get(lppufb,'Angles');
@@ -909,8 +887,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = CplxOLpPuFbAnalysis1dSystem(...
                 'LpPuFb1d',lppufb,...
-                'NumberOfSymmetricChannels',nChs(1),...
-                'NumberOfAntisymmetricChannels',nChs(2),...
+                'NumberOfChannels',ch,...
                 'BoundaryOperation','Circular');
             
             % Actual values
@@ -924,11 +901,10 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testStepDec2Ch22Ord2Level1PeridicExt(testCase)
+        function testStepDec2Ch4Ord2Level1PeridicExt(testCase)
             
             dec = 2;
-            chs = [ 2 2 ];
-            nChs = sum(chs);
+            ch = 4;
             ord = 2;
             nLen = 32;
             srcSeq = rand(1,nLen);
@@ -938,7 +914,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.colpprfb.*
             lppufb = CplxOLpPrFbFactory.createCplxOvsdLpPuFb1dSystem(...
                 'DecimationFactor',dec,...
-                'NumberOfChannels', chs,...
+                'NumberOfChannels', ch,...
                 'PolyPhaseOrder',ord);
             angs = get(lppufb,'Angles');
             angs = randn(size(angs));
@@ -948,10 +924,10 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             release(lppufb)
             set(lppufb,'OutputMode','AnalysisFilterAt');
             nSubCoefs = nLen/dec;
-            coefsExpctd = zeros(1,nChs*nSubCoefs);
+            coefsExpctd = zeros(1,ch*nSubCoefs);
             phs = dec-1;
             offset = -dec*ord/2;
-            for iSubband = 1:nChs
+            for iSubband = 1:ch
                 subCoef = downsample(...
                     circshift(...
                     cconv(srcSeq.',...
@@ -960,15 +936,14 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
                 coefsExpctd((iSubband-1)*nSubCoefs+1:iSubband*nSubCoefs) = ...
                     subCoef(:).';
             end
-            scalesExpctd = repmat(length(srcSeq)./dec,nChs,1);
+            scalesExpctd = repmat(length(srcSeq)./dec,ch,1);
             
             % Instantiation of target class
             release(lppufb)
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = CplxOLpPuFbAnalysis1dSystem(...
                 'LpPuFb1d',lppufb,...
-                'NumberOfSymmetricChannels',chs(1),...
-                'NumberOfAntisymmetricChannels',chs(2),...
+                'NumberOfChannels',ch,...
                 'BoundaryOperation','Circular');
             
             % Actual values
@@ -982,11 +957,10 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testStepDec2Ch22Ord0Level1PeridicExt(testCase)
+        function testStepDec2Ch4Ord0Level1PeridicExt(testCase)
             
             dec = 2;
-            chs = [ 2 2 ];
-            nChs = sum(chs);
+            ch = 4;
             ord = 0;
             nLen = 64;
             srcSeq = rand(1,nLen);
@@ -996,7 +970,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.colpprfb.*
             lppufb = CplxOLpPrFbFactory.createCplxOvsdLpPuFb1dSystem(...
                 'DecimationFactor',dec,...
-                'NumberOfChannels', chs,...
+                'NumberOfChannels', ch,...
                 'PolyPhaseOrder',ord);
             angs = get(lppufb,'Angles');
             angs = randn(size(angs));
@@ -1006,10 +980,10 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             release(lppufb)
             set(lppufb,'OutputMode','AnalysisFilterAt');
             nSubCoefs = nLen/dec;
-            coefsExpctd = zeros(1,nChs*nSubCoefs);
+            coefsExpctd = zeros(1,ch*nSubCoefs);
             phs = dec-1;
             offset = -dec*ord/2;
-            for iSubband = 1:nChs
+            for iSubband = 1:ch
                 subCoef = downsample(...
                     circshift(...
                     cconv(srcSeq.',...
@@ -1018,15 +992,14 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
                 coefsExpctd((iSubband-1)*nSubCoefs+1:iSubband*nSubCoefs) = ...
                     subCoef(:).';
             end
-            scalesExpctd = repmat(length(srcSeq)./dec,nChs,1);
+            scalesExpctd = repmat(length(srcSeq)./dec,ch,1);
             
             % Instantiation of target class
             release(lppufb)
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = CplxOLpPuFbAnalysis1dSystem(...
                 'LpPuFb1d',lppufb,...
-                'NumberOfSymmetricChannels',chs(1),...
-                'NumberOfAntisymmetricChannels',chs(2),...
+                'NumberOfChannels',ch,...
                 'BoundaryOperation','Circular');
             
             % Actual values
@@ -1040,11 +1013,10 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testStepDec2Ch22Ord2Level2PeriodicExt(testCase)
+        function testStepDec2Ch4Ord2Level2PeriodicExt(testCase)
             
             dec = 2;
-            nChs = [ 2 2 ];
-            ch = sum(nChs);
+            ch = 4;
             ord = 2;
             nLen = 64;
             srcSeq = rand(1,nLen);
@@ -1054,7 +1026,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.colpprfb.*
             lppufb = CplxOLpPrFbFactory.createCplxOvsdLpPuFb1dSystem(...
                 'DecimationFactor',dec,...
-                'NumberOfChannels', nChs,...
+                'NumberOfChannels', ch,...
                 'PolyPhaseOrder',ord);
             angs = get(lppufb,'Angles');
             angs = randn(size(angs));
@@ -1103,8 +1075,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = CplxOLpPuFbAnalysis1dSystem(...
                 'LpPuFb1d',lppufb,...
-                'NumberOfSymmetricChannels',nChs(1),...
-                'NumberOfAntisymmetricChannels',nChs(2),...
+                'NumberOfChannels',ch,...
                 'BoundaryOperation','Circular');
             
             % Actual values
@@ -1120,11 +1091,10 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testStepDec2Ch33Ord2Level1(testCase)
+        function testStepDec2Ch6Ord2Level1(testCase)
             
             dec = 2;
-            nChs = [ 3 3 ];
-            ch = sum(nChs);
+            ch = 6;
             ord = 2;
             nLen = 32;
             srcSeq = rand(1,nLen);
@@ -1163,8 +1133,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = CplxOLpPuFbAnalysis1dSystem(...
                 'LpPuFb1d',lppufb,...
-                'NumberOfSymmetricChannels',nChs(1),...
-                'NumberOfAntisymmetricChannels',nChs(2),...
+                'NumberOfChannels',ch,...
                 'BoundaryOperation','Circular');
             
             % Actual values
@@ -1179,11 +1148,10 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testStepDec2Ch33Ord2Level2PeriodicExt(testCase)
+        function testStepDec2Ch6Ord2Level2PeriodicExt(testCase)
             
             dec = 2;
-            nChs = [ 3 3 ];
-            ch = sum(nChs);
+            ch = 6;
             ord = 2;
             nLen = 64;
             srcSeq = rand(1,nLen);
@@ -1193,7 +1161,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.colpprfb.*
             lppufb = CplxOLpPrFbFactory.createCplxOvsdLpPuFb1dSystem(...
                 'DecimationFactor',dec,...
-                'NumberOfChannels', nChs,...
+                'NumberOfChannels', ch,...
                 'PolyPhaseOrder',ord);
             angs = get(lppufb,'Angles');
             angs = randn(size(angs));
@@ -1246,8 +1214,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = CplxOLpPuFbAnalysis1dSystem(...
                 'LpPuFb1d',lppufb,...
-                'NumberOfSymmetricChannels',nChs(1),...
-                'NumberOfAntisymmetricChannels',nChs(2),...
+                'NumberOfChannels',ch,...
                 'BoundaryOperation','Circular');
             
             % Actual values
@@ -1262,11 +1229,10 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testStepDec2Ch44Ord2Level1(testCase)
+        function testStepDec2Ch8Ord2Level1(testCase)
             
             dec = 2;
-            nChs = [ 4 4 ];
-            ch = sum(nChs);
+            ch = 8;
             ord = 2;
             nLen = 32;
             srcSeq = rand(1,nLen);
@@ -1276,7 +1242,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.colpprfb.*
             lppufb = CplxOLpPrFbFactory.createCplxOvsdLpPuFb1dSystem(...
                 'DecimationFactor',dec,...
-                'NumberOfChannels', nChs,...
+                'NumberOfChannels', ch,...
                 'PolyPhaseOrder',ord);
             angs = get(lppufb,'Angles');
             angs = randn(size(angs));
@@ -1305,8 +1271,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = CplxOLpPuFbAnalysis1dSystem(...
                 'LpPuFb1d',lppufb,...
-                'NumberOfSymmetricChannels',nChs(1),...
-                'NumberOfAntisymmetricChannels',nChs(2),...
+                'NumberOfChannels',ch,...
                 'BoundaryOperation','Circular');
             
             % Actual values
@@ -1322,11 +1287,10 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testStepDec2Ch44Ord2Level2PeriodicExt(testCase)
+        function testStepDec2Ch8Ord2Level2PeriodicExt(testCase)
             
             dec = 2;
-            nChs = [ 4 4 ];
-            ch = sum(nChs);
+            ch = 8;
             ord = 2;
             nLen = 32;
             srcSeq = rand(1,nLen);
@@ -1336,7 +1300,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.colpprfb.*
             lppufb = CplxOLpPrFbFactory.createCplxOvsdLpPuFb1dSystem(...
                 'DecimationFactor',dec,...
-                'NumberOfChannels', nChs,...
+                'NumberOfChannels', ch,...
                 'PolyPhaseOrder',ord);
             angs = get(lppufb,'Angles');
             angs = randn(size(angs));
@@ -1393,8 +1357,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = CplxOLpPuFbAnalysis1dSystem(...
                 'LpPuFb1d',lppufb,...
-                'NumberOfSymmetricChannels',nChs(1),...
-                'NumberOfAntisymmetricChannels',nChs(2),...
+                'NumberOfChannels',ch,...
                 'BoundaryOperation','Circular');
             
             % Actual values
@@ -1408,11 +1371,10 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         end
         
         % Level 3, dec 22 ch 4 order 4
-        function testStepDec2Ch44Ord4Level3PeriodicExt(testCase)
+        function testStepDec2Ch8Ord4Level3PeriodicExt(testCase)
             
             dec = 2;
-            nChs =  [ 4 4 ];
-            ch = sum(nChs);
+            ch =  8;
             ord = 4;
             nLen = 64;
             srcSeq = rand(1,nLen);
@@ -1494,8 +1456,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = CplxOLpPuFbAnalysis1dSystem(...
                 'LpPuFb1d',lppufb,...
-                'NumberOfSymmetricChannels',nChs(1),...
-                'NumberOfAntisymmetricChannels',nChs(2),...
+                'NumberOfChannels',ch,...
                 'BoundaryOperation','Circular');
             
             % Actual values
@@ -1511,7 +1472,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         end
         
         % Level 3, dec 2 ch 8  order 44
-        function testSetLpPuFb1dDec2Ch44Ord4(testCase)
+        function testSetLpPuFb1dDec2Ch8Ord4(testCase)
             
             dec = 2;
             ch =  [ 4 4 ];
@@ -1727,19 +1688,19 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         %         function testDefaultConstruction6plus2(testCase)
         %
         %             % Preperation
-        %             nChs = [6 2];
+        %             ch = [6 2];
         %
         %             % Expected values
         %             import saivdr.dictionary.colpprfb.*
         %             lppufbExpctd = CplxOvsdLpPuFb1dTypeIIVm1System(...
-        %                 'NumberOfChannels',nChs,...
+        %                 'NumberOfChannels',ch,...
         %                 'OutputMode','ParameterMatrixSet');
         %
         %             % Instantiation
         %             import saivdr.dictionary.nsoltx.ChannelGroup
         %             testCase.analyzer = CplxOLpPuFbAnalysis1dSystem(...
-        %                 'NumberOfSymmetricChannels',nChs(ChannelGroup.UPPER),...
-        %                 'NumberOfAntisymmetricChannels',nChs(ChannelGroup.LOWER));
+        %                 'NumberOfChannels',ch(ChannelGroup.UPPER),...
+        %                 'NumberOfAntisymmetricChannels',ch(ChannelGroup.LOWER));
         %
         %             % Actual value
         %             lppufbActual = get(testCase.analyzer,'LpPuFb1d');
@@ -1749,11 +1710,11 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         %         end
         
         % Test
-        function testStepDec1Ch32Ord0Level1PeriodicExtVm0(testCase)
+        function testStepDec1Ch5Ord0Level1PeriodicExtVm0(testCase)
             
             dec = 1;
-            decch = [ dec 3 2 ];
-            nChs = sum(decch(2:3));
+            decch = [ dec 5 ];
+            ch = decch(2);
             ord = 0;
             nLen = 32;
             srcSeq = rand(1,nLen);
@@ -1763,7 +1724,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.colpprfb.*
             lppufb = CplxOLpPrFbFactory.createCplxOvsdLpPuFb1dSystem(...
                 'DecimationFactor',decch(1),...
-                'NumberOfChannels',decch(2:end),...
+                'NumberOfChannels',decch(2),...
                 'PolyPhaseOrder',ord,...
                 'NumberOfVanishingMoments',0);
             angs = get(lppufb,'Angles');
@@ -1774,10 +1735,10 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             release(lppufb);
             set(lppufb,'OutputMode','AnalysisFilterAt');
             nSubCoefs = numel(srcSeq)/(decch(1));
-            coefsExpctd = zeros(1,nChs*nSubCoefs);
+            coefsExpctd = zeros(1,ch*nSubCoefs);
             phs = dec - 1;
             offset = -dec*ord/2;
-            for iSubband = 1:nChs
+            for iSubband = 1:ch
                 subCoef = downsample(...
                     circshift(...
                     cconv(srcSeq.',...
@@ -1786,7 +1747,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
                 coefsExpctd((iSubband-1)*nSubCoefs+1:iSubband*nSubCoefs) = ...
                     subCoef(:).';
             end
-            scalesExpctd = repmat(length(srcSeq)./decch(1),nChs,1);
+            scalesExpctd = repmat(length(srcSeq)./decch(1),ch,1);
             
             % Instantiation of target class
             release(lppufb)
@@ -1795,8 +1756,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = CplxOLpPuFbAnalysis1dSystem(...
                 'LpPuFb1d',lppufb,...
-                'NumberOfSymmetricChannels',decch(2),...
-                'NumberOfAntisymmetricChannels',decch(3),...
+                'NumberOfChannels',ch,...
                 'BoundaryOperation','Circular');
             
             % Actual values
@@ -1811,11 +1771,11 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testStepDec1Ch32Ord0Level1PeriodicExtVm1(testCase)
+        function testStepDec1Ch5Ord0Level1PeriodicExtVm1(testCase)
             
             dec = 1;
-            decch = [ dec 3 2 ];
-            nChs = sum(decch(2:3));
+            decch = [ dec 5 ];
+            ch = decch(2);
             ord = 0;
             nLen = 32;
             srcSeq = rand(1,nLen);
@@ -1825,7 +1785,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.colpprfb.*
             lppufb = CplxOLpPrFbFactory.createCplxOvsdLpPuFb1dSystem(...
                 'DecimationFactor',decch(1),...
-                'NumberOfChannels',decch(2:end),...
+                'NumberOfChannels',decch(2),...
                 'PolyPhaseOrder',ord,...
                 'NumberOfVanishingMoments',1);
             angs = get(lppufb,'Angles');
@@ -1836,10 +1796,10 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             release(lppufb);
             set(lppufb,'OutputMode','AnalysisFilterAt');
             nSubCoefs = numel(srcSeq)/(decch(1));
-            coefsExpctd = zeros(1,nChs*nSubCoefs);
+            coefsExpctd = zeros(1,ch*nSubCoefs);
             offset = -dec*ord/2;
             phs = dec-1 ;
-            for iSubband = 1:nChs
+            for iSubband = 1:ch
                 subCoef = downsample(...
                     circshift(...
                     cconv(srcSeq.',...
@@ -1848,7 +1808,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
                 coefsExpctd((iSubband-1)*nSubCoefs+1:iSubband*nSubCoefs) = ...
                     subCoef(:).';
             end
-            scalesExpctd = repmat(length(srcSeq)./decch(1),nChs,1);
+            scalesExpctd = repmat(length(srcSeq)./decch(1),ch,1);
             
             % Instantiation of target class
             release(lppufb)
@@ -1857,8 +1817,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = CplxOLpPuFbAnalysis1dSystem(...
                 'LpPuFb1d',lppufb,...
-                'NumberOfSymmetricChannels',decch(2),...
-                'NumberOfAntisymmetricChannels',decch(3),...
+                'NumberOfChannels',ch,...
                 'BoundaryOperation','Circular');
             
             % Actual values
@@ -1873,11 +1832,11 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testStepDec11Ch32Ord00Level2PeriodicExtVm0(testCase)
+        function testStepDec11Ch5Ord00Level2PeriodicExtVm0(testCase)
             
             dec = 1;
-            decch = [ dec 3 2 ];
-            nChs = sum(decch(2:3));
+            decch = [ dec 5 ];
+            ch = sum(decch(2));
             ord = 0;
             nLen = 32;
             srcSeq = rand(1,nLen);
@@ -1887,7 +1846,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.colpprfb.*
             lppufb = CplxOLpPrFbFactory.createCplxOvsdLpPuFb1dSystem(...
                 'DecimationFactor',decch(1),...
-                'NumberOfChannels', decch(2:end),...
+                'NumberOfChannels', decch(2),...
                 'PolyPhaseOrder',ord,...
                 'NumberOfVanishingMoments',0);
             angs = get(lppufb,'Angles');
@@ -1897,18 +1856,18 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             % Expected values
             release(lppufb)
             set(lppufb,'OutputMode','AnalysisFilterAt');
-            coefsExpctdLv1 = cell(nChs,1);
+            coefsExpctdLv1 = cell(ch,1);
             offset = -dec*ord/2;
             phs = dec-1;
-            for iSubband = 1:nChs
+            for iSubband = 1:ch
                 coefsExpctdLv1{iSubband} = downsample(...
                     circshift(...
                     cconv(srcSeq.',...
                     step(lppufb,[],[],iSubband),...
                     nLen),offset),dec,phs);
             end
-            coefsExpctdLv2 = cell(nChs,1);
-            for iSubband = 1:nChs
+            coefsExpctdLv2 = cell(ch,1);
+            for iSubband = 1:ch
                 coefsExpctdLv2{iSubband} = downsample(...
                     circshift(...
                     cconv(coefsExpctdLv1{1},...
@@ -1939,8 +1898,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = CplxOLpPuFbAnalysis1dSystem(...
                 'LpPuFb1d',lppufb,...
-                'NumberOfSymmetricChannels',decch(2),...
-                'NumberOfAntisymmetricChannels',decch(3),...
+                'NumberOfChannels',ch,...
                 'BoundaryOperation','Circular');
             
             % Actual values
@@ -1956,11 +1914,11 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testStepDec1Ch32Ord0Level2PeriodicExtVm1(testCase)
+        function testStepDec1Ch5Ord0Level2PeriodicExtVm1(testCase)
             
             dec = 1;
-            decch = [ dec 3 2 ];
-            nChs = sum(decch(2:3));
+            decch = [ dec 5 ];
+            ch = decch(2);
             ord = 0;
             nLen = 32;
             
@@ -1971,7 +1929,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.colpprfb.*
             lppufb = CplxOLpPrFbFactory.createCplxOvsdLpPuFb1dSystem(...
                 'DecimationFactor',decch(1),...
-                'NumberOfChannels', decch(2:end),...
+                'NumberOfChannels', decch(2),...
                 'PolyPhaseOrder',ord,...
                 'NumberOfVanishingMoments',1);
             angs = get(lppufb,'Angles');
@@ -1981,18 +1939,18 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             % Expected values
             release(lppufb)
             set(lppufb,'OutputMode','AnalysisFilterAt');
-            coefsExpctdLv1 = cell(nChs,1);
+            coefsExpctdLv1 = cell(ch,1);
             offset = -dec*ord/2;
             phs = dec-1;
-            for iSubband = 1:nChs
+            for iSubband = 1:ch
                 coefsExpctdLv1{iSubband} = downsample(...
                     circshift(...
                     cconv(srcSeq.',...
                     step(lppufb,[],[],iSubband),...
                     nLen),offset),dec,phs);
             end
-            coefsExpctdLv2 = cell(nChs,1);
-            for iSubband = 1:nChs
+            coefsExpctdLv2 = cell(ch,1);
+            for iSubband = 1:ch
                 coefsExpctdLv2{iSubband} = downsample(...
                     circshift(...
                     cconv(coefsExpctdLv1{1},...
@@ -2023,8 +1981,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = CplxOLpPuFbAnalysis1dSystem(...
                 'LpPuFb1d',lppufb,...
-                'NumberOfSymmetricChannels',decch(2),...
-                'NumberOfAntisymmetricChannels',decch(3),...
+                'NumberOfChannels',ch,...
                 'BoundaryOperation','Circular');
             
             % Actual values
@@ -2040,11 +1997,11 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testStepDec2Ch32Ord0Level1(testCase)
+        function testStepDec2Ch5Ord0Level1(testCase)
             
             dec = 2;
-            decch = [ dec 3 2 ];
-            nChs = sum(decch(2:3));
+            decch = [ dec 5 ];
+            ch = decch(2);
             ord = 0;
             nLen = 32;
             srcSeq = rand(1,nLen);
@@ -2054,7 +2011,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.colpprfb.*
             lppufb = CplxOLpPrFbFactory.createCplxOvsdLpPuFb1dSystem(...
                 'DecimationFactor',decch(1),...
-                'NumberOfChannels',decch(2:end),...
+                'NumberOfChannels',decch(2),...
                 'PolyPhaseOrder',ord,...
                 'NumberOfVanishingMoments',0);
             angs = get(lppufb,'Angles');
@@ -2065,10 +2022,10 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             release(lppufb)
             set(lppufb,'OutputMode','AnalysisFilterAt');
             nSubCoefs = numel(srcSeq)/(decch(1));
-            coefsExpctd = zeros(1,nChs*nSubCoefs);
+            coefsExpctd = zeros(1,ch*nSubCoefs);
             offset = -dec*ord/2;
             phs = dec-1;
-            for iSubband = 1:nChs
+            for iSubband = 1:ch
                 subCoef = downsample(...
                     circshift(...
                     cconv(srcSeq.',...
@@ -2077,15 +2034,14 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
                 coefsExpctd((iSubband-1)*nSubCoefs+1:iSubband*nSubCoefs) = ...
                     subCoef(:).';
             end
-            scalesExpctd = repmat(length(srcSeq)./decch(1),nChs,1);
+            scalesExpctd = repmat(length(srcSeq)./decch(1),ch,1);
             
             % Instantiation of target class
             release(lppufb)
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = CplxOLpPuFbAnalysis1dSystem(...
                 'LpPuFb1d',lppufb,...
-                'NumberOfSymmetricChannels',decch(2),...
-                'NumberOfAntisymmetricChannels',decch(3),...
+                'NumberOfChannels',ch,...
                 'BoundaryOperation','Circular');
             
             % Actual values
@@ -2099,11 +2055,11 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testStepDec4Ch98Ord0Level1(testCase)
+        function testStepDec4Ch17Ord0Level1(testCase)
             
             dec = 4;
-            decch = [ dec 9 8 ];
-            nChs = sum(decch(2:3));
+            decch = [ dec 17 ];
+            ch = decch(2);
             ord = 0;
             nLen = 32;
             srcSeq = rand(1,nLen);
@@ -2113,7 +2069,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.colpprfb.*
             lppufb = CplxOLpPrFbFactory.createCplxOvsdLpPuFb1dSystem(...
                 'DecimationFactor',decch(1),...
-                'NumberOfChannels',decch(2:end),...
+                'NumberOfChannels',decch(2),...
                 'PolyPhaseOrder',ord,...
                 'NumberOfVanishingMoments',0);
             angs = get(lppufb,'Angles');
@@ -2124,10 +2080,10 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             release(lppufb)
             set(lppufb,'OutputMode','AnalysisFilterAt');
             nSubCoefs = numel(srcSeq)/(decch(1));
-            coefsExpctd = zeros(1,nChs*nSubCoefs);
+            coefsExpctd = zeros(1,ch*nSubCoefs);
             offset = -dec*ord/2;
             phs = dec-1;
-            for iSubband = 1:nChs
+            for iSubband = 1:ch
                 subCoef = downsample(...
                     circshift(...
                     cconv(srcSeq.',...
@@ -2136,15 +2092,14 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
                 coefsExpctd((iSubband-1)*nSubCoefs+1:iSubband*nSubCoefs) = ...
                     subCoef(:).';
             end
-            scalesExpctd = repmat(length(srcSeq)./decch(1),nChs,1);
+            scalesExpctd = repmat(length(srcSeq)./decch(1),ch,1);
             
             % Instantiation of target class
             release(lppufb)
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = CplxOLpPuFbAnalysis1dSystem(...
                 'LpPuFb1d',lppufb,...
-                'NumberOfSymmetricChannels',decch(2),...
-                'NumberOfAntisymmetricChannels',decch(3),...
+                'NumberOfChannels',ch,...
                 'BoundaryOperation','Circular');
             
             % Actual values
@@ -2158,11 +2113,11 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testStepDec4Ch98Ord2Level1(testCase)
+        function testStepDec4Ch17Ord2Level1(testCase)
             
             dec = 4;
-            decch = [ dec 9 8 ];
-            nChs = sum(decch(2:3));
+            decch = [ dec 17 ];
+            ch = decch(2);
             ord = 2;
             nLen = 32;
             srcSeq = rand(1,nLen);
@@ -2172,7 +2127,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.colpprfb.*
             lppufb = CplxOLpPrFbFactory.createCplxOvsdLpPuFb1dSystem(...
                 'DecimationFactor',decch(1),...
-                'NumberOfChannels',decch(2:end),...
+                'NumberOfChannels',decch(2),...
                 'PolyPhaseOrder',ord,...
                 'NumberOfVanishingMoments',0);
             angs = get(lppufb,'Angles');
@@ -2183,10 +2138,10 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             release(lppufb)
             set(lppufb,'OutputMode','AnalysisFilterAt');
             nSubCoefs = numel(srcSeq)/(decch(1));
-            coefsExpctd = zeros(1,nChs*nSubCoefs);
+            coefsExpctd = zeros(1,ch*nSubCoefs);
             offset = -dec*ord/2;
             phs = dec-1;
-            for iSubband = 1:nChs
+            for iSubband = 1:ch
                 subCoef = downsample(...
                     circshift(...
                     cconv(srcSeq.',...
@@ -2195,15 +2150,14 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
                 coefsExpctd((iSubband-1)*nSubCoefs+1:iSubband*nSubCoefs) = ...
                     subCoef(:).';
             end
-            scalesExpctd = repmat(length(srcSeq)./decch(1),nChs,1);
+            scalesExpctd = repmat(length(srcSeq)./decch(1),ch,1);
             
             % Instantiation of target class
             release(lppufb)
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = CplxOLpPuFbAnalysis1dSystem(...
                 'LpPuFb1d',lppufb,...
-                'NumberOfSymmetricChannels',decch(2),...
-                'NumberOfAntisymmetricChannels',decch(3),...
+                'NumberOfChannels',ch,...
                 'BoundaryOperation','Circular');
             
             % Actual values
@@ -2217,11 +2171,11 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testStepDec2Ch32Ord0Level2PeriodicExt(testCase)
+        function testStepDec2Ch5Ord0Level2PeriodicExt(testCase)
             
             dec = 2;
-            decch = [ dec 3 2];
-            ch = sum(decch(2:3));
+            decch = [ dec 5];
+            ch = decch(2);
             ord = 0;
             nLen = 32;
             srcSeq = rand(1,nLen);
@@ -2283,8 +2237,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = CplxOLpPuFbAnalysis1dSystem(...
                 'LpPuFb1d',lppufb,...
-                'NumberOfSymmetricChannels',decch(2),...
-                'NumberOfAntisymmetricChannels',decch(3),...
+                'NumberOfChannels',ch,...
                 'BoundaryOperation','Circular');
             
             % Actual values
@@ -2300,11 +2253,11 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testStepDec2Ch43Ord0Level1(testCase)
+        function testStepDec2Ch7Ord0Level1(testCase)
             
             dec = 2;
-            decch = [ dec 4 3 ];
-            nChs = sum(decch(2:3));
+            decch = [ dec 7 ];
+            ch = decch(2);
             ord = 0;
             nLen = 32;
             srcSeq = rand(1,nLen);
@@ -2314,7 +2267,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.colpprfb.*
             lppufb = CplxOLpPrFbFactory.createCplxOvsdLpPuFb1dSystem(...
                 'DecimationFactor',decch(1),...
-                'NumberOfChannels',decch(2:end),...
+                'NumberOfChannels',decch(2),...
                 'PolyPhaseOrder',ord,...
                 'NumberOfVanishingMoments',0);
             angs = get(lppufb,'Angles');
@@ -2325,10 +2278,10 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             release(lppufb)
             set(lppufb,'OutputMode','AnalysisFilterAt');
             nSubCoefs = numel(srcSeq)/(decch(1));
-            coefsExpctd = zeros(1,nChs*nSubCoefs);
+            coefsExpctd = zeros(1,ch*nSubCoefs);
             offset = -dec*ord/2;
             phs = dec-1;
-            for iSubband = 1:nChs
+            for iSubband = 1:ch
                 subCoef = downsample(...
                     circshift(...
                     cconv(srcSeq.',...
@@ -2337,15 +2290,14 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
                 coefsExpctd((iSubband-1)*nSubCoefs+1:iSubband*nSubCoefs) = ...
                     subCoef(:).';
             end
-            scalesExpctd = repmat(length(srcSeq)./decch(1),nChs,1);
+            scalesExpctd = repmat(length(srcSeq)./decch(1),ch,1);
             
             % Instantiation of target class
             release(lppufb)
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = CplxOLpPuFbAnalysis1dSystem(...
                 'LpPuFb1d',lppufb,...
-                'NumberOfSymmetricChannels',decch(2),...
-                'NumberOfAntisymmetricChannels',decch(3),...
+                'NumberOfChannels',ch,...
                 'BoundaryOperation','Circular');
             
             % Actual values
@@ -2359,11 +2311,11 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testStepDec2Ch43Ord0Level2PeriodicExt(testCase)
+        function testStepDec2Ch7Ord0Level2PeriodicExt(testCase)
             
             dec = 2;
-            decch = [ dec 4 3 ];
-            ch = sum(decch(2:3));
+            decch = [ dec 7 ];
+            ch = decch(2);
             ord = 0;
             nLen = 32;
             srcSeq = rand(1,nLen);
@@ -2429,8 +2381,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = CplxOLpPuFbAnalysis1dSystem(...
                 'LpPuFb1d',lppufb,...
-                'NumberOfSymmetricChannels',decch(2),...
-                'NumberOfAntisymmetricChannels',decch(3),...
+                'NumberOfChannels',ch,...
                 'BoundaryOperation','Circular');
             
             % Actual values
@@ -2447,11 +2398,11 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testStepDec2Ch54Ord0Level1(testCase)
+        function testStepDec2Ch9Ord0Level1(testCase)
             
             dec = 2;
-            decch = [ dec 5 4 ];
-            nChs= sum(decch(2:3));
+            decch = [ dec 9 ];
+            ch= decch(2);
             ord = 0;
             nLen = 32;
             srcSeq = rand(1,nLen);
@@ -2461,7 +2412,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.colpprfb.*
             lppufb = CplxOLpPrFbFactory.createCplxOvsdLpPuFb1dSystem(...
                 'DecimationFactor',decch(1),...
-                'NumberOfChannels',decch(2:end),...
+                'NumberOfChannels',decch(2),...
                 'PolyPhaseOrder',ord,...
                 'NumberOfVanishingMoments',0);
             angs = get(lppufb,'Angles');
@@ -2472,10 +2423,10 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             release(lppufb)
             set(lppufb,'OutputMode','AnalysisFilterAt');
             nSubCoefs = numel(srcSeq)/(decch(1));
-            coefsExpctd = zeros(1,nChs*nSubCoefs);
+            coefsExpctd = zeros(1,ch*nSubCoefs);
             offset = -dec*ord/2;
             phs = dec-1;
-            for iSubband = 1:nChs
+            for iSubband = 1:ch
                 subCoef = downsample(...
                     circshift(...
                     cconv(srcSeq.',...
@@ -2484,15 +2435,14 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
                 coefsExpctd((iSubband-1)*nSubCoefs+1:iSubband*nSubCoefs) = ...
                     subCoef(:).';
             end
-            scalesExpctd = repmat(length(srcSeq)./decch(1),nChs,1);
+            scalesExpctd = repmat(length(srcSeq)./decch(1),ch,1);
             
             % Instantiation of target class
             release(lppufb)
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = CplxOLpPuFbAnalysis1dSystem(...
                 'LpPuFb1d',lppufb,...
-                'NumberOfSymmetricChannels',decch(2),...
-                'NumberOfAntisymmetricChannels',decch(3),...
+                'NumberOfChannels',ch,...
                 'BoundaryOperation','Circular');
             
             % Actual values
@@ -2505,11 +2455,11 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testStepDec2Ch54Ord0Level2PeriodicExt(testCase)
+        function testStepDec2Ch9Ord0Level2PeriodicExt(testCase)
             
             dec = 2;
-            decch = [ dec 5 4 ];
-            ch = sum(decch(2:3));
+            decch = [ dec 9 ];
+            ch = decch(2);
             ord = 0;
             nLen = 32;
             srcSeq = rand(1,nLen);
@@ -2579,8 +2529,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = CplxOLpPuFbAnalysis1dSystem(...
                 'LpPuFb1d',lppufb,...
-                'NumberOfSymmetricChannels',decch(2),...
-                'NumberOfAntisymmetricChannels',decch(3),...
+                'NumberOfChannels',ch,...
                 'BoundaryOperation','Circular');
             
             % Actual values
@@ -2596,11 +2545,11 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testStepDec1Ch32Ord2Level1(testCase)
+        function testStepDec1Ch5Ord2Level1(testCase)
             
             dec = 1;
-            decch = [ dec 3 2 ];
-            nChs = sum(decch(2:3));
+            decch = [ dec 5 ];
+            ch = decch(2);
             ord = 2;
             nLen = 32;
             srcSeq = rand(1,nLen);
@@ -2610,7 +2559,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.colpprfb.*
             lppufb = CplxOLpPrFbFactory.createCplxOvsdLpPuFb1dSystem(...
                 'DecimationFactor',decch(1),...
-                'NumberOfChannels',decch(2:end),...
+                'NumberOfChannels',decch(2),...
                 'PolyPhaseOrder',ord,...
                 'NumberOfVanishingMoments',0);
             angs = get(lppufb,'Angles');
@@ -2621,10 +2570,10 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             release(lppufb)
             set(lppufb,'OutputMode','AnalysisFilterAt');
             nSubCoefs = numel(srcSeq)/(decch(1));
-            coefsExpctd = zeros(1,nChs*nSubCoefs);
+            coefsExpctd = zeros(1,ch*nSubCoefs);
             offset = -dec*ord/2;
             phs = dec-1;
-            for iSubband = 1:nChs
+            for iSubband = 1:ch
                 subCoef = downsample(...
                     circshift(...
                     cconv(srcSeq.',...
@@ -2633,15 +2582,14 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
                 coefsExpctd((iSubband-1)*nSubCoefs+1:iSubband*nSubCoefs) = ...
                     subCoef(:).';
             end
-            scalesExpctd = repmat(length(srcSeq)./decch(1),nChs,1);
+            scalesExpctd = repmat(length(srcSeq)./decch(1),ch,1);
             
             % Instantiation of target class
             release(lppufb)
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = CplxOLpPuFbAnalysis1dSystem(...
                 'LpPuFb1d',lppufb,...
-                'NumberOfSymmetricChannels',decch(2),...
-                'NumberOfAntisymmetricChannels',decch(3),...
+                'NumberOfChannels',ch,...
                 'BoundaryOperation','Circular');
             
             % Actual values
@@ -2655,11 +2603,11 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testStepDec1Ch32Ord2Level2PeriodicExt(testCase)
+        function testStepDec1Ch5Ord2Level2PeriodicExt(testCase)
             
             dec = 1;
-            decch = [ dec 3 2 ];
-            ch = sum(decch(2:3));
+            decch = [ dec 5 ];
+            ch = decch(2);
             ord = 2;
             nLen = 32;
             srcSeq = rand(1,nLen);
@@ -2721,8 +2669,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = CplxOLpPuFbAnalysis1dSystem(...
                 'LpPuFb1d',lppufb,...
-                'NumberOfSymmetricChannels',decch(2),...
-                'NumberOfAntisymmetricChannels',decch(3),...
+                'NumberOfChannels',ch,...
                 'BoundaryOperation','Circular');
             
             % Actual values
@@ -2739,11 +2686,11 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testStepDec2Ch32Ord2Level1(testCase)
+        function testStepDec2Ch5Ord2Level1(testCase)
             
             dec = 2;
-            decch = [ dec 3 2 ];
-            nChs = sum(decch(2:3));
+            decch = [ dec 5 ];
+            ch = decch(2);
             ord = 2;
             nLen = 32;
             srcSeq = rand(1,nLen);
@@ -2753,7 +2700,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.colpprfb.*
             lppufb = CplxOLpPrFbFactory.createCplxOvsdLpPuFb1dSystem(...
                 'DecimationFactor',decch(1),...
-                'NumberOfChannels',decch(2:end),...
+                'NumberOfChannels',decch(2),...
                 'PolyPhaseOrder',ord,...
                 'NumberOfVanishingMoments',0);
             angs = get(lppufb,'Angles');
@@ -2764,10 +2711,10 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             release(lppufb)
             set(lppufb,'OutputMode','AnalysisFilterAt');
             nSubCoefs = numel(srcSeq)/(decch(1));
-            coefsExpctd = zeros(1,nChs*nSubCoefs);
+            coefsExpctd = zeros(1,ch*nSubCoefs);
             offset = -dec*ord/2;
             phs = dec-1;
-            for iSubband = 1:nChs
+            for iSubband = 1:ch
                 subCoef = downsample(...
                     circshift(...
                     cconv(srcSeq.',...
@@ -2776,15 +2723,14 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
                 coefsExpctd((iSubband-1)*nSubCoefs+1:iSubband*nSubCoefs) = ...
                     subCoef(:).';
             end
-            scalesExpctd = repmat(length(srcSeq)./decch(1),nChs,1);
+            scalesExpctd = repmat(length(srcSeq)./decch(1),ch,1);
             
             % Instantiation of target class
             release(lppufb)
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = CplxOLpPuFbAnalysis1dSystem(...
                 'LpPuFb1d',lppufb,...
-                'NumberOfSymmetricChannels',decch(2),...
-                'NumberOfAntisymmetricChannels',decch(3),...
+                'NumberOfChannels',ch,...
                 'BoundaryOperation','Circular');
             
             % Actual values
@@ -2798,11 +2744,11 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testStepDec2Ch32Ord2Level2eriodicExt(testCase)
+        function testStepDec2Ch5Ord2Level2eriodicExt(testCase)
             
             dec = 2;
-            decch = [ dec 3 2 ];
-            ch = sum(decch(2:3));
+            decch = [ dec 5 ];
+            ch = decch(2);
             ord = 2;
             nLen = 32;
             srcSeq = rand(1,nLen);
@@ -2864,8 +2810,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = CplxOLpPuFbAnalysis1dSystem(...
                 'LpPuFb1d',lppufb,...
-                'NumberOfSymmetricChannels',decch(2),...
-                'NumberOfAntisymmetricChannels',decch(3),...
+                'NumberOfChannels',ch,...
                 'BoundaryOperation','Circular');
             
             % Actual values
@@ -2881,11 +2826,11 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testStepDec2Ch43Ord2Level1(testCase)
+        function testStepDec2Ch7Ord2Level1(testCase)
             
             dec = 2;
-            decch = [ dec 4 3 ];
-            nChs = sum(decch(2:3));
+            decch = [ dec 7 ];
+            ch = decch(2);
             ord = 2;
             nLen = 32;
             srcSeq = rand(1,nLen);
@@ -2895,7 +2840,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.colpprfb.*
             lppufb = CplxOLpPrFbFactory.createCplxOvsdLpPuFb1dSystem(...
                 'DecimationFactor',decch(1),...
-                'NumberOfChannels',decch(2:end),...
+                'NumberOfChannels',decch(2),...
                 'PolyPhaseOrder',ord,...
                 'NumberOfVanishingMoments',0);
             angs = get(lppufb,'Angles');
@@ -2906,10 +2851,10 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             release(lppufb)
             set(lppufb,'OutputMode','AnalysisFilterAt');
             nSubCoefs = numel(srcSeq)/(decch(1));
-            coefsExpctd = zeros(1,nChs*nSubCoefs);
+            coefsExpctd = zeros(1,ch*nSubCoefs);
             offset = -dec*ord/2;
             phs = dec-1;
-            for iSubband = 1:nChs
+            for iSubband = 1:ch
                 subCoef = downsample(...
                     circshift(...
                     cconv(srcSeq.',...
@@ -2918,15 +2863,14 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
                 coefsExpctd((iSubband-1)*nSubCoefs+1:iSubband*nSubCoefs) = ...
                     subCoef(:).';
             end
-            scalesExpctd = repmat(length(srcSeq)./decch(1),nChs,1);
+            scalesExpctd = repmat(length(srcSeq)./decch(1),ch,1);
             
             % Instantiation of target class
             release(lppufb)
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = CplxOLpPuFbAnalysis1dSystem(...
                 'LpPuFb1d',lppufb,...
-                'NumberOfSymmetricChannels',decch(2),...
-                'NumberOfAntisymmetricChannels',decch(3),...
+                'NumberOfChannels',ch,...
                 'BoundaryOperation','Circular');
             
             % Actual values
@@ -2940,11 +2884,11 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testStepDec2Ch43Ord2Level2PeriodicExt(testCase)
+        function testStepDec2Ch7Ord2Level2PeriodicExt(testCase)
             
             dec = 2;
-            decch = [ dec 4 3 ];
-            ch = sum(decch(2:3));
+            decch = [ dec 7 ];
+            ch = decch(2);
             ord = 2;
             nLen = 32;
             srcSeq = rand(1,nLen);
@@ -3010,8 +2954,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = CplxOLpPuFbAnalysis1dSystem(...
                 'LpPuFb1d',lppufb,...
-                'NumberOfSymmetricChannels',decch(2),...
-                'NumberOfAntisymmetricChannels',decch(3),...
+                'NumberOfChannels',ch,...
                 'BoundaryOperation','Circular');
             
             % Actual values
@@ -3027,11 +2970,11 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testStepDec2Ch54Ord2Level1(testCase)
+        function testStepDec2Ch9Ord2Level1(testCase)
             
             dec = 2;
-            decch = [ dec 5 4 ];
-            nChs = sum(decch(2:3));
+            decch = [ dec 9 ];
+            ch = decch(2);
             ord = 2;
             nLen = 32;
             srcSeq = rand(1,nLen);
@@ -3041,7 +2984,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.colpprfb.*
             lppufb = CplxOLpPrFbFactory.createCplxOvsdLpPuFb1dSystem(...
                 'DecimationFactor',decch(1),...
-                'NumberOfChannels', decch(2:end),...
+                'NumberOfChannels', decch(2),...
                 'PolyPhaseOrder',ord,...
                 'NumberOfVanishingMoments',0);
             angs = get(lppufb,'Angles');
@@ -3052,10 +2995,10 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             release(lppufb)
             set(lppufb,'OutputMode','AnalysisFilterAt');
             nSubCoefs = numel(srcSeq)/(decch(1));
-            coefsExpctd = zeros(1,nChs*nSubCoefs);
+            coefsExpctd = zeros(1,ch*nSubCoefs);
             offset = -dec*ord/2;
             phs = dec-1;
-            for iSubband = 1:nChs
+            for iSubband = 1:ch
                 subCoef = downsample(...
                     circshift(...
                     cconv(srcSeq.',...
@@ -3064,15 +3007,14 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
                 coefsExpctd((iSubband-1)*nSubCoefs+1:iSubband*nSubCoefs) = ...
                     subCoef(:).';
             end
-            scalesExpctd = repmat(length(srcSeq)./decch(1),nChs,1);
+            scalesExpctd = repmat(length(srcSeq)./decch(1),ch,1);
             
             % Instantiation of target class
             release(lppufb)
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = CplxOLpPuFbAnalysis1dSystem(...
                 'LpPuFb1d',lppufb,...
-                'NumberOfSymmetricChannels',decch(2),...
-                'NumberOfAntisymmetricChannels',decch(3),...
+                'NumberOfChannels',ch,...
                 'BoundaryOperation','Circular');
             
             % Actual values
@@ -3087,12 +3029,10 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testSteppDec2Ch54Ord2Level2PeriodicExt(testCase)
+        function testSteppDec2Ch9Ord2Level2PeriodicExt(testCase)
             
             dec = 2;
-            nChs = [ 5 4 ];
-            decch = [ dec nChs ];
-            ch = sum(nChs);
+            ch = 9;
             ord = 2;
             nLen = 32;
             srcSeq = rand(1,nLen);
@@ -3162,8 +3102,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = CplxOLpPuFbAnalysis1dSystem(...
                 'LpPuFb1d',lppufb,...
-                'NumberOfSymmetricChannels',decch(2),...
-                'NumberOfAntisymmetricChannels',decch(3),...
+                'NumberOfChannels',ch,...
                 'BoundaryOperation','Circular');
             
             % Actual values
@@ -3179,12 +3118,10 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         end
         
         % Level 3, dec 1 ch 54 order 8
-        function testStepDec1Ch54Ord8Level3PeriodicExt(testCase)
+        function testStepDec1Ch9Ord8Level3PeriodicExt(testCase)
             
             dec = 1;
-            nChs = [ 5 4 ];
-            decch = [ dec nChs ];
-            ch = sum(nChs);
+            ch = 9;
             ord = 8;
             nLen = 64;
             srcSeq = rand(1,nLen);
@@ -3270,8 +3207,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = CplxOLpPuFbAnalysis1dSystem(...
                 'LpPuFb1d',lppufb,...
-                'NumberOfSymmetricChannels',decch(2),...
-                'NumberOfAntisymmetricChannels',decch(3),...
+                'NumberOfChannels',ch,...
                 'BoundaryOperation','Circular');
             
             % Actual values
@@ -3287,12 +3223,10 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         end
         
         % Level 3, dec 2 ch 54 order 4
-        function testStepDec2Ch54Ord4Level3PeriodicExt(testCase)
+        function testStepDec2Ch9Ord4Level3PeriodicExt(testCase)
             
             dec = 2;
-            nChs = [ 5 4 ];
-            decch = [ dec nChs ];
-            ch = sum(nChs);
+            ch = 9;
             ord = 4;
             nLen = 64;
             srcSeq = rand(1,nLen);
@@ -3378,8 +3312,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = CplxOLpPuFbAnalysis1dSystem(...
                 'LpPuFb1d',lppufb,...
-                'NumberOfSymmetricChannels',decch(2),...
-                'NumberOfAntisymmetricChannels',decch(3),...
+                'NumberOfChannels',ch,...
                 'BoundaryOperation','Circular');
             
             % Actual values
@@ -3395,11 +3328,10 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testStepDec2Ch32Ord2Level1PeriodicExt(testCase)
+        function testStepDec2Ch5Ord2Level1PeriodicExt(testCase)
             
             dec = 2;
-            ch = [3 2];
-            nChs = sum(ch);
+            ch = 5;
             ord = 2;
             nLen = 32;
             srcSeq = rand(1,nLen);
@@ -3420,10 +3352,10 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             release(lppufb)
             set(lppufb,'OutputMode','AnalysisFilterAt');
             nSubCoefs = numel(srcSeq)/(dec);
-            coefsExpctd = zeros(1,nChs*nSubCoefs);
+            coefsExpctd = zeros(1,ch*nSubCoefs);
             offset = -dec*ord/2;
             phs = dec-1;
-            for iSubband = 1:nChs
+            for iSubband = 1:ch
                 subCoef = downsample(...
                     circshift(...
                     cconv(srcSeq.',...
@@ -3432,15 +3364,14 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
                 coefsExpctd((iSubband-1)*nSubCoefs+1:iSubband*nSubCoefs) = ...
                     subCoef(:).';
             end
-            scalesExpctd = repmat(length(srcSeq)./dec,nChs,1);
+            scalesExpctd = repmat(length(srcSeq)./dec,ch,1);
             
             % Instantiation of target class
             release(lppufb)
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = CplxOLpPuFbAnalysis1dSystem(...
                 'LpPuFb1d',lppufb,...
-                'NumberOfSymmetricChannels',ch(1),...
-                'NumberOfAntisymmetricChannels',ch(2),...
+                'NumberOfChannels',ch,...
                 'BoundaryOperation','Circular');
             
             % Actual values
@@ -3454,10 +3385,10 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testStepDec2Ch32Ord2Lev2PeriodicExt(testCase)
+        function testStepDec2Ch5Ord2Lev2PeriodicExt(testCase)
             
-            decch = [2 3 2];
-            nChs = sum(decch(2:3));
+            decch = [ 2 5 ];
+            ch = decch(2);
             ord = 2;
             nLen = 32;
             srcSeq = rand(1,nLen);
@@ -3467,7 +3398,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.colpprfb.*
             lppufb = CplxOLpPrFbFactory.createCplxOvsdLpPuFb1dSystem(...
                 'DecimationFactor',decch(1),...
-                'NumberOfChannels',decch(2:end),...
+                'NumberOfChannels',decch(2),...
                 'PolyPhaseOrder',ord,...
                 'NumberOfVanishingMoments',0);
             angs = get(lppufb,'Angles');
@@ -3477,18 +3408,18 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             % Expected values
             release(lppufb)
             set(lppufb,'OutputMode','AnalysisFilterAt');
-            coefsExpctdLv1 = cell(nChs,1);
+            coefsExpctdLv1 = cell(ch,1);
             offset = -decch(1)*ord/2;
             phs = decch(1)-1;
-            for iSubband = 1:nChs
+            for iSubband = 1:ch
                 coefsExpctdLv1{iSubband} = downsample(...
                     circshift(...
                     cconv(srcSeq.',...
                     step(lppufb,[],[],iSubband),...
                     nLen),offset),decch(1),phs);
             end
-            coefsExpctdLv2 = cell(nChs,1);
-            for iSubband = 1:nChs
+            coefsExpctdLv2 = cell(ch,1);
+            for iSubband = 1:ch
                 coefsExpctdLv2{iSubband} = downsample(...
                     circshift(...
                     cconv(coefsExpctdLv1{1},...
@@ -3519,8 +3450,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = CplxOLpPuFbAnalysis1dSystem(...
                 'LpPuFb1d',lppufb,...
-                'NumberOfSymmetricChannels',decch(2),...
-                'NumberOfAntisymmetricChannels',decch(3),...
+                'NumberOfChannels',ch,...
                 'BoundaryOperation','Circular');
             
             % Actual values
@@ -3538,7 +3468,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         %         function testStepDec2Ch42Ord2Level1PeriodicExt(testCase)
         %
         %             decch = [2 4 2];
-        %             nChs = sum(decch(2:3));
+        %             ch = decch(2);
         %             ord = 2;
         %             nLen = 32;
         %             srcSeq = rand(1,nLen);
@@ -3548,7 +3478,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         %             import saivdr.dictionary.colpprfb.*
         %             lppufb = CplxOLpPrFbFactory.createCplxOvsdLpPuFb1dSystem(...
         %                 'DecimationFactor',decch(1),...
-        %                 'NumberOfChannels',decch(2:end),...
+        %                 'NumberOfChannels',decch(2),...
         %                 'PolyPhaseOrder',ord,...
         %                 'NumberOfVanishingMoments',0);
         %             angs = get(lppufb,'Angles');
@@ -3559,10 +3489,10 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         %             release(lppufb)
         %             set(lppufb,'OutputMode','AnalysisFilterAt');
         %             nSubCoefs = numel(srcSeq)/(decch(1));
-        %             coefsExpctd = zeros(1,nChs*nSubCoefs);
+        %             coefsExpctd = zeros(1,ch*nSubCoefs);
         %             offset = -decch(1)*ord/2;
         %             phs = decch(1)-1;
-        %             for iSubband = 1:nChs
+        %             for iSubband = 1:ch
         %                 subCoef = downsample(...
         %                     circshift(...
         %                     cconv(srcSeq.',...
@@ -3571,14 +3501,14 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         %                 coefsExpctd((iSubband-1)*nSubCoefs+1:iSubband*nSubCoefs) = ...
         %                     subCoef(:).';
         %             end
-        %             scalesExpctd = repmat(length(srcSeq)./decch(1),nChs,1);
+        %             scalesExpctd = repmat(length(srcSeq)./decch(1),ch,1);
         %
         %             % Instantiation of target class
         %             release(lppufb)
         %             set(lppufb,'OutputMode','ParameterMatrixSet');
         %             testCase.analyzer = CplxOLpPuFbAnalysis1dSystem(...
         %                 'LpPuFb1d',lppufb,...
-        %                 'NumberOfSymmetricChannels',decch(2),...
+        %                 'NumberOfChannels',decch(2),...
         %                 'NumberOfAntisymmetricChannels',decch(3),...
         %                 'BoundaryOperation','Circular');
         %
@@ -3596,7 +3526,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         %         function testStepDec2Ch42Ord2Level2PeriodicExt(testCase)
         %
         %             decch = [2 4 2];
-        %             nChs = sum(decch(2:3));
+        %             ch = decch(2);
         %             ord = 2;
         %             nLen = 32;
         %             srcSeq = rand(1,nLen);
@@ -3606,7 +3536,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         %             import saivdr.dictionary.colpprfb.*
         %             lppufb = CplxOLpPrFbFactory.createCplxOvsdLpPuFb1dSystem(...
         %                 'DecimationFactor',decch(1),...
-        %                 'NumberOfChannels',decch(2:end),...
+        %                 'NumberOfChannels',decch(2),...
         %                 'PolyPhaseOrder',ord,...
         %                 'NumberOfVanishingMoments',0);
         %             angs = get(lppufb,'Angles');
@@ -3616,18 +3546,18 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         %             % Expected values
         %             release(lppufb)
         %             set(lppufb,'OutputMode','AnalysisFilterAt');
-        %             coefsExpctdLv1 = cell(nChs,1);
+        %             coefsExpctdLv1 = cell(ch,1);
         %             offset = -decch(1)*ord/2;
         %             phs = decch(1)-1;
-        %             for iSubband = 1:nChs
+        %             for iSubband = 1:ch
         %                 coefsExpctdLv1{iSubband} = downsample(...
         %                     circshift(...
         %                     cconv(srcSeq.',...
         %                     step(lppufb,[],[],iSubband),...
         %                     nLen),offset),decch(1),phs);
         %             end
-        %             coefsExpctdLv2 = cell(nChs,1);
-        %             for iSubband = 1:nChs
+        %             coefsExpctdLv2 = cell(ch,1);
+        %             for iSubband = 1:ch
         %                 coefsExpctdLv2{iSubband} = downsample(...
         %                     circshift(...
         %                     cconv(coefsExpctdLv1{1},...
@@ -3660,7 +3590,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         %             set(lppufb,'OutputMode','ParameterMatrixSet');
         %             testCase.analyzer = CplxOLpPuFbAnalysis1dSystem(...
         %                 'LpPuFb1d',lppufb,...
-        %                 'NumberOfSymmetricChannels',decch(2),...
+        %                 'NumberOfChannels',decch(2),...
         %                 'NumberOfAntisymmetricChannels',decch(3),...
         %                 'BoundaryOperation','Circular');
         %
@@ -3725,10 +3655,9 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         
         % Test
         function testIsCloneFalseTypeII(testCase)
-            
+            %TODO:
             dec = 2;
-            %ch =  [ 6 2 ];
-            ch = [4 4];
+            ch = 8;
             ord = 4;
             nLen = 64;
             nLevels = 1;
@@ -3826,9 +3755,9 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         %         function testStepDec1Ch45Ord8Level3PeriodicExt(testCase)
         %
         %             dec = 1;
-        %             nChs = [ 4 5 ];
-        %             decch = [ dec nChs ];
-        %             ch = sum(nChs);
+        %             ch = [ 4 5 ];
+        %             decch = [ dec ch ];
+        %             ch = sum(ch);
         %             ord = 8;
         %             nLen = 64;
         %             srcSeq = rand(1,nLen);
@@ -3914,7 +3843,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         %             set(lppufb,'OutputMode','ParameterMatrixSet');
         %             testCase.analyzer = CplxOLpPuFbAnalysis1dSystem(...
         %                 'LpPuFb1d',lppufb,...
-        %                 'NumberOfSymmetricChannels',decch(2),...
+        %                 'NumberOfChannels',decch(2),...
         %                 'NumberOfAntisymmetricChannels',decch(3),...
         %                 'BoundaryOperation','Circular');
         %
@@ -3933,9 +3862,9 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         %         function testStepDec2Ch45Ord4Level3PeriodicExt(testCase)
         %
         %             dec = 2;
-        %             nChs = [ 4 5 ];
-        %             decch = [ dec nChs ];
-        %             ch = sum(nChs);
+        %             ch = [ 4 5 ];
+        %             decch = [ dec ch ];
+        %             ch = sum(ch);
         %             ord = 4;
         %             nLen = 64;
         %             srcSeq = rand(1,nLen);
@@ -4021,7 +3950,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         %             set(lppufb,'OutputMode','ParameterMatrixSet');
         %             testCase.analyzer = CplxOLpPuFbAnalysis1dSystem(...
         %                 'LpPuFb1d',lppufb,...
-        %                 'NumberOfSymmetricChannels',decch(2),...
+        %                 'NumberOfChannels',decch(2),...
         %                 'NumberOfAntisymmetricChannels',decch(3),...
         %                 'BoundaryOperation','Circular');
         %
@@ -4041,7 +3970,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         %         function testStepDec2Ch23Ord2Level1PeriodicExt(testCase)
         %
         %             decch = [2 2 3];
-        %             nChs = sum(decch(2:3));
+        %             ch = decch(2);
         %             ord = 2;
         %             nLen = 32;
         %             srcSeq = rand(1,nLen);
@@ -4051,7 +3980,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         %             import saivdr.dictionary.colpprfb.*
         %             lppufb = CplxOLpPrFbFactory.createCplxOvsdLpPuFb1dSystem(...
         %                 'DecimationFactor',decch(1),...
-        %                 'NumberOfChannels',decch(2:end),...
+        %                 'NumberOfChannels',decch(2),...
         %                 'PolyPhaseOrder',ord,...
         %                 'NumberOfVanishingMoments',0);
         %             angs = get(lppufb,'Angles');
@@ -4062,10 +3991,10 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         %             release(lppufb)
         %             set(lppufb,'OutputMode','AnalysisFilterAt');
         %             nSubCoefs = numel(srcSeq)/(decch(1));
-        %             coefsExpctd = zeros(1,nChs*nSubCoefs);
+        %             coefsExpctd = zeros(1,ch*nSubCoefs);
         %             offset = -decch(1)*ord/2;
         %             phs = decch(1)-1;
-        %             for iSubband = 1:nChs
+        %             for iSubband = 1:ch
         %                 subCoef = downsample(...
         %                     circshift(...
         %                     cconv(srcSeq.',...
@@ -4074,14 +4003,14 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         %                 coefsExpctd((iSubband-1)*nSubCoefs+1:iSubband*nSubCoefs) = ...
         %                     subCoef(:).';
         %             end
-        %             scalesExpctd = repmat(length(srcSeq)./decch(1),nChs,1);
+        %             scalesExpctd = repmat(length(srcSeq)./decch(1),ch,1);
         %
         %             % Instantiation of target class
         %             release(lppufb)
         %             set(lppufb,'OutputMode','ParameterMatrixSet');
         %             testCase.analyzer = CplxOLpPuFbAnalysis1dSystem(...
         %                 'LpPuFb1d',lppufb,...
-        %                 'NumberOfSymmetricChannels',decch(2),...
+        %                 'NumberOfChannels',decch(2),...
         %                 'NumberOfAntisymmetricChannels',decch(3),...
         %                 'BoundaryOperation','Circular');
         %
@@ -4100,7 +4029,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         %         function testStepDec2Ch23Ord2Level2PeriodicExt(testCase)
         %
         %             decch = [2 2 3];
-        %             nChs = sum(decch(2:3));
+        %             ch = decch(2);
         %             ord = 2;
         %             nLen = 32;
         %             srcSeq = rand(1,nLen);
@@ -4110,7 +4039,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         %             import saivdr.dictionary.colpprfb.*
         %             lppufb = CplxOLpPrFbFactory.createCplxOvsdLpPuFb1dSystem(...
         %                 'DecimationFactor',decch(1),...
-        %                 'NumberOfChannels',decch(2:end),...
+        %                 'NumberOfChannels',decch(2),...
         %                 'PolyPhaseOrder',ord,...
         %                 'NumberOfVanishingMoments',0);
         %             angs = get(lppufb,'Angles');
@@ -4120,18 +4049,18 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         %             % Expected values
         %             release(lppufb)
         %             set(lppufb,'OutputMode','AnalysisFilterAt');
-        %             coefsExpctdLv1 = cell(nChs,1);
+        %             coefsExpctdLv1 = cell(ch,1);
         %             offset = -decch(1)*ord/2;
         %             phs = decch(1)-1;
-        %             for iSubband = 1:nChs
+        %             for iSubband = 1:ch
         %                 coefsExpctdLv1{iSubband} = downsample(...
         %                     circshift(...
         %                     cconv(srcSeq.',...
         %                     step(lppufb,[],[],iSubband),...
         %                     nLen),offset),decch(1),phs);
         %             end
-        %             coefsExpctdLv2 = cell(nChs,1);
-        %             for iSubband = 1:nChs
+        %             coefsExpctdLv2 = cell(ch,1);
+        %             for iSubband = 1:ch
         %                 coefsExpctdLv2{iSubband} = downsample(...
         %                     circshift(...
         %                     cconv(coefsExpctdLv1{1},...
@@ -4162,7 +4091,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         %             set(lppufb,'OutputMode','ParameterMatrixSet');
         %             testCase.analyzer = CplxOLpPuFbAnalysis1dSystem(...
         %                 'LpPuFb1d',lppufb,...
-        %                 'NumberOfSymmetricChannels',decch(2),...
+        %                 'NumberOfChannels',decch(2),...
         %                 'NumberOfAntisymmetricChannels',decch(3),...
         %                 'BoundaryOperation','Circular');
         %
@@ -4181,7 +4110,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         %         function testStepDec2Ch24Ord2Level1PeriodicExt(testCase)
         %
         %             decch = [2 2 4];
-        %             nChs = sum(decch(2:3));
+        %             ch = decch(2);
         %             ord = 2;
         %             nLen = 32;
         %             srcSeq = rand(1,nLen);
@@ -4191,7 +4120,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         %             import saivdr.dictionary.colpprfb.*
         %             lppufb = CplxOLpPrFbFactory.createCplxOvsdLpPuFb1dSystem(...
         %                 'DecimationFactor',decch(1),...
-        %                 'NumberOfChannels',decch(2:end),...
+        %                 'NumberOfChannels',decch(2),...
         %                 'PolyPhaseOrder',ord,...
         %                 'NumberOfVanishingMoments',0);
         %             angs = get(lppufb,'Angles');
@@ -4202,10 +4131,10 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         %             release(lppufb)
         %             set(lppufb,'OutputMode','AnalysisFilterAt');
         %             nSubCoefs = numel(srcSeq)/(decch(1));
-        %             coefsExpctd = zeros(1,nChs*nSubCoefs);
+        %             coefsExpctd = zeros(1,ch*nSubCoefs);
         %             offset = -decch(1)*ord/2;
         %             phs = decch(1)-1;
-        %             for iSubband = 1:nChs
+        %             for iSubband = 1:ch
         %                 subCoef = downsample(...
         %                     circshift(...
         %                     cconv(srcSeq.',...
@@ -4214,14 +4143,14 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         %                 coefsExpctd((iSubband-1)*nSubCoefs+1:iSubband*nSubCoefs) = ...
         %                     subCoef(:).';
         %             end
-        %             scalesExpctd = repmat(length(srcSeq)./decch(1),nChs,1);
+        %             scalesExpctd = repmat(length(srcSeq)./decch(1),ch,1);
         %
         %             % Instantiation of target class
         %             release(lppufb)
         %             set(lppufb,'OutputMode','ParameterMatrixSet');
         %             testCase.analyzer = CplxOLpPuFbAnalysis1dSystem(...
         %                 'LpPuFb1d',lppufb,...
-        %                 'NumberOfSymmetricChannels',decch(2),...
+        %                 'NumberOfChannels',decch(2),...
         %                 'NumberOfAntisymmetricChannels',decch(3),...
         %                 'BoundaryOperation','Circular');
         %
@@ -4239,7 +4168,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         %         function testStepDec2Ch24Ord2Level2PeriodicExt(testCase)
         %
         %             decch = [2 2 4];
-        %             nChs = sum(decch(2:3));
+        %             ch = decch(2);
         %             ord = 2;
         %             nLen = 32;
         %             srcSeq = rand(1,nLen);
@@ -4249,7 +4178,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         %             import saivdr.dictionary.colpprfb.*
         %             lppufb = CplxOLpPrFbFactory.createCplxOvsdLpPuFb1dSystem(...
         %                 'DecimationFactor',decch(1),...
-        %                 'NumberOfChannels',decch(2:end),...
+        %                 'NumberOfChannels',decch(2),...
         %                 'PolyPhaseOrder',ord,...
         %                 'NumberOfVanishingMoments',0);
         %             angs = get(lppufb,'Angles');
@@ -4259,18 +4188,18 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         %             % Expected values
         %             release(lppufb)
         %             set(lppufb,'OutputMode','AnalysisFilterAt');
-        %             coefsExpctdLv1 = cell(nChs,1);
+        %             coefsExpctdLv1 = cell(ch,1);
         %             offset = -decch(1)*ord/2;
         %             phs = decch(1)-1;
-        %             for iSubband = 1:nChs
+        %             for iSubband = 1:ch
         %                 coefsExpctdLv1{iSubband} = downsample(...
         %                     circshift(...
         %                     cconv(srcSeq.',...
         %                     step(lppufb,[],[],iSubband),...
         %                     nLen),offset),decch(1),phs);
         %             end
-        %             coefsExpctdLv2 = cell(nChs,1);
-        %             for iSubband = 1:nChs
+        %             coefsExpctdLv2 = cell(ch,1);
+        %             for iSubband = 1:ch
         %                 coefsExpctdLv2{iSubband} = downsample(...
         %                     circshift(...
         %                     cconv(coefsExpctdLv1{1},...
@@ -4303,7 +4232,7 @@ classdef CplxOLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
         %             set(lppufb,'OutputMode','ParameterMatrixSet');
         %             testCase.analyzer = CplxOLpPuFbAnalysis1dSystem(...
         %                 'LpPuFb1d',lppufb,...
-        %                 'NumberOfSymmetricChannels',decch(2),...
+        %                 'NumberOfChannels',decch(2),...
         %                 'NumberOfAntisymmetricChannels',decch(3),...
         %                 'BoundaryOperation','Circular');
         %

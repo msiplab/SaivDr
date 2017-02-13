@@ -115,7 +115,7 @@ classdef CplxOLpPrFbAtomConcatenator1d < ...
         end
        
         function arrayCoefs = atomCncTypeI_(obj,arrayCoefs,paramMtx1,paramMtx2,paramMtx3,paramMtx4,paramMtx5,paramMtx6,isPeriodicExt)
-            hLen = obj.NumberOfAntisymmetricChannels;
+            hLen = obj.NumberOfHalfChannels;
             
             import saivdr.dictionary.cnsoltx.mexsrcs.AbstCplxBuildingBlock
             
@@ -157,7 +157,7 @@ classdef CplxOLpPrFbAtomConcatenator1d < ...
         end
         
         function arrayCoefs = atomCncTypeII_(obj,arrayCoefs,paramMtx1,paramMtx2,paramMtx3,paramMtx4,paramMtx5,paramMtx6,isPeriodicExt)
-            hLen = obj.NumberOfAntisymmetricChannels;
+            hLen = obj.NumberOfHalfChannels;
             import saivdr.dictionary.cnsoltx.mexsrcs.AbstCplxBuildingBlock
             
             % Phase 1
@@ -198,39 +198,20 @@ classdef CplxOLpPrFbAtomConcatenator1d < ...
         end      
         
         function arrayCoefs = leftShiftLowerCoefs_(obj,arrayCoefs)
-            hLenMn = min([ obj.NumberOfSymmetricChannels
-                obj.NumberOfAntisymmetricChannels]);
+            hLen = obj.NumberOfHalfChannels;
             %
-            lowerCoefsPre = arrayCoefs(hLenMn+1:end,1);
-            arrayCoefs(hLenMn+1:end,1:end-1) = arrayCoefs(hLenMn+1:end,2:end);
-            arrayCoefs(hLenMn+1:end,end) = lowerCoefsPre;            
+            lowerCoefsPre = arrayCoefs(hLen+1:end,1);
+            arrayCoefs(hLen+1:end,1:end-1) = arrayCoefs(hLen+1:end,2:end);
+            arrayCoefs(hLen+1:end,end) = lowerCoefsPre;            
         end
         
         function arrayCoefs = rightShiftUpperCoefs_(obj,arrayCoefs)
-            hLenMn = min([ obj.NumberOfSymmetricChannels
-                obj.NumberOfAntisymmetricChannels]);
+            hLen = obj.NumberOfHalfChannels;
             %
-            upperCoefsPost = arrayCoefs(1:hLenMn,end);
-            arrayCoefs(1:hLenMn,2:end) = arrayCoefs(1:hLenMn,1:end-1);
-            arrayCoefs(1:hLenMn,1) = upperCoefsPost;
+            upperCoefsPost = arrayCoefs(1:hLen,end);
+            arrayCoefs(1:hLen,2:end) = arrayCoefs(1:hLen,1:end-1);
+            arrayCoefs(1:hLen,1) = upperCoefsPost;
         end
-        
-%         function hB = butterflyMtx_(obj, angles)%TODO: “¯ˆê‚ÌŠÖ”‚ªAbstBuildingBlock.m‚ÅŽÀ‘•‚³‚ê‚Ä‚¢‚é‚Ì‚Åˆê‰ÓŠ‚É‚Ü‚Æ‚ß‚éD
-%             hchs = obj.NumberOfAntisymmetricChannels;
-%             
-%             hC = complex(eye(hchs));
-%             hS = complex(eye(hchs));
-%             for p = 1:floor(hchs/2)
-%                 tp = angles(p)/2;
-%                 
-%                 hC(2*p-1:2*p, 2*p-1:2*p) = [ -1i*cos(tp), -1i*sin(tp);
-%                     cos(tp) , -sin(tp)]; %c^
-%                 hS(2*p-1:2*p, 2*p-1:2*p) = [ -1i*sin(tp), -1i*cos(tp);
-%                     sin(tp) , -cos(tp)]; %s^
-%             end
-%             
-%             hB = [hC, conj(hC); 1i*hS, -1i*conj(hS)]/sqrt(2);
-%         end
     end
     
 end

@@ -21,8 +21,7 @@ function coefs = fcn_CplxOLpPrFbAtomExtender1d( coefs, scale, pmcoefs, ...
 persistent h;
 if isempty(h)
     h = saivdr.dictionary.colpprfb.CplxOLpPrFbAtomExtender1d(...
-        'NumberOfSymmetricChannels',nch(1),...
-        'NumberOfAntisymmetricChannels',nch(2));
+        'NumberOfChannels',nch);
 end
 set(h,'IsPeriodicExt',fpe);
 set(h,'PolyPhaseOrder',ord);

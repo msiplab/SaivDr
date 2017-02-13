@@ -116,7 +116,7 @@ classdef CplxOLpPrFbAtomExtender1d <  ...
         end
         
         function arrayCoefs = supportExtTypeI_(obj,arrayCoefs,paramMtx1,paramMtx2,paramMtx3,paramMtx4,paramMtx5,paramMtx6,isPeriodicExt)
-            hLen = obj.NumberOfAntisymmetricChannels;
+            hLen = obj.NumberOfHalfChannels;
             import saivdr.dictionary.cnsoltx.mexsrcs.AbstCplxBuildingBlock
 
             % Phase 1
@@ -160,7 +160,7 @@ classdef CplxOLpPrFbAtomExtender1d <  ...
         end
         
         function arrayCoefs = supportExtTypeII_(obj,arrayCoefs,paramMtx1,paramMtx2,paramMtx3,paramMtx4,paramMtx5,paramMtx6,isPeriodicExt)
-            hLen = obj.NumberOfAntisymmetricChannels;
+            hLen = obj.NumberOfHalfChannels;
             import saivdr.dictionary.cnsoltx.mexsrcs.AbstCplxBuildingBlock
             
             % Phase 1
@@ -203,8 +203,7 @@ classdef CplxOLpPrFbAtomExtender1d <  ...
         end
         
         function arrayCoefs = rightShiftLowerCoefs_(obj,arrayCoefs)
-            hLenMn = min([ obj.NumberOfSymmetricChannels
-                obj.NumberOfAntisymmetricChannels]);
+            hLenMn = obj.NumberOfHalfChannels;
             %
             lowerCoefsPre = arrayCoefs(hLenMn+1:end,end);
             arrayCoefs(hLenMn+1:end,2:end) = arrayCoefs(hLenMn+1:end,1:end-1);
@@ -212,30 +211,12 @@ classdef CplxOLpPrFbAtomExtender1d <  ...
         end
         
         function arrayCoefs = leftShiftUpperCoefs_(obj,arrayCoefs)
-            hLenMn = min([ obj.NumberOfSymmetricChannels
-                obj.NumberOfAntisymmetricChannels]);
+            hLenMn = obj.NumberOfHalfChannels;
             %
             upperCoefsPost = arrayCoefs(1:hLenMn,1);
             arrayCoefs(1:hLenMn,1:end-1) = arrayCoefs(1:hLenMn,2:end);
             arrayCoefs(1:hLenMn,end) = upperCoefsPost;
         end
-        
-%         function hB = butterflyMtx_(obj, angles)%TODO: “¯ˆê‚ÌŠÖ”‚ªAbstBuildingBlock.m‚ÅŽÀ‘•‚³‚ê‚Ä‚¢‚é‚Ì‚Åˆê‰ÓŠ‚É‚Ü‚Æ‚ß‚éD
-%             hchs = obj.NumberOfAntisymmetricChannels;
-%             
-%             hC = complex(eye(hchs));
-%             hS = complex(eye(hchs));
-%             for p = 1:floor(hchs/2)
-%                 tp = angles(p)/2;
-%                 
-%                 hC(2*p-1:2*p, 2*p-1:2*p) = [ -1i*cos(tp), -1i*sin(tp);
-%                     cos(tp) , -sin(tp)]; %c^
-%                 hS(2*p-1:2*p, 2*p-1:2*p) = [ -1i*sin(tp), -1i*cos(tp);
-%                     sin(tp) , -cos(tp)]; %s^
-%             end
-%             
-%             hB = [hC, conj(hC); 1i*hS, -1i*conj(hS)]/sqrt(2);
-%         end
     end
     
 end

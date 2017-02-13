@@ -28,9 +28,9 @@ classdef CplxOLpPuFbAnalysis1dSystem < ...
         BoundaryOperation = 'Termination'
     end
 
-    properties (Nontunable, PositiveInteger)    
-        NumberOfSymmetricChannels     = 2
-        NumberOfAntisymmetricChannels = 2
+    properties (Nontunable, PositiveInteger)   
+        NumberOfChannels = 4
+        NumberOfHalfChannels = 2
     end
     
     properties (Nontunable, Logical)
@@ -72,9 +72,7 @@ classdef CplxOLpPuFbAnalysis1dSystem < ...
             if isempty(obj.LpPuFb1d)
                 import saivdr.dictionary.colpprfb.CplxOLpPrFbFactory
                 obj.LpPuFb1d = CplxOLpPrFbFactory.createCplxOvsdLpPuFb1dSystem(...
-                    'NumberOfChannels', ...
-                    [ obj.NumberOfSymmetricChannels ...
-                      obj.NumberOfAntisymmetricChannels ], ...
+                    'NumberOfChannels', obj.NumberOfChannels, ...
                     'NumberOfVanishingMoments',1,...
                     'OutputMode','ParameterMatrixSet');
             end
@@ -91,8 +89,8 @@ classdef CplxOLpPuFbAnalysis1dSystem < ...
             obj.decimationFactor = get(obj.LpPuFb1d,'DecimationFactor');
             obj.polyPhaseOrder   = get(obj.LpPuFb1d,'PolyPhaseOrder');
             nch = get(obj.LpPuFb1d,'NumberOfChannels');
-            obj.NumberOfSymmetricChannels = ceil(nch/2);
-            obj.NumberOfAntisymmetricChannels = floor(nch/2);
+            obj.NumberOfChannels = nch;
+            obj.NumberOfHalfChannels = floor(nch/2);
         end
         
     end
@@ -133,8 +131,7 @@ classdef CplxOLpPuFbAnalysis1dSystem < ...
         
         function setupImpl(obj, srcSeq, nLevels)
             dec = obj.decimationFactor;
-            nch = [ obj.NumberOfSymmetricChannels ...
-                obj.NumberOfAntisymmetricChannels ];
+            nch = obj.NumberOfChannels;
             %
             nChs  = sum(nch);
             nDec = dec;
@@ -156,8 +153,7 @@ classdef CplxOLpPuFbAnalysis1dSystem < ...
             obj.isMexFcn = 1;
             mexFcn = [];
             
-            if obj.NumberOfSymmetricChannels == 1 || ...
-                    obj.NumberOfAntisymmetricChannels == 1 
+            if obj.NumberOfChannels == 2
                 mexFcn = [];
             elseif ~obj.isMexFcn
                 import saivdr.dictionary.colpprfb.mexsrcs.fcn_autobuild_catomext1d
@@ -193,8 +189,7 @@ classdef CplxOLpPuFbAnalysis1dSystem < ...
         function [ coefs, scales ] = ...
                 analyze_(obj, srcSeq, nLevels, pmCoefs)
             %
-            nChs = obj.NumberOfSymmetricChannels ...
-                + obj.NumberOfAntisymmetricChannels;
+            nChs = obj.NumberOfChannels;
             dec  = obj.decimationFactor;
             %
             iSubband = obj.nAllChs;
@@ -225,9 +220,7 @@ classdef CplxOLpPuFbAnalysis1dSystem < ...
         function arrayCoefs = subAnalyze_(obj,subSeq,pmCoefs)
             import saivdr.dictionary.utility.Direction
             %
-            nChs = obj.NumberOfSymmetricChannels ...
-                + obj.NumberOfAntisymmetricChannels;
-            %ps = obj.NumberOfSymmetricChannels;
+            nChs = obj.NumberOfChannels;
             nBlks_ = obj.nBlks;
             dec_  = obj.decimationFactor;
             %

@@ -30,9 +30,9 @@ classdef CplxOvsdLpPuFb1dTypeIIVm0System < ...
             import saivdr.dictionary.utility.OrthonormalMatrixGenerationSystem
             obj = obj@saivdr.dictionary.colpprfb.AbstCplxOvsdLpPuFb1dTypeIISystem(...
                 varargin{:});
-            obj.omgsV0_ = OrthonormalMatrixGenerationSystem();
-            obj.omgsE_ = OrthonormalMatrixGenerationSystem();
-            obj.omgsO_ = OrthonormalMatrixGenerationSystem();
+            obj.omgsV0_ = OrthonormalMatrixGenerationSystem('OrderOfProduction','Ascending');
+            obj.omgsE_ = OrthonormalMatrixGenerationSystem('OrderOfProduction','Ascending');
+            obj.omgsO_ = OrthonormalMatrixGenerationSystem('OrderOfProduction','Ascending');
         end
     end
     

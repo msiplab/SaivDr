@@ -108,7 +108,6 @@ classdef AbstCplxOvsdLpPuFb1dTypeIISystem < ...
                 obj.NumberOfChannels = 2*floor(nHalfDecs)+1;
             elseif isvector(obj.NumberOfChannels)
                 obj.NumberOfChannels = sum(obj.NumberOfChannels);
-                % TODO: —áŠOˆ—‚ð³‚µ‚­ŽÀ‘•‚·‚é
                 if mod(obj.NumberOfChannels,2) == 0
                     id = 'SaivDr:IllegalArgumentException';
                     msg = '#Channels must be odd.';
@@ -146,14 +145,11 @@ classdef AbstCplxOvsdLpPuFb1dTypeIISystem < ...
                 obj.Angles = zeros(1,sizeOfAngles);
             end
             
-            obj.Angles = obj.Angles(:);
-            % TODO : —áŠOˆ—
-%             if size(obj.Angles,1) ~= sizeOfAngles(1) || ...
-%                     size(obj.Angles,2) ~= sizeOfAngles(2)
-            if size(obj.Angles) ~= sizeOfAngles
+            obj.Angles = obj.Angles(:).';
+            if length(obj.Angles) ~= sizeOfAngles
                 id = 'SaivDr:IllegalArgumentException';
                 msg = sprintf(...
-                    'Size of angles must be %d %d',...
+                    'Size of angles must be [ 1 %d ]',...
                     sizeOfAngles);
                 me = MException(id, msg);
                 throw(me);
@@ -163,7 +159,6 @@ classdef AbstCplxOvsdLpPuFb1dTypeIISystem < ...
         function updateMus_(obj)
             import saivdr.dictionary.cnsoltx.ChannelGroup
             %
-%             sizeOfMus = [ 2*sum(obj.NumberOfChannels) obj.nStages ];
             sizeOfMus = obj.NumberOfChannels*(2*obj.nStages-1);
             %
             nChL = floor(obj.NumberOfChannels/2);
@@ -173,14 +168,12 @@ classdef AbstCplxOvsdLpPuFb1dTypeIISystem < ...
                     repmat([ ones(1,nChL), -1*ones(1,nChL),...
                     ones(1,nChU), -1*ones(1,nChL), 1 ], 1, obj.nStages-1)];
             end
-            %obj.Mus = ones(1,sizeOfMus);
-%             if size(obj.Mus,1) ~= sizeOfMus(1) || ...
-%                     size(obj.Mus,2) ~= sizeOfMus(2)
-            if size(obj.Mus) ~= sizeOfMus
+            obj.Mus = obj.Mus(:).';
+            if length(obj.Mus) ~= sizeOfMus
                 id = 'SaivDr:IllegalArgumentException';
                 msg = sprintf(...
-                    'Size of mus must be [ %d %d ]',...
-                    sizeOfMus(1), sizeOfMus(2));
+                    'Size of mus must be [ 1 %d ]',...
+                    sizeOfMus);
                 me = MException(id, msg);
                 throw(me);
             end
@@ -226,7 +219,7 @@ classdef AbstCplxOvsdLpPuFb1dTypeIISystem < ...
                 end
                 len = dec*(ord+1);
             end
-            %E = diag(obj.Symmetry)*E;
+            E = diag(exp(1i*obj.Symmetry))*E;
             value = E.';
         end
 

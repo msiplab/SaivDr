@@ -26,8 +26,8 @@ classdef CplxOvsdLpPuFb1dTypeIVm0System < ...
             import saivdr.dictionary.utility.OrthonormalMatrixGenerationSystem
             obj = obj@saivdr.dictionary.colpprfb.AbstCplxOvsdLpPuFb1dTypeISystem(...
                 varargin{:});
-            obj.omgsV0_ = OrthonormalMatrixGenerationSystem();
-            obj.omgsWU_ = OrthonormalMatrixGenerationSystem();
+            obj.omgsV0_ = OrthonormalMatrixGenerationSystem('OrderOfProduction','Ascending');
+            obj.omgsWU_ = OrthonormalMatrixGenerationSystem('OrderOfProduction','Ascending');
         end
     end
     

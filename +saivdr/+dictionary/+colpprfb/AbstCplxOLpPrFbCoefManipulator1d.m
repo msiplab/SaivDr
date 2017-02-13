@@ -21,8 +21,10 @@ classdef AbstCplxOLpPrFbCoefManipulator1d < matlab.System %#codegen
     
     properties (Nontunable, PositiveInteger)
         % TODO: 名称の変更を検討する
-        NumberOfSymmetricChannels      = 2
-        NumberOfAntisymmetricChannels  = 2
+%         NumberOfSymmetricChannels      = 2
+%         NumberOfAntisymmetricChannels  = 2
+        NumberOfChannels = 4
+        NumberOfHalfChannels = 2
     end
 
     properties (Logical)
@@ -40,11 +42,7 @@ classdef AbstCplxOLpPrFbCoefManipulator1d < matlab.System %#codegen
     properties (Hidden, Transient)
         OLpPrFbTypeSet = ...
             matlab.system.StringSet({'Type I','Type II'});
-    end
-    
-    properties (SetAccess = protected, GetAccess = public, Nontunable, Logical)
-        IsPsGreaterThanPa = true;
-    end    
+    end   
     
     properties (Access = protected)
         paramMtxCoefs
@@ -62,19 +60,9 @@ classdef AbstCplxOLpPrFbCoefManipulator1d < matlab.System %#codegen
         % Constructor
         function obj = AbstCplxOLpPrFbCoefManipulator1d(varargin)
             setProperties(obj,nargin,varargin{:});
-            %
-            ps = obj.NumberOfSymmetricChannels;
-            pa = obj.NumberOfAntisymmetricChannels;
-            %
-%             if ps > pa
-%                 obj.OLpPrFbType = 'Type II';
-%                 obj.IsPsGreaterThanPa = true;
-%             elseif ps < pa
-%                 obj.OLpPrFbType = 'Type II';
-%                 obj.IsPsGreaterThanPa = false;
-%             end            
-            %
-            if ps ~= pa
+            
+            obj.NumberOfHalfChannels = floor(obj.NumberOfChannels/2);
+            if mod(obj.NumberOfChannels,2) ~= 0
                 obj.OLpPrFbType = 'Type II';
             end
         end
@@ -117,15 +105,14 @@ classdef AbstCplxOLpPrFbCoefManipulator1d < matlab.System %#codegen
                 error('%s:\n lentgh(PolyPhaseOrder) must be %d.',...
                     id, saivdr.dictionary.colpprfb.AbstCplxOLpPrFbCoefManipulator1d.DATA_DIMENSION);
             end
-            %TODO: エラーメッセージを編集する
-%             if obj.NumberOfSymmetricChannels < 2
-%                 error('%s: NumberOfSymmetricChannels must be more than one.',...
-%                     id);
-%             end
-%             if obj.NumberOfAntisymmetricChannels < 2
-%                 error('%s: NumberOfAntisymmetricChannels must be more than one.',...
-%                     id);
-%             end            
+
+            %TODO: create test cases of followings:
+            if obj.NumberOfChannels < 2
+                error('%s:\n NumberOfChannels must be more than 2.',id);
+            end
+            if obj.NumberOfHalfChannels ~= floor(obj.NumberOfChannels/2)
+                error('%s;\n NumberOfHalfChannels must be %d.',id,floor(obj.NumberOfChannels/2));
+            end
         end
         
         function validateInputsImpl(~, coefs, subScale, ~)
@@ -167,8 +154,8 @@ classdef AbstCplxOLpPrFbCoefManipulator1d < matlab.System %#codegen
         
         function setupParamMtx_(obj)
             ord = obj.PolyPhaseOrder; 
-            ps  = obj.NumberOfSymmetricChannels;
-            pa  = obj.NumberOfAntisymmetricChannels;
+            pa  = obj.NumberOfHalfChannels;
+            ps  = obj.NumberOfChannels - pa;
             %
             obj.paramMtxSzTab = zeros(3*sum(ord)+1, 2);
             obj.paramMtxSzTab(1,:) = [ps+pa, ps+pa];
@@ -203,29 +190,29 @@ classdef AbstCplxOLpPrFbCoefManipulator1d < matlab.System %#codegen
                 value(iRow,:) = pmCoefs(iRow:nRows_:end);
             end
         end
-        
-        %TODO: 現在使用していないので削除を検討する
-        function arrayCoefs = blockButterflyTypeI_(obj,arrayCoefs,angles)
-            hLen = obj.NumberOfSymmetricChannels;
-            upper = arrayCoefs(1:hLen,:);
-            lower = arrayCoefs(hLen+1:end,:);
-            arrayCoefs(1:hLen,:)     = upper + lower;
-            arrayCoefs(hLen+1:end,:) = upper - lower;
-        end
-        
-        %TODO: 現在使用していないので削除を検討する
-        function arrayCoefs = blockButterflyTypeII_(obj,arrayCoefs,angles)
-            chs = [obj.NumberOfSymmetricChannels ...
-                obj.NumberOfAntisymmetricChannels ];
-            nChMx  = max(chs);
-            nChMn  = min(chs);
-            upper  = arrayCoefs(1:nChMn,:);
-            middle = arrayCoefs(nChMn+1:nChMx,:);
-            lower  = arrayCoefs(nChMx+1:end,:);
-            arrayCoefs(1:nChMn,:)       = upper + lower;
-            arrayCoefs(nChMn+1:nChMx,:) = 1.414213562373095*middle;
-            arrayCoefs(nChMx+1:end,:)   = upper - lower;
-        end
+%         
+%         %TODO: 現在使用していないので削除を検討する
+%         function arrayCoefs = blockButterflyTypeI_(obj,arrayCoefs,angles)
+%             hLen = obj.NumberOfSymmetricChannels;
+%             upper = arrayCoefs(1:hLen,:);
+%             lower = arrayCoefs(hLen+1:end,:);
+%             arrayCoefs(1:hLen,:)     = upper + lower;
+%             arrayCoefs(hLen+1:end,:) = upper - lower;
+%         end
+%         
+%         %TODO: 現在使用していないので削除を検討する
+%         function arrayCoefs = blockButterflyTypeII_(obj,arrayCoefs,angles)
+%             chs = [obj.NumberOfSymmetricChannels ...
+%                 obj.NumberOfAntisymmetricChannels ];
+%             nChMx  = max(chs);
+%             nChMn  = min(chs);
+%             upper  = arrayCoefs(1:nChMn,:);
+%             middle = arrayCoefs(nChMn+1:nChMx,:);
+%             lower  = arrayCoefs(nChMx+1:end,:);
+%             arrayCoefs(1:nChMn,:)       = upper + lower;
+%             arrayCoefs(nChMn+1:nChMx,:) = 1.414213562373095*middle;
+%             arrayCoefs(nChMx+1:end,:)   = upper - lower;
+%         end
                
     end
     

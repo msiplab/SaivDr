@@ -54,7 +54,7 @@ classdef CplxOLpPuFbSynthesis1dSystemTestCase < matlab.unittest.TestCase
         function testDefaultConstruction4plus4(testCase)
             
             % Preperation
-            nChs = [4 4];
+            nChs = 8;
             
             % Expected values
             import saivdr.dictionary.colpprfb.*
@@ -65,8 +65,7 @@ classdef CplxOLpPuFbSynthesis1dSystemTestCase < matlab.unittest.TestCase
             % Instantiation
             import saivdr.dictionary.cnsoltx.ChannelGroup
             testCase.synthesizer = CplxOLpPuFbAnalysis1dSystem(...
-                'NumberOfSymmetricChannels',nChs(ChannelGroup.UPPER),...
-                'NumberOfAntisymmetricChannels',nChs(ChannelGroup.LOWER));
+                'NumberOfChannels',nChs);
             
             % Actual value
             lppufbActual = get(testCase.synthesizer,'LpPuFb1d');
@@ -115,7 +114,7 @@ classdef CplxOLpPuFbSynthesis1dSystemTestCase < matlab.unittest.TestCase
             
         end
         
-        function testStepDec2Ch22Ord0(testCase)
+        function testStepDec2Ch4Ord0(testCase)
             
             dec = 2;
             ch = dec;
@@ -283,7 +282,7 @@ classdef CplxOLpPuFbSynthesis1dSystemTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testStepDec4Ch22Ord2(testCase)
+        function testStepDec4Ch4Ord2(testCase)
             
             dec = 4;
             ch = dec;
@@ -344,7 +343,7 @@ classdef CplxOLpPuFbSynthesis1dSystemTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testStepDec4Ch22Ord2PeriodicExtVm0(testCase)
+        function testStepDec4Ch4Ord2PeriodicExtVm0(testCase)
             
             dec = 4;
             ch = dec;
@@ -405,7 +404,7 @@ classdef CplxOLpPuFbSynthesis1dSystemTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testStepDec4Ch22Ord2PeriodicExtVm1(testCase)
+        function testStepDec4Ch4Ord2PeriodicExtVm1(testCase)
             
             dec = 4;
             ch = dec;
@@ -685,7 +684,7 @@ classdef CplxOLpPuFbSynthesis1dSystemTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testStepDec4Ch22Ord4(testCase)
+        function testStepDec4Ch4Ord4(testCase)
             
             dec = 4;
             ch = dec;
@@ -747,7 +746,7 @@ classdef CplxOLpPuFbSynthesis1dSystemTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testStepDec4Ch22Ord4PeriodicExt(testCase)
+        function testStepDec4Ch4Ord4PeriodicExt(testCase)
             
             dec = 4;
             ch = dec;
@@ -1031,7 +1030,7 @@ classdef CplxOLpPuFbSynthesis1dSystemTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testStepDec4Ch22Ord6(testCase)
+        function testStepDec4Ch4Ord6(testCase)
             
             dec = 4;
             ch = dec;
@@ -1094,7 +1093,7 @@ classdef CplxOLpPuFbSynthesis1dSystemTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testStepDec4Ch22Ord6PeriodicExt(testCase)
+        function testStepDec4Ch4Ord6PeriodicExt(testCase)
             
             dec = 4;
             ch = dec;
@@ -1206,7 +1205,7 @@ classdef CplxOLpPuFbSynthesis1dSystemTestCase < matlab.unittest.TestCase
         end
         
         % Test for boundary operation
-        function testInverseBlockDctDec4Ch22Ord6(testCase)
+        function testInverseBlockDctDec4Ch4Ord6(testCase)
             
             dec = 4;
             ch = dec;
@@ -1319,7 +1318,7 @@ classdef CplxOLpPuFbSynthesis1dSystemTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testStepDec4Ch22Ord2PeriodicExt(testCase)
+        function testStepDec4Ch4Ord2PeriodicExt(testCase)
             
             dec = 4;
             ch = dec;
@@ -1380,7 +1379,7 @@ classdef CplxOLpPuFbSynthesis1dSystemTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testStepDec2Ch22Ord2PeriodicExt(testCase)
+        function testStepDec2Ch4Ord2PeriodicExt(testCase)
             
             dec = 2;
             ch = dec;
@@ -1872,7 +1871,7 @@ classdef CplxOLpPuFbSynthesis1dSystemTestCase < matlab.unittest.TestCase
         end
         
         %Dec2Ch8Ord2
-        function testStepDec2Ch44Ord2(testCase)
+        function testStepDec2Ch8Ord2(testCase)
             
             dec = 2;
             ch  = 8;
@@ -3839,7 +3838,7 @@ classdef CplxOLpPuFbSynthesis1dSystemTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(seqActual,seqExpctd,'RelTol',1e-8,sprintf('%g',diff));
         end
         
-        function testSetLpPuFb1dDec2Ch22Ord4(testCase)
+        function testSetLpPuFb1dDec2Ch4Ord4(testCase)
             
             dec = 2;
             decch = [ dec 4 4 ];
@@ -8233,306 +8232,306 @@ classdef CplxOLpPuFbSynthesis1dSystemTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(seqActual,seqExpctd,'RelTol',1e-8,sprintf('%g',diff));
         end
         
-        % Test
-        function testStepDec2Ch32Ord0(testCase)
-            
-            dec = 2;
-            decch = [dec 3 2];
-            nChs = sum(decch(2:3));
-            nLen = 16;
-            
-            subCoefs = rand(nChs,nLen/dec) + 1i*rand(nChs,nLen/dec);
-            coefs = zeros(1,nLen);
-            scales = zeros(nChs,1);
-            sIdx = 1;
-            for iCh = 1:nChs
-                subSeq = subCoefs(iCh,:);
-                eIdx = sIdx + length(subSeq) - 1;
-                coefs(sIdx:eIdx) = subSeq(:).';
-                scales(iCh) = length(subSeq);
-                sIdx = eIdx + 1;
-            end
-            
-            % Preparation
-            import saivdr.dictionary.colpprfb.*
-            lppufb = CplxOLpPrFbFactory.createCplxOvsdLpPuFb1dSystem(...
-                'DecimationFactor',decch(1),...
-                'NumberOfChannels',decch(2:end));
-            angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
-            set(lppufb,'Angles',angs);
-            E = step(lppufb,[],[]);
-            
-            % Expected values
-            tmp = flipud(E'*subCoefs);
-            seqExpctd = tmp(:).';
-            
-            % Instantiation of target class
-            release(lppufb)
-            set(lppufb,'OutputMode','ParameterMatrixSet');
-            testCase.synthesizer = CplxOLpPuFbSynthesis1dSystem(....
-                'LpPuFb1d',lppufb);
-            
-            % Actual values
-            seqActual = ...
-                step(testCase.synthesizer,coefs,scales);
-            
-            % Evaluation
-            diff = max(abs(seqExpctd(:) - seqActual(:))./abs(seqExpctd(:)));
-            testCase.verifyEqual(seqActual,seqExpctd,'RelTol',1e-10,sprintf('%g',diff));
-            
-        end
-        
-        % Test
-        function testStepDec2Ch32Ord2(testCase)
-            
-            dec = 2;
-            decch = [dec 3 2];
-            nChs = sum(decch(2:3));
-            ord = 2;
-            nLen = 16;
-            subCoefs = cell(nChs,1);
-            coefs = zeros(1,nLen);
-            scales = zeros(nChs,1);
-            sIdx = 1;
-            for iSubband = 1:nChs
-                subSeq = rand(1,nLen/dec) + 1i*rand(1,nLen/dec);
-                subCoefs{iSubband} = subSeq;
-                eIdx = sIdx + length(subSeq) - 1;
-                coefs(sIdx:eIdx) = subSeq(:).';
-                scales(iSubband) = length(subSeq);
-                sIdx = eIdx + 1;
-            end
-            
-            % Preparation
-            import saivdr.dictionary.colpprfb.*
-            lppufb = CplxOLpPrFbFactory.createCplxOvsdLpPuFb1dSystem(...
-                'DecimationFactor',decch(1),...
-                'NumberOfChannels',decch(2:end),...
-                'PolyPhaseOrder',ord);
-            angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
-            set(lppufb,'Angles',angs);
-            
-            % Expected values
-            release(lppufb)
-            set(lppufb,'OutputMode','SynthesisFilterAt');
-            seqExpctd = zeros(1,nLen);
-            offset = -dec*ord/2;
-            phs = 0; % for phs adjustment required experimentaly
-            for iSubband = 1:nChs
-                subSeq = circshift(cconv(...
-                    upsample(subCoefs{iSubband},dec,phs).',...
-                    step(lppufb,[],[],iSubband),nLen),offset).';
-                seqExpctd = seqExpctd + subSeq;
-            end
-            
-            % Instantiation of target class
-            release(lppufb)
-            set(lppufb,'OutputMode','ParameterMatrixSet');
-            testCase.synthesizer = CplxOLpPuFbSynthesis1dSystem(....
-                'LpPuFb1d',lppufb);
-            
-            % Actual values
-            seqActual = ...
-                step(testCase.synthesizer,coefs,scales);
-            
-            % Evaluation
-            testCase.verifySize(seqActual,size(seqExpctd),...
-                'Actual image size is different from the expected one.');
-            seqExpctd = seqExpctd(decch(1)+1:end-decch(1)); % ignore border
-            seqActual = seqActual(decch(1)+1:end-decch(1)); % ignore border
-            diff = max(abs(seqExpctd(:) - seqActual(:))./abs(seqExpctd(:)));
-            testCase.verifyEqual(seqActual,seqExpctd,'RelTol',1e-10,sprintf('%g',diff));
-        end
-        
-        % Test
-        function testStepDec2Ch32Ord2PeriodicExt(testCase)
-            
-            dec = 2;
-            decch = [ dec 3 2 ];
-            nChs = sum(decch(2:3));
-            ord = 2;
-            nLen = 16;
-            subCoefs = cell(nChs,1);
-            coefs = zeros(1,nLen);
-            scales = zeros(nChs,1);
-            sIdx = 1;
-            for iSubband = 1:nChs
-                subSeq = rand(1,nLen/dec) + 1i*rand(1,nLen/dec);
-                subCoefs{iSubband} = subSeq;
-                eIdx = sIdx + length(subSeq) - 1;
-                coefs(sIdx:eIdx) = subSeq(:).';
-                scales(iSubband) = length(subSeq);
-                sIdx = eIdx + 1;
-            end
-            
-            % Preparation
-            import saivdr.dictionary.colpprfb.*
-            lppufb = CplxOLpPrFbFactory.createCplxOvsdLpPuFb1dSystem(...
-                'DecimationFactor',decch(1),...
-                'NumberOfChannels',decch(2:end),...
-                'PolyPhaseOrder',ord);
-            angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
-            set(lppufb,'Angles',angs);
-            
-            % Expected values
-            release(lppufb)
-            set(lppufb,'OutputMode','SynthesisFilterAt');
-            seqExpctd = zeros(1,nLen);
-            offset = -dec*ord/2;
-            phs = 0; % for phs adjustment required experimentaly
-            for iSubband = 1:nChs
-                subSeq = circshift(cconv(...
-                    upsample(subCoefs{iSubband},dec,phs).',...
-                    step(lppufb,[],[],iSubband),nLen),offset).';
-                seqExpctd = seqExpctd + subSeq;
-            end
-            
-            % Instantiation of target class
-            release(lppufb)
-            set(lppufb,'OutputMode','ParameterMatrixSet');
-            testCase.synthesizer = CplxOLpPuFbSynthesis1dSystem(....
-                'LpPuFb1d',lppufb,...
-                'BoundaryOperation','Circular');
-            
-            % Actual values
-            seqActual = ...
-                step(testCase.synthesizer,coefs,scales);
-            
-            % Evaluation
-            testCase.verifySize(seqActual,size(seqExpctd),...
-                'Actual image size is different from the expected one.');
-            diff = max(abs(seqExpctd(:) - seqActual(:))./abs(seqExpctd(:)));
-            testCase.verifyEqual(seqActual,seqExpctd,'RelTol',1e-10,sprintf('%g',diff));
-        end
-        
-        % Test
-        function testStepDec2Ch32Ord4(testCase)
-            
-            dec = 2;
-            decch = [ dec 3 2];
-            nChs = sum(decch(2:3));
-            ord = 4;
-            nLen = 16;
-            subCoefs = cell(nChs,1);
-            coefs = zeros(1,nLen);
-            scales = zeros(nChs,1);
-            sIdx = 1;
-            for iSubband = 1:nChs
-                subSeq = rand(1,nLen/dec) + 1i*rand(1,nLen/dec);
-                subCoefs{iSubband} = subSeq;
-                eIdx = sIdx + length(subSeq) - 1;
-                coefs(sIdx:eIdx) = subSeq(:).';
-                scales(iSubband) = length(subSeq);
-                sIdx = eIdx + 1;
-            end
-            
-            % Preparation
-            import saivdr.dictionary.colpprfb.*
-            lppufb = CplxOLpPrFbFactory.createCplxOvsdLpPuFb1dSystem(...
-                'DecimationFactor',decch(1),...
-                'NumberOfChannels',decch(2:end),...
-                'PolyPhaseOrder',ord);
-            angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
-            set(lppufb,'Angles',angs);
-            
-            % Expected values
-            release(lppufb)
-            set(lppufb,'OutputMode','SynthesisFilterAt');
-            seqExpctd = zeros(1,nLen);
-            offset = -dec*ord/2;
-            phs = 0; % for phs adjustment required experimentaly
-            for iSubband = 1:nChs
-                subSeq = circshift(cconv(...
-                    upsample(subCoefs{iSubband},dec,phs).',...
-                    step(lppufb,[],[],iSubband),nLen),offset).';
-                seqExpctd = seqExpctd + subSeq;
-            end
-            
-            % Instantiation of target class
-            release(lppufb)
-            set(lppufb,'OutputMode','ParameterMatrixSet');
-            testCase.synthesizer = CplxOLpPuFbSynthesis1dSystem(....
-                'LpPuFb1d',lppufb);
-            
-            % Actual values
-            seqActual = ...
-                step(testCase.synthesizer,coefs,scales);
-            
-            % Evaluation
-            testCase.verifySize(seqActual,size(seqExpctd),...
-                'Actual image size is different from the expected one.');
-            seqExpctd = seqExpctd(2*decch(1)+1:end-2*decch(1)); % ignore border
-            seqActual = seqActual(2*decch(1)+1:end-2*decch(1)); % ignore border
-            diff = max(abs(seqExpctd(:) - seqActual(:))./abs(seqExpctd(:)));
-            testCase.verifyEqual(seqActual,seqExpctd,'RelTol',1e-10,sprintf('%g',diff));
-        end
-        
-        % Test
-        function testStepDec2Ch32Ord4PeriodicExt(testCase)
-            
-            dec = 2;
-            decch = [  dec 3 2];
-            nChs = sum(decch(2:3));
-            ord = 4;
-            nLen = 16;
-            
-            subCoefs = cell(nChs,1);
-            coefs = zeros(1,nLen);
-            scales = zeros(nChs,1);
-            sIdx = 1;
-            for iSubband = 1:nChs
-                subSeq = rand(1,nLen/dec) + 1i*rand(1,nLen/dec);
-                subCoefs{iSubband} = subSeq;
-                eIdx = sIdx + length(subSeq) - 1;
-                coefs(sIdx:eIdx) = subSeq(:).';
-                scales(iSubband) = length(subSeq);
-                sIdx = eIdx + 1;
-            end
-            
-            % Preparation
-            import saivdr.dictionary.colpprfb.*
-            lppufb = CplxOLpPrFbFactory.createCplxOvsdLpPuFb1dSystem(...
-                'DecimationFactor',decch(1),...
-                'NumberOfChannels',decch(2:3),...
-                'PolyPhaseOrder',ord);
-            angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
-            set(lppufb,'Angles',angs);
-            
-            % Expected values
-            release(lppufb)
-            set(lppufb,'OutputMode','SynthesisFilterAt');
-            seqExpctd = zeros(1,nLen);
-            offset = -dec*ord/2;
-            phs = 0; % for phs adjustment required experimentaly
-            for iSubband = 1:nChs
-                subSeq = circshift(cconv(...
-                    upsample(subCoefs{iSubband},dec,phs).',...
-                    step(lppufb,[],[],iSubband),nLen),offset).';
-                seqExpctd = seqExpctd + subSeq;
-            end
-            
-            % Instantiation of target class
-            release(lppufb)
-            set(lppufb,'OutputMode','ParameterMatrixSet');
-            testCase.synthesizer = CplxOLpPuFbSynthesis1dSystem(....
-                'LpPuFb1d',lppufb,...
-                'BoundaryOperation','Circular');
-            
-            % Actual values
-            seqActual = ...
-                step(testCase.synthesizer,coefs,scales);
-            
-            % Evaluation
-            testCase.verifySize(seqActual,size(seqExpctd),...
-                'Actual image size is different from the expected one.');
-            diff = max(abs(seqExpctd(:) - seqActual(:))./abs(seqExpctd(:)));
-            testCase.verifyEqual(seqActual,seqExpctd,'RelTol',1e-10,sprintf('%g',diff));
-        end
+%         % Test
+%         function testStepDec2Ch5Ord0(testCase)
+%             
+%             dec = 2;
+%             decch = [dec 3 2];
+%             nChs = sum(decch(2:3));
+%             nLen = 16;
+%             
+%             subCoefs = rand(nChs,nLen/dec) + 1i*rand(nChs,nLen/dec);
+%             coefs = zeros(1,nLen);
+%             scales = zeros(nChs,1);
+%             sIdx = 1;
+%             for iCh = 1:nChs
+%                 subSeq = subCoefs(iCh,:);
+%                 eIdx = sIdx + length(subSeq) - 1;
+%                 coefs(sIdx:eIdx) = subSeq(:).';
+%                 scales(iCh) = length(subSeq);
+%                 sIdx = eIdx + 1;
+%             end
+%             
+%             % Preparation
+%             import saivdr.dictionary.colpprfb.*
+%             lppufb = CplxOLpPrFbFactory.createCplxOvsdLpPuFb1dSystem(...
+%                 'DecimationFactor',decch(1),...
+%                 'NumberOfChannels',decch(2:end));
+%             angs = get(lppufb,'Angles');
+%             angs = randn(size(angs));
+%             set(lppufb,'Angles',angs);
+%             E = step(lppufb,[],[]);
+%             
+%             % Expected values
+%             tmp = flipud(E'*subCoefs);
+%             seqExpctd = tmp(:).';
+%             
+%             % Instantiation of target class
+%             release(lppufb)
+%             set(lppufb,'OutputMode','ParameterMatrixSet');
+%             testCase.synthesizer = CplxOLpPuFbSynthesis1dSystem(....
+%                 'LpPuFb1d',lppufb);
+%             
+%             % Actual values
+%             seqActual = ...
+%                 step(testCase.synthesizer,coefs,scales);
+%             
+%             % Evaluation
+%             diff = max(abs(seqExpctd(:) - seqActual(:))./abs(seqExpctd(:)));
+%             testCase.verifyEqual(seqActual,seqExpctd,'RelTol',1e-10,sprintf('%g',diff));
+%             
+%         end
+%         
+%         % Test
+%         function testStepDec2Ch5Ord2(testCase)
+%             
+%             dec = 2;
+%             decch = [dec 3 2];
+%             nChs = sum(decch(2:3));
+%             ord = 2;
+%             nLen = 16;
+%             subCoefs = cell(nChs,1);
+%             coefs = zeros(1,nLen);
+%             scales = zeros(nChs,1);
+%             sIdx = 1;
+%             for iSubband = 1:nChs
+%                 subSeq = rand(1,nLen/dec) + 1i*rand(1,nLen/dec);
+%                 subCoefs{iSubband} = subSeq;
+%                 eIdx = sIdx + length(subSeq) - 1;
+%                 coefs(sIdx:eIdx) = subSeq(:).';
+%                 scales(iSubband) = length(subSeq);
+%                 sIdx = eIdx + 1;
+%             end
+%             
+%             % Preparation
+%             import saivdr.dictionary.colpprfb.*
+%             lppufb = CplxOLpPrFbFactory.createCplxOvsdLpPuFb1dSystem(...
+%                 'DecimationFactor',decch(1),...
+%                 'NumberOfChannels',decch(2:end),...
+%                 'PolyPhaseOrder',ord);
+%             angs = get(lppufb,'Angles');
+%             angs = randn(size(angs));
+%             set(lppufb,'Angles',angs);
+%             
+%             % Expected values
+%             release(lppufb)
+%             set(lppufb,'OutputMode','SynthesisFilterAt');
+%             seqExpctd = zeros(1,nLen);
+%             offset = -dec*ord/2;
+%             phs = 0; % for phs adjustment required experimentaly
+%             for iSubband = 1:nChs
+%                 subSeq = circshift(cconv(...
+%                     upsample(subCoefs{iSubband},dec,phs).',...
+%                     step(lppufb,[],[],iSubband),nLen),offset).';
+%                 seqExpctd = seqExpctd + subSeq;
+%             end
+%             
+%             % Instantiation of target class
+%             release(lppufb)
+%             set(lppufb,'OutputMode','ParameterMatrixSet');
+%             testCase.synthesizer = CplxOLpPuFbSynthesis1dSystem(....
+%                 'LpPuFb1d',lppufb);
+%             
+%             % Actual values
+%             seqActual = ...
+%                 step(testCase.synthesizer,coefs,scales);
+%             
+%             % Evaluation
+%             testCase.verifySize(seqActual,size(seqExpctd),...
+%                 'Actual image size is different from the expected one.');
+%             seqExpctd = seqExpctd(decch(1)+1:end-decch(1)); % ignore border
+%             seqActual = seqActual(decch(1)+1:end-decch(1)); % ignore border
+%             diff = max(abs(seqExpctd(:) - seqActual(:))./abs(seqExpctd(:)));
+%             testCase.verifyEqual(seqActual,seqExpctd,'RelTol',1e-10,sprintf('%g',diff));
+%         end
+%         
+%         % Test
+%         function testStepDec2Ch5Ord2PeriodicExt(testCase)
+%             
+%             dec = 2;
+%             decch = [ dec 3 2 ];
+%             nChs = sum(decch(2:3));
+%             ord = 2;
+%             nLen = 16;
+%             subCoefs = cell(nChs,1);
+%             coefs = zeros(1,nLen);
+%             scales = zeros(nChs,1);
+%             sIdx = 1;
+%             for iSubband = 1:nChs
+%                 subSeq = rand(1,nLen/dec) + 1i*rand(1,nLen/dec);
+%                 subCoefs{iSubband} = subSeq;
+%                 eIdx = sIdx + length(subSeq) - 1;
+%                 coefs(sIdx:eIdx) = subSeq(:).';
+%                 scales(iSubband) = length(subSeq);
+%                 sIdx = eIdx + 1;
+%             end
+%             
+%             % Preparation
+%             import saivdr.dictionary.colpprfb.*
+%             lppufb = CplxOLpPrFbFactory.createCplxOvsdLpPuFb1dSystem(...
+%                 'DecimationFactor',decch(1),...
+%                 'NumberOfChannels',decch(2:end),...
+%                 'PolyPhaseOrder',ord);
+%             angs = get(lppufb,'Angles');
+%             angs = randn(size(angs));
+%             set(lppufb,'Angles',angs);
+%             
+%             % Expected values
+%             release(lppufb)
+%             set(lppufb,'OutputMode','SynthesisFilterAt');
+%             seqExpctd = zeros(1,nLen);
+%             offset = -dec*ord/2;
+%             phs = 0; % for phs adjustment required experimentaly
+%             for iSubband = 1:nChs
+%                 subSeq = circshift(cconv(...
+%                     upsample(subCoefs{iSubband},dec,phs).',...
+%                     step(lppufb,[],[],iSubband),nLen),offset).';
+%                 seqExpctd = seqExpctd + subSeq;
+%             end
+%             
+%             % Instantiation of target class
+%             release(lppufb)
+%             set(lppufb,'OutputMode','ParameterMatrixSet');
+%             testCase.synthesizer = CplxOLpPuFbSynthesis1dSystem(....
+%                 'LpPuFb1d',lppufb,...
+%                 'BoundaryOperation','Circular');
+%             
+%             % Actual values
+%             seqActual = ...
+%                 step(testCase.synthesizer,coefs,scales);
+%             
+%             % Evaluation
+%             testCase.verifySize(seqActual,size(seqExpctd),...
+%                 'Actual image size is different from the expected one.');
+%             diff = max(abs(seqExpctd(:) - seqActual(:))./abs(seqExpctd(:)));
+%             testCase.verifyEqual(seqActual,seqExpctd,'RelTol',1e-10,sprintf('%g',diff));
+%         end
+%         
+%         % Test
+%         function testStepDec2Ch5Ord4(testCase)
+%             
+%             dec = 2;
+%             decch = [ dec 3 2];
+%             nChs = sum(decch(2:3));
+%             ord = 4;
+%             nLen = 16;
+%             subCoefs = cell(nChs,1);
+%             coefs = zeros(1,nLen);
+%             scales = zeros(nChs,1);
+%             sIdx = 1;
+%             for iSubband = 1:nChs
+%                 subSeq = rand(1,nLen/dec) + 1i*rand(1,nLen/dec);
+%                 subCoefs{iSubband} = subSeq;
+%                 eIdx = sIdx + length(subSeq) - 1;
+%                 coefs(sIdx:eIdx) = subSeq(:).';
+%                 scales(iSubband) = length(subSeq);
+%                 sIdx = eIdx + 1;
+%             end
+%             
+%             % Preparation
+%             import saivdr.dictionary.colpprfb.*
+%             lppufb = CplxOLpPrFbFactory.createCplxOvsdLpPuFb1dSystem(...
+%                 'DecimationFactor',decch(1),...
+%                 'NumberOfChannels',decch(2:end),...
+%                 'PolyPhaseOrder',ord);
+%             angs = get(lppufb,'Angles');
+%             angs = randn(size(angs));
+%             set(lppufb,'Angles',angs);
+%             
+%             % Expected values
+%             release(lppufb)
+%             set(lppufb,'OutputMode','SynthesisFilterAt');
+%             seqExpctd = zeros(1,nLen);
+%             offset = -dec*ord/2;
+%             phs = 0; % for phs adjustment required experimentaly
+%             for iSubband = 1:nChs
+%                 subSeq = circshift(cconv(...
+%                     upsample(subCoefs{iSubband},dec,phs).',...
+%                     step(lppufb,[],[],iSubband),nLen),offset).';
+%                 seqExpctd = seqExpctd + subSeq;
+%             end
+%             
+%             % Instantiation of target class
+%             release(lppufb)
+%             set(lppufb,'OutputMode','ParameterMatrixSet');
+%             testCase.synthesizer = CplxOLpPuFbSynthesis1dSystem(....
+%                 'LpPuFb1d',lppufb);
+%             
+%             % Actual values
+%             seqActual = ...
+%                 step(testCase.synthesizer,coefs,scales);
+%             
+%             % Evaluation
+%             testCase.verifySize(seqActual,size(seqExpctd),...
+%                 'Actual image size is different from the expected one.');
+%             seqExpctd = seqExpctd(2*decch(1)+1:end-2*decch(1)); % ignore border
+%             seqActual = seqActual(2*decch(1)+1:end-2*decch(1)); % ignore border
+%             diff = max(abs(seqExpctd(:) - seqActual(:))./abs(seqExpctd(:)));
+%             testCase.verifyEqual(seqActual,seqExpctd,'RelTol',1e-10,sprintf('%g',diff));
+%         end
+%         
+%         % Test
+%         function testStepDec2Ch5Ord4PeriodicExt(testCase)
+%             
+%             dec = 2;
+%             decch = [  dec 3 2];
+%             nChs = sum(decch(2:3));
+%             ord = 4;
+%             nLen = 16;
+%             
+%             subCoefs = cell(nChs,1);
+%             coefs = zeros(1,nLen);
+%             scales = zeros(nChs,1);
+%             sIdx = 1;
+%             for iSubband = 1:nChs
+%                 subSeq = rand(1,nLen/dec) + 1i*rand(1,nLen/dec);
+%                 subCoefs{iSubband} = subSeq;
+%                 eIdx = sIdx + length(subSeq) - 1;
+%                 coefs(sIdx:eIdx) = subSeq(:).';
+%                 scales(iSubband) = length(subSeq);
+%                 sIdx = eIdx + 1;
+%             end
+%             
+%             % Preparation
+%             import saivdr.dictionary.colpprfb.*
+%             lppufb = CplxOLpPrFbFactory.createCplxOvsdLpPuFb1dSystem(...
+%                 'DecimationFactor',decch(1),...
+%                 'NumberOfChannels',decch(2:3),...
+%                 'PolyPhaseOrder',ord);
+%             angs = get(lppufb,'Angles');
+%             angs = randn(size(angs));
+%             set(lppufb,'Angles',angs);
+%             
+%             % Expected values
+%             release(lppufb)
+%             set(lppufb,'OutputMode','SynthesisFilterAt');
+%             seqExpctd = zeros(1,nLen);
+%             offset = -dec*ord/2;
+%             phs = 0; % for phs adjustment required experimentaly
+%             for iSubband = 1:nChs
+%                 subSeq = circshift(cconv(...
+%                     upsample(subCoefs{iSubband},dec,phs).',...
+%                     step(lppufb,[],[],iSubband),nLen),offset).';
+%                 seqExpctd = seqExpctd + subSeq;
+%             end
+%             
+%             % Instantiation of target class
+%             release(lppufb)
+%             set(lppufb,'OutputMode','ParameterMatrixSet');
+%             testCase.synthesizer = CplxOLpPuFbSynthesis1dSystem(....
+%                 'LpPuFb1d',lppufb,...
+%                 'BoundaryOperation','Circular');
+%             
+%             % Actual values
+%             seqActual = ...
+%                 step(testCase.synthesizer,coefs,scales);
+%             
+%             % Evaluation
+%             testCase.verifySize(seqActual,size(seqExpctd),...
+%                 'Actual image size is different from the expected one.');
+%             diff = max(abs(seqExpctd(:) - seqActual(:))./abs(seqExpctd(:)));
+%             testCase.verifyEqual(seqActual,seqExpctd,'RelTol',1e-10,sprintf('%g',diff));
+%         end
         
 %         % Test
 %         function testStepDec2Ch42Ord0(testCase)
@@ -8582,409 +8581,15 @@ classdef CplxOLpPuFbSynthesis1dSystemTestCase < matlab.unittest.TestCase
 %             testCase.verifyEqual(seqActual,seqExpctd,'RelTol',1e-10,sprintf('%g',diff));
 %             
 %         end
-%         
-%         % Test
-%         function testStepDec2Ch42Ord2(testCase)
+        %Dec2Ch5Ord2Level1
+%         function testStepDec2Ch5Ord2Level1(testCase)
 %             
 %             dec = 2;
-%             decch = [dec 4 2];
-%             nChs = sum(decch(2:3));
-%             ord = 2;
-%             nLen = 16;
-%             subCoefs = cell(nChs,1);
-%             coefs = zeros(1,nLen);
-%             scales = zeros(nChs,1);
-%             sIdx = 1;
-%             for iSubband = 1:nChs
-%                 subSeq = rand(1,nLen/dec) + 1i*rand(1,nLen/dec);
-%                 subCoefs{iSubband} = subSeq;
-%                 eIdx = sIdx + length(subSeq) - 1;
-%                 coefs(sIdx:eIdx) = subSeq(:).';
-%                 scales(iSubband) = length(subSeq);
-%                 sIdx = eIdx + 1;
-%             end
-%             
-%             % Preparation
-%             import saivdr.dictionary.colpprfb.*
-%             lppufb = CplxOLpPrFbFactory.createCplxOvsdLpPuFb1dSystem(...
-%                 'DecimationFactor',decch(1),...
-%                 'NumberOfChannels',decch(2:3),...
-%                 'PolyPhaseOrder',ord);
-%             angs = get(lppufb,'Angles');
-%             angs = randn(size(angs));
-%             set(lppufb,'Angles',angs);
-%             
-%             % Expected values
-%             release(lppufb)
-%             set(lppufb,'OutputMode','SynthesisFilterAt');
-%             seqExpctd = zeros(1,nLen);
-%             offset = -dec*ord/2;
-%             phs = 0; % for phs adjustment required experimentaly
-%             for iSubband = 1:nChs
-%                 subSeq = circshift(cconv(...
-%                     upsample(subCoefs{iSubband},dec,phs).',...
-%                     step(lppufb,[],[],iSubband),nLen),offset).';
-%                 seqExpctd = seqExpctd + subSeq;
-%             end
-%             
-%             % Instantiation of target class
-%             release(lppufb)
-%             set(lppufb,'OutputMode','ParameterMatrixSet');
-%             testCase.synthesizer = CplxOLpPuFbSynthesis1dSystem(....
-%                 'LpPuFb1d',lppufb);
-%             
-%             % Actual values
-%             seqActual = ...
-%                 step(testCase.synthesizer,coefs,scales);
-%             
-%             % Evaluation
-%             testCase.verifySize(seqActual,size(seqExpctd),...
-%                 'Actual image size is different from the expected one.');
-%             seqExpctd = seqExpctd(decch(1)+1:end-decch(1)); % ignore border
-%             seqActual = seqActual(decch(1)+1:end-decch(1)); % ignore border
-%             diff = max(abs(seqExpctd(:) - seqActual(:))./abs(seqExpctd(:)));
-%             testCase.verifyEqual(seqActual,seqExpctd,'RelTol',1e-10,sprintf('%g',diff));
-%         end
-%         
-%         % Test
-%         function testStepDec2Ch42Ord2PeriodicExt(testCase)
-%             
-%             dec = 2;
-%             decch = [ dec 4 2 ];
-%             nChs = sum(decch(2:3));
-%             ord = 2;
-%             nLen = 16;
-%             subCoefs = cell(nChs,1);
-%             coefs = zeros(1,nLen);
-%             scales = zeros(nChs,1);
-%             sIdx = 1;
-%             for iSubband = 1:nChs
-%                 subSeq = rand(1,nLen/dec) + 1i*rand(1,nLen/dec);
-%                 subCoefs{iSubband} = subSeq;
-%                 eIdx = sIdx + length(subSeq) - 1;
-%                 coefs(sIdx:eIdx) = subSeq(:).';
-%                 scales(iSubband) = length(subSeq);
-%                 sIdx = eIdx + 1;
-%             end
-%             
-%             % Preparation
-%             import saivdr.dictionary.colpprfb.*
-%             lppufb = CplxOLpPrFbFactory.createCplxOvsdLpPuFb1dSystem(...
-%                 'DecimationFactor',decch(1),...
-%                 'NumberOfChannels',decch(2:3),...
-%                 'PolyPhaseOrder',ord);
-%             angs = get(lppufb,'Angles');
-%             angs = randn(size(angs));
-%             set(lppufb,'Angles',angs);
-%             
-%             % Expected values
-%             release(lppufb)
-%             set(lppufb,'OutputMode','SynthesisFilterAt');
-%             seqExpctd = zeros(1,nLen);
-%             offset = -dec*ord/2;
-%             phs = 0; % for phs adjustment required experimentaly
-%             for iSubband = 1:nChs
-%                 subSeq = circshift(cconv(...
-%                     upsample(subCoefs{iSubband},dec,phs).',...
-%                     step(lppufb,[],[],iSubband),nLen),offset).';
-%                 seqExpctd = seqExpctd + subSeq;
-%             end
-%             
-%             % Instantiation of target class
-%             release(lppufb)
-%             set(lppufb,'OutputMode','ParameterMatrixSet');
-%             testCase.synthesizer = CplxOLpPuFbSynthesis1dSystem(....
-%                 'LpPuFb1d',lppufb,...
-%                 'BoundaryOperation','Circular');
-%             
-%             % Actual values
-%             seqActual = ...
-%                 step(testCase.synthesizer,coefs,scales);
-%             
-%             % Evaluation
-%             testCase.verifySize(seqActual,size(seqExpctd),...
-%                 'Actual image size is different from the expected one.');
-%             diff = max(abs(seqExpctd(:) - seqActual(:))./abs(seqExpctd(:)));
-%             testCase.verifyEqual(seqActual,seqExpctd,'RelTol',1e-10,sprintf('%g',diff));
-%         end
-%         
-%         % Test
-%         function testStepDec2Ch42Ord4(testCase)
-%             
-%             dec = 2;
-%             decch = [dec 4 2];
-%             nChs = sum(decch(2:3));
-%             ord = 4;
-%             nLen = 16;
-%             subCoefs = cell(nChs,1);
-%             coefs = zeros(1,nLen);
-%             scales = zeros(nChs,1);
-%             sIdx = 1;
-%             for iSubband = 1:nChs
-%                 subSeq = rand(1,nLen/dec) + 1i*rand(1,nLen/dec);
-%                 subCoefs{iSubband} = subSeq;
-%                 eIdx = sIdx + length(subSeq) - 1;
-%                 coefs(sIdx:eIdx) = subSeq(:).';
-%                 scales(iSubband) = length(subSeq);
-%                 sIdx = eIdx + 1;
-%             end
-%             
-%             % Preparation
-%             import saivdr.dictionary.colpprfb.*
-%             lppufb = CplxOLpPrFbFactory.createCplxOvsdLpPuFb1dSystem(...
-%                 'DecimationFactor',decch(1),...
-%                 'NumberOfChannels',decch(2:3),...
-%                 'PolyPhaseOrder',ord);
-%             angs = get(lppufb,'Angles');
-%             angs = randn(size(angs));
-%             set(lppufb,'Angles',angs);
-%             
-%             % Expected values
-%             release(lppufb)
-%             set(lppufb,'OutputMode','SynthesisFilterAt');
-%             seqExpctd = zeros(1,nLen);
-%             offset = -dec*ord/2;
-%             phs = 0; % for phs adjustment required experimentaly
-%             for iSubband = 1:nChs
-%                 subSeq = circshift(cconv(...
-%                     upsample(subCoefs{iSubband},dec,phs).',...
-%                     step(lppufb,[],[],iSubband),nLen),offset).';
-%                 seqExpctd = seqExpctd + subSeq;
-%             end
-%             
-%             % Instantiation of target class
-%             release(lppufb)
-%             set(lppufb,'OutputMode','ParameterMatrixSet');
-%             testCase.synthesizer = CplxOLpPuFbSynthesis1dSystem(....
-%                 'LpPuFb1d',lppufb);
-%             
-%             % Actual values
-%             seqActual = ...
-%                 step(testCase.synthesizer,coefs,scales);
-%             
-%             % Evaluation
-%             testCase.verifySize(seqActual,size(seqExpctd),...
-%                 'Actual image size is different from the expected one.');
-%             seqExpctd = seqExpctd(2*decch(1)+1:end-2*decch(1)); % ignore border
-%             seqActual = seqActual(2*decch(1)+1:end-2*decch(1)); % ignore border
-%             diff = max(abs(seqExpctd(:) - seqActual(:))./abs(seqExpctd(:)));
-%             testCase.verifyEqual(seqActual,seqExpctd,'RelTol',1e-10,sprintf('%g',diff));
-%         end
-%         
-%         % Test
-%         function testStepDec2Ch42Ord4PeriodicExt(testCase)
-%             
-%             dec = 2;
-%             decch = [dec 4 2];
-%             nChs = sum(decch(2:3));
-%             ord = 4;
-%             nLen = 16;
-%             subCoefs = cell(nChs,1);
-%             coefs = zeros(1,nLen);
-%             scales = zeros(nChs,1);
-%             sIdx = 1;
-%             for iSubband = 1:nChs
-%                 subSeq = rand(1,nLen/dec) + 1i*rand(1,nLen/dec);
-%                 subCoefs{iSubband} = subSeq;
-%                 eIdx = sIdx + length(subSeq) - 1;
-%                 coefs(sIdx:eIdx) = subSeq(:).';
-%                 scales(iSubband) = length(subSeq);
-%                 sIdx = eIdx + 1;
-%             end
-%             
-%             % Preparation
-%             import saivdr.dictionary.colpprfb.*
-%             lppufb = CplxOLpPrFbFactory.createCplxOvsdLpPuFb1dSystem(...
-%                 'DecimationFactor',decch(1),...
-%                 'NumberOfChannels',decch(2:3),...
-%                 'PolyPhaseOrder',ord);
-%             angs = get(lppufb,'Angles');
-%             angs = randn(size(angs));
-%             set(lppufb,'Angles',angs);
-%             
-%             % Expected values
-%             release(lppufb)
-%             set(lppufb,'OutputMode','SynthesisFilterAt');
-%             seqExpctd = zeros(1,nLen);
-%             offset = -dec*ord/2;
-%             phs = 0; % for phs adjustment required experimentaly
-%             for iSubband = 1:nChs
-%                 subSeq = circshift(cconv(...
-%                     upsample(subCoefs{iSubband},dec,phs).',...
-%                     step(lppufb,[],[],iSubband),nLen),offset).';
-%                 seqExpctd = seqExpctd + subSeq;
-%             end
-%             
-%             % Instantiation of target class
-%             release(lppufb)
-%             set(lppufb,'OutputMode','ParameterMatrixSet');
-%             testCase.synthesizer = CplxOLpPuFbSynthesis1dSystem(....
-%                 'LpPuFb1d',lppufb,...
-%                 'BoundaryOperation','Circular');
-%             
-%             % Actual values
-%             seqActual = ...
-%                 step(testCase.synthesizer,coefs,scales);
-%             
-%             % Evaluation
-%             testCase.verifySize(seqActual,size(seqExpctd),...
-%                 'Actual image size is different from the expected one.');
-%             diff = max(abs(seqExpctd(:) - seqActual(:))./abs(seqExpctd(:)));
-%             testCase.verifyEqual(seqActual,seqExpctd,'RelTol',1e-9,sprintf('%g',diff));
-%         end
-        
-        %Dec2Ch32Ord2Level1
-        function testStepDec2Ch32Ord2Level1(testCase)
-            
-            dec = 2;
-            decch = [dec 3 2];
-            nChs = sum(decch(2:3));
-            ord = 2;
-            nLen = 32;
-            %nLevels = 1;
-            subCoefs = cell(nChs,1);
-            coefs = zeros(1,nLen);
-            scales = zeros(nChs,1);
-            sIdx = 1;
-            for iSubband = 1:nChs
-                subSeq = rand(1,nLen/dec) + 1i*rand(1,nLen/dec);
-                subCoefs{iSubband} = subSeq;
-                eIdx = sIdx + length(subSeq) - 1;
-                coefs(sIdx:eIdx) = subSeq(:).';
-                scales(iSubband) = length(subSeq);
-                sIdx = eIdx + 1;
-            end
-            
-            % Preparation
-            import saivdr.dictionary.colpprfb.*
-            lppufb = CplxOLpPrFbFactory.createCplxOvsdLpPuFb1dSystem(...
-                'DecimationFactor',decch(1),...
-                'NumberOfChannels',decch(2:3),...
-                'PolyPhaseOrder',ord);
-            angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
-            set(lppufb,'Angles',angs);
-            
-            % Expected values
-            release(lppufb)
-            set(lppufb,'OutputMode','SynthesisFilterAt');
-            seqExpctd = zeros(1,nLen);
-            offset = -dec*ord/2;
-            phs = 0; % for phs adjustment required experimentaly
-            for iSubband = 1:nChs
-                subSeq = circshift(cconv(...
-                    upsample(subCoefs{iSubband},dec,phs).',...
-                    step(lppufb,[],[],iSubband),nLen),offset).';
-                seqExpctd = seqExpctd + subSeq;
-            end
-            
-            % Instantiation of target class
-            release(lppufb)
-            set(lppufb,'OutputMode','ParameterMatrixSet');
-            testCase.synthesizer = CplxOLpPuFbSynthesis1dSystem(....
-                'LpPuFb1d',lppufb);
-            
-            % Actual values
-            seqActual = ...
-                step(testCase.synthesizer,coefs,scales);
-            
-            % Evaluation
-            testCase.verifySize(seqActual,size(seqExpctd),...
-                'Actual image size is different from the expected one.');
-            border1 = decch(1);
-            seqExpctd = seqExpctd(border1+1:end-border1); % ignore border
-            seqActual = seqActual(border1+1:end-border1); % ignore border
-            diff = max(abs(seqExpctd(:) - seqActual(:))./abs(seqExpctd(:)));
-            testCase.verifyEqual(seqActual,seqExpctd,'RelTol',1e-10,sprintf('%g',diff));
-        end
-        
-        %Dec2Ch32Ord2Level2PeriodicExt
-        function testStepDec2Ch32Ord2Level2PeriodicExt(testCase)
-            
-            dec = 2;
-            decch = [dec 3 2];
-            nChs = sum(decch(2:3));
-            ord = 2;
-            nLen = 32;
-            nLevels = 2;
-            subCoefs = cell(nLevels*(nChs-1)+1,1);
-            subCoefs{1} = rand(1,nLen/(decch(1)^2)) + 1i*rand(1,nLen/(decch(1)^2));
-            subCoefs{2} = rand(1,nLen/(decch(1)^2)) + 1i*rand(1,nLen/(decch(1)^2));
-            subCoefs{3} = rand(1,nLen/(decch(1)^2)) + 1i*rand(1,nLen/(decch(1)^2));
-            subCoefs{4} = rand(1,nLen/(decch(1)^2)) + 1i*rand(1,nLen/(decch(1)^2));
-            subCoefs{5} = rand(1,nLen/(decch(1)^2)) + 1i*rand(1,nLen/(decch(1)^2));
-            subCoefs{6} = rand(1,nLen/decch(1)) + 1i*rand(1,nLen/(decch(1)));
-            subCoefs{7} = rand(1,nLen/decch(1)) + 1i*rand(1,nLen/(decch(1)));
-            subCoefs{8} = rand(1,nLen/decch(1)) + 1i*rand(1,nLen/(decch(1)));
-            subCoefs{9} = rand(1,nLen/decch(1)) + 1i*rand(1,nLen/(decch(1)));
-            nSubbands = length(subCoefs);
-            scales = zeros(nSubbands,1);
-            sIdx = 1;
-            for iSubband = 1:nSubbands
-                scales(iSubband) = length(subCoefs{iSubband});
-                eIdx = sIdx + scales(iSubband)-1;
-                coefs(sIdx:eIdx) = subCoefs{iSubband}(:).';
-                sIdx = eIdx + 1;
-            end
-            
-            % Preparation
-            import saivdr.dictionary.colpprfb.*
-            lppufb = CplxOLpPrFbFactory.createCplxOvsdLpPuFb1dSystem(...
-                'DecimationFactor',decch(1),...
-                'NumberOfChannels',decch(2:3),...
-                'PolyPhaseOrder',ord);
-            angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
-            set(lppufb,'Angles',angs);
-            
-            % Expected values
-            release(lppufb)
-            set(lppufb,'OutputMode','SynthesisFilterAt');
-            offset = -dec*ord/2;
-            phs = 0; % for phs adjustment required experimentaly
-            subsubCoefs = cell(nChs,1);
-            subsubCoefs{1} = subCoefs{1};
-            for iLevel = 1:nLevels
-                period = nLen/(dec^(nLevels-iLevel));
-                seqExpctd = circshift(cconv(...
-                    upsample(subsubCoefs{1},dec,phs).',...
-                    step(lppufb,[],[],1),period),offset).';
-                for iSubSub = 2:nChs
-                    iSubband = (iLevel-1)*(nChs-1)+iSubSub;
-                    subSeq = circshift(cconv(...
-                        upsample(subCoefs{iSubband},dec,phs).',...
-                        step(lppufb,[],[],iSubSub),period),offset).';
-                    seqExpctd = seqExpctd + subSeq;
-                end
-                subsubCoefs{1}=seqExpctd;
-            end
-            
-            % Instantiation of target class
-            release(lppufb)
-            set(lppufb,'OutputMode','ParameterMatrixSet');
-            testCase.synthesizer = CplxOLpPuFbSynthesis1dSystem(....
-                'LpPuFb1d',lppufb,...
-                'BoundaryOperation','Circular');
-            
-            % Actual values
-            seqActual = ...
-                step(testCase.synthesizer,coefs,scales);
-            
-            % Evaluation
-            testCase.verifySize(seqActual,size(seqExpctd),...
-                'Actual image size is different from the expected one.');
-            diff = max(abs(seqExpctd(:) - seqActual(:))./abs(seqExpctd(:)));
-            testCase.verifyEqual(seqActual,seqExpctd,'RelTol',1e-9,sprintf('%g',diff));
-        end
-        
-%         %Dec2Ch32Ord2Level1
-%         function testStepDec42Ch5Ord2Level1(testCase)
-%             
-%             dec = 2;
-%             decch = [dec 4 2];
+%             decch = [dec 3 2];
 %             nChs = sum(decch(2:3));
 %             ord = 2;
 %             nLen = 32;
+%             %nLevels = 1;
 %             subCoefs = cell(nChs,1);
 %             coefs = zeros(1,nLen);
 %             scales = zeros(nChs,1);
@@ -9038,30 +8643,28 @@ classdef CplxOLpPuFbSynthesis1dSystemTestCase < matlab.unittest.TestCase
 %             seqExpctd = seqExpctd(border1+1:end-border1); % ignore border
 %             seqActual = seqActual(border1+1:end-border1); % ignore border
 %             diff = max(abs(seqExpctd(:) - seqActual(:))./abs(seqExpctd(:)));
-%             testCase.verifyEqual(seqActual,seqExpctd,'RelTol',1e-9,sprintf('%g',diff));
+%             testCase.verifyEqual(seqActual,seqExpctd,'RelTol',1e-10,sprintf('%g',diff));
 %         end
-%         
-%         %Dec2Ch32Ord2Level2PeriodicExt
-%         function testStepDec2Ch42Ord2Level2PeriodicExt(testCase)
+        
+%         %Dec2Ch5Ord2Level2PeriodicExt
+%         function testStepDec2Ch5Ord2Level2PeriodicExt(testCase)
 %             
 %             dec = 2;
-%             decch = [dec 4 2];
+%             decch = [dec 3 2];
 %             nChs = sum(decch(2:3));
 %             ord = 2;
 %             nLen = 32;
 %             nLevels = 2;
 %             subCoefs = cell(nLevels*(nChs-1)+1,1);
-%             subCoefs{1} = rand(1,nLen/(decch(1)^2));
-%             subCoefs{2} = rand(1,nLen/(decch(1)^2));
-%             subCoefs{3} = rand(1,nLen/(decch(1)^2));
-%             subCoefs{4} = rand(1,nLen/(decch(1)^2));
-%             subCoefs{5} = rand(1,nLen/(decch(1)^2));
-%             subCoefs{6} = rand(1,nLen/(decch(1)^2));
-%             subCoefs{7} = rand(1,nLen/decch(1));
-%             subCoefs{8} = rand(1,nLen/decch(1));
-%             subCoefs{9} = rand(1,nLen/decch(1));
-%             subCoefs{10} = rand(1,nLen/decch(1));
-%             subCoefs{11} = rand(1,nLen/decch(1));
+%             subCoefs{1} = rand(1,nLen/(decch(1)^2)) + 1i*rand(1,nLen/(decch(1)^2));
+%             subCoefs{2} = rand(1,nLen/(decch(1)^2)) + 1i*rand(1,nLen/(decch(1)^2));
+%             subCoefs{3} = rand(1,nLen/(decch(1)^2)) + 1i*rand(1,nLen/(decch(1)^2));
+%             subCoefs{4} = rand(1,nLen/(decch(1)^2)) + 1i*rand(1,nLen/(decch(1)^2));
+%             subCoefs{5} = rand(1,nLen/(decch(1)^2)) + 1i*rand(1,nLen/(decch(1)^2));
+%             subCoefs{6} = rand(1,nLen/decch(1)) + 1i*rand(1,nLen/(decch(1)));
+%             subCoefs{7} = rand(1,nLen/decch(1)) + 1i*rand(1,nLen/(decch(1)));
+%             subCoefs{8} = rand(1,nLen/decch(1)) + 1i*rand(1,nLen/(decch(1)));
+%             subCoefs{9} = rand(1,nLen/decch(1)) + 1i*rand(1,nLen/(decch(1)));
 %             nSubbands = length(subCoefs);
 %             scales = zeros(nSubbands,1);
 %             sIdx = 1;
@@ -9082,7 +8685,6 @@ classdef CplxOLpPuFbSynthesis1dSystemTestCase < matlab.unittest.TestCase
 %             angs = randn(size(angs));
 %             set(lppufb,'Angles',angs);
 %             
-%             
 %             % Expected values
 %             release(lppufb)
 %             set(lppufb,'OutputMode','SynthesisFilterAt');
@@ -9093,7 +8695,7 @@ classdef CplxOLpPuFbSynthesis1dSystemTestCase < matlab.unittest.TestCase
 %             for iLevel = 1:nLevels
 %                 period = nLen/(dec^(nLevels-iLevel));
 %                 seqExpctd = circshift(cconv(...
-%                     upsample(subsubCoefs{1},decch(1),phs).',...
+%                     upsample(subsubCoefs{1},dec,phs).',...
 %                     step(lppufb,[],[],1),period),offset).';
 %                 for iSubSub = 2:nChs
 %                     iSubband = (iLevel-1)*(nChs-1)+iSubSub;
@@ -9121,127 +8723,6 @@ classdef CplxOLpPuFbSynthesis1dSystemTestCase < matlab.unittest.TestCase
 %                 'Actual image size is different from the expected one.');
 %             diff = max(abs(seqExpctd(:) - seqActual(:))./abs(seqExpctd(:)));
 %             testCase.verifyEqual(seqActual,seqExpctd,'RelTol',1e-9,sprintf('%g',diff));
-%         end
-%         
-%         function testSetLpPuFb1dDec2Ch62Ord4(testCase)
-%             
-%             dec = 2;
-%             ch = [ 6 2 ];
-%             ord = 4;
-%             nLen = 32;
-%             subCoefs{1} = rand(1,nLen/(dec));
-%             subCoefs{2} = rand(1,nLen/(dec));
-%             subCoefs{3} = rand(1,nLen/(dec));
-%             subCoefs{4} = rand(1,nLen/(dec));
-%             subCoefs{5} = rand(1,nLen/(dec));
-%             subCoefs{6} = rand(1,nLen/(dec));
-%             subCoefs{7} = rand(1,nLen/(dec));
-%             subCoefs{8} = rand(1,nLen/(dec));
-%             nSubbands = length(subCoefs);
-%             scales = zeros(nSubbands,1);
-%             sIdx = 1;
-%             for iSubband = 1:nSubbands
-%                 scales(iSubband) = length(subCoefs{iSubband});
-%                 eIdx = sIdx + scales(iSubband)-1;
-%                 coefs(sIdx:eIdx) = subCoefs{iSubband}(:).';
-%                 sIdx = eIdx + 1;
-%             end
-%             
-%             % Preparation
-%             import saivdr.dictionary.colpprfb.*
-%             lppufb = CplxOLpPrFbFactory.createCplxOvsdLpPuFb1dSystem(...
-%                 'DecimationFactor',dec,...
-%                 'NumberOfChannels',ch,...
-%                 'PolyPhaseOrder',ord);
-%             
-%             % Instantiation of target class
-%             release(lppufb)
-%             set(lppufb,'OutputMode','ParameterMatrixSet');
-%             testCase.synthesizer = CplxOLpPuFbSynthesis1dSystem(...
-%                 'LpPuFb1d',lppufb);
-%             imgPre = step(testCase.synthesizer,coefs,scales);
-%             
-%             % Update lppufb
-%             angs = get(lppufb,'Angles');
-%             angs = randn(size(angs));
-%             set(lppufb,'Angles',angs);
-%             imgPst = step(testCase.synthesizer,coefs,scales);
-%             
-%             % Evaluation
-%             import matlab.unittest.constraints.IsGreaterThan;
-%             diff = norm(imgPst(:)-imgPre(:));
-%             testCase.verifyTrue(diff<1e-15);
-%             
-%             % ReInstantiation of target class
-%             testCase.synthesizer = CplxOLpPuFbSynthesis1dSystem(...
-%                 'LpPuFb1d',lppufb,...
-%                 'BoundaryOperation','Termination');
-%             imgPst = step(testCase.synthesizer,coefs,scales);
-%             
-%             % Evaluation
-%             import matlab.unittest.constraints.IsGreaterThan;
-%             diff = norm(imgPst(:)-imgPre(:));
-%             testCase.verifyThat(diff,IsGreaterThan(0));
-% %         end
-%         
-%         function testSetLpPuFb1dDec2Ch52Ord4(testCase)
-%             
-%             dec = 2;
-%             ch = [ 5 2 ];
-%             ord = 4;
-%             nLen = 32;
-%             subCoefs{1} = rand(1,nLen/(dec));
-%             subCoefs{2} = rand(1,nLen/(dec));
-%             subCoefs{3} = rand(1,nLen/(dec));
-%             subCoefs{4} = rand(1,nLen/(dec));
-%             subCoefs{5} = rand(1,nLen/(dec));
-%             subCoefs{6} = rand(1,nLen/(dec));
-%             subCoefs{7} = rand(1,nLen/(dec));
-%             nSubbands = length(subCoefs);
-%             scales = zeros(nSubbands,1);
-%             sIdx = 1;
-%             for iSubband = 1:nSubbands
-%                 scales(iSubband) = length(subCoefs{iSubband});
-%                 eIdx = sIdx + scales(iSubband)-1;
-%                 coefs(sIdx:eIdx) = subCoefs{iSubband}(:).';
-%                 sIdx = eIdx + 1;
-%             end
-%             
-%             % Preparation
-%             import saivdr.dictionary.colpprfb.*
-%             lppufb = CplxOLpPrFbFactory.createCplxOvsdLpPuFb1dSystem(...
-%                 'DecimationFactor',dec,...
-%                 'NumberOfChannels',ch,...
-%                 'PolyPhaseOrder',ord);
-%             
-%             % Instantiation of target class
-%             release(lppufb)
-%             set(lppufb,'OutputMode','ParameterMatrixSet');
-%             testCase.synthesizer = CplxOLpPuFbSynthesis1dSystem(...
-%                 'LpPuFb1d',lppufb);
-%             imgPre = step(testCase.synthesizer,coefs,scales);
-%             
-%             % Update lppufb
-%             angs = get(lppufb,'Angles');
-%             angs = randn(size(angs));
-%             set(lppufb,'Angles',angs);
-%             imgPst = step(testCase.synthesizer,coefs,scales);
-%             
-%             % Evaluation
-%             import matlab.unittest.constraints.IsGreaterThan;
-%             diff = norm(imgPst(:)-imgPre(:));
-%             testCase.verifyTrue(diff<1e-15);
-%             
-%             % ReInstantiation of target class
-%             testCase.synthesizer = CplxOLpPuFbSynthesis1dSystem(...
-%                 'LpPuFb1d',lppufb,...
-%                 'BoundaryOperation','Termination');
-%             imgPst = step(testCase.synthesizer,coefs,scales);
-%             
-%             % Evaluation
-%             import matlab.unittest.constraints.IsGreaterThan;
-%             diff = norm(imgPst(:)-imgPre(:));
-%             testCase.verifyThat(diff,IsGreaterThan(0));
 %         end
 %         
 %         % Test Clone
@@ -9283,672 +8764,7 @@ classdef CplxOLpPuFbSynthesis1dSystemTestCase < matlab.unittest.TestCase
 %             testCase.assertEqual(recseqActual,recseqExpctd);
 %             
 % %         end
-%         
-%         % Test
-%         function testStepDec2Ch23Ord0(testCase)
-%             
-%             dec = 2;
-%             decch = [dec 2 3];
-%             nChs = sum(decch(2:3));
-%             nLen = 16;
-%             subCoefs = rand(nChs,nLen/dec);
-%             coefs = zeros(1,nLen);
-%             scales = zeros(nChs,1);
-%             sIdx = 1;
-%             for iCh = 1:nChs
-%                 subSeq = subCoefs(iCh,:);
-%                 eIdx = sIdx + length(subSeq) - 1;
-%                 coefs(sIdx:eIdx) = subSeq(:).';
-%                 scales(iCh) = length(subSeq);
-%                 sIdx = eIdx + 1;
-%             end
-%             
-%             % Preparation
-%             import saivdr.dictionary.colpprfb.*
-%             lppufb = CplxOLpPrFbFactory.createCplxOvsdLpPuFb1dSystem(...
-%                 'DecimationFactor',decch(1),...
-%                 'NumberOfChannels',decch(2:3));
-%             angs = get(lppufb,'Angles');
-%             angs = randn(size(angs));
-%             set(lppufb,'Angles',angs);
-%             E = step(lppufb,[],[]);
-%             
-%             % Expected values
-%             tmp = flipud(E'*subCoefs);
-%             seqExpctd = tmp(:).';
-%             
-%             % Instantiation of target class
-%             release(lppufb)
-%             set(lppufb,'OutputMode','ParameterMatrixSet');
-%             testCase.synthesizer = CplxOLpPuFbSynthesis1dSystem(....
-%                 'LpPuFb1d',lppufb);
-%             
-%             % Actual values
-%             seqActual = ...
-%                 step(testCase.synthesizer,coefs,scales);
-%             
-%             
-%             % Evaluation
-%             diff = max(abs(seqExpctd(:) - seqActual(:))./abs(seqExpctd(:)));
-%             testCase.verifyEqual(seqActual,seqExpctd,'RelTol',1e-10,sprintf('%g',diff));
-%             
-%         end
-%         
-%         % Test
-%         function testStepDec2Ch23Ord2(testCase)
-%             
-%             dec = 2;
-%             decch = [dec 2 3];
-%             nChs = sum(decch(2:3));
-%             ord = 2;
-%             nLen = 16;
-%             subCoefs = cell(nChs,1);
-%             coefs = zeros(1,nLen);
-%             scales = zeros(nChs,1);
-%             sIdx = 1;
-%             for iSubband = 1:nChs
-%                 subSeq = rand(1,nLen/dec) + 1i*rand(1,nLen/dec);
-%                 subCoefs{iSubband} = subSeq;
-%                 eIdx = sIdx + length(subSeq) - 1;
-%                 coefs(sIdx:eIdx) = subSeq(:).';
-%                 scales(iSubband) = length(subSeq);
-%                 sIdx = eIdx + 1;
-%             end
-%             
-%             % Preparation
-%             import saivdr.dictionary.colpprfb.*
-%             lppufb = CplxOLpPrFbFactory.createCplxOvsdLpPuFb1dSystem(...
-%                 'DecimationFactor',decch(1),...
-%                 'NumberOfChannels',decch(2:3),...
-%                 'PolyPhaseOrder',ord);
-%             angs = get(lppufb,'Angles');
-%             angs = randn(size(angs));
-%             set(lppufb,'Angles',angs);
-%             
-%             % Expected values
-%             release(lppufb)
-%             set(lppufb,'OutputMode','SynthesisFilterAt');
-%             seqExpctd = zeros(1,nLen);
-%             offset = -dec*ord/2;
-%             phs = 0; % for phs adjustment required experimentaly
-%             for iSubband = 1:nChs
-%                 subSeq = circshift(cconv(...
-%                     upsample(subCoefs{iSubband},dec,phs).',...
-%                     step(lppufb,[],[],iSubband),nLen),offset).';
-%                 seqExpctd = seqExpctd + subSeq;
-%             end
-%             
-%             % Instantiation of target class
-%             release(lppufb)
-%             set(lppufb,'OutputMode','ParameterMatrixSet');
-%             testCase.synthesizer = CplxOLpPuFbSynthesis1dSystem(....
-%                 'LpPuFb1d',lppufb);
-%             
-%             % Actual values
-%             seqActual = ...
-%                 step(testCase.synthesizer,coefs,scales);
-%             
-%             % Evaluation
-%             testCase.verifySize(seqActual,size(seqExpctd),...
-%                 'Actual image size is different from the expected one.');
-%             seqExpctd = seqExpctd(decch(1)+1:end-decch(1)); % ignore border
-%             seqActual = seqActual(decch(1)+1:end-decch(1)); % ignore border
-%             diff = max(abs(seqExpctd(:) - seqActual(:))./abs(seqExpctd(:)));
-%             testCase.verifyEqual(seqActual,seqExpctd,'RelTol',1e-10,sprintf('%g',diff));
-%         end
-%         
-%         % Test
-%         function testStepDec2Ch23Ord2PeriodicExt(testCase)
-%             
-%             dec = 2;
-%             decch = [ dec 2 3 ];
-%             nChs = sum(decch(2:3));
-%             ord = 2;
-%             nLen = 16;
-%             subCoefs = cell(nChs,1);
-%             coefs = zeros(1,nLen);
-%             scales = zeros(nChs,1);
-%             sIdx = 1;
-%             for iSubband = 1:nChs
-%                 subSeq = rand(1,nLen/dec) + 1i*rand(1,nLen/dec);
-%                 subCoefs{iSubband} = subSeq;
-%                 eIdx = sIdx + length(subSeq) - 1;
-%                 coefs(sIdx:eIdx) = subSeq(:).';
-%                 scales(iSubband) = length(subSeq);
-%                 sIdx = eIdx + 1;
-%             end
-%             
-%             % Preparation
-%             import saivdr.dictionary.colpprfb.*
-%             lppufb = CplxOLpPrFbFactory.createCplxOvsdLpPuFb1dSystem(...
-%                 'DecimationFactor',decch(1),...
-%                 'NumberOfChannels',decch(2:3),...
-%                 'PolyPhaseOrder',ord);
-%             angs = get(lppufb,'Angles');
-%             angs = randn(size(angs));
-%             set(lppufb,'Angles',angs);
-%             
-%             % Expected values
-%             release(lppufb)
-%             set(lppufb,'OutputMode','SynthesisFilterAt');
-%             seqExpctd = zeros(1,nLen);
-%             offset = -dec*ord/2;
-%             phs = 0; % for phs adjustment required experimentaly
-%             for iSubband = 1:nChs
-%                 subSeq = circshift(cconv(...
-%                     upsample(subCoefs{iSubband},dec,phs).',...
-%                     step(lppufb,[],[],iSubband),nLen),offset).';
-%                 seqExpctd = seqExpctd + subSeq;
-%             end
-%             
-%             % Instantiation of target class
-%             release(lppufb)
-%             set(lppufb,'OutputMode','ParameterMatrixSet');
-%             testCase.synthesizer = CplxOLpPuFbSynthesis1dSystem(....
-%                 'LpPuFb1d',lppufb,...
-%                 'BoundaryOperation','Circular');
-%             
-%             % Actual values
-%             seqActual = ...
-%                 step(testCase.synthesizer,coefs,scales);
-%             
-%             % Evaluation
-%             testCase.verifySize(seqActual,size(seqExpctd),...
-%                 'Actual image size is different from the expected one.');
-%             diff = max(abs(seqExpctd(:) - seqActual(:))./abs(seqExpctd(:)));
-%             testCase.verifyEqual(seqActual,seqExpctd,'RelTol',1e-10,sprintf('%g',diff));
-%         end
-%         
-%         % Test
-%         function testStepDec2Ch23Ord4(testCase)
-%             
-%             dec = 2;
-%             decch = [dec 2 3];
-%             nChs = sum(decch(2:3));
-%             ord = 4;
-%             nLen = 16;
-%             subCoefs = cell(nChs,1);
-%             coefs = zeros(1,nLen);
-%             scales = zeros(nChs,1);
-%             sIdx = 1;
-%             for iSubband = 1:nChs
-%                 subSeq = rand(1,nLen/dec) + 1i*rand(1,nLen/dec);
-%                 subCoefs{iSubband} = subSeq;
-%                 eIdx = sIdx + length(subSeq) - 1;
-%                 coefs(sIdx:eIdx) = subSeq(:).';
-%                 scales(iSubband) = length(subSeq);
-%                 sIdx = eIdx + 1;
-%             end
-%             
-%             % Preparation
-%             import saivdr.dictionary.colpprfb.*
-%             lppufb = CplxOLpPrFbFactory.createCplxOvsdLpPuFb1dSystem(...
-%                 'DecimationFactor',decch(1),...
-%                 'NumberOfChannels',decch(2:3),...
-%                 'PolyPhaseOrder',ord);
-%             angs = get(lppufb,'Angles');
-%             angs = randn(size(angs));
-%             set(lppufb,'Angles',angs);
-%             
-%             % Expected values
-%             release(lppufb)
-%             set(lppufb,'OutputMode','SynthesisFilterAt');
-%             seqExpctd = zeros(1,nLen);
-%             offset = -dec*ord/2;
-%             phs = 0; % for phs adjustment required experimentaly
-%             for iSubband = 1:nChs
-%                 subSeq = circshift(cconv(...
-%                     upsample(subCoefs{iSubband},dec,phs).',...
-%                     step(lppufb,[],[],iSubband),nLen),offset).';
-%                 seqExpctd = seqExpctd + subSeq;
-%             end
-%             
-%             % Instantiation of target class
-%             release(lppufb)
-%             set(lppufb,'OutputMode','ParameterMatrixSet');
-%             testCase.synthesizer = CplxOLpPuFbSynthesis1dSystem(....
-%                 'LpPuFb1d',lppufb);
-%             
-%             % Actual values
-%             seqActual = ...
-%                 step(testCase.synthesizer,coefs,scales);
-%             
-%             % Evaluation
-%             testCase.verifySize(seqActual,size(seqExpctd),...
-%                 'Actual image size is different from the expected one.');
-%             seqExpctd = seqExpctd(2*decch(1)+1:end-2*decch(1)); % ignore border
-%             seqActual = seqActual(2*decch(1)+1:end-2*decch(1)); % ignore border
-%             diff = max(abs(seqExpctd(:) - seqActual(:))./abs(seqExpctd(:)));
-%             testCase.verifyEqual(seqActual,seqExpctd,'RelTol',1e-10,sprintf('%g',diff));
-%         end
-%         
-%         % Test
-%         function testStepDec2Ch23Ord4PeriodicExt(testCase)
-%             
-%             dec = 2;
-%             decch = [ dec 2 3];
-%             nChs = sum(decch(2:3));
-%             ord = 4;
-%             nLen = 16;
-%             subCoefs = cell(nChs,1);
-%             coefs = zeros(1,nLen);
-%             scales = zeros(nChs,1);
-%             sIdx = 1;
-%             for iSubband = 1:nChs
-%                 subSeq = rand(1,nLen/dec) + 1i*rand(1,nLen/dec);
-%                 subCoefs{iSubband} = subSeq;
-%                 eIdx = sIdx + length(subSeq) - 1;
-%                 coefs(sIdx:eIdx) = subSeq(:).';
-%                 scales(iSubband) = length(subSeq);
-%                 sIdx = eIdx + 1;
-%             end
-%             
-%             % Preparation
-%             import saivdr.dictionary.colpprfb.*
-%             lppufb = CplxOLpPrFbFactory.createCplxOvsdLpPuFb1dSystem(...
-%                 'DecimationFactor',decch(1),...
-%                 'NumberOfChannels',decch(2:3),...
-%                 'PolyPhaseOrder',ord);
-%             angs = get(lppufb,'Angles');
-%             angs = randn(size(angs));
-%             set(lppufb,'Angles',angs);
-%             
-%             % Expected values
-%             release(lppufb)
-%             set(lppufb,'OutputMode','SynthesisFilterAt');
-%             seqExpctd = zeros(1,nLen);
-%             offset = -dec*ord/2;
-%             phs = 0; % for phs adjustment required experimentaly
-%             for iSubband = 1:nChs
-%                 subSeq = circshift(cconv(...
-%                     upsample(subCoefs{iSubband},dec,phs).',...
-%                     step(lppufb,[],[],iSubband),nLen),offset).';
-%                 seqExpctd = seqExpctd + subSeq;
-%             end
-%             
-%             % Instantiation of target class
-%             release(lppufb)
-%             set(lppufb,'OutputMode','ParameterMatrixSet');
-%             testCase.synthesizer = CplxOLpPuFbSynthesis1dSystem(....
-%                 'LpPuFb1d',lppufb,...
-%                 'BoundaryOperation','Circular');
-%             
-%             % Actual values
-%             seqActual = ...
-%                 step(testCase.synthesizer,coefs,scales);
-%             
-%             % Evaluation
-%             testCase.verifySize(seqActual,size(seqExpctd),...
-%                 'Actual image size is different from the expected one.');
-%             diff = max(abs(seqExpctd(:) - seqActual(:))./abs(seqExpctd(:)));
-%             testCase.verifyEqual(seqActual,seqExpctd,'RelTol',1e-10,sprintf('%g',diff));
-%         end
-%         
-%         % Test
-%         function testStepDec2Ch24Ord0(testCase)
-%             
-%             dec  = 2;
-%             decch = [ dec 2 4 ];
-%             nChs = sum(decch(2:3));
-%             nLen = 16;
-%             subCoefs = rand(nChs,nLen/decch(1));
-%             coefs = zeros(1,nLen);
-%             scales = zeros(nChs,1);
-%             sIdx = 1;
-%             for iCh = 1:nChs
-%                 subSeq = subCoefs(iCh,:);
-%                 eIdx = sIdx + length(subSeq) - 1;
-%                 coefs(sIdx:eIdx) = subSeq(:).';
-%                 scales(iCh) = length(subSeq);
-%                 sIdx = eIdx + 1;
-%             end
-%             
-%             % Preparation
-%             import saivdr.dictionary.colpprfb.*
-%             lppufb = CplxOLpPrFbFactory.createCplxOvsdLpPuFb1dSystem(...
-%                 'DecimationFactor',decch(1),...
-%                 'NumberOfChannels',decch(2:3));
-%             angs = get(lppufb,'Angles');
-%             angs = randn(size(angs));
-%             set(lppufb,'Angles',angs);
-%             E = step(lppufb,[],[]);
-%             
-%             % Expected values
-%             tmp = flipud(E'*subCoefs);
-%             seqExpctd = tmp(:).';
-%             
-%             % Instantiation of target class
-%             release(lppufb)
-%             set(lppufb,'OutputMode','ParameterMatrixSet');
-%             testCase.synthesizer = CplxOLpPuFbSynthesis1dSystem(....
-%                 'LpPuFb1d',lppufb);
-%             
-%             % Actual values
-%             seqActual = ...
-%                 step(testCase.synthesizer,coefs,scales);
-%             
-%             % Evaluation
-%             diff = max(abs(seqExpctd(:) - seqActual(:))./abs(seqExpctd(:)));
-%             testCase.verifyEqual(seqActual,seqExpctd,'RelTol',1e-10,sprintf('%g',diff));
-%             
-%         end
-%         
-%         % Test
-%         function testStepDec2Ch24Ord2(testCase)
-%             
-%             dec = 2;
-%             decch = [dec 2 4];
-%             nChs = sum(decch(2:3));
-%             ord = 2;
-%             nLen = 16;
-%             subCoefs = cell(nChs,1);
-%             coefs = zeros(1,nLen);
-%             scales = zeros(nChs,1);
-%             sIdx = 1;
-%             for iSubband = 1:nChs
-%                 subSeq = rand(1,nLen/dec) + 1i*rand(1,nLen/dec);
-%                 subCoefs{iSubband} = subSeq;
-%                 eIdx = sIdx + length(subSeq) - 1;
-%                 coefs(sIdx:eIdx) = subSeq(:).';
-%                 scales(iSubband) = length(subSeq);
-%                 sIdx = eIdx + 1;
-%             end
-%             
-%             % Preparation
-%             import saivdr.dictionary.colpprfb.*
-%             lppufb = CplxOLpPrFbFactory.createCplxOvsdLpPuFb1dSystem(...
-%                 'DecimationFactor',decch(1),...
-%                 'NumberOfChannels',decch(2:3),...
-%                 'PolyPhaseOrder',ord);
-%             angs = get(lppufb,'Angles');
-%             angs = randn(size(angs));
-%             set(lppufb,'Angles',angs);
-%             
-%             % Expected values
-%             release(lppufb)
-%             set(lppufb,'OutputMode','SynthesisFilterAt');
-%             seqExpctd = zeros(1,nLen);
-%             offset = -dec*ord/2;
-%             phs = 0; % for phs adjustment required experimentaly
-%             for iSubband = 1:nChs
-%                 subSeq = circshift(cconv(...
-%                     upsample(subCoefs{iSubband},dec,phs).',...
-%                     step(lppufb,[],[],iSubband),nLen),offset).';
-%                 seqExpctd = seqExpctd + subSeq;
-%             end
-%             
-%             % Instantiation of target class
-%             release(lppufb)
-%             set(lppufb,'OutputMode','ParameterMatrixSet');
-%             testCase.synthesizer = CplxOLpPuFbSynthesis1dSystem(....
-%                 'LpPuFb1d',lppufb);
-%             
-%             % Actual values
-%             seqActual = ...
-%                 step(testCase.synthesizer,coefs,scales);
-%             
-%             % Evaluation
-%             testCase.verifySize(seqActual,size(seqExpctd),...
-%                 'Actual image size is different from the expected one.');
-%             seqExpctd = seqExpctd(decch(1)+1:end-decch(1)); % ignore border
-%             seqActual = seqActual(decch(1)+1:end-decch(1)); % ignore border
-%             diff = max(abs(seqExpctd(:) - seqActual(:))./abs(seqExpctd(:)));
-%             testCase.verifyEqual(seqActual,seqExpctd,'RelTol',1e-10,sprintf('%g',diff));
-%         end
-%         
-%         % Test
-%         function testStepDec2Ch24Ord2PeriodicExt(testCase)
-%             
-%             dec = 2;
-%             decch = [ dec 2 4 ];
-%             nChs = sum(decch(2:3));
-%             ord = 2;
-%             nLen = 16;
-%             subCoefs = cell(nChs,1);
-%             coefs = zeros(1,nLen);
-%             scales = zeros(nChs,1);
-%             sIdx = 1;
-%             for iSubband = 1:nChs
-%                 subSeq = rand(1,nLen/dec) + 1i*rand(1,nLen/dec);
-%                 subCoefs{iSubband} = subSeq;
-%                 eIdx = sIdx + length(subSeq) - 1;
-%                 coefs(sIdx:eIdx) = subSeq(:).';
-%                 scales(iSubband) = length(subSeq);
-%                 sIdx = eIdx + 1;
-%             end
-%             
-%             % Preparation
-%             import saivdr.dictionary.colpprfb.*
-%             lppufb = CplxOLpPrFbFactory.createCplxOvsdLpPuFb1dSystem(...
-%                 'DecimationFactor',decch(1),...
-%                 'NumberOfChannels',decch(2:3),...
-%                 'PolyPhaseOrder',ord);
-%             angs = get(lppufb,'Angles');
-%             angs = randn(size(angs));
-%             set(lppufb,'Angles',angs);
-%             
-%             % Expected values
-%             release(lppufb)
-%             set(lppufb,'OutputMode','SynthesisFilterAt');
-%             seqExpctd = zeros(1,nLen);
-%             offset = -dec*ord/2;
-%             phs = 0; % for phs adjustment required experimentaly
-%             for iSubband = 1:nChs
-%                 subSeq = circshift(cconv(...
-%                     upsample(subCoefs{iSubband},dec,phs).',...
-%                     step(lppufb,[],[],iSubband),nLen),offset).';
-%                 seqExpctd = seqExpctd + subSeq;
-%             end
-%             
-%             % Instantiation of target class
-%             release(lppufb)
-%             set(lppufb,'OutputMode','ParameterMatrixSet');
-%             testCase.synthesizer = CplxOLpPuFbSynthesis1dSystem(....
-%                 'LpPuFb1d',lppufb,...
-%                 'BoundaryOperation','Circular');
-%             
-%             % Actual values
-%             seqActual = ...
-%                 step(testCase.synthesizer,coefs,scales);
-%             
-%             % Evaluation
-%             testCase.verifySize(seqActual,size(seqExpctd),...
-%                 'Actual image size is different from the expected one.');
-%             diff = max(abs(seqExpctd(:) - seqActual(:))./abs(seqExpctd(:)));
-%             testCase.verifyEqual(seqActual,seqExpctd,'RelTol',1e-10,sprintf('%g',diff));
-%         end
-%         
-%         % Test
-%         function testStepDec2Ch24Ord4(testCase)
-%             
-%             dec = 2;
-%             decch = [dec 2 4];
-%             nChs = sum(decch(2:3));
-%             ord = 4;
-%             nLen = 16;
-%             subCoefs = cell(nChs,1);
-%             coefs = zeros(1,nLen);
-%             scales = zeros(nChs,1);
-%             sIdx = 1;
-%             for iSubband = 1:nChs
-%                 subSeq = rand(1,nLen/dec) + 1i*rand(1,nLen/dec);
-%                 subCoefs{iSubband} = subSeq;
-%                 eIdx = sIdx + length(subSeq) - 1;
-%                 coefs(sIdx:eIdx) = subSeq(:).';
-%                 scales(iSubband) = length(subSeq);
-%                 sIdx = eIdx + 1;
-%             end
-%             
-%             % Preparation
-%             import saivdr.dictionary.colpprfb.*
-%             lppufb = CplxOLpPrFbFactory.createCplxOvsdLpPuFb1dSystem(...
-%                 'DecimationFactor',decch(1),...
-%                 'NumberOfChannels',decch(2:3),...
-%                 'PolyPhaseOrder',ord);
-%             angs = get(lppufb,'Angles');
-%             angs = randn(size(angs));
-%             set(lppufb,'Angles',angs);
-%             
-%             % Expected values
-%             release(lppufb)
-%             set(lppufb,'OutputMode','SynthesisFilterAt');
-%             seqExpctd = zeros(1,nLen);
-%             offset = -dec*ord/2;
-%             phs = 0; % for phs adjustment required experimentaly
-%             for iSubband = 1:nChs
-%                 subSeq = circshift(cconv(...
-%                     upsample(subCoefs{iSubband},dec,phs).',...
-%                     step(lppufb,[],[],iSubband),nLen),offset).';
-%                 seqExpctd = seqExpctd + subSeq;
-%             end
-%             
-%             % Instantiation of target class
-%             release(lppufb)
-%             set(lppufb,'OutputMode','ParameterMatrixSet');
-%             testCase.synthesizer = CplxOLpPuFbSynthesis1dSystem(....
-%                 'LpPuFb1d',lppufb);
-%             
-%             % Actual values
-%             seqActual = ...
-%                 step(testCase.synthesizer,coefs,scales);
-%             
-%             % Evaluation
-%             testCase.verifySize(seqActual,size(seqExpctd),...
-%                 'Actual image size is different from the expected one.');
-%             seqExpctd = seqExpctd(2*decch(1)+1:end-2*decch(1)); % ignore border
-%             seqActual = seqActual(2*decch(1)+1:end-2*decch(1)); % ignore border
-%             diff = max(abs(seqExpctd(:) - seqActual(:))./abs(seqExpctd(:)));
-%             testCase.verifyEqual(seqActual,seqExpctd,'RelTol',1e-10,sprintf('%g',diff));
-%         end
-%         
-%         % Test
-%         function testStepDec2Ch24Ord4PeriodicExt(testCase)
-%             
-%             dec = 2;
-%             decch = [dec 2 4];
-%             nChs = sum(decch(2:3));
-%             ord = 4;
-%             nLen = 16;
-%             subCoefs = cell(nChs,1);
-%             coefs = zeros(1,nLen);
-%             scales = zeros(nChs,1);
-%             sIdx = 1;
-%             for iSubband = 1:nChs
-%                 subSeq = rand(1,nLen/dec) + 1i*rand(1,nLen/dec);
-%                 subCoefs{iSubband} = subSeq;
-%                 eIdx = sIdx + length(subSeq) - 1;
-%                 coefs(sIdx:eIdx) = subSeq(:).';
-%                 scales(iSubband) = length(subSeq);
-%                 sIdx = eIdx + 1;
-%             end
-%             
-%             % Preparation
-%             import saivdr.dictionary.colpprfb.*
-%             lppufb = CplxOLpPrFbFactory.createCplxOvsdLpPuFb1dSystem(...
-%                 'DecimationFactor',decch(1),...
-%                 'NumberOfChannels',decch(2:3),...
-%                 'PolyPhaseOrder',ord);
-%             angs = get(lppufb,'Angles');
-%             angs = randn(size(angs));
-%             set(lppufb,'Angles',angs);
-%             
-%             % Expected values
-%             release(lppufb)
-%             set(lppufb,'OutputMode','SynthesisFilterAt');
-%             seqExpctd = zeros(1,nLen);
-%             offset = -dec*ord/2;
-%             phs = 0; % for phs adjustment required experimentaly
-%             for iSubband = 1:nChs
-%                 subSeq = circshift(cconv(...
-%                     upsample(subCoefs{iSubband},dec,phs).',...
-%                     step(lppufb,[],[],iSubband),nLen),offset).';
-%                 seqExpctd = seqExpctd + subSeq;
-%             end
-%             
-%             % Instantiation of target class
-%             release(lppufb)
-%             set(lppufb,'OutputMode','ParameterMatrixSet');
-%             testCase.synthesizer = CplxOLpPuFbSynthesis1dSystem(....
-%                 'LpPuFb1d',lppufb,...
-%                 'BoundaryOperation','Circular');
-%             
-%             % Actual values
-%             seqActual = ...
-%                 step(testCase.synthesizer,coefs,scales);
-%             
-%             
-%             % Evaluation
-%             testCase.verifySize(seqActual,size(seqExpctd),...
-%                 'Actual image size is different from the expected one.');
-%             diff = max(abs(seqExpctd(:) - seqActual(:))./abs(seqExpctd(:)));
-%             testCase.verifyEqual(seqActual,seqExpctd,'RelTol',1e-9,sprintf('%g',diff));
-%         end
-%         
-%         %Dec2Ch32Ord2Level1
-%         function testStepDec2Ch23Ord2Level1(testCase)
-%             
-%             dec = 2;
-%             decch = [ dec 2 3];
-%             nChs = sum(decch(2:3));
-%             ord = 2;
-%             nLen = 32;
-%             %nLevels = 1;
-%             subCoefs = cell(nChs,1);
-%             coefs = zeros(1,nLen);
-%             scales = zeros(nChs,1);
-%             sIdx = 1;
-%             for iSubband = 1:nChs
-%                 subSeq = rand(1,nLen/dec) + 1i*rand(1,nLen/dec);
-%                 subCoefs{iSubband} = subSeq;
-%                 eIdx = sIdx + length(subSeq) - 1;
-%                 coefs(sIdx:eIdx) = subSeq(:).';
-%                 scales(iSubband) = length(subSeq);
-%                 sIdx = eIdx + 1;
-%             end
-%             
-%             % Preparation
-%             import saivdr.dictionary.colpprfb.*
-%             lppufb = CplxOLpPrFbFactory.createCplxOvsdLpPuFb1dSystem(...
-%                 'DecimationFactor',dec,...
-%                 'NumberOfChannels',decch(2:end),...
-%                 'PolyPhaseOrder',ord);
-%             angs = get(lppufb,'Angles');
-%             angs = randn(size(angs));
-%             set(lppufb,'Angles',angs);
-%             
-%             % Expected values
-%             release(lppufb)
-%             set(lppufb,'OutputMode','SynthesisFilterAt');
-%             seqExpctd = zeros(1,nLen);
-%             offset = -dec*ord/2;
-%             phs = 0; % for phs adjustment required experimentaly
-%             for iSubband = 1:nChs
-%                 subSeq = circshift(cconv(...
-%                     upsample(subCoefs{iSubband},dec,phs).',...
-%                     step(lppufb,[],[],iSubband),nLen),offset).';
-%                 seqExpctd = seqExpctd + subSeq;
-%             end
-%             
-%             % Instantiation of target class
-%             release(lppufb)
-%             set(lppufb,'OutputMode','ParameterMatrixSet');
-%             testCase.synthesizer = CplxOLpPuFbSynthesis1dSystem(....
-%                 'LpPuFb1d',lppufb);
-%             
-%             % Actual values
-%             seqActual = ...
-%                 step(testCase.synthesizer,coefs,scales);
-%             
-%             % Evaluation
-%             testCase.verifySize(seqActual,size(seqExpctd),...
-%                 'Actual image size is different from the expected one.');
-%             border1 = decch(1);
-%             seqExpctd = seqExpctd(border1+1:end-border1); % ignore border
-%             seqActual = seqActual(border1+1:end-border1); % ignore border
-%             diff = max(abs(seqExpctd(:) - seqActual(:))./abs(seqExpctd(:)));
-%             testCase.verifyEqual(seqActual,seqExpctd,'RelTol',1e-10,sprintf('%g',diff));
-%         end
-%         
+
      end
     
 end

@@ -29,8 +29,8 @@ classdef CplxOLpPuFbSynthesis1dSystem  < ...
     end
 
     properties (Nontunable, PositiveInteger)    
-        NumberOfSymmetricChannels     = 2
-        NumberOfAntisymmetricChannels = 2
+        NumberOfChannels     = 4
+        NumberOfHalfChannels = 2
     end
     
     properties (Nontunable, Logical)
@@ -68,9 +68,7 @@ classdef CplxOLpPuFbSynthesis1dSystem  < ...
             if isempty(obj.LpPuFb1d)
                 import saivdr.dictionary.colpprfb.CplxOLpPrFbFactory
                 obj.LpPuFb1d = CplxOLpPrFbFactory.createCplxOvsdLpPuFb1dSystem(...
-                    'NumberOfChannels', ...
-                    [ obj.NumberOfSymmetricChannels ...
-                      obj.NumberOfAntisymmetricChannels ], ...
+                    'NumberOfChannels',obj.NumberOfChannels , ...
                     'NumberOfVanishingMoments',1,...
                     'OutputMode','ParameterMatrixSet');
             end            
@@ -87,8 +85,8 @@ classdef CplxOLpPuFbSynthesis1dSystem  < ...
             obj.decimationFactor = get(obj.LpPuFb1d,'DecimationFactor');
             obj.polyPhaseOrder   = get(obj.LpPuFb1d,'PolyPhaseOrder');
             nch = get(obj.LpPuFb1d,'NumberOfChannels');
-            obj.NumberOfSymmetricChannels = ceil(nch/2);
-            obj.NumberOfAntisymmetricChannels = floor(nch/2);
+            obj.NumberOfChannels = nch;
+            obj.NumberOfHalfChannels = floor(nch/2);
             %
             obj.FrameBound = 1;            
         end
@@ -124,8 +122,7 @@ classdef CplxOLpPuFbSynthesis1dSystem  < ...
         end
         
         function setupImpl(obj, ~, ~)
-            nch = [ obj.NumberOfSymmetricChannels ...
-                obj.NumberOfAntisymmetricChannels ];
+            nch = obj.NumberOfChannels;
             
             % Prepare MEX function
             
@@ -133,8 +130,7 @@ classdef CplxOLpPuFbSynthesis1dSystem  < ...
             mexFcn = [];
             obj.isMexFcn = 1;
             
-            if obj.NumberOfSymmetricChannels == 1 || ...
-                    obj.NumberOfAntisymmetricChannels == 1 
+            if obj.NumberOfChannels == 2
                 mexFcn = [];
             elseif ~obj.isMexFcn
                 import saivdr.dictionary.colpprfb.mexsrcs.fcn_autobuild_catomcnc1d
@@ -169,8 +165,7 @@ classdef CplxOLpPuFbSynthesis1dSystem  < ...
         function recSeq = synthesize_(obj,coefs,scales,pmCoefs)
             import saivdr.dictionary.utility.Direction
             %
-            nChs = obj.NumberOfSymmetricChannels ...
-                + obj.NumberOfAntisymmetricChannels;
+            nChs = obj.NumberOfChannels;
             nLevels = (size(scales,1)-1)/(nChs-1);
             %
             iSubband = 1;
@@ -235,21 +230,6 @@ classdef CplxOLpPuFbSynthesis1dSystem  < ...
             end
         end
         
-%         function value = hsdftmtx_(~, nDec) %Hermitian-Symmetric DFT matrix
-%             w = exp(-2*pi*1i/nDec);
-%             value = complex(zeros(nDec));
-%             for u = 0:nDec-1
-%                 for x =0:nDec-1
-%                     value(u+1,x+1) = w^(u*(x+0.5))/sqrt(nDec);
-%                 end
-%             end
-%         end
-%         
-%         function value = ihsdft_(obj, X)
-%             mtx = hsdftmtx_(obj,size(X,1))';
-%             value = mtx*X;
-%         end
-%         
     end
     
 end

@@ -70,10 +70,10 @@ classdef AbstCplxOvsdLpPuFb1dSystem < matlab.System %#codegen
             updateParameterMatrixSet_(obj);
             obj.mexFlag = false;            
             H = getAnalysisFilterBank_(obj);
-            for ib=1:sum(obj.NumberOfChannels)
-                subplot(2,sum(obj.NumberOfChannels),ib);
+            for ib=1:obj.NumberOfChannels
+                subplot(2,obj.NumberOfChannels,ib);
                 impz(real(flipud(H(:,ib))));
-                subplot(2,sum(obj.NumberOfChannels),ib+sum(obj.NumberOfChannels));
+                subplot(2,obj.NumberOfChannels,ib+obj.NumberOfChannels);
                 impz(imag(flipud(H(:,ib))));
             end
         end
@@ -100,7 +100,7 @@ classdef AbstCplxOvsdLpPuFb1dSystem < matlab.System %#codegen
         
         function validatePropertiesImpl(obj)
             id = 'SaivDr:IllegalPropertyException';
-            if obj.DecimationFactor > sum(obj.NumberOfChannels)
+            if obj.DecimationFactor > obj.NumberOfChannels
                 error('%s:\n sum(NumberOfChannels) must be greater than or equalto DecimationFactor.',...
                     id);
             end
@@ -194,9 +194,9 @@ classdef AbstCplxOvsdLpPuFb1dSystem < matlab.System %#codegen
         
         function updateSymmetry_(obj)
             if isempty(obj.Symmetry)
-                obj.Symmetry = ones(obj.NumberOfChannels,1);
+                obj.Symmetry = zeros(1,obj.NumberOfChannels);
             end
-            if size(obj.Symmetry,1) ~= obj.NumberOfChannels
+            if length(obj.Symmetry) ~= obj.NumberOfChannels
                 %TODO: —áŠOˆ—
             end
         end
@@ -217,6 +217,16 @@ classdef AbstCplxOvsdLpPuFb1dSystem < matlab.System %#codegen
             end
             value = coefs;
         end
+        
+        function [initAngles,propAngles] = splitAngles_(obj)
+            nCh = obj.NumberOfChannels;
+            nInitAngles = nCh*(nCh-1)/2;
+            
+            initAngles = obj.Angles(1:nInitAngles);
+            
+            propAngles = obj.Angles(nInitAngles+1:end);
+        end
+        
     end
     
 end

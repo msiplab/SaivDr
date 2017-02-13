@@ -445,7 +445,7 @@ classdef CplxOvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             import saivdr.dictionary.utility.*            
-            omgs = OrthonormalMatrixGenerationSystem();
+            omgs = OrthonormalMatrixGenerationSystem('OrderOfProduction','Ascending');
             matrixV0 = step(omgs,ang,1);
             coefExpctd = ...
                 matrixV0 * ...

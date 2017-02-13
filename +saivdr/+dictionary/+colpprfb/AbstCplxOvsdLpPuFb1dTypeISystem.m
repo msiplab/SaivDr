@@ -111,8 +111,12 @@ classdef AbstCplxOvsdLpPuFb1dTypeISystem < ...
             end
 
             % Prepare ParameterMatrixSet
-            paramMtxSizeTab = [obj.NumberOfChannels*ones(1,2);
-                repmat([obj.NumberOfChannels/2*ones(2,2);floor(obj.NumberOfChannels/4),1], obj.nStages-1, 1)];
+            paramMtxSizeTab = [
+                obj.NumberOfChannels*ones(1,2);
+                repmat([
+                    obj.NumberOfChannels/2*ones(2,2);
+                    floor(obj.NumberOfChannels/4),1],...
+                    obj.nStages-1, 1)];
             obj.ParameterMatrixSet = ParameterMatrixContainer(...
                 'MatrixSizeTable',paramMtxSizeTab);
 
@@ -125,16 +129,13 @@ classdef AbstCplxOvsdLpPuFb1dTypeISystem < ...
             nAngsPerStg = nChL*(nChL-1)+floor(nChL/2);
             sizeOfAngles = nAngsInitStg+nAngsPerStg*(obj.nStages-1);
             if isempty(obj.Angles)
-                obj.Angles = zeros(sizeOfAngles,1);
+                obj.Angles = zeros(1,sizeOfAngles);
             end
-            obj.Angles = obj.Angles(:);
-%             if size(obj.Angles,1) ~= sizeOfAngles(1) || ...
-%                     size(obj.Angles,2) ~= sizeOfAngles(2)
-            if size(obj.Angles) ~= sizeOfAngles
+            obj.Angles = obj.Angles(:).';
+            if length(obj.Angles) ~= sizeOfAngles
                 id = 'SaivDr:IllegalArgumentException';
                 msg = sprintf(...
-                    'Size of angles must be [ %d %d ]',...
-                    sizeOfAngles(1), sizeOfAngles(2));
+                    'Size of angles must be [ 1 %d ]',sizeOfAngles);
                 me = MException(id, msg);
                 throw(me);
             end
@@ -143,22 +144,17 @@ classdef AbstCplxOvsdLpPuFb1dTypeISystem < ...
         function updateMus_(obj)
             import saivdr.dictionary.cnsoltx.ChannelGroup
             nChL = obj.NumberOfChannels/2;
-            %sizeOfMus = [ 2*nChL obj.nStages ];
             sizeOfMus = 2*nChL*obj.nStages;
             if isempty(obj.Mus)
-                %TODO:obj.Mus‚ð“KØ‚É’è‚ß‚é
                 musMat = ones(2*nChL,obj.nStages);
                 musMat(nChL+1:end,2:end) = -1*ones(nChL,obj.nStages-1);
-                obj.Mus = musMat(:);
+                obj.Mus = musMat(:).';
             end
-            % TODO: —áŠOˆ—
-%             if size(obj.Mus,1) ~= sizeOfMus(1) || ...
-%                     size(obj.Mus,2) ~= sizeOfMus(2)
-            if size(obj.Mus) ~= sizeOfMus
+            obj.Mus = obj.Mus(:).';
+            if length(obj.Mus) ~= sizeOfMus
                 id = 'SaivDr:IllegalArgumentException';
                 msg = sprintf(...
-                    'Size of mus must be [ %d %d ]',...
-                    sizeOfMus(1), sizeOfMus(2));
+                    'Size of mus must be [ 1 %d ]',sizeOfMus);
                 me = MException(id, msg);
                 throw(me);
             end
@@ -201,7 +197,7 @@ classdef AbstCplxOvsdLpPuFb1dTypeISystem < ...
                     iParamMtx = iParamMtx+3;
                 end
             end
-            E = diag(obj.Symmetry)*E;
+            E = diag(exp(1i*obj.Symmetry))*E;
             value = E.';
         end
 
