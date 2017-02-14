@@ -29,8 +29,8 @@ classdef CnsoltSynthesis2dSystem  < ...
     end
 
     properties (Nontunable, PositiveInteger)    
-        NumberOfSymmetricChannels     = 2
-        NumberOfAntisymmetricChannels = 2
+        NumberOfChannels     = 2
+        NumberOfHalfChannels = 2
     end
     
     properties (Nontunable, Logical)
@@ -69,9 +69,7 @@ classdef CnsoltSynthesis2dSystem  < ...
             if isempty(obj.LpPuFb2d)
                 import saivdr.dictionary.cnsoltx.CnsoltFactory
                 obj.LpPuFb2d = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
-                    'NumberOfChannels', ...
-                    [ obj.NumberOfSymmetricChannels ...
-                      obj.NumberOfAntisymmetricChannels ], ...
+                    'NumberOfChannels',obj.NumberOfChannels, ...
                     'NumberOfVanishingMoments',1,...
                     'OutputMode','ParameterMatrixSet');
             end            
@@ -88,8 +86,7 @@ classdef CnsoltSynthesis2dSystem  < ...
             obj.decimationFactor = get(obj.LpPuFb2d,'DecimationFactor');
             obj.polyPhaseOrder   = get(obj.LpPuFb2d,'PolyPhaseOrder');
             nch = get(obj.LpPuFb2d,'NumberOfChannels');
-            obj.NumberOfSymmetricChannels = ceil(nch/2);
-            obj.NumberOfAntisymmetricChannels = floor(nch/2);
+            obj.NumberOfChannels = nch;
             %
             obj.FrameBound = 1;            
         end
@@ -129,11 +126,10 @@ classdef CnsoltSynthesis2dSystem  < ...
         end
         
         function setupImpl(obj, ~, ~)
-            nch = [ obj.NumberOfSymmetricChannels ...
-                obj.NumberOfAntisymmetricChannels ];
+            nch = obj.NumberOfChannels;
             
             % Prepare MEX function
-            %TODO: MEX??????????????????2?s??????????
+            %TODO: MEXコード化を完了したら下の2行を削除する
             obj.isMexFcn = 1;
             mexFcn = [];
             
@@ -170,8 +166,7 @@ classdef CnsoltSynthesis2dSystem  < ...
         function recImg = synthesize_(obj,coefs,scales,pmCoefs,symmetry)
             import saivdr.dictionary.utility.Direction
             %
-            nChs = obj.NumberOfSymmetricChannels ...
-                + obj.NumberOfAntisymmetricChannels;
+            nChs = obj.NumberOfChannels;
             nLevels = (size(scales,1)-1)/(nChs-1);
             %
             iSubband = 1;
@@ -223,7 +218,7 @@ classdef CnsoltSynthesis2dSystem  < ...
             arrayCoefs = obj.atomCncFcn(S*arrayCoefs,subScale,pmCoefs,...
                 ord,fpe);
             
-            % Block IDCT
+            % Block IDFT
             if decY_ == 1 && decX_ == 1
                 scale = double(subScale);
                 coefs = zeros(nDec,nRows_*nCols_);

@@ -160,7 +160,7 @@ classdef CnsoltAtomConcatenator2d < ...
        
         function arrayCoefs = atomCncTypeI_(obj,arrayCoefs,paramMtx1,paramMtx2,paramMtx3,paramMtx4,paramMtx5,paramMtx6,isPeriodicExt)
             import saivdr.dictionary.cnsoltx.mexsrcs.AbstCplxBuildingBlock
-            hLen = obj.NumberOfAntisymmetricChannels;
+            hLen = obj.NumberOfHalfChannels;
             
             % Phase 1
             Wx2 = paramMtx1.';
@@ -206,7 +206,7 @@ classdef CnsoltAtomConcatenator2d < ...
         
         function arrayCoefs = atomCncTypeII_(obj,arrayCoefs,paramMtx1,paramMtx2,paramMtx3,paramMtx4,paramMtx5,paramMtx6,isPeriodicExt)
             import saivdr.dictionary.cnsoltx.mexsrcs.AbstCplxBuildingBlock
-            hLen = obj.NumberOfAntisymmetricChannels;
+            hLen = obj.NumberOfHalfChannels;
             
             % Phase 1
             Wx2 = paramMtx1.';
@@ -251,8 +251,7 @@ classdef CnsoltAtomConcatenator2d < ...
         end      
         
         function arrayCoefs = leftShiftLowerCoefs_(obj,arrayCoefs)
-            hLenMn = min([ obj.NumberOfSymmetricChannels
-                obj.NumberOfAntisymmetricChannels]);
+            hLenMn = obj.NumberOfHalfChannels;
             nRows_ = obj.nRows;
             %
             lowerCoefsPost = arrayCoefs(hLenMn+1:end,1:nRows_);
@@ -263,8 +262,7 @@ classdef CnsoltAtomConcatenator2d < ...
         end
         
         function arrayCoefs = rightShiftUpperCoefs_(obj,arrayCoefs)
-            hLenMn = min([ obj.NumberOfSymmetricChannels
-                obj.NumberOfAntisymmetricChannels]);
+            hLenMn = obj.NumberOfHalfChannels;
             nRows_ = obj.nRows;
             %
             upperCoefsPre = arrayCoefs(1:hLenMn,end-nRows_+1:end);

@@ -153,7 +153,7 @@ classdef CnsoltAtomExtender2d <  ...
         
         function arrayCoefs = supportExtTypeI_(obj,arrayCoefs,paramMtx1,paramMtx2,paramMtx3,paramMtx4,paramMtx5,paramMtx6,isPeriodicExt)
             import saivdr.dictionary.cnsoltx.mexsrcs.AbstCplxBuildingBlock
-            hLen = obj.NumberOfAntisymmetricChannels;
+            hLen = obj.NumberOfHalfChannels;
             nCols_ = obj.nCols;
             
             % Phase 1
@@ -202,7 +202,7 @@ classdef CnsoltAtomExtender2d <  ...
         
         function arrayCoefs = supportExtTypeII_(obj,arrayCoefs,paramMtx1,paramMtx2,paramMtx3,paramMtx4,paramMtx5,paramMtx6,isPeriodicExt)
             import saivdr.dictionary.cnsoltx.mexsrcs.AbstCplxBuildingBlock
-            hLen = obj.NumberOfAntisymmetricChannels;
+            hLen = obj.NumberOfHalfChannels;
             nCols_ = obj.nCols;
             
             % Phase 1
@@ -248,8 +248,7 @@ classdef CnsoltAtomExtender2d <  ...
         end
         
         function arrayCoefs = rightShiftLowerCoefs_(obj,arrayCoefs)
-            hLenMn = min([ obj.NumberOfSymmetricChannels
-                obj.NumberOfAntisymmetricChannels]);
+            hLenMn = obj.NumberOfHalfChannels;
             nRows_ = obj.nRows;
             %
             lowerCoefsPre = arrayCoefs(hLenMn+1:end,end-nRows_+1:end);
@@ -260,8 +259,7 @@ classdef CnsoltAtomExtender2d <  ...
         end
         
         function arrayCoefs = leftShiftUpperCoefs_(obj,arrayCoefs)
-            hLenMn = min([ obj.NumberOfSymmetricChannels
-                obj.NumberOfAntisymmetricChannels]);
+            hLenMn = obj.NumberOfHalfChannels;
             nRows_ = obj.nRows;
             %
             upperCoefsPost = arrayCoefs(1:hLenMn,1:nRows_);

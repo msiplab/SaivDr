@@ -29,8 +29,8 @@ classdef CnsoltAnalysis2dSystem < ...
     end
 
     properties (Nontunable, PositiveInteger)    
-        NumberOfSymmetricChannels     = 2
-        NumberOfAntisymmetricChannels = 2
+        NumberOfChannels     = 4
+        NumberOfHalfChannels = 2
     end
     
     properties (Nontunable, Logical)
@@ -73,9 +73,7 @@ classdef CnsoltAnalysis2dSystem < ...
             if isempty(obj.LpPuFb2d)
                 import saivdr.dictionary.cnsoltx.CnsoltFactory
                 obj.LpPuFb2d = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
-                    'NumberOfChannels', ...
-                    [ obj.NumberOfSymmetricChannels ...
-                      obj.NumberOfAntisymmetricChannels ], ...
+                    'NumberOfChannels', obj.NumberOfSymmetricChannels,...
                     'NumberOfVanishingMoments',1,...
                     'OutputMode','ParameterMatrixSet');
             end
@@ -92,8 +90,7 @@ classdef CnsoltAnalysis2dSystem < ...
             obj.decimationFactor = get(obj.LpPuFb2d,'DecimationFactor');
             obj.polyPhaseOrder   = get(obj.LpPuFb2d,'PolyPhaseOrder');
             nch = get(obj.LpPuFb2d,'NumberOfChannels');
-            obj.NumberOfSymmetricChannels = ceil(nch/2);
-            obj.NumberOfAntisymmetricChannels = floor(nch/2);
+            obj.NumberOfChannels = nch;
         end
         
     end
@@ -134,8 +131,7 @@ classdef CnsoltAnalysis2dSystem < ...
         
         function setupImpl(obj, srcImg, nLevels)
             dec = obj.decimationFactor;
-            nch = [ obj.NumberOfSymmetricChannels ...
-                obj.NumberOfAntisymmetricChannels ];
+            nch = obj.NumberOfChannels;
             %
             nChs  = sum(nch);
             nDec = prod(dec);
@@ -193,8 +189,7 @@ classdef CnsoltAnalysis2dSystem < ...
                 analyze_(obj, srcImg, nLevels, pmCoefs, symmetry)
             import saivdr.dictionary.utility.Direction            
             %
-            nChs = obj.NumberOfSymmetricChannels ...
-                + obj.NumberOfAntisymmetricChannels;
+            nChs = obj.NumberOfChannels;
             decY  = obj.decimationFactor(Direction.VERTICAL);
             decX  = obj.decimationFactor(Direction.HORIZONTAL);            
             %
@@ -228,9 +223,7 @@ classdef CnsoltAnalysis2dSystem < ...
         function arrayCoefs = subAnalyze_(obj,subImg,pmCoefs,symmetry)
             import saivdr.dictionary.utility.Direction
             %
-            nChs = obj.NumberOfSymmetricChannels ...
-                + obj.NumberOfAntisymmetricChannels;
-            %ps = obj.NumberOfSymmetricChannels;
+            nChs = obj.NumberOfChannels;
             nRows_ = obj.nRows;
             nCols_ = obj.nCols;            
             decY_  = obj.decimationFactor(Direction.VERTICAL);
@@ -245,7 +238,7 @@ classdef CnsoltAnalysis2dSystem < ...
             % Prepare array
             arrayCoefs = complex(zeros(nChs,nRows_*nCols_));
             
-            % Block DCT
+            % Block DFT
             if decY_ == 1 && decX_ == 1
                 coefs = im2col(subImg,blockSize,'distinct');
                 arrayCoefs(1,:) = coefs(1,:);

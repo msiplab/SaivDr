@@ -23,8 +23,8 @@ classdef AbstCnsoltCoefManipulator2d < matlab.System
     end
     
     properties (Nontunable, PositiveInteger)
-        NumberOfSymmetricChannels      = 2
-        NumberOfAntisymmetricChannels  = 2
+        NumberOfChannels      = 4
+        NumberOfHalfChannels  = 2
     end
 
     properties (Logical)
@@ -44,10 +44,6 @@ classdef AbstCnsoltCoefManipulator2d < matlab.System
             matlab.system.StringSet({'Type I','Type II'});
     end
     
-    properties (SetAccess = protected, GetAccess = public, Nontunable, Logical)
-        IsPsGreaterThanPa = true;
-    end    
-    
     properties (Access = protected)
         paramMtxCoefs
         indexOfParamMtxSzTab
@@ -66,10 +62,8 @@ classdef AbstCnsoltCoefManipulator2d < matlab.System
         function obj = AbstCnsoltCoefManipulator2d(varargin)
             setProperties(obj,nargin,varargin{:});
             %
-            ps = obj.NumberOfSymmetricChannels;
-            pa = obj.NumberOfAntisymmetricChannels;
-            
-            if ps ~= pa
+            obj.NumberOfHalfChannels = floor(obj.NumberOfChannels/2);
+            if mod(obj.NumberOfChannels,2) ~= 0
                 obj.NsoltType = 'Type II';
             end
         end
@@ -159,9 +153,9 @@ classdef AbstCnsoltCoefManipulator2d < matlab.System
         end
         
         function setupParamMtx_(obj)
-            ord = obj.PolyPhaseOrder; 
-            ps  = obj.NumberOfSymmetricChannels;
-            pa  = obj.NumberOfAntisymmetricChannels;
+            ord = obj.PolyPhaseOrder;
+            pa  = obj.NumberOfHalfChannels;
+            ps  = obj.NumberOfChannels - pa;
             %
             paramMtxSzTab_ = zeros(3*sum(ord)+1, 2);
             paramMtxSzTab_(1,:) = [ ps+pa, ps+pa ];
@@ -196,28 +190,28 @@ classdef AbstCnsoltCoefManipulator2d < matlab.System
                 dimension);
         end
         
-        function arrayCoefs = blockButterflyTypeI_(obj,arrayCoefs)
-            hLen = obj.NumberOfSymmetricChannels;
-            upper = arrayCoefs(1:hLen,:);
-            lower = arrayCoefs(hLen+1:end,:);
-            
-            arrayCoefs(1:hLen,:)     = upper + lower;
-            arrayCoefs(hLen+1:end,:) = upper - lower;
-        end
-        
-        function arrayCoefs = blockButterflyTypeII_(obj,arrayCoefs)
-            chs = [obj.NumberOfSymmetricChannels ...
-                obj.NumberOfAntisymmetricChannels ];
-            nChMx = max(chs);
-            nChMn = min(chs);
-            upper = arrayCoefs(1:nChMn,:);
-            middle = arrayCoefs(nChMn+1:nChMx,:);
-            lower = arrayCoefs(nChMx+1:end,:);
-            
-            arrayCoefs(1:nChMn,:) = upper + lower;
-            arrayCoefs(nChMn+1:nChMx,:) = 1.414213562373095*middle;
-            arrayCoefs(nChMx+1:end,:) =  upper - lower;
-        end
+%         function arrayCoefs = blockButterflyTypeI_(obj,arrayCoefs)
+%             hLen = obj.NumberOfSymmetricChannels;
+%             upper = arrayCoefs(1:hLen,:);
+%             lower = arrayCoefs(hLen+1:end,:);
+%             
+%             arrayCoefs(1:hLen,:)     = upper + lower;
+%             arrayCoefs(hLen+1:end,:) = upper - lower;
+%         end
+%         
+%         function arrayCoefs = blockButterflyTypeII_(obj,arrayCoefs)
+%             chs = [obj.NumberOfSymmetricChannels ...
+%                 obj.NumberOfAntisymmetricChannels ];
+%             nChMx = max(chs);
+%             nChMn = min(chs);
+%             upper = arrayCoefs(1:nChMn,:);
+%             middle = arrayCoefs(nChMn+1:nChMx,:);
+%             lower = arrayCoefs(nChMx+1:end,:);
+%             
+%             arrayCoefs(1:nChMn,:) = upper + lower;
+%             arrayCoefs(nChMn+1:nChMx,:) = 1.414213562373095*middle;
+%             arrayCoefs(nChMx+1:end,:) =  upper - lower;
+%         end
         
         function arrayCoefs = lowerBlockRot_(obj,arrayCoefs,iCol,U)
             hLen = obj.NumberOfAntisymmetricChannels;
