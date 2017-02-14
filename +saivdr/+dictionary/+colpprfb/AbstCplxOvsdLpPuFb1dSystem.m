@@ -35,9 +35,9 @@ classdef AbstCplxOvsdLpPuFb1dSystem < matlab.System %#codegen
     end
     
     properties (Hidden)
-        Symmetry = [];
-        Angles = [];
-        Mus    = [];   
+        Symmetry = 0;
+        Angles = 0;
+        Mus    = 1;   
     end
 
     properties (GetAccess = public, SetAccess = protected)
@@ -191,7 +191,7 @@ classdef AbstCplxOvsdLpPuFb1dSystem < matlab.System %#codegen
         end
         
         function updateSymmetry_(obj)
-            if isempty(obj.Symmetry)
+            if isscalar(obj.Symmetry) && obj.Symmetry == 0
                 obj.Symmetry = zeros(obj.NumberOfChannels,1);
             end
             if length(obj.Symmetry) ~= obj.NumberOfChannels

@@ -1194,88 +1194,88 @@ classdef CplxOvsdLpPuFb2dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
             
         end
             %TODO: stepメソッドの入出力仕様を定める
-%         % Test for angle setting
-%         function testSetAngles(testCase)
-%             
-%             % Parameters
-%             decch = [ 2 2 5 ];
-%             ord = [ 0 0 ];
-%             angPre = [ pi/4 pi/4 pi/4 pi/4 pi/4 pi/4 pi/4 pi/4 pi/4 pi/4 pi/4 pi/4 pi/4 pi/4 pi/4 ].';
-%             angPst = [ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 ].';
-%             
-%             % Expected values
-%             coefExpctd(:,:,1,1) = 1/2*[
-%                  1 ,  1 ,  1 ,  1 ;
-%                  1i, -1i,  1i, -1i;
-%                  1i,  1i, -1i, -1i;
-%                 -1 ,  1 ,  1 , -1 ;
-%                  0 ,  0 ,  0 ,  0 ;];
-%             
-%             % Instantiation of target class
-%             import saivdr.dictionary.cnsoltx.*
-%             testCase.lppufb = CplxOvsdLpPuFb2dTypeIIVm0System(...
-%                 'DecimationFactor',decch(1:2),...
-%                 'NumberOfChannels',decch(3:end),...
-%                 'PolyPhaseOrder',ord);
-%             
-%             % Actual values
-%             coefActual = step(testCase.lppufb,angPre,[]);
-%             
-%             % Evaluation
-%             import matlab.unittest.constraints.IsGreaterThanOrEqualTo;
-%             coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
-%             testCase.verifyThat(coefDist,IsGreaterThanOrEqualTo(1e-14),sprintf('%g',coefDist));
-%             
-%             % Actual values
-%             coefActual = step(testCase.lppufb,angPst,[]);
-%             
-%             % Evaluation
-%             coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
-%             testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',coefDist));
-%             
-%         end
-%         
-%         % Test for mus setting
-%         function testSetMus(testCase)
-%             
-%             % Parameters
-%             decch = [ 2 2 5 ];
-%             ord = [ 0 0 ];
-%             ang = [ 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 ].';
-%             musPre = [ 1 -1  1 -1 1 ].'; %TODO:
-%             musPst = 1;
-%             
-%             % Expected values
-%             coefExpctd(:,:,1,1) = 1/2*[
-%                  1 ,  1 ,  1 ,  1 ;
-%                  1i, -1i,  1i, -1i;
-%                  1i,  1i, -1i, -1i;
-%                 -1 ,  1 ,  1 , -1 ;
-%                  0 ,  0 ,  0 ,  0 ;];
-%             
-%             % Instantiation of target class
-%             import saivdr.dictionary.cnsoltx.*
-%             testCase.lppufb = CplxOvsdLpPuFb2dTypeIIVm0System(...
-%                 'DecimationFactor',decch(1:2),...
-%                 'NumberOfChannels',decch(3:end),...
-%                 'PolyPhaseOrder',ord);
-%             
-%             % Actual values
-%             coefActual = step(testCase.lppufb,ang,musPre);
-%             
-%             % Evaluation
-%             import matlab.unittest.constraints.IsGreaterThanOrEqualTo;
-%             coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
-%             testCase.verifyThat(coefDist,IsGreaterThanOrEqualTo(1e-14),sprintf('%g',coefDist));
-%             
-%             % Actual values
-%             coefActual = step(testCase.lppufb,[],musPst);
-%             
-%             % Evaluation
-%             coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
-%             testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',coefDist));
-%             
-%         end
+        % Test for angle setting
+        function testSetAngles(testCase)
+            
+            % Parameters
+            decch = [ 2 2 5 ];
+            ord = [ 0 0 ];
+            angPre = [ pi/4 pi/4 pi/4 pi/4 pi/4 pi/4 pi/4 pi/4 pi/4 pi/4 ].';
+            angPst = [ 0 0 0 0 0 0 0 0 0 0 ].';
+            
+            % Expected values
+            coefExpctd(:,:,1,1) = 1/2*[
+                 1 ,  1 ,  1 ,  1 ;
+                 1i, -1i,  1i, -1i;
+                 1i,  1i, -1i, -1i;
+                -1 ,  1 ,  1 , -1 ;
+                 0 ,  0 ,  0 ,  0 ;];
+            
+            % Instantiation of target class
+            import saivdr.dictionary.cnsoltx.*
+            testCase.lppufb = CplxOvsdLpPuFb2dTypeIIVm0System(...
+                'DecimationFactor',decch(1:2),...
+                'NumberOfChannels',decch(3:end),...
+                'PolyPhaseOrder',ord);
+            
+            % Actual values
+            coefActual = step(testCase.lppufb,angPre,[]);
+            
+            % Evaluation
+            import matlab.unittest.constraints.IsGreaterThanOrEqualTo;
+            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
+            testCase.verifyThat(coefDist,IsGreaterThanOrEqualTo(1e-14),sprintf('%g',coefDist));
+            
+            % Actual values
+            coefActual = step(testCase.lppufb,angPst,[]);
+            
+            % Evaluation
+            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
+            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',coefDist));
+            
+        end
+        
+        % Test for mus setting
+        function testSetMus(testCase)
+            
+            % Parameters
+            decch = [ 2 2 5 ];
+            ord = [ 0 0 ];
+            ang = [ 0 0 0 0 0 0 0 0 0 0 ].';
+            musPre = [ 1 -1  1 -1 1 ].'; %TODO:
+            musPst = 1;
+            
+            % Expected values
+            coefExpctd(:,:,1,1) = 1/2*[
+                 1 ,  1 ,  1 ,  1 ;
+                 1i, -1i,  1i, -1i;
+                 1i,  1i, -1i, -1i;
+                -1 ,  1 ,  1 , -1 ;
+                 0 ,  0 ,  0 ,  0 ;];
+            
+            % Instantiation of target class
+            import saivdr.dictionary.cnsoltx.*
+            testCase.lppufb = CplxOvsdLpPuFb2dTypeIIVm0System(...
+                'DecimationFactor',decch(1:2),...
+                'NumberOfChannels',decch(3:end),...
+                'PolyPhaseOrder',ord);
+            
+            % Actual values
+            coefActual = step(testCase.lppufb,ang,musPre);
+            
+            % Evaluation
+            import matlab.unittest.constraints.IsGreaterThanOrEqualTo;
+            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
+            testCase.verifyThat(coefDist,IsGreaterThanOrEqualTo(1e-14),sprintf('%g',coefDist));
+            
+            % Actual values
+            coefActual = step(testCase.lppufb,[],musPst);
+            
+            % Evaluation
+            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
+            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',coefDist));
+            
+        end
         
         % Test for subsref
         function testAnalysisFilterAt(testCase)

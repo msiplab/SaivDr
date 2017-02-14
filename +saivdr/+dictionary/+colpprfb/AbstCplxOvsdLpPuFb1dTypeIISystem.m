@@ -144,7 +144,7 @@ classdef AbstCplxOvsdLpPuFb1dTypeIISystem < ...
             sizeOfAngles = nAngsInit + sum(nAngsPerStg)*(obj.nStages-1);
             %
 
-            if isempty(obj.Angles)
+            if isscalar(obj.Angles) && obj.Angles == 0
                 obj.Angles = zeros(sizeOfAngles,1);
             end
             
@@ -165,7 +165,7 @@ classdef AbstCplxOvsdLpPuFb1dTypeIISystem < ...
             %
             nChL = floor(obj.NumberOfChannels/2);
             nChU = ceil(obj.NumberOfChannels/2);
-            if isempty(obj.Mus)
+            if isscalar(obj.Mus) && obj.Mus == 1
                 obj.Mus = [ ones(1,obj.NumberOfChannels),...
                     repmat([ ones(1,nChL), -1*ones(1,nChL),...
                     ones(1,nChU), -1*ones(1,nChL), 1 ], 1, obj.nStages-1)];
