@@ -52,7 +52,7 @@ orgImg = im2double(srcImg(py:py+height-1,px:px+width-1,:));
 % * saivdr.degradation.DegradationSystem
 
 import saivdr.degradation.linearprocess.BlurSystem
-blurtype = 'Gaussian';  % Blur type
+blurtype = 'Identical';  % Blur type
 boundary = 'Symmetric'; % Boundary option
 hsigma   = 2;           % Sigma for Gausian kernel
 blur = BlurSystem(...   % Instantiation of blur process              

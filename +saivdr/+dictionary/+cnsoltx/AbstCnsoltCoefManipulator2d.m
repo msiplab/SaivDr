@@ -136,7 +136,7 @@ classdef AbstCnsoltCoefManipulator2d < matlab.System
             obj.paramMtxCoefs = pmCoefs;
             %
             if size(coefs,2) ~= (obj.nRows*obj.nCols)
-                obj.tmpArray = zeros(size(coefs)); 
+                obj.tmpArray = complex(zeros(size(coefs))); 
             end
             %
             obj.nRows = subScale(saivdr.dictionary.utility.Direction.VERTICAL);

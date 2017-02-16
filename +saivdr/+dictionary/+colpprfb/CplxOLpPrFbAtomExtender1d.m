@@ -62,7 +62,7 @@ classdef CplxOLpPrFbAtomExtender1d <  ...
             %
             if ~isempty(obj.paramMtxCoefs)
                 V0 = getParamMtx_(obj,uint32(1));
-                arrayCoefs = V0*arrayCoefs;
+                arrayCoefs = V0(1:obj.NumberOfChannels,:)*arrayCoefs;
             end
 
         end
@@ -117,12 +117,12 @@ classdef CplxOLpPrFbAtomExtender1d <  ...
         
         function arrayCoefs = supportExtTypeI_(obj,arrayCoefs,paramMtx1,paramMtx2,paramMtx3,paramMtx4,paramMtx5,paramMtx6,isPeriodicExt)
             hLen = obj.NumberOfHalfChannels;
-            import saivdr.dictionary.cnsoltx.mexsrcs.AbstCplxBuildingBlock
+            %import saivdr.dictionary.cnsoltx.mexsrcs.AbstCplxBuildingBlock
 
             % Phase 1
             Wx1 = paramMtx1;
             Ux1 = paramMtx2;
-            B1 = AbstCplxBuildingBlock.butterflyMtx(hLen,paramMtx3);
+            B1 = saivdr.dictionary.cnsoltx.mexsrcs.AbstCplxBuildingBlock.butterflyMtx(hLen,paramMtx3);
             %cB1 = conj(B1);
             %TODO: ŽÀ‘•‚ÌŒø—¦‰»‚ðŒŸ“¢
             %arrayCoefs = blockButterflyTypeI_(obj,arrayCoefs,angB1);
@@ -145,7 +145,7 @@ classdef CplxOLpPrFbAtomExtender1d <  ...
             % Phase 2
             Wx2 = paramMtx4;
             Ux2 = paramMtx5;
-            B2 = AbstCplxBuildingBlock.butterflyMtx(hLen,paramMtx6);
+            B2 = saivdr.dictionary.cnsoltx.mexsrcs.AbstCplxBuildingBlock.butterflyMtx(hLen,paramMtx6);
             %cB2 = conj(B2);
             %TODO:
             %arrayCoefs = blockButterflyTypeI_(obj,arrayCoefs,angB2);
@@ -161,12 +161,12 @@ classdef CplxOLpPrFbAtomExtender1d <  ...
         
         function arrayCoefs = supportExtTypeII_(obj,arrayCoefs,paramMtx1,paramMtx2,paramMtx3,paramMtx4,paramMtx5,paramMtx6,isPeriodicExt)
             hLen = obj.NumberOfHalfChannels;
-            import saivdr.dictionary.cnsoltx.mexsrcs.AbstCplxBuildingBlock
+            %import saivdr.dictionary.cnsoltx.mexsrcs.AbstCplxBuildingBlock
             
             % Phase 1
             Wx = paramMtx1;
             Ux = paramMtx2;
-            B = AbstCplxBuildingBlock.butterflyMtx(hLen,paramMtx3);
+            B = saivdr.dictionary.cnsoltx.mexsrcs.AbstCplxBuildingBlock.butterflyMtx(hLen,paramMtx3);
             %cB = conj(B);
             %arrayCoefs = blockButterflyTypeII_(obj,arrayCoefs,[]);
             arrayCoefs(1:end-1,:) = B'*arrayCoefs(1:end-1,:);
@@ -189,7 +189,7 @@ classdef CplxOLpPrFbAtomExtender1d <  ...
             % Phase 2
             Wx = paramMtx4;
             Ux = paramMtx5;
-            B = AbstCplxBuildingBlock.butterflyMtx(hLen,paramMtx6);
+            B = saivdr.dictionary.cnsoltx.mexsrcs.AbstCplxBuildingBlock.butterflyMtx(hLen,paramMtx6);
             %cB = conj(B);
             %arrayCoefs = blockButterflyTypeII_(obj,arrayCoefs,[]);
             arrayCoefs(1:end-1,:) = B'*arrayCoefs(1:end-1,:);

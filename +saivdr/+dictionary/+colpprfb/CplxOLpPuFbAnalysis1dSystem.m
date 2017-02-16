@@ -149,11 +149,8 @@ classdef CplxOLpPuFbAnalysis1dSystem < ...
             obj.allScales = zeros(obj.nAllChs,obj.DATA_DIMENSION);
             
             % Prepare MEX function
-            %TODO: MEX‰»‚É‘Î‰ž‚µ‚½‚ç‰º‚ÌƒR[ƒh‚ðíœ‚·‚é
-            obj.isMexFcn = 1;
-            mexFcn = [];
             
-            if obj.NumberOfChannels == 2
+            if obj.NumberOfChannels <= 3
                 mexFcn = [];
             elseif ~obj.isMexFcn
                 import saivdr.dictionary.colpprfb.mexsrcs.fcn_autobuild_catomext1d
@@ -244,13 +241,9 @@ classdef CplxOLpPuFbAnalysis1dSystem < ...
 %                 arrayCoefs(1,:)    = (subSeq1+subSeq2)/sqrt(2);
 %                 arrayCoefs(ps+1,:) = -(subSeq1-subSeq2)/sqrt(2);
             else
-                %mc = ceil(dec_/2);
-                %mf = floor(dec_/2);
                 import saivdr.utility.HermitianSymmetricDFT
                 Edft = HermitianSymmetricDFT.hsdftmtx(dec_);
                 hsdftCoefs = Edft*reshape(subSeq,[dec_, nBlks_]);
-                %arrayCoefs(1:mc,:) = dctCoefs(1:mc,:) ;
-                %arrayCoefs(ps+1:ps+mf,:) = dctCoefs(mc+1:end,:);
                 arrayCoefs(1:dec_,:) = hsdftCoefs;
             end
             

@@ -126,16 +126,12 @@ classdef CplxOLpPuFbSynthesis1dSystem  < ...
             
             % Prepare MEX function
             
-            %TODO: MEX‰»‚É‘Î‰ž‚µ‚½‚ç‰º‚Ì‚Qs‚ðíœ‚·‚é
-            mexFcn = [];
-            obj.isMexFcn = 1;
-            
-            if obj.NumberOfChannels == 2
+            if obj.NumberOfChannels <= 3
                 mexFcn = [];
             elseif ~obj.isMexFcn
                 import saivdr.dictionary.colpprfb.mexsrcs.fcn_autobuild_catomcnc1d
                 [mexFcn, obj.isMexFcn] = ...
-                    fcn_autobuild_atomcnc1d(nch);
+                    fcn_autobuild_catomcnc1d(nch);
             end
             
             if ~isempty(mexFcn)

@@ -29,7 +29,7 @@ classdef CnsoltSynthesis2dSystem  < ...
     end
 
     properties (Nontunable, PositiveInteger)    
-        NumberOfChannels     = 2
+        NumberOfChannels     = 4
         NumberOfHalfChannels = 2
     end
     
@@ -129,9 +129,6 @@ classdef CnsoltSynthesis2dSystem  < ...
             nch = obj.NumberOfChannels;
             
             % Prepare MEX function
-            %TODO: MEXコード化を完了したら下の2行を削除する
-            obj.isMexFcn = 1;
-            mexFcn = [];
             
             if ~obj.isMexFcn
                 import saivdr.dictionary.cnsoltx.mexsrcs.fcn_autobuild_catomcnc2d

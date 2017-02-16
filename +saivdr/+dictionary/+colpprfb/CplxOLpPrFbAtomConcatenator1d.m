@@ -61,7 +61,7 @@ classdef CplxOLpPrFbAtomConcatenator1d < ...
             %
             if ~isempty(obj.paramMtxCoefs)
                 V0 = getParamMtx_(obj,uint32(1)).';
-                arrayCoefs = V0*arrayCoefs;
+                arrayCoefs = V0(1:obj.NumberOfChannels,:)*arrayCoefs;
             end
             
         end
@@ -117,12 +117,12 @@ classdef CplxOLpPrFbAtomConcatenator1d < ...
         function arrayCoefs = atomCncTypeI_(obj,arrayCoefs,paramMtx1,paramMtx2,paramMtx3,paramMtx4,paramMtx5,paramMtx6,isPeriodicExt)
             hLen = obj.NumberOfHalfChannels;
             
-            import saivdr.dictionary.cnsoltx.mexsrcs.AbstCplxBuildingBlock
+            %import saivdr.dictionary.cnsoltx.mexsrcs.AbstCplxBuildingBlock
             
             % Phase 1
             Wx2 = paramMtx1.';
             Ux2 = paramMtx2.';
-            Bx2 = AbstCplxBuildingBlock.butterflyMtx(hLen,paramMtx3);
+            Bx2 = saivdr.dictionary.cnsoltx.mexsrcs.AbstCplxBuildingBlock.butterflyMtx(hLen,paramMtx3);
             
             % Lower channel rotation
             arrayCoefs(1:hLen,:) = Wx2*arrayCoefs(1:hLen,:);
@@ -137,7 +137,7 @@ classdef CplxOLpPrFbAtomConcatenator1d < ...
             % Phase 2
             Wx1 = paramMtx4.';
             Ux1 = paramMtx5.';
-            B1 = AbstCplxBuildingBlock.butterflyMtx(hLen, paramMtx6);
+            B1 = saivdr.dictionary.cnsoltx.mexsrcs.AbstCplxBuildingBlock.butterflyMtx(hLen, paramMtx6);
             % Lower channel rotation
             if isPeriodicExt
                  arrayCoefs(1:hLen,:) = Wx1*arrayCoefs(1:hLen,:);
@@ -158,12 +158,12 @@ classdef CplxOLpPrFbAtomConcatenator1d < ...
         
         function arrayCoefs = atomCncTypeII_(obj,arrayCoefs,paramMtx1,paramMtx2,paramMtx3,paramMtx4,paramMtx5,paramMtx6,isPeriodicExt)
             hLen = obj.NumberOfHalfChannels;
-            import saivdr.dictionary.cnsoltx.mexsrcs.AbstCplxBuildingBlock
+            %import saivdr.dictionary.cnsoltx.mexsrcs.AbstCplxBuildingBlock
             
             % Phase 1
             Wx2 = paramMtx1.';
             Ux2 = paramMtx2.';
-            B2 = AbstCplxBuildingBlock.butterflyMtx(hLen,paramMtx3);
+            B2 = saivdr.dictionary.cnsoltx.mexsrcs.AbstCplxBuildingBlock.butterflyMtx(hLen,paramMtx3);
             % Upper channel rotation
             arrayCoefs(1:hLen+1,:) = Wx2*arrayCoefs(1:hLen+1,:);
             arrayCoefs(hLen+1:end,:) = Ux2*arrayCoefs(hLen+1:end,:);
@@ -178,7 +178,7 @@ classdef CplxOLpPrFbAtomConcatenator1d < ...
             % Phase 2
             Wx1 = paramMtx4.';
             Ux1 = paramMtx5.';
-            B1 = AbstCplxBuildingBlock.butterflyMtx(hLen,paramMtx6);
+            B1 = saivdr.dictionary.cnsoltx.mexsrcs.AbstCplxBuildingBlock.butterflyMtx(hLen,paramMtx6);
             % Lower channel rotation
             if isPeriodicExt % TODO:ŽüŠúŠg’£‚Ì’è‹`
                 arrayCoefs(1:hLen,:) = Wx1*arrayCoefs(1:hLen,:);
