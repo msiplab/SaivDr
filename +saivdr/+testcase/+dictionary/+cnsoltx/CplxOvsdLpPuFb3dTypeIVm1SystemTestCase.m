@@ -42,15 +42,14 @@ classdef CplxOvsdLpPuFb3dTypeIVm1SystemTestCase < matlab.unittest.TestCase
                 F100(:).' ],2);
         %}
         matrixE0 = 1/(2*sqrt(2))*[
-            1     1     1     1     1     1     1     1
-            1     1    -1    -1    -1    -1     1     1
-            1    -1    -1     1     1    -1    -1     1
-            1    -1     1    -1    -1     1    -1     1
-            -1    -1    -1    -1     1     1     1     1
-            -1    -1     1     1    -1    -1     1     1
-            -1     1     1    -1     1    -1    -1     1
-            -1     1    -1     1    -1     1    -1     1
-            ];
+             1 ,  1 ,  1 ,  1 ,  1 ,  1 ,  1 ,  1 ;
+            -1i, -1i, -1i, -1i,  1i,  1i,  1i,  1i;
+            -1i, -1i,  1i,  1i, -1i, -1i,  1i,  1i;
+            -1 , -1 ,  1 ,  1 ,  1 ,  1 , -1 , -1 ;
+            -1i,  1i, -1i,  1i, -1i,  1i, -1i,  1i;
+            -1 ,  1 , -1 ,  1 ,  1 , -1 ,  1 , -1 ;
+            -1 ,  1 ,  1 , -1 , -1 ,  1 ,  1 , -1 ;
+             1i, -1i, -1i,  1i, -1i,  1i,  1i, -1i];
     end
     properties
         lppufb
@@ -220,7 +219,7 @@ classdef CplxOvsdLpPuFb3dTypeIVm1SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 2 2 2 10 ];
             ord = [ 2 0 0 ];
-            ang = 2*pi*rand(10,4);
+            ang = 2*pi*rand(45+2*22,1);
             
             % Expected values
             nChs = decch(4);
@@ -263,7 +262,7 @@ classdef CplxOvsdLpPuFb3dTypeIVm1SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 2 2 2 10 ];
             ord = [ 0 2 0 ];
-            ang = 2*pi*rand(10,4);
+            ang = 2*pi*rand(45+2*22,1);
             
             % Expected values
             nChs = decch(4);
@@ -306,7 +305,7 @@ classdef CplxOvsdLpPuFb3dTypeIVm1SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 2 2 2 10 ];
             ord = [ 0 0 2 ];
-            ang = 2*pi*rand(10,4);
+            ang = 2*pi*rand(45+2*22,1);
             
             % Expected values
             nChs = decch(4);
@@ -349,7 +348,7 @@ classdef CplxOvsdLpPuFb3dTypeIVm1SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 2 2 2 10 ];
             ord = [ 2 2 2 ];
-            ang = 2*pi*rand(10,8);
+            ang = 2*pi*rand(45+6*22,1);
             
             % Expected values
             nChs = decch(4);
@@ -465,7 +464,7 @@ classdef CplxOvsdLpPuFb3dTypeIVm1SystemTestCase < matlab.unittest.TestCase
             % Parameters
             dec = [ 2 2 2 ];
             ord = [ 0 0 0 ];
-            ang = zeros(6,2);
+            ang = zeros(28,1);
             
             % Expected values
             coefExpctd(:,:,1,1,1) = testCase.matrixE0;
@@ -492,7 +491,7 @@ classdef CplxOvsdLpPuFb3dTypeIVm1SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 2 2 2 10 ];
             ord = [ 4 4 4 ];
-            ang = 2*pi*rand(10,14);
+            ang = 2*pi*rand(45+12*22,1);
             
             % Expected values
             nChs = decch(4);
@@ -535,7 +534,7 @@ classdef CplxOvsdLpPuFb3dTypeIVm1SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 2 2 2 10 ];
             ord = [ 2 2 2 ];
-            ang = 2*pi*rand(10,8);
+            ang = 2*pi*rand(45+6*22,1);
             
             % Expected values
             nChs = decch(4);
@@ -573,7 +572,7 @@ classdef CplxOvsdLpPuFb3dTypeIVm1SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 2 2 2 10 ];
             ord = [ 4 4 4 ];
-            ang = 2*pi*rand(10,14);
+            ang = 2*pi*rand(45+12*22,1);
             
             % Expected values
             nChs = decch(4);
@@ -609,12 +608,12 @@ classdef CplxOvsdLpPuFb3dTypeIVm1SystemTestCase < matlab.unittest.TestCase
         function testConstructorWithDec222Ch44Ord222AngNoDcLeakage(testCase)
             
             % Parameters
-            decch = [ 2 2 2 4 4 ];
+            decch = [ 2 2 2 8 ];
             ord = [ 4 4 4 ];
-            ang = 2*pi*rand(6,14);
+            ang = 2*pi*rand(28+12*14,1);
             
             % Expected values
-            nChs = sum(decch(4:5));
+            nChs = sum(decch(4));
             nDec = prod(decch(1:3));
             dimExpctd = [nChs nDec ord(1)+1 ord(2)+1 ord(3)+1 ];
             
@@ -647,14 +646,13 @@ classdef CplxOvsdLpPuFb3dTypeIVm1SystemTestCase < matlab.unittest.TestCase
         function testParameterMatrixContainer(testCase)
             
             % Preparation
-            mstab = [ 4 4 ; 4 4 ];
+            mstab = [ 8 8 ];
             
             % Expected value
             import saivdr.dictionary.utility.ParameterMatrixContainer
             paramExpctd = ParameterMatrixContainer(...
                 'MatrixSizeTable',mstab);
-            step(paramExpctd,eye(4),1);
-            step(paramExpctd,eye(4),2);
+            step(paramExpctd,eye(8),1);
             
             % Instantiation of target class
             import saivdr.dictionary.cnsoltx.*

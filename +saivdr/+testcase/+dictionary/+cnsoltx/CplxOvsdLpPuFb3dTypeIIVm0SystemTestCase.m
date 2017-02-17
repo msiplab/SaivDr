@@ -45,15 +45,14 @@ classdef CplxOvsdLpPuFb3dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
                 F100(:).' ],2);
         %}
         matrixE0 = 1/(2*sqrt(2))*[
-            1     1     1     1     1     1     1     1
-            1     1    -1    -1    -1    -1     1     1
-            1    -1    -1     1     1    -1    -1     1
-            1    -1     1    -1    -1     1    -1     1
-            -1    -1    -1    -1     1     1     1     1
-            -1    -1     1     1    -1    -1     1     1
-            -1     1     1    -1     1    -1    -1     1
-            -1     1    -1     1    -1     1    -1     1
-            ];
+             1 ,  1 ,  1 ,  1 ,  1 ,  1 ,  1 ,  1 ;
+            -1i, -1i, -1i, -1i,  1i,  1i,  1i,  1i;
+            -1i, -1i,  1i,  1i, -1i, -1i,  1i,  1i;
+            -1 , -1 ,  1 ,  1 ,  1 ,  1 , -1 , -1 ;
+            -1i,  1i, -1i,  1i, -1i,  1i, -1i,  1i;
+            -1 ,  1 , -1 ,  1 ,  1 , -1 ,  1 , -1 ;
+            -1 ,  1 ,  1 , -1 , -1 ,  1 ,  1 , -1 ;
+             1i, -1i, -1i,  1i, -1i,  1i,  1i, -1i];
     end
     
     properties
@@ -73,9 +72,8 @@ classdef CplxOvsdLpPuFb3dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             coefExpctd = [ 
-                testCase.matrixE0(1:4,:) ;
+                testCase.matrixE0;
                 zeros(1,8);
-                testCase.matrixE0(5:end,:) 
             ];
             
             % Instantiation of target class
@@ -132,9 +130,8 @@ classdef CplxOvsdLpPuFb3dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             coefExpctd(:,:,1,1,1) =  [ 
-                testCase.matrixE0(1:4,:) ;
+                testCase.matrixE0;
                 zeros(1,8);
-                testCase.matrixE0(5:end,:) 
             ];
             
             % Instantiation of target class
@@ -159,7 +156,7 @@ classdef CplxOvsdLpPuFb3dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 2 2 2 9 ];
             ord = [ 0 0 2 ];
-            ang = 2*pi*rand(16,2);
+            ang = 2*pi*rand(36+12+20+4,1);
             
             % Expected values
             nChs = decch(4);
@@ -202,7 +199,7 @@ classdef CplxOvsdLpPuFb3dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 2 2 2 9 ];
             ord = [ 0 2 0 ];
-            ang = 2*pi*rand(16,2);
+            ang = 2*pi*rand(36+12+20+4,1);
             
             % Expected values
             nChs = decch(4);
@@ -245,7 +242,7 @@ classdef CplxOvsdLpPuFb3dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 2 2 2 9 ];
             ord = [ 2 0 0 ];
-            ang = 2*pi*rand(16,2);
+            ang = 2*pi*rand(36+12+20+4,1);
             
             % Expected values
             nChs = decch(4);
@@ -288,7 +285,7 @@ classdef CplxOvsdLpPuFb3dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 2 2 2 9 ];
             ord = [ 2 2 2 ];
-            ang = 2*pi*rand(16,4);
+            ang = 2*pi*rand(36+3*(12+20+4),1);
             
             % Expected values
             nDec = prod(decch(1:3));
@@ -331,54 +328,12 @@ classdef CplxOvsdLpPuFb3dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             dec = [ 3 3 3 ];
             ord = [ 0 0 0 ];
-            ang = 2*pi*rand(169,1);
+            ang = 2*pi*rand(27*13,1);
             
             % Expected values
             nDec = prod(dec(1:3));
             nChs = nDec;
             dimExpctd = [nChs nDec ];
-            
-            % Instantiation of target class
-            import saivdr.dictionary.cnsoltx.*
-            testCase.lppufb = CplxOvsdLpPuFb3dTypeIIVm0System(...
-                'DecimationFactor',dec,...
-                'PolyPhaseOrder',ord);
-            
-            % Actual values
-            coefActual = step(testCase.lppufb,ang,[]);
-            
-            % Evaluation
-            testCase.verifySize(coefActual,dimExpctd);
-            
-            % Check symmetry
-            import matlab.unittest.constraints.IsLessThan;
-            coefDiff = coefActual(:,:)-fliplr(conj(coefActual(:,:)));
-            coefDist = max(abs(coefDiff(:)));
-            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));
-            
-            % Check tightness
-            coefE = step(testCase.lppufb,[],[]); 
-            E = saivdr.dictionary.utility.PolyPhaseMatrix3d(coefE);
-            coefActual = double(E'*E);
-            coefActual(1:nDec,1:nDec,ord(1)+1,ord(2)+1,ord(3)+1) = ...
-                coefActual(1:nDec,1:nDec,ord(1)+1,ord(2)+1,ord(3)+1) - eye(nDec);
-            coefDist = max(abs(coefActual(:)));
-            testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));
-            
-        end
-
-        % Test for construction with order 2 2 2
-        function testConstructorWithDec222Ord222Ang(testCase)
-            
-            % Parameters
-            dec = [ 2 2 2 ];
-            ord = [ 2 2 2 ];
-            ang = 2*pi*rand(16,4);
-            
-            % Expected values
-            nDec = prod(dec(1:3));
-            nChs = nDec + (mod(nDec,2)==0);
-            dimExpctd = [nChs nDec ord(1)+1 ord(2)+1 ord(3)+1];
             
             % Instantiation of target class
             import saivdr.dictionary.cnsoltx.*
@@ -490,10 +445,8 @@ classdef CplxOvsdLpPuFb3dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             coefExpctd(:,:,1,1,1) = [
-                testCase.matrixE0(1:4,:);
-                zeros(3,8);
-                testCase.matrixE0(5:8,:);
-                zeros(2,8)
+                testCase.matrixE0;
+                zeros(5,8)
                 ];
             
             % Instantiation of target class
@@ -518,22 +471,18 @@ classdef CplxOvsdLpPuFb3dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 2 2 2 13 ];
             ord = [ 0 0 0 ];
-            angW = zeros(21,1);
-            angU = 2*pi*rand(15,1);
+            angV0 = 2*pi*rand(13*6,1);
+            angV0(1:decch(4)) = zeros(decch(4),1);
             
             % Expected values
             import saivdr.dictionary.utility.*
-            omgsW = OrthonormalMatrixGenerationSystem();
-            omgsU = OrthonormalMatrixGenerationSystem();
-            matrixW0 = step(omgsW,angW,1);
-            matrixU0 = step(omgsU,angU,1);
+            omgsV0 = OrthonormalMatrixGenerationSystem('OrderOfProduction','Ascending');
+            matrixV0 = step(omgsV0,angV0,1);
             coefExpctd(:,:,1,1) = ...
-                blkdiag(matrixW0, matrixU0) * ...
+                matrixV0* ...
                 [
-                    testCase.matrixE0(1:4,:);
-                    zeros(3,8);
-                    testCase.matrixE0(5:8,:);
-                    zeros(2,8)
+                    testCase.matrixE0;
+                    zeros(5,8)
                 ];
             
             % Instantiation of target class
@@ -544,7 +493,7 @@ classdef CplxOvsdLpPuFb3dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
                 'PolyPhaseOrder',ord);
             
             % Actual values
-            coefActual = step(testCase.lppufb,[angW;angU],[]);
+            coefActual = step(testCase.lppufb,angV0,[]);
             
             % Evaluation
             coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
@@ -558,7 +507,7 @@ classdef CplxOvsdLpPuFb3dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 2 2 2 9 ];
             ord = [ 0 0 0 ];
-            ang = 2*pi*rand(16,1);
+            ang = 2*pi*rand(36,1);
             
             % Expected values
             dimExpctd = [9 8];
@@ -594,7 +543,7 @@ classdef CplxOvsdLpPuFb3dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 2 2 2 11 ];
             ord = [ 0 0 0 ];
-            ang = 2*pi*rand(25,1);
+            ang = 2*pi*rand(55,1);
             
             % Expected values
             dimExpctd = [11 8];
@@ -628,9 +577,9 @@ classdef CplxOvsdLpPuFb3dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
         function testConstructorWithDec222Ch54Ord000Ang(testCase)
             
             % Parameters
-            decch = [ 2 2 2 5 4 ];
+            decch = [ 2 2 2 9 ];
             ord = [ 0 0 0 ];
-            ang = 2*pi*rand(16,1);
+            ang = 2*pi*rand(36,1);
             
             % Expected values
             dimExpctd = [9 8];
@@ -666,7 +615,7 @@ classdef CplxOvsdLpPuFb3dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 3 3 3 29 ];
             ord = [ 0 0 0 ];
-            ang = 2*pi*rand(196,1);
+            ang = 2*pi*rand(29*14,1);
             
             % Expected values
             dimExpctd = [29 27];
@@ -765,17 +714,15 @@ classdef CplxOvsdLpPuFb3dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 1 1 1 5 ];
             ord = [ 0 0 0 ];
-            angW = zeros(3,1);
-            angU = pi/3;
+            angV0 = zeros(10,1);
+            angV0(1:decch(4)) = zeros(decch(4),1);
             
             % Expected values
             import saivdr.dictionary.utility.*
-            omgsW = OrthonormalMatrixGenerationSystem();
-            omgsU = OrthonormalMatrixGenerationSystem();
-            matrixW0 = step(omgsW,angW,1);
-            matrixU0 = step(omgsU,angU,1);
+            omgsV0 = OrthonormalMatrixGenerationSystem('OrderOfProduction','Ascending');
+            matrixV0 = step(omgsV0,angV0,1);
             coefExpctd(:,:,1,1) = ...
-                blkdiag(matrixW0, matrixU0) * ...
+                matrixV0 * ...
                 [ 1 0 0 0 0 ].';
             
             % Instantiation of target class
@@ -786,7 +733,7 @@ classdef CplxOvsdLpPuFb3dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
                 'PolyPhaseOrder',ord);
             
             % Actual values
-            coefActual = step(testCase.lppufb,[angW;angU],[]);
+            coefActual = step(testCase.lppufb,angV0,[]);
             
             % Evaluation
             coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
@@ -800,17 +747,17 @@ classdef CplxOvsdLpPuFb3dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
             % Invalid input
             decch = [ 2 2 2 9 ];
             ord = [ 0 0 0 ];
-            sizeInvalid = [2 2];
+            sizeInvalid = 4;
             ang = 2*pi*rand(sizeInvalid);
             
             % Expected value
-            sizeExpctd = [16 1];
+            sizeExpctd = 36;
             
             % Expected values
             exceptionIdExpctd = 'SaivDr:IllegalArgumentException';
             messageExpctd = ...
-                sprintf('Size of angles must be [ %d %d ]',...
-                sizeExpctd(1), sizeExpctd(2));
+                sprintf('Length of angles must be %d',...
+                sizeExpctd);
             
             % Instantiation of target class
             try
@@ -836,14 +783,14 @@ classdef CplxOvsdLpPuFb3dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 2 2 2 9 ];
             ord = [ 0 0 0 ];
-            ang = zeros(16,1);
-            mus = [ 1 1 1 1 1 -1 -1 -1 -1 ].';
+            ang = zeros(36,1);
+            mus = [ 1 1 1 1 -1 -1 -1 -1 -1 ].';
             
             % Expected values
             coefExpctd(:,:,1,1,1) = [...
                 testCase.matrixE0(1:4,:);
-                zeros(1,8);
-               -testCase.matrixE0(5:8,:)
+               -testCase.matrixE0(5:8,:);
+                zeros(1,8)
                ];
             
             % Instantiation of target class
@@ -873,9 +820,8 @@ classdef CplxOvsdLpPuFb3dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
             % Expected values
             coefExpctd = zeros(9,8,3,3,3);
             coefExpctd(:,:,2,2,2) = [
-                testCase.matrixE0(1:4,:);
+                testCase.matrixE0;
                 zeros(1,8);
-                testCase.matrixE0(5:8,:)
                ];                
             
             % Instantiation of target class
@@ -901,7 +847,7 @@ classdef CplxOvsdLpPuFb3dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 2 2 2 9 ];
             ord = [ 4 4 4 ];
-            ang = 2*pi*rand(16,7);
+            ang = 2*pi*rand(36+6*(12+20+4),1);
             
             % Expected values
             nDec = prod(decch(1:3));
@@ -955,8 +901,7 @@ classdef CplxOvsdLpPuFb3dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
             coefExpctd = zeros(27,27,3,3,3);
             matrixE0_ = step(testCase.lppufb,[],[]);            
             coefExpctd(:,:,2,2,2) = [
-                matrixE0_(1:14,:);
-                matrixE0_(15:27,:) 
+                matrixE0_; 
                ]; 
             
             % Instantiation of target class
@@ -982,7 +927,7 @@ classdef CplxOvsdLpPuFb3dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 2 2 2 11 ];
             ord = [ 2 2 2 ];
-            ang = 2*pi*rand(25,4);
+            ang = 2*pi*rand(55+3*(20+30+4),1);
             
             % Expected values
             nDec = prod(decch(1:3));
@@ -1025,7 +970,7 @@ classdef CplxOvsdLpPuFb3dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 3 3 3 27 ];
             ord = [ 4 4 4 ];
-            ang = 2*pi*rand(169,7);
+            ang = 2*pi*rand(27*13+6*(13*12+14*13+12),1);
             
             % Expected values
             nDec = prod(decch(1:3));
@@ -1068,14 +1013,13 @@ classdef CplxOvsdLpPuFb3dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 2 2 2 9 ];
             ord = [ 0 0 0 ];
-            angPre = pi/4*ones(16,1);
-            angPst = zeros(16,1);
+            angPre = pi/4*ones(36,1);
+            angPst = zeros(36,1);
             
             % Expected values
             coefExpctd(:,:,1,1,1) = [...
-                testCase.matrixE0(1:4,:);
-                zeros(1,8);
-                testCase.matrixE0(5:8,:)
+                testCase.matrixE0;
+                zeros(1,8)
                 ];
             
             % Instantiation of target class
@@ -1108,15 +1052,14 @@ classdef CplxOvsdLpPuFb3dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
             % Parameters
             decch = [ 2 2 2 9 ];
             ord = [ 0 0 0 ];
-            ang = zeros(16,1);
+            ang = zeros(36,1);
             musPre = [ 1 -1  1 -1 1 1 -1 1 -1 ].';
             musPst = 1;
             
             % Expected values
             coefExpctd(:,:,1,1,1) = [
-                testCase.matrixE0(1:4,:);
+                testCase.matrixE0;
                 zeros(1,8);
-                testCase.matrixE0(5:8,:)
                 ];
             
             % Instantiation of target class
@@ -1392,9 +1335,8 @@ classdef CplxOvsdLpPuFb3dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
             % Expected values
             coefExpctd = zeros(9,8,1,1,3);
             coefExpctd(:,:,1,1,2) = [
-                testCase.matrixE0(1:4,:)
+                testCase.matrixE0;
                 zeros(1,8)
-                testCase.matrixE0(5:8,:)
                ];
 
             % Instantiation of target class
@@ -1478,181 +1420,18 @@ classdef CplxOvsdLpPuFb3dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',coefDist));
             
         end
-
-%         % Test dec 2 2 2 order 4 4 4
-%         function testConstructorWithDec222Ch64Ord444(testCase)
-%             
-%             % Parameters
-%             decch = [ 2 2 2 6 4 ];
-%             ord = [ 4 4 4 ];
-%             ang = 0;
-%             
-%             % Expected values
-%             coefExpctd = zeros(10,8,5,5,5);
-%             coefExpctd(:,:,3,3,3) =  [
-%                 testCase.matrixE0(1:4,:)
-%                 zeros(2,8);
-%                 testCase.matrixE0(5:8,:)
-%                 ];
-%             
-%             % Instantiation of target class
-%             import saivdr.dictionary.cnsoltx.*
-%             testCase.lppufb = CplxOvsdLpPuFb3dTypeIIVm0System(...
-%                 'DecimationFactor',decch(1:3),...
-%                 'NumberOfChannels',decch(4:end),...
-%                 'PolyPhaseOrder',ord);
-%             
-%             % Actual values
-%             coefActual = step(testCase.lppufb,ang,[]);
-%             
-%             % Evaluation
-%             coefDist = max(abs(coefExpctd(:)-coefActual(:)));
-%             testCase.verifyEqual(coefActual,coefExpctd,'AbsTol',1e-14,sprintf('%g',coefDist));
-%             
-%         end  
-%         
-%         % Test dec 2 2 2 order 2 2 2
-%         function testConstructorWithDec222Ch74Ord222Ang(testCase)
-%             
-%           % Parameters
-%             decch = [ 2 2 2 7 4 ];
-%             ord = [ 2 2 2 ];
-%             ang = 2*pi*rand(27,4);
-%             
-%             % Expected values
-%             nDec = prod(decch(1:3));
-%             nChs = sum(decch(4:end));
-%             dimExpctd = [nChs nDec ord(1)+1 ord(2)+1 ord(3)+1];
-%             
-%             % Instantiation of target class
-%             import saivdr.dictionary.cnsoltx.*
-%             testCase.lppufb = CplxOvsdLpPuFb3dTypeIIVm0System(...
-%                 'DecimationFactor',decch(1:3),...
-%                 'NumberOfChannels',decch(4:end),...
-%                 'PolyPhaseOrder',ord);
-%             
-%             % Actual values
-%             coefActual = step(testCase.lppufb,ang,[]);
-%             
-%             % Evaluation
-%             testCase.verifySize(coefActual,dimExpctd);
-%             
-%             % Check symmetry
-%             import matlab.unittest.constraints.IsLessThan;
-%             coefDiff = coefActual(:,:)-fliplr(conj(coefActual(:,:)));
-%             coefDist = max(abs(coefDiff(:)));
-%             testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));
-%             
-%             % Check tightness
-%             coefE = step(testCase.lppufb,[],[]); 
-%             E = saivdr.dictionary.utility.PolyPhaseMatrix3d(coefE);
-%             coefActual = double(E'*E);
-%             coefActual(1:nDec,1:nDec,ord(1)+1,ord(2)+1,ord(3)+1) = ...
-%                 coefActual(1:nDec,1:nDec,ord(1)+1,ord(2)+1,ord(3)+1) - eye(nDec);
-%             coefDist = max(abs(coefActual(:)));
-%             testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));
-%             
-% %         end
-% %         
-% %         % Test dec 2 2 2 order 4 4 4
-% %         function testConstructorWithDec222Ch64Ord444Ang(testCase)
-% %             
-% %             % Parameters
-% %             decch = [ 2 2 2 6 4 ];
-% %             ord = [ 4 4 4 ];
-% %             ang = 2*pi*rand(21,7);
-% %             
-% %             % Expected values
-% %             nDec = prod(decch(1:3));
-% %             nChs = sum(decch(4:end));
-% %             dimExpctd = [nChs nDec ord(1)+1 ord(2)+1 ord(3)+1];
-% %             
-% %             % Instantiation of target class
-% %             import saivdr.dictionary.cnsoltx.*
-% %             testCase.lppufb = CplxOvsdLpPuFb3dTypeIIVm0System(...
-% %                 'DecimationFactor',decch(1:3),...
-% %                 'NumberOfChannels',decch(4:end),...
-% %                 'PolyPhaseOrder',ord);
-% %             
-% %             % Actual values
-% %             coefActual = step(testCase.lppufb,ang,[]);
-% %             
-% %             % Evaluation
-% %             testCase.verifySize(coefActual,dimExpctd);
-% %             
-% %             % Check symmetry
-% %             import matlab.unittest.constraints.IsLessThan;
-% %             coefDiff = coefActual(:,:)-fliplr(conj(coefActual(:,:)));
-% %             coefDist = max(abs(coefDiff(:)));
-% %             testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist)); 
-% %             
-% %             % Check orthogonality
-% %             coefE = step(testCase.lppufb,[],[]); 
-% %             E = saivdr.dictionary.utility.PolyPhaseMatrix3d(coefE);
-% %             coefActual = double(E'*E);
-% %             coefActual(1:nDec,1:nDec,ord(1)+1,ord(2)+1,ord(3)+1) = ...
-% %                 coefActual(1:nDec,1:nDec,ord(1)+1,ord(2)+1,ord(3)+1) - eye(nDec);
-% %             coefDist = norm(coefActual(:))/sqrt(numel(coefActual));
-% %             testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));
-% %             
-% %         end
-% 
-% %         % Test dec 2 2 2 order 2 2 2
-% %         function testConstructorWithDec222Ch64Ord222Ang(testCase)
-% %             
-% %           % Parameters
-% %             decch = [ 2 2 2 6 4 ];
-% %             ord = [ 2 2 2 ];
-% %             ang = 2*pi*rand(21,4);
-% %             
-% %             % Expected values
-% %             nDec = prod(decch(1:3));
-% %             nChs = sum(decch(4:end));
-% %             dimExpctd = [nChs nDec ord(1)+1 ord(2)+1 ord(3)+1];
-% %             
-% %             % Instantiation of target class
-% %             import saivdr.dictionary.cnsoltx.*
-% %             testCase.lppufb = CplxOvsdLpPuFb3dTypeIIVm0System(...
-% %                 'DecimationFactor',decch(1:3),...
-% %                 'NumberOfChannels',decch(4:end),...
-% %                 'PolyPhaseOrder',ord);
-% %             
-% %             % Actual values
-% %             coefActual = step(testCase.lppufb,ang,[]);
-% %             
-% %             % Evaluation
-% %             testCase.verifySize(coefActual,dimExpctd);
-% %             
-% %             % Check symmetry
-% %             import matlab.unittest.constraints.IsLessThan;
-% %             coefDiff = coefActual(:,:)-fliplr(conj(coefActual(:,:)));
-% %             coefDist = max(abs(coefDiff(:)));
-% %             testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));
-% %             
-% %             % Check tightness
-% %             coefE = step(testCase.lppufb,[],[]); 
-% %             E = saivdr.dictionary.utility.PolyPhaseMatrix3d(coefE);
-% %             coefActual = double(E'*E);
-% %             coefActual(1:nDec,1:nDec,ord(1)+1,ord(2)+1,ord(3)+1) = ...
-% %                 coefActual(1:nDec,1:nDec,ord(1)+1,ord(2)+1,ord(3)+1) - eye(nDec);
-% %             coefDist = max(abs(coefActual(:)));
-% %             testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));
-% %             
-% %         end
-%         %}
-%   
-%         % Test for ParameterMatrixSet
+        
+        % Test for ParameterMatrixSet
         function testParameterMatrixSet(testCase)
             
             % Preparation
-            mstab = [ 5 5 ; 4 4 ];
+            mstab = [ 9 9 ];
             
             % Expected value
-            import saivdr.dictionary.utility.ParameterMatrixSet
-            paramExpctd = ParameterMatrixSet(...
+            import saivdr.dictionary.utility.ParameterMatrixContainer
+            paramExpctd = ParameterMatrixContainer(...
                 'MatrixSizeTable',mstab);
-            step(paramExpctd,eye(5),1);
-            step(paramExpctd,eye(4),2);
+            step(paramExpctd,eye(9),1);
             
             % Instantiation of target class
             import saivdr.dictionary.cnsoltx.*
@@ -1768,295 +1547,6 @@ classdef CplxOvsdLpPuFb3dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(cfsActual,cfsExpctd,'RelTol',1e-8);
             
         end            
-%         % Test dec 2 2 2 order 4 4 4
-%         function testConstructorWithDec222Ch46Ord444(testCase)
-%             
-%             % Parameters
-%             decch = [ 2 2 2 4 6 ];
-%             ord = [ 4 4 4 ];
-%             ang = 0;
-%             
-%             % Expected values
-%             coefExpctd = zeros(10,8,5,5,5);
-%             coefExpctd(:,:,3,3,3) =  [
-%                 testCase.matrixE0(1:4,:)
-%                 testCase.matrixE0(5:8,:)
-%                 zeros(2,8);
-%                 ];
-%             
-%             % Instantiation of target class
-%             import saivdr.dictionary.cnsoltx.*
-%             testCase.lppufb = CplxOvsdLpPuFb3dTypeIIVm0System(...
-%                 'DecimationFactor',decch(1:3),...
-%                 'NumberOfChannels',decch(4:end),...
-%                 'PolyPhaseOrder',ord);
-%             
-%             % Actual values
-%             coefActual = step(testCase.lppufb,ang,[]);
-%             
-%             % Evaluation
-%             coefDist = max(abs(coefExpctd(:)-coefActual(:)));
-%             testCase.verifyEqual(coefActual,coefExpctd,'AbsTol',1e-14,sprintf('%g',coefDist));
-%             
-%         end  
-%         
-%         % Test dec 2 2 2 order 2 2 2
-%         function testConstructorWithDec222Ch47Ord222Ang(testCase)
-%             
-%           % Parameters
-%             decch = [ 2 2 2 4 7 ];
-%             ord = [ 2 2 2 ];
-%             ang = 2*pi*rand(27,4);
-%             
-%             % Expected values
-%             nDec = prod(decch(1:3));
-%             nChs = sum(decch(4:end));
-%             dimExpctd = [nChs nDec ord(1)+1 ord(2)+1 ord(3)+1];
-%             
-%             % Instantiation of target class
-%             import saivdr.dictionary.cnsoltx.*
-%             testCase.lppufb = CplxOvsdLpPuFb3dTypeIIVm0System(...
-%                 'DecimationFactor',decch(1:3),...
-%                 'NumberOfChannels',decch(4:end),...
-%                 'PolyPhaseOrder',ord);
-%             
-%             % Actual values
-%             coefActual = step(testCase.lppufb,ang,[]);
-%             
-%             % Evaluation
-%             testCase.verifySize(coefActual,dimExpctd);
-%             
-%             % Check symmetry
-%             import matlab.unittest.constraints.IsLessThan;
-%             coefDiff = coefActual(:,:)-fliplr(conj(coefActual(:,:)));
-%             coefDist = max(abs(coefDiff(:)));
-%             testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));
-%             
-%             % Check tightness
-%             coefE = step(testCase.lppufb,[],[]); 
-%             E = saivdr.dictionary.utility.PolyPhaseMatrix3d(coefE);
-%             coefActual = double(E'*E);
-%             coefActual(1:nDec,1:nDec,ord(1)+1,ord(2)+1,ord(3)+1) = ...
-%                 coefActual(1:nDec,1:nDec,ord(1)+1,ord(2)+1,ord(3)+1) - eye(nDec);
-%             coefDist = max(abs(coefActual(:)));
-%             testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));
-%             
-%         end
-%         
-%         % Test dec 2 2 2 order 4 4 4
-%         function testConstructorWithDec222Ch46Ord444Ang(testCase)
-%             
-%             % Parameters
-%             decch = [ 2 2 2 4 6 ];
-%             ord = [ 4 4 4 ];
-%             ang = 2*pi*rand(21,7);
-%             
-%             % Expected values
-%             nDec = prod(decch(1:3));
-%             nChs = sum(decch(4:end));
-%             dimExpctd = [nChs nDec ord(1)+1 ord(2)+1 ord(3)+1];
-%             
-%             % Instantiation of target class
-%             import saivdr.dictionary.cnsoltx.*
-%             testCase.lppufb = CplxOvsdLpPuFb3dTypeIIVm0System(...
-%                 'DecimationFactor',decch(1:3),...
-%                 'NumberOfChannels',decch(4:end),...
-%                 'PolyPhaseOrder',ord);
-%             
-%             % Actual values
-%             coefActual = step(testCase.lppufb,ang,[]);
-%             
-%             % Evaluation
-%             testCase.verifySize(coefActual,dimExpctd);
-%             
-%             % Check symmetry
-%             import matlab.unittest.constraints.IsLessThan;
-%             coefDiff = coefActual(:,:)-fliplr(conj(coefActual(:,:)));
-%             coefDist = max(abs(coefDiff(:)));
-%             testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));
-%             
-%             % Check orthogonality
-%             coefE = step(testCase.lppufb,[],[]); 
-%             E = saivdr.dictionary.utility.PolyPhaseMatrix3d(coefE);
-%             coefActual = double(E'*E);
-%             coefActual(1:nDec,1:nDec,ord(1)+1,ord(2)+1,ord(3)+1) = ...
-%                 coefActual(1:nDec,1:nDec,ord(1)+1,ord(2)+1,ord(3)+1) - eye(nDec);
-%             coefDist = norm(coefActual(:))/sqrt(numel(coefActual));
-%             testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));
-%             
-%         end
-% 
-%         % Test dec 2 2 2 order 2 2 2
-%         function testConstructorWithDec222Ch46Ord222Ang(testCase)
-%             
-%           % Parameters
-%             decch = [ 2 2 2 4 6 ];
-%             ord = [ 2 2 2 ];
-%             ang = 2*pi*rand(21,4);
-%             
-%             % Expected values
-%             nDec = prod(decch(1:3));
-%             nChs = sum(decch(4:end));
-%             dimExpctd = [nChs nDec ord(1)+1 ord(2)+1 ord(3)+1];
-%             
-%             % Instantiation of target class
-%             import saivdr.dictionary.cnsoltx.*
-%             testCase.lppufb = CplxOvsdLpPuFb3dTypeIIVm0System(...
-%                 'DecimationFactor',decch(1:3),...
-%                 'NumberOfChannels',decch(4:end),...
-%                 'PolyPhaseOrder',ord);
-%             
-%             % Actual values
-%             coefActual = step(testCase.lppufb,ang,[]);
-%             
-%             % Evaluation
-%             testCase.verifySize(coefActual,dimExpctd);
-%             
-%             % Check symmetry
-%             import matlab.unittest.constraints.IsLessThan;
-%             coefDiff = coefActual(:,:)-fliplr(conj(coefActual(:,:)));
-%             coefDist = max(abs(coefDiff(:)));
-%             testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));
-%             
-%             % Check tightness
-%             coefE = step(testCase.lppufb,[],[]); 
-%             E = saivdr.dictionary.utility.PolyPhaseMatrix3d(coefE);
-%             coefActual = double(E'*E);
-%             coefActual(1:nDec,1:nDec,ord(1)+1,ord(2)+1,ord(3)+1) = ...
-%                 coefActual(1:nDec,1:nDec,ord(1)+1,ord(2)+1,ord(3)+1) - eye(nDec);
-%             coefDist = max(abs(coefActual(:)));
-%             testCase.verifyThat(coefDist,IsLessThan(1e-14),sprintf('%g',coefDist));
-%             
-%         end
-%     
-%         % Test for ParameterMatrixSet
-%         function testParameterMatrixSetCh45(testCase)
-%             
-%             % Preparation
-%             chs = [ 4 5 ];
-%             mstab = [ 4 4 ; 5 5 ];
-%             
-%             % Expected value
-%             import saivdr.dictionary.utility.ParameterMatrixSet
-%             paramExpctd = ParameterMatrixSet(...
-%                 'MatrixSizeTable',mstab);
-%             step(paramExpctd,eye(4),1);
-%             step(paramExpctd,eye(5),2);
-%             
-%             % Instantiation of target class
-%             import saivdr.dictionary.cnsoltx.*
-%             testCase.lppufb = CplxOvsdLpPuFb3dTypeIIVm0System(...
-%                 'OutputMode','ParameterMatrixSet',...
-%                 'NumberOfChannels',chs);
-%             
-%             % Actual values
-%             paramActual = step(testCase.lppufb,[],[]);
-%             
-%             % Evaluation
-%             testCase.verifyEqual(paramExpctd, paramActual);
-%             
-%         end
-% 
-%         function testStepOrd222Ch45Rand(testCase)
-% 
-%             import saivdr.dictionary.utility.OrthonormalMatrixGenerationSystem
-%             omgW = OrthonormalMatrixGenerationSystem();
-%             omgU = OrthonormalMatrixGenerationSystem();
-%             
-%             % Parameters
-%             ord  = [ 2 2 2 ];
-%             nch  = [ 4 5 ];
-%             npmU = 6;
-%             npmL = 10;
-%             angs = rand(npmU+npmL,(2+sum(ord))/2);
-%             mus  = ones(sum(nch),(2+sum(ord))/2);
-%             nchn = min(nch);
-%             nchx = max(nch);
-%             In   = eye(nchn);
-%             Ix   = eye(nchx);
-%             Znx  = zeros(nchn,nchx);
-%             Zxn  = zeros(nchx,nchn);
-%             Zn   = zeros(nchn);
-%             Zx   = zeros(nchx);
-%             %
-%             Dzo = zeros(9,9,1,1,2);
-%             Dzo(:,:,1,1,1) = [ In Znx ; Zxn Zx ];
-%             Dzo(:,:,1,1,2) = [ Zn Znx ; Zxn Ix ];
-%             Dze = zeros(9,9,1,1,2);
-%             Dze(:,:,1,1,1) = [ Ix Zxn ; Znx Zn ];
-%             Dze(:,:,1,1,2) = [ Zx Zxn ; Znx In ];            
-%             %
-%             Dxo = zeros(9,9,1,2,1);
-%             Dxo(:,:,1,1,1) = [ In Znx ; Zxn Zx ];
-%             Dxo(:,:,1,2,1) = [ Zn Znx ; Zxn Ix ];
-%             Dxe = zeros(9,9,1,2,1);
-%             Dxe(:,:,1,1,1) = [ Ix Zxn ; Znx Zn ];
-%             Dxe(:,:,1,2,1) = [ Zx Zxn ; Znx In ];                        
-%             %
-%             Dyo = zeros(9,9,2,1,1);
-%             Dyo(:,:,1,1,1) = [ In Znx ; Zxn Zx ];
-%             Dyo(:,:,2,1,1) = [ Zn Znx ; Zxn Ix ];
-%             Dye = zeros(9,9,2,1,1);
-%             Dye(:,:,1,1,1) = [ Ix Zxn ; Znx Zn ];
-%             Dye(:,:,2,1,1) = [ Zx Zxn ; Znx In ];
-%             %
-%             W0  = step(omgW,angs(1:npmU,1),mus(1:nchn,1));
-%             U0  = step(omgU,angs(npmU+1:end,1),mus(nchn+1:end,1));
-%             Wz1 = step(omgW,angs(1:npmU,2),mus(1:nchn,2));
-%             Uz1 = step(omgU,angs(npmU+1:end,2),mus(nchn+1:end,2));
-%             Wx1 = step(omgW,angs(1:npmU,3),mus(1:nchn,3));
-%             Ux1 = step(omgU,angs(npmU+1:end,3),mus(nchn+1:end,3));
-%             Wy1 = step(omgW,angs(1:npmU,4),mus(1:nchn,4));
-%             Uy1 = step(omgU,angs(npmU+1:end,4),mus(nchn+1:end,4));
-%             %
-%             Znd  = zeros(nchn,(nchx-nchn));
-%             Id  = eye(nchx-nchn);
-%             B  = PolyPhaseMatrix3d([
-%                 In    Znd     In ; 
-%                 Znd.' sqrt(2)*Id Znd.'
-%                 In    Znd     -In 
-%                 ]/sqrt(2));
-%             Qzo = B*PolyPhaseMatrix3d(Dzo)*B;                        
-%             Qze = B*PolyPhaseMatrix3d(Dze)*B;
-%             Qxo = B*PolyPhaseMatrix3d(Dxo)*B;            
-%             Qxe = B*PolyPhaseMatrix3d(Dxe)*B;
-%             Qyo = B*PolyPhaseMatrix3d(Dyo)*B;                
-%             Qye = B*PolyPhaseMatrix3d(Dye)*B;
-%             
-%             % Instantiation
-%             import saivdr.dictionary.cnsoltx.*
-%             testCase.lppufb = CplxOvsdLpPuFb3dTypeIIVm0System(...
-%                 'DecimationFactor',[ 2 2 2 ],...
-%                 'NumberOfChannels',[ 4 5 ],...
-%                 'PolyPhaseOrder',ord,...
-%                 'OutputMode','Coefficients');            
-%             set(testCase.lppufb,'Angles',angs);
-%             set(testCase.lppufb,'Mus',mus);
-% 
-%             % Expected values
-%             import saivdr.dictionary.utility.PolyPhaseMatrix3d
-%             E0 = testCase.matrixE0;
-%             R0 = blkdiag(W0,U0)*[In Zn; Zn In; Znd.' Znd.' ];
-%             Rz1 = blkdiag(Wz1,Ix);
-%             Rz2 = blkdiag(In,Uz1);
-%             Rx1 = blkdiag(Wx1,Ix);
-%             Rx2 = blkdiag(In,Ux1);
-%             Ry1 = blkdiag(Wy1,Ix);
-%             Ry2 = blkdiag(In,Uy1);
-%             E = Ry2*Qye*Ry1*Qyo*Rx2*Qxe*Rx1*Qxo*Rz2*Qze*Rz1*Qzo*R0*E0;
-%             
-%             % Actual values
-%             ordExpctd = ord;
-%             cfsExpctd = E.Coefficients;
-%                                     
-%             ordActual = get(testCase.lppufb,'PolyPhaseOrder');
-%             cfsActual = step(testCase.lppufb,[],[]);
-%             
-%             % Evaluation
-%             testCase.verifyEqual(ordActual,ordExpctd);
-%             testCase.verifyEqual(cfsActual,cfsExpctd,'RelTol',1e-8);
-%             
-%         end            
         
     end
     
