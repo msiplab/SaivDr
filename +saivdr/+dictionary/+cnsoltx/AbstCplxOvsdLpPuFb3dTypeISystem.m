@@ -192,9 +192,9 @@ classdef AbstCplxOvsdLpPuFb3dTypeISystem < ...
             lenX = decX;
             nShift = int32(lenY*(decZ*lenX));
             for iOrdZ = 1:ordZ
-                W = step(pmMtxSt_,[],iParamMtx);
-                U = step(pmMtxSt_,[],iParamMtx+1);
-                angsB = step(pmMtxSt_,[],iParamMtx+2);
+                W = step(pmMtxSet_,[],iParamMtx);
+                U = step(pmMtxSet_,[],iParamMtx+1);
+                angsB = step(pmMtxSet_,[],iParamMtx+2);
                 if mexFlag_
                     E = mexFcn_(E, W, U, angsB, hChs, nShift);
                 else
@@ -210,9 +210,9 @@ classdef AbstCplxOvsdLpPuFb3dTypeISystem < ...
             E = permuteCoefs_(obj,E,lenY*lenX); % Y X Z -> Z Y X
             nShift = int32(lenZ*(decX*lenY));
             for iOrdX = 1:ordX
-                W = step(pmMtxSt_,[],iParamMtx);
-                U = step(pmMtxSt_,[],iParamMtx+1);
-                angsB = step(pmMtxSt_,[],iParamMtx+2);
+                W = step(pmMtxSet_,[],iParamMtx);
+                U = step(pmMtxSet_,[],iParamMtx+1);
+                angsB = step(pmMtxSet_,[],iParamMtx+2);
                 if mexFlag_
                     E = mexFcn_(E, W, U, angsB, hChs, nShift);
                 else
@@ -228,9 +228,9 @@ classdef AbstCplxOvsdLpPuFb3dTypeISystem < ...
             E = permuteCoefs_(obj,E,lenZ*lenY); % Z Y X -> X Z Y
             nShift = int32(lenX*(decY*lenZ));
             for iOrdY = 1:ordY
-                W = step(pmMtxSt_,[],iParamMtx);
-                U = step(pmMtxSt_,[],iParamMtx+1);
-                angsB = step(pmMtxSt_,[],iParamMtx+2);
+                W = step(pmMtxSet_,[],iParamMtx);
+                U = step(pmMtxSet_,[],iParamMtx+1);
+                angsB = step(pmMtxSet_,[],iParamMtx+2);
                 if mexFlag_
                     E = mexFcn_(E, W, U, angsB, hChs, nShift);
                 else

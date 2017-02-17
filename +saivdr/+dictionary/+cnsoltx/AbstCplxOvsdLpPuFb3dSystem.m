@@ -330,6 +330,15 @@ classdef AbstCplxOvsdLpPuFb3dSystem < matlab.System %#codegen
             end
         end
         
+        function [initAngles,propAngles] = splitAngles_(obj)
+            nCh = obj.NumberOfChannels;
+            nInitAngles = nCh*(nCh-1)/2;
+            
+            initAngles = obj.Angles(1:nInitAngles);
+            
+            propAngles = obj.Angles(nInitAngles+1:end);
+        end
+        
 %         function value = hsdftmtx_(~, nDec) %Hermitian-Symmetric DFT matrix
 %             w = exp(-2*pi*1i/nDec);
 %             value = complex(zeros(nDec));

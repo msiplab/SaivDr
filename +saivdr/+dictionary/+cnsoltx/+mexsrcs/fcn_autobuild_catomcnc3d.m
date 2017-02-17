@@ -24,8 +24,8 @@ function [fcnhandler,flag] = fcn_autobuild_catomcnc3d(nch)
 % end
 
 bsfname = 'fcn_CnsoltAtomConcatenator3d';
-mexname = sprintf('%s_%d_%d_mex',bsfname,...
-    nch(1),nch(2));
+mexname = sprintf('%s_%d_mex',bsfname,...
+    nch);
 
 ftypemex = exist(mexname, 'file');
 if exist('getCurrentTask','file') == 2
@@ -51,9 +51,9 @@ if isempty(task) || task.ID == 1
             %maxNCfs = 518400;
             %nPmCoefs = (nch(1)^2 +nch(2)^2)*(sum(ord)/2+1);
             %
-            aCoefs   = coder.typeof(double(0),[sum(nch) Inf],[0 1]); %#ok
+            aCoefs   = coder.typeof(complex(double(0)),[sum(nch) Inf],[0 1]); %#ok
             aScale   = coder.typeof(uint32(0),[1 3],[0 0]); %#ok
-            aPmCoefs = coder.typeof(double(0),[Inf 1],[1 0]); %#ok 
+            aPmCoefs = coder.typeof(complex(double(0)),[Inf 1],[1 0]); %#ok 
             cNch = coder.Constant(nch); %#ok
             aOrd = coder.typeof(uint32(0),[1 3],[0 0]); %#ok
             aFpe = coder.typeof(logical(0),[1 1],[0 0]); %#ok

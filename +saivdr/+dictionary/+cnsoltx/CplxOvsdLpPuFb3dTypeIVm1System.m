@@ -27,6 +27,7 @@ classdef CplxOvsdLpPuFb3dTypeIVm1System < saivdr.dictionary.cnsoltx.AbstCplxOvsd
     methods
         function obj = CplxOvsdLpPuFb3dTypeIVm1System(varargin)
             import saivdr.dictionary.utility.OrthonormalMatrixGenerationSystem
+            import saivdr.dictionary.utility.OrthonormalMatrixFactorizationSystem
             obj = obj@saivdr.dictionary.cnsoltx.AbstCplxOvsdLpPuFb3dTypeISystem(...
                 varargin{:});
             obj.initOmgs_ = OrthonormalMatrixGenerationSystem('OrderOfProduction','Ascending');

@@ -165,7 +165,7 @@ classdef CnsoltSynthesis3dSystem  < ...
         function recImg = stepImpl(obj, coefs, scales)
             pmMtx = step(obj.LpPuFb3d,[],[]);
             pmMtxCoefs = get(pmMtx,'Coefficients');
-            symmetry = get(obj.LpPuFb2d,'Symmetry');
+            symmetry = get(obj.LpPuFb3d,'Symmetry');
             recImg = synthesize_(obj, coefs, scales, pmMtxCoefs,symmetry);
         end
         
@@ -212,7 +212,6 @@ classdef CnsoltSynthesis3dSystem  < ...
         function subImg = subSynthesize_(obj,arrayCoefs,pmCoefs,symmetry)
             import saivdr.dictionary.utility.Direction
             %
-            ps = obj.NumberOfSymmetricChannels;
             nRows_ = obj.nRows;
             nCols_ = obj.nCols;
             nLays_ = obj.nLays;
@@ -325,9 +324,9 @@ classdef CnsoltSynthesis3dSystem  < ...
         function value = getMatrixE0_(obj)
             import saivdr.dictionary.utility.Direction
             import saivdr.utility.HermitianSymmetricDFT
-            decY_ = obj.DecimationFactor(Direction.VERTICAL);
-            decX_ = obj.DecimationFactor(Direction.HORIZONTAL);
-            decZ_ = obj.DecimationFactor(Direction.DEPTH);
+            decY_ = obj.decimationFactor(Direction.VERTICAL);
+            decX_ = obj.decimationFactor(Direction.HORIZONTAL);
+            decZ_ = obj.decimationFactor(Direction.DEPTH);
             nElmBi = decY_*decX_*decZ_;
             coefs = complex(zeros(nElmBi));
             iElm = 1;

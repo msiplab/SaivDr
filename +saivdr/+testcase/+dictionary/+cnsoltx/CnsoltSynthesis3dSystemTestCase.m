@@ -54,7 +54,7 @@ classdef CnsoltSynthesis3dSystemTestCase < matlab.unittest.TestCase
         function testDefaultConstruction4plus4(testCase)
             
             % Preperation
-            nChs = [4 4];
+            nChs = 8;
             
             % Expected values
             import saivdr.dictionary.cnsoltx.*
@@ -65,8 +65,7 @@ classdef CnsoltSynthesis3dSystemTestCase < matlab.unittest.TestCase
             % Instantiation
             import saivdr.dictionary.cnsoltx.ChannelGroup
             testCase.synthesizer = CnsoltAnalysis3dSystem(...
-                'NumberOfSymmetricChannels',nChs(ChannelGroup.UPPER),...
-                'NumberOfAntisymmetricChannels',nChs(ChannelGroup.LOWER));
+                'NumberOfChannels',nChs);
             
             % Actual value
             lppufbActual = get(testCase.synthesizer,'LpPuFb3d');
@@ -109,7 +108,7 @@ classdef CnsoltSynthesis3dSystemTestCase < matlab.unittest.TestCase
                             (iy-1)*dec+1:iy*dec,...
                             (ix-1)*dec+1:ix*dec,...
                             (iz-1)*dec+1:iz*dec) = ...
-                            reshape(flipud(E0.'*blockData),dec,dec,dec);
+                            reshape(flipud(E0'*blockData),dec,dec,dec);
                     end
                 end
             end
@@ -153,7 +152,7 @@ function testInverseBlockDctDec44(testCase)
             lppufb = CnsoltFactory.createCplxOvsdLpPuFb3dSystem(...
                 'DecimationFactor',[dec dec]);
             E0 = step(lppufb,[],[]);
-            fun = @(x) reshape(flipud(E0.'*x.data(:)),dec,dec);
+            fun = @(x) reshape(flipud(E0'*x.data(:)),dec,dec);
             imgExpctd = blockproc(subCoefs,[dec*dec 1],fun);
             
             % Instantiation of target class
@@ -210,7 +209,7 @@ function testInverseBlockDctDec44(testCase)
                             (iy-1)*dec+1:iy*dec,...
                             (ix-1)*dec+1:ix*dec,...
                             (iz-1)*dec+1:iz*dec) = ...
-                            reshape(flipud(E.'*blockData),dec,dec,dec);
+                            reshape(flipud(E'*blockData),dec,dec,dec);
                     end
                 end
             end
@@ -275,7 +274,7 @@ function testInverseBlockDctDec44(testCase)
             for iSubband = 1:nChs
                 atom = step(lppufb,[],[],iSubband);
                 subbandImg = imfilter(upsample3_(...
-                    subCoefs{iSubband},dec,phase),atom,'cir');
+                    subCoefs{iSubband},dec,phase),atom,'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -344,7 +343,7 @@ function testInverseBlockDctDec44(testCase)
             for iSubband = 1:nDecs
                 atom = step(lppufb,[],[],iSubband);
                 subbandImg = imfilter(upsample3_(...
-                    subCoefs{iSubband},dec,phase),atom,'cir');
+                    subCoefs{iSubband},dec,phase),atom,'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -410,7 +409,7 @@ function testInverseBlockDctDec44(testCase)
             for iSubband = 1:nChs
                 atom = step(lppufb,[],[],iSubband);
                 subbandImg = imfilter(upsample3_(...
-                    subCoefs{iSubband},dec,phase),atom,'cir');
+                    subCoefs{iSubband},dec,phase),atom,'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -479,7 +478,7 @@ function testInverseBlockDctDec44(testCase)
             for iSubband = 1:nDecs
                 atom = step(lppufb,[],[],iSubband);
                 subbandImg = imfilter(upsample3_(...
-                    subCoefs{iSubband},dec,phase),atom,'cir');
+                    subCoefs{iSubband},dec,phase),atom,'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -544,7 +543,7 @@ function testInverseBlockDctDec44(testCase)
             for iSubband = 1:nChs
                 atom = step(lppufb,[],[],iSubband);
                 subbandImg = imfilter(upsample3_(...
-                    subCoefs{iSubband},dec,phase),atom,'cir');
+                    subCoefs{iSubband},dec,phase),atom,'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -613,7 +612,7 @@ function testInverseBlockDctDec44(testCase)
             for iSubband = 1:nDecs
                 atom = step(lppufb,[],[],iSubband);
                 subbandImg = imfilter(upsample3_(...
-                    subCoefs{iSubband},dec,phase),atom,'cir');
+                    subCoefs{iSubband},dec,phase),atom,'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -678,7 +677,7 @@ function testInverseBlockDctDec44(testCase)
             for iSubband = 1:nChs
                 atom = step(lppufb,[],[],iSubband);
                 subbandImg = imfilter(upsample3_(...
-                    subCoefs{iSubband},dec,phase),atom,'cir');
+                    subCoefs{iSubband},dec,phase),atom,'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -747,7 +746,7 @@ function testInverseBlockDctDec44(testCase)
             for iSubband = 1:nDecs
                 atom = step(lppufb,[],[],iSubband);
                 subbandImg = imfilter(upsample3_(...
-                    subCoefs{iSubband},dec,phase),atom,'cir');
+                    subCoefs{iSubband},dec,phase),atom,'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -812,7 +811,7 @@ function testInverseBlockDctDec44(testCase)
             for iSubband = 1:nChs
                 atom = step(lppufb,[],[],iSubband);
                 subbandImg = imfilter(upsample3_(...
-                    subCoefs{iSubband},dec,phase),atom,'cir');
+                    subCoefs{iSubband},dec,phase),atom,'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -881,7 +880,7 @@ function testInverseBlockDctDec44(testCase)
             for iSubband = 1:nDecs
                 atom = step(lppufb,[],[],iSubband);
                 subbandImg = imfilter(upsample3_(...
-                    subCoefs{iSubband},dec,phase),atom,'cir');
+                    subCoefs{iSubband},dec,phase),atom,'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -954,7 +953,7 @@ function testInverseBlockDctDec44(testCase)
             for iSubband = 1:nChs
                 atom = step(lppufb,[],[],iSubband);
                 subbandImg = imfilter(upsample3_(...
-                    subCoefs{iSubband},dec,phase),atom,'cir');
+                    subCoefs{iSubband},dec,phase),atom,'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -1019,7 +1018,7 @@ function testInverseBlockDctDec44(testCase)
             for iSubband = 1:nDecs
                 atom = step(lppufb,[],[],iSubband);
                 subbandImg = imfilter(...
-                    upsample3_(subCoefs{iSubband},dec,phase),atom,'cir');
+                    upsample3_(subCoefs{iSubband},dec,phase),atom,'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -1088,7 +1087,7 @@ function testInverseBlockDctDec44(testCase)
             for iSubband = 1:nDecs
                 atom = step(lppufb,[],[],iSubband);
                 subbandImg = imfilter(...
-                    upsample3_(subCoefs{iSubband},dec,phase),atom,'cir');
+                    upsample3_(subCoefs{iSubband},dec,phase),atom,'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -1154,7 +1153,7 @@ function testInverseBlockDctDec44(testCase)
             for iSubband = 1:nDecs
                 atom = step(lppufb,[],[],iSubband);
                 subbandImg = imfilter(...
-                    upsample3_(subCoefs{iSubband},dec,phase),atom,'cir');
+                    upsample3_(subCoefs{iSubband},dec,phase),atom,'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -1221,7 +1220,7 @@ function testInverseBlockDctDec44(testCase)
             for iSubband = 1:nDecs
                 atom = step(lppufb,[],[],iSubband);
                 subbandImg = imfilter(...
-                    upsample3_(subCoefs{iSubband},dec,phase),atom,'cir');
+                    upsample3_(subCoefs{iSubband},dec,phase),atom,'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -1284,7 +1283,7 @@ function testStepDec222Ch666Ord00(testCase)
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -1347,7 +1346,7 @@ function testStepDec22Ch8Ord00(testCase)
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -1410,7 +1409,7 @@ function testStepDec11Ch4Ord22(testCase)
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -1475,7 +1474,7 @@ function testStepDec22Ch4Ord22(testCase)
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -1541,7 +1540,7 @@ function testStepDec22Ch6Ord22(testCase)
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -1607,7 +1606,7 @@ function testStepDec22Ch8Ord22(testCase)
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -1673,7 +1672,7 @@ function testStepDec11Ch4Ord44(testCase)
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -1739,7 +1738,7 @@ function testStepDec22Ch4Ord44(testCase)
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -1804,7 +1803,7 @@ function testStepDec22Ch6Ord44(testCase)
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -1870,7 +1869,7 @@ function testStepDec22Ch8Ord44(testCase)
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -1936,7 +1935,7 @@ function testStepDec11Ch4Ord66(testCase)
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -2002,7 +2001,7 @@ function testStepDec2Ch4Ord66(testCase)
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -2066,7 +2065,7 @@ function testStepDec22Ch6Ord66(testCase)
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -2131,7 +2130,7 @@ function testStepDec22Ch8Ord66(testCase)
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -2195,7 +2194,7 @@ function testStepDec11Ch4Ord66PeriodicExt(testCase)
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -2261,7 +2260,7 @@ function testStepDec22Ch4Ord66PeriodicExt(testCase)
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -2327,7 +2326,7 @@ function testStepDec22Ch6Ord66PeriodicExt(testCase)
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -2393,7 +2392,7 @@ function testStepDec22Ch8Ord66PeriodicExt(testCase)
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -2459,7 +2458,7 @@ function testStepDec11Ch4Ord00Level1(testCase)
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -2523,7 +2522,7 @@ function testStepDec22Ch4Ord00Level1(testCase)
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -2587,7 +2586,7 @@ function testStepDec22Ch6Ord00Level1(testCase)
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -2650,7 +2649,7 @@ function testStepDec22Ch8Ord00Level1(testCase)
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -2721,13 +2720,13 @@ function testStepDec11Ch4Ord00Level2(testCase)
                 imgExpctd = imfilter(...
                     upsample(...
                     upsample(subsubCoefs{1}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],1),'cir');
+                    dec,phase),step(lppufb,[],[],1),'conv','cir');
                 for iSubSub = 2:ch
                     iSubband = (iLevel-1)*(ch-1)+iSubSub;
                     subbandImg = imfilter(...
                         upsample(...
                         upsample(subCoefs{iSubband}.',dec,phase).',...
-                        dec,phase),step(lppufb,[],[],iSubSub),'cir');
+                        dec,phase),step(lppufb,[],[],iSubSub),'conv','cir');
                     imgExpctd = imgExpctd + subbandImg;
                 end
                 subsubCoefs{1}=imgExpctd;
@@ -2800,13 +2799,13 @@ function testStepDec22Ch4Ord00Level2(testCase)
                 imgExpctd = imfilter(...
                     upsample(...
                     upsample(subsubCoefs{1}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],1),'cir');
+                    dec,phase),step(lppufb,[],[],1),'conv','cir');
                 for iSubSub = 2:ch
                     iSubband = (iLevel-1)*(ch-1)+iSubSub;
                     subbandImg = imfilter(...
                         upsample(...
                         upsample(subCoefs{iSubband}.',dec,phase).',...
-                        dec,phase),step(lppufb,[],[],iSubSub),'cir');
+                        dec,phase),step(lppufb,[],[],iSubSub),'conv','cir');
                     imgExpctd = imgExpctd + subbandImg;
                 end
                 subsubCoefs{1}=imgExpctd;
@@ -2883,13 +2882,13 @@ function testStepDec22Ch6Ord00Level2(testCase)
                 imgExpctd = imfilter(...
                     upsample(...
                     upsample(subsubCoefs{1}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],1),'cir');
+                    dec,phase),step(lppufb,[],[],1),'conv','cir');
                 for iSubSub = 2:ch
                     iSubband = (iLevel-1)*(ch-1)+iSubSub;
                     subbandImg = imfilter(...
                         upsample(...
                         upsample(subCoefs{iSubband}.',dec,phase).',...
-                        dec,phase),step(lppufb,[],[],iSubSub),'cir');
+                        dec,phase),step(lppufb,[],[],iSubSub),'conv','cir');
                     imgExpctd = imgExpctd + subbandImg;
                 end
                 subsubCoefs{1}=imgExpctd;
@@ -2969,13 +2968,13 @@ function testStepDec22Ch8Ord00Level2(testCase)
                 imgExpctd = imfilter(...
                     upsample(...
                     upsample(subsubCoefs{1}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],1),'cir');
+                    dec,phase),step(lppufb,[],[],1),'conv','cir');
                 for iSubSub = 2:ch
                     iSubband = (iLevel-1)*(ch-1)+iSubSub;
                     subbandImg = imfilter(...
                         upsample(...
                         upsample(subCoefs{iSubband}.',dec,phase).',...
-                        dec,phase),step(lppufb,[],[],iSubSub),'cir');
+                        dec,phase),step(lppufb,[],[],iSubSub),'conv','cir');
                     imgExpctd = imgExpctd + subbandImg;
                 end
                 subsubCoefs{1}=imgExpctd;
@@ -3040,7 +3039,7 @@ function testStepDec11Ch4Ord22Level1(testCase)
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -3106,7 +3105,7 @@ function testStepDec22Ch4Ord22Level1(testCase)
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -3172,7 +3171,7 @@ function testStepDec22Ch6Ord22Level1(testCase)
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -3238,7 +3237,7 @@ function testStepDec22Ch8Ord22Level1(testCase)
                 subbandImg = imfilter(...
                     upsample(...
                     upsample(subCoefs{iSubband}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],iSubband),'cir');
+                    dec,phase),step(lppufb,[],[],iSubband),'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -3311,13 +3310,13 @@ function testStepDec11Ch4Ord22Level2PeriodicExt(testCase)
                 imgExpctd = imfilter(...
                     upsample(...
                     upsample(subsubCoefs{1}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],1),'cir');
+                    dec,phase),step(lppufb,[],[],1),'conv','cir');
                 for iSubSub = 2:ch
                     iSubband = (iLevel-1)*(ch-1)+iSubSub;
                     subbandImg = imfilter(...
                         upsample(...
                         upsample(subCoefs{iSubband}.',dec,phase).',...
-                        dec,phase),step(lppufb,[],[],iSubSub),'cir');
+                        dec,phase),step(lppufb,[],[],iSubSub),'conv','cir');
                     imgExpctd = imgExpctd + subbandImg;
                 end
                 subsubCoefs{1}=imgExpctd;
@@ -3390,13 +3389,13 @@ function testStepDec22Ch4Ord22Level2PeriodicExt(testCase)
                 imgExpctd = imfilter(...
                     upsample(...
                     upsample(subsubCoefs{1}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],1),'cir');
+                    dec,phase),step(lppufb,[],[],1),'conv','cir');
                 for iSubSub = 2:ch
                     iSubband = (iLevel-1)*(ch-1)+iSubSub;
                     subbandImg = imfilter(...
                         upsample(...
                         upsample(subCoefs{iSubband}.',dec,phase).',...
-                        dec,phase),step(lppufb,[],[],iSubSub),'cir');
+                        dec,phase),step(lppufb,[],[],iSubSub),'conv','cir');
                     imgExpctd = imgExpctd + subbandImg;
                 end
                 subsubCoefs{1}=imgExpctd;
@@ -3471,13 +3470,13 @@ function testStepDec22Ch6Ord22Level2PeriodicExt(testCase)
                 imgExpctd = imfilter(...
                     upsample(...
                     upsample(subsubCoefs{1}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],1),'cir');
+                    dec,phase),step(lppufb,[],[],1),'conv','cir');
                 for iSubSub = 2:ch
                     iSubband = (iLevel-1)*(ch-1)+iSubSub;
                     subbandImg = imfilter(...
                         upsample(...
                         upsample(subCoefs{iSubband}.',dec,phase).',...
-                        dec,phase),step(lppufb,[],[],iSubSub),'cir');
+                        dec,phase),step(lppufb,[],[],iSubSub),'conv','cir');
                     imgExpctd = imgExpctd + subbandImg;
                 end
                 subsubCoefs{1}=imgExpctd;
@@ -3558,13 +3557,13 @@ function testStepDec22Ch44Ord22Level2PeriodicExt(testCase)
                 imgExpctd = imfilter(...
                     upsample(...
                     upsample(subsubCoefs{1}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],1),'cir');
+                    dec,phase),step(lppufb,[],[],1),'conv','cir');
                 for iSubSub = 2:ch
                     iSubband = (iLevel-1)*(ch-1)+iSubSub;
                     subbandImg = imfilter(...
                         upsample(...
                         upsample(subCoefs{iSubband}.',dec,phase).',...
-                        dec,phase),step(lppufb,[],[],iSubSub),'cir');
+                        dec,phase),step(lppufb,[],[],iSubSub),'conv','cir');
                     imgExpctd = imgExpctd + subbandImg;
                 end
                 subsubCoefs{1}=imgExpctd;
@@ -3651,13 +3650,13 @@ function testStepDec22Ch44Ord44Level3PeriodicExt(testCase)
                 imgExpctd = imfilter(...
                     upsample(...
                     upsample(subsubCoefs{1}.',dec,phase).',...
-                    dec,phase),step(lppufb,[],[],1),'cir');
+                    dec,phase),step(lppufb,[],[],1),'conv','cir');
                 for iSubSub = 2:ch
                     iSubband = (iLevel-1)*(ch-1)+iSubSub;
                     subbandImg = imfilter(...
                         upsample(...
                         upsample(subCoefs{iSubband}.',dec,phase).',...
-                        dec,phase),step(lppufb,[],[],iSubSub),'cir');
+                        dec,phase),step(lppufb,[],[],iSubSub),'conv','cir');
                     imgExpctd = imgExpctd + subbandImg;
                 end
                 subsubCoefs{1}=imgExpctd;
@@ -3929,7 +3928,7 @@ function testClone(testCase)
             for iSubband = 1:nChs
                 atom = step(lppufb,[],[],iSubband);
                 subbandImg = imfilter(upsample3_(...
-                    subCoefs{iSubband},dec,phase),atom,'cir');
+                    subCoefs{iSubband},dec,phase),atom,'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -4000,7 +3999,7 @@ function testClone(testCase)
 %             for iSubband = 1:nChs
 %                 atom = step(lppufb,[],[],iSubband);
 %                 subbandImg = imfilter(upsample3_(...
-%                     subCoefs{iSubband},dec,phase),atom,'cir');
+%                     subCoefs{iSubband},dec,phase),atom,'conv','cir');
 %                 imgExpctd = imgExpctd + subbandImg;
 %             end
 %             
@@ -4093,7 +4092,7 @@ function testClone(testCase)
             for iSubband = 1:nChs
                 atom = step(lppufb,[],[],iSubband);
                 subbandImg = imfilter(...
-                    upsample3_(subCoefs{iSubband},dec,phase),atom,'cir');
+                    upsample3_(subCoefs{iSubband},dec,phase),atom,'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -4162,7 +4161,7 @@ function testClone(testCase)
             for iSubband = 1:nChs
                 atom = step(lppufb,[],[],iSubband);
                 subbandImg = imfilter(...
-                    upsample3_(subCoefs{iSubband},dec,phase),atom,'cir');
+                    upsample3_(subCoefs{iSubband},dec,phase),atom,'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -4231,7 +4230,7 @@ function testClone(testCase)
             for iSubband = 1:nChs
                 atom = step(lppufb,[],[],iSubband);
                 subbandImg = imfilter(...
-                    upsample3_(subCoefs{iSubband},dec,phase),atom,'cir');
+                    upsample3_(subCoefs{iSubband},dec,phase),atom,'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -4298,7 +4297,7 @@ function testClone(testCase)
             for iSubband = 1:nChs
                 atom = step(lppufb,[],[],iSubband);
                 subbandImg = imfilter(...
-                    upsample3_(subCoefs{iSubband},dec,phase),atom,'cir');
+                    upsample3_(subCoefs{iSubband},dec,phase),atom,'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -4365,7 +4364,7 @@ function testClone(testCase)
             for iSubband = 1:nChs
                 atom = step(lppufb,[],[],iSubband);
                 subbandImg = imfilter(...
-                    upsample3_(subCoefs{iSubband},dec,phase),atom,'cir');
+                    upsample3_(subCoefs{iSubband},dec,phase),atom,'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -4433,7 +4432,7 @@ function testClone(testCase)
             for iSubband = 1:nChs
                 atom = step(lppufb,[],[],iSubband);
                 subbandImg = imfilter(...
-                    upsample3_(subCoefs{iSubband},dec,phase),atom,'cir');
+                    upsample3_(subCoefs{iSubband},dec,phase),atom,'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -4501,7 +4500,7 @@ function testClone(testCase)
             for iSubband = 1:nChs
                 atom = step(lppufb,[],[],iSubband);
                 subbandImg = imfilter(...
-                    upsample3_(subCoefs{iSubband},dec,phase),atom,'cir');
+                    upsample3_(subCoefs{iSubband},dec,phase),atom,'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -4569,7 +4568,7 @@ function testClone(testCase)
             for iSubband = 1:nChs
                 atom = step(lppufb,[],[],iSubband);
                 subbandImg = imfilter(...
-                    upsample3_(subCoefs{iSubband},dec,phase),atom,'cir');
+                    upsample3_(subCoefs{iSubband},dec,phase),atom,'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -4637,7 +4636,7 @@ function testClone(testCase)
             for iSubband = 1:nChs
                 atom = step(lppufb,[],[],iSubband);
                 subbandImg = imfilter(...
-                    upsample3_(subCoefs{iSubband},dec,phase),atom,'cir');
+                    upsample3_(subCoefs{iSubband},dec,phase),atom,'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -4705,7 +4704,7 @@ function testClone(testCase)
             for iSubband = 1:nChs
                 atom = step(lppufb,[],[],iSubband);
                 subbandImg = imfilter(...
-                    upsample3_(subCoefs{iSubband},dec,phase),atom,'cir');
+                    upsample3_(subCoefs{iSubband},dec,phase),atom,'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -4773,7 +4772,7 @@ function testClone(testCase)
             for iSubband = 1:nChs
                 atom = step(lppufb,[],[],iSubband);
                 subbandImg = imfilter(...
-                    upsample3_(subCoefs{iSubband},dec,phase),atom,'cir');
+                    upsample3_(subCoefs{iSubband},dec,phase),atom,'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -4841,7 +4840,7 @@ function testClone(testCase)
             for iSubband = 1:nChs
                 atom = step(lppufb,[],[],iSubband);
                 subbandImg = imfilter(...
-                    upsample3_(subCoefs{iSubband},dec,phase),atom,'cir');
+                    upsample3_(subCoefs{iSubband},dec,phase),atom,'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -4909,7 +4908,7 @@ function testClone(testCase)
 %             for iSubband = 1:nChs
 %                 atom = step(lppufb,[],[],iSubband);
 %                 subbandImg = imfilter(...
-%                     upsample3_(subCoefs{iSubband},dec,phase),atom,'cir');
+%                     upsample3_(subCoefs{iSubband},dec,phase),atom,'conv','cir');
 %                 imgExpctd = imgExpctd + subbandImg;
 %             end
 %             
@@ -4977,7 +4976,7 @@ function testClone(testCase)
 %             for iSubband = 1:nChs
 %                 atom = step(lppufb,[],[],iSubband);
 %                 subbandImg = imfilter(...
-%                     upsample3_(subCoefs{iSubband},dec,phase),atom,'cir');
+%                     upsample3_(subCoefs{iSubband},dec,phase),atom,'conv','cir');
 %                 imgExpctd = imgExpctd + subbandImg;
 %             end
 %             
@@ -5038,7 +5037,7 @@ function testClone(testCase)
             imgExpctd = zeros(height,width,depth);
             for iSubband = 1:nChs
                 atom = step(lppufb,[],[],iSubband);
-                subbandImg = imfilter(subCoefs{iSubband},atom,'cir');
+                subbandImg = imfilter(subCoefs{iSubband},atom,'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -5098,7 +5097,7 @@ function testClone(testCase)
             imgExpctd = zeros(height,width,depth);
             for iSubband = 1:nChs
                 atom = step(lppufb,[],[],iSubband);
-                subbandImg = imfilter(subCoefs{iSubband},atom,'cir');
+                subbandImg = imfilter(subCoefs{iSubband},atom,'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -5158,7 +5157,7 @@ function testClone(testCase)
             imgExpctd = zeros(height,width,depth);
             for iSubband = 1:nChs
                 atom = step(lppufb,[],[],iSubband);
-                subbandImg = imfilter(subCoefs{iSubband},atom,'cir');
+                subbandImg = imfilter(subCoefs{iSubband},atom,'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -5220,7 +5219,7 @@ function testClone(testCase)
             imgExpctd = zeros(height,width,depth);
             for iSubband = 1:nChs
                 atom = step(lppufb,[],[],iSubband);
-                subbandImg = imfilter(subCoefs{iSubband},atom,'cir');
+                subbandImg = imfilter(subCoefs{iSubband},atom,'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -5288,7 +5287,7 @@ function testClone(testCase)
             for iSubband = 1:nChs
                 atom = step(lppufb,[],[],iSubband);
                 subbandImg = imfilter(...
-                    upsample3_(subCoefs{iSubband},dec,phase),atom,'cir');
+                    upsample3_(subCoefs{iSubband},dec,phase),atom,'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -5368,12 +5367,12 @@ function testClone(testCase)
             for iLevel = 1:nLevels
                 atom = step(lppufb,[],[],1);
                 imgExpctd = imfilter(...
-                    upsample3_(subsubCoefs,dec,phase),atom,'cir');
+                    upsample3_(subsubCoefs,dec,phase),atom,'conv','cir');
                 for iSubSub = 2:nChs
                     iSubband = (iLevel-1)*(nChs-1)+iSubSub;
                     atom = step(lppufb,[],[],iSubSub);
                     subbandImg = imfilter(...
-                        upsample3_(subCoefs{iSubband},dec,phase),atom,'cir');
+                        upsample3_(subCoefs{iSubband},dec,phase),atom,'conv','cir');
                     imgExpctd = imgExpctd + subbandImg;
                 end
                 subsubCoefs=imgExpctd;
@@ -5455,12 +5454,12 @@ function testClone(testCase)
             for iLevel = 1:nLevels
                 atom = step(lppufb,[],[],1);
                 imgExpctd = imfilter(...
-                    upsample3_(subsubCoefs,dec,phase),atom,'cir');
+                    upsample3_(subsubCoefs,dec,phase),atom,'conv','cir');
                 for iSubSub = 2:nChs
                     iSubband = (iLevel-1)*(nChs-1)+iSubSub;
                     atom = step(lppufb,[],[],iSubSub);
                     subbandImg = imfilter(...
-                        upsample3_(subCoefs{iSubband},dec,phase),atom,'cir');
+                        upsample3_(subCoefs{iSubband},dec,phase),atom,'conv','cir');
                     imgExpctd = imgExpctd + subbandImg;
                 end
                 subsubCoefs=imgExpctd;
@@ -5550,12 +5549,12 @@ function testClone(testCase)
             for iLevel = 1:nLevels
                 atom = step(lppufb,[],[],1);
                 imgExpctd = imfilter(...
-                    upsample3_(subsubCoefs,dec,phase),atom,'cir');
+                    upsample3_(subsubCoefs,dec,phase),atom,'conv','cir');
                 for iSubSub = 2:nChs
                     atom = step(lppufb,[],[],iSubSub);
                     iSubband = (iLevel-1)*(nChs-1)+iSubSub;
                     subbandImg = imfilter(...
-                        upsample3_(subCoefs{iSubband},dec,phase),atom,'cir');
+                        upsample3_(subCoefs{iSubband},dec,phase),atom,'conv','cir');
                     imgExpctd = imgExpctd + subbandImg;
                 end
                 subsubCoefs=imgExpctd;
@@ -5657,12 +5656,12 @@ function testClone(testCase)
             for iLevel = 1:nLevels
                 atom = step(lppufb,[],[],1);
                 imgExpctd = imfilter(...
-                    upsample3_(subsubCoefs,dec,phase),atom,'cir');
+                    upsample3_(subsubCoefs,dec,phase),atom,'conv','cir');
                 for iSubSub = 2:nChs
                     atom = step(lppufb,[],[],iSubSub);
                     iSubband = (iLevel-1)*(nChs-1)+iSubSub;
                     subbandImg = imfilter(...
-                        upsample3_(subCoefs{iSubband},dec,phase),atom,'cir');
+                        upsample3_(subCoefs{iSubband},dec,phase),atom,'conv','cir');
                     imgExpctd = imgExpctd + subbandImg;
                 end
                 subsubCoefs=imgExpctd;
@@ -5750,12 +5749,12 @@ function testClone(testCase)
             for iLevel = 1:nLevels
                 atom = step(lppufb,[],[],1);
                 imgExpctd = imfilter(...
-                    upsample3_(subsubCoefs,dec,phase),atom,'cir');
+                    upsample3_(subsubCoefs,dec,phase),atom,'conv','cir');
                 for iSubSub = 2:nChs
                     iSubband = (iLevel-1)*(nChs-1)+iSubSub;
                     atom = step(lppufb,[],[],iSubSub);
                     subbandImg = imfilter(...
-                        upsample3_(subCoefs{iSubband},dec,phase),atom,'cir');
+                        upsample3_(subCoefs{iSubband},dec,phase),atom,'conv','cir');
                     imgExpctd = imgExpctd + subbandImg;
                 end
                 subsubCoefs=imgExpctd;
@@ -5839,12 +5838,12 @@ function testClone(testCase)
             for iLevel = 1:nLevels
                 atom = step(lppufb,[],[],1);
                 imgExpctd = imfilter(...
-                    upsample3_(subsubCoefs,dec,phase),atom,'cir');
+                    upsample3_(subsubCoefs,dec,phase),atom,'conv','cir');
                 for iSubSub = 2:nChs
                     iSubband = (iLevel-1)*(nChs-1)+iSubSub;
                     atom = step(lppufb,[],[],iSubSub);
                     subbandImg = imfilter(...
-                        upsample3_(subCoefs{iSubband},dec,phase),atom,'cir');
+                        upsample3_(subCoefs{iSubband},dec,phase),atom,'conv','cir');
                     imgExpctd = imgExpctd + subbandImg;
                 end
                 subsubCoefs=imgExpctd;
@@ -5937,12 +5936,12 @@ function testClone(testCase)
             for iLevel = 1:nLevels
                 atom = step(lppufb,[],[],1);
                 imgExpctd = imfilter(...
-                    upsample3_(subsubCoefs,dec,phase),atom,'cir');
+                    upsample3_(subsubCoefs,dec,phase),atom,'conv','cir');
                 for iSubSub = 2:nChs
                     atom = step(lppufb,[],[],iSubSub);
                     iSubband = (iLevel-1)*(nChs-1)+iSubSub;
                     subbandImg = imfilter(...
-                        upsample3_(subCoefs{iSubband},dec,phase),atom,'cir');
+                        upsample3_(subCoefs{iSubband},dec,phase),atom,'conv','cir');
                     imgExpctd = imgExpctd + subbandImg;
                 end
                 subsubCoefs=imgExpctd;
@@ -6038,12 +6037,12 @@ function testClone(testCase)
 %             for iLevel = 1:nLevels
 %                 atom = step(lppufb,[],[],1);
 %                 imgExpctd = imfilter(...
-%                     upsample3_(subsubCoefs,dec,phase),atom,'cir');
+%                     upsample3_(subsubCoefs,dec,phase),atom,'conv','cir');
 %                 for iSubSub = 2:nChs
 %                     atom = step(lppufb,[],[],iSubSub);
 %                     iSubband = (iLevel-1)*(nChs-1)+iSubSub;
 %                     subbandImg = imfilter(...
-%                         upsample3_(subCoefs{iSubband},dec,phase),atom,'cir');
+%                         upsample3_(subCoefs{iSubband},dec,phase),atom,'conv','cir');
 %                     imgExpctd = imgExpctd + subbandImg;
 %                 end
 %                 subsubCoefs=imgExpctd;
@@ -6333,7 +6332,7 @@ function testClone(testCase)
                             (iy-1)*dec+1:iy*dec,...
                             (ix-1)*dec+1:ix*dec,...
                             (iz-1)*dec+1:iz*dec) = ...
-                            reshape(flipud(E.'*blockData),dec,dec,dec);
+                            reshape(flipud(E'*blockData),dec,dec,dec);
                     end
                 end
             end
@@ -6405,7 +6404,7 @@ function testClone(testCase)
 %             for iSubband = 1:nChs
 %                 atom = step(lppufb,[],[],iSubband);
 %                 subbandImg = imfilter(upsample3_(...
-%                     subCoefs{iSubband},dec,phase),atom,'cir');
+%                     subCoefs{iSubband},dec,phase),atom,'conv','cir');
 %                 imgExpctd = imgExpctd + subbandImg;
 %             end
 %             
@@ -6476,7 +6475,7 @@ function testClone(testCase)
 %             for iSubband = 1:nChs
 %                 atom = step(lppufb,[],[],iSubband);
 %                 subbandImg = imfilter(upsample3_(...
-%                     subCoefs{iSubband},dec,phase),atom,'cir');
+%                     subCoefs{iSubband},dec,phase),atom,'conv','cir');
 %                 imgExpctd = imgExpctd + subbandImg;
 %             end
 %             
@@ -6569,7 +6568,7 @@ function testClone(testCase)
 %             for iSubband = 1:nChs
 %                 atom = step(lppufb,[],[],iSubband);
 %                 subbandImg = imfilter(...
-%                     upsample3_(subCoefs{iSubband},dec,phase),atom,'cir');
+%                     upsample3_(subCoefs{iSubband},dec,phase),atom,'conv','cir');
 %                 imgExpctd = imgExpctd + subbandImg;
 %             end
 %             
@@ -6638,7 +6637,7 @@ function testClone(testCase)
 %             for iSubband = 1:nChs
 %                 atom = step(lppufb,[],[],iSubband);
 %                 subbandImg = imfilter(...
-%                     upsample3_(subCoefs{iSubband},dec,phase),atom,'cir');
+%                     upsample3_(subCoefs{iSubband},dec,phase),atom,'conv','cir');
 %                 imgExpctd = imgExpctd + subbandImg;
 %             end
 %             
@@ -6707,7 +6706,7 @@ function testClone(testCase)
 %             for iSubband = 1:nChs
 %                 atom = step(lppufb,[],[],iSubband);
 %                 subbandImg = imfilter(...
-%                     upsample3_(subCoefs{iSubband},dec,phase),atom,'cir');
+%                     upsample3_(subCoefs{iSubband},dec,phase),atom,'conv','cir');
 %                 imgExpctd = imgExpctd + subbandImg;
 %             end
 %             
@@ -6774,7 +6773,7 @@ function testClone(testCase)
 %             for iSubband = 1:nChs
 %                 atom = step(lppufb,[],[],iSubband);
 %                 subbandImg = imfilter(...
-%                     upsample3_(subCoefs{iSubband},dec,phase),atom,'cir');
+%                     upsample3_(subCoefs{iSubband},dec,phase),atom,'conv','cir');
 %                 imgExpctd = imgExpctd + subbandImg;
 %             end
 %             
@@ -6841,7 +6840,7 @@ function testClone(testCase)
 %             for iSubband = 1:nChs
 %                 atom = step(lppufb,[],[],iSubband);
 %                 subbandImg = imfilter(...
-%                     upsample3_(subCoefs{iSubband},dec,phase),atom,'cir');
+%                     upsample3_(subCoefs{iSubband},dec,phase),atom,'conv','cir');
 %                 imgExpctd = imgExpctd + subbandImg;
 %             end
 %             
@@ -6909,7 +6908,7 @@ function testClone(testCase)
 %             for iSubband = 1:nChs
 %                 atom = step(lppufb,[],[],iSubband);
 %                 subbandImg = imfilter(...
-%                     upsample3_(subCoefs{iSubband},dec,phase),atom,'cir');
+%                     upsample3_(subCoefs{iSubband},dec,phase),atom,'conv','cir');
 %                 imgExpctd = imgExpctd + subbandImg;
 %             end
 %             
@@ -6977,7 +6976,7 @@ function testClone(testCase)
 %             for iSubband = 1:nChs
 %                 atom = step(lppufb,[],[],iSubband);
 %                 subbandImg = imfilter(...
-%                     upsample3_(subCoefs{iSubband},dec,phase),atom,'cir');
+%                     upsample3_(subCoefs{iSubband},dec,phase),atom,'conv','cir');
 %                 imgExpctd = imgExpctd + subbandImg;
 %             end
 %             
@@ -7045,7 +7044,7 @@ function testClone(testCase)
 %             for iSubband = 1:nChs
 %                 atom = step(lppufb,[],[],iSubband);
 %                 subbandImg = imfilter(...
-%                     upsample3_(subCoefs{iSubband},dec,phase),atom,'cir');
+%                     upsample3_(subCoefs{iSubband},dec,phase),atom,'conv','cir');
 %                 imgExpctd = imgExpctd + subbandImg;
 %             end
 %             
@@ -7113,7 +7112,7 @@ function testClone(testCase)
 %             for iSubband = 1:nChs
 %                 atom = step(lppufb,[],[],iSubband);
 %                 subbandImg = imfilter(...
-%                     upsample3_(subCoefs{iSubband},dec,phase),atom,'cir');
+%                     upsample3_(subCoefs{iSubband},dec,phase),atom,'conv','cir');
 %                 imgExpctd = imgExpctd + subbandImg;
 %             end
 %             
@@ -7181,7 +7180,7 @@ function testClone(testCase)
 %             for iSubband = 1:nChs
 %                 atom = step(lppufb,[],[],iSubband);
 %                 subbandImg = imfilter(...
-%                     upsample3_(subCoefs{iSubband},dec,phase),atom,'cir');
+%                     upsample3_(subCoefs{iSubband},dec,phase),atom,'conv','cir');
 %                 imgExpctd = imgExpctd + subbandImg;
 %             end
 %             
@@ -7249,7 +7248,7 @@ function testClone(testCase)
 %             for iSubband = 1:nChs
 %                 atom = step(lppufb,[],[],iSubband);
 %                 subbandImg = imfilter(...
-%                     upsample3_(subCoefs{iSubband},dec,phase),atom,'cir');
+%                     upsample3_(subCoefs{iSubband},dec,phase),atom,'conv','cir');
 %                 imgExpctd = imgExpctd + subbandImg;
 %             end
 %             
@@ -7317,7 +7316,7 @@ function testClone(testCase)
 %             for iSubband = 1:nChs
 %                 atom = step(lppufb,[],[],iSubband);
 %                 subbandImg = imfilter(...
-%                     upsample3_(subCoefs{iSubband},dec,phase),atom,'cir');
+%                     upsample3_(subCoefs{iSubband},dec,phase),atom,'conv','cir');
 %                 imgExpctd = imgExpctd + subbandImg;
 %             end
 %             
@@ -7385,7 +7384,7 @@ function testClone(testCase)
 %             for iSubband = 1:nChs
 %                 atom = step(lppufb,[],[],iSubband);
 %                 subbandImg = imfilter(...
-%                     upsample3_(subCoefs{iSubband},dec,phase),atom,'cir');
+%                     upsample3_(subCoefs{iSubband},dec,phase),atom,'conv','cir');
 %                 imgExpctd = imgExpctd + subbandImg;
 %             end
 %             
@@ -7453,7 +7452,7 @@ function testClone(testCase)
 %             for iSubband = 1:nChs
 %                 atom = step(lppufb,[],[],iSubband);
 %                 subbandImg = imfilter(...
-%                     upsample3_(subCoefs{iSubband},dec,phase),atom,'cir');
+%                     upsample3_(subCoefs{iSubband},dec,phase),atom,'conv','cir');
 %                 imgExpctd = imgExpctd + subbandImg;
 %             end
 %             
@@ -7514,7 +7513,7 @@ function testClone(testCase)
 %             imgExpctd = zeros(height,width,depth);
 %             for iSubband = 1:nChs
 %                 atom = step(lppufb,[],[],iSubband);
-%                 subbandImg = imfilter(subCoefs{iSubband},atom,'cir');
+%                 subbandImg = imfilter(subCoefs{iSubband},atom,'conv','cir');
 %                 imgExpctd = imgExpctd + subbandImg;
 %             end
 %             
@@ -7574,7 +7573,7 @@ function testClone(testCase)
 %             imgExpctd = zeros(height,width,depth);
 %             for iSubband = 1:nChs
 %                 atom = step(lppufb,[],[],iSubband);
-%                 subbandImg = imfilter(subCoefs{iSubband},atom,'cir');
+%                 subbandImg = imfilter(subCoefs{iSubband},atom,'conv','cir');
 %                 imgExpctd = imgExpctd + subbandImg;
 %             end
 %             
@@ -7642,7 +7641,7 @@ function testClone(testCase)
 %             for iSubband = 1:nChs
 %                 atom = step(lppufb,[],[],iSubband);
 %                 subbandImg = imfilter(...
-%                     upsample3_(subCoefs{iSubband},dec,phase),atom,'cir');
+%                     upsample3_(subCoefs{iSubband},dec,phase),atom,'conv','cir');
 %                 imgExpctd = imgExpctd + subbandImg;
 %             end
 %             
@@ -7724,12 +7723,12 @@ function testClone(testCase)
 %             for iLevel = 1:nLevels
 %                 atom = step(lppufb,[],[],1);
 %                 imgExpctd = imfilter(...
-%                     upsample3_(subsubCoefs,dec,phase),atom,'cir');
+%                     upsample3_(subsubCoefs,dec,phase),atom,'conv','cir');
 %                 for iSubSub = 2:nChs
 %                     iSubband = (iLevel-1)*(nChs-1)+iSubSub;
 %                     atom = step(lppufb,[],[],iSubSub);
 %                     subbandImg = imfilter(...
-%                         upsample3_(subCoefs{iSubband},dec,phase),atom,'cir');
+%                         upsample3_(subCoefs{iSubband},dec,phase),atom,'conv','cir');
 %                     imgExpctd = imgExpctd + subbandImg;
 %                 end
 %                 subsubCoefs=imgExpctd;
@@ -7813,12 +7812,12 @@ function testClone(testCase)
 %             for iLevel = 1:nLevels
 %                 atom = step(lppufb,[],[],1);
 %                 imgExpctd = imfilter(...
-%                     upsample3_(subsubCoefs,dec,phase),atom,'cir');
+%                     upsample3_(subsubCoefs,dec,phase),atom,'conv','cir');
 %                 for iSubSub = 2:nChs
 %                     iSubband = (iLevel-1)*(nChs-1)+iSubSub;
 %                     atom = step(lppufb,[],[],iSubSub);
 %                     subbandImg = imfilter(...
-%                         upsample3_(subCoefs{iSubband},dec,phase),atom,'cir');
+%                         upsample3_(subCoefs{iSubband},dec,phase),atom,'conv','cir');
 %                     imgExpctd = imgExpctd + subbandImg;
 %                 end
 %                 subsubCoefs=imgExpctd;
@@ -7911,12 +7910,12 @@ function testClone(testCase)
 %             for iLevel = 1:nLevels
 %                 atom = step(lppufb,[],[],1);
 %                 imgExpctd = imfilter(...
-%                     upsample3_(subsubCoefs,dec,phase),atom,'cir');
+%                     upsample3_(subsubCoefs,dec,phase),atom,'conv','cir');
 %                 for iSubSub = 2:nChs
 %                     atom = step(lppufb,[],[],iSubSub);
 %                     iSubband = (iLevel-1)*(nChs-1)+iSubSub;
 %                     subbandImg = imfilter(...
-%                         upsample3_(subCoefs{iSubband},dec,phase),atom,'cir');
+%                         upsample3_(subCoefs{iSubband},dec,phase),atom,'conv','cir');
 %                     imgExpctd = imgExpctd + subbandImg;
 %                 end
 %                 subsubCoefs=imgExpctd;
@@ -8012,12 +8011,12 @@ function testClone(testCase)
 %             for iLevel = 1:nLevels
 %                 atom = step(lppufb,[],[],1);
 %                 imgExpctd = imfilter(...
-%                     upsample3_(subsubCoefs,dec,phase),atom,'cir');
+%                     upsample3_(subsubCoefs,dec,phase),atom,'conv','cir');
 %                 for iSubSub = 2:nChs
 %                     atom = step(lppufb,[],[],iSubSub);
 %                     iSubband = (iLevel-1)*(nChs-1)+iSubSub;
 %                     subbandImg = imfilter(...
-%                         upsample3_(subCoefs{iSubband},dec,phase),atom,'cir');
+%                         upsample3_(subCoefs{iSubband},dec,phase),atom,'conv','cir');
 %                     imgExpctd = imgExpctd + subbandImg;
 %                 end
 %                 subsubCoefs=imgExpctd;
@@ -8217,7 +8216,7 @@ function testClone(testCase)
             for iSubband = 1:nch_
                 atom = step(lppufb,[],[],iSubband);
                 subbandImg = imfilter(upsample3_(...
-                    subCoefs{iSubband},nDecs,phase),atom,'cir');
+                    subCoefs{iSubband},nDecs,phase),atom,'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -8284,7 +8283,7 @@ function testClone(testCase)
             for iSubband = 1:nch_
                 atom = step(lppufb,[],[],iSubband);
                 subbandImg = imfilter(upsample3_(...
-                    subCoefs{iSubband},nDecs,phase),atom,'cir');
+                    subCoefs{iSubband},nDecs,phase),atom,'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -8351,7 +8350,7 @@ function testClone(testCase)
             for iSubband = 1:nch_
                 atom = step(lppufb,[],[],iSubband);
                 subbandImg = imfilter(upsample3_(...
-                    subCoefs{iSubband},nDecs,phase),atom,'cir');
+                    subCoefs{iSubband},nDecs,phase),atom,'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -8418,7 +8417,7 @@ function testClone(testCase)
             for iSubband = 1:nch_
                 atom = step(lppufb,[],[],iSubband);
                 subbandImg = imfilter(upsample3_(...
-                    subCoefs{iSubband},nDecs,phase),atom,'cir');
+                    subCoefs{iSubband},nDecs,phase),atom,'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -8485,7 +8484,7 @@ function testClone(testCase)
             for iSubband = 1:nch_
                 atom = step(lppufb,[],[],iSubband);
                 subbandImg = imfilter(upsample3_(...
-                    subCoefs{iSubband},nDecs,phase),atom,'cir');
+                    subCoefs{iSubband},nDecs,phase),atom,'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -8552,7 +8551,7 @@ function testClone(testCase)
             for iSubband = 1:nch_
                 atom = step(lppufb,[],[],iSubband);
                 subbandImg = imfilter(upsample3_(...
-                    subCoefs{iSubband},nDecs,phase),atom,'cir');
+                    subCoefs{iSubband},nDecs,phase),atom,'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -8619,7 +8618,7 @@ function testClone(testCase)
 %             for iSubband = 1:nch_
 %                 atom = step(lppufb,[],[],iSubband);
 %                 subbandImg = imfilter(upsample3_(...
-%                     subCoefs{iSubband},nDecs,phase),atom,'cir');
+%                     subCoefs{iSubband},nDecs,phase),atom,'conv','cir');
 %                 imgExpctd = imgExpctd + subbandImg;
 %             end
 %             
@@ -8686,7 +8685,7 @@ function testClone(testCase)
 %             for iSubband = 1:nch_
 %                 atom = step(lppufb,[],[],iSubband);
 %                 subbandImg = imfilter(upsample3_(...
-%                     subCoefs{iSubband},nDecs,phase),atom,'cir');
+%                     subCoefs{iSubband},nDecs,phase),atom,'conv','cir');
 %                 imgExpctd = imgExpctd + subbandImg;
 %             end
 %             
@@ -8753,7 +8752,7 @@ function testClone(testCase)
 %             for iSubband = 1:nch_
 %                 atom = step(lppufb,[],[],iSubband);
 %                 subbandImg = imfilter(upsample3_(...
-%                     subCoefs{iSubband},nDecs,phase),atom,'cir');
+%                     subCoefs{iSubband},nDecs,phase),atom,'conv','cir');
 %                 imgExpctd = imgExpctd + subbandImg;
 %             end
 %             
@@ -8820,7 +8819,7 @@ function testClone(testCase)
 %             for iSubband = 1:nch_
 %                 atom = step(lppufb,[],[],iSubband);
 %                 subbandImg = imfilter(upsample3_(...
-%                     subCoefs{iSubband},nDecs,phase),atom,'cir');
+%                     subCoefs{iSubband},nDecs,phase),atom,'conv','cir');
 %                 imgExpctd = imgExpctd + subbandImg;
 %             end
 %             
@@ -8887,7 +8886,7 @@ function testClone(testCase)
 %             for iSubband = 1:nch_
 %                 atom = step(lppufb,[],[],iSubband);
 %                 subbandImg = imfilter(upsample3_(...
-%                     subCoefs{iSubband},nDecs,phase),atom,'cir');
+%                     subCoefs{iSubband},nDecs,phase),atom,'conv','cir');
 %                 imgExpctd = imgExpctd + subbandImg;
 %             end
 %             
@@ -8954,7 +8953,7 @@ function testClone(testCase)
 %             for iSubband = 1:nch_
 %                 atom = step(lppufb,[],[],iSubband);
 %                 subbandImg = imfilter(upsample3_(...
-%                     subCoefs{iSubband},nDecs,phase),atom,'cir');
+%                     subCoefs{iSubband},nDecs,phase),atom,'conv','cir');
 %                 imgExpctd = imgExpctd + subbandImg;
 %             end
 %             
@@ -9022,7 +9021,7 @@ function testClone(testCase)
             for iSubband = 1:nch_
                 atom = step(lppufb,[],[],iSubband);
                 subbandImg = imfilter(upsample3_(...
-                    subCoefs{iSubband},nDecs,phase),atom,'cir');
+                    subCoefs{iSubband},nDecs,phase),atom,'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -9089,7 +9088,7 @@ function testClone(testCase)
             for iSubband = 1:nch_
                 atom = step(lppufb,[],[],iSubband);
                 subbandImg = imfilter(upsample3_(...
-                    subCoefs{iSubband},nDecs,phase),atom,'cir');
+                    subCoefs{iSubband},nDecs,phase),atom,'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -9156,7 +9155,7 @@ function testClone(testCase)
             for iSubband = 1:nch_
                 atom = step(lppufb,[],[],iSubband);
                 subbandImg = imfilter(upsample3_(...
-                    subCoefs{iSubband},nDecs,phase),atom,'cir');
+                    subCoefs{iSubband},nDecs,phase),atom,'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -9223,7 +9222,7 @@ function testClone(testCase)
             for iSubband = 1:nch_
                 atom = step(lppufb,[],[],iSubband);
                 subbandImg = imfilter(upsample3_(...
-                    subCoefs{iSubband},nDecs,phase),atom,'cir');
+                    subCoefs{iSubband},nDecs,phase),atom,'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -9290,7 +9289,7 @@ function testClone(testCase)
             for iSubband = 1:nch_
                 atom = step(lppufb,[],[],iSubband);
                 subbandImg = imfilter(upsample3_(...
-                    subCoefs{iSubband},nDecs,phase),atom,'cir');
+                    subCoefs{iSubband},nDecs,phase),atom,'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             
@@ -9357,7 +9356,7 @@ function testClone(testCase)
             for iSubband = 1:nch_
                 atom = step(lppufb,[],[],iSubband);
                 subbandImg = imfilter(upsample3_(...
-                    subCoefs{iSubband},nDecs,phase),atom,'cir');
+                    subCoefs{iSubband},nDecs,phase),atom,'conv','cir');
                 imgExpctd = imgExpctd + subbandImg;
             end
             

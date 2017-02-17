@@ -172,6 +172,7 @@ classdef CnsoltAnalysis3dSystem < ...
         function [ coefs, scales ] = stepImpl(obj, srcImg, nLevels)
             pmMtx = step(obj.LpPuFb3d,[],[]);
             pmMtxCoefs = get(pmMtx,'Coefficients');
+            symmetry = get(obj.LpPuFb3d,'Symmetry');
             [ coefs, scales ] = analyze_(obj, srcImg, nLevels, pmMtxCoefs, symmetry);
         end
         
@@ -290,7 +291,7 @@ classdef CnsoltAnalysis3dSystem < ...
                 nDec_=decY_*decX_*decZ_;
                 coefs = vol2col_(obj,subImg);
                 E0 = getMatrixE0_(obj);
-                coefs = E0*coefs;
+                coefs = conj(E0)*coefs;
                 arrayCoefs(1:nDec_,:) = coefs;
             end
             
@@ -335,9 +336,9 @@ classdef CnsoltAnalysis3dSystem < ...
         function value = getMatrixE0_(obj)
             import saivdr.dictionary.utility.Direction
             import saivdr.utility.HermitianSymmetricDFT
-            decY_ = obj.DecimationFactor(Direction.VERTICAL);
-            decX_ = obj.DecimationFactor(Direction.HORIZONTAL);
-            decZ_ = obj.DecimationFactor(Direction.DEPTH);
+            decY_ = obj.decimationFactor(Direction.VERTICAL);
+            decX_ = obj.decimationFactor(Direction.HORIZONTAL);
+            decZ_ = obj.decimationFactor(Direction.DEPTH);
             nElmBi = decY_*decX_*decZ_;
             coefs = complex(zeros(nElmBi));
             iElm = 1;

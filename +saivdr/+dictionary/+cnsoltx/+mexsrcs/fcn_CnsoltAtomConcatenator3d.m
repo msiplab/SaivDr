@@ -21,8 +21,7 @@ function coefs = fcn_CnsoltAtomConcatenator3d( coefs, scale, pmcoefs, ...
 persistent h;
 if isempty(h)
     h = saivdr.dictionary.cnsoltx.CnsoltAtomConcatenator3d(...
-        'NumberOfSymmetricChannels',nch(1),...
-        'NumberOfAntisymmetricChannels',nch(2));
+        'NumberOfChannels',nch);
 end
 set(h,'IsPeriodicExt',fpe);
 set(h,'PolyPhaseOrder',ord);

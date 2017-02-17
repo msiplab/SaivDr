@@ -46,15 +46,16 @@ classdef CplxOvsdLpPuFb3dTypeIIVm1System < ...
             s.omfs_  = matlab.System.saveObject(obj.omfs_);
             s.initOmgs_ = matlab.System.saveObject(obj.initOmgs_);
             s.propOmgs1st_ = matlab.System.saveObject(obj.propOmgs1st_);
-            s.propOmgs1nd_ = matlab.System.saveObject(obj.propOmgs2nd_);
+            s.propOmgs2nd_ = matlab.System.saveObject(obj.propOmgs2nd_);
         end
         
         function loadObjectImpl(obj,s,wasLocked)
             loadObjectImpl@saivdr.dictionary.cnsoltx.AbstCplxOvsdLpPuFb3dTypeIISystem(obj,s,wasLocked);
             obj.omfs_ = matlab.System.loadObject(s.omfs_);
-            obj.omgsW_ = matlab.System.loadObject(s.omgsW_);            
-            obj.omgsU_ = matlab.System.loadObject(s.omgsU_);            
-        end        
+            obj.initOmgs_ = matlab.System.loadObject(s.initOmgs_);
+            obj.propOmgs1st_ = matlab.System.loadObject(s.propOmgs1st_);
+            obj.propOmgs2nd_ = matlab.System.loadObject(s.propOmgs2nd_);
+        end
         
         function updateParameterMatrixSet_(obj)
             nCh = obj.NumberOfChannels;
