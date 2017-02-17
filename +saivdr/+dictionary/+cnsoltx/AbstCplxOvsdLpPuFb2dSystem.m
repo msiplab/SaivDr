@@ -179,7 +179,7 @@ classdef AbstCplxOvsdLpPuFb2dSystem < matlab.System %#codegen
             %
             H = getAnalysisFilterBank_(obj);
             nSubbands = sum(nChs);
-            coefs = zeros(nSubbands,decY*decX,ordY+1,ordX+1);
+            coefs = complex(zeros(nSubbands,decY*decX,ordY+1,ordX+1));
             for iSubband = 1:nSubbands
                 hi = H(:,:,iSubband);
                 for iOrdX = 0:ordX
@@ -217,7 +217,7 @@ classdef AbstCplxOvsdLpPuFb2dSystem < matlab.System %#codegen
             iElm = 1;
             for iCol = 1:nCols
                 for iRow = 1:nRows
-                    hsdftCoef = zeros(nRows,nCols);
+                    hsdftCoef = complex(zeros(nRows,nCols));
                     hsdftCoef(iRow,iCol) = 1;
                     basisImage = conj(hsdftY).'*hsdftCoef*conj(hsdftX);
                     coefs(iElm,:) = basisImage(:).';

@@ -214,7 +214,7 @@ classdef AbstCnsoltCoefManipulator2d < matlab.System
 %         end
         
         function arrayCoefs = lowerBlockRot_(obj,arrayCoefs,iCol,U)
-            hLen = obj.NumberOfAntisymmetricChannels;
+            hLen = obj.NumberOfHalfChannels;
             nRows_ = obj.nRows; 
             indexCol = (iCol-1)*nRows_;
             arrayCoefs(hLen+1:end,indexCol+1:indexCol+nRows_) = ...
@@ -222,7 +222,7 @@ classdef AbstCnsoltCoefManipulator2d < matlab.System
         end
         
         function arrayCoefs = upperBlockRot_(obj,arrayCoefs,iCol,W)
-            hLen = obj.NumberOfAntisymmetricChannels;
+            hLen = obj.NumberOfHalfChannels;
             nRows_ = obj.nRows;
             indexCol = (iCol-1)*nRows_;
             arrayCoefs(1:hLen,indexCol+1:indexCol+nRows_) = ...

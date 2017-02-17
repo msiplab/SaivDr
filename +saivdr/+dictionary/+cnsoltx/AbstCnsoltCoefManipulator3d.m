@@ -23,8 +23,8 @@ classdef AbstCnsoltCoefManipulator3d < matlab.System
     end
     
     properties (Nontunable, PositiveInteger)
-        NumberOfSymmetricChannels      = 4
-        NumberOfAntisymmetricChannels  = 4
+        NumberOfChannels      = 8
+        NumberOfHalfChannels  = 4
     end
 
     properties (Logical)
@@ -43,10 +43,6 @@ classdef AbstCnsoltCoefManipulator3d < matlab.System
         NsoltTypeSet = ...
             matlab.system.StringSet({'Type I','Type II'});
     end
-    
-    properties (SetAccess = protected, GetAccess = public, Nontunable, Logical)
-        IsPsGreaterThanPa = true;
-    end    
     
     properties (Access = protected)
         paramMtxCoefs
@@ -67,17 +63,10 @@ classdef AbstCnsoltCoefManipulator3d < matlab.System
         function obj = AbstCnsoltCoefManipulator3d(varargin)
             setProperties(obj,nargin,varargin{:});
             %
-            ps = obj.NumberOfSymmetricChannels;
-            pa = obj.NumberOfAntisymmetricChannels;
-            %
-            if ps > pa
+            obj.NumberOfHalfChannels = floor(obj.NumberOfChannels/2);
+            if mod(obj.NumberOfChannels,2) ~= 0
                 obj.NsoltType = 'Type II';
-                obj.IsPsGreaterThanPa = true;
-            elseif ps < pa
-                obj.NsoltType = 'Type II';
-                obj.IsPsGreaterThanPa = false;
-            end            
-            %
+            end
         end
         
     end
@@ -149,7 +138,7 @@ classdef AbstCnsoltCoefManipulator3d < matlab.System
             obj.paramMtxCoefs = pmCoefs;
             %
             if size(coefs,2) ~= (obj.nRows*obj.nCols*obj.nLays)
-                obj.tmpArray = zeros(size(coefs)); 
+                obj.tmpArray = complex(zeros(size(coefs))); 
             end
             %
             obj.nRows = subScale(saivdr.dictionary.utility.Direction.VERTICAL);
@@ -167,22 +156,19 @@ classdef AbstCnsoltCoefManipulator3d < matlab.System
         end
         
         function setupParamMtx_(obj)
-            ord = obj.PolyPhaseOrder; 
-            ps  = obj.NumberOfSymmetricChannels;
-            pa  = obj.NumberOfAntisymmetricChannels;
+            ord = obj.PolyPhaseOrder;
+            pa  = obj.NumberOfHalfChannels;
+            ps  = obj.NumberOfChannels - pa;
             %
-            paramMtxSzTab_ = zeros(sum(ord)+2,2);
-            paramMtxSzTab_(1,:) = [ ps ps ];
-            paramMtxSzTab_(2,:) = [ pa pa ];            
-            if strcmp(obj.NsoltType,'Type I')
-                for iOrd = 1:sum(ord)
-                    paramMtxSzTab_(iOrd+2,:) = [ pa pa ];
-                end
-            else
-                for iOrd = 1:sum(ord)/2
-                    paramMtxSzTab_(2*iOrd+1,:)   = [ ps ps ];
-                    paramMtxSzTab_(2*iOrd+2,:) = [ pa pa ];
-                end                
+            paramMtxSzTab_ = zeros(3*sum(ord)+1,2);
+            paramMtxSzTab_(1,:) = [ ps+pa, ps+pa ];
+            for iOrd = 1:sum(ord)/2
+                paramMtxSzTab_(6*iOrd-4,:) = [ pa pa ];
+                paramMtxSzTab_(6*iOrd-3,:) = [ pa pa ];
+                paramMtxSzTab_(6*iOrd-2,:) = [ floor(pa/2) 1 ];
+                paramMtxSzTab_(6*iOrd-1,:) = [ ps ps ];
+                paramMtxSzTab_(6*iOrd  ,:) = [ ps ps ];
+                paramMtxSzTab_(6*iOrd+1,:) = [ floor(pa/2) 1 ];
             end
             %
             nRowsPm = size(paramMtxSzTab_,1);
@@ -213,31 +199,31 @@ classdef AbstCnsoltCoefManipulator3d < matlab.System
 %             end 
         end
         
-        function arrayCoefs = blockButterflyTypeI_(obj,arrayCoefs)
-            hLen = obj.NumberOfSymmetricChannels;
-            upper = arrayCoefs(1:hLen,:);
-            lower = arrayCoefs(hLen+1:end,:);
-            
-            arrayCoefs(1:hLen,:)     = upper + lower;
-            arrayCoefs(hLen+1:end,:) =  upper - lower;
-        end
-        
-        function arrayCoefs = blockButterflyTypeII_(obj,arrayCoefs)
-            chs = [obj.NumberOfSymmetricChannels ...
-                obj.NumberOfAntisymmetricChannels ];
-            nChMx = max(chs);
-            nChMn = min(chs);
-            upper  = arrayCoefs(1:nChMn,:);
-            middle = arrayCoefs(nChMn+1:nChMx,:);
-            lower  = arrayCoefs(nChMx+1:end,:);
-            
-            arrayCoefs(1:nChMn,:)       = upper + lower;
-            arrayCoefs(nChMn+1:nChMx,:) = 1.414213562373095*middle;
-            arrayCoefs(nChMx+1:end,:)   = upper - lower;
-        end
+%         function arrayCoefs = blockButterflyTypeI_(obj,arrayCoefs)
+%             hLen = obj.NumberOfSymmetricChannels;
+%             upper = arrayCoefs(1:hLen,:);
+%             lower = arrayCoefs(hLen+1:end,:);
+%             
+%             arrayCoefs(1:hLen,:)     = upper + lower;
+%             arrayCoefs(hLen+1:end,:) =  upper - lower;
+%         end
+%         
+%         function arrayCoefs = blockButterflyTypeII_(obj,arrayCoefs)
+%             chs = [obj.NumberOfSymmetricChannels ...
+%                 obj.NumberOfAntisymmetricChannels ];
+%             nChMx = max(chs);
+%             nChMn = min(chs);
+%             upper  = arrayCoefs(1:nChMn,:);
+%             middle = arrayCoefs(nChMn+1:nChMx,:);
+%             lower  = arrayCoefs(nChMx+1:end,:);
+%             
+%             arrayCoefs(1:nChMn,:)       = upper + lower;
+%             arrayCoefs(nChMn+1:nChMx,:) = 1.414213562373095*middle;
+%             arrayCoefs(nChMx+1:end,:)   = upper - lower;
+%         end
        
         function arrayCoefs = lowerBlockRot_(obj,arrayCoefs,iLay,U)
-            hLen = obj.NumberOfSymmetricChannels;
+            hLen = obj.NumberOfHalfChannels;
             nRowsxnCols_ = obj.nRows*obj.nCols; 
             indexLay = (iLay-1)*nRowsxnCols_;
             arrayCoefs(hLen+1:end,indexLay+1:indexLay+nRowsxnCols_) = ...
@@ -245,7 +231,7 @@ classdef AbstCnsoltCoefManipulator3d < matlab.System
         end
         
         function arrayCoefs = upperBlockRot_(obj,arrayCoefs,iLay,W)
-            hLen = obj.NumberOfSymmetricChannels;
+            hLen = obj.NumberOfHalfChannels;
             nRowsxnCols_ = obj.nRows*obj.nCols; 
             indexLay = (iLay-1)*nRowsxnCols_;
             arrayCoefs(1:hLen,indexLay+1:indexLay+nRowsxnCols_) = ...

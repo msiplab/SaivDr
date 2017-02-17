@@ -29,10 +29,12 @@ classdef AbstCplxOvsdLpPuFb3dSystem < matlab.System %#codegen
             'AnalysisFilters',...
             'AnalysisFilterAt',...
             'SynthesisFilters',...
+            'SynthesisFilterAt',...
             'ParameterMatrixSet'});
     end
 
     properties (Hidden)
+        Symmetry = 0;
         Angles = 0;
         Mus    = 1;
         ColorMapAtmImShow      = 'cool'
@@ -65,6 +67,7 @@ classdef AbstCplxOvsdLpPuFb3dSystem < matlab.System %#codegen
         end
 
         function atmimshow(obj,varargin)
+            % TODO: •¡‘f‘Î‰ž
             % Show Atomic Images
             updateParameterMatrixSet_(obj);
             obj.mexFlag = false;
@@ -260,7 +263,7 @@ classdef AbstCplxOvsdLpPuFb3dSystem < matlab.System %#codegen
             %
             H = getAnalysisFilterBank_(obj);
             nSubbands = sum(nChs);
-            coefs = zeros(nSubbands,decY*decX*decZ,ordY+1,ordX+1,ordZ+1);
+            coefs = complex(zeros(nSubbands,decY*decX*decZ,ordY+1,ordX+1,ordZ+1));
             for iSubband = 1:nSubbands
                 hi = H(:,:,:,iSubband);
                 for iOrdZ = 0:ordZ
@@ -280,9 +283,19 @@ classdef AbstCplxOvsdLpPuFb3dSystem < matlab.System %#codegen
             end
             obj.Coefficients = coefs;
         end
+        
+        function updateSymmetry_(obj)
+            if isscalar(obj.Symmetry) && obj.Symmetry == 0
+                obj.Symmetry = zeros(obj.NumberOfChannels,1);
+            end
+            if length(obj.Symmetry) ~= obj.NumberOfChannels
+                %TODO: —áŠOˆ—
+            end
+        end
 
         function value = getMatrixE0_(obj)
             import saivdr.dictionary.utility.Direction
+            import saivdr.utility.HermitianSymmetricDFT
             nRows = obj.DecimationFactor(Direction.VERTICAL);
             nCols = obj.DecimationFactor(Direction.HORIZONTAL);
             nDeps = obj.DecimationFactor(Direction.DEPTH);
@@ -291,14 +304,14 @@ classdef AbstCplxOvsdLpPuFb3dSystem < matlab.System %#codegen
             iElm = 1;
             for iRow = 1:nRows
                 for iCol = 1:nCols
-                    hsdftCoefYX = zeros(nRows,nCols);
+                    hsdftCoefYX = complex(zeros(nRows,nCols));
                     hsdftCoefYX(iRow,iCol) = 1;
-                    basisYX = ihsdft2_(obj,hsdftCoefYX);
+                    basisYX = HermitianSymmetricDFT.ihsdft2(hsdftCoefYX);
                     for iDep = 1:nDeps
                         hsdftCoefZ = zeros(nDeps,1);
                         hsdftCoefZ(iDep) = 1;
                         %basisZ  = permute(idct(hsdftCoefZ),[2 3 1]);
-                        basisZ = permute(ihsdft_(obj,hsdftCoefZ),[2 3 1]);
+                        basisZ = permute(HermitianSymmetricDFT.ihsdft(hsdftCoefZ),[2 3 1]);
                         basisVd = convn(basisZ,basisYX);
                         coefs(iElm,:) = basisVd(:).';
                         iElm = iElm + 1;
@@ -317,26 +330,26 @@ classdef AbstCplxOvsdLpPuFb3dSystem < matlab.System %#codegen
             end
         end
         
-        function value = hsdftmtx_(~, nDec) %Hermitian-Symmetric DFT matrix
-            w = exp(-2*pi*1i/nDec);
-            value = complex(zeros(nDec));
-            for u = 0:nDec-1
-                for x =0:nDec-1
-                    value(u+1,x+1) = w^(u*(x+0.5))/sqrt(nDec);
-                end
-            end
-        end
-        
-        function value = ihsdft_(obj, X)
-            value = hsdftmtx_(obj, length(X))'*X;
-        end
-        
-        function value = ihsdft2_(obj, X)
-            [lenU, lenV] = size(X);
-            ihsdftU = hsdftmtx_(obj, lenU)';
-            ihsdftV = hsdftmtx_(obj, lenV)';
-            value = (ihsdftV*((ihsdftU*X).')).';
-        end
+%         function value = hsdftmtx_(~, nDec) %Hermitian-Symmetric DFT matrix
+%             w = exp(-2*pi*1i/nDec);
+%             value = complex(zeros(nDec));
+%             for u = 0:nDec-1
+%                 for x =0:nDec-1
+%                     value(u+1,x+1) = w^(u*(x+0.5))/sqrt(nDec);
+%                 end
+%             end
+%         end
+%         
+%         function value = ihsdft_(obj, X)
+%             value = hsdftmtx_(obj, length(X))'*X;
+%         end
+%         
+%         function value = ihsdft2_(obj, X)
+%             [lenU, lenV] = size(X);
+%             ihsdftU = hsdftmtx_(obj, lenU)';
+%             ihsdftV = hsdftmtx_(obj, lenV)';
+%             value = (ihsdftV*((ihsdftU*X).')).';
+%         end
 
     end
 

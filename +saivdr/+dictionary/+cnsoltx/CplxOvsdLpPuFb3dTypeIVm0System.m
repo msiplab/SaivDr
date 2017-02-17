@@ -19,7 +19,8 @@ classdef CplxOvsdLpPuFb3dTypeIVm0System < saivdr.dictionary.cnsoltx.AbstCplxOvsd
     % 
     
     properties (Access = private)
-        omgs_
+        initOmgs_
+        propOmgs_
     end
     
     methods
@@ -27,7 +28,8 @@ classdef CplxOvsdLpPuFb3dTypeIVm0System < saivdr.dictionary.cnsoltx.AbstCplxOvsd
             import saivdr.dictionary.utility.OrthonormalMatrixGenerationSystem
             obj = obj@saivdr.dictionary.cnsoltx.AbstCplxOvsdLpPuFb3dTypeISystem(...
                 varargin{:});
-            obj.omgs_ = OrthonormalMatrixGenerationSystem();
+            obj.initOmgs_ = OrthonormalMatrixGenerationSystem('OrderOfProduction','Ascending');
+            obj.propOmgs_ = OrthonormalMatrixGenerationSystem('OrderOfProduction','Ascending');
         end
     end
     
@@ -35,22 +37,43 @@ classdef CplxOvsdLpPuFb3dTypeIVm0System < saivdr.dictionary.cnsoltx.AbstCplxOvsd
         
         function s = saveObjectImpl(obj)
             s = saveObjectImpl@saivdr.dictionary.cnsoltx.AbstCplxOvsdLpPuFb3dTypeISystem(obj);
-            s.omgs_ = matlab.System.saveObject(obj.omgs_);
+            s.initOmgs_ = matlab.System.saveObject(obj.initOmgs_);
+            s.propOmgs_ = matlab.System.saveObject(obj.propOmgs_);
         end
         
         function loadObjectImpl(obj,s,wasLocked)
-            obj.omgs_ = matlab.System.loadObject(s.omgs_);
+            obj.initOmgs_ = matlab.System.loadObject(s.initOmgs_);
+            obj.propOmgs_ = matlab.System.loadObject(s.propOmgs_);
             loadObjectImpl@saivdr.dictionary.cnsoltx.AbstCplxOvsdLpPuFb3dTypeISystem(obj,s,wasLocked);
         end
         
         function obj = updateParameterMatrixSet_(obj)
-            angles = obj.Angles;
-            mus    = obj.Mus;
-            omgs   = obj.omgs_;
+            nCh = obj.NumberOfChannels;
+            hCh = nCh/2;
+            
             pmMtxSet = obj.ParameterMatrixSet;
-            for iParamMtx = uint32(1):obj.nStages+1
-                mtx = step(omgs,angles(:,iParamMtx),mus(:,iParamMtx));
-                step(pmMtxSet,mtx,iParamMtx);
+            
+            [initAngles, propAngles] = splitAngles_(obj);
+            
+            % V0
+            mtx = step(obj.initOmgs_,initAngles,obj.Mus(1:nCh));
+            step(pmMtxSet,mtx,uint32(1));
+            
+            angles = reshape(propAngles,[],obj.nStages-1);
+            mus    = reshape(obj.Mus(nCh+1:end),[],obj.nStages-1);
+            
+            nParamMtxAngs = nCh*(nCh-2)/8;
+            for iParamMtx = uint32(1):obj.nStages-1
+                % W
+                mtx = step(obj.propOmgs_,angles(1:nParamMtxAngs,iParamMtx),mus(1:hCh,iParamMtx));
+                step(pmMtxSet,mtx,3*iParamMtx-1);
+                
+                % U
+                mtx = step(obj.propOmgs_,angles(nParamMtxAngs+1:2*nParamMtxAngs,iParamMtx),mus(hCh+1:end,iParamMtx));
+                step(pmMtxSet,mtx,3*iParamMtx);
+                
+                % angsB
+                step(pmMtxSet,angles(2*nParamMtxAngs+1:end,iParamMtx),3*iParamMtx+1);
             end
         end
         

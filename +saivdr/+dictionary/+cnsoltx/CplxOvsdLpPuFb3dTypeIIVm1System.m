@@ -20,8 +20,9 @@ classdef CplxOvsdLpPuFb3dTypeIIVm1System < ...
     % 
    
     properties (Access = private, Nontunable)
-        omgsW_
-        omgsU_
+        initOmgs_
+        propOmgs1st_
+        propOmgs2nd_
         omfs_
     end
       
@@ -31,9 +32,10 @@ classdef CplxOvsdLpPuFb3dTypeIIVm1System < ...
             import saivdr.dictionary.utility.OrthonormalMatrixGenerationSystem
             obj = obj@saivdr.dictionary.cnsoltx.AbstCplxOvsdLpPuFb3dTypeIISystem(...
                 varargin{:});
-            obj.omfs_  = OrthonormalMatrixFactorizationSystem();
-            obj.omgsW_ = OrthonormalMatrixGenerationSystem();
-            obj.omgsU_ = OrthonormalMatrixGenerationSystem();
+            obj.omfs_  = OrthonormalMatrixFactorizationSystem('OrderOfProduction','Ascending');
+            obj.initOmgs_ = OrthonormalMatrixGenerationSystem('OrderOfProduction','Ascending');
+            obj.propOmgs1st_ = OrthonormalMatrixGenerationSystem('OrderOfProduction','Ascending');
+            obj.propOmgs2nd_ = OrthonormalMatrixGenerationSystem('OrderOfProduction','Ascending');
         end
     end
     
@@ -41,9 +43,10 @@ classdef CplxOvsdLpPuFb3dTypeIIVm1System < ...
             
         function s = saveObjectImpl(obj)
             s = saveObjectImpl@saivdr.dictionary.cnsoltx.AbstCplxOvsdLpPuFb3dTypeIISystem(obj);
-            s.omfs_  = matlab.System.saveObject(obj.omfs_);            
-            s.omgsW_ = matlab.System.saveObject(obj.omgsW_);            
-            s.omgsU_ = matlab.System.saveObject(obj.omgsU_);            
+            s.omfs_  = matlab.System.saveObject(obj.omfs_);
+            s.initOmgs_ = matlab.System.saveObject(obj.initOmgs_);
+            s.propOmgs1st_ = matlab.System.saveObject(obj.propOmgs1st_);
+            s.propOmgs1nd_ = matlab.System.saveObject(obj.propOmgs2nd_);
         end
         
         function loadObjectImpl(obj,s,wasLocked)
@@ -54,44 +57,62 @@ classdef CplxOvsdLpPuFb3dTypeIIVm1System < ...
         end        
         
         function updateParameterMatrixSet_(obj)
-            import saivdr.dictionary.cnsoltx.ChannelGroup
-            nChs = obj.NumberOfChannels;
-            angles = obj.Angles;
-            mus    = obj.Mus;
-            nAngsW = nChs(ChannelGroup.UPPER)*(nChs(ChannelGroup.UPPER)-1)/2;
-            nMusW  = nChs(ChannelGroup.UPPER);
-            % No-DC-Leackage condition
-            W_ = eye(nChs(ChannelGroup.UPPER)); 
-            omgsW = obj.omgsW_;
-            omgsU = obj.omgsU_;
-            pmMtxSet = obj.ParameterMatrixSet;
+            nCh = obj.NumberOfChannels;
+            hCh = floor(nCh/2);
+            pmMtxSt_ = obj.ParameterMatrixSet;
+            
+            [initAngles, propAngles] = splitAngles_(obj);
+            
+            angles = reshape(propAngles,[],obj.nStages-1);
+            mus    = reshape(obj.Mus(nCh+1:end),[],obj.nStages-1);            
+            nAngs1st = hCh*(hCh-1)/2;
+            nAngs2nd = (hCh+1)*hCh/2;
+            nAngsB = floor(nCh/4);
+            nMus1st = hCh;
+            nMus2nd = hCh+1;
+            
+            V_ = eye(nCh);
+            
             for iParamMtx = uint32(1):obj.nStages-1
                 % W
-                mtx = step(omgsW,angles(1:nAngsW,iParamMtx),...
-                    mus(1:nMusW,iParamMtx));                  
-                step(pmMtxSet,mtx,2*iParamMtx-1);
+                mtx = step(obj.propOmgs1st_,angles(1:nAngs1st,iParamMtx),...
+                    mus(1:nMus1st,iParamMtx));
+                step(pmMtxSt_,mtx,6*iParamMtx-4);
+                V_(1:hCh,:) = mtx*V_(1:hCh,:);
+                
                 % U
-                mtx = step(omgsU,angles(nAngsW+1:end,iParamMtx),...
-                        mus(nMusW+1:end,iParamMtx));
-                step(pmMtxSet,mtx,2*iParamMtx);
+                mtx = step(obj.propOmgs1st_,angles(nAngs1st+1:2*nAngs1st,iParamMtx),...
+                        mus(nMus1st+1:2*nMus1st,iParamMtx));
+                step(pmMtxSt_,mtx,6*iParamMtx-3);
+                V_(hCh+1:end-1,:) = mtx*V_(hCh+1:end-1,:);
+                
+                % angsB1
+                step(pmMtxSt_,angles(2*nAngs1st+1:2*nAngs1st+nAngsB,iParamMtx),6*iParamMtx-2);
+                
+                % HU
+                mtx = step(obj.propOmgs2nd_,angles(2*nAngs1st+nAngsB+nAngs2nd+1:2*nAngs1st+nAngsB+2*nAngs2nd,iParamMtx),...
+                        mus(2*nMus1st+nMus2nd+1:end,iParamMtx));
+                step(pmMtxSt_,mtx,6*iParamMtx);
+                V_(hCh+1:end,:) = mtx*V_(hCh+1:end,:);
+                
+                % HW
+                mtx = step(obj.propOmgs2nd_,angles(2*nAngs1st+nAngsB+1:2*nAngs1st+nAngsB+nAngs2nd,iParamMtx),...
+                    mus(2*nMus1st+1:2*nMus1st+nMus2nd,iParamMtx));
+                step(pmMtxSt_,mtx,6*iParamMtx-1);
+                V_(1:hCh+1,:) = mtx*V_(1:hCh+1,:);
 
-                W_ = step(pmMtxSet,[],2*iParamMtx-1)*W_;
+                % angsB2
+                step(pmMtxSt_,angles(2*nAngs1st+1:2*nAngs1st+nAngsB,iParamMtx),6*iParamMtx+1);
             end
-            [angles_,mus_] = step(obj.omfs_,W_.');
-            angles(1:nChs(ChannelGroup.UPPER)-1,obj.nStages) = ...
-                angles_(1:nChs(ChannelGroup.UPPER)-1);
-            mus(1,obj.nStages) = mus_(1);
-            % W
-            mtx = step(omgsW,angles(1:nAngsW,obj.nStages),...
-                mus(1:nMusW,obj.nStages));            
-            step(pmMtxSet,mtx,2*obj.nStages-1); 
-            % U
-            mtx = step(omgsU,angles(nAngsW+1:end,obj.nStages),...
-                mus(nMusW+1:end,obj.nStages));
-            step(pmMtxSet,mtx,2*obj.nStages);
-            %
-            obj.Angles = angles;
-            obj.Mus    = mus;
+            
+            % Initial matrix V0 with No-DC-leakage condition
+            [angles_,~] = step(obj.omfs_,V_.');
+            initAngles(1:nCh-1) = angles_(1:nCh-1);
+            mtx = step(obj.initOmgs_,initAngles,obj.Mus(1:nCh));
+            step(pmMtxSt_,mtx,uint32(1));
+            
+            obj.Angles = [initAngles ; angles(:)];
+            obj.Mus(nCh+1:end)    = mus(:);
         end
         
     end

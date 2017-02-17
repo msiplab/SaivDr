@@ -73,7 +73,6 @@ classdef AbstCplxOvsdLpPuFb2dTypeISystem < ...
         end
 
         function updateProperties_(obj)
-            import saivdr.dictionary.cnsoltx.ChannelGroup
             import saivdr.dictionary.utility.Direction
             import saivdr.dictionary.utility.ParameterMatrixContainer
            % import saivdr.dictionary.cnsoltx.AbstCplxOvsdLpPuFb2dTypeISystem
@@ -126,7 +125,7 @@ classdef AbstCplxOvsdLpPuFb2dTypeISystem < ...
         end
 
         function updateAngles_(obj)
-            import saivdr.dictionary.cnsoltx.ChannelGroup
+            import saivdr.dictionary.utility.Direction
             nChL = obj.NumberOfChannels/2;
             nAngsInitStg = obj.NumberOfChannels*(obj.NumberOfChannels-1)/2;
             nAngsPerStg = nChL*(nChL-1)+floor(nChL/2);

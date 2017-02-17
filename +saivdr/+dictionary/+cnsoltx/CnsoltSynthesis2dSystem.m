@@ -171,7 +171,7 @@ classdef CnsoltSynthesis2dSystem  < ...
             %
             height = scales(1,1);
             width  = scales(1,2);
-            arrayCoefs = zeros(nChs,height*width);
+            arrayCoefs = complex(zeros(nChs,height*width));
             arrayCoefs(1,:) = coefs(1:eIdx);
             for iLevel = 1:nLevels
                 obj.nRows = uint32(height);
@@ -218,7 +218,7 @@ classdef CnsoltSynthesis2dSystem  < ...
             % Block IDFT
             if decY_ == 1 && decX_ == 1
                 scale = double(subScale);
-                coefs = zeros(nDec,nRows_*nCols_);
+                coefs = complex(zeros(nDec,nRows_*nCols_));
                 coefs(1,:) = arrayCoefs(1,:);
                 subImg = col2im(coefs,blockSize,scale,'distinct');
 %             elseif decY_ == 2 && decX_ == 2

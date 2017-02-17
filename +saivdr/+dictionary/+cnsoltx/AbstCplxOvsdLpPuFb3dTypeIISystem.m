@@ -36,6 +36,7 @@ classdef AbstCplxOvsdLpPuFb3dTypeIISystem < ...
             updateProperties_(obj);
             updateAngles_(obj);
             updateMus_(obj);
+            updateSymmetry_(obj);
         end
     end
 
@@ -58,24 +59,20 @@ classdef AbstCplxOvsdLpPuFb3dTypeIISystem < ...
         function resetImpl(obj)
             resetImpl@saivdr.dictionary.cnsoltx.AbstCplxOvsdLpPuFb3dSystem(obj);
             % Prepare MEX function
-            import saivdr.dictionary.cnsoltx.ChannelGroup
             import saivdr.dictionary.cnsoltx.mexsrcs.fcn_autobuild_cbb_type2
             %TODO:
             [obj.mexFcn, obj.mexFlag] = fcn_autobuild_cbb_type2(...
-                obj.NumberOfChannels(ChannelGroup.LOWER));
+                floor(obj.NumberOfChannels/2));
         end
 
         function setupImpl(obj,varargin)
             % Prepare MEX function
-            import saivdr.dictionary.cnsoltx.ChannelGroup
             import saivdr.dictionary.cnsoltx.mexsrcs.fcn_autobuild_cbb_type2
-            %TODO:            
             [obj.mexFcn, obj.mexFlag] = fcn_autobuild_cbb_type2(...
-                obj.NumberOfChannels(ChannelGroup.LOWER));
+                floor(obj.NumberOfChannels/2));
         end
 
         function updateProperties_(obj)
-            import saivdr.dictionary.cnsoltx.ChannelGroup
             import saivdr.dictionary.utility.Direction
             import saivdr.dictionary.utility.ParameterMatrixContainer
             % Check DecimationFactor
@@ -105,106 +102,81 @@ classdef AbstCplxOvsdLpPuFb3dTypeIISystem < ...
                 error('Dimension of NumberOfChannels must be less than or equal to two.');
             end
             if isempty(obj.NumberOfChannels)
-                obj.NumberOfChannels = [ floor(nHalfDecs+1) floor(nHalfDecs) ];
-            elseif length(obj.NumberOfChannels) == 1
+                obj.NumberOfChannels = 2*floor(nHalfDecs)+1;
+            elseif isvector(obj.NumberOfChannels)
+                obj.NumberOfChannels = sum(obj.NumberOfChannels);
                 if mod(obj.NumberOfChannels,2) == 0
                     id = 'SaivDr:IllegalArgumentException';
                     msg = '#Channels must be odd.';
                     me = MException(id, msg);
                     throw(me);
-                else
-                    obj.NumberOfChannels = ...
-                        [ ceil(double(obj.NumberOfChannels)/2) ...
-                        floor(double(obj.NumberOfChannels)/2) ];
                 end
-                %{
-            elseif obj.NumberOfChannels(ChannelGroup.UPPER) <= ...
-                    obj.NumberOfChannels(ChannelGroup.LOWER)
-                id = 'SaivDr:IllegalArgumentException';
-                msg = 'ps must be greater than pa. (not yet supported).';
-                me = MException(id, msg);
-                throw(me);
-                %}
-            elseif (obj.NumberOfChannels(ChannelGroup.UPPER) < ceil(nHalfDecs)) ||...
-                    (obj.NumberOfChannels(ChannelGroup.LOWER) < floor(nHalfDecs))
-                id = 'SaivDr:IllegalArgumentException';
-                msg = 'Both of ps and pa must be greater than a half of #Decs.';
-                me = MException(id, msg);
-                throw(me);
             end
 
             % Prepare ParameterMatrixSet
-            paramMtxSizeTab = repmat(...
-                [ obj.NumberOfChannels(ChannelGroup.UPPER) ;
-                obj.NumberOfChannels(ChannelGroup.LOWER) ],...
-                obj.nStages,2);
+            paramMtxSizeTab = [obj.NumberOfChannels*ones(1,2);
+                repmat([floor(obj.NumberOfChannels/2)*ones(2,2);
+                floor(obj.NumberOfChannels/4),1;
+                ceil(obj.NumberOfChannels/2)*ones(2,2);
+                floor(obj.NumberOfChannels/4),1], obj.nStages-1, 1)];
             obj.ParameterMatrixSet = ParameterMatrixContainer(...
                 'MatrixSizeTable',paramMtxSizeTab);
-
-%             % Prepare MEX function
-%             if ~obj.mexFlag
-%                 import saivdr.dictionary.cnsoltx.mexsrcs.fcn_autobuild_bb_type2
-%                 [obj.mexFcn, obj.mexFlag] = fcn_autobuild_bb_type2(...
-%                     obj.NumberOfChannels(ChannelGroup.UPPER),...
-%                     obj.NumberOfChannels(ChannelGroup.LOWER));
-%             end
-
+            
+            % Prepare MEX function
+            if ~obj.mexFlag
+                import saivdr.dictionary.cnsoltx.mexsrcs.fcn_autobuild_cbb_type2
+                [obj.mexFcn, obj.mexFlag] = fcn_autobuild_cbb_type2(...
+                    floor(obj.NumberOfChannels/2));
+            end
+            
         end
 
         function updateAngles_(obj)
-            import saivdr.dictionary.cnsoltx.ChannelGroup
-            nAngsPerStg = zeros(2,1);
+            nAngsPerStg = zeros(3,1);
             %
-            nChU = obj.NumberOfChannels(ChannelGroup.UPPER);
-            nChL = obj.NumberOfChannels(ChannelGroup.LOWER);
-            nAngsPerStg(ChannelGroup.UPPER) = ...
-                nChU*double(nChU-1)/2;
-            nAngsPerStg(ChannelGroup.LOWER) = ...
-                nChL*double(nChL-1)/2;
-            sizeOfAngles = [sum(nAngsPerStg) obj.nStages];
+            nAngsPerStg(1) = ...
+                floor(obj.NumberOfChannels/2) ...
+                *double(floor(obj.NumberOfChannels/2)-1);
+            nAngsPerStg(2) = ...
+                ceil(obj.NumberOfChannels/2) ...
+                *double(ceil(obj.NumberOfChannels/2)-1);
+            nAngsPerStg(3) = 2*floor(obj.NumberOfChannels/4);
+            nAngsInit = obj.NumberOfChannels*(obj.NumberOfChannels-1)/2;
+            sizeOfAngles = nAngsInit + sum(nAngsPerStg)*(obj.nStages-1);
             %
 
             if isscalar(obj.Angles) && obj.Angles == 0
-                obj.Angles = zeros(sizeOfAngles);
+                obj.Angles = zeros(sizeOfAngles,1);
             end
-            if size(obj.Angles,1) ~= sizeOfAngles(1) || ...
-                    size(obj.Angles,2) ~= sizeOfAngles(2)
+            
+            obj.Angles = obj.Angles(:);
+            if length(obj.Angles) ~= sizeOfAngles
                 id = 'SaivDr:IllegalArgumentException';
                 msg = sprintf(...
-                    'Size of angles must be [ %d %d ]',...
-                    sizeOfAngles(1), sizeOfAngles(2));
+                    'Length of angles must be %d',...
+                    sizeOfAngles);
                 me = MException(id, msg);
                 throw(me);
             end
         end
 
         function updateMus_(obj)
-            import saivdr.dictionary.cnsoltx.ChannelGroup
             %
-            nChU = obj.NumberOfChannels(ChannelGroup.UPPER);
-            nChL = obj.NumberOfChannels(ChannelGroup.LOWER);
-            sizeOfMus = [ (nChU+nChL) obj.nStages ];
+            sizeOfMus = obj.NumberOfChannels*(2*obj.nStages-1);
             %
+            nChL = floor(obj.NumberOfChannels/2);
+            nChU = ceil(obj.NumberOfChannels/2);
             if isscalar(obj.Mus) && obj.Mus == 1
-                if nChU > nChL
-                    obj.Mus = [
-                        ones(nChU, obj.nStages);
-                        -ones(nChL, obj.nStages) ];
-                else
-                    obj.Mus = [
-                        -ones(nChU, obj.nStages);
-                        ones(nChL, obj.nStages) ];
-                end
-                if mod(obj.nStages,2) == 1
-                    obj.Mus(:,1) = ones(size(obj.Mus,1),1);
-                end
+                obj.Mus = [ ones(1,obj.NumberOfChannels),...
+                    repmat([ ones(1,nChL), -1*ones(1,nChL),...
+                    ones(1,nChU), -1*ones(1,nChL), 1 ], 1, obj.nStages-1)];
             end
-            if size(obj.Mus,1) ~= sizeOfMus(1) || ...
-                    size(obj.Mus,2) ~= sizeOfMus(2)
+            obj.Mus = obj.Mus(:);
+            if length(obj.Mus) ~= sizeOfMus
                 id = 'SaivDr:IllegalArgumentException';
                 msg = sprintf(...
-                    'Size of mus must be [ %d %d ]',...
-                    sizeOfMus(1), sizeOfMus(2));
+                    'Length of mus must be %d',...
+                    sizeOfMus);
                 me = MException(id, msg);
                 throw(me);
             end
@@ -212,9 +184,8 @@ classdef AbstCplxOvsdLpPuFb3dTypeIISystem < ...
 
         function value = getAnalysisFilterBank_(obj)
             import saivdr.dictionary.utility.Direction
-            import saivdr.dictionary.cnsoltx.ChannelGroup
             import saivdr.dictionary.cnsoltx.AbstCplxOvsdLpPuFb3dTypeIISystem
-            %import saivdr.dictionary.cnsoltx.mexsrcs.*
+            import saivdr.dictionary.cnsoltx.mexsrcs.*
 
             %
             nChs = obj.NumberOfChannels;
@@ -222,58 +193,39 @@ classdef AbstCplxOvsdLpPuFb3dTypeIISystem < ...
             decX = dec(Direction.HORIZONTAL);
             decY = dec(Direction.VERTICAL);
             decZ = dec(Direction.DEPTH);
-            nHalfDecs = prod(dec)/2;
             ordX = obj.PolyPhaseOrder(Direction.HORIZONTAL);
             ordY = obj.PolyPhaseOrder(Direction.VERTICAL);
             ordZ = obj.PolyPhaseOrder(Direction.DEPTH);
+            pmMtxSt_ = obj.ParameterMatrixSet;
+            mexFcn_  = obj.mexFcn;
+            mexFlag_ = obj.mexFlag;
+            
             %
             E0 = obj.matrixE0;
             %
-            %TODO:begin
-            cM_2 = ceil(nHalfDecs);
-            pmMtxSt_ = obj.ParameterMatrixSet;
-            W = step(pmMtxSt_,[],uint32(1))*[
-                eye(cM_2) ;
-                zeros(nChs(ChannelGroup.UPPER)-cM_2,cM_2)];
-            fM_2 = floor(nHalfDecs);
-            %
-            U = step(pmMtxSt_,[],uint32(2))*[
-                eye(fM_2);
-                zeros(nChs(ChannelGroup.LOWER)-fM_2,fM_2) ];
-            R = blkdiag(W,U);
-            %TODO:end
-            %R = step(pmMtxSt_,[],uint32(1))*[eye(floor(nHalfDecs)),zeros(sum(nChs)-floor(nHalfDecs),1)]
-            E = R*E0;
-            iParamMtx = uint32(3);
-            %iParamMtx = uint32(2);
+            V0 = step(pmMtxSt_,[],uint32(1));
+            E = V0*[ E0 ; zeros(nChs-prod(dec),prod(dec))];
+            iParamMtx = uint32(2);
 
             % Depth extention
             lenY = decY;
             lenX = decX;
             nShift = int32(lenY*(decZ*lenX));
             for iOrdZ = 1:uint32(double(ordZ)/2)
-                %hW = step(pmMtxSt_,[],iParamMtx);
-                hW = eye(nChs(ChannelGroup.UPPER));
-                %hU = step(pmMtxSt_,[],iParamMtx+1);
-                hU = step(pmMtxSt_,[],iParamMtx);
-                %angles2 = step(pmMtxSt_,[],iParamMtx+2);
-                angles2 = pi/4*ones(floor(nChs(ChannelGroup.LOWER)/2),1);
-                %W = step(pmMtxSt_,[],iParamMtx+3);
-                W = step(pmMtxSt_,[],iParamMtx+1);
-                %U = step(pmMtxSt_,[],iParamMtx+4);
-                U = eye(nChs(ChannelGroup.LOWER));
-                %angles1 = step(pmMtxSt_,[],iParamMtx+5);
-                angles1 = pi/4*ones(floor(nChs(ChannelGroup.LOWER)/2),1);
-                if obj.mexFlag
-                    %TODO:
-                    E = obj.mexFcn(E, hW, hU, angles2, W, U, angles1, nChs(ChannelGroup.LOWER), nShift);
+                W = step(pmMtxSt_,[],iParamMtx);
+                U = step(pmMtxSt_,[],iParamMtx+1);
+                angsB1 = step(pmMtxSt_,[],iParamMtx+2);
+                hW = step(pmMtxSt_,[],iParamMtx+3);
+                hU = step(pmMtxSt_,[],iParamMtx+4);
+                angsB2 = step(pmMtxSt_,[],iParamMtx+5);
+                if mexFlag_
+                    E = mexFcn_(E, W, U, angsB1, hW, hU, angsB2, floor(nChs/2), nShift);
                 else
                     import saivdr.dictionary.cnsoltx.mexsrcs.Order2CplxBuildingBlockTypeII
                     hObb = Order2CplxBuildingBlockTypeII();
-                    E = step(hObb, E, hW, hU, angles2, W, U, angles1, nChs(ChannelGroup.LOWER), nShift);
+                    E = step(hObb, E, W, U, angsB1, hW, hU, angsB2, floor(nChs/2), nShift);
                 end
-                iParamMtx = iParamMtx+2;
-                %iParamMtx = iParamMtx+6;
+                iParamMtx = iParamMtx+6;
             end
             lenZ = decZ*(ordZ+1);
 
@@ -281,28 +233,20 @@ classdef AbstCplxOvsdLpPuFb3dTypeIISystem < ...
             E = permuteCoefs_(obj,E,lenY*lenX); % Y X Z -> Z Y X
             nShift = int32(lenZ*(decX*lenY));
             for iOrdX = 1:uint32(double(ordX)/2)
-                %hW = step(pmMtxSt_,[],iParamMtx);
-                hW = eye(nChs(ChannelGroup.UPPER));
-                %hU = step(pmMtxSt_,[],iParamMtx+1);
-                hU = step(pmMtxSt_,[],iParamMtx);
-                %angles2 = step(pmMtxSt_,[],iParamMtx+2);
-                angles2 = pi/4*ones(floor(nChs(ChannelGroup.LOWER)/2),1);
-                %W = step(pmMtxSt_,[],iParamMtx+3);
-                W = step(pmMtxSt_,[],iParamMtx+1);
-                %U = step(pmMtxSt_,[],iParamMtx+4);
-                U = eye(nChs(ChannelGroup.LOWER));
-                %angles1 = step(pmMtxSt_,[],iParamMtx+5);
-                angles1 = pi/4*ones(floor(nChs(ChannelGroup.LOWER)/2),1);
-                if obj.mexFlag
-                    %TODO:
-                    E = obj.mexFcn(E, hW, hU, angles2, W, U, angles1, nChs(ChannelGroup.LOWER), nShift);
+                W = step(pmMtxSt_,[],iParamMtx);
+                U = step(pmMtxSt_,[],iParamMtx+1);
+                angsB1 = step(pmMtxSt_,[],iParamMtx+2);
+                hW = step(pmMtxSt_,[],iParamMtx+3);
+                hU = step(pmMtxSt_,[],iParamMtx+4);
+                angsB2 = step(pmMtxSt_,[],iParamMtx+5);
+                if mexFlag_
+                    E = mexFcn_(E, W, U, angsB1, hW, hU, angsB2, floor(nChs/2), nShift);
                 else
                     import saivdr.dictionary.cnsoltx.mexsrcs.Order2CplxBuildingBlockTypeII
                     hObb = Order2CplxBuildingBlockTypeII();
-                    E = step(hObb, E, hW, hU, angles2, W, U, angles1, nChs(ChannelGroup.LOWER), nShift);
+                    E = step(hObb, E, W, U, angsB1, hW, hU, angsB2, floor(nChs/2), nShift);
                 end
-                iParamMtx = iParamMtx+2;
-                %iParamMtx = iParamMtx+6;
+                iParamMtx = iParamMtx+6;
             end
             lenX = decX*(ordX+1);
 
@@ -310,33 +254,28 @@ classdef AbstCplxOvsdLpPuFb3dTypeIISystem < ...
             E = permuteCoefs_(obj,E,lenZ*lenY); % Z Y X -> X Z Y
             nShift = int32(lenX*(decY*lenZ));
             for iOrdY = 1:uint32(double(ordY)/2)
-                %hW = step(pmMtxSt_,[],iParamMtx);
-                hW = eye(nChs(ChannelGroup.UPPER));
-                %hU = step(pmMtxSt_,[],iParamMtx+1);
-                hU = step(pmMtxSt_,[],iParamMtx);
-                %angles2 = step(pmMtxSt_,[],iParamMtx+2);
-                angles2 = pi/4*ones(floor(nChs(ChannelGroup.LOWER)/2),1);
-                %W = step(pmMtxSt_,[],iParamMtx+3);
-                W = step(pmMtxSt_,[],iParamMtx+1);
-                %U = step(pmMtxSt_,[],iParamMtx+4);
-                U = eye(nChs(ChannelGroup.LOWER));
-                %angles1 = step(pmMtxSt_,[],iParamMtx+5);
-                angles1 = pi/4*ones(floor(nChs(ChannelGroup.LOWER)/2),1);
-                if obj.mexFlag
-                    %TODO:
-                    E = obj.mexFcn(E, hW, hU, angles2, W, U, angles1, nChs(ChannelGroup.LOWER), nShift);
+                W = step(pmMtxSt_,[],iParamMtx);
+                U = step(pmMtxSt_,[],iParamMtx+1);
+                angsB1 = step(pmMtxSt_,[],iParamMtx+2);
+                hW = step(pmMtxSt_,[],iParamMtx+3);
+                hU = step(pmMtxSt_,[],iParamMtx+4);
+                angsB2 = step(pmMtxSt_,[],iParamMtx+5);
+                if mexFlag_
+                    E = mexFcn_(E, W, U, angsB1, hW, hU, angsB2, floor(nChs/2), nShift);
                 else
                     import saivdr.dictionary.cnsoltx.mexsrcs.Order2CplxBuildingBlockTypeII
                     hObb = Order2CplxBuildingBlockTypeII();
-                    E = step(hObb, E, hW, hU, angles2, W, U, angles1, nChs(ChannelGroup.LOWER), nShift);
+                    E = step(hObb, E, W, U, angsB1, hW, hU, angsB2, floor(nChs/2), nShift);
                 end
-                iParamMtx = iParamMtx+2;
-                %iParamMtx = iParamMtx+6;
+                iParamMtx = iParamMtx+6;
             end
             lenY = decY*(ordY+1);
 
             %
             E = permuteCoefs_(obj,E,lenX*lenZ); % X Z Y -> Y X Z
+            Phi = diag(exp(1i*obj.Symmetry));
+            E = Phi*E;
+            
             nSubbands = size(E,1);
             value = zeros(lenY,lenX,lenZ,nSubbands);
             for iSubband = 1:nSubbands

@@ -29,8 +29,8 @@ classdef CnsoltAnalysis3dSystem < ...
     end
 
     properties (Nontunable, PositiveInteger)    
-        NumberOfSymmetricChannels     = 4
-        NumberOfAntisymmetricChannels = 4
+        NumberOfChannels     = 8
+        NumberOfHalfChannels = 4
     end
     
     properties (Nontunable, Logical)
@@ -74,9 +74,7 @@ classdef CnsoltAnalysis3dSystem < ...
             if isempty(obj.LpPuFb3d)
                 import saivdr.dictionary.cnsoltx.CnsoltFactory
                 obj.LpPuFb3d = CnsoltFactory.createCplxOvsdLpPuFb3dSystem(...
-                    'NumberOfChannels', ...
-                    [ obj.NumberOfSymmetricChannels ...
-                      obj.NumberOfAntisymmetricChannels ], ...
+                    'NumberOfChannels',obj.NumberOfChannels,...
                     'NumberOfVanishingMoments',1,...
                     'OutputMode','ParameterMatrixSet');
             end
@@ -93,8 +91,7 @@ classdef CnsoltAnalysis3dSystem < ...
             obj.decimationFactor = get(obj.LpPuFb3d,'DecimationFactor');
             obj.polyPhaseOrder   = get(obj.LpPuFb3d,'PolyPhaseOrder');
             nch = get(obj.LpPuFb3d,'NumberOfChannels');
-            obj.NumberOfSymmetricChannels = nch(1);
-            obj.NumberOfAntisymmetricChannels = nch(2);
+            obj.NumberOfChannels = nch;
         end
         
     end
@@ -135,8 +132,7 @@ classdef CnsoltAnalysis3dSystem < ...
         
         function setupImpl(obj,srcImg,nLevels)
             dec = obj.decimationFactor;
-            nch = [ obj.NumberOfSymmetricChannels ...
-                obj.NumberOfAntisymmetricChannels ];
+            nch = obj.NumberOfChannels;
             %
             nChs  = sum(nch);
             nDec = prod(dec);
@@ -176,7 +172,7 @@ classdef CnsoltAnalysis3dSystem < ...
         function [ coefs, scales ] = stepImpl(obj, srcImg, nLevels)
             pmMtx = step(obj.LpPuFb3d,[],[]);
             pmMtxCoefs = get(pmMtx,'Coefficients');
-            [ coefs, scales ] = analyze_(obj, srcImg, nLevels, pmMtxCoefs);
+            [ coefs, scales ] = analyze_(obj, srcImg, nLevels, pmMtxCoefs, symmetry);
         end
         
     end
@@ -184,11 +180,10 @@ classdef CnsoltAnalysis3dSystem < ...
     methods (Access = private)
         
         function [ coefs, scales ] = ...
-                analyze_(obj, srcImg, nLevels, pmCoefs)
+                analyze_(obj, srcImg, nLevels, pmCoefs, symmetry)
             import saivdr.dictionary.utility.Direction            
             %
-            nChs = obj.NumberOfSymmetricChannels ...
-                + obj.NumberOfAntisymmetricChannels;
+            nChs = obj.NumberOfChannels;
             decY = obj.decimationFactor(Direction.VERTICAL);
             decX = obj.decimationFactor(Direction.HORIZONTAL);   
             decZ = obj.decimationFactor(Direction.DEPTH);   
@@ -204,7 +199,7 @@ classdef CnsoltAnalysis3dSystem < ...
                 obj.nRows = uint32(height/decY);
                 obj.nCols = uint32(width/decX);
                 obj.nLays = uint32(depth/decZ);                
-                arrayCoefs = subAnalyze_(obj,subImg,pmCoefs);
+                arrayCoefs = subAnalyze_(obj,subImg,pmCoefs,symmetry);
                 for iCh = nChs:-1:2
                     subbandCoefs = arrayCoefs(iCh,:);
                     obj.allScales(iSubband,:) = [ obj.nRows obj.nCols obj.nLays];
@@ -222,12 +217,10 @@ classdef CnsoltAnalysis3dSystem < ...
             coefs  = obj.allCoefs;
         end
         
-        function arrayCoefs = subAnalyze_(obj,subImg,pmCoefs)
+        function arrayCoefs = subAnalyze_(obj,subImg,pmCoefs,symmetry)
             import saivdr.dictionary.utility.Direction
            %
-            nChs = obj.NumberOfSymmetricChannels ...
-                + obj.NumberOfAntisymmetricChannels;
-            ps = obj.NumberOfSymmetricChannels;
+            nChs = obj.NumberOfChannels;
             nRows_ = obj.nRows;
             nCols_ = obj.nCols;
             nLays_ = obj.nLays;
@@ -240,75 +233,73 @@ classdef CnsoltAnalysis3dSystem < ...
             end
             
             % Prepare array
-            arrayCoefs = zeros(nChs,nRows_*nCols_*nLays_);
+            arrayCoefs = complex(zeros(nChs,nRows_*nCols_*nLays_));
             
             % Block DCT
             if decY_ == 1 && decX_ == 1 && decZ_ == 1
                 coefs = vol2col_(obj,subImg);
                 arrayCoefs(1,:) = coefs(1,:);
-            elseif decY_ == 2 && decX_ == 2 && decZ_ == 2
-                subImg1 = subImg(1:2:end,1:2:end,1:2:end);
-                subImg2 = subImg(2:2:end,1:2:end,1:2:end);
-                subImg3 = subImg(1:2:end,2:2:end,1:2:end);
-                subImg4 = subImg(2:2:end,2:2:end,1:2:end);
-                subImg5 = subImg(1:2:end,1:2:end,2:2:end);
-                subImg6 = subImg(2:2:end,1:2:end,2:2:end);
-                subImg7 = subImg(1:2:end,2:2:end,2:2:end);
-                subImg8 = subImg(2:2:end,2:2:end,2:2:end);
-                %
-                subImg1 = subImg1(:).';
-                subImg2 = subImg2(:).';
-                subImg3 = subImg3(:).';
-                subImg4 = subImg4(:).';
-                subImg5 = subImg5(:).';
-                subImg6 = subImg6(:).';
-                subImg7 = subImg7(:).';
-                subImg8 = subImg8(:).';
-                %
-                subImg1p2 = subImg1 + subImg2;
-                subImg1m2 = subImg1 - subImg2;
-                subImg3p4 = subImg3 + subImg4;
-                subImg3m4 = subImg3 - subImg4;                
-                subImg5p6 = subImg5 + subImg6;
-                subImg5m6 = subImg5 - subImg6;                                
-                subImg7p8 = subImg7 + subImg8;
-                subImg7m8 = subImg7 - subImg8;        
-                %
-                subImg1p2p3p4 = subImg1p2 + subImg3p4;
-                subImg1p2m3m4 = subImg1p2 - subImg3p4;
-                subImg1m2p3m4 = subImg1m2 + subImg3m4;
-                subImg1m2m3p4 = subImg1m2 - subImg3m4;                
-                subImg5p6p7p8 = subImg5p6 + subImg7p8;
-                subImg5p6m7m8 = subImg5p6 - subImg7p8;
-                subImg5m6p7m8 = subImg5m6 + subImg7m8;
-                subImg5m6m7p8 = subImg5m6 - subImg7m8;                                
-                %
-                arrayCoefs(1,:)    = subImg1p2p3p4 + subImg5p6p7p8;
-                arrayCoefs(2,:)    = subImg1p2m3m4 - subImg5p6m7m8;
-                arrayCoefs(3,:)    = subImg1m2m3p4 + subImg5m6m7p8;
-                arrayCoefs(4,:)    = subImg1m2p3m4 - subImg5m6p7m8;
-                arrayCoefs(ps+1,:) = subImg1p2p3p4 - subImg5p6p7p8;
-                arrayCoefs(ps+2,:) = subImg1p2m3m4 + subImg5p6m7m8;
-                arrayCoefs(ps+3,:) = subImg1m2m3p4 - subImg5m6m7p8;
-                arrayCoefs(ps+4,:) = subImg1m2p3m4 + subImg5m6p7m8;
-                %
-                arrayCoefs = arrayCoefs/(2*sqrt(2));
+%             elseif decY_ == 2 && decX_ == 2 && decZ_ == 2
+%                 subImg1 = subImg(1:2:end,1:2:end,1:2:end);
+%                 subImg2 = subImg(2:2:end,1:2:end,1:2:end);
+%                 subImg3 = subImg(1:2:end,2:2:end,1:2:end);
+%                 subImg4 = subImg(2:2:end,2:2:end,1:2:end);
+%                 subImg5 = subImg(1:2:end,1:2:end,2:2:end);
+%                 subImg6 = subImg(2:2:end,1:2:end,2:2:end);
+%                 subImg7 = subImg(1:2:end,2:2:end,2:2:end);
+%                 subImg8 = subImg(2:2:end,2:2:end,2:2:end);
+%                 %
+%                 subImg1 = subImg1(:).';
+%                 subImg2 = subImg2(:).';
+%                 subImg3 = subImg3(:).';
+%                 subImg4 = subImg4(:).';
+%                 subImg5 = subImg5(:).';
+%                 subImg6 = subImg6(:).';
+%                 subImg7 = subImg7(:).';
+%                 subImg8 = subImg8(:).';
+%                 %
+%                 subImg1p2 = subImg1 + subImg2;
+%                 subImg1m2 = subImg1 - subImg2;
+%                 subImg3p4 = subImg3 + subImg4;
+%                 subImg3m4 = subImg3 - subImg4;                
+%                 subImg5p6 = subImg5 + subImg6;
+%                 subImg5m6 = subImg5 - subImg6;                                
+%                 subImg7p8 = subImg7 + subImg8;
+%                 subImg7m8 = subImg7 - subImg8;        
+%                 %
+%                 subImg1p2p3p4 = subImg1p2 + subImg3p4;
+%                 subImg1p2m3m4 = subImg1p2 - subImg3p4;
+%                 subImg1m2p3m4 = subImg1m2 + subImg3m4;
+%                 subImg1m2m3p4 = subImg1m2 - subImg3m4;                
+%                 subImg5p6p7p8 = subImg5p6 + subImg7p8;
+%                 subImg5p6m7m8 = subImg5p6 - subImg7p8;
+%                 subImg5m6p7m8 = subImg5m6 + subImg7m8;
+%                 subImg5m6m7p8 = subImg5m6 - subImg7m8;                                
+%                 %
+%                 arrayCoefs(1,:)    = subImg1p2p3p4 + subImg5p6p7p8;
+%                 arrayCoefs(2,:)    = subImg1p2m3m4 - subImg5p6m7m8;
+%                 arrayCoefs(3,:)    = subImg1m2m3p4 + subImg5m6m7p8;
+%                 arrayCoefs(4,:)    = subImg1m2p3m4 - subImg5m6p7m8;
+%                 arrayCoefs(ps+1,:) = subImg1p2p3p4 - subImg5p6p7p8;
+%                 arrayCoefs(ps+2,:) = subImg1p2m3m4 + subImg5p6m7m8;
+%                 arrayCoefs(ps+3,:) = subImg1m2m3p4 - subImg5m6m7p8;
+%                 arrayCoefs(ps+4,:) = subImg1m2p3m4 + subImg5m6p7m8;
+%                 %
+%                 arrayCoefs = arrayCoefs/(2*sqrt(2));
             else 
                 nDec_=decY_*decX_*decZ_;
-                mc = ceil(nDec_/2);
-                mf = floor(nDec_/2);
                 coefs = vol2col_(obj,subImg);
                 E0 = getMatrixE0_(obj);
                 coefs = E0*coefs;
-                arrayCoefs(1:mc,:) = coefs(1:mc,:);
-                arrayCoefs(ps+1:ps+mf,:) = coefs(mc+1:end,:);
+                arrayCoefs(1:nDec_,:) = coefs;
             end
             
             % Atom extension
+            S = diag(exp(1i*symmetry));
             subScale = [ obj.nRows obj.nCols obj.nLays];
             ord   = uint32(obj.polyPhaseOrder);            
             fpe = strcmp(obj.BoundaryOperation,'Circular');
-             arrayCoefs = obj.atomExtFcn(arrayCoefs,subScale,pmCoefs,...
+             arrayCoefs = S*obj.atomExtFcn(arrayCoefs,subScale,pmCoefs,...
                  ord,fpe);
         end        
 
@@ -343,135 +334,23 @@ classdef CnsoltAnalysis3dSystem < ...
         
         function value = getMatrixE0_(obj)
             import saivdr.dictionary.utility.Direction
-            decY_ = obj.decimationFactor(Direction.VERTICAL);
-            decX_ = obj.decimationFactor(Direction.HORIZONTAL);
-            decZ_ = obj.decimationFactor(Direction.DEPTH);
+            import saivdr.utility.HermitianSymmetricDFT
+            decY_ = obj.DecimationFactor(Direction.VERTICAL);
+            decX_ = obj.DecimationFactor(Direction.HORIZONTAL);
+            decZ_ = obj.DecimationFactor(Direction.DEPTH);
             nElmBi = decY_*decX_*decZ_;
-            coefs = zeros(nElmBi);
+            coefs = complex(zeros(nElmBi));
             iElm = 1;
-            % E0.'= [ Beee Beoo Booe Boeo Beeo Beoe Booo Boee ] % Byxz
-            % Beee
-            for iRow = 1:2:decY_ % y-e
-                for iCol = 1:2:decX_ % x-e
-                    dctCoefYX = zeros(decY_,decX_);
-                    dctCoefYX(iRow,iCol) = 1;
-                    basisYX = idct2(dctCoefYX);
-                    for iDep = 1:2:decZ_ % z-e
-                        dctCoefZ = zeros(decZ_,1);
-                        dctCoefZ(iDep) = 1;
-                        basisZ  = permute(idct(dctCoefZ),[2 3 1]);
-                        basisVd = convn(basisZ,basisYX);
-                        coefs(iElm,:) = basisVd(:).';
-                        iElm = iElm + 1;
-                    end
-                end
-            end
-            % Beoo
-            for iRow = 1:2:decY_ % y-e
-                for iCol = 2:2:decX_ % x-o
-                    dctCoefYX = zeros(decY_,decX_);
-                    dctCoefYX(iRow,iCol) = 1;
-                    basisYX = idct2(dctCoefYX);
-                    for iDep = 2:2:decZ_ % z-o
-                        dctCoefZ = zeros(decZ_,1);
-                        dctCoefZ(iDep) = 1;
-                        basisZ  = permute(idct(dctCoefZ),[2 3 1]);
-                        basisVd = convn(basisZ,basisYX);
-                        coefs(iElm,:) = basisVd(:).';
-                        iElm = iElm + 1;
-                    end
-                end
-            end
-            %Booe
-            for iRow = 2:2:decY_ % y-o
-                for iCol = 2:2:decX_ % x-o
-                    dctCoefYX = zeros(decY_,decX_);
-                    dctCoefYX(iRow,iCol) = 1;
-                    basisYX = idct2(dctCoefYX);
-                    for iDep = 1:2:decZ_ % z-e
-                        dctCoefZ = zeros(decZ_,1);
-                        dctCoefZ(iDep) = 1;
-                        basisZ  = permute(idct(dctCoefZ),[2 3 1]);
-                        basisVd = convn(basisZ,basisYX);
-                        coefs(iElm,:) = basisVd(:).';
-                        iElm = iElm + 1;
-                    end
-                end
-            end
-            %Boeo
-            for iRow = 2:2:decY_ % y-o
-                for iCol = 1:2:decX_ % x-e
-                    dctCoefYX = zeros(decY_,decX_);
-                    dctCoefYX(iRow,iCol) = 1;
-                    basisYX = idct2(dctCoefYX);
-                    for iDep = 2:2:decZ_ % z-o
-                        dctCoefZ = zeros(decZ_,1);
-                        dctCoefZ(iDep) = 1;
-                        basisZ  = permute(idct(dctCoefZ),[2 3 1]);
-                        basisVd = convn(basisZ,basisYX);
-                        coefs(iElm,:) = basisVd(:).';
-                        iElm = iElm + 1;
-                    end
-                end
-            end
-            %Beeo
-            for iRow = 1:2:decY_ % y-e
-                for iCol = 1:2:decX_ % x-e
-                    dctCoefYX = zeros(decY_,decX_);
-                    dctCoefYX(iRow,iCol) = 1;
-                    basisYX = idct2(dctCoefYX);
-                    for iDep = 2:2:decZ_ % z-o
-                        dctCoefZ = zeros(decZ_,1);
-                        dctCoefZ(iDep) = 1;
-                        basisZ  = permute(idct(dctCoefZ),[2 3 1]);
-                        basisVd = convn(basisZ,basisYX);
-                        coefs(iElm,:) = basisVd(:).';
-                        iElm = iElm + 1;
-                    end
-                end
-            end
-            %Beoe
-            for iRow = 1:2:decY_ % y-e
-                for iCol = 2:2:decX_ % x-o
-                    dctCoefYX = zeros(decY_,decX_);
-                    dctCoefYX(iRow,iCol) = 1;
-                    basisYX = idct2(dctCoefYX);
-                    for iDep = 1:2:decZ_ % z-e
-                        dctCoefZ = zeros(decZ_,1);
-                        dctCoefZ(iDep) = 1;
-                        basisZ  = permute(idct(dctCoefZ),[2 3 1]);
-                        basisVd = convn(basisZ,basisYX);
-                        coefs(iElm,:) = basisVd(:).';
-                        iElm = iElm + 1;
-                    end
-                end
-            end
-            %Booo
-            for iRow = 2:2:decY_ % y-o
-                for iCol = 2:2:decX_ % x-o
-                    dctCoefYX = zeros(decY_,decX_);
-                    dctCoefYX(iRow,iCol) = 1;
-                    basisYX = idct2(dctCoefYX);
-                    for iDep = 2:2:decZ_ % z-o
-                        dctCoefZ = zeros(decZ_,1);
-                        dctCoefZ(iDep) = 1;
-                        basisZ  = permute(idct(dctCoefZ),[2 3 1]);
-                        basisVd = convn(basisZ,basisYX);
-                        coefs(iElm,:) = basisVd(:).';
-                        iElm = iElm + 1;
-                    end
-                end
-            end
-            %Boee
-            for iRow = 2:2:decY_ % y-o
-                for iCol = 1:2:decX_ % x-e
-                    dctCoefYX = zeros(decY_,decX_);
-                    dctCoefYX(iRow,iCol) = 1;
-                    basisYX = idct2(dctCoefYX);
-                    for iDep = 1:2:decZ_ % z-e
-                        dctCoefZ = zeros(decZ_,1);
-                        dctCoefZ(iDep) = 1;
-                        basisZ  = permute(idct(dctCoefZ),[2 3 1]);
+            for iRow = 1:decY_
+                for iCol = 1:decX_
+                    hsdftCoefYX = complex(zeros(decY_,decX_));
+                    hsdftCoefYX(iRow,iCol) = 1;
+                    basisYX = HermitianSymmetricDFT.ihsdft2(hsdftCoefYX);
+                    for iDep = 1:decZ_
+                        hsdftCoefZ = zeros(decZ_,1);
+                        hsdftCoefZ(iDep) = 1;
+                        %basisZ  = permute(idct(hsdftCoefZ),[2 3 1]);
+                        basisZ = permute(HermitianSymmetricDFT.ihsdft(hsdftCoefZ),[2 3 1]);
                         basisVd = convn(basisZ,basisYX);
                         coefs(iElm,:) = basisVd(:).';
                         iElm = iElm + 1;
@@ -479,8 +358,149 @@ classdef CnsoltAnalysis3dSystem < ...
                 end
             end
             %
-            value = coefs;
+            value = flip(coefs,2);
         end
+        
+%         function value = getMatrixE0_(obj)
+%             import saivdr.dictionary.utility.Direction
+%             decY_ = obj.decimationFactor(Direction.VERTICAL);
+%             decX_ = obj.decimationFactor(Direction.HORIZONTAL);
+%             decZ_ = obj.decimationFactor(Direction.DEPTH);
+%             nElmBi = decY_*decX_*decZ_;
+%             coefs = zeros(nElmBi);
+%             iElm = 1;
+%             % E0.'= [ Beee Beoo Booe Boeo Beeo Beoe Booo Boee ] % Byxz
+%             % Beee
+%             for iRow = 1:2:decY_ % y-e
+%                 for iCol = 1:2:decX_ % x-e
+%                     dctCoefYX = zeros(decY_,decX_);
+%                     dctCoefYX(iRow,iCol) = 1;
+%                     basisYX = idct2(dctCoefYX);
+%                     for iDep = 1:2:decZ_ % z-e
+%                         dctCoefZ = zeros(decZ_,1);
+%                         dctCoefZ(iDep) = 1;
+%                         basisZ  = permute(idct(dctCoefZ),[2 3 1]);
+%                         basisVd = convn(basisZ,basisYX);
+%                         coefs(iElm,:) = basisVd(:).';
+%                         iElm = iElm + 1;
+%                     end
+%                 end
+%             end
+%             % Beoo
+%             for iRow = 1:2:decY_ % y-e
+%                 for iCol = 2:2:decX_ % x-o
+%                     dctCoefYX = zeros(decY_,decX_);
+%                     dctCoefYX(iRow,iCol) = 1;
+%                     basisYX = idct2(dctCoefYX);
+%                     for iDep = 2:2:decZ_ % z-o
+%                         dctCoefZ = zeros(decZ_,1);
+%                         dctCoefZ(iDep) = 1;
+%                         basisZ  = permute(idct(dctCoefZ),[2 3 1]);
+%                         basisVd = convn(basisZ,basisYX);
+%                         coefs(iElm,:) = basisVd(:).';
+%                         iElm = iElm + 1;
+%                     end
+%                 end
+%             end
+%             %Booe
+%             for iRow = 2:2:decY_ % y-o
+%                 for iCol = 2:2:decX_ % x-o
+%                     dctCoefYX = zeros(decY_,decX_);
+%                     dctCoefYX(iRow,iCol) = 1;
+%                     basisYX = idct2(dctCoefYX);
+%                     for iDep = 1:2:decZ_ % z-e
+%                         dctCoefZ = zeros(decZ_,1);
+%                         dctCoefZ(iDep) = 1;
+%                         basisZ  = permute(idct(dctCoefZ),[2 3 1]);
+%                         basisVd = convn(basisZ,basisYX);
+%                         coefs(iElm,:) = basisVd(:).';
+%                         iElm = iElm + 1;
+%                     end
+%                 end
+%             end
+%             %Boeo
+%             for iRow = 2:2:decY_ % y-o
+%                 for iCol = 1:2:decX_ % x-e
+%                     dctCoefYX = zeros(decY_,decX_);
+%                     dctCoefYX(iRow,iCol) = 1;
+%                     basisYX = idct2(dctCoefYX);
+%                     for iDep = 2:2:decZ_ % z-o
+%                         dctCoefZ = zeros(decZ_,1);
+%                         dctCoefZ(iDep) = 1;
+%                         basisZ  = permute(idct(dctCoefZ),[2 3 1]);
+%                         basisVd = convn(basisZ,basisYX);
+%                         coefs(iElm,:) = basisVd(:).';
+%                         iElm = iElm + 1;
+%                     end
+%                 end
+%             end
+%             %Beeo
+%             for iRow = 1:2:decY_ % y-e
+%                 for iCol = 1:2:decX_ % x-e
+%                     dctCoefYX = zeros(decY_,decX_);
+%                     dctCoefYX(iRow,iCol) = 1;
+%                     basisYX = idct2(dctCoefYX);
+%                     for iDep = 2:2:decZ_ % z-o
+%                         dctCoefZ = zeros(decZ_,1);
+%                         dctCoefZ(iDep) = 1;
+%                         basisZ  = permute(idct(dctCoefZ),[2 3 1]);
+%                         basisVd = convn(basisZ,basisYX);
+%                         coefs(iElm,:) = basisVd(:).';
+%                         iElm = iElm + 1;
+%                     end
+%                 end
+%             end
+%             %Beoe
+%             for iRow = 1:2:decY_ % y-e
+%                 for iCol = 2:2:decX_ % x-o
+%                     dctCoefYX = zeros(decY_,decX_);
+%                     dctCoefYX(iRow,iCol) = 1;
+%                     basisYX = idct2(dctCoefYX);
+%                     for iDep = 1:2:decZ_ % z-e
+%                         dctCoefZ = zeros(decZ_,1);
+%                         dctCoefZ(iDep) = 1;
+%                         basisZ  = permute(idct(dctCoefZ),[2 3 1]);
+%                         basisVd = convn(basisZ,basisYX);
+%                         coefs(iElm,:) = basisVd(:).';
+%                         iElm = iElm + 1;
+%                     end
+%                 end
+%             end
+%             %Booo
+%             for iRow = 2:2:decY_ % y-o
+%                 for iCol = 2:2:decX_ % x-o
+%                     dctCoefYX = zeros(decY_,decX_);
+%                     dctCoefYX(iRow,iCol) = 1;
+%                     basisYX = idct2(dctCoefYX);
+%                     for iDep = 2:2:decZ_ % z-o
+%                         dctCoefZ = zeros(decZ_,1);
+%                         dctCoefZ(iDep) = 1;
+%                         basisZ  = permute(idct(dctCoefZ),[2 3 1]);
+%                         basisVd = convn(basisZ,basisYX);
+%                         coefs(iElm,:) = basisVd(:).';
+%                         iElm = iElm + 1;
+%                     end
+%                 end
+%             end
+%             %Boee
+%             for iRow = 2:2:decY_ % y-o
+%                 for iCol = 1:2:decX_ % x-e
+%                     dctCoefYX = zeros(decY_,decX_);
+%                     dctCoefYX(iRow,iCol) = 1;
+%                     basisYX = idct2(dctCoefYX);
+%                     for iDep = 1:2:decZ_ % z-e
+%                         dctCoefZ = zeros(decZ_,1);
+%                         dctCoefZ(iDep) = 1;
+%                         basisZ  = permute(idct(dctCoefZ),[2 3 1]);
+%                         basisVd = convn(basisZ,basisYX);
+%                         coefs(iElm,:) = basisVd(:).';
+%                         iElm = iElm + 1;
+%                     end
+%                 end
+%             end
+%             %
+%             value = coefs;
+%         end
         
     end
     

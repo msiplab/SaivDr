@@ -25,9 +25,9 @@ nVm     = 1;     % # of vanishing moments
 %nVm = 0;
 
 % Design conditions
-%trnImgs{1}   = im2double(rgb2gray(orgImg)); 
+trnImgs{1}   = im2double(rgb2gray(orgImg)); 
 %trnImgs{1}   = im2double(orgImg(:,:,1)+1i*orgImg(:,:,2));
-trnImgs{1} = orgImg;
+%trnImgs{1} = orgImg;
 nIters       = 8;
 nCoefs       = numel(trnImgs{1})/8;
 optfcn       = @fminunc;
@@ -44,7 +44,7 @@ options = optimoptions(options,'Display','iter-detailed');
 options = optimoptions(options,'UseParallel',true);
 
 % Instantiation of designer
-import saivdr.dictionary.nsoltx.design.NsoltDictionaryLearning
+import saivdr.dictionary.cnsoltx.design.NsoltDictionaryLearning
 designer = NsoltDictionaryLearning(...
     'SourceImages',trnImgs,...
     'NumberOfSparseCoefficients',nCoefs,...
@@ -58,7 +58,7 @@ designer = NsoltDictionaryLearning(...
     'SparseCoding',sparseCoding,...
     'IsFixedCoefs',isFixedCoefs,...
     'IsRandomInit',isRandomInit,...
-    'IsRealValue',false,...
+    'IsComplexValue',true,...
     'GradObj',gradObj);
 set(designer,'NumberOfUnfixedInitialSteps',nUnfixedInitSteps);
 set(designer,'StdOfAngRandomInit',stdOfAng);

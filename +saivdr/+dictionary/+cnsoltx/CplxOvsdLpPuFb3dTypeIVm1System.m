@@ -19,7 +19,9 @@ classdef CplxOvsdLpPuFb3dTypeIVm1System < saivdr.dictionary.cnsoltx.AbstCplxOvsd
     %      
     
     properties (Access = private)
-        omgs_
+        initOmgs_
+        propOmgs_
+        propOmfs_
     end
     
     methods
@@ -27,7 +29,9 @@ classdef CplxOvsdLpPuFb3dTypeIVm1System < saivdr.dictionary.cnsoltx.AbstCplxOvsd
             import saivdr.dictionary.utility.OrthonormalMatrixGenerationSystem
             obj = obj@saivdr.dictionary.cnsoltx.AbstCplxOvsdLpPuFb3dTypeISystem(...
                 varargin{:});
-            obj.omgs_ = OrthonormalMatrixGenerationSystem();
+            obj.initOmgs_ = OrthonormalMatrixGenerationSystem('OrderOfProduction','Ascending');
+            obj.propOmgs_ = OrthonormalMatrixGenerationSystem('OrderOfProduction','Ascending');
+            obj.propOmfs_ = OrthonormalMatrixFactorizationSystem('OrderOfProduction','Ascending');
         end
     end
     
@@ -35,31 +39,55 @@ classdef CplxOvsdLpPuFb3dTypeIVm1System < saivdr.dictionary.cnsoltx.AbstCplxOvsd
 
         function s = saveObjectImpl(obj)
             s = saveObjectImpl@saivdr.dictionary.cnsoltx.AbstCplxOvsdLpPuFb3dTypeISystem(obj);
-            s.omgs_ = matlab.System.saveObject(obj.omgs_);
+            s.initOmgs_ = matlab.System.saveObject(obj.initOmgs_);
+            s.propOmgs_ = matlab.System.saveObject(obj.propOmgs_);
+            s.propOmfs_ = matlab.System.saveObject(obj.propOmfs_);
         end
         
         function loadObjectImpl(obj,s,wasLocked)
             loadObjectImpl@saivdr.dictionary.cnsoltx.AbstCplxOvsdLpPuFb3dTypeISystem(obj,s,wasLocked);
-            obj.omgs_ = matlab.System.loadObject(s.omgs_);
-        end        
+            obj.initOmgs_ = matlab.System.loadObject(s.initOmgs_);
+            obj.propOmgs_ = matlab.System.loadObject(s.propOmgs_);
+            obj.propOmfs_ = matlab.System.loadObject(s.propOmfs_);
+        end
         
         function updateParameterMatrixSet_(obj)
-            import saivdr.dictionary.cnsoltx.ChannelGroup
-            nChs = obj.NumberOfChannels;
-            angles = obj.Angles;
-            mus    = obj.Mus;
-            % No-DC-Leackage condition
-            angles(1:nChs(ChannelGroup.LOWER)-1,1) = ...
-                zeros(nChs(ChannelGroup.LOWER)-1,1);
-            mus(1,1) = 1;
+            nCh = obj.NumberOfChannels;
+            hCh = nCh/2;
+
+            [initAngles, propAngles] = splitAngles_(obj);
+            
+            angles = reshape(propAngles,[],obj.nStages-1);
+            mus    = reshape(obj.Mus(nCh+1:end),[],obj.nStages-1);
+            
+            nParamMtxAngs = nCh*(nCh-2)/8;
+
+            W_ = eye(hCh);
+            
             pmMtxSet = obj.ParameterMatrixSet;
-            omgs     = obj.omgs_;
-            for iParamMtx = uint32(1):obj.nStages+1
-                mtx = step(omgs,angles(:,iParamMtx),mus(:,iParamMtx));
-                step(pmMtxSet,mtx,iParamMtx);
+            for iParamMtx = uint32(1):obj.nStages-1
+                % W
+                mtx = step(obj.propOmgs_,angles(1:nParamMtxAngs,iParamMtx),mus(1:hCh,iParamMtx));
+                step(pmMtxSet,mtx,3*iParamMtx-1);
+                W_ = mtx*W_;
+                
+                % U
+                mtx = step(obj.propOmgs_,angles(nParamMtxAngs+1:2*nParamMtxAngs,iParamMtx),mus(hCh+1:end,iParamMtx));
+                step(pmMtxSet,mtx,3*iParamMtx);
+                
+                % angsB
+                step(pmMtxSet,angles(2*nParamMtxAngs+1:end,iParamMtx),3*iParamMtx+1);
             end
-            obj.Angles = angles;
-            obj.Mus = mus;
+            
+            % Initial matrix V0 with No-DC-leakage condition
+            [angles_,~] = step(obj.propOmfs_,W_.');
+            initAngles(1:hCh-1) = angles_(1:hCh-1);
+            initAngles(hCh:nCh-1) = zeros(hCh,1);
+            mtx = step(obj.initOmgs_,initAngles,obj.Mus(1:nCh));
+            step(pmMtxSet,mtx,uint32(1));
+            
+            obj.Angles = [initAngles ; angles(:)];
+            obj.Mus(nCh+1:end) = mus(:);
         end
         
     end
