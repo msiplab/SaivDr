@@ -836,8 +836,8 @@ classdef CplxOvsdLpPuFb3dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
             
             % Evaluation
             testCase.verifySize(coefActual,size(coefExpctd));
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',coefDist));
+            coefDist = max(abs(coefExpctd(:)-coefActual(:)));
+            testCase.verifyEqual(coefActual,coefExpctd,'AbsTol',1e-14,sprintf('%g',coefDist));
             
         end
         
@@ -1091,70 +1091,70 @@ classdef CplxOvsdLpPuFb3dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
             
             % Expected value
             anFiltExpctd1(:,:,1) = 1/(2*sqrt(2)) * [
-                1  1 ;
-                1  1
+                1   1 ;
+                1   1
                 ]; 
             anFiltExpctd1(:,:,2) = 1/(2*sqrt(2)) * [
-                1  1 ; 
-                1  1
+                1   1 ; 
+                1   1
                 ];             
             anFiltExpctd2(:,:,1) = 1/(2*sqrt(2)) * [
-                1 -1 ;
-                1 -1
+               -1i -1i ;
+               -1i -1i
                 ];                
             anFiltExpctd2(:,:,2) = 1/(2*sqrt(2)) * [
-               -1  1 ;  
-               -1  1 
+                1i  1i ;  
+                1i  1i
                 ];                            
             anFiltExpctd3(:,:,1) = 1/(2*sqrt(2)) * [
-                1 -1
-               -1  1
+               -1i  1i
+               -1i  1i
                 ];                
             anFiltExpctd3(:,:,2) = 1/(2*sqrt(2)) * [
-                1 -1
-               -1  1
+               -1i  1i
+               -1i  1i
                 ];                            
             anFiltExpctd4(:,:,1) = 1/(2*sqrt(2)) * [
-                1  1
-               -1 -1
+               -1   1
+               -1   1
                 ];                
             anFiltExpctd4(:,:,2) = 1/(2*sqrt(2)) * [
-               -1 -1
-                1  1
-                ];   
-            anFiltExpctd5 = zeros(2,2,2);
+                1  -1
+                1  -1
+                ];                            
+            anFiltExpctd5(:,:,1) = 1/(2*sqrt(2)) * [
+               -1i -1i
+                1i  1i
+                ];                
+            anFiltExpctd5(:,:,2) = 1/(2*sqrt(2)) * [
+               -1i -1i
+                1i  1i
+                ];                            
             anFiltExpctd6(:,:,1) = 1/(2*sqrt(2)) * [
-               -1 -1
-               -1 -1
+               -1  -1
+                1   1
                 ];                
             anFiltExpctd6(:,:,2) = 1/(2*sqrt(2)) * [
-                1  1
-                1  1 
+                1   1
+               -1  -1 
                 ];                            
             anFiltExpctd7(:,:,1) = 1/(2*sqrt(2)) * [
-               -1  1
-               -1  1
+               -1   1
+                1  -1
                 ];                
             anFiltExpctd7(:,:,2) = 1/(2*sqrt(2)) * [
-               -1  1
-               -1  1 
-                ];                            
+               -1   1
+                1  -1 
+                ];                
             anFiltExpctd8(:,:,1) = 1/(2*sqrt(2)) * [
-               -1  1
-                1 -1
-                ];                
-            anFiltExpctd8(:,:,2) = 1/(2*sqrt(2)) * [
-                1 -1
-               -1  1 
-                ];                
-            anFiltExpctd9(:,:,1) = 1/(2*sqrt(2)) * [
-               -1 -1
-                1  1
+                1i -1i
+               -1i  1i
                 ];
-            anFiltExpctd9(:,:,2) = 1/(2*sqrt(2)) * [
-               -1 -1
-                1  1
-                ];            
+            anFiltExpctd8(:,:,2) = 1/(2*sqrt(2)) * [
+               -1i  1i
+                1i -1i
+                ];
+            anFiltExpctd9 = zeros(2,2,2);           
             
             % Instantiation of target class
             import saivdr.dictionary.cnsoltx.*
@@ -1208,71 +1208,71 @@ classdef CplxOvsdLpPuFb3dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
         function testAnalysisFilters(testCase)
             
             % Expected value
-          anFiltExpctd1(:,:,1) = 1/(2*sqrt(2)) * [
-                1  1 ;
-                1  1
+            anFiltExpctd1(:,:,1) = 1/(2*sqrt(2)) * [
+                1   1 ;
+                1   1
                 ]; 
             anFiltExpctd1(:,:,2) = 1/(2*sqrt(2)) * [
-                1  1 ; 
-                1  1
+                1   1 ; 
+                1   1
                 ];             
             anFiltExpctd2(:,:,1) = 1/(2*sqrt(2)) * [
-                1 -1 ;
-                1 -1
+               -1i -1i ;
+               -1i -1i
                 ];                
             anFiltExpctd2(:,:,2) = 1/(2*sqrt(2)) * [
-               -1  1 ;  
-               -1  1 
+                1i  1i ;  
+                1i  1i
                 ];                            
             anFiltExpctd3(:,:,1) = 1/(2*sqrt(2)) * [
-                1 -1
-               -1  1
+               -1i  1i
+               -1i  1i
                 ];                
             anFiltExpctd3(:,:,2) = 1/(2*sqrt(2)) * [
-                1 -1
-               -1  1
+               -1i  1i
+               -1i  1i
                 ];                            
             anFiltExpctd4(:,:,1) = 1/(2*sqrt(2)) * [
-                1  1
-               -1 -1
+               -1   1
+               -1   1
                 ];                
             anFiltExpctd4(:,:,2) = 1/(2*sqrt(2)) * [
-               -1 -1
-                1  1
-                ];   
-            anFiltExpctd5 = zeros(2,2,2);
+                1  -1
+                1  -1
+                ];                            
+            anFiltExpctd5(:,:,1) = 1/(2*sqrt(2)) * [
+               -1i -1i
+                1i  1i
+                ];                
+            anFiltExpctd5(:,:,2) = 1/(2*sqrt(2)) * [
+               -1i -1i
+                1i  1i
+                ];                            
             anFiltExpctd6(:,:,1) = 1/(2*sqrt(2)) * [
-               -1 -1
-               -1 -1
+               -1  -1
+                1   1
                 ];                
             anFiltExpctd6(:,:,2) = 1/(2*sqrt(2)) * [
-                1  1
-                1  1 
+                1   1
+               -1  -1 
                 ];                            
             anFiltExpctd7(:,:,1) = 1/(2*sqrt(2)) * [
-               -1  1
-               -1  1
+               -1   1
+                1  -1
                 ];                
             anFiltExpctd7(:,:,2) = 1/(2*sqrt(2)) * [
-               -1  1
-               -1  1 
-                ];                            
+               -1   1
+                1  -1 
+                ];                
             anFiltExpctd8(:,:,1) = 1/(2*sqrt(2)) * [
-               -1  1
-                1 -1
-                ];                
-            anFiltExpctd8(:,:,2) = 1/(2*sqrt(2)) * [
-                1 -1
-               -1  1 
-                ];                
-            anFiltExpctd9(:,:,1) = 1/(2*sqrt(2)) * [
-               -1 -1
-                1  1
+                1i -1i
+               -1i  1i
                 ];
-            anFiltExpctd9(:,:,2) = 1/(2*sqrt(2)) * [
-               -1 -1
-                1  1
-                ];            
+            anFiltExpctd8(:,:,2) = 1/(2*sqrt(2)) * [
+               -1i  1i
+                1i -1i
+                ];
+            anFiltExpctd9 = zeros(2,2,2);      
             
             % Instantiation of target class
             import saivdr.dictionary.cnsoltx.*
@@ -1383,8 +1383,8 @@ classdef CplxOvsdLpPuFb3dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
             coefActual = step(testCase.lppufb,ang,[]);
             
             % Evaluation
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',coefDist));
+            coefDist = max(abs(coefExpctd(:)-coefActual(:)));
+            testCase.verifyEqual(coefActual,coefExpctd,'AbsTol',1e-14,sprintf('%g',coefDist));
             
         end
 
@@ -1416,8 +1416,8 @@ classdef CplxOvsdLpPuFb3dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
             coefActual = step(testCase.lppufb,ang,[]);
             
             % Evaluation
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',coefDist));
+            coefDist = max(abs(coefExpctd(:)-coefActual(:)));
+            testCase.verifyEqual(coefActual,coefExpctd,'AbsTol',1e-14,sprintf('%g',coefDist));
             
         end
         
@@ -1446,107 +1446,107 @@ classdef CplxOvsdLpPuFb3dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
             
         end
 
-  
-        function testStepOrd222Ch54Rand(testCase)
-
-            import saivdr.dictionary.utility.OrthonormalMatrixGenerationSystem
-            omgW = OrthonormalMatrixGenerationSystem();
-            omgU = OrthonormalMatrixGenerationSystem();
-            
-            % Parameters
-            ord  = [ 2 2 2 ];
-            nch  = [ 5 4 ];
-            npmU = 10;
-            npmL = 6;
-            angs = rand(npmU+npmL,(2+sum(ord))/2);
-            mus  = ones(sum(nch),(2+sum(ord))/2);
-            nchn = min(nch);
-            nchx = max(nch);
-            In   = eye(nchn);
-            Ix   = eye(nchx);
-            Znx  = zeros(nchn,nchx);
-            Zxn  = zeros(nchx,nchn);
-            Zn   = zeros(nchn);
-            Zx   = zeros(nchx);
-            %
-            Dzo = zeros(9,9,1,1,2);
-            Dzo(:,:,1,1,1) = [ In Znx ; Zxn Zx ];
-            Dzo(:,:,1,1,2) = [ Zn Znx ; Zxn Ix ];
-            Dze = zeros(9,9,1,1,2);
-            Dze(:,:,1,1,1) = [ Ix Zxn ; Znx Zn ];
-            Dze(:,:,1,1,2) = [ Zx Zxn ; Znx In ];            
-            %
-            Dxo = zeros(9,9,1,2,1);
-            Dxo(:,:,1,1,1) = [ In Znx ; Zxn Zx ];
-            Dxo(:,:,1,2,1) = [ Zn Znx ; Zxn Ix ];
-            Dxe = zeros(9,9,1,2,1);
-            Dxe(:,:,1,1,1) = [ Ix Zxn ; Znx Zn ];
-            Dxe(:,:,1,2,1) = [ Zx Zxn ; Znx In ];                        
-            %
-            Dyo = zeros(9,9,2,1,1);
-            Dyo(:,:,1,1,1) = [ In Znx ; Zxn Zx ];
-            Dyo(:,:,2,1,1) = [ Zn Znx ; Zxn Ix ];
-            Dye = zeros(9,9,2,1,1);
-            Dye(:,:,1,1,1) = [ Ix Zxn ; Znx Zn ];
-            Dye(:,:,2,1,1) = [ Zx Zxn ; Znx In ];
-            %
-            W0  = step(omgW,angs(1:npmU,1),mus(1:nchx,1));
-            U0  = step(omgU,angs(npmU+1:end,1),mus(nchx+1:end,1));
-            Wz1 = step(omgW,angs(1:npmU,2),mus(1:nchx,2));
-            Uz1 = step(omgU,angs(npmU+1:end,2),mus(nchx+1:end,2));
-            Wx1 = step(omgW,angs(1:npmU,3),mus(1:nchx,3));
-            Ux1 = step(omgU,angs(npmU+1:end,3),mus(nchx+1:end,3));
-            Wy1 = step(omgW,angs(1:npmU,4),mus(1:nchx,4));
-            Uy1 = step(omgU,angs(npmU+1:end,4),mus(nchx+1:end,4));
-            %
-            Znd  = zeros(nchn,(nchx-nchn));
-            Id  = eye(nchx-nchn);
-            B  = PolyPhaseMatrix3d([
-                In    Znd     In ; 
-                Znd.' sqrt(2)*Id Znd.'
-                In    Znd     -In 
-                ]/sqrt(2));
-            Qzo = B*PolyPhaseMatrix3d(Dzo)*B;                        
-            Qze = B*PolyPhaseMatrix3d(Dze)*B;
-            Qxo = B*PolyPhaseMatrix3d(Dxo)*B;            
-            Qxe = B*PolyPhaseMatrix3d(Dxe)*B;
-            Qyo = B*PolyPhaseMatrix3d(Dyo)*B;                
-            Qye = B*PolyPhaseMatrix3d(Dye)*B;
-            
-            % Instantiation
-            import saivdr.dictionary.cnsoltx.*
-            testCase.lppufb = CplxOvsdLpPuFb3dTypeIIVm0System(...
-                'DecimationFactor',[ 2 2 2 ],...
-                'NumberOfChannels',[ 5 4 ],...
-                'PolyPhaseOrder',ord,...
-                'OutputMode','Coefficients');            
-            set(testCase.lppufb,'Angles',angs);
-            set(testCase.lppufb,'Mus',mus);
-
-            % Expected values
-            import saivdr.dictionary.utility.PolyPhaseMatrix3d
-            E0 = testCase.matrixE0;
-            R0 = blkdiag(W0,U0)*[In Zn; Znd.' Znd.' ;Zn In];
-            Rz1 = blkdiag(Ix,Uz1);
-            Rz2 = blkdiag(Wz1,In);
-            Rx1 = blkdiag(Ix,Ux1);
-            Rx2 = blkdiag(Wx1,In);
-            Ry1 = blkdiag(Ix,Uy1);
-            Ry2 = blkdiag(Wy1,In);
-            E = Ry2*Qye*Ry1*Qyo*Rx2*Qxe*Rx1*Qxo*Rz2*Qze*Rz1*Qzo*R0*E0;
-            
-            % Actual values
-            ordExpctd = ord;
-            cfsExpctd = E.Coefficients;
-                                    
-            ordActual = get(testCase.lppufb,'PolyPhaseOrder');
-            cfsActual = step(testCase.lppufb,[],[]);
-            
-            % Evaluation
-            testCase.verifyEqual(ordActual,ordExpctd);
-            testCase.verifyEqual(cfsActual,cfsExpctd,'RelTol',1e-8);
-            
-        end            
+%   
+%         function testStepOrd222Ch54Rand(testCase)
+% 
+%             import saivdr.dictionary.utility.OrthonormalMatrixGenerationSystem
+%             omgW = OrthonormalMatrixGenerationSystem();
+%             omgU = OrthonormalMatrixGenerationSystem();
+%             
+%             % Parameters
+%             ord  = [ 2 2 2 ];
+%             nch  = [ 5 4 ];
+%             npmU = 10;
+%             npmL = 6;
+%             angs = rand(npmU+npmL,(2+sum(ord))/2);
+%             mus  = ones(sum(nch),(2+sum(ord))/2);
+%             nchn = min(nch);
+%             nchx = max(nch);
+%             In   = eye(nchn);
+%             Ix   = eye(nchx);
+%             Znx  = zeros(nchn,nchx);
+%             Zxn  = zeros(nchx,nchn);
+%             Zn   = zeros(nchn);
+%             Zx   = zeros(nchx);
+%             %
+%             Dzo = zeros(9,9,1,1,2);
+%             Dzo(:,:,1,1,1) = [ In Znx ; Zxn Zx ];
+%             Dzo(:,:,1,1,2) = [ Zn Znx ; Zxn Ix ];
+%             Dze = zeros(9,9,1,1,2);
+%             Dze(:,:,1,1,1) = [ Ix Zxn ; Znx Zn ];
+%             Dze(:,:,1,1,2) = [ Zx Zxn ; Znx In ];            
+%             %
+%             Dxo = zeros(9,9,1,2,1);
+%             Dxo(:,:,1,1,1) = [ In Znx ; Zxn Zx ];
+%             Dxo(:,:,1,2,1) = [ Zn Znx ; Zxn Ix ];
+%             Dxe = zeros(9,9,1,2,1);
+%             Dxe(:,:,1,1,1) = [ Ix Zxn ; Znx Zn ];
+%             Dxe(:,:,1,2,1) = [ Zx Zxn ; Znx In ];                        
+%             %
+%             Dyo = zeros(9,9,2,1,1);
+%             Dyo(:,:,1,1,1) = [ In Znx ; Zxn Zx ];
+%             Dyo(:,:,2,1,1) = [ Zn Znx ; Zxn Ix ];
+%             Dye = zeros(9,9,2,1,1);
+%             Dye(:,:,1,1,1) = [ Ix Zxn ; Znx Zn ];
+%             Dye(:,:,2,1,1) = [ Zx Zxn ; Znx In ];
+%             %
+%             W0  = step(omgW,angs(1:npmU,1),mus(1:nchx,1));
+%             U0  = step(omgU,angs(npmU+1:end,1),mus(nchx+1:end,1));
+%             Wz1 = step(omgW,angs(1:npmU,2),mus(1:nchx,2));
+%             Uz1 = step(omgU,angs(npmU+1:end,2),mus(nchx+1:end,2));
+%             Wx1 = step(omgW,angs(1:npmU,3),mus(1:nchx,3));
+%             Ux1 = step(omgU,angs(npmU+1:end,3),mus(nchx+1:end,3));
+%             Wy1 = step(omgW,angs(1:npmU,4),mus(1:nchx,4));
+%             Uy1 = step(omgU,angs(npmU+1:end,4),mus(nchx+1:end,4));
+%             %
+%             Znd  = zeros(nchn,(nchx-nchn));
+%             Id  = eye(nchx-nchn);
+%             B  = PolyPhaseMatrix3d([
+%                 In    Znd     In ; 
+%                 Znd.' sqrt(2)*Id Znd.'
+%                 In    Znd     -In 
+%                 ]/sqrt(2));
+%             Qzo = B*PolyPhaseMatrix3d(Dzo)*B;                        
+%             Qze = B*PolyPhaseMatrix3d(Dze)*B;
+%             Qxo = B*PolyPhaseMatrix3d(Dxo)*B;            
+%             Qxe = B*PolyPhaseMatrix3d(Dxe)*B;
+%             Qyo = B*PolyPhaseMatrix3d(Dyo)*B;                
+%             Qye = B*PolyPhaseMatrix3d(Dye)*B;
+%             
+%             % Instantiation
+%             import saivdr.dictionary.cnsoltx.*
+%             testCase.lppufb = CplxOvsdLpPuFb3dTypeIIVm0System(...
+%                 'DecimationFactor',[ 2 2 2 ],...
+%                 'NumberOfChannels',[ 5 4 ],...
+%                 'PolyPhaseOrder',ord,...
+%                 'OutputMode','Coefficients');            
+%             set(testCase.lppufb,'Angles',angs);
+%             set(testCase.lppufb,'Mus',mus);
+% 
+%             % Expected values
+%             import saivdr.dictionary.utility.PolyPhaseMatrix3d
+%             E0 = testCase.matrixE0;
+%             R0 = blkdiag(W0,U0)*[In Zn; Znd.' Znd.' ;Zn In];
+%             Rz1 = blkdiag(Ix,Uz1);
+%             Rz2 = blkdiag(Wz1,In);
+%             Rx1 = blkdiag(Ix,Ux1);
+%             Rx2 = blkdiag(Wx1,In);
+%             Ry1 = blkdiag(Ix,Uy1);
+%             Ry2 = blkdiag(Wy1,In);
+%             E = Ry2*Qye*Ry1*Qyo*Rx2*Qxe*Rx1*Qxo*Rz2*Qze*Rz1*Qzo*R0*E0;
+%             
+%             % Actual values
+%             ordExpctd = ord;
+%             cfsExpctd = E.Coefficients;
+%                                     
+%             ordActual = get(testCase.lppufb,'PolyPhaseOrder');
+%             cfsActual = step(testCase.lppufb,[],[]);
+%             
+%             % Evaluation
+%             testCase.verifyEqual(ordActual,ordExpctd);
+%             testCase.verifyEqual(cfsActual,cfsExpctd,'RelTol',1e-8);
+%             
+%         end            
         
     end
     
