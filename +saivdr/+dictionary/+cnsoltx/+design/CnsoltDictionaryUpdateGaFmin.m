@@ -1,5 +1,5 @@
-classdef NsoltDictionaryUpdateGaFmin < ...
-        saivdr.dictionary.nsoltx.design.AbstNsoltDesignerGaFmin %#~codegen
+classdef CnsoltDictionaryUpdateGaFmin < ...
+        saivdr.dictionary.cnsoltx.design.AbstCnsoltDesignerGaFmin %#~codegen
     %NSOLTDICTIONARYUPDATEGAFMIN Update step of NSOLT dictionary learning 
     %
     % SVN identifier:
@@ -40,8 +40,8 @@ classdef NsoltDictionaryUpdateGaFmin < ...
     
     methods
         
-        function obj = NsoltDictionaryUpdateGaFmin(varargin)
-            obj = obj@saivdr.dictionary.nsoltx.design.AbstNsoltDesignerGaFmin(...
+        function obj = CnsoltDictionaryUpdateGaFmin(varargin)
+            obj = obj@saivdr.dictionary.cnsoltx.design.AbstCnsoltDesignerGaFmin(...
                 varargin{:});
         end
         
@@ -81,13 +81,13 @@ classdef NsoltDictionaryUpdateGaFmin < ...
                 fprintf('IsFixedCoefs = %d\n', get(obj.aprxError,'IsFixedCoefs'));
              end                
              [ lppufb, fval, exitflag ] = stepImpl@...
-                 saivdr.dictionary.nsoltx.design.AbstNsoltDesignerGaFmin(...
+                 saivdr.dictionary.cnsoltx.design.AbstCnsoltDesignerGaFmin(...
                  obj,lppufb_,options);
          end
         
         function setupImpl(obj,lppufb_,options)
-            setupImpl@saivdr.dictionary.nsoltx.design.AbstNsoltDesignerGaFmin(obj,lppufb_,options);
-            import saivdr.dictionary.nsoltx.design.AprxErrorWithSparseRep
+            setupImpl@saivdr.dictionary.cnsoltx.design.AbstCnsoltDesignerGaFmin(obj,lppufb_,options);
+            import saivdr.dictionary.cnsoltx.design.AprxErrorWithSparseRep
             obj.aprxError = AprxErrorWithSparseRep(...
                 'SourceImages', obj.SourceImages,...
                 'NumberOfTreeLevels',obj.NumberOfTreeLevels,...
@@ -104,13 +104,13 @@ classdef NsoltDictionaryUpdateGaFmin < ...
         end
         
         function s = saveObjectImpl(obj)
-            s = saveObjectImpl@saivdr.dictionary.nsoltx.design.AbstNsoltDesignerGaFmin(obj);
+            s = saveObjectImpl@saivdr.dictionary.cnsoltx.design.AbstCnsoltDesignerGaFmin(obj);
             s.aprxError = matlab.System.saveObject(obj.aprxError);
         end
         
         function loadObjectImpl(obj,s,wasLocked)
             obj.aprxError = matlab.System.loadObject(s.aprxError);
-            loadObjectImpl@saivdr.dictionary.nsoltx.design.AbstNsoltDesignerGaFmin(obj,s,wasLocked);
+            loadObjectImpl@saivdr.dictionary.cnsoltx.design.AbstCnsoltDesignerGaFmin(obj,s,wasLocked);
         end   
         
     end

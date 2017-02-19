@@ -1,4 +1,4 @@
-classdef AbstNsoltDesigner < matlab.System %#~codegen
+classdef AbstCnsoltDesigner < matlab.System %#~codegen
     %ABSTNSOLTDESIGNER Abstract class of NSOLT Designer
     %
     % SVN identifier:
@@ -35,7 +35,7 @@ classdef AbstNsoltDesigner < matlab.System %#~codegen
     end
     
     methods
-        function obj = AbstNsoltDesigner(varargin)
+        function obj = AbstCnsoltDesigner(varargin)
             setProperties(obj,nargin,varargin{:});
         end
     end

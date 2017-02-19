@@ -1,5 +1,5 @@
-classdef OvsdLpPuFb2dTypeICostEvaluator < ... %#codegen
-        saivdr.dictionary.nsoltx.design.AbstOvsdLpPuFbCostEvaluator
+classdef CplxOvsdLpPuFb2dTypeICostEvaluator < ... %#codegen
+        saivdr.dictionary.cnsoltx.design.AbstCplxOvsdLpPuFbCostEvaluator
     %OVSDLPPUFB2DTYPEICOSTEVALUATOR Cost evaluator for Type-I NSOLT
     %
     % SVN identifier:
@@ -26,8 +26,8 @@ classdef OvsdLpPuFb2dTypeICostEvaluator < ... %#codegen
     methods
         
         % Constractor
-        function obj = OvsdLpPuFb2dTypeICostEvaluator(varargin)
-            obj = obj@saivdr.dictionary.nsoltx.design.AbstOvsdLpPuFbCostEvaluator(...
+        function obj = CplxOvsdLpPuFb2dTypeICostEvaluator(varargin)
+            obj = obj@saivdr.dictionary.cnsoltx.design.AbstCplxOvsdLpPuFbCostEvaluator(...
                 varargin{:});
         end
         
@@ -40,11 +40,11 @@ classdef OvsdLpPuFb2dTypeICostEvaluator < ... %#codegen
         end
         
 %         function s = saveObjectImpl(obj)
-%             s = saveObjectImpl@saivdr.dictionary.nsoltx.design.AbstOvsdLpPuFbCostEvaluator(obj);
+%             s = saveObjectImpl@saivdr.dictionary.cnsoltx.design.AbstOvsdLpPuFbCostEvaluator(obj);
 %         end
 %         
 %         function loadObjectImpl(obj,s,wasLocked)
-%             loadObjectImpl@saivdr.dictionary.nsoltx.design.AbstOvsdLpPuFbCostEvaluator(obj,s,wasLocked);
+%             loadObjectImpl@saivdr.dictionary.cnsoltx.design.AbstOvsdLpPuFbCostEvaluator(obj,s,wasLocked);
 %         end     
         
         function validatePropertiesImpl(~)
@@ -65,10 +65,10 @@ classdef OvsdLpPuFb2dTypeICostEvaluator < ... %#codegen
             
             % Prepare MEX function
             if ~obj.isMexFcn
-                import saivdr.dictionary.nsoltx.mexsrcs.fcn_autobuild_atomcnc2d
-                [mexFcnAcnc, isMexFcnAcnc] = fcn_autobuild_atomcnc2d(nch);
+                import saivdr.dictionary.cnsoltx.mexsrcs.fcn_autobuild_catomcnc2d
+                [mexFcnAcnc, isMexFcnAcnc] = fcn_autobuild_catomcnc2d(nch);
                 %
-                import saivdr.dictionary.nsoltx.mexsrcs.fcn_autobuild_gradevalsteps2d
+                import saivdr.dictionary.cnsoltx.mexsrcs.fcn_autobuild_gradevalsteps2d
                 [mexFcnGrad, isMexFcnGrad] = fcn_autobuild_gradevalsteps2d(nch,ord);
                 %
                 obj.isMexFcn = isMexFcnAcnc && isMexFcnGrad;
@@ -78,17 +78,17 @@ classdef OvsdLpPuFb2dTypeICostEvaluator < ... %#codegen
                 obj.atomCncFcn = @(coefs,scale,pmcoefs,ord,fpe) ...
                     mexFcnAcnc(coefs,scale,pmcoefs,nch,ord,fpe);
             else
-                import saivdr.dictionary.nsoltx.mexsrcs.fcn_NsoltAtomConcatenator2d
-                clear fcn_NsoltAtomConcatenator2d
+                import saivdr.dictionary.cnsoltx.mexsrcs.fcn_CnsoltAtomConcatenator2d
+                clear fcn_CnsoltAtomConcatenator2d
                 obj.atomCncFcn = @(coefs,scale,pmcoefs,ord,fpe) ...
-                    fcn_NsoltAtomConcatenator2d(coefs,scale,pmcoefs,nch,ord,fpe);
+                    fcn_CnsoltAtomConcatenator2d(coefs,scale,pmcoefs,nch,ord,fpe);
             end
             % Gradient evaluator
             if ~isempty(mexFcnGrad)
                 obj.gradFcn = @(coefsB,coefsC,scale,pmCoefs,angs,mus,fpe,isnodc) ...
                     mexFcnGrad(coefsB,coefsC,scale,pmCoefs,angs,mus,nch,ord,fpe,isnodc);
             else
-                import saivdr.dictionary.nsoltx.mexsrcs.fcn_GradEvalSteps2d
+                import saivdr.dictionary.cnsoltx.mexsrcs.fcn_GradEvalSteps2d
                 clear fcn_GradEvalSteps2d
                 obj.gradFcn = @(coefsB,coefsC,scale,pmCoefs,angs,mus,fpe,isnodc) ...
                     fcn_GradEvalSteps2d(coefsB,coefsC,scale,pmCoefs,angs,mus,nch,ord,fpe,isnodc);
@@ -105,7 +105,7 @@ classdef OvsdLpPuFb2dTypeICostEvaluator < ... %#codegen
             angs = get(obj.LpPuFb,'Angles');
             mus  = get(obj.LpPuFb,'Mus');
             isnodc = isa(obj.LpPuFb,...
-                'saivdr.dictionary.nsoltx.OvsdLpPuFb2dTypeIVm1System');
+                'saivdr.dictionary.cnsoltx.CplxOvsdLpPuFb2dTypeIVm1System');
             grad = gradient_(obj, difImg, intrCoefs, pmMtx, scales, ...
                 angs, mus, isnodc);
         end
@@ -169,13 +169,13 @@ classdef OvsdLpPuFb2dTypeICostEvaluator < ... %#codegen
 %                 coefs = im2col(dctCoefs,blockSize,'distinct');
 %                 arrayCoefsC(1:mc,:) = coefs(1:mc,:);
 %                 arrayCoefsC(ps+1:ps+mf,:) = coefs(mc+1:end,:);
-                dftCoefs = blockproc(difImg,blockSize,@obj.conjsdft2_);
+                dftCoefs = blockproc(difImg,blockSize,@obj.hsdft2_);
                 coefs = im2col(dftCoefs,blockSize,'distinct');
                 arrayCoefsC(1:decX_*decY_,:) = coefs;
             end
             
             % Gradient calculation steps
-            %import saivdr.dictionary.nsoltx.mexsrcs.fcn_GradEvalSteps2d                   
+            %import saivdr.dictionary.cnsoltx.mexsrcs.fcn_GradEvalSteps2d                   
             fpe = strcmp(obj.BoundaryOperation,'Circular');
             grad = obj.gradFcn(...
                 arrayCoefsB, arrayCoefsC, scale_, pmCoefs, ...
@@ -261,7 +261,7 @@ classdef OvsdLpPuFb2dTypeICostEvaluator < ... %#codegen
                 coefs = arrayCoefs(1:nDec,:);
                 scale = double(subScale) .* obj.decimationFactor;
                 dftCoefs = col2im(coefs,blockSize,scale,'distinct');
-                recImg = blockproc(dftCoefs,blockSize,@obj.conjihsdft);
+                recImg = blockproc(dftCoefs,blockSize,@obj.ihsdft);
             end
         end
         

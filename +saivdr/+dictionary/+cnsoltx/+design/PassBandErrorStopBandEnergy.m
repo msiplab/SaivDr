@@ -80,7 +80,7 @@ classdef PassBandErrorStopBandEnergy < matlab.System %#codegen
         function value = getCost_(obj,filters_)
             value = 0.0;
             pgain = [];
-            if isa(filters_,'saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2dSystem')
+            if isa(filters_,'saivdr.dictionary.cnsoltx.AbstCplxOvsdLpPuFb2dSystem')
                 lppufb = clone(filters_);
                 if ~strcmp(get(lppufb,'OutputMode'),'AnalysisFilters')
                     warning('OutputMode of OvsdLpPuFb2d is recommended to be AnalysisFilters');

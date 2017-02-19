@@ -1,5 +1,5 @@
-classdef NsoltDesignerFrq < ...
-        saivdr.dictionary.nsoltx.design.AbstNsoltDesignerGaFmin %#~codegen
+classdef CnsoltDesignerFrq < ...
+        saivdr.dictionary.cnsoltx.design.AbstCnsoltDesignerGaFmin %#~codegen
     %NSOLTDESIGNERFRQ NSOLT design class with frequency specification
     %
     % SVN identifier:
@@ -32,9 +32,9 @@ classdef NsoltDesignerFrq < ...
       
     methods
         
-        function obj = NsoltDesignerFrq(varargin)
-            import saivdr.dictionary.nsoltx.design.PassBandErrorStopBandEnergy
-            obj = obj@saivdr.dictionary.nsoltx.design.AbstNsoltDesignerGaFmin(...
+        function obj = CnsoltDesignerFrq(varargin)
+            import saivdr.dictionary.cnsoltx.design.PassBandErrorStopBandEnergy
+            obj = obj@saivdr.dictionary.cnsoltx.design.AbstCnsoltDesignerGaFmin(...
                 varargin{:});
             obj.pbErrSbEng = PassBandErrorStopBandEnergy(...
                 'AmplitudeSpecs',obj.AmplitudeSpecs,...
@@ -71,13 +71,13 @@ classdef NsoltDesignerFrq < ...
     methods (Access = protected)
         
         function s = saveObjectImpl(obj)
-            s = saveObjectImpl@saivdr.dictionary.nsoltx.design.AbstNsoltDesignerGaFmin(obj);
+            s = saveObjectImpl@saivdr.dictionary.cnsoltx.design.AbstCnsoltDesignerGaFmin(obj);
             s.pbErrSbEng = matlab.System.saveObject(obj.pbErrSbEng);
         end
         
         function loadObjectImpl(obj,s,wasLocked)
             obj.pbErrSbEng = matlab.System.loadObject(s.pbErrSbEng);
-            loadObjectImpl@saivdr.dictionary.nsoltx.design.AbstNsoltDesignerGaFmin(obj,s,wasLocked);
+            loadObjectImpl@saivdr.dictionary.cnsoltx.design.AbstCnsoltDesignerGaFmin(obj,s,wasLocked);
         end
         
     end

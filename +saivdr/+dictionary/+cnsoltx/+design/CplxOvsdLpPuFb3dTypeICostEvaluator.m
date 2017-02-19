@@ -1,5 +1,5 @@
-classdef OvsdLpPuFb3dTypeICostEvaluator < ... %#codegen
-        saivdr.dictionary.nsoltx.design.AbstOvsdLpPuFbCostEvaluator
+classdef CplxOvsdLpPuFb3dTypeICostEvaluator < ... %#codegen
+        saivdr.dictionary.cnsoltx.design.AbstCplxOvsdLpPuFbCostEvaluator
     %OVSDLPPUFB3DTYPEICOSTEVALUATOR Cost evaluator for Type-I NSOLT
     %
     % SVN identifier:
@@ -26,8 +26,8 @@ classdef OvsdLpPuFb3dTypeICostEvaluator < ... %#codegen
     methods
         
         % Constractor
-        function obj = OvsdLpPuFb3dTypeICostEvaluator(varargin)
-            obj = obj@saivdr.dictionary.nsoltx.design.AbstOvsdLpPuFbCostEvaluator(...
+        function obj = CplxOvsdLpPuFb3dTypeICostEvaluator(varargin)
+            obj = obj@saivdr.dictionary.cnsoltx.design.AbstCplxOvsdLpPuFbCostEvaluator(...
                 varargin{:});
         end
         
@@ -40,11 +40,11 @@ classdef OvsdLpPuFb3dTypeICostEvaluator < ... %#codegen
         end
         
 %         function s = saveObjectImpl(obj)
-%             s = saveObjectImpl@saivdr.dictionary.nsoltx.design.AbstOvsdLpPuFbCostEvaluator(obj);
+%             s = saveObjectImpl@saivdr.dictionary.cnsoltx.design.AbstOvsdLpPuFbCostEvaluator(obj);
 %         end
 %         
 %         function loadObjectImpl(obj,s,wasLocked)
-%             loadObjectImpl@saivdr.dictionary.nsoltx.design.AbstOvsdLpPuFbCostEvaluator(obj,s,wasLocked);
+%             loadObjectImpl@saivdr.dictionary.cnsoltx.design.AbstOvsdLpPuFbCostEvaluator(obj,s,wasLocked);
 %         end     
         
         function validatePropertiesImpl(~)
@@ -65,10 +65,10 @@ classdef OvsdLpPuFb3dTypeICostEvaluator < ... %#codegen
             
             % Prepare MEX function
             if ~obj.isMexFcn
-                import saivdr.dictionary.nsoltx.mexsrcs.fcn_autobuild_atomcnc3d
-                [mexFcnAcnc, isMexFcnAcnc] = fcn_autobuild_atomcnc3d(nch);
+                import saivdr.dictionary.cnsoltx.mexsrcs.fcn_autobuild_catomcnc3d
+                [mexFcnAcnc, isMexFcnAcnc] = fcn_autobuild_catomcnc3d(nch);
                 %
-                import saivdr.dictionary.nsoltx.mexsrcs.fcn_autobuild_gradevalsteps3d
+                import saivdr.dictionary.cnsoltx.mexsrcs.fcn_autobuild_gradevalsteps3d
                 [mexFcnGrad, isMexFcnGrad] = fcn_autobuild_gradevalsteps3d(nch,ord);
                 %
                 obj.isMexFcn = isMexFcnAcnc && isMexFcnGrad;
@@ -78,17 +78,17 @@ classdef OvsdLpPuFb3dTypeICostEvaluator < ... %#codegen
                 obj.atomCncFcn = @(coefs,scale,pmcoefs,ord,fpe) ...
                     mexFcnAcnc(coefs,scale,pmcoefs,nch,ord,fpe);
             else
-                import saivdr.dictionary.nsoltx.mexsrcs.fcn_NsoltAtomConcatenator3d
-                clear fcn_NsoltAtomConcatenator3d
+                import saivdr.dictionary.cnsoltx.mexsrcs.fcn_CnsoltAtomConcatenator3d
+                clear fcn_CnsoltAtomConcatenator3d
                 obj.atomCncFcn = @(coefs,scale,pmcoefs,ord,fpe) ...
-                    fcn_NsoltAtomConcatenator3d(coefs,scale,pmcoefs,nch,ord,fpe);
+                    fcn_CnsoltAtomConcatenator3d(coefs,scale,pmcoefs,nch,ord,fpe);
             end
             % Gradient evaluator
             if ~isempty(mexFcnGrad)
                 obj.gradFcn = @(coefsB,coefsC,scale,pmCoefs,angs,mus,fpe,isnodc) ...
                     mexFcnGrad(coefsB,coefsC,scale,pmCoefs,angs,mus,nch,ord,fpe,isnodc);
             else
-                import saivdr.dictionary.nsoltx.mexsrcs.fcn_GradEvalSteps3d
+                import saivdr.dictionary.cnsoltx.mexsrcs.fcn_GradEvalSteps3d
                 clear fcn_GradEvalSteps3d
                 obj.gradFcn = @(coefsB,coefsC,scale,pmCoefs,angs,mus,fpe,isnodc) ...
                     fcn_GradEvalSteps3d(coefsB,coefsC,scale,pmCoefs,angs,mus,nch,ord,fpe,isnodc);
@@ -105,7 +105,7 @@ classdef OvsdLpPuFb3dTypeICostEvaluator < ... %#codegen
             angs = get(obj.LpPuFb,'Angles');
             mus  = get(obj.LpPuFb,'Mus');
             isnodc = isa(obj.LpPuFb,...
-                'saivdr.dictionary.nsoltx.OvsdLpPuFb3dTypeIVm1System');
+                'saivdr.dictionary.cnsoltx.CplxOvsdLpPuFb3dTypeIVm1System');
             grad = gradient_(obj, difImg, intrCoefs, pmMtx, scales, ...
                 angs, mus, isnodc);
         end
