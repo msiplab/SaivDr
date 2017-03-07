@@ -278,15 +278,10 @@ classdef IstaImRestoration < matlab.System %~#codegen
         % Soft shrink
         function outputcf = softshrink_(inputcf,threshold)
             % Soft-thresholding shrinkage
-            ln = abs(inputcf);
-            
-            outputcf = complex(zeros(size(inputcf)));
-            for idx = 1:length(inputcf)
-                if ln(idx) > threshold
-                    outputcf(idx) = (ln(idx)-threshold)/ln(idx)*inputcf(idx);
-                end
-            end
-%             outputcf = (ln > threshold).*(ln-threshold)./ln.*inputcf;
+%             cfr = real(inputcf);
+%             cfi = imag(inputcf);
+%             outputcf = max(1.0-threshold./cfr).*cfr + 1i*max(1.0-threshold./cfi).*cfi;
+            outputcf = max(1.0-threshold./abs(inputcf),0).*inputcf;
         end
 
     end

@@ -23,6 +23,7 @@ classdef AdmmImRestoration < matlab.System
     end
     
     properties
+        StepMonitor
         Eps0 = 1e-6
         Lambda = 0.00185 % TODO:
     end
@@ -71,26 +72,44 @@ classdef AdmmImRestoration < matlab.System
             obj.eta = obj.eta0;
             obj.gamma = 1; % TODO:???????
             obj.x = srcImg;
-            [obj.y,obj.scales] = step(obj.AdjOfSynthesizer,srcImg,obj.NumberOfTreeLevels);
+            for iCmp = 1:obj.NumberOfComponents
+                [obj.y(:,iCmp),obj.scales(:,:,iCmp)] = step(obj.AdjOfSynthesizer,srcImg(:,:,iCmp),obj.NumberOfTreeLevels);
+            end
+            
+            if ~isempty(obj.StepMonitor)
+                reset(obj.StepMonitor);
+            end
             obj.ypre = obj.y;
             obj.alpha = zeros(size(srcImg)); % TODO: ???????????
             err = Inf;
             
             while err > obj.Eps0 && obj.nItr < obj.MaxIter
-                hx = step(obj.Synthesizer,2*obj.y-obj.ypre,obj.scales);
-                obj.alpha = (obj.x-hx+obj.eta*obj.alpha)/(obj.Lambda+obj.eta);
-                
+                hx = zeros(size(srcImg));
+                for iCmp = 1:obj.NumberOfComponents
+                    hx(:,:,iCmp) = step(obj.Synthesizer,2*obj.y-obj.ypre,obj.scales);
+                    obj.alpha(:,:,iCmp) = (obj.x(:,:,iCmp)-hx(:,:,iCmp)+obj.eta*obj.alpha(:,:,iCmp))/(obj.Lambda+obj.eta);
+                end
                 % optimize y
                 obj.ypre = obj.y;
-                hy = step(obj.AdjOfSynthesizer,obj.alpha,obj.NumberOfTreeLevels);
-                obj.y = AdmmImRestoration.softshrink_(...
-                    obj.y + obj.eta*hy, obj.eta);
-                %ypst = obj.y;
+                hy = zeros(size(obj.y));
+                for iCmp = 1:obj.NumberOfComponents
+                    hy(:,iCmp) = step(obj.AdjOfSynthesizer,obj.alpha(:,:,iCmp),obj.NumberOfTreeLevels);
+                    obj.y(:,iCmp) = AdmmImRestoration.softshrink_(...
+                        obj.y(:,iCmp) + obj.eta*hy(:,iCmp), obj.eta);
+                    %ypst = obj.y;
+                end
                 err = norm(obj.y(:)-obj.ypre(:))^2/norm(obj.y(:))^2;
                 
+                if ~isempty(obj.StepMonitor)
+                    step(obj.StepMonitor,hx);
+                end
                 obj.nItr = obj.nItr + 1;
+                
             end
-            resImg = step(obj.Synthesizer,obj.y,obj.scales);
+            resImg = zeros(size(srcImg));
+            for iCmp = 1:obj.NumberOfComponents
+                resImg(:,:,iCmp) = step(obj.Synthesizer,obj.y(:,iCmp),obj.scales);
+            end
             coefvec = obj.y;
             scales = obj.scales;
         end
@@ -99,9 +118,9 @@ classdef AdmmImRestoration < matlab.System
             N = 1;
         end
         
-%         function N = getNumOutputsImpl(~)
-%             N = 1;
-%         end
+        function N = getNumOutputsImpl(~)
+            N = 1;
+        end
     end
     
     methods (Access = private)
@@ -111,15 +130,7 @@ classdef AdmmImRestoration < matlab.System
         % Soft shrink
         function outputcf = softshrink_(inputcf,threshold)
             % Soft-thresholding shrinkage
-            ln = abs(inputcf);
-            
-            outputcf = zeros(size(inputcf));
-            for idx = 1:length(inputcf)
-                if ln(idx) > threshold
-                    outputcf(idx) = (ln(idx)-threshold)/ln(idx)*inputcf(idx);
-                end
-            end
-            %             outputcf = (ln > threshold).*(ln-threshold)./ln.*inputcf;
+            outputcf = max(1.0-threshold./abs(inputcf),0).*inputcf;
         end
         
     end

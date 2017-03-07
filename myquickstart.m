@@ -28,12 +28,14 @@ setpath
 % is described. As a preliminary, let us read an RGB picture as 
 % the source image.
 
-srcImg = imread('peppers.png');
+load('cropRadarImage');
+srcImg = cropImg;
 width  = 256; % Width
 height = 256; % Height
 px     = 64;  % Horizontal position of cropping
 py     = 64;  % Vertical position of cropping
-orgImg = im2double(srcImg(py:py+height-1,px:px+width-1,:));
+%orgImg = im2double(srcImg(py:py+height-1,px:px+width-1,:));
+orgImg = cropImg/max(abs(cropImg(:)));
 
 %% Create a degradation system object
 % Suppose that we only have a degraded image $\mathbf{x}$ which is 
@@ -54,14 +56,14 @@ orgImg = im2double(srcImg(py:py+height-1,px:px+width-1,:));
 import saivdr.degradation.linearprocess.BlurSystem
 blurtype = 'Identical';  % Blur type
 boundary = 'Symmetric'; % Boundary option
-hsigma   = 2;           % Sigma for Gausian kernel
+hsigma   = 0;           % Sigma for Gausian kernel
 blur = BlurSystem(...   % Instantiation of blur process              
     'BlurType',              blurtype,...
     'SigmaOfGaussianKernel', hsigma,...
     'BoundaryOption',boundary);
 
 import saivdr.degradation.noiseprocess.AdditiveWhiteGaussianNoiseSystem
-nsigma    = 5;              % Sigma for AWGN for scale [0..255]
+nsigma    = 0;              % Sigma for AWGN for scale [0..255]
 noise_var = (nsigma/255)^2; % Normalize sigma to scale [0..1]
 awgn = AdditiveWhiteGaussianNoiseSystem(... % Instantiation of AWGN
     'Mean',     0,...
@@ -107,16 +109,16 @@ obsImg = step(dgrd,orgImg);
 nLevels = 4;     % # of wavelet tree levels
 nDec    = [2 2]; % Decimation factor
 nChs    = [4 4]; % # of channels
-nOrd    = [4 4]; % Polyphase order
+nOrd    = [2 2]; % Polyphase order
 nVm     = 1;     % # of vanishing moments
 
 % Location which containts a pre-designed NSOLT
 sdir = './examples/quickdesign/results';
 
 % Load a pre-designed dictionary from a MAT-file
-s = load(sprintf('%s/nsolt_d%dx%d_c%d+%d_o%d+%d_v%d_l%d_n%d_%s.mat',...
+s = load(sprintf('%s/cnsolt_d%dx%d_c%d+%d_o%d+%d_v%d_l%d_n%d_%s.mat',...
     sdir,nDec(1),nDec(2),nChs(1),nChs(2),nOrd(1),nOrd(2),nVm,nLevels,...
-    2048,'peppers128x128'),'nsolt');
+    128,'ibushi64x64'),'nsolt');
 nsolt = s.nsolt; % saivdr.dictionary.nsolt.OvsdLpPuFb2dTypeIVm1System
 
 % Conversion of nsolt to new package style
@@ -200,7 +202,7 @@ setFrameBound(synthesizer,1);
 
 % Instantiation of ISTA system object
 import saivdr.restoration.ista.IstaImRestoration
-lambda    = 0.00185;                      % lambda
+lambda    = 0.0185;                      % lambda
 ista = IstaImRestoration(...
     'Synthesizer',        synthesizer,... % Synthesizer (Dictionary)
     'AdjOfSynthesizer',   analyzer,...    % Analyzer (Adj. of dictionary)
@@ -245,7 +247,7 @@ set(ista,'StepMonitor',stepmonitor);
 % is obtained.
 
 fprintf('\n ISTA')
-resImg = step(ista,obsImg); % STEP method of IstaImRestoration
+[resImg,rescf,ressc] = step(ista,obsImg); % STEP method of IstaImRestoration
 
 %% Extract the final evaluation  
 % The object of StepMonitoringSystem, _stepmonitor_ , stores the 
@@ -257,60 +259,95 @@ nItr  = get(stepmonitor,'nItr');
 psnrs = get(stepmonitor,'PSNRs');
 psnr_ista = psnrs(nItr);
 
-%% Perform Wiener filtering
-% As a reference, let us show a result of Wiener filter.
+figure(3)
+clims = [-60 0];
+imagesc(cropR, cropX, 20*log10(abs(orgImg)), clims)
+xlabel('Range')
+ylabel('Runing Distance')
+xlim([0 8])
+colorbar
 
-% Create a step monitor system object for the PSNR evaluation
-stepmonitor = StepMonitoringSystem(...
-    'SourceImage',orgImg,...
-    'MaxIter', 1,...
-    'IsMSE',  false,...
-    'IsPSNR', true,...
-    'IsSSIM', false,...
-    'IsVisible', false,...
-    'IsVerbose', isverbose);
+figure(4)
+clims = [-pi pi];
+imagesc(cropR, cropX, angle(orgImg), clims)
+xlabel('Range')
+ylabel('Runing Distance')
+xlim([0 8])
+colorbar
 
-% Use the same blur kernel as that applied to the observed image, obsImg
-blurKernel = get(blur,'BlurKernel');
+figure(5)
+clims = [-60 0];
+imagesc(cropR, cropX, 20*log10(abs(resImg)), clims)
+xlabel('Range')
+ylabel('Runing Distance')
+xlim([0 8])
+colorbar
 
-% Estimation of noise to signal ratio
-nsr = noise_var/var(orgImg(:));
+figure(6)
+clims = [-pi pi];
+imagesc(cropR, cropX, angle(resImg), clims)
+xlabel('Range')
+ylabel('Runing Distance')
+xlim([0 8])
+colorbar
 
-% Wiener filter deconvolution of Image Processing Toolbox
-wnfImg = deconvwnr(obsImg, blurKernel, nsr);
+nonzeros = sum(abs(rescf(:)) > 1e-6)
+numel(rescf)
 
-% Evaluation
-fprintf('\n Wiener')
-psnr_wfdc = step(stepmonitor,wnfImg); % STEP method of StepMonitoringSystem
-
-%% Compare deblurring performances
-% In order to compare the deblurring performances between two methods,
-% ISTA-based deblurring with NSOLT and Wiener filter, let us show 
-% the original, observed and two results in one figure together.
-
-hfig3 = figure(3);
-
-% Original image x
-subplot(2,2,1)
-imshow(orgImg)
-title('Original image {\bf u}')
-
-% Observed image u
-subplot(2,2,2)
-imshow(obsImg)
-title('Observed image {\bf x}')
-
-% Result u^ of ISTA 
-subplot(2,2,3)
-imshow(resImg)
-title(['{\bf u}\^ by ISTA  : ' num2str(psnr_ista) ' [dB]'])
-
-% Result u^ of Wiener filter
-subplot(2,2,4)
-imshow(wnfImg)
-title(['{\bf u}\^ by Wiener: ' num2str(psnr_wfdc) ' [dB]'])
-
-%% Release notes
-% RELEASENOTES.txt contains release notes on *SaivDr Package*.
-
-type('RELEASENOTES.txt')
+% %% Perform Wiener filtering
+% % As a reference, let us show a result of Wiener filter.
+% 
+% % Create a step monitor system object for the PSNR evaluation
+% stepmonitor = StepMonitoringSystem(...
+%     'SourceImage',orgImg,...
+%     'MaxIter', 1,...
+%     'IsMSE',  false,...
+%     'IsPSNR', true,...
+%     'IsSSIM', false,...
+%     'IsVisible', false,...
+%     'IsVerbose', isverbose);
+% 
+% % Use the same blur kernel as that applied to the observed image, obsImg
+% blurKernel = get(blur,'BlurKernel');
+% 
+% % Estimation of noise to signal ratio
+% nsr = noise_var/var(orgImg(:));
+% 
+% % Wiener filter deconvolution of Image Processing Toolbox
+% wnfImg = deconvwnr(obsImg, blurKernel, nsr);
+% 
+% % Evaluation
+% fprintf('\n Wiener')
+% psnr_wfdc = step(stepmonitor,wnfImg); % STEP method of StepMonitoringSystem
+% 
+% %% Compare deblurring performances
+% % In order to compare the deblurring performances between two methods,
+% % ISTA-based deblurring with NSOLT and Wiener filter, let us show 
+% % the original, observed and two results in one figure together.
+% 
+% hfig3 = figure(3);
+% 
+% % Original image x
+% subplot(2,2,1)
+% imshow(orgImg)
+% title('Original image {\bf u}')
+% 
+% % Observed image u
+% subplot(2,2,2)
+% imshow(obsImg)
+% title('Observed image {\bf x}')
+% 
+% % Result u^ of ISTA 
+% subplot(2,2,3)
+% imshow(resImg)
+% title(['{\bf u}\^ by ISTA  : ' num2str(psnr_ista) ' [dB]'])
+% 
+% % Result u^ of Wiener filter
+% subplot(2,2,4)
+% imshow(wnfImg)
+% title(['{\bf u}\^ by Wiener: ' num2str(psnr_wfdc) ' [dB]'])
+% 
+% %% Release notes
+% % RELEASENOTES.txt contains release notes on *SaivDr Package*.
+% 
+% type('RELEASENOTES.txt')

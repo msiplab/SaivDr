@@ -23,6 +23,7 @@ classdef DalImRestoration < matlab.System
     end
     
     properties
+        StepMonitor
         Eps0 = 1e-6
         Lambda = 0.00185 % TODO:
     end
@@ -66,7 +67,7 @@ classdef DalImRestoration < matlab.System
             obj.nItr = 0;
             obj.eta0 = 0.01/obj.Lambda;
             obj.gamma = 1; % TODO:???????
-            [obj.y,obj.scales] = step(obj.Analyzer,srcImg,obj.NumberOfTreeLevels);
+            [obj.y,obj.scales] = step(obj.AdjOfSynthesizer,srcImg,obj.NumberOfTreeLevels);
             alpha = zeros(size(srcImg)); % TODO: ???????????
             err = Inf;
                       
