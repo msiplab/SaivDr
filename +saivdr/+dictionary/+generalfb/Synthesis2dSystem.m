@@ -83,9 +83,9 @@ classdef Synthesis2dSystem < saivdr.dictionary.AbstSynthesisSystem
             loadObjectImpl@matlab.System(obj,s,wasLocked);
         end
 
-        function setupImpl(obj,coefs,scales)
+        function setupImpl(obj,~,scales)
             import saivdr.dictionary.utility.Direction
-            obj.IsRealValue = isreal(coefs);
+            %obj.IsRealValue = isreal(obj.SynthesisFilters);
 
             % Set up for frequency domain filtering
             if strcmp(obj.FilterDomain,'Frequency')

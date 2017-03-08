@@ -37,6 +37,10 @@ py     = 64;  % Vertical position of cropping
 %orgImg = im2double(srcImg(py:py+height-1,px:px+width-1,:));
 orgImg = cropImg/max(abs(cropImg(:)));
 
+% srcImg1 = im2double(imread('cameraman.tif'));
+% srcImg2 = im2double(rgb2gray(imread('peppers.png')));
+% orgImg = srcImg1(1:256,1:256) + 1i*srcImg2(1:256,1:256);
+
 %% Create a degradation system object
 % Suppose that we only have a degraded image $\mathbf{x}$ which is 
 % contaminated by Gaussian kernel blur $\mathbf{P}$ with addtive 
@@ -56,11 +60,12 @@ orgImg = cropImg/max(abs(cropImg(:)));
 import saivdr.degradation.linearprocess.BlurSystem
 blurtype = 'Identical';  % Blur type
 boundary = 'Symmetric'; % Boundary option
-hsigma   = 0;           % Sigma for Gausian kernel
+hsigma   = 2;           % Sigma for Gausian kernel
 blur = BlurSystem(...   % Instantiation of blur process              
     'BlurType',              blurtype,...
     'SigmaOfGaussianKernel', hsigma,...
-    'BoundaryOption',boundary);
+    'BoundaryOption',boundary,...
+    'IsComplexValue',true);
 
 import saivdr.degradation.noiseprocess.AdditiveWhiteGaussianNoiseSystem
 nsigma    = 0;              % Sigma for AWGN for scale [0..255]
@@ -118,7 +123,7 @@ sdir = './examples/quickdesign/results';
 % Load a pre-designed dictionary from a MAT-file
 s = load(sprintf('%s/cnsolt_d%dx%d_c%d+%d_o%d+%d_v%d_l%d_n%d_%s.mat',...
     sdir,nDec(1),nDec(2),nChs(1),nChs(2),nOrd(1),nOrd(2),nVm,nLevels,...
-    128,'ibushi64x64'),'nsolt');
+    512,'cameraman+peppers64x64'),'nsolt');
 nsolt = s.nsolt; % saivdr.dictionary.nsolt.OvsdLpPuFb2dTypeIVm1System
 
 % Conversion of nsolt to new package style
@@ -158,11 +163,13 @@ synthesisFilters = step(nsolt,[],[]);
 analyzer    = Analysis2dSystem(...
     'DecimationFactor',nDec,...
     'AnalysisFilters',analysisFilters,...
-    'FilterDomain','Frequency');
+    'FilterDomain','Frequency',...
+    'IsRealValue',false);
 synthesizer = Synthesis2dSystem(...
     'DecimationFactor',nDec,...
     'SynthesisFilters',synthesisFilters,...
-    'FilterDomain','Frequency');
+    'FilterDomain','Frequency',...
+    'IsRealValue',false);
 setFrameBound(synthesizer,1);
 
 %%

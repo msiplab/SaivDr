@@ -129,7 +129,7 @@ classdef Analysis2dSystem < saivdr.dictionary.AbstAnalysisSystem
             obj.nAllChs = nLevels*(nChs_-1)+1;
             obj.allCoefs  = zeros(1,obj.nAllCoefs);
             obj.allScales = zeros(obj.nAllChs,obj.DATA_DIMENSION);
-            obj.IsRealValue = isreal(srcImg);
+            %obj.IsRealValue = isreal(obj.AnalysisFilters);
 
             % Set up for frequency domain filtering
             if strcmp(obj.FilterDomain,'Frequency')

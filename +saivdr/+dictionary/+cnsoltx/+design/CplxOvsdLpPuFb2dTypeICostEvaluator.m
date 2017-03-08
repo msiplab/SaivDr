@@ -262,6 +262,7 @@ classdef CplxOvsdLpPuFb2dTypeICostEvaluator < ... %#codegen
                 scale = double(subScale) .* obj.decimationFactor;
                 dftCoefs = col2im(coefs,blockSize,scale,'distinct');
                 recImg = blockproc(dftCoefs,blockSize,@obj.ihsdft);
+                fprintf('Hello World!!!\n');
             end
         end
         

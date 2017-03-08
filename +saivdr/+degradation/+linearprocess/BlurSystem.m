@@ -27,6 +27,8 @@ classdef BlurSystem < ...
         CustomKernel = [];
         % Parameter available only for Value
         BoundaryValue = 0
+        % TODO:
+        IsComplexValue = false
     end
     
     properties (Hidden, Transient)
@@ -133,22 +135,43 @@ classdef BlurSystem < ...
         end
         
         function output = normalStepImpl(obj,input)
-            if strcmp(obj.BoundaryOption,'Value')
-                output = imfilter(input,obj.BlurKernel,'conv',...
-                     obj.BoundaryValue);
+            if ~obj.IsComplexValue
+                if strcmp(obj.BoundaryOption,'Value')
+                    output = imfilter(input,obj.BlurKernel,'conv',...
+                        obj.BoundaryValue);
+                else
+                    output = imfilter(input,obj.BlurKernel,'conv',...
+                        lower(obj.BoundaryOption));
+                end
             else
-                output = imfilter(input,obj.BlurKernel,'conv',...
-                    lower(obj.BoundaryOption));
+                % 
+%                 if strcmp(obj.BoundaryOption,'Value')
+                    output = filter2(rot90(conj(obj.BlurKernel),2),...
+                        input,'same');
+%                 else
+%                     output = imfilter(input,obj.BlurKernel,'conv',...
+%                         lower(obj.BoundaryOption));
+%                 end
             end
         end
         
         function output = adjointStepImpl(obj,input)
-            if strcmp(obj.BoundaryOption,'Value')            
-                output = imfilter(input,obj.BlurKernel,'corr',...
-                    obj.BoundaryValue);
+            if ~obj.IsComplexValue
+                if strcmp(obj.BoundaryOption,'Value')
+                    output = imfilter(input,obj.BlurKernel,'corr',...
+                        obj.BoundaryValue);
+                else
+                    output = imfilter(input,obj.BlurKernel,'corr',...
+                        lower(obj.BoundaryOption));
+                end
             else
-                output = imfilter(input,obj.BlurKernel,'corr',...
-                    lower(obj.BoundaryOption));                
+%                 if strcmp(obj.BoundaryOption,'Value')
+                    output = filter2(obj.BlurKernel,...
+                        input,'same');
+%                 else
+%                     output = imfilter(input,obj.BlurKernel,'corr',...
+%                         lower(obj.BoundaryOption));
+%                 end
             end
         end
 

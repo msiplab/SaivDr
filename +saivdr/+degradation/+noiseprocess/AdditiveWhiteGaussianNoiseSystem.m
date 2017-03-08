@@ -35,8 +35,8 @@ classdef AdditiveWhiteGaussianNoiseSystem < ...
             if isreal(input)
                 output = imnoise(input,'gaussian',obj.Mean,obj.Variance);
             else
-                output = imnoise(real(input),'gaussian',obj.Mean,obj.Variance/2)...
-                    + 1i*imnoise(imag(input),'gaussian',obj.Mean,obj.Variance/2);
+                output = input + obj.Variance*randn(size(input))...
+                    + 1i*obj.Variance*randn(size(input)) + obj.Mean;
             end
         end
     end
