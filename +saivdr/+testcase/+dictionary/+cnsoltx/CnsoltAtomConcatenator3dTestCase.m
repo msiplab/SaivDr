@@ -1172,163 +1172,163 @@ classdef CnsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             
         end
         
-        function testStepOrd002Ch44RandAng(testCase)
-
-            % Parameters
-            height = 4;
-            width  = 4;
-            depth  = 4;
-            ord   = [ 0 0 2 ];
-            nch   = 8;
-            nhch   = nch/2;
-            arrayCoefs = repmat(1:height*width*depth,[nch,1]);
-            scale = [ height width depth ];
-            
-            %
-            import saivdr.dictionary.utility.*            
-            npm = 6;
-            angs = randn(npm,2+sum(ord));
-            mus  = ones(ceil(nch/2),2+sum(ord));
-            omg = OrthonormalMatrixGenerationSystem();            
-            W0  = step(omg,angs(:,1),mus(:,1));
-            U0  = step(omg,angs(:,2),mus(:,2));
-            Uz1 = step(omg,angs(:,3),mus(:,3));
-            Uz2 = step(omg,angs(:,4),mus(:,4));        
-            I = eye(nhch);
-            B  = [ I I ; I -I ]/sqrt(2);
-            %
-            pmCoefs = [ 
-                W0(:) ; 
-                U0(:) ;
-                Uz1(:) ; 
-                Uz2(:) ];
-            %
-            R0  = blkdiag(W0.',U0.');
-            Rz1 = blkdiag(I,Uz1.');
-            Rz2 = blkdiag(I,Uz2.');
-            coefs_ = B*Rz2*arrayCoefs;
-            % right shift upper coefs
-            tmp = coefs_(1:nhch,end-width*height+1:end);
-            coefs_(1:nhch,width*height+1:end) = coefs_(1:nhch,1:end-width*height);
-            coefs_(1:nhch,1:width*height) = tmp;
-            %
-            coefs_ = B*coefs_;
-            coefs_ = B*Rz1*coefs_;
-            % left shift lower coefs
-            tmp = coefs_(nhch+1:end,1:width*height);
-            coefs_(nhch+1:end,1:end-width*height) = coefs_(nhch+1:end,width*height+1:end);
-            coefs_(nhch+1:end,end-width*height+1:end) = tmp;
-            %            
-            coefs_ = B*coefs_;            
-            coefs_ = R0*coefs_;
-          
-            % Expected values
-            ordExpctd = ord;
-            cfsExpctd = coefs_;
-            
-            % Instantiation
-            import saivdr.dictionary.cnsoltx.CnsoltAtomConcatenator3d
-            testCase.module = CnsoltAtomConcatenator3d(...
-                'NumberOfSymmetricChannels',ceil(nch/2),...
-                'NumberOfAntisymmetricChannels',floor(nch/2),...
-                'IsPeriodicExt',true);
-            set(testCase.module,'PolyPhaseOrder',ord);
-            
-            % Actual values
-            ordActual = get(testCase.module,'PolyPhaseOrder');
-            cfsActual = step(testCase.module,arrayCoefs,scale,pmCoefs);
-            
-            % Evaluation
-            testCase.verifyEqual(ordActual,ordExpctd);
-            testCase.verifySize(cfsActual,size(cfsExpctd));
-            diff = max(abs(cfsActual(:)-cfsExpctd(:))./abs(cfsExpctd(:)));
-            testCase.verifyEqual(cfsActual,cfsExpctd,'RelTol',1e-8,...
-                sprintf('diff = %e',diff));
-            
-        end
+%         function testStepOrd002Ch44RandAng(testCase)
+% 
+%             % Parameters
+%             height = 4;
+%             width  = 4;
+%             depth  = 4;
+%             ord   = [ 0 0 2 ];
+%             nch   = 8;
+%             nhch   = nch/2;
+%             arrayCoefs = repmat(1:height*width*depth,[nch,1]);
+%             scale = [ height width depth ];
+%             
+%             %
+%             import saivdr.dictionary.utility.*            
+%             npm = 6;
+%             angs = randn(npm,2+sum(ord));
+%             mus  = ones(ceil(nch/2),2+sum(ord));
+%             omg = OrthonormalMatrixGenerationSystem();            
+%             W0  = step(omg,angs(:,1),mus(:,1));
+%             U0  = step(omg,angs(:,2),mus(:,2));
+%             Uz1 = step(omg,angs(:,3),mus(:,3));
+%             Uz2 = step(omg,angs(:,4),mus(:,4));        
+%             I = eye(nhch);
+%             B  = [ I I ; I -I ]/sqrt(2);
+%             %
+%             pmCoefs = [ 
+%                 W0(:) ; 
+%                 U0(:) ;
+%                 Uz1(:) ; 
+%                 Uz2(:) ];
+%             %
+%             R0  = blkdiag(W0.',U0.');
+%             Rz1 = blkdiag(I,Uz1.');
+%             Rz2 = blkdiag(I,Uz2.');
+%             coefs_ = B*Rz2*arrayCoefs;
+%             % right shift upper coefs
+%             tmp = coefs_(1:nhch,end-width*height+1:end);
+%             coefs_(1:nhch,width*height+1:end) = coefs_(1:nhch,1:end-width*height);
+%             coefs_(1:nhch,1:width*height) = tmp;
+%             %
+%             coefs_ = B*coefs_;
+%             coefs_ = B*Rz1*coefs_;
+%             % left shift lower coefs
+%             tmp = coefs_(nhch+1:end,1:width*height);
+%             coefs_(nhch+1:end,1:end-width*height) = coefs_(nhch+1:end,width*height+1:end);
+%             coefs_(nhch+1:end,end-width*height+1:end) = tmp;
+%             %            
+%             coefs_ = B*coefs_;            
+%             coefs_ = R0*coefs_;
+%           
+%             % Expected values
+%             ordExpctd = ord;
+%             cfsExpctd = coefs_;
+%             
+%             % Instantiation
+%             import saivdr.dictionary.cnsoltx.CnsoltAtomConcatenator3d
+%             testCase.module = CnsoltAtomConcatenator3d(...
+%                 'NumberOfSymmetricChannels',ceil(nch/2),...
+%                 'NumberOfAntisymmetricChannels',floor(nch/2),...
+%                 'IsPeriodicExt',true);
+%             set(testCase.module,'PolyPhaseOrder',ord);
+%             
+%             % Actual values
+%             ordActual = get(testCase.module,'PolyPhaseOrder');
+%             cfsActual = step(testCase.module,arrayCoefs,scale,pmCoefs);
+%             
+%             % Evaluation
+%             testCase.verifyEqual(ordActual,ordExpctd);
+%             testCase.verifySize(cfsActual,size(cfsExpctd));
+%             diff = max(abs(cfsActual(:)-cfsExpctd(:))./abs(cfsExpctd(:)));
+%             testCase.verifyEqual(cfsActual,cfsExpctd,'RelTol',1e-8,...
+%                 sprintf('diff = %e',diff));
+%             
+%         end
         
-        function testStepOrd002Ch54RandAng(testCase)
-
-            % Parameters
-            height = 4;
-            width  = 4;
-            depth  = 4;
-            ord   = [ 0 0 2 ];
-            nch   = 9;
-            nhx   = max(nch);
-            nhn   = min(nch);
-            arrayCoefs = repmat(1:height*width*depth,[nch,1]);
-            scale = [ height width depth ];
-            
-            %
-            import saivdr.dictionary.utility.*            
-            npmW = 10;
-            npmU = 6;
-            npm = npmW+npmU;
-            angs = randn(npm,(2+sum(ord))/2);
-            mus  = ones(nch,(2+sum(ord))/2);
-            omgW = OrthonormalMatrixGenerationSystem();            
-            omgU = OrthonormalMatrixGenerationSystem();            
-            W0  = step(omgW,angs(1:npmW,1),mus(1:ceil(nch/2),1));
-            U0  = step(omgU,angs(npmW+1:end,1),mus(ceil(nch/2)+1:end,1));
-            Wz1 = step(omgW,angs(1:npmW,2),mus(1:ceil(nch/2),2));
-            Uz1 = step(omgU,angs(npmW+1:end,2),mus(ceil(nch/2)+1:end,2));        
-            In = eye(nhn);
-            Id = eye(nhx-nhn);
-            zn = zeros(nhn,1);
-            B  = [ In zn In ; 
-                zn.' sqrt(2)*Id zn.' ;
-                  In zn -In ]/sqrt(2);
-            %
-            pmCoefs = [ 
-                W0(:) ; 
-                U0(:) ;
-                Wz1(:) ; 
-                Uz1(:) ];
-            %
-            R0  = blkdiag(W0.',U0.');
-            Rz1 = blkdiag(eye(nhx),Uz1.');
-            Rz2 = blkdiag(Wz1.',eye(nhn));
-            coefs_ = B*Rz2*arrayCoefs;
-            % right shift upper coefs
-            tmp = coefs_(1:nhx,end-width*height+1:end);
-            coefs_(1:nhx,width*height+1:end) = coefs_(1:nhx,1:end-width*height);
-            coefs_(1:nhx,1:width*height) = tmp;
-            %
-            coefs_ = B*coefs_;
-            coefs_ = B*Rz1*coefs_;
-            % left shift lower coefs
-            tmp = coefs_(nhn+1:end,1:width*height);
-            coefs_(nhn+1:end,1:end-width*height) = coefs_(nhn+1:end,width*height+1:end);
-            coefs_(nhn+1:end,end-width*height+1:end) = tmp;
-            %            
-            coefs_ = B*coefs_;            
-            coefs_ = R0*coefs_;
-          
-            % Expected values
-            ordExpctd = ord;
-            cfsExpctd = coefs_;
-            
-            % Instantiation
-            import saivdr.dictionary.cnsoltx.CnsoltAtomConcatenator3d
-            testCase.module = CnsoltAtomConcatenator3d(...
-                'NumberOfSymmetricChannels',ceil(nch/2),...
-                'NumberOfAntisymmetricChannels',floor(nch/2),...
-                'IsPeriodicExt',true);
-            set(testCase.module,'PolyPhaseOrder',ord);
-            
-            % Actual values
-            ordActual = get(testCase.module,'PolyPhaseOrder');
-            cfsActual = step(testCase.module,arrayCoefs,scale,pmCoefs);
-            
-            % Evaluation
-            testCase.verifyEqual(ordActual,ordExpctd);
-            testCase.verifySize(cfsActual,size(cfsExpctd));
-            diff = max(abs(cfsActual(:)-cfsExpctd(:))./abs(cfsExpctd(:)));
-            testCase.verifyEqual(cfsActual,cfsExpctd,'RelTol',1e-8,...
-                sprintf('diff = %e',diff));
-            
-        end
+%         function testStepOrd002Ch54RandAng(testCase)
+% 
+%             % Parameters
+%             height = 4;
+%             width  = 4;
+%             depth  = 4;
+%             ord   = [ 0 0 2 ];
+%             nch   = 9;
+%             nhx   = max(nch);
+%             nhn   = min(nch);
+%             arrayCoefs = repmat(1:height*width*depth,[nch,1]);
+%             scale = [ height width depth ];
+%             
+%             %
+%             import saivdr.dictionary.utility.*            
+%             npmW = 10;
+%             npmU = 6;
+%             npm = npmW+npmU;
+%             angs = randn(npm,(2+sum(ord))/2);
+%             mus  = ones(nch,(2+sum(ord))/2);
+%             omgW = OrthonormalMatrixGenerationSystem();            
+%             omgU = OrthonormalMatrixGenerationSystem();            
+%             W0  = step(omgW,angs(1:npmW,1),mus(1:ceil(nch/2),1));
+%             U0  = step(omgU,angs(npmW+1:end,1),mus(ceil(nch/2)+1:end,1));
+%             Wz1 = step(omgW,angs(1:npmW,2),mus(1:ceil(nch/2),2));
+%             Uz1 = step(omgU,angs(npmW+1:end,2),mus(ceil(nch/2)+1:end,2));        
+%             In = eye(nhn);
+%             Id = eye(nhx-nhn);
+%             zn = zeros(nhn,1);
+%             B  = [ In zn In ; 
+%                 zn.' sqrt(2)*Id zn.' ;
+%                   In zn -In ]/sqrt(2);
+%             %
+%             pmCoefs = [ 
+%                 W0(:) ; 
+%                 U0(:) ;
+%                 Wz1(:) ; 
+%                 Uz1(:) ];
+%             %
+%             R0  = blkdiag(W0.',U0.');
+%             Rz1 = blkdiag(eye(nhx),Uz1.');
+%             Rz2 = blkdiag(Wz1.',eye(nhn));
+%             coefs_ = B*Rz2*arrayCoefs;
+%             % right shift upper coefs
+%             tmp = coefs_(1:nhx,end-width*height+1:end);
+%             coefs_(1:nhx,width*height+1:end) = coefs_(1:nhx,1:end-width*height);
+%             coefs_(1:nhx,1:width*height) = tmp;
+%             %
+%             coefs_ = B*coefs_;
+%             coefs_ = B*Rz1*coefs_;
+%             % left shift lower coefs
+%             tmp = coefs_(nhn+1:end,1:width*height);
+%             coefs_(nhn+1:end,1:end-width*height) = coefs_(nhn+1:end,width*height+1:end);
+%             coefs_(nhn+1:end,end-width*height+1:end) = tmp;
+%             %            
+%             coefs_ = B*coefs_;            
+%             coefs_ = R0*coefs_;
+%           
+%             % Expected values
+%             ordExpctd = ord;
+%             cfsExpctd = coefs_;
+%             
+%             % Instantiation
+%             import saivdr.dictionary.cnsoltx.CnsoltAtomConcatenator3d
+%             testCase.module = CnsoltAtomConcatenator3d(...
+%                 'NumberOfSymmetricChannels',ceil(nch/2),...
+%                 'NumberOfAntisymmetricChannels',floor(nch/2),...
+%                 'IsPeriodicExt',true);
+%             set(testCase.module,'PolyPhaseOrder',ord);
+%             
+%             % Actual values
+%             ordActual = get(testCase.module,'PolyPhaseOrder');
+%             cfsActual = step(testCase.module,arrayCoefs,scale,pmCoefs);
+%             
+%             % Evaluation
+%             testCase.verifyEqual(ordActual,ordExpctd);
+%             testCase.verifySize(cfsActual,size(cfsExpctd));
+%             diff = max(abs(cfsActual(:)-cfsExpctd(:))./abs(cfsExpctd(:)));
+%             testCase.verifyEqual(cfsActual,cfsExpctd,'RelTol',1e-8,...
+%                 sprintf('diff = %e',diff));
+%             
+%         end
         
     end
  

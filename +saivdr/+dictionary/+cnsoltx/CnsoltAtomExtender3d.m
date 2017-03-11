@@ -189,18 +189,18 @@ classdef CnsoltAtomExtender3d <  ...
         function arrayCoefs = supportExtTypeI_(obj,arrayCoefs,paramMtx1,paramMtx2,paramMtx3,paramMtx4,paramMtx5,paramMtx6,isPeriodicExt)
             hLen = obj.NumberOfHalfChannels;
             nLays_ = obj.nLays;
+            bmg = saivdr.dictionary.utility.ButterflyMatrixGenerationSystem('NumberOfSubmatrices',floor(obj.NumberOfHalfChannels/2));
             
             % Phase 1
             Wx1 = paramMtx1;
             Ux1 = paramMtx2;
-            B1 = saivdr.dictionary.cnsoltx.mexsrcs.AbstCplxBuildingBlock.butterflyMtx(hLen,paramMtx3);
+            [ Cs, Ss ] = step(bmg,paramMtx3);
+            
             I = eye(size(Ux1));
-%             arrayCoefs = blockButterflyTypeI_(obj,arrayCoefs);
-            arrayCoefs = B1'*arrayCoefs;
+            arrayCoefs = blockButterflyPre_(obj,arrayCoefs,Cs,Ss);
             arrayCoefs = rightShiftLowerCoefs_(obj,arrayCoefs);
-            arrayCoefs = B1*arrayCoefs;
-%             arrayCoefs = blockButterflyTypeI_(obj,arrayCoefs);
-%             arrayCoefs = arrayCoefs/2.0;
+            arrayCoefs = blockButterflyPost_(obj,arrayCoefs,Cs,Ss);
+            arrayCoefs = arrayCoefs/2.0;
             % Lower channel rotation
             if isPeriodicExt
                 arrayCoefs(1:hLen,:) = Wx1*arrayCoefs(1:hLen,:);
@@ -220,13 +220,12 @@ classdef CnsoltAtomExtender3d <  ...
             % Phase 2
             Wx2 = paramMtx4;
             Ux2 = paramMtx5;
-            B2 = saivdr.dictionary.cnsoltx.mexsrcs.AbstCplxBuildingBlock.butterflyMtx(hLen,paramMtx6);
-%             arrayCoefs = blockButterflyTypeI_(obj,arrayCoefs);
-            arrayCoefs = B2'*arrayCoefs;
+            [ Cs, Ss ] = step(bmg,paramMtx6);
+            
+            arrayCoefs = blockButterflyPre_(obj,arrayCoefs,Cs,Ss);
             arrayCoefs = leftShiftUpperCoefs_(obj,arrayCoefs);
-            arrayCoefs = B2*arrayCoefs;
-%             arrayCoefs = blockButterflyTypeI_(obj,arrayCoefs);
-%             arrayCoefs = arrayCoefs/2.0;
+            arrayCoefs = blockButterflyPost_(obj,arrayCoefs,Cs,Ss);
+            arrayCoefs = arrayCoefs/2.0;
             % Lower channel rotation
             arrayCoefs(hLen+1:end,:) = Ux2*arrayCoefs(hLen+1:end,:);
             arrayCoefs(1:hLen,:) = Wx2*arrayCoefs(1:hLen,:);
@@ -234,19 +233,19 @@ classdef CnsoltAtomExtender3d <  ...
         
         function arrayCoefs = supportExtTypeII_(obj,arrayCoefs,paramMtx1,paramMtx2,paramMtx3,paramMtx4,paramMtx5,paramMtx6,isPeriodicExt)
             hLen = obj.NumberOfHalfChannels;
-            nLays_ = obj.nLays;        
+            nLays_ = obj.nLays;
+            bmg = saivdr.dictionary.utility.ButterflyMatrixGenerationSystem('NumberOfSubmatrices',floor(obj.NumberOfHalfChannels/2));
             
             % Phase 1
             Wx = paramMtx1;
             Ux = paramMtx2;
-            B = saivdr.dictionary.cnsoltx.mexsrcs.AbstCplxBuildingBlock.butterflyMtx(hLen,paramMtx3);
+            [ Cs, Ss ] = step(bmg,paramMtx3);
+            
             I = eye(size(Ux));
-%             arrayCoefs = blockButterflyTypeII_(obj,arrayCoefs);
-            arrayCoefs(1:end-1,:) = B'*arrayCoefs(1:end-1,:);
+            arrayCoefs(1:end-1,:) = blockButterflyPre_(obj,arrayCoefs(1:end-1,:),Cs,Ss);
             arrayCoefs(1:end-1,:) = rightShiftLowerCoefs_(obj,arrayCoefs(1:end-1,:));
-            arrayCoefs(1:end-1,:) = B*arrayCoefs(1:end-1,:);
-%             arrayCoefs = blockButterflyTypeII_(obj,arrayCoefs);
-%             arrayCoefs = arrayCoefs/2.0;
+            arrayCoefs(1:end-1,:) = blockButterflyPost_(obj,arrayCoefs(1:end-1,:),Cs,Ss);
+            arrayCoefs(1:end-1,:) = arrayCoefs(1:end-1,:)/2.0;
             % Lower channel rotation
             if isPeriodicExt
                 arrayCoefs(1:hLen,:) = Wx*arrayCoefs(1:hLen,:);
@@ -266,13 +265,12 @@ classdef CnsoltAtomExtender3d <  ...
             % Phase 2
             Wx = paramMtx4;
             Ux = paramMtx5;
-            B = saivdr.dictionary.cnsoltx.mexsrcs.AbstCplxBuildingBlock.butterflyMtx(hLen,paramMtx6);
-%             arrayCoefs = blockButterflyTypeII_(obj,arrayCoefs);
-            arrayCoefs(1:end-1,:) = B'*arrayCoefs(1:end-1,:);
+            [ Cs, Ss ] = step(bmg,paramMtx6);
+            
+            arrayCoefs(1:end-1,:) = blockButterflyPre_(obj,arrayCoefs(1:end-1,:),Cs,Ss);
             arrayCoefs(1:end-1,:) = leftShiftUpperCoefs_(obj,arrayCoefs(1:end-1,:));
-            arrayCoefs(1:end-1,:) = B*arrayCoefs(1:end-1,:);
-%             arrayCoefs = blockButterflyTypeII_(obj,arrayCoefs);
-%             arrayCoefs = arrayCoefs/2.0;
+            arrayCoefs(1:end-1,:) = blockButterflyPost_(obj,arrayCoefs(1:end-1,:),Cs,Ss);
+            arrayCoefs(1:end-1,:) = arrayCoefs(1:end-1,:)/2.0;
             % Upper channel rotation
             arrayCoefs(hLen+1:end,:) = Ux*arrayCoefs(hLen+1:end,:);
             arrayCoefs(1:hLen+1,:) = Wx*arrayCoefs(1:hLen+1,:);

@@ -49,6 +49,7 @@ classdef AbstCnsoltCoefManipulator2d < matlab.System
         indexOfParamMtxSzTab
         paramMtxSzTab
         tmpArray
+        
     end
     
     properties (Access = protected, PositiveInteger)
@@ -191,44 +192,42 @@ classdef AbstCnsoltCoefManipulator2d < matlab.System
         end
         
         % B'*arrayCoefs
-        function arrayCoefs = blockButterflyPre_(obj,Cs,Ss,arrayCoefs)
+        function arrayCoefs = blockButterflyPre_(obj,arrayCoefs,Cs,Ss)
             hLen = obj.NumberOfHalfChannels;
             upper = arrayCoefs(1:hLen,:);
             lower = arrayCoefs(hLen+1:2*hLen,:);
             
-            %parfor idx = 1:2:hLen-1
-            for idx = 1:2:hLen-1
-                upperIdx = idx:idx+1;
-                lowerIdx = hLen+idx:hLen+idx+1;
+            %parfor idx = 1:floor(hLen/2)
+            for idx = 1:floor(hLen/2)
+                range = 2*idx-1:2*idx;
                 C = Cs(:,:,idx);
                 S = Ss(:,:,idx);
-                arrayCoefs(upperIdx) = C' *upper(upperIdx) + S.'*lower(lowerIdx);
-                arrayCoefs(lowerIdx) = C.'*upper(upperIdx) + S' *lower(lowerIdx);
+                arrayCoefs(range,:)      = C' *upper(range,:) + S'*lower(range,:);
+                arrayCoefs(range+hLen,:) = C.'*upper(range,:) + S.' *lower(range,:);
             end
             if mod(hLen,2) ~= 0
-                arrayCoefs(hLen) = upper(hLen) - 1i*lower(end);
-                arrayCoefs(end)  = upper(hLen) + 1i*lower(end);
+                arrayCoefs(hLen,:) = upper(hLen,:) - 1i*lower(hLen,:);
+                arrayCoefs(end,:)  = upper(hLen,:) + 1i*lower(hLen,:);
             end
         end
         
         % B*arrayCoefs
-        function arrayCoefs = blockButterflyPost_(obj,Cs,Ss,arrayCoefs)
+        function arrayCoefs = blockButterflyPost_(obj,arrayCoefs,Cs,Ss)
             hLen = obj.NumberOfHalfChannels;
             upper = arrayCoefs(1:hLen,:);
             lower = arrayCoefs(hLen+1:2*hLen,:);
             
-            %parfor idx = 1:2:hLen-1
-            for idx = 1:2:hLen-1
-                upperIdx = idx:idx+1;
-                lowerIdx = hLen+idx:hLen+idx+1;
+            %parfor idx = 1:floor(hLen/2)
+            for idx = 1:floor(hLen/2)
+                range = 2*idx-1:2*idx;
                 C = Cs(:,:,idx);
                 S = Ss(:,:,idx);
-                arrayCoefs(upperIdx) = C*upper(upperIdx) + conj(C)*lower(lowerIdx);
-                arrayCoefs(lowerIdx) = S*upper(upperIdx) + conj(S)*lower(lowerIdx);
+                arrayCoefs(range,:)      = C*upper(range,:) + conj(C)*lower(range,:);
+                arrayCoefs(range+hLen,:) = S*upper(range,:) + conj(S)*lower(range,:);
             end
             if mod(hLen,2) ~= 0
-                arrayCoefs(hLen) =    upper(hLen) +    lower(end);
-                arrayCoefs(end)  = 1i*upper(hLen) - 1i*lower(end);
+                arrayCoefs(hLen,:) =    upper(hLen,:) +    lower(hLen,:);
+                arrayCoefs(end,:)  = 1i*upper(hLen,:) - 1i*lower(hLen,:);
             end
         end
         

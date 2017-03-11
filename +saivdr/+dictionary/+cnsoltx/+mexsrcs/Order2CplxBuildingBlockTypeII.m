@@ -23,6 +23,7 @@ classdef Order2CplxBuildingBlockTypeII < saivdr.dictionary.cnsoltx.mexsrcs.AbstC
         function setupImpl(obj,~,~,~,~,~,~,~,p,~)
             obj.nHalfChannels = p;
             obj.I = eye(p);
+            obj.bmg           = saivdr.dictionary.utility.ButterflyMatrixGenerationSystem('NumberOfSubmatrices',floor(p/2));
         end
 
         function output = stepImpl(obj,input,mtxWE,mtxUE,angB1,mtxWO,mtxHO,angB2,~,nshift)
