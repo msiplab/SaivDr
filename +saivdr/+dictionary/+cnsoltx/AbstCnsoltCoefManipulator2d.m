@@ -190,28 +190,47 @@ classdef AbstCnsoltCoefManipulator2d < matlab.System
                 dimension);
         end
         
-%         function arrayCoefs = blockButterflyTypeI_(obj,arrayCoefs)
-%             hLen = obj.NumberOfSymmetricChannels;
-%             upper = arrayCoefs(1:hLen,:);
-%             lower = arrayCoefs(hLen+1:end,:);
-%             
-%             arrayCoefs(1:hLen,:)     = upper + lower;
-%             arrayCoefs(hLen+1:end,:) = upper - lower;
-%         end
-%         
-%         function arrayCoefs = blockButterflyTypeII_(obj,arrayCoefs)
-%             chs = [obj.NumberOfSymmetricChannels ...
-%                 obj.NumberOfAntisymmetricChannels ];
-%             nChMx = max(chs);
-%             nChMn = min(chs);
-%             upper = arrayCoefs(1:nChMn,:);
-%             middle = arrayCoefs(nChMn+1:nChMx,:);
-%             lower = arrayCoefs(nChMx+1:end,:);
-%             
-%             arrayCoefs(1:nChMn,:) = upper + lower;
-%             arrayCoefs(nChMn+1:nChMx,:) = 1.414213562373095*middle;
-%             arrayCoefs(nChMx+1:end,:) =  upper - lower;
-%         end
+        % B'*arrayCoefs
+        function arrayCoefs = blockButterflyPre_(obj,Cs,Ss,arrayCoefs)
+            hLen = obj.NumberOfHalfChannels;
+            upper = arrayCoefs(1:hLen,:);
+            lower = arrayCoefs(hLen+1:2*hLen,:);
+            
+            %parfor idx = 1:2:hLen-1
+            for idx = 1:2:hLen-1
+                upperIdx = idx:idx+1;
+                lowerIdx = hLen+idx:hLen+idx+1;
+                C = Cs(:,:,idx);
+                S = Ss(:,:,idx);
+                arrayCoefs(upperIdx) = C' *upper(upperIdx) + S.'*lower(lowerIdx);
+                arrayCoefs(lowerIdx) = C.'*upper(upperIdx) + S' *lower(lowerIdx);
+            end
+            if mod(hLen,2) ~= 0
+                arrayCoefs(hLen) = upper(hLen) - 1i*lower(end);
+                arrayCoefs(end)  = upper(hLen) + 1i*lower(end);
+            end
+        end
+        
+        % B*arrayCoefs
+        function arrayCoefs = blockButterflyPost_(obj,Cs,Ss,arrayCoefs)
+            hLen = obj.NumberOfHalfChannels;
+            upper = arrayCoefs(1:hLen,:);
+            lower = arrayCoefs(hLen+1:2*hLen,:);
+            
+            %parfor idx = 1:2:hLen-1
+            for idx = 1:2:hLen-1
+                upperIdx = idx:idx+1;
+                lowerIdx = hLen+idx:hLen+idx+1;
+                C = Cs(:,:,idx);
+                S = Ss(:,:,idx);
+                arrayCoefs(upperIdx) = C*upper(upperIdx) + conj(C)*lower(lowerIdx);
+                arrayCoefs(lowerIdx) = S*upper(upperIdx) + conj(S)*lower(lowerIdx);
+            end
+            if mod(hLen,2) ~= 0
+                arrayCoefs(hLen) =    upper(hLen) +    lower(end);
+                arrayCoefs(end)  = 1i*upper(hLen) - 1i*lower(end);
+            end
+        end
         
         function arrayCoefs = lowerBlockRot_(obj,arrayCoefs,iCol,U)
             hLen = obj.NumberOfHalfChannels;

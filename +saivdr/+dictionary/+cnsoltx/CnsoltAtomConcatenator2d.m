@@ -158,7 +158,6 @@ classdef CnsoltAtomConcatenator2d < ...
         end
        
         function arrayCoefs = atomCncTypeI_(obj,arrayCoefs,paramMtx1,paramMtx2,paramMtx3,paramMtx4,paramMtx5,paramMtx6,isPeriodicExt)
-            %import saivdr.dictionary.cnsoltx.mexsrcs.AbstCplxBuildingBlock
             hLen = obj.NumberOfHalfChannels;
             
             % Phase 1

@@ -267,36 +267,36 @@ psnrs = get(stepmonitor,'PSNRs');
 psnr_ista = psnrs(nItr);
 
 figure(3)
-clims = [-60 0];
-imagesc(cropR, cropX, 20*log10(abs(orgImg)), clims)
-xlabel('Range')
-ylabel('Runing Distance')
-xlim([0 8])
-colorbar
+orgImgHsv = zeros(size(orgImg,1),size(orgImg,2),3);
+orgImgHsv(:,:,1) = angle(orgImg)/(2*pi) + 0.5;
+orgImgHsv(:,:,2) = ones(size(orgImg));
+orgImgHsv(:,:,3) = log10(abs(orgImg)) / 3.0 + 1.0;
+
+image(cropR,cropX,hsv2rgb(orgImgHsv));
 
 figure(4)
-clims = [-pi pi];
-imagesc(cropR, cropX, angle(orgImg), clims)
-xlabel('Range')
-ylabel('Runing Distance')
-xlim([0 8])
-colorbar
+resImgHsv = zeros(size(resImg,1),size(resImg,2),3);
+resImgHsv(:,:,1) = angle(resImg)/(2*pi) + 0.5;
+resImgHsv(:,:,2) = ones(size(resImg));
+resImgHsv(:,:,3) = log10(abs(resImg)) / 3.0 + 1.0;
 
-figure(5)
-clims = [-60 0];
-imagesc(cropR, cropX, 20*log10(abs(resImg)), clims)
-xlabel('Range')
-ylabel('Runing Distance')
-xlim([0 8])
-colorbar
+image(cropR,cropX,hsv2rgb(resImgHsv));
 
-figure(6)
-clims = [-pi pi];
-imagesc(cropR, cropX, angle(resImg), clims)
-xlabel('Range')
-ylabel('Runing Distance')
-xlim([0 8])
-colorbar
+% figure(5)
+% clims = [-60 0];
+% imagesc(cropR, cropX, 20*log10(abs(resImg)), clims)
+% xlabel('Range')
+% ylabel('Runing Distance')
+% xlim([0 8])
+% colorbar
+% 
+% figure(6)
+% clims = [-pi pi];
+% imagesc(cropR, cropX, angle(resImg), clims)
+% xlabel('Range')
+% ylabel('Runing Distance')
+% xlim([0 8])
+% colorbar
 
 nonzeros = sum(abs(rescf(:)) > 1e-6)
 numel(rescf)
