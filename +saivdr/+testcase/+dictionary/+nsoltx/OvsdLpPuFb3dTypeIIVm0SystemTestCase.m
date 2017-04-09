@@ -1,12 +1,9 @@
 classdef OvsdLpPuFb3dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
     %OVSDLPPUFB3dTYPEIIVM0SYSTEMTESTCASE Test case for OvsdLpPuFb3dTypeIIVm0System
     %
-    % SVN identifier:
-    % $Id: OvsdLpPuFb3dTypeIIVm0SystemTestCase.m 683 2015-05-29 08:22:13Z sho $
-    %
     % Requirements: MATLAB R2013b
     %
-    % Copyright (c) 2014-2015, Shogo MURAMATSU
+    % Copyright (c) 2014-2016, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -1732,14 +1729,14 @@ classdef OvsdLpPuFb3dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
         %}
   
         % Test for ParameterMatrixSet
-        function testParameterMatrixSet(testCase)
+        function testParameterMatrixContainer(testCase)
             
             % Preparation
             mstab = [ 5 5 ; 4 4 ];
             
             % Expected value
-            import saivdr.dictionary.utility.ParameterMatrixSet
-            paramExpctd = ParameterMatrixSet(...
+            import saivdr.dictionary.utility.ParameterMatrixContainer
+            paramExpctd = ParameterMatrixContainer(...
                 'MatrixSizeTable',mstab);
             step(paramExpctd,eye(5),1);
             step(paramExpctd,eye(4),2);
@@ -2042,8 +2039,8 @@ classdef OvsdLpPuFb3dTypeIIVm0SystemTestCase < matlab.unittest.TestCase
             mstab = [ 4 4 ; 5 5 ];
             
             % Expected value
-            import saivdr.dictionary.utility.ParameterMatrixSet
-            paramExpctd = ParameterMatrixSet(...
+            import saivdr.dictionary.utility.ParameterMatrixContainer
+            paramExpctd = ParameterMatrixContainer(...
                 'MatrixSizeTable',mstab);
             step(paramExpctd,eye(4),1);
             step(paramExpctd,eye(5),2);

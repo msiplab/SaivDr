@@ -1,12 +1,9 @@
 classdef NsoltAnalysisSynthesisTestCase < matlab.unittest.TestCase
     %NsoltAnalysis2dSystemTESTCASE Test case for NsoltAnalysis2dSystem
     %
-    % SVN identifier:
-    % $Id: NsoltAnalysisSynthesisTestCase.m 868 2015-11-25 02:33:11Z sho $
-    %
     % Requirements: MATLAB R2013b
     %
-    % Copyright (c) 2014-2015, Shogo MURAMATSU
+    % Copyright (c) 2014-2016, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -815,7 +812,7 @@ classdef NsoltAnalysisSynthesisTestCase < matlab.unittest.TestCase
                 'AbsTol',1e-10,sprintf('diff = %g',diff));
             testCase.verifySize(recImg,[ height width ]);
             diff = max(abs(recImg(:)-srcImg(:))./abs(srcImg(:)));
-            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-10,...
+            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-9,...
                 sprintf('diff = %g',diff));
         end
                 

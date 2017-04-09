@@ -1,12 +1,9 @@
 classdef NsoltFactory
     %NSOLTFACTORY Factory class of NSOLTs
     %
-    % SVN identifier:
-    % $Id: NsoltFactory.m 683 2015-05-29 08:22:13Z sho $
-    %
     % Requirements: MATLAB R2013b
     %
-    % Copyright (c) 2014-2015, Shogo MURAMATSU
+    % Copyright (c) 2014-2016, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -25,7 +22,7 @@ classdef NsoltFactory
             if nargin < 1
                 value = OvsdLpPuFb2dTypeIVm1System();
             elseif isa(varargin{1},'saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2dSystem')
-                value = varargin{1};
+                value = clone(varargin{1});
             else
                 p = inputParser;
                 addOptional(p,'DecimationFactor',[2 2]);
@@ -81,7 +78,7 @@ classdef NsoltFactory
             if nargin < 1
                 value = OvsdLpPuFb3dTypeIVm1System();
             elseif isa(varargin{1},'saivdr.dictionary.nsoltx.AbstOvsdLpPuFb3dSystem')
-                value = varargin{1};
+                value = clone(varargin{1});
             else
                 p = inputParser;
                 addOptional(p,'DecimationFactor',[2 2 2]);

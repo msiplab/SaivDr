@@ -112,6 +112,15 @@
 %    LinedIn: https://www.linkedin.com/in/shogo-muramatsu-627b084b
 % 
 % * References
+% 
+% - Shogo Muramatsu, Kosuke Furuya and Naotaka Yuki, "Multidimensional 
+%   Nonseparable Oversampled Lapped Transforms: Theory and Design," 
+%   IEEE Trans. on Signal Process. (T-SP), to appear
+%
+% - Kota Horiuchi and Shogo Muramatsu, "Fast convolution technique for 
+%   Non-separable Oversampled Lapped transforms," Proc. of Asia Pacific 
+%   Signal and Information Proc. Assoc. Annual Summit and Conf. 
+%   (APSIPA ASC), Dec. 2016, to appear
 %
 % - Shogo Muramatsu, Masaki Ishii and Zhiyu Chen,
 %   "Efficient Parameter Optimization for Example-Based Design of 
@@ -156,7 +165,4 @@
 % -- Masaki ISHII,      2015
 % -- Takumi KAWAMURA,   2015
 % -- Kenta SEINO,       2015
-%
-% SVN identifier:
-% $Id: Contents.m 868 2015-11-25 02:33:11Z sho $
 

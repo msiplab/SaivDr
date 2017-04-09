@@ -1,12 +1,9 @@
 classdef NsGenLotFactory
     %NSGENLOTFACTORY  Factory class of NS-GenLOTs
     %
-    % SVN identifier:
-    % $Id: NsGenLotFactory.m 683 2015-05-29 08:22:13Z sho $
-    %
     % Requirements: MATLAB R2013b
     %
-    % Copyright (c) 2014-2015, Shogo MURAMATSU
+    % Copyright (c) 2014-2016, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -26,7 +23,7 @@ classdef NsGenLotFactory
             if nargin < 1
                 value = OvsdLpPuFb2dTypeIVm1System();
             elseif isa(varargin{1},'saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2dSystem')
-                value = varargin{1};
+                value = clone(varargin{1});
             else 
                 p = inputParser;
                 addOptional(p,'DecimationFactor',[2 2]);
@@ -75,9 +72,6 @@ classdef NsGenLotFactory
                     elseif isscalar(angleTvm)
                         value = LpPuFb2dTvmSystem(argin{:});
                     end
-%                 elseif ischar(vm) && vm(1)=='d'
-%                     phi = sscanf(vm,'d%f');
-%                     value = LpPuFb2dTvmSystem(varargin{:});
                 else
                     id = 'SaivDr:IllegalArgumentException';
                     msg = 'Unsupported type of vanishing moments';

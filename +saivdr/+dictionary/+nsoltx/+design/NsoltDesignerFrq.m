@@ -71,13 +71,13 @@ classdef NsoltDesignerFrq < ...
     methods (Access = protected)
         
         function s = saveObjectImpl(obj)
-            s = saveObjectImpl@saivdr.dictionary.nsoltx.design.AbstNsoltDesigner(obj);
+            s = saveObjectImpl@saivdr.dictionary.nsoltx.design.AbstNsoltDesignerGaFmin(obj);
             s.pbErrSbEng = matlab.System.saveObject(obj.pbErrSbEng);
         end
         
         function loadObjectImpl(obj,s,wasLocked)
             obj.pbErrSbEng = matlab.System.loadObject(s.pbErrSbEng);
-            loadObjectImpl@saivdr.dictionary.nsoltx.design.AbstNsoltDesigner(obj,s,wasLocked);
+            loadObjectImpl@saivdr.dictionary.nsoltx.design.AbstNsoltDesignerGaFmin(obj,s,wasLocked);
         end
         
     end

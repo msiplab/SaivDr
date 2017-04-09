@@ -12,12 +12,9 @@ classdef IterativeHardThresholding < ...
     %    IEEE J. Sel. Topics Signal Process., vol. 4, no. 2, pp. 298-309,
     %    Apr. 2010.
     %
-    % SVN identifier:
-    % $Id: IterativeHardThresholding.m 683 2015-05-29 08:22:13Z sho $
-    %
     % Requirements: MATLAB R2013b
     %
-    % Copyright (c) 2014-2015, Shogo MURAMATSU
+    % Copyright (c) 2014-2016, Shogo MURAMATSU
     %
     % All rights reserved.
     %

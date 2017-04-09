@@ -23,6 +23,7 @@ function [fcnhandler,flag] = fcn_autobuild_bb_type2(ps,pa)
 %     isAutoBuildBbType2Locked = false;
 % end
 
+%pkgname = 'saivdr.dictionary.nsoltx.mexsrcs';
 bsfname = 'fcn_Order2BuildingBlockTypeII';
 mexname = sprintf('%s_%d_%d_mex',bsfname,ps,pa);
 
@@ -69,7 +70,8 @@ if isempty(task) || task.ID == 1
         else
             error('SaivDr: Invalid argument')
         end
-        
+%         fname = sprintf('%s.%s',pkgname,bsfname);
+%         clear(fname)
         cd(cdir)
     end
     ftypemex = exist(mexname, 'file');

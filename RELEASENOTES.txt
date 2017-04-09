@@ -87,8 +87,7 @@
 
 * Known issues
 
-- Script 'mytest.m' sometimes fails to generate mex codes at the first
-  trial.  Please try it twice. Then, the code generation may successfully
-  be finished.
+- Script 'mytest.m' sometimes fails to generate mex codes. 
+  Please try several times until the code generation is completed.
 
 ---

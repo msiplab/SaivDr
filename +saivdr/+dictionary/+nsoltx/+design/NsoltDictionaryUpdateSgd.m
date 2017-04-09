@@ -2,12 +2,9 @@ classdef NsoltDictionaryUpdateSgd < ...
         saivdr.dictionary.nsoltx.design.AbstNsoltDesigner %#~codegen
     %NSOLTDICTIONARYUPDATESGD Update step of NSOLT dictionary learning
     %
-    % SVN identifier:
-    % $Id: NsoltDictionaryUpdateSgd.m 866 2015-11-24 04:29:42Z sho $
-    %
     % Requirements: MATLAB R2013b
     %
-    % Copyright (c) 2015, Shogo MURAMATSU
+    % Copyright (c) 2015-2016, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -36,8 +33,8 @@ classdef NsoltDictionaryUpdateSgd < ...
     properties (Hidden, Nontunable)
         NumberOfTreeLevels = 1
         IsFixedCoefs       = true
-        StepStart = 1;
-        StepFinal = 1e-4;
+        StepStart = 1
+        StepFinal = 1e-4
     end    
 
     properties (Hidden)
@@ -148,13 +145,14 @@ classdef NsoltDictionaryUpdateSgd < ...
                 'GradObj',obj.GradObj,...
                 'IsFixedCoefs',obj.IsFixedCoefs,...
                 'Stochastic','on');
+            if obj.IsVerbose
+                fprintf('(NsoltDictionaryUpdateSgd) IsFixedCoefs = %d\n', ...
+                    get(obj.aprxError,'IsFixedCoefs'));
+            end            
         end
         
         function [ lppufb, fval, exitflag ] = stepImpl(obj,lppufb_,options)
-            if obj.IsVerbose
-                fprintf('IsFixedCoefs = %d\n', ...
-                    get(obj.aprxError,'IsFixedCoefs'));
-            end
+
             
             lppufb = clone(lppufb_);
             

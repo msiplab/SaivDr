@@ -51,6 +51,7 @@ filterName = sprintf('%s/nsolt_%s.mat', location, sparam);
 display(filterName)
 S = load(filterName,'lppufb');
 lppufb = S.lppufb;
+lppufb = saivdr.dictionary.utility.fcn_upgrade(lppufb);
 prmMtcs = get(lppufb,'ParameterMatrixSet');
 if isa(lppufb,'saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2dTypeIISystem')
     fprintf('W_0 = \n');
@@ -65,12 +66,13 @@ if isa(lppufb,'saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2dTypeIISystem')
             direction = 'y';
             offset = nOrd(Direction.HORIZONTAL)/2;
         end
-        fprintf('W^{%s}_%d = \n',dir,(idx-1)/2-offset);
+        fprintf('W^{%s}_%d = \n',direction,(idx-1)/2-offset);
         disp(step(prmMtcs,[],uint32(idx)))
-        fprintf('U^{%s}_%d = \n',dir,(idx-1)/2-offset);
+        fprintf('U^{%s}_%d = \n',direction,(idx-1)/2-offset);
         disp(step(prmMtcs,[],uint32(idx+1)))
     end
 else
+    %lppufb = saivdr.dictionary.utility.fcn_upgrade(lppufb);
     fprintf('W_0 = \n')
     disp(step(prmMtcs,[],uint32(1)))
     fprintf('U_0 = \n')

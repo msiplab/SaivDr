@@ -1,4 +1,4 @@
-function [ outputFb ] = fcn_upgrade( inputFb )
+function [ outputFb, isConversion ] = fcn_upgrade( inputFb )
 %NSOLTX_OVSDLPPUFB2D Converter of Old Package Systems
 %
 % SVN identifier:
@@ -44,6 +44,7 @@ else
 end
 %
 if isConversion
+    warning('Temporary upgrading ...')
     dec = get(inputFb,'DecimationFactor');
     ord = get(inputFb,'PolyPhaseOrder');
     omd = get(inputFb,'OutputMode');

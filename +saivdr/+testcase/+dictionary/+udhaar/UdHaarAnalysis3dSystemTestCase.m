@@ -525,7 +525,7 @@ classdef UdHaarAnalysis3dSystemTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(norm(coefActual(:)),norm(srcImg(:)),...
                 'RelTol',1e-7,sprintf('Energy is not preserved.'));        
             diff = max(abs(coefExpctd(:) - coefActual(:))./abs(coefExpctd(:)));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-7,sprintf('%g',diff));
+            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-6,sprintf('%g',diff));
 
         end
         
