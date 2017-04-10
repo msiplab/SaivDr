@@ -89,6 +89,7 @@ classdef ModulePartialLineBuffer < matlab.System  & ...
         end                
         
         function icon = getIconImpl(~)
+            coder.extrinsic('sprintf')
             icon = sprintf('Partial\nLine Buf.');
         end
     end
