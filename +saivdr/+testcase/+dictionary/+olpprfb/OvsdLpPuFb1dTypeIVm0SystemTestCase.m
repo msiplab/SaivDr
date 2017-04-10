@@ -990,7 +990,7 @@ classdef OvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             
             % Evaluation
             coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',coefDist));
+            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-13,sprintf('%g',coefDist));
             
         end
         
@@ -1611,7 +1611,7 @@ classdef OvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             
             % Evaluation
             coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',coefDist));
+            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-13,sprintf('%g',coefDist));
             
         end
         
@@ -1851,7 +1851,7 @@ classdef OvsdLpPuFb1dTypeIVm0SystemTestCase < matlab.unittest.TestCase
             
             % Evaluation
             coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',coefDist));
+            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-13,sprintf('%g',coefDist));
             
         end
         
