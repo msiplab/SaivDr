@@ -180,20 +180,22 @@ classdef AbstOvsdLpPuFb1dSystem < matlab.System %#codegen
         function value = getMatrixE0_(obj)
             nCoefs = obj.DecimationFactor;
             nElmBi = nCoefs;
-            dctMtx = dctmtx(nCoefs);
+            %dctMtx = dctmtx(nCoefs);
             coefs = zeros(nElmBi);
             iElm = 1; % E0.'= [ Bee Boo Boe Beo ] % Byx
             for iCoef = 1:2:nCoefs % y-e
                 dctCoef = zeros(nCoefs,1);
                 dctCoef(iCoef) = 1;
-                basisVector = dctMtx.'*dctCoef;
+                %basisVector = dctMtx.'*dctCoef;
+                basisVector = idct(dctCoef);
                 coefs(iElm,:) = basisVector(:).';
                 iElm = iElm + 1;
             end
             for iCoef = 2:2:nCoefs % y-e
                 dctCoef = zeros(nCoefs,1);
                 dctCoef(iCoef) = 1;
-                basisVector = dctMtx.'*dctCoef;
+                %basisVector = dctMtx.'*dctCoef;
+                basisVector = idct(dctCoef);
                 coefs(iElm,:) = basisVector(:).';
                 iElm = iElm + 1;
             end

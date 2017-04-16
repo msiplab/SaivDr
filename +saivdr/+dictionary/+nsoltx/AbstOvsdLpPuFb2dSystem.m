@@ -67,6 +67,7 @@ classdef AbstOvsdLpPuFb2dSystem < matlab.System %#codegen
             updateParameterMatrixSet_(obj);
             obj.mexFlag = false;            
             H = getAnalysisFilterBank_(obj);
+            coder.extrinsic('imshow')
             for ib=1:sum(obj.NumberOfChannels)
                 subplot(2,obj.NumberOfChannels(1),ib);
                 imshow(rot90(H(:,:,ib),2)+0.5);
@@ -195,8 +196,8 @@ classdef AbstOvsdLpPuFb2dSystem < matlab.System %#codegen
             nRows = obj.DecimationFactor(Direction.VERTICAL);
             nCols = obj.DecimationFactor(Direction.HORIZONTAL);
             nElmBi = nRows*nCols;
-            dctY = dctmtx(nRows);
-            dctX = dctmtx(nCols);
+            dctY = dct(eye(nRows)); %dctmtx(nRows);
+            dctX = dct(eye(nCols)); %dctmtx(nCols);
             coefs = zeros(nElmBi);
             iElm = 1; % E0.'= [ Bee Boo Boe Beo ] % Byx
             for iCol = 1:2:nCols % x-e

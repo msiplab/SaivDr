@@ -78,6 +78,9 @@ classdef AbstOvsdLpPuFb3dSystem < matlab.System %#codegen
             lz = size(H,3);
             %
             [x,y,z] = meshgrid(-(lx-1)/2:(lx-1)/2,-(ly-1)/2:(ly-1)/2,-(lz-1)/2:(lz-1)/2);
+            coder.extrinsic('slice')
+            coder.extrinsic('colorbar')
+            coder.extrinsic('isprop')
             for ib=1:sum(obj.NumberOfChannels)
                 %hold off
                 %
@@ -289,11 +292,14 @@ classdef AbstOvsdLpPuFb3dSystem < matlab.System %#codegen
             iElm = 1; 
             % E0.'= [ Beee Beoo Booe Boeo Beeo Beoe Booo Boee ] % Byxz
             % Beee
+            dctY = dct(eye(nRows)); %dctmtx(nRows);
+            dctX = dct(eye(nCols)); %dctmtx(nCols);            
             for iRow = 1:2:nRows % y-e            
                 for iCol = 1:2:nCols % x-e
                     dctCoefYX = zeros(nRows,nCols);
                     dctCoefYX(iRow,iCol) = 1;
-                    basisYX = idct2(dctCoefYX);
+                    %basisYX = idct2(dctCoefYX);
+                    basisYX = dctY.'*dctCoefYX*dctX;
                     for iDep = 1:2:nDeps % z-e
                         dctCoefZ = zeros(nDeps,1);
                         dctCoefZ(iDep) = 1;
@@ -309,7 +315,8 @@ classdef AbstOvsdLpPuFb3dSystem < matlab.System %#codegen
                 for iCol = 2:2:nCols % x-o
                     dctCoefYX = zeros(nRows,nCols);
                     dctCoefYX(iRow,iCol) = 1;
-                    basisYX = idct2(dctCoefYX);
+                    %basisYX = idct2(dctCoefYX);
+                    basisYX = dctY.'*dctCoefYX*dctX;                    
                     for iDep = 2:2:nDeps % z-o
                         dctCoefZ = zeros(nDeps,1);
                         dctCoefZ(iDep) = 1;
@@ -325,7 +332,8 @@ classdef AbstOvsdLpPuFb3dSystem < matlab.System %#codegen
                 for iCol = 2:2:nCols % x-o
                     dctCoefYX = zeros(nRows,nCols);
                     dctCoefYX(iRow,iCol) = 1;
-                    basisYX = idct2(dctCoefYX);
+                    %basisYX = idct2(dctCoefYX);
+                    basisYX = dctY.'*dctCoefYX*dctX;                    
                     for iDep = 1:2:nDeps % z-e
                         dctCoefZ = zeros(nDeps,1);
                         dctCoefZ(iDep) = 1;
@@ -341,7 +349,8 @@ classdef AbstOvsdLpPuFb3dSystem < matlab.System %#codegen
                 for iCol = 1:2:nCols % x-e
                     dctCoefYX = zeros(nRows,nCols);
                     dctCoefYX(iRow,iCol) = 1;
-                    basisYX = idct2(dctCoefYX);
+                    %basisYX = idct2(dctCoefYX)
+                    basisYX = dctY.'*dctCoefYX*dctX;
                     for iDep = 2:2:nDeps % z-o
                         dctCoefZ = zeros(nDeps,1);
                         dctCoefZ(iDep) = 1;
@@ -357,7 +366,8 @@ classdef AbstOvsdLpPuFb3dSystem < matlab.System %#codegen
                 for iCol = 1:2:nCols % x-e
                     dctCoefYX = zeros(nRows,nCols);
                     dctCoefYX(iRow,iCol) = 1;
-                    basisYX = idct2(dctCoefYX);
+                    %basisYX = idct2(dctCoefYX);
+                    basisYX = dctY.'*dctCoefYX*dctX;                    
                     for iDep = 2:2:nDeps % z-o
                         dctCoefZ = zeros(nDeps,1);
                         dctCoefZ(iDep) = 1;
@@ -373,7 +383,8 @@ classdef AbstOvsdLpPuFb3dSystem < matlab.System %#codegen
                 for iCol = 2:2:nCols % x-o
                     dctCoefYX = zeros(nRows,nCols);
                     dctCoefYX(iRow,iCol) = 1;
-                    basisYX = idct2(dctCoefYX);
+                    %basisYX = idct2(dctCoefYX);
+                    basisYX = dctY.'*dctCoefYX*dctX;                    
                     for iDep = 1:2:nDeps % z-e
                         dctCoefZ = zeros(nDeps,1);
                         dctCoefZ(iDep) = 1;
@@ -389,7 +400,8 @@ classdef AbstOvsdLpPuFb3dSystem < matlab.System %#codegen
                 for iCol = 2:2:nCols % x-o
                     dctCoefYX = zeros(nRows,nCols);
                     dctCoefYX(iRow,iCol) = 1;
-                    basisYX = idct2(dctCoefYX);
+                    %basisYX = idct2(dctCoefYX);
+                    basisYX = dctY.'*dctCoefYX*dctX;                    
                     for iDep = 2:2:nDeps % z-o
                         dctCoefZ = zeros(nDeps,1);
                         dctCoefZ(iDep) = 1;
@@ -405,7 +417,8 @@ classdef AbstOvsdLpPuFb3dSystem < matlab.System %#codegen
                 for iCol = 1:2:nCols % x-e
                     dctCoefYX = zeros(nRows,nCols);
                     dctCoefYX(iRow,iCol) = 1;
-                    basisYX = idct2(dctCoefYX);
+                    %basisYX = idct2(dctCoefYX);
+                    basisYX = dctY.'*dctCoefYX*dctX;                    
                     for iDep = 1:2:nDeps % z-e
                         dctCoefZ = zeros(nDeps,1);
                         dctCoefZ(iDep) = 1;
