@@ -78,6 +78,12 @@ classdef UdHaarSynthesis2dSystem < saivdr.dictionary.AbstSynthesisSystem %#codeg
         end
         
         function y = stepImpl(obj, u, ~)
+            % NOTE:
+            % imfilter of R2017a has a bug for double precision array            
+            if strcmp(version('-release'),'2017a') && ...
+                    isa(u,'double')
+                 warning('imfilter of R2017a has a bug for double precison array')
+            end             
             ufactor = 2^(obj.nLevels-1);
             kernelSize = 2^obj.nLevels;
             weight = 1/(kernelSize^2);
