@@ -134,7 +134,14 @@ classdef NsoltDesignerFrqTestCase < matlab.unittest.TestCase
             % Optimization
             options = gaoptimset('ga');
             options = gaoptimset(options,'Display',testCase.display);
-            options = gaoptimset(options,'UseParallel','always');
+            strver = version('-release');
+            if strcmp(strver,'2016b')
+                isParallel = false;
+                warning('R2016b fails when UseParalell is true.')
+            else
+                isParallel = true;                
+            end
+            options = gaoptimset(options,'UseParallel',isParallel);             
             options = gaoptimset(options,'PopulationSize',4);
             options = gaoptimset(options,'EliteCount',2);
             popInitRange = [angles(:)-pi angles(:)+pi].';
@@ -205,7 +212,14 @@ classdef NsoltDesignerFrqTestCase < matlab.unittest.TestCase
             % Optimization
             options = gaoptimset('ga');
             options = gaoptimset(options,'Display',testCase.display);
-            options = gaoptimset(options,'UseParallel','always');
+            strver = version('-release');
+            if strcmp(strver,'2016b')
+                isParallel = false;
+                warning('R2016b fails when UseParalell is true.')
+            else
+                isParallel = true;                
+            end
+            options = gaoptimset(options,'UseParallel',isParallel);                
             options = gaoptimset(options,'PopulationSize',4);
             options = gaoptimset(options,'EliteCount',2);
             popInitRange = [angles(:)-pi angles(:)+pi].';
