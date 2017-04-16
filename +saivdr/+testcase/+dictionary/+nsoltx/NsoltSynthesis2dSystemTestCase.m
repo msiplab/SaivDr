@@ -6,7 +6,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
     %
     % Requirements: MATLAB R2013b
     %
-    % Copyright (c) 2014-2015, Shogo MURAMATSU
+    % Copyright (c) 2014-2017, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -112,8 +112,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 step(testCase.synthesizer,coefs,scales);
                                     
             % Evaluation
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,...
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,...
                 sprintf('%g',diff));
             
         end
@@ -154,8 +154,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 step(testCase.synthesizer,coefs,scales);
                                     
             % Evaluation
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
             
         end
 
@@ -199,8 +199,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
             
         end
 
@@ -262,8 +262,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(dec+1:end-dec,dec+1:end-dec); % ignore border
             imgActual = imgActual(dec+1:end-dec,dec+1:end-dec); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
                 
         % Test
@@ -323,8 +323,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
     
         % Test
@@ -386,8 +386,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(dec+1:end-dec,dec+1:end-dec); % ignore border
             imgActual = imgActual(dec+1:end-dec,dec+1:end-dec); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-8,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
                 
         % Test
@@ -448,8 +448,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -510,8 +510,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
 
 
@@ -569,8 +569,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
 
         % Test for boundary operation
@@ -628,8 +628,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -692,8 +692,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(2*dec+1:end-2*dec,2*dec+1:end-2*dec); % ignore border
             imgActual = imgActual(2*dec+1:end-2*dec,2*dec+1:end-2*dec); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -755,8 +755,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
  
         % Test
@@ -818,8 +818,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(2*dec+1:end-2*dec,2*dec+1:end-2*dec); % ignore border
             imgActual = imgActual(2*dec+1:end-2*dec,2*dec+1:end-2*dec); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
        
         % Test
@@ -879,8 +879,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -939,8 +939,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             
             % Evaluation
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test for boundary operation
@@ -1002,8 +1002,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             
             % Evaluation
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -1065,8 +1065,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(3*dec+1:end-3*dec,3*dec+1:end-3*dec); % ignore border
             imgActual = imgActual(3*dec+1:end-3*dec,3*dec+1:end-3*dec); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -1126,8 +1126,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -1189,8 +1189,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(3*dec+1:end-3*dec,3*dec+1:end-3*dec); % ignore border
             imgActual = imgActual(3*dec+1:end-3*dec,3*dec+1:end-3*dec); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -1250,8 +1250,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -1311,8 +1311,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test for boundary operation
@@ -1371,8 +1371,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -1434,8 +1434,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(:,dec+1:end-dec); % ignore border
             imgActual = imgActual(:,dec+1:end-dec); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -1498,8 +1498,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(:,dec+1:end-dec); % ignore border
             imgActual = imgActual(:,dec+1:end-dec); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -1562,8 +1562,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(:,2*dec+1:end-2*dec); % ignore border
             imgActual = imgActual(:,2*dec+1:end-2*dec); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -1625,8 +1625,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(:,2*dec+1:end-2*dec); % ignore border
             imgActual = imgActual(:,2*dec+1:end-2*dec); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -1688,8 +1688,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(dec+1:end-dec,:); % ignore border
             imgActual = imgActual(dec+1:end-dec,:); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -1752,8 +1752,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(dec+1:end-dec,:); % ignore border
             imgActual = imgActual(dec+1:end-dec,:); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -1814,8 +1814,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(2*dec+1:end-2*dec,:); % ignore border
             imgActual = imgActual(2*dec+1:end-2*dec,:); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -1877,8 +1877,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(2*dec+1:end-2*dec,:); % ignore border
             imgActual = imgActual(2*dec+1:end-2*dec,:); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -1939,8 +1939,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -2001,8 +2001,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -2063,8 +2063,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -2125,8 +2125,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -2187,8 +2187,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -2249,8 +2249,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,...
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,...
                 sprintf('%g',diff));
         end
         
@@ -2312,8 +2312,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -2374,8 +2374,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -2438,8 +2438,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(dec+1:end-dec,2*dec+1:end-2*dec); % ignore border
             imgActual = imgActual(dec+1:end-dec,2*dec+1:end-2*dec); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -2501,8 +2501,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(dec+1:end-dec,2*dec+1:end-2*dec); % ignore border
             imgActual = imgActual(dec+1:end-dec,2*dec+1:end-2*dec); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -2563,8 +2563,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -2625,8 +2625,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-8,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -2689,8 +2689,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(2*dec+1:end-2*dec,dec+1:end-dec); % ignore border
             imgActual = imgActual(2*dec+1:end-2*dec,dec+1:end-dec); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -2753,8 +2753,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(2*dec+1:end-2*dec,dec+1:end-dec); % ignore border
             imgActual = imgActual(2*dec+1:end-2*dec,dec+1:end-dec); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -2814,8 +2814,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -2876,8 +2876,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec11Ch4Ord00
@@ -2938,8 +2938,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec22Ch4Ord00
@@ -3000,8 +3000,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             
             % Evaluation
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
             
         end
         
@@ -3063,8 +3063,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             
             % Evaluation
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
             
         end
         
@@ -3126,8 +3126,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             
             % Evaluation
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
             
         end
         
@@ -3192,8 +3192,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(dec+1:end-dec,dec+1:end-dec); % ignore border
             imgActual = imgActual(dec+1:end-dec,dec+1:end-dec); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec22Ch4Ord22
@@ -3258,8 +3258,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             border = dec;
             imgExpctd = imgExpctd(border+1:end-border,border+1:end-border); % ignore border
             imgActual = imgActual(border+1:end-border,border+1:end-border); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec22Ch6Ord22
@@ -3324,8 +3324,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             border = dec;
             imgExpctd = imgExpctd(border+1:end-border,border+1:end-border); % ignore border
             imgActual = imgActual(border+1:end-border,border+1:end-border); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec22Ch8Ord22
@@ -3390,8 +3390,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             border = dec;
             imgExpctd = imgExpctd(border+1:end-border,border+1:end-border); % ignore border
             imgActual = imgActual(border+1:end-border,border+1:end-border); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec11Ch4Ord44
@@ -3456,8 +3456,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             border = ord*dec/2;
             imgExpctd = imgExpctd(border+1:end-border,border+1:end-border); % ignore border
             imgActual = imgActual(border+1:end-border,border+1:end-border); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec22Ch4Ord44
@@ -3521,8 +3521,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             border = ord*dec/2;
             imgExpctd = imgExpctd(border+1:end-border,border+1:end-border); % ignore border
             imgActual = imgActual(border+1:end-border,border+1:end-border); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec22Ch6Ord44
@@ -3587,8 +3587,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             border = ord*dec/2;
             imgExpctd = imgExpctd(border+1:end-border,border+1:end-border); % ignore border
             imgActual = imgActual(border+1:end-border,border+1:end-border); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec22Ch8Ord44
@@ -3653,8 +3653,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             border = ord*dec/2;
             imgExpctd = imgExpctd(border+1:end-border,border+1:end-border); % ignore border
             imgActual = imgActual(border+1:end-border,border+1:end-border); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec11Ch4Ord66
@@ -3719,8 +3719,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             border = ord*dec/2;
             imgExpctd = imgExpctd(border+1:end-border,border+1:end-border); % ignore border
             imgActual = imgActual(border+1:end-border,border+1:end-border); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec22Ch4Ord66
@@ -3784,8 +3784,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             border = ord*dec/2;
             imgExpctd = imgExpctd(border+1:end-border,border+1:end-border); % ignore border
             imgActual = imgActual(border+1:end-border,border+1:end-border); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec22Ch6Ord66
@@ -3848,8 +3848,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             border = ord*dec/2;
             imgExpctd = imgExpctd(border+1:end-border,border+1:end-border); % ignore border
             imgActual = imgActual(border+1:end-border,border+1:end-border); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec22Ch8Ord66
@@ -3913,8 +3913,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             border = ord*dec/2;
             imgExpctd = imgExpctd(border+1:end-border,border+1:end-border); % ignore border
             imgActual = imgActual(border+1:end-border,border+1:end-border); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec11Ch4Ord66PeriodicExt
@@ -3978,8 +3978,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             border = 0;
             imgExpctd = imgExpctd(border+1:end-border,border+1:end-border); % ignore border
             imgActual = imgActual(border+1:end-border,border+1:end-border); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec22Ch4Ord66PeriodicExt
@@ -4044,8 +4044,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             border = 0;
             imgExpctd = imgExpctd(border+1:end-border,border+1:end-border); % ignore border
             imgActual = imgActual(border+1:end-border,border+1:end-border); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec22Ch6Ord66PeriodicExt
@@ -4111,8 +4111,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             border = 0;
             imgExpctd = imgExpctd(border+1:end-border,border+1:end-border); % ignore border
             imgActual = imgActual(border+1:end-border,border+1:end-border); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec22Ch8Ord66PeriodicExt
@@ -4177,8 +4177,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             border = 0;
             imgExpctd = imgExpctd(border+1:end-border,border+1:end-border); % ignore border
             imgActual = imgActual(border+1:end-border,border+1:end-border); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec11Ch4Ord00Level1
@@ -4240,8 +4240,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec22Ch4Ord00Level1
@@ -4304,8 +4304,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec22Ch6Ord00Level1
@@ -4368,8 +4368,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec22Ch8Ord00Level1
@@ -4431,8 +4431,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec11Ch4Ord00Level2
@@ -4510,8 +4510,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec22Ch4Ord00Level2
@@ -4589,8 +4589,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec22Ch6Ord00Level2
@@ -4671,8 +4671,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec22Ch8Ord00Level2
@@ -4757,8 +4757,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec11Ch4Ord22Level1
@@ -4823,8 +4823,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             border = dec;
             imgExpctd = imgExpctd(border+1:end-border,border+1:end-border); % ignore border
             imgActual = imgActual(border+1:end-border,border+1:end-border); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec22Ch4Ord22Level1
@@ -4888,8 +4888,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             border = dec;
             imgExpctd = imgExpctd(border+1:end-border,border+1:end-border); % ignore border
             imgActual = imgActual(border+1:end-border,border+1:end-border); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec22Ch6Ord22Level1
@@ -4954,8 +4954,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             border = dec;
             imgExpctd = imgExpctd(border+1:end-border,border+1:end-border); % ignore border
             imgActual = imgActual(border+1:end-border,border+1:end-border); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec22Ch8Ord22Level1
@@ -5020,8 +5020,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             border = dec;
             imgExpctd = imgExpctd(border+1:end-border,border+1:end-border); % ignore border
             imgActual = imgActual(border+1:end-border,border+1:end-border); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec11Ch4Ord22Level2PeriodicExt
@@ -5099,8 +5099,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec22Ch4Ord22Level2PeriodicExt
@@ -5177,8 +5177,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec22Ch6Ord22Level2PeriodicExt
@@ -5258,8 +5258,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec22Ch44Ord22Level2PeriodicExt
@@ -5345,8 +5345,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-8,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec22Ch44Ord44Level3PeriodicExt
@@ -5438,8 +5438,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-8,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         function testSetLpPuFb2dDec22Ch44Ord44(testCase)
@@ -5557,7 +5557,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             import matlab.unittest.constraints.IsGreaterThan;
             diff = norm(imgPst(:)-imgPre(:));
-            testCase.verifyEqual(diff,0,'AbsTol',1e-15,sprintf('%g',diff));
+            testCase.verifyEqual(diff,0,'AbsTol',1e-14,sprintf('%g',diff));
             
             % ReInstantiation of target class
             testCase.synthesizer = NsoltSynthesis2dSystem(...
@@ -5704,8 +5704,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
             
         end
         
@@ -5746,8 +5746,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
             
         end
         
@@ -5796,8 +5796,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
             
         end
         
@@ -5846,8 +5846,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-8,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
             
         end
         
@@ -5912,8 +5912,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(dec+1:end-dec,dec+1:end-dec); % ignore border
             imgActual = imgActual(dec+1:end-dec,dec+1:end-dec); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -5977,8 +5977,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(dec+1:end-dec,dec+1:end-dec); % ignore border
             imgActual = imgActual(dec+1:end-dec,dec+1:end-dec); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -6041,8 +6041,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -6106,8 +6106,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(dec+1:end-dec,dec+1:end-dec); % ignore border
             imgActual = imgActual(dec+1:end-dec,dec+1:end-dec); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -6170,8 +6170,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test for boundary operation
@@ -6230,8 +6230,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             
             % Evaluation
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test for boundary operation
@@ -6290,8 +6290,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             
             % Evaluation
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -6355,8 +6355,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(2*dec+1:end-2*dec,2*dec+1:end-2*dec); % ignore border
             imgActual = imgActual(2*dec+1:end-2*dec,2*dec+1:end-2*dec); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -6419,8 +6419,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -6484,8 +6484,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(2*dec+1:end-2*dec,2*dec+1:end-2*dec); % ignore border
             imgActual = imgActual(2*dec+1:end-2*dec,2*dec+1:end-2*dec); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -6548,8 +6548,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -6608,8 +6608,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             
             % Evaluation
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test for boundary operation
@@ -6668,8 +6668,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             
             % Evaluation
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -6733,8 +6733,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(3*dec+1:end-3*dec,3*dec+1:end-3*dec); % ignore border
             imgActual = imgActual(3*dec+1:end-3*dec,3*dec+1:end-3*dec); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -6797,8 +6797,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -6862,8 +6862,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(3*dec+1:end-3*dec,3*dec+1:end-3*dec); % ignore border
             imgActual = imgActual(3*dec+1:end-3*dec,3*dec+1:end-3*dec); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -6926,8 +6926,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -6987,8 +6987,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             
             % Evaluation
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test for boundary operation
@@ -7047,8 +7047,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             
             % Evaluation
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-8,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -7111,8 +7111,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(:,dec+1:end-dec); % ignore border
             imgActual = imgActual(:,dec+1:end-dec); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -7175,8 +7175,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(:,dec+1:end-dec); % ignore border
             imgActual = imgActual(:,dec+1:end-dec); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -7239,8 +7239,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(:,2*dec+1:end-2*dec); % ignore border
             imgActual = imgActual(:,2*dec+1:end-2*dec); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -7303,8 +7303,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(:,2*dec+1:end-2*dec); % ignore border
             imgActual = imgActual(:,2*dec+1:end-2*dec); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -7367,8 +7367,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(dec+1:end-dec,:); % ignore border
             imgActual = imgActual(dec+1:end-dec,:); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -7431,8 +7431,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(dec+1:end-dec,:); % ignore border
             imgActual = imgActual(dec+1:end-dec,:); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -7495,8 +7495,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(2*dec+1:end-2*dec,:); % ignore border
             imgActual = imgActual(2*dec+1:end-2*dec,:); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -7559,8 +7559,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(2*dec+1:end-2*dec,:); % ignore border
             imgActual = imgActual(2*dec+1:end-2*dec,:); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -7622,8 +7622,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -7685,8 +7685,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -7748,8 +7748,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -7811,8 +7811,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -7874,8 +7874,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -7937,8 +7937,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         
@@ -8001,8 +8001,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -8064,8 +8064,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -8128,8 +8128,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(dec+1:end-dec,2*dec+1:end-2*dec); % ignore border
             imgActual = imgActual(dec+1:end-dec,2*dec+1:end-2*dec); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -8192,8 +8192,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(dec+1:end-dec,2*dec+1:end-2*dec); % ignore border
             imgActual = imgActual(dec+1:end-dec,2*dec+1:end-2*dec); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -8255,8 +8255,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -8318,8 +8318,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -8382,8 +8382,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(2*dec+1:end-2*dec,dec+1:end-dec); % ignore border
             imgActual = imgActual(2*dec+1:end-2*dec,dec+1:end-dec); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -8446,8 +8446,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(2*dec+1:end-2*dec,dec+1:end-dec); % ignore border
             imgActual = imgActual(2*dec+1:end-2*dec,dec+1:end-dec); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -8509,8 +8509,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -8572,8 +8572,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec11Ch5Ord00
@@ -8635,8 +8635,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec22Ch7Ord00
@@ -8696,8 +8696,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             
             % Evaluation
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
             
         end
         
@@ -8758,8 +8758,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             
             % Evaluation
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
             
         end
         
@@ -8820,8 +8820,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             
             % Evaluation
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
             
         end
         
@@ -8886,8 +8886,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(dec+1:end-dec,dec+1:end-dec); % ignore border
             imgActual = imgActual(dec+1:end-dec,dec+1:end-dec); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec22Ch4Ord22
@@ -8952,8 +8952,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             border = dec;
             imgExpctd = imgExpctd(border+1:end-border,border+1:end-border); % ignore border
             imgActual = imgActual(border+1:end-border,border+1:end-border); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec22Ch6Ord22
@@ -9018,8 +9018,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             border = dec;
             imgExpctd = imgExpctd(border+1:end-border,border+1:end-border); % ignore border
             imgActual = imgActual(border+1:end-border,border+1:end-border); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec22Ch8Ord22
@@ -9084,8 +9084,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             border = dec;
             imgExpctd = imgExpctd(border+1:end-border,border+1:end-border); % ignore border
             imgActual = imgActual(border+1:end-border,border+1:end-border); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec11Ch4Ord44
@@ -9150,8 +9150,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             border = ord*dec/2;
             imgExpctd = imgExpctd(border+1:end-border,border+1:end-border); % ignore border
             imgActual = imgActual(border+1:end-border,border+1:end-border); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec22Ch4Ord44
@@ -9216,8 +9216,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             border = ord*dec/2;
             imgExpctd = imgExpctd(border+1:end-border,border+1:end-border); % ignore border
             imgActual = imgActual(border+1:end-border,border+1:end-border); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec22Ch6Ord44
@@ -9282,8 +9282,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             border = ord*dec/2;
             imgExpctd = imgExpctd(border+1:end-border,border+1:end-border); % ignore border
             imgActual = imgActual(border+1:end-border,border+1:end-border); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec22Ch8Ord44
@@ -9347,8 +9347,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             border = ord*dec/2;
             imgExpctd = imgExpctd(border+1:end-border,border+1:end-border); % ignore border
             imgActual = imgActual(border+1:end-border,border+1:end-border); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec11Ch4Ord66
@@ -9413,8 +9413,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             border = ord*dec/2;
             imgExpctd = imgExpctd(border+1:end-border,border+1:end-border); % ignore border
             imgActual = imgActual(border+1:end-border,border+1:end-border); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec22Ch4Ord66
@@ -9479,8 +9479,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             border = ord*dec/2;
             imgExpctd = imgExpctd(border+1:end-border,border+1:end-border); % ignore border
             imgActual = imgActual(border+1:end-border,border+1:end-border); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec22Ch6Ord66
@@ -9545,8 +9545,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             border = ord*dec/2;
             imgExpctd = imgExpctd(border+1:end-border,border+1:end-border); % ignore border
             imgActual = imgActual(border+1:end-border,border+1:end-border); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec22Ch8Ord66
@@ -9611,8 +9611,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             border = ord*dec/2;
             imgExpctd = imgExpctd(border+1:end-border,border+1:end-border); % ignore border
             imgActual = imgActual(border+1:end-border,border+1:end-border); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec11Ch4Ord66PeriodicExt
@@ -9678,8 +9678,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             border = 0;
             imgExpctd = imgExpctd(border+1:end-border,border+1:end-border);
             imgActual = imgActual(border+1:end-border,border+1:end-border);
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
               
         %Dec22Ch6Ord66PeriodicExt
@@ -9745,8 +9745,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             border = 0;
             imgExpctd = imgExpctd(border+1:end-border,border+1:end-border);
             imgActual = imgActual(border+1:end-border,border+1:end-border);
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec22Ch8Ord66PeriodicExt
@@ -9812,8 +9812,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             border = 0;
             imgExpctd = imgExpctd(border+1:end-border,border+1:end-border);
             imgActual = imgActual(border+1:end-border,border+1:end-border);
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec11Ch4Ord00Level1
@@ -9874,8 +9874,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec22Ch5Ord00Level1
@@ -9936,8 +9936,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec22Ch6Ord00Level1
@@ -9998,8 +9998,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
             
         end
         
@@ -10061,8 +10061,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec11Ch4Ord00Level2
@@ -10140,8 +10140,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec22Ch4Ord00Level2
@@ -10219,8 +10219,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec22Ch6Ord00Level2
@@ -10303,8 +10303,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec22Ch8Ord00Level2
@@ -10390,8 +10390,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec11Ch4Ord22Level1
@@ -10456,8 +10456,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             border = dec;
             imgExpctd = imgExpctd(border+1:end-border,border+1:end-border); % ignore border
             imgActual = imgActual(border+1:end-border,border+1:end-border); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec22Ch4Ord22Level1
@@ -10522,8 +10522,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             border = dec;
             imgExpctd = imgExpctd(border+1:end-border,border+1:end-border); % ignore border
             imgActual = imgActual(border+1:end-border,border+1:end-border); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec22Ch6Ord22Level1
@@ -10588,8 +10588,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             border = dec;
             imgExpctd = imgExpctd(border+1:end-border,border+1:end-border); % ignore border
             imgActual = imgActual(border+1:end-border,border+1:end-border); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec22Ch8Ord22Level1
@@ -10655,8 +10655,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             border = dec;
             imgExpctd = imgExpctd(border+1:end-border,border+1:end-border); % ignore border
             imgActual = imgActual(border+1:end-border,border+1:end-border); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec11Ch4Ord22Level2PeriodicExt
@@ -10735,8 +10735,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec22Ch4Ord22Level2PeriodicExt
@@ -10816,8 +10816,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec22Ch6Ord22Level2PeriodicExt
@@ -10900,8 +10900,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec22Ch8Ord22Level2PeriodicExt
@@ -10987,8 +10987,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec22Ch9Ord44Level3PeriodicExt
@@ -11083,8 +11083,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-8,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec11Ch7Ord88Level3PeriodicExt
@@ -11179,8 +11179,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-8,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -11229,8 +11229,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             
             % Evaluation
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
             
         end
         
@@ -11296,8 +11296,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(decch(1)+1:end-decch(1),decch(2)+1:end-decch(2)); % ignore border
             imgActual = imgActual(decch(1)+1:end-decch(1),decch(2)+1:end-decch(2)); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -11361,8 +11361,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -11427,8 +11427,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(2*decch(1)+1:end-2*decch(1),2*decch(2)+1:end-2*decch(2)); % ignore border
             imgActual = imgActual(2*decch(1)+1:end-2*decch(1),2*decch(2)+1:end-2*decch(2)); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -11492,8 +11492,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -11543,8 +11543,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             
             % Evaluation
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
             
         end
         
@@ -11610,8 +11610,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(decch(1)+1:end-decch(1),decch(2)+1:end-decch(2)); % ignore border
             imgActual = imgActual(decch(1)+1:end-decch(1),decch(2)+1:end-decch(2)); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -11675,8 +11675,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -11741,8 +11741,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(2*decch(1)+1:end-2*decch(1),2*decch(2)+1:end-2*decch(2)); % ignore border
             imgActual = imgActual(2*decch(1)+1:end-2*decch(1),2*decch(2)+1:end-2*decch(2)); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -11806,8 +11806,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec22Ch32Ord22Level1
@@ -11874,8 +11874,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             border2 = decch(2);
             imgExpctd = imgExpctd(border1+1:end-border1,border2+1:end-border2); % ignore border
             imgActual = imgActual(border1+1:end-border1,border2+1:end-border2); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         
@@ -11956,8 +11956,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec22Ch32Ord22Level1
@@ -12023,8 +12023,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             border2 = decch(2);
             imgExpctd = imgExpctd(border1+1:end-border1,border2+1:end-border2); % ignore border
             imgActual = imgActual(border1+1:end-border1,border2+1:end-border2); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec22Ch32Ord22Level2PeriodicExt
@@ -12105,8 +12105,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         function testSetLpPuFb2dDec22Ch62Ord44(testCase)
@@ -12319,8 +12319,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             
             % Evaluation
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
             
         end
         
@@ -12386,8 +12386,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(decch(1)+1:end-decch(1),decch(2)+1:end-decch(2)); % ignore border
             imgActual = imgActual(decch(1)+1:end-decch(1),decch(2)+1:end-decch(2)); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -12450,8 +12450,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -12515,8 +12515,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(2*decch(1)+1:end-2*decch(1),2*decch(2)+1:end-2*decch(2)); % ignore border
             imgActual = imgActual(2*decch(1)+1:end-2*decch(1),2*decch(2)+1:end-2*decch(2)); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -12578,8 +12578,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -12627,8 +12627,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
             
         end
         
@@ -12692,8 +12692,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(decch(1)+1:end-decch(1),decch(2)+1:end-decch(2)); % ignore border
             imgActual = imgActual(decch(1)+1:end-decch(1),decch(2)+1:end-decch(2)); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -12755,8 +12755,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -12819,8 +12819,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(2*decch(1)+1:end-2*decch(1),2*decch(2)+1:end-2*decch(2)); % ignore border
             imgActual = imgActual(2*decch(1)+1:end-2*decch(1),2*decch(2)+1:end-2*decch(2)); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         % Test
@@ -12883,8 +12883,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Dec22Ch32Ord22Level1
@@ -12950,8 +12950,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             border2 = decch(2);
             imgExpctd = imgExpctd(border1+1:end-border1,border2+1:end-border2); % ignore border
             imgActual = imgActual(border1+1:end-border1,border2+1:end-border2); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Test
@@ -13017,8 +13017,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             border2 = nDecs(2);
             imgExpctd = imgExpctd(border1+1:end-border1,border2+1:end-border2); % ignore border
             imgActual = imgActual(border1+1:end-border1,border2+1:end-border2); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Test
@@ -13084,8 +13084,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             border2 = nDecs(2);
             imgExpctd = imgExpctd(border1+1:end-border1,border2+1:end-border2); % ignore border
             imgActual = imgActual(border1+1:end-border1,border2+1:end-border2); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Test
@@ -13151,8 +13151,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             border2 = nDecs(2);
             imgExpctd = imgExpctd(border1+1:end-border1,border2+1:end-border2); % ignore border
             imgActual = imgActual(border1+1:end-border1,border2+1:end-border2); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Test
@@ -13218,8 +13218,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             border2 = nDecs(2);
             imgExpctd = imgExpctd(border1+1:end-border1,border2+1:end-border2); % ignore border
             imgActual = imgActual(border1+1:end-border1,border2+1:end-border2); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
                 %Test
@@ -13285,8 +13285,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             border2 = nDecs(2);
             imgExpctd = imgExpctd(border1+1:end-border1,border2+1:end-border2); % ignore border
             imgActual = imgActual(border1+1:end-border1,border2+1:end-border2); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
         %Test
@@ -13352,8 +13352,8 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             border2 = nDecs(2);
             imgExpctd = imgExpctd(border1+1:end-border1,border2+1:end-border2); % ignore border
             imgActual = imgActual(border1+1:end-border1,border2+1:end-border2); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-14,sprintf('%g',diff));
         end
         
     end

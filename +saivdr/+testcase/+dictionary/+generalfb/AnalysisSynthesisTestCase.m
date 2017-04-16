@@ -3,7 +3,7 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
     %
     % Requirements: MATLAB R2013b
     %
-    % Copyright (c) 2015-2016, Shogo MURAMATSU
+    % Copyright (c) 2015-2017, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -73,8 +73,8 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(norm(coefs(:)),norm(srcImg(:)),...
                 'AbsTol',1e-10,sprintf('diff = %g',diff));
             testCase.verifySize(recImg,[ height width ]);
-            diff = max(abs(recImg(:)-srcImg(:))./abs(srcImg(:)));
-            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-10,...
+            diff = max(abs(recImg(:)-srcImg(:)));
+            testCase.verifyEqual(recImg,srcImg,'AbsTol',1e-14,...
                 sprintf('diff = %g',diff));
         end
         
@@ -123,8 +123,8 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(norm(coefs(:)),norm(srcImg(:)),...
                 'AbsTol',1e-10,sprintf('diff = %g',diff));
             testCase.verifySize(recImg,[ height width ]);
-            diff = max(abs(recImg(:)-srcImg(:))./abs(srcImg(:)));
-            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-9,...
+            diff = max(abs(recImg(:)-srcImg(:)));
+            testCase.verifyEqual(recImg,srcImg,'AbsTol',1e-14,...
                 sprintf('diff = %g',diff));
         end
 
@@ -173,8 +173,8 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(norm(coefs(:)),norm(srcImg(:)),...
                 'AbsTol',1e-10,sprintf('diff = %g',diff));
             testCase.verifySize(recImg,[ height width ]);
-            diff = max(abs(recImg(:)-srcImg(:))./abs(srcImg(:)));
-            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-9,...
+            diff = max(abs(recImg(:)-srcImg(:)));
+            testCase.verifyEqual(recImg,srcImg,'AbsTol',1e-14,...
                 sprintf('diff = %g',diff));
         end    
 
@@ -223,8 +223,8 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(norm(coefs(:)),norm(srcImg(:)),...
                 'AbsTol',1e-10,sprintf('diff = %g',diff));
             testCase.verifySize(recImg,[ height width ]);
-            diff = max(abs(recImg(:)-srcImg(:))./abs(srcImg(:)));
-            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-9,...
+            diff = max(abs(recImg(:)-srcImg(:)));
+            testCase.verifyEqual(recImg,srcImg,'AbsTol',1e-14,...
                 sprintf('diff = %g',diff));
         end            
 
@@ -273,8 +273,8 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(norm(coefs(:)),norm(srcImg(:)),...
                 'AbsTol',1e-10,sprintf('diff = %g',diff));
             testCase.verifySize(recImg,[ height width ]);
-            diff = max(abs(recImg(:)-srcImg(:))./abs(srcImg(:)));
-            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-10,...
+            diff = max(abs(recImg(:)-srcImg(:)));
+            testCase.verifyEqual(recImg,srcImg,'AbsTol',1e-14,...
                 sprintf('diff = %g',diff));
         end
         
@@ -323,8 +323,8 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(norm(coefs(:)),norm(srcImg(:)),...
                 'AbsTol',1e-10,sprintf('diff = %g',diff));
             testCase.verifySize(recImg,[ height width ]);
-            diff = max(abs(recImg(:)-srcImg(:))./abs(srcImg(:)));
-            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-9,...
+            diff = max(abs(recImg(:)-srcImg(:)));
+            testCase.verifyEqual(recImg,srcImg,'AbsTol',1e-14,...
                 sprintf('diff = %g',diff));
         end
         
@@ -373,8 +373,8 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(norm(coefs(:)),norm(srcImg(:)),...
                 'AbsTol',1e-10,sprintf('diff = %g',diff));
             testCase.verifySize(recImg,[ height width ]);
-            diff = max(abs(recImg(:)-srcImg(:))./abs(srcImg(:)));
-            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-9,...
+            diff = max(abs(recImg(:)-srcImg(:)));
+            testCase.verifyEqual(recImg,srcImg,'AbsTol',1e-14,...
                 sprintf('diff = %g',diff));
         end
         
@@ -423,8 +423,8 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(norm(coefs(:)),norm(srcImg(:)),...
                 'AbsTol',1e-10,sprintf('diff = %g',diff));
             testCase.verifySize(recImg,[ height width ]);
-            diff = max(abs(recImg(:)-srcImg(:))./abs(srcImg(:)));
-            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-9,...
+            diff = max(abs(recImg(:)-srcImg(:)));
+            testCase.verifyEqual(recImg,srcImg,'AbsTol',1e-14,...
                 sprintf('diff = %g',diff));
         end
         
@@ -471,8 +471,8 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(norm(coefs(:)),norm(srcImg(:)),...
                 'AbsTol',1e-10,sprintf('diff = %g',diff));
             testCase.verifySize(recImg,[ height width ]);
-            diff = max(abs(recImg(:)-srcImg(:))./abs(srcImg(:)));
-            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-10,...
+            diff = max(abs(recImg(:)-srcImg(:)));
+            testCase.verifyEqual(recImg,srcImg,'AbsTol',1e-14,...
                 sprintf('diff = %g',diff));
         end
         
@@ -519,8 +519,8 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(norm(coefs(:)),norm(srcImg(:)),...
                 'AbsTol',1e-10,sprintf('diff = %g',diff));
             testCase.verifySize(recImg,[ height width ]);
-            diff = max(abs(recImg(:)-srcImg(:))./abs(srcImg(:)));
-            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-9,...
+            diff = max(abs(recImg(:)-srcImg(:)));
+            testCase.verifyEqual(recImg,srcImg,'AbsTol',1e-14,...
                 sprintf('diff = %g',diff));
         end
                 
@@ -570,8 +570,8 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(norm(coefs(:)),norm(srcImg(:)),...
                 'AbsTol',1e-10,sprintf('diff = %g',diff));
             testCase.verifySize(recImg,[ height width depth ]);
-            diff = max(abs(recImg(:)-srcImg(:))./abs(srcImg(:)));
-            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-8,...
+            diff = max(abs(recImg(:)-srcImg(:)));
+            testCase.verifyEqual(recImg,srcImg,'AbsTol',1e-14,...
                 sprintf('diff = %g',diff));
         end
 
@@ -621,8 +621,8 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(norm(coefs(:)),norm(srcImg(:)),...
                 'AbsTol',1e-10,sprintf('diff = %g',diff));
             testCase.verifySize(recImg,[ height width depth ]);
-            diff = max(abs(recImg(:)-srcImg(:))./abs(srcImg(:)));
-            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-8,...
+            diff = max(abs(recImg(:)-srcImg(:)));
+            testCase.verifyEqual(recImg,srcImg,'AbsTol',1e-14,...
                 sprintf('diff = %g',diff));
         end
         
@@ -672,8 +672,8 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(norm(coefs(:)),norm(srcImg(:)),...
                 'AbsTol',1e-10,sprintf('diff = %g',diff));
             testCase.verifySize(recImg,[ height width depth ]);
-            diff = max(abs(recImg(:)-srcImg(:))./abs(srcImg(:)));
-            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-8,...
+            diff = max(abs(recImg(:)-srcImg(:)));
+            testCase.verifyEqual(recImg,srcImg,'AbsTol',1e-14,...
                 sprintf('diff = %g',diff));
         end
         
@@ -723,8 +723,8 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(norm(coefs(:)),norm(srcImg(:)),...
                 'AbsTol',1e-10,sprintf('diff = %g',diff));
             testCase.verifySize(recImg,[ height width depth ]);
-            diff = max(abs(recImg(:)-srcImg(:))./abs(srcImg(:)));
-            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-8,...
+            diff = max(abs(recImg(:)-srcImg(:)));
+            testCase.verifyEqual(recImg,srcImg,'AbsTol',1e-14,...
                 sprintf('diff = %g',diff));
         end
         
@@ -774,8 +774,8 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(norm(coefs(:)),norm(srcImg(:)),...
                 'AbsTol',1e-10,sprintf('diff = %g',diff));
             testCase.verifySize(recImg,[ height width depth ]);
-            diff = max(abs(recImg(:)-srcImg(:))./abs(srcImg(:)));
-            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-7,...
+            diff = max(abs(recImg(:)-srcImg(:)));
+            testCase.verifyEqual(recImg,srcImg,'AbsTol',1e-14,...
                 sprintf('diff = %g',diff));
         end
         
@@ -825,8 +825,8 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(norm(coefs(:)),norm(srcImg(:)),...
                 'AbsTol',1e-10,sprintf('diff = %g',diff));
             testCase.verifySize(recImg,[ height width depth ]);
-            diff = max(abs(recImg(:)-srcImg(:))./abs(srcImg(:)));
-            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-8,...
+            diff = max(abs(recImg(:)-srcImg(:)));
+            testCase.verifyEqual(recImg,srcImg,'AbsTol',1e-14,...
                 sprintf('diff = %g',diff));
         end
         
@@ -876,8 +876,8 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(norm(coefs(:)),norm(srcImg(:)),...
                 'AbsTol',1e-10,sprintf('diff = %g',diff));
             testCase.verifySize(recImg,[ height width depth ]);
-            diff = max(abs(recImg(:)-srcImg(:))./abs(srcImg(:)));
-            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-8,...
+            diff = max(abs(recImg(:)-srcImg(:)));
+            testCase.verifyEqual(recImg,srcImg,'AbsTol',1e-14,...
                 sprintf('diff = %g',diff));
         end
         
@@ -927,8 +927,8 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(norm(coefs(:)),norm(srcImg(:)),...
                 'AbsTol',1e-10,sprintf('diff = %g',diff));
             testCase.verifySize(recImg,[ height width depth ]);
-            diff = max(abs(recImg(:)-srcImg(:))./abs(srcImg(:)));
-            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-8,...
+            diff = max(abs(recImg(:)-srcImg(:)));
+            testCase.verifyEqual(recImg,srcImg,'AbsTol',1e-14,...
                 sprintf('diff = %g',diff));
         end
         
@@ -976,8 +976,8 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(norm(coefs(:)),norm(srcImg(:)),...
                 'AbsTol',1e-10,sprintf('diff = %g',diff));
             testCase.verifySize(recImg,[ height width depth ]);
-            diff = max(abs(recImg(:)-srcImg(:))./abs(srcImg(:)));
-            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-8,...
+            diff = max(abs(recImg(:)-srcImg(:)));
+            testCase.verifyEqual(recImg,srcImg,'AbsTol',1e-14,...
                 sprintf('diff = %g',diff));
         end
         
@@ -1025,8 +1025,8 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(norm(coefs(:)),norm(srcImg(:)),...
                 'AbsTol',1e-10,sprintf('diff = %g',diff));
             testCase.verifySize(recImg,[ height width depth ]);
-            diff = max(abs(recImg(:)-srcImg(:))./abs(srcImg(:)));
-            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-8,...
+            diff = max(abs(recImg(:)-srcImg(:)));
+            testCase.verifyEqual(recImg,srcImg,'AbsTol',1e-14,...
                 sprintf('diff = %g',diff));
         end
 
@@ -1077,8 +1077,8 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(norm(coefs(:)),norm(srcImg(:)),...
                 'AbsTol',1e-10,sprintf('diff = %g',diff));
             testCase.verifySize(recImg,[ height width ]);
-            diff = max(abs(recImg(:)-srcImg(:))./abs(srcImg(:)));
-            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-10,...
+            diff = max(abs(recImg(:)-srcImg(:)));
+            testCase.verifyEqual(recImg,srcImg,'AbsTol',1e-14,...
                 sprintf('diff = %g',diff));
         end
         
@@ -1129,8 +1129,8 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(norm(coefs(:)),norm(srcImg(:)),...
                 'AbsTol',1e-10,sprintf('diff = %g',diff));
             testCase.verifySize(recImg,[ height width ]);
-            diff = max(abs(recImg(:)-srcImg(:))./abs(srcImg(:)));
-            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-9,...
+            diff = max(abs(recImg(:)-srcImg(:)));
+            testCase.verifyEqual(recImg,srcImg,'AbsTol',1e-14,...
                 sprintf('diff = %g',diff));
         end
 
@@ -1181,8 +1181,8 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(norm(coefs(:)),norm(srcImg(:)),...
                 'AbsTol',1e-10,sprintf('diff = %g',diff));
             testCase.verifySize(recImg,[ height width ]);
-            diff = max(abs(recImg(:)-srcImg(:))./abs(srcImg(:)));
-            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-9,...
+            diff = max(abs(recImg(:)-srcImg(:)));
+            testCase.verifyEqual(recImg,srcImg,'AbsTol',1e-14,...
                 sprintf('diff = %g',diff));
         end    
 
@@ -1233,8 +1233,8 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(norm(coefs(:)),norm(srcImg(:)),...
                 'AbsTol',1e-10,sprintf('diff = %g',diff));
             testCase.verifySize(recImg,[ height width ]);
-            diff = max(abs(recImg(:)-srcImg(:))./abs(srcImg(:)));
-            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-9,...
+            diff = max(abs(recImg(:)-srcImg(:)));
+            testCase.verifyEqual(recImg,srcImg,'AbsTol',1e-14,...
                 sprintf('diff = %g',diff));
         end            
 
@@ -1285,8 +1285,8 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(norm(coefs(:)),norm(srcImg(:)),...
                 'AbsTol',1e-10,sprintf('diff = %g',diff));
             testCase.verifySize(recImg,[ height width ]);
-            diff = max(abs(recImg(:)-srcImg(:))./abs(srcImg(:)));
-            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-9,...
+            diff = max(abs(recImg(:)-srcImg(:)));
+            testCase.verifyEqual(recImg,srcImg,'AbsTol',1e-14,...
                 sprintf('diff = %g',diff));
         end
         
@@ -1337,8 +1337,8 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(norm(coefs(:)),norm(srcImg(:)),...
                 'AbsTol',1e-10,sprintf('diff = %g',diff));
             testCase.verifySize(recImg,[ height width ]);
-            diff = max(abs(recImg(:)-srcImg(:))./abs(srcImg(:)));
-            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-10,...
+            diff = max(abs(recImg(:)-srcImg(:)));
+            testCase.verifyEqual(recImg,srcImg,'AbsTol',1e-14,...
                 sprintf('diff = %g',diff));
         end
         
@@ -1389,8 +1389,8 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(norm(coefs(:)),norm(srcImg(:)),...
                 'AbsTol',1e-10,sprintf('diff = %g',diff));
             testCase.verifySize(recImg,[ height width ]);
-            diff = max(abs(recImg(:)-srcImg(:))./abs(srcImg(:)));
-            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-9,...
+            diff = max(abs(recImg(:)-srcImg(:)));
+            testCase.verifyEqual(recImg,srcImg,'AbsTol',1e-14,...
                 sprintf('diff = %g',diff));
         end
         
@@ -1441,8 +1441,8 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(norm(coefs(:)),norm(srcImg(:)),...
                 'AbsTol',1e-10,sprintf('diff = %g',diff));
             testCase.verifySize(recImg,[ height width ]);
-            diff = max(abs(recImg(:)-srcImg(:))./abs(srcImg(:)));
-            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-8,...
+            diff = max(abs(recImg(:)-srcImg(:)));
+            testCase.verifyEqual(recImg,srcImg,'AbsTol',1e-14,...
                 sprintf('diff = %g',diff));
         end
         
@@ -1490,8 +1490,8 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(norm(coefs(:)),norm(srcImg(:)),...
                 'AbsTol',1e-10,sprintf('diff = %g',diff));
             testCase.verifySize(recImg,[ height width ]);
-            diff = max(abs(recImg(:)-srcImg(:))./abs(srcImg(:)));
-            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-10,...
+            diff = max(abs(recImg(:)-srcImg(:)));
+            testCase.verifyEqual(recImg,srcImg,'AbsTol',1e-14,...
                 sprintf('diff = %g',diff));
         end
         
@@ -1539,8 +1539,8 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(norm(coefs(:)),norm(srcImg(:)),...
                 'AbsTol',1e-10,sprintf('diff = %g',diff));
             testCase.verifySize(recImg,[ height width ]);
-            diff = max(abs(recImg(:)-srcImg(:))./abs(srcImg(:)));
-            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-9,...
+            diff = max(abs(recImg(:)-srcImg(:)));
+            testCase.verifyEqual(recImg,srcImg,'AbsTol',1e-14,...
                 sprintf('diff = %g',diff));
         end
                 
@@ -1592,8 +1592,8 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(norm(coefs(:)),norm(srcImg(:)),...
                 'AbsTol',1e-10,sprintf('diff = %g',diff));
             testCase.verifySize(recImg,[ height width depth ]);
-            diff = max(abs(recImg(:)-srcImg(:))./abs(srcImg(:)));
-            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-7,...
+            diff = max(abs(recImg(:)-srcImg(:)));
+            testCase.verifyEqual(recImg,srcImg,'AbsTol',1e-14,...
                 sprintf('diff = %g',diff));
         end
 
@@ -1645,8 +1645,8 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(norm(coefs(:)),norm(srcImg(:)),...
                 'AbsTol',1e-10,sprintf('diff = %g',diff));
             testCase.verifySize(recImg,[ height width depth ]);
-            diff = max(abs(recImg(:)-srcImg(:))./abs(srcImg(:)));
-            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-8,...
+            diff = max(abs(recImg(:)-srcImg(:)));
+            testCase.verifyEqual(recImg,srcImg,'AbsTol',1e-14,...
                 sprintf('diff = %g',diff));
         end
         
@@ -1698,8 +1698,8 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(norm(coefs(:)),norm(srcImg(:)),...
                 'AbsTol',1e-10,sprintf('diff = %g',diff));
             testCase.verifySize(recImg,[ height width depth ]);
-            diff = max(abs(recImg(:)-srcImg(:))./abs(srcImg(:)));
-            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-8,...
+            diff = max(abs(recImg(:)-srcImg(:)));
+            testCase.verifyEqual(recImg,srcImg,'AbsTol',1e-14,...
                 sprintf('diff = %g',diff));
         end
         
@@ -1751,8 +1751,8 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(norm(coefs(:)),norm(srcImg(:)),...
                 'AbsTol',1e-10,sprintf('diff = %g',diff));
             testCase.verifySize(recImg,[ height width depth ]);
-            diff = max(abs(recImg(:)-srcImg(:))./abs(srcImg(:)));
-            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-8,...
+            diff = max(abs(recImg(:)-srcImg(:)));
+            testCase.verifyEqual(recImg,srcImg,'AbsTol',1e-14,...
                 sprintf('diff = %g',diff));
         end
         
@@ -1804,8 +1804,8 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(norm(coefs(:)),norm(srcImg(:)),...
                 'AbsTol',1e-10,sprintf('diff = %g',diff));
             testCase.verifySize(recImg,[ height width depth ]);
-            diff = max(abs(recImg(:)-srcImg(:))./abs(srcImg(:)));
-            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-8,...
+            diff = max(abs(recImg(:)-srcImg(:)));
+            testCase.verifyEqual(recImg,srcImg,'AbsTol',1e-14,...
                 sprintf('diff = %g',diff));
         end
         
@@ -1857,8 +1857,8 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(norm(coefs(:)),norm(srcImg(:)),...
                 'AbsTol',1e-10,sprintf('diff = %g',diff));
             testCase.verifySize(recImg,[ height width depth ]);
-            diff = max(abs(recImg(:)-srcImg(:))./abs(srcImg(:)));
-            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-8,...
+            diff = max(abs(recImg(:)-srcImg(:)));
+            testCase.verifyEqual(recImg,srcImg,'AbsTol',1e-14,...
                 sprintf('diff = %g',diff));
         end
         
@@ -1910,8 +1910,8 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(norm(coefs(:)),norm(srcImg(:)),...
                 'AbsTol',1e-10,sprintf('diff = %g',diff));
             testCase.verifySize(recImg,[ height width depth ]);
-            diff = max(abs(recImg(:)-srcImg(:))./abs(srcImg(:)));
-            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-7,...
+            diff = max(abs(recImg(:)-srcImg(:)));
+            testCase.verifyEqual(recImg,srcImg,'AbsTol',1e-14,...
                 sprintf('diff = %g',diff));
         end
         
@@ -1963,8 +1963,8 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(norm(coefs(:)),norm(srcImg(:)),...
                 'AbsTol',1e-10,sprintf('diff = %g',diff));
             testCase.verifySize(recImg,[ height width depth ]);
-            diff = max(abs(recImg(:)-srcImg(:))./abs(srcImg(:)));
-            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-8,...
+            diff = max(abs(recImg(:)-srcImg(:)));
+            testCase.verifyEqual(recImg,srcImg,'AbsTol',1e-14,...
                 sprintf('diff = %g',diff));
         end
         
@@ -2013,8 +2013,8 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(norm(coefs(:)),norm(srcImg(:)),...
                 'AbsTol',1e-10,sprintf('diff = %g',diff));
             testCase.verifySize(recImg,[ height width depth ]);
-            diff = max(abs(recImg(:)-srcImg(:))./abs(srcImg(:)));
-            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-8,...
+            diff = max(abs(recImg(:)-srcImg(:)));
+            testCase.verifyEqual(recImg,srcImg,'AbsTol',1e-14,...
                 sprintf('diff = %g',diff));
         end
         
@@ -2063,8 +2063,8 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(norm(coefs(:)),norm(srcImg(:)),...
                 'AbsTol',1e-10,sprintf('diff = %g',diff));
             testCase.verifySize(recImg,[ height width depth ]);
-            diff = max(abs(recImg(:)-srcImg(:))./abs(srcImg(:)));
-            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-7,...
+            diff = max(abs(recImg(:)-srcImg(:)));
+            testCase.verifyEqual(recImg,srcImg,'AbsTol',1e-14,...
                 sprintf('diff = %g',diff));
         end
         
@@ -2119,8 +2119,8 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(norm(coefs(:)),norm(srcImg(:)),...
                 'AbsTol',1e-10,sprintf('diff = %g',diff));
             testCase.verifySize(recImg,[ height width ]);
-            diff = max(abs(recImg(:)-srcImg(:))./abs(srcImg(:)));
-            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-9,...
+            diff = max(abs(recImg(:)-srcImg(:)));
+            testCase.verifyEqual(recImg,srcImg,'AbsTol',1e-14,...
                 sprintf('diff = %g',diff));
         end
         
@@ -2176,8 +2176,8 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(norm(coefs(:)),norm(srcImg(:)),...
                 'AbsTol',1e-10,sprintf('diff = %g',diff));
             testCase.verifySize(recImg,[ height width depth ]);
-            diff = max(abs(recImg(:)-srcImg(:))./abs(srcImg(:)));
-            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-7,...
+            diff = max(abs(recImg(:)-srcImg(:)));
+            testCase.verifyEqual(recImg,srcImg,'AbsTol',1e-14,...
                 sprintf('diff = %g',diff));
         end
         
@@ -2228,8 +2228,8 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(norm(coefs(:)),norm(srcImg(:)),...
                 'AbsTol',1e-10,sprintf('diff = %g',diff));
             testCase.verifySize(recImg,[ height width ]);
-            diff = max(abs(recImg(:)-srcImg(:))./abs(srcImg(:)));
-            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-10,...
+            diff = max(abs(recImg(:)-srcImg(:)));
+            testCase.verifyEqual(recImg,srcImg,'AbsTol',1e-14,...
                 sprintf('diff = %g',diff));
         end
                 
@@ -2280,8 +2280,8 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(norm(coefs(:)),norm(srcImg(:)),...
                 'AbsTol',1e-10,sprintf('diff = %g',diff));
             testCase.verifySize(recImg,[ height width ]);
-            diff = max(abs(recImg(:)-srcImg(:))./abs(srcImg(:)));
-            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-9,...
+            diff = max(abs(recImg(:)-srcImg(:)));
+            testCase.verifyEqual(recImg,srcImg,'AbsTol',1e-14,...
                 sprintf('diff = %g',diff));
         end
             
@@ -2332,8 +2332,8 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(norm(coefs(:)),norm(srcImg(:)),...
                 'AbsTol',1e-10,sprintf('diff = %g',diff));
             testCase.verifySize(recImg,[ height width ]);
-            diff = max(abs(recImg(:)-srcImg(:))./abs(srcImg(:)));
-            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-10,...
+            diff = max(abs(recImg(:)-srcImg(:)));
+            testCase.verifyEqual(recImg,srcImg,'AbsTol',1e-14,...
                 sprintf('diff = %g',diff));
         end
             
@@ -2384,8 +2384,8 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(norm(coefs(:)),norm(srcImg(:)),...
                 'AbsTol',1e-10,sprintf('diff = %g',diff));
             testCase.verifySize(recImg,[ height width ]);
-            diff = max(abs(recImg(:)-srcImg(:))./abs(srcImg(:)));
-            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-10,...
+            diff = max(abs(recImg(:)-srcImg(:)));
+            testCase.verifyEqual(recImg,srcImg,'AbsTol',1e-14,...
                 sprintf('diff = %g',diff));
         end
    
@@ -2436,8 +2436,8 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(norm(coefs(:)),norm(srcImg(:)),...
                 'AbsTol',1e-10,sprintf('diff = %g',diff));
             testCase.verifySize(recImg,[ height width ]);
-            diff = max(abs(recImg(:)-srcImg(:))./abs(srcImg(:)));
-            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-9,...
+            diff = max(abs(recImg(:)-srcImg(:)));
+            testCase.verifyEqual(recImg,srcImg,'AbsTol',1e-14,...
                 sprintf('diff = %g',diff));
         end
                 
@@ -2488,8 +2488,8 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(norm(coefs(:)),norm(srcImg(:)),...
                 'AbsTol',1e-10,sprintf('diff = %g',diff));
             testCase.verifySize(recImg,[ height width ]);
-            diff = max(abs(recImg(:)-srcImg(:))./abs(srcImg(:)));
-            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-9,...
+            diff = max(abs(recImg(:)-srcImg(:)));
+            testCase.verifyEqual(recImg,srcImg,'AbsTol',1e-14,...
                 sprintf('diff = %g',diff));
         end
             
@@ -2540,8 +2540,8 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(norm(coefs(:)),norm(srcImg(:)),...
                 'AbsTol',1e-10,sprintf('diff = %g',diff));
             testCase.verifySize(recImg,[ height width ]);
-            diff = max(abs(recImg(:)-srcImg(:))./abs(srcImg(:)));
-            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-9,...
+            diff = max(abs(recImg(:)-srcImg(:)));
+            testCase.verifyEqual(recImg,srcImg,'AbsTol',1e-14,...
                 sprintf('diff = %g',diff));
         end
             
@@ -2592,8 +2592,8 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(norm(coefs(:)),norm(srcImg(:)),...
                 'AbsTol',1e-10,sprintf('diff = %g',diff));
             testCase.verifySize(recImg,[ height width ]);
-            diff = max(abs(recImg(:)-srcImg(:))./abs(srcImg(:)));
-            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-9,...
+            diff = max(abs(recImg(:)-srcImg(:)));
+            testCase.verifyEqual(recImg,srcImg,'AbsTol',1e-14,...
                 sprintf('diff = %g',diff));
         end
              
@@ -2643,8 +2643,8 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(norm(coefs(:)),norm(srcImg(:)),...
                 'AbsTol',1e-10,sprintf('diff = %g',diff));
             testCase.verifySize(recImg,[ height width depth ]);
-            diff = max(abs(recImg(:)-srcImg(:))./abs(srcImg(:)));
-            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-8,...
+            diff = max(abs(recImg(:)-srcImg(:)));
+            testCase.verifyEqual(recImg,srcImg,'AbsTol',1e-14,...
                 sprintf('diff = %g',diff));
         end
         
@@ -2696,8 +2696,8 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(norm(coefs(:)),norm(srcImg(:)),...
                 'AbsTol',1e-10,sprintf('diff = %g',diff));
             testCase.verifySize(recImg,[ height width depth ]);
-            diff = max(abs(recImg(:)-srcImg(:))./abs(srcImg(:)));
-            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-7,...
+            diff = max(abs(recImg(:)-srcImg(:)));
+            testCase.verifyEqual(recImg,srcImg,'AbsTol',1e-14,...
                 sprintf('diff = %g',diff));
         end
         
@@ -2747,8 +2747,8 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(norm(coefs(:)),norm(srcImg(:)),...
                 'AbsTol',1e-10,sprintf('diff = %g',diff));
             testCase.verifySize(recImg,[ height width depth ]);
-            diff = max(abs(recImg(:)-srcImg(:))./abs(srcImg(:)));
-            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-8,...
+            diff = max(abs(recImg(:)-srcImg(:)));
+            testCase.verifyEqual(recImg,srcImg,'AbsTol',1e-14,...
                 sprintf('diff = %g',diff));
         end
         
@@ -2800,8 +2800,8 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(norm(coefs(:)),norm(srcImg(:)),...
                 'AbsTol',1e-10,sprintf('diff = %g',diff));
             testCase.verifySize(recImg,[ height width depth ]);
-            diff = max(abs(recImg(:)-srcImg(:))./abs(srcImg(:)));
-            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-7,...
+            diff = max(abs(recImg(:)-srcImg(:)));
+            testCase.verifyEqual(recImg,srcImg,'AbsTol',1e-14,...
                 sprintf('diff = %g',diff));
         end
                 
@@ -2851,8 +2851,8 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(norm(coefs(:)),norm(srcImg(:)),...
                 'AbsTol',1e-10,sprintf('diff = %g',diff));
             testCase.verifySize(recImg,[ height width depth ]);
-            diff = max(abs(recImg(:)-srcImg(:))./abs(srcImg(:)));
-            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-8,...
+            diff = max(abs(recImg(:)-srcImg(:)));
+            testCase.verifyEqual(recImg,srcImg,'AbsTol',1e-14,...
                 sprintf('diff = %g',diff));
         end
         
@@ -2904,8 +2904,8 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(norm(coefs(:)),norm(srcImg(:)),...
                 'AbsTol',1e-10,sprintf('diff = %g',diff));
             testCase.verifySize(recImg,[ height width depth ]);
-            diff = max(abs(recImg(:)-srcImg(:))./abs(srcImg(:)));
-            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-8,...
+            diff = max(abs(recImg(:)-srcImg(:)));
+            testCase.verifyEqual(recImg,srcImg,'AbsTol',1e-14,...
                 sprintf('diff = %g',diff));
         end
                 

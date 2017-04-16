@@ -83,6 +83,7 @@ classdef ModuleBlockDct2d < matlab.System & ...
         
         
         function icon = getIconImpl(~)
+            coder.extrinsic('sprintf')
             icon = sprintf('Block\n2-D DCT');
         end
     end

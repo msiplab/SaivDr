@@ -83,6 +83,7 @@ classdef ModulePartialDelay < matlab.System  & ...
         end        
         
         function icon = getIconImpl(~)
+            coder.extrinsic('sprintf')
             icon = sprintf('Partial\nDelay');
         end
          

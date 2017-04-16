@@ -132,6 +132,7 @@ classdef AbstOvsdLpPuFb2dTypeISystem < ...
             if isscalar(obj.Angles) && obj.Angles==0
                 obj.Angles = zeros(sizeOfAngles);
             end
+            coder.extrinsic('sprintf')
             if size(obj.Angles,1) ~= sizeOfAngles(1) || ...
                     size(obj.Angles,2) ~= sizeOfAngles(2)
                 id = 'SaivDr:IllegalArgumentException';
@@ -152,6 +153,7 @@ classdef AbstOvsdLpPuFb2dTypeISystem < ...
                 obj.Mus = -ones(sizeOfMus);
                 obj.Mus(:,1:2) = ones(size(obj.Mus,1),2);
             end
+            coder.extrinsic('sprintf')
             if size(obj.Mus,1) ~= sizeOfMus(1) || ...
                     size(obj.Mus,2) ~= sizeOfMus(2)
                 id = 'SaivDr:IllegalArgumentException';

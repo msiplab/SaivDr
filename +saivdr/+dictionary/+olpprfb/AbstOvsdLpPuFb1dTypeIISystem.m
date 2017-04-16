@@ -67,7 +67,7 @@ classdef AbstOvsdLpPuFb1dTypeIISystem < ...
             import saivdr.dictionary.nsoltx.ChannelGroup
             [obj.mexFcn, obj.mexFlag] = fcn_autobuild_bb_type2(...
                 obj.NumberOfChannels(ChannelGroup.UPPER),...
-                obj.NumberOfChannels(ChannelGroup.LOWER));        
+                obj.NumberOfChannels(ChannelGroup.LOWER));
         end
         
         function setupImpl(obj,varargin)
@@ -153,6 +153,7 @@ classdef AbstOvsdLpPuFb1dTypeIISystem < ...
             if isscalar(obj.Angles) && obj.Angles == 0
                 obj.Angles = zeros(sizeOfAngles);
             end
+            coder.extrinsic('sprintf')
             if size(obj.Angles,1) ~= sizeOfAngles(1) || ...
                     size(obj.Angles,2) ~= sizeOfAngles(2)
                 id = 'SaivDr:IllegalArgumentException';
@@ -185,6 +186,7 @@ classdef AbstOvsdLpPuFb1dTypeIISystem < ...
                     obj.Mus(:,1) = ones(size(obj.Mus,1),1);
                 end
             end
+            coder.extrinsic('sprintf')
             if size(obj.Mus,1) ~= sizeOfMus(1) || ...
                     size(obj.Mus,2) ~= sizeOfMus(2)
                 id = 'SaivDr:IllegalArgumentException';

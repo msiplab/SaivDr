@@ -62,6 +62,7 @@ classdef AbstOvsdLpPuFb2dSystem < matlab.System %#codegen
             % Show Atomic Images
             updateParameterMatrixSet_(obj);
             H = getAnalysisFilterBank_(obj);
+            coder.extrinsic('imshow')
             for ib=1:sum(obj.NumberOfChannels)
                 subplot(2,obj.NumberOfChannels(1),ib);
                 imshow(rot90(H(:,:,ib),2)+0.5);
@@ -133,8 +134,8 @@ classdef AbstOvsdLpPuFb2dSystem < matlab.System %#codegen
                 output = rot90(H(:,:,idx),2);
             elseif strcmp(obj.OutputMode,'SynthesisFilters')     
                 H = getAnalysisFilterBank_(obj);          
-                H = flipdim(H,1);
-                output = flipdim(H,2);
+                H = flip(H,1);
+                output = flip(H,2);
             else
                 output = [];
             end
@@ -186,15 +187,16 @@ classdef AbstOvsdLpPuFb2dSystem < matlab.System %#codegen
             nRows = obj.DecimationFactor(Direction.VERTICAL);
             nCols = obj.DecimationFactor(Direction.HORIZONTAL);
             nElmBi = nRows*nCols;
-            dctY = dctmtx(nRows);
-            dctX = dctmtx(nCols);
+            %dctY = dct(eye(nRows)); %dctmtx(nRows);
+            %dctX = dct(eye(nCols)); %dctmtx(nCols);
             coefs = zeros(nElmBi);
             iElm = 1; % E0.'= [ Bee Boo Boe Beo ] % Byx
             for iCol = 1:2:nCols % x-e
                 for iRow = 1:2:nRows % y-e
                     dctCoef = zeros(nRows,nCols);
                     dctCoef(iRow,iCol) = 1;
-                    basisImage = dctY.'*dctCoef*dctX;
+                    %basisImage = dctY.'*dctCoef*dctX;
+                    basisImage = idct2(dctCoef);
                     coefs(iElm,:) = basisImage(:).';
                     iElm = iElm + 1;
                 end
@@ -203,7 +205,8 @@ classdef AbstOvsdLpPuFb2dSystem < matlab.System %#codegen
                 for iRow = 2:2:nRows % y-e
                     dctCoef = zeros(nRows,nCols);
                     dctCoef(iRow,iCol) = 1;
-                    basisImage = dctY.'*dctCoef*dctX;
+                    %basisImage = dctY.'*dctCoef*dctX;
+                    basisImage = idct2(dctCoef);
                     coefs(iElm,:) = basisImage(:).';
                     iElm = iElm + 1;
                 end
@@ -212,7 +215,8 @@ classdef AbstOvsdLpPuFb2dSystem < matlab.System %#codegen
                 for iRow = 2:2:nRows % y-o
                     dctCoef = zeros(nRows,nCols);
                     dctCoef(iRow,iCol) = 1;
-                    basisImage = dctY.'*dctCoef*dctX;
+                    %basisImage = dctY.'*dctCoef*dctX;
+                    basisImage = idct2(dctCoef);
                     coefs(iElm,:) = -basisImage(:).';
                     iElm = iElm + 1;
                 end
@@ -221,7 +225,8 @@ classdef AbstOvsdLpPuFb2dSystem < matlab.System %#codegen
                 for iRow = 1:2:nRows % y-e
                     dctCoef = zeros(nRows,nCols);
                     dctCoef(iRow,iCol) = 1;
-                    basisImage = dctY.'*dctCoef*dctX;
+                    %basisImage = dctY.'*dctCoef*dctX;
+                    basisImage = idct2(dctCoef);
                     coefs(iElm,:) = -basisImage(:).';
                     iElm = iElm + 1;
                 end

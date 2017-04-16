@@ -79,6 +79,7 @@ classdef ModuleButterfly < matlab.System & ...
         end        
         
         function icon = getIconImpl(~)
+            coder.extrinsic('sprintf')
             icon = sprintf('Butterfly');
         end
     end

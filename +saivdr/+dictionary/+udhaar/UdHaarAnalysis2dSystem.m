@@ -62,6 +62,12 @@ classdef UdHaarAnalysis2dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
         
         function [ coefs, scales ] = stepImpl(obj, u, nLevels)
             scales = repmat(size(u),[3*nLevels+1, 1]);
+            % NOTE:
+            % imfilter of R2017a has a bug for double precision array            
+            if strcmp(version('-release'),'2017a') && ...
+                    isa(u,'double')
+                warning('IMFILTER of R2017a with CIRCULAR option has a bug for double precison array.')
+            end            
             ya = u;
             hd = obj.kernels.D;
             hv = obj.kernels.V;
@@ -71,7 +77,7 @@ classdef UdHaarAnalysis2dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
             for iLevel = 1:nLevels
                 kernelSize = 2^iLevel;
                 weight = 1/(kernelSize^2);
-                if iLevel < 2 
+                if iLevel < 2
                     offset = [0 0]; % 1
                 else
                     offset = -[1 1]*(2^(iLevel-2)-1);
@@ -87,14 +93,26 @@ classdef UdHaarAnalysis2dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
                 obj.coefs((iSubband-3)*obj.nPixels+1:(iSubband-2)*obj.nPixels) = ...
                     yh(:).'*weight;
                 iSubband = iSubband - 3;
-                hd = upsample(upsample(hd,2).',2).';
-                hv = upsample(upsample(hv,2).',2).';
-                hh = upsample(upsample(hh,2).',2).';
-                ha = upsample(upsample(ha,2).',2).';
+                hd = upsample2_(obj,hd);
+                hv = upsample2_(obj,hv);
+                hh = upsample2_(obj,hh);
+                ha = upsample2_(obj,ha);
             end
             obj.coefs(1:obj.nPixels) = ya(:).'*weight;
             coefs = obj.coefs;
         end
 
     end
+    
+    methods (Access = private)
+        
+        function value = upsample2_(~,x)
+            ufactor = 2;
+            value = shiftdim(upsample(...
+                shiftdim(upsample(x,...
+                ufactor),1),...
+                ufactor),1);
+        end
+    end
+    
 end
