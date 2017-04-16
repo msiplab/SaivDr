@@ -3,7 +3,7 @@ classdef OvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
     %
     % Requirements: MATLAB R2013b
     %
-    % Copyright (c) 2014-2016, Shogo MURAMATSU
+    % Copyright (c) 2014-2017, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -47,8 +47,8 @@ classdef OvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             
             % Evaluation
             testCase.verifySize(coefActual,size(coefExpctd));
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,...
+            coefDist = max(abs(coefExpctd(:)-coefActual(:)));
+            testCase.verifyEqual(coefActual,coefExpctd,'AbsTol',1e-14,...
                 sprintf('%g',coefDist));
             
         end
@@ -76,8 +76,8 @@ classdef OvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             coefActual = step(cloneLpPuFb,[],[]);
             
             % Evaluation
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,...
+            coefDist = max(abs(coefExpctd(:)-coefActual(:)));
+            testCase.verifyEqual(coefActual,coefExpctd,'AbsTol',1e-14,...
                 sprintf('%g',coefDist));
             
             % Change angles
@@ -88,7 +88,7 @@ classdef OvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             
             % Evaluation
             import matlab.unittest.constraints.IsGreaterThan;
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
+            coefDist = max(abs(coefExpctd(:)-coefActual(:)));
             testCase.verifyThat(coefDist,IsGreaterThan(1e-14),...
                 sprintf('%g',coefDist));
             
@@ -121,8 +121,8 @@ classdef OvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             coefActual = step(testCase.lppufb,[],[]);
             
             % Evaluation
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',coefDist));
+            coefDist = max(abs(coefExpctd(:)-coefActual(:)));
+            testCase.verifyEqual(coefActual,coefExpctd,'AbsTol',1e-15,sprintf('%g',coefDist));
             
         end
         
@@ -149,8 +149,8 @@ classdef OvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             coefActual = step(testCase.lppufb,[],[]);
             
             % Evaluation
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',coefDist));
+            coefDist = max(abs(coefExpctd(:)-coefActual(:)));
+            testCase.verifyEqual(coefActual,coefExpctd,'AbsTol',1e-14,sprintf('%g',coefDist));
             
         end
         
@@ -543,8 +543,8 @@ classdef OvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             coefActual = step(testCase.lppufb,ang,[]);
             
             % Evaluation
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',coefDist));
+            coefDist = max(abs(coefExpctd(:)-coefActual(:)));
+            testCase.verifyEqual(coefActual,coefExpctd,'AbsTol',1e-15,sprintf('%g',coefDist));
             
         end
         
@@ -578,8 +578,8 @@ classdef OvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             coefActual = step(testCase.lppufb,[angW;angU],[]);
             
             % Evaluation
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-11,sprintf('%g',coefDist));
+            coefDist = max(abs(coefExpctd(:)-coefActual(:)));
+            testCase.verifyEqual(coefActual,coefExpctd,'AbsTol',1e-15,sprintf('%g',coefDist));
             
         end
         
@@ -775,8 +775,8 @@ classdef OvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             coefActual = step(testCase.lppufb,[],[]);
             
             % Evaluation
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',coefDist));
+            coefDist = max(abs(coefExpctd(:)-coefActual(:)));
+            testCase.verifyEqual(coefActual,coefExpctd,'AbsTol',1e-14,sprintf('%g',coefDist));
             
         end
         
@@ -807,8 +807,8 @@ classdef OvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             coefActual = step(testCase.lppufb,ang,[]);
             
             % Evaluation
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',coefDist));
+            coefDist = max(abs(coefExpctd(:)-coefActual(:)));
+            testCase.verifyEqual(coefActual,coefExpctd,'AbsTol',1e-14,sprintf('%g',coefDist));
             
         end
         
@@ -842,8 +842,8 @@ classdef OvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             coefActual = step(testCase.lppufb,[angW;angU],[]);
             
             % Evaluation
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',coefDist));
+            coefDist = max(abs(coefExpctd(:)-coefActual(:)));
+            testCase.verifyEqual(coefActual,coefExpctd,'AbsTol',1e-14,sprintf('%g',coefDist));
             
         end
         
@@ -911,8 +911,8 @@ classdef OvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             coefActual = step(testCase.lppufb,ang,mus);
             
             % Evaluation
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',coefDist));
+            coefDist = max(abs(coefExpctd(:)-coefActual(:)));
+            testCase.verifyEqual(coefActual,coefExpctd,'AbsTol',1e-14,sprintf('%g',coefDist));
             
         end
         
@@ -991,8 +991,8 @@ classdef OvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             coefActual = step(testCase.lppufb,ang,[]);
             
             % Evaluation
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',coefDist));
+            coefDist = max(abs(coefExpctd(:)-coefActual(:)));
+            testCase.verifyEqual(coefActual,coefExpctd,'AbsTol',1e-14,sprintf('%g',coefDist));
             
         end
         
@@ -1203,15 +1203,15 @@ classdef OvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             
             % Evaluation
             import matlab.unittest.constraints.IsGreaterThanOrEqualTo;
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
+            coefDist = max(abs(coefExpctd(:)-coefActual(:)));
             testCase.verifyThat(coefDist,IsGreaterThanOrEqualTo(1e-14),sprintf('%g',coefDist));
             
             % Actual values
             coefActual = step(testCase.lppufb,angPst,[]);
             
             % Evaluation
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',coefDist));
+            coefDist = max(abs(coefExpctd(:)-coefActual(:)));
+            testCase.verifyEqual(coefActual,coefExpctd,'AbsTol',1e-14,sprintf('%g',coefDist));
             
         end
         
@@ -1245,15 +1245,15 @@ classdef OvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             
             % Evaluation
             import matlab.unittest.constraints.IsGreaterThanOrEqualTo;
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
+            coefDist = max(abs(coefExpctd(:)-coefActual(:)));
             testCase.verifyThat(coefDist,IsGreaterThanOrEqualTo(1e-14),sprintf('%g',coefDist));
             
             % Actual values
             coefActual = step(testCase.lppufb,[],musPst);
             
             % Evaluation
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',coefDist));
+            coefDist = max(abs(coefExpctd(:)-coefActual(:)));
+            testCase.verifyEqual(coefActual,coefExpctd,'AbsTol',1e-14,sprintf('%g',coefDist));
             
         end
 
@@ -1372,8 +1372,8 @@ classdef OvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             coefActual = step(testCase.lppufb,ang,[]);
             
             % Evaluation
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',coefDist));
+            coefDist = max(abs(coefExpctd(:)-coefActual(:)));
+            testCase.verifyEqual(coefActual,coefExpctd,'AbsTol',1e-14,sprintf('%g',coefDist));
             
         end
         
@@ -1418,8 +1418,8 @@ classdef OvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             coefActual = step(testCase.lppufb,ang,[]);
             
             % Evaluation
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',coefDist));
+            coefDist = max(abs(coefExpctd(:)-coefActual(:)));
+            testCase.verifyEqual(coefActual,coefExpctd,'AbsTol',1e-14,sprintf('%g',coefDist));
             
         end
         
@@ -1503,8 +1503,8 @@ classdef OvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             coefActual = step(testCase.lppufb,[],[]);
             
             % Evaluation
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',coefDist));
+            coefDist = max(abs(coefExpctd(:)-coefActual(:)));
+            testCase.verifyEqual(coefActual,coefExpctd,'AbsTol',1e-14,sprintf('%g',coefDist));
             
         end
         
@@ -1549,8 +1549,8 @@ classdef OvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             coefActual = step(testCase.lppufb,ang,[]);
             
             % Evaluation
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',coefDist));
+            coefDist = max(abs(coefExpctd(:)-coefActual(:)));
+            testCase.verifyEqual(coefActual,coefExpctd,'AbsTol',1e-14,sprintf('%g',coefDist));
             
         end
         
@@ -1637,8 +1637,8 @@ classdef OvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             coefActual = step(testCase.lppufb,ang,[]);
             
             % Evaluation
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',coefDist));
+            coefDist = max(abs(coefExpctd(:)-coefActual(:)));
+            testCase.verifyEqual(coefActual,coefExpctd,'AbsTol',1e-14,sprintf('%g',coefDist));
             
         end
         
@@ -1697,8 +1697,8 @@ classdef OvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             coefActual = step(testCase.lppufb,ang,[]);
             
             % Evaluation
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',coefDist));
+            coefDist = max(abs(coefExpctd(:)-coefActual(:)));
+            testCase.verifyEqual(coefActual,coefExpctd,'AbsTol',1e-14,sprintf('%g',coefDist));
             
         end
         
@@ -1806,8 +1806,8 @@ classdef OvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             coefActual = step(testCase.lppufb,ang,[]);
             
             % Evaluation
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',coefDist));
+            coefDist = max(abs(coefExpctd(:)-coefActual(:)));
+            testCase.verifyEqual(coefActual,coefExpctd,'AbsTol',1e-14,sprintf('%g',coefDist));
             
         end
         
@@ -2055,8 +2055,8 @@ classdef OvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             coefActual = step(testCase.lppufb,ang,[]);
             
             % Evaluation
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',coefDist));
+            coefDist = max(abs(coefExpctd(:)-coefActual(:)));
+            testCase.verifyEqual(coefActual,coefExpctd,'AbsTol',1e-14,sprintf('%g',coefDist));
             
         end
         
@@ -2558,8 +2558,8 @@ classdef OvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             coefActual = step(testCase.lppufb,[],[]);
             
             % Evaluation
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',coefDist));
+            coefDist = max(abs(coefExpctd(:)-coefActual(:)));
+            testCase.verifyEqual(coefActual,coefExpctd,'AbsTol',1e-14,sprintf('%g',coefDist));
             
         end
         
@@ -2587,8 +2587,8 @@ classdef OvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             coefActual = step(testCase.lppufb,[],[]);
             
             % Evaluation
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',coefDist));
+            coefDist = max(abs(coefExpctd(:)-coefActual(:)));
+            testCase.verifyEqual(coefActual,coefExpctd,'AbsTol',1e-14,sprintf('%g',coefDist));
             
         end
         
@@ -2617,8 +2617,8 @@ classdef OvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             coefActual = step(testCase.lppufb,[],[]);
             
             % Evaluation
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',coefDist));
+            coefDist = max(abs(coefExpctd(:)-coefActual(:)));
+            testCase.verifyEqual(coefActual,coefExpctd,'AbsTol',1e-14,sprintf('%g',coefDist));
             
         end
         
@@ -2647,8 +2647,8 @@ classdef OvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             coefActual = step(testCase.lppufb,[],[]);
             
             % Evaluation
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',coefDist));
+            coefDist = max(abs(coefExpctd(:)-coefActual(:)));
+            testCase.verifyEqual(coefActual,coefExpctd,'AbsTol',1e-14,sprintf('%g',coefDist));
             
         end
         
@@ -2678,8 +2678,8 @@ classdef OvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             coefActual = step(testCase.lppufb,[],[]);
             
             % Evaluation
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',coefDist));
+            coefDist = max(abs(coefExpctd(:)-coefActual(:)));
+            testCase.verifyEqual(coefActual,coefExpctd,'AbsTol',1e-14,sprintf('%g',coefDist));
             
         end
         
@@ -2766,8 +2766,8 @@ classdef OvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             coefActual = step(testCase.lppufb,ang,[]);
             
             % Evaluation
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',coefDist));
+            coefDist = max(abs(coefExpctd(:)-coefActual(:)));
+            testCase.verifyEqual(coefActual,coefExpctd,'AbsTol',1e-14,sprintf('%g',coefDist));
             
         end
         
@@ -2863,8 +2863,8 @@ classdef OvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             coefActual = step(testCase.lppufb,ang,[]);
             
             % Evaluation
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',coefDist));
+            coefDist = max(abs(coefExpctd(:)-coefActual(:)));
+            testCase.verifyEqual(coefActual,coefExpctd,'AbsTol',1e-14,sprintf('%g',coefDist));
             
         end
         
@@ -2969,8 +2969,8 @@ classdef OvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             coefActual = step(testCase.lppufb,ang,[]);
             
             % Evaluation
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',coefDist));
+            coefDist = max(abs(coefExpctd(:)-coefActual(:)));
+            testCase.verifyEqual(coefActual,coefExpctd,'AbsTol',1e-14,sprintf('%g',coefDist));
             
         end
         
@@ -3084,8 +3084,8 @@ classdef OvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             coefActual = step(testCase.lppufb,ang,[]);
             
             % Evaluation
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',coefDist));
+            coefDist = max(abs(coefExpctd(:)-coefActual(:)));
+            testCase.verifyEqual(coefActual,coefExpctd,'AbsTol',1e-14,sprintf('%g',coefDist));
             
         end
         
@@ -3199,8 +3199,8 @@ classdef OvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             coefActual = step(testCase.lppufb,ang,[]);
             
             % Evaluation
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',coefDist));
+            coefDist = max(abs(coefExpctd(:)-coefActual(:)));
+            testCase.verifyEqual(coefActual,coefExpctd,'AbsTol',1e-14,sprintf('%g',coefDist));
             
         end
         
@@ -3399,8 +3399,8 @@ classdef OvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             coefActual = step(testCase.lppufb,ang,[]);
             
             % Evaluation
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',coefDist));
+            coefDist = max(abs(coefExpctd(:)-coefActual(:)));
+            testCase.verifyEqual(coefActual,coefExpctd,'AbsTol',1e-14,sprintf('%g',coefDist));
             
         end     
         
@@ -3624,8 +3624,8 @@ classdef OvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             coefActual = step(testCase.lppufb,ang,[]);
             
             % Evaluation
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',coefDist));
+            coefDist = max(abs(coefExpctd(:)-coefActual(:)));
+            testCase.verifyEqual(coefActual,coefExpctd,'AbsTol',1e-14,sprintf('%g',coefDist));
             
         end  
         
@@ -3851,7 +3851,7 @@ classdef OvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             release(testCase.lppufb)
             import matlab.unittest.constraints.IsLessThan
             set(testCase.lppufb,'OutputMode','AnalysisFilterAt');
-            for iSubband = 2:nChs;
+            for iSubband = 2:nChs
                 H = step(testCase.lppufb,[],[],iSubband);
                 dc = abs(sum(H(:)));
                 testCase.verifyThat(dc,IsLessThan(1e-14),sprintf('%g',dc));
@@ -3889,7 +3889,7 @@ classdef OvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             release(testCase.lppufb)
             import matlab.unittest.constraints.IsLessThan
             set(testCase.lppufb,'OutputMode','AnalysisFilterAt');
-            for iSubband = 2:nChs;
+            for iSubband = 2:nChs
                 H = step(testCase.lppufb,[],[],iSubband);
                 dc = abs(sum(H(:)));
                 testCase.verifyThat(dc,IsLessThan(1e-14),sprintf('%g',dc));
@@ -3927,7 +3927,7 @@ classdef OvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             release(testCase.lppufb)
             import matlab.unittest.constraints.IsLessThan
             set(testCase.lppufb,'OutputMode','AnalysisFilterAt');
-            for iSubband = 2:nChs;
+            for iSubband = 2:nChs
                 H = step(testCase.lppufb,[],[],iSubband);
                 dc = abs(sum(H(:)));
                 testCase.verifyThat(dc,IsLessThan(1e-14),sprintf('%g',dc));
@@ -3995,7 +3995,7 @@ classdef OvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             
             % Evaluation
             diff = max(abs(coefExpctd-coefActual)./abs(coefExpctd));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',diff));
+            testCase.verifyEqual(coefActual,coefExpctd,'AbsTol',1e-14,sprintf('%g',diff));
             
             % Random angles
             ang = get(testCase.lppufb,'Angles');
@@ -4015,7 +4015,7 @@ classdef OvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
 
             % Evaluation
             diff = max(abs(coefExpctd-coefActual)./abs(coefExpctd));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',diff));
+            testCase.verifyEqual(coefActual,coefExpctd,'AbsTol',1e-14,sprintf('%g',diff));
             
             % Check DC-E
             release(testCase.lppufb)
@@ -4062,7 +4062,7 @@ classdef OvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             
             % Evaluation
             diff = max(abs(coefExpctd-coefActual)./abs(coefExpctd));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',diff));
+            testCase.verifyEqual(coefActual,coefExpctd,'AbsTol',1e-14,sprintf('%g',diff));
             
             % Random angles
             mus = get(testCase.lppufb,'Mus');
@@ -4082,7 +4082,7 @@ classdef OvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             
             % Evaluation
             diff = max(abs(coefExpctd-coefActual)./abs(coefExpctd));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',diff));
+            testCase.verifyEqual(coefActual,coefExpctd,'AbsTol',1e-14,sprintf('%g',diff));
             
             % Check DC-E
             release(testCase.lppufb)
@@ -4130,7 +4130,7 @@ classdef OvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             
             % Evaluation
             diff = max(abs(coefExpctd-coefActual)./abs(coefExpctd));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',diff));
+            testCase.verifyEqual(coefActual,coefExpctd,'AbsTol',1e-14,sprintf('%g',diff));
             
             % Random angles and mus
             ang = get(testCase.lppufb,'Angles');
@@ -4152,7 +4152,7 @@ classdef OvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             
             % Evaluation
             diff = max(abs(coefExpctd-coefActual)./abs(coefExpctd));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',diff));
+            testCase.verifyEqual(coefActual,coefExpctd,'AbsTol',1e-14,sprintf('%g',diff));
             
             % Check DC-E
             release(testCase.lppufb)
@@ -4188,8 +4188,8 @@ classdef OvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             coefActual = step(testCase.lppufb,[],[]);
             
             % Evaluation
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',coefDist));
+            coefDist = max(abs(coefExpctd(:)-coefActual(:)));
+            testCase.verifyEqual(coefActual,coefExpctd,'AbsTol',1e-14,sprintf('%g',coefDist));
             
         end
         
@@ -4217,8 +4217,8 @@ classdef OvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             coefActual = step(testCase.lppufb,[],[]);
             
             % Evaluation
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',coefDist));
+            coefDist = max(abs(coefExpctd(:)-coefActual(:)));
+            testCase.verifyEqual(coefActual,coefExpctd,'AbsTol',1e-14,sprintf('%g',coefDist));
             
         end
         
@@ -4247,8 +4247,8 @@ classdef OvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             coefActual = step(testCase.lppufb,[],[]);
             
             % Evaluation
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',coefDist));
+            coefDist = max(abs(coefExpctd(:)-coefActual(:)));
+            testCase.verifyEqual(coefActual,coefExpctd,'AbsTol',1e-14,sprintf('%g',coefDist));
             
         end
         
@@ -4277,8 +4277,8 @@ classdef OvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             coefActual = step(testCase.lppufb,[],[]);
             
             % Evaluation
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',coefDist));
+            coefDist = max(abs(coefExpctd(:)-coefActual(:)));
+            testCase.verifyEqual(coefActual,coefExpctd,'AbsTol',1e-14,sprintf('%g',coefDist));
             
         end
         
@@ -4308,8 +4308,8 @@ classdef OvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             coefActual = step(testCase.lppufb,[],[]);
             
             % Evaluation
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',coefDist));
+            coefDist = max(abs(coefExpctd(:)-coefActual(:)));
+            testCase.verifyEqual(coefActual,coefExpctd,'AbsTol',1e-14,sprintf('%g',coefDist));
             
         end
         
@@ -4396,8 +4396,8 @@ classdef OvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             coefActual = step(testCase.lppufb,ang,[]);
             
             % Evaluation
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',coefDist));
+            coefDist = max(abs(coefExpctd(:)-coefActual(:)));
+            testCase.verifyEqual(coefActual,coefExpctd,'AbsTol',1e-14,sprintf('%g',coefDist));
             
         end
         
@@ -4493,8 +4493,8 @@ classdef OvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             coefActual = step(testCase.lppufb,ang,[]);
             
             % Evaluation
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',coefDist));
+            coefDist = max(abs(coefExpctd(:)-coefActual(:)));
+            testCase.verifyEqual(coefActual,coefExpctd,'AbsTol',1e-14,sprintf('%g',coefDist));
             
         end
         
@@ -4599,8 +4599,8 @@ classdef OvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             coefActual = step(testCase.lppufb,ang,[]);
             
             % Evaluation
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',coefDist));
+            coefDist = max(abs(coefExpctd(:)-coefActual(:)));
+            testCase.verifyEqual(coefActual,coefExpctd,'AbsTol',1e-14,sprintf('%g',coefDist));
             
         end
         
@@ -4714,8 +4714,8 @@ classdef OvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             coefActual = step(testCase.lppufb,ang,[]);
             
             % Evaluation
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',coefDist));
+            coefDist = max(abs(coefExpctd(:)-coefActual(:)));
+            testCase.verifyEqual(coefActual,coefExpctd,'AbsTol',1e-14,sprintf('%g',coefDist));
             
         end
         
@@ -4829,8 +4829,8 @@ classdef OvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             coefActual = step(testCase.lppufb,ang,[]);
             
             % Evaluation
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',coefDist));
+            coefDist = max(abs(coefExpctd(:)-coefActual(:)));
+            testCase.verifyEqual(coefActual,coefExpctd,'AbsTol',1e-14,sprintf('%g',coefDist));
             
         end
         
@@ -5029,8 +5029,8 @@ classdef OvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             coefActual = step(testCase.lppufb,ang,[]);
             
             % Evaluation
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',coefDist));
+            coefDist = max(abs(coefExpctd(:)-coefActual(:)));
+            testCase.verifyEqual(coefActual,coefExpctd,'AbsTol',1e-14,sprintf('%g',coefDist));
             
         end
         
@@ -5254,8 +5254,8 @@ classdef OvsdLpPuFb2dTypeIIVm1SystemTestCase < matlab.unittest.TestCase
             coefActual = step(testCase.lppufb,ang,[]);
             
             % Evaluation
-            coefDist = max(abs(coefExpctd(:)-coefActual(:))./abs(coefExpctd(:)));
-            testCase.verifyEqual(coefActual,coefExpctd,'RelTol',1e-14,sprintf('%g',coefDist));
+            coefDist = max(abs(coefExpctd(:)-coefActual(:)));
+            testCase.verifyEqual(coefActual,coefExpctd,'AbsTol',1e-14,sprintf('%g',coefDist));
             
         end
         
