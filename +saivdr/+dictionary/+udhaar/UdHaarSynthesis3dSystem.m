@@ -95,7 +95,7 @@ classdef UdHaarSynthesis3dSystem < saivdr.dictionary.AbstSynthesisSystem %#codeg
             % imfilter of R2017a has a bug for double precision array            
             if strcmp(version('-release'),'2017a') && ...
                     isa(u,'double')
-                warning('imfilter of R2017a has a bug for double precison array')
+                warning('IMFILTER of R2017a with CIRCULAR option has a bug for double precison array.')
             end            
             ufactor = 2^(obj.nLevels-1);
             kernelSize = 2^obj.nLevels;

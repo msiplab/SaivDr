@@ -66,7 +66,7 @@ classdef UdHaarAnalysis2dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
             % imfilter of R2017a has a bug for double precision array            
             if strcmp(version('-release'),'2017a') && ...
                     isa(u,'double')
-                warning('imfilter of R2017a has a bug for double precison array')
+                warning('IMFILTER of R2017a with CIRCULAR option has a bug for double precison array.')
             end            
             ya = u;
             hd = obj.kernels.D;
