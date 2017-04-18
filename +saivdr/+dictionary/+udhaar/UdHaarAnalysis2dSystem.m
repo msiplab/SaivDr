@@ -63,11 +63,12 @@ classdef UdHaarAnalysis2dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
         function [ coefs, scales ] = stepImpl(obj, u, nLevels)
             scales = repmat(size(u),[3*nLevels+1, 1]);
             % NOTE:
-            % imfilter of R2017a has a bug for double precision array            
+            % imfilter of R2017a has a bug for double precision array
             if strcmp(version('-release'),'2017a') && ...
                     isa(u,'double')
-                warning('IMFILTER of R2017a with CIRCULAR option has a bug for double precison array.')
-            end            
+                warning(['IMFILTER of R2017a with CIRCULAR option has a bug for double precison array.' ...
+                    ' Please visit https://jp.mathworks.com/support/bugreports/ and search #BugID: 1554862.' ])
+            end
             ya = u;
             hd = obj.kernels.D;
             hv = obj.kernels.V;
