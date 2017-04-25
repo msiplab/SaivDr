@@ -45,16 +45,12 @@ classdef OLpPuFbSynthesis1dSystemCodeGen  < ...
     end    
 
     properties (Access = private)
-        atomCncFcn
+        atomCncObj
     end
     
     properties (Access = private, PositiveInteger)
         nBlks
     end 
-    
-    properties (Access = private, Logical)
-        isMexFcn = false
-    end
     
     methods
         
@@ -101,14 +97,14 @@ classdef OLpPuFbSynthesis1dSystemCodeGen  < ...
             s.LpPuFb1d = matlab.System.saveObject(obj.LpPuFb1d);
             
             % Save the protected & private properties
-            s.atomCncFcn       = obj.atomCncFcn;            
+            s.atomCncObj       = obj.atomCncObj;            
             s.decimationFactor = obj.decimationFactor;
             s.polyPhaseOrder   = obj.polyPhaseOrder;
         end
         
         function loadObjectImpl(obj,s,wasLocked)
             % Load protected and private properties            
-            obj.atomCncFcn       = s.atomCncFcn;
+            obj.atomCncObj       = s.atomCncObj;
             obj.decimationFactor = s.decimationFactor;
             obj.polyPhaseOrder   = s.polyPhaseOrder;        
             % Call base class method to load public properties            
@@ -124,11 +120,14 @@ classdef OLpPuFbSynthesis1dSystemCodeGen  < ...
             nch = [ obj.NumberOfSymmetricChannels ...
                 obj.NumberOfAntisymmetricChannels ];
             
-            import saivdr.dictionary.olpprfb.mexsrcs.fcn_OLpPrFbAtomConcatenator1d
-            clear fcn_OLpPrFbAtomConcatenator1d
-            obj.atomCncFcn = @(coefs,scale,pmcoefs,ord,fpe) ...
-                fcn_OLpPrFbAtomConcatenator1d(coefs,scale,pmcoefs,...
-                nch,ord,fpe);
+            ord = uint32(obj.polyPhaseOrder);
+            fpe = strcmp(obj.BoundaryOperation,'Circular');
+            import saivdr.dictionary.olpprfb.OLpPrFbAtomConcatenator1d
+            obj.atomCncObj = OLpPrFbAtomConcatenator1d(...
+                'NumberOfSymmetricChannels',nch(1),...
+                'NumberOfAntisymmetricChannels',nch(2),...
+                'IsPeriodicExt',fpe,...
+                'PolyPhaseOrder',ord);
             
         end
         
@@ -185,11 +184,8 @@ classdef OLpPuFbSynthesis1dSystemCodeGen  < ...
             end
             
             % Atom concatenation
-            subScale  = nBlks_;
-            ord = uint32(obj.polyPhaseOrder);            
-            fpe = strcmp(obj.BoundaryOperation,'Circular');        
-            arrayCoefs = obj.atomCncFcn(arrayCoefs,subScale,pmCoefs,...
-                ord,fpe);
+            subScale  = nBlks_;     
+            arrayCoefs = obj.atomCncObj.step(arrayCoefs,subScale,pmCoefs); 
             
             % Block IDCT
             if dec_ == 1

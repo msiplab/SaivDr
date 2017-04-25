@@ -59,10 +59,6 @@ classdef OLpPuFbAnalysis1dSystemCodeGen < ...
         nBlks
     end
     
-    properties (Access = private, Logical)
-        isMexFcn = false
-    end
-    
     methods
         
         % Constructor
