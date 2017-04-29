@@ -128,9 +128,11 @@ classdef AbstOLpPrFbCoefManipulator1d < matlab.System %#codegen
                 elseif ps < pa
                     obj.OLpPrFbType = 'Type II';
                     obj.IsPsGreaterThanPa = false;
+                else
+                    obj.OLpPrFbType = 'Type I';
                 end
-                setupParamMtx_(obj);
             end
+            setupParamMtx_(obj);
         end
         
         function setupImpl(obj, ~, subScale, ~)
