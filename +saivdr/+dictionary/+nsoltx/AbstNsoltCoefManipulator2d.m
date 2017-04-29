@@ -168,7 +168,7 @@ classdef AbstNsoltCoefManipulator2d < matlab.System
             ps  = obj.NumberOfSymmetricChannels;
             pa  = obj.NumberOfAntisymmetricChannels;
             %
-            paramMtxSzTab_ = zeros(sum(ord)+2, 2);
+            paramMtxSzTab_ = zeros(sum(ord)+2,2);
             paramMtxSzTab_(1,:) = [ ps ps ];
             paramMtxSzTab_(2,:) = [ pa pa ];            
             if strcmp(obj.NsoltType,'Type I')
@@ -180,7 +180,7 @@ classdef AbstNsoltCoefManipulator2d < matlab.System
                     paramMtxSzTab_(2*iOrd+1,:)   = [ ps ps ];
                     paramMtxSzTab_(2*iOrd+2,:) = [ pa pa ];
                 end                
-            end            
+            end
             %
             nRowsPm = size(paramMtxSzTab_,1);
             indexOfParamMtxSzTab_ = zeros(nRowsPm,3);
@@ -218,13 +218,13 @@ classdef AbstNsoltCoefManipulator2d < matlab.System
                 obj.NumberOfAntisymmetricChannels ];
             nChMx = max(chs);
             nChMn = min(chs);
-            upper = arrayCoefs(1:nChMn,:);
+            upper  = arrayCoefs(1:nChMn,:);
             middle = arrayCoefs(nChMn+1:nChMx,:);
-            lower = arrayCoefs(nChMx+1:end,:);
+            lower  = arrayCoefs(nChMx+1:end,:);
             
-            arrayCoefs(1:nChMn,:) = upper + lower;
+            arrayCoefs(1:nChMn,:)       = upper + lower;
             arrayCoefs(nChMn+1:nChMx,:) = 1.414213562373095*middle;
-            arrayCoefs(nChMx+1:end,:) =  upper - lower;
+            arrayCoefs(nChMx+1:end,:)   = upper - lower;
         end
         
         function arrayCoefs = lowerBlockRot_(obj,arrayCoefs,iCol,U)
@@ -242,7 +242,7 @@ classdef AbstNsoltCoefManipulator2d < matlab.System
             arrayCoefs(1:hLen,indexCol+1:indexCol+nRows_) = ...
                 W*arrayCoefs(1:hLen,indexCol+1:indexCol+nRows_);
         end
-
+        
         function arrayCoefs = permuteCoefs_(obj,arrayCoefs)
             nRows_ = obj.nRows;
             nCols_ = obj.nCols;
@@ -264,9 +264,9 @@ classdef AbstNsoltCoefManipulator2d < matlab.System
                     obj.tmpArray(:,idx*nRows_+1:(idx+1)*nRows_);
             end
             obj.nRows = nCols_;
-            obj.nCols = nRows_;                                
-        end        
-
+            obj.nCols = nRows_;
+        end
+        
     end
     
 end

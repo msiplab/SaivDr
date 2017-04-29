@@ -103,7 +103,7 @@ classdef NsoltAtomExtender2d <  ...
         function arrayCoefs = fullAtomExtTypeII_(obj,arrayCoefs)
             %
             isPeriodicExt = obj.IsPeriodicExt; % BoundaryOperation = 'Circular'
-            isPsGtPa      = obj.IsPsGreaterThanPa;            
+            isPsGtPa      = obj.IsPsGreaterThanPa;
             %
             ordY = obj.PolyPhaseOrder(saivdr.dictionary.utility.Direction.VERTICAL);
             ordX = obj.PolyPhaseOrder(saivdr.dictionary.utility.Direction.HORIZONTAL);
@@ -243,7 +243,7 @@ classdef NsoltAtomExtender2d <  ...
         end
         
         function arrayCoefs = rightShiftLowerCoefs_(obj,arrayCoefs)
-            hLenMn = max([ obj.NumberOfSymmetricChannels
+            hLenMn = min([ obj.NumberOfSymmetricChannels
                 obj.NumberOfAntisymmetricChannels]);
             nRows_ = obj.nRows;
             %
@@ -255,7 +255,7 @@ classdef NsoltAtomExtender2d <  ...
         end
         
         function arrayCoefs = leftShiftUpperCoefs_(obj,arrayCoefs)
-            hLenMx = min([ obj.NumberOfSymmetricChannels
+            hLenMx = max([ obj.NumberOfSymmetricChannels
                 obj.NumberOfAntisymmetricChannels]);
             nRows_ = obj.nRows;
             %
@@ -263,7 +263,7 @@ classdef NsoltAtomExtender2d <  ...
             arrayCoefs(1:hLenMx,1:end-nRows_) = ...
                 arrayCoefs(1:hLenMx,nRows_+1:end);
             arrayCoefs(1:hLenMx,end-nRows_+1:end) = ...
-                upperCoefsPost;            
+                upperCoefsPost;
         end
     end
     

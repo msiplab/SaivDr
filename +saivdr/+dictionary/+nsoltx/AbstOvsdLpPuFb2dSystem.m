@@ -14,7 +14,7 @@ classdef AbstOvsdLpPuFb2dSystem < matlab.System %#codegen
     %
     % LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627    
     %
-
+    
     properties (Nontunable)
         DecimationFactor = [ 2 2 ];
         PolyPhaseOrder   = [];
@@ -35,17 +35,17 @@ classdef AbstOvsdLpPuFb2dSystem < matlab.System %#codegen
     
     properties (Hidden)
         Angles = 0;
-        Mus    = 1;   
+        Mus    = 1;
     end
-
+    
     properties (GetAccess = public, SetAccess = protected)
         ParameterMatrixSet
     end
-        
+    
     properties (Access = protected)
         Coefficients
     end
-
+    
     properties(Access = protected, Logical)
         mexFlag = false
     end
@@ -57,7 +57,7 @@ classdef AbstOvsdLpPuFb2dSystem < matlab.System %#codegen
         updateMus_(obj)
     end
     
-    methods 
+    methods
         function obj = AbstOvsdLpPuFb2dSystem(varargin)
             setProperties(obj,nargin,varargin{:});
         end
@@ -65,14 +65,14 @@ classdef AbstOvsdLpPuFb2dSystem < matlab.System %#codegen
         function atmimshow(obj)
             % Show Atomic Images
             updateParameterMatrixSet_(obj);
-            obj.mexFlag = false;            
+            obj.mexFlag = false;
             H = getAnalysisFilterBank_(obj);
             for ib=1:sum(obj.NumberOfChannels)
                 subplot(2,obj.NumberOfChannels(1),ib);
                 imshow(rot90(H(:,:,ib),2)+0.5);
             end
         end
-
+        
     end
     
     methods (Access = protected)
@@ -85,8 +85,8 @@ classdef AbstOvsdLpPuFb2dSystem < matlab.System %#codegen
         end
         
         function loadObjectImpl(obj,s,wasLocked)
-            import saivdr.dictionary.utility.ParameterMatrixContainer 
-            obj.mexFlag = s.mexFlag;            
+            import saivdr.dictionary.utility.ParameterMatrixContainer
+            obj.mexFlag = s.mexFlag;
             obj.Coefficients = s.Coefficients;
             loadObjectImpl@matlab.System(obj,s,wasLocked);
             %

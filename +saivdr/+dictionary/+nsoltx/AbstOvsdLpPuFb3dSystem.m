@@ -50,7 +50,7 @@ classdef AbstOvsdLpPuFb3dSystem < matlab.System %#codegen
     
     properties(Access = protected, Logical)
         mexFlag = false
-    end    
+    end
     
     methods (Access = protected, Abstract = true)
         value = getAnalysisFilterBank_(obj)
@@ -164,12 +164,12 @@ classdef AbstOvsdLpPuFb3dSystem < matlab.System %#codegen
             s = saveObjectImpl@matlab.System(obj);
             s.ParameterMatrixSet = matlab.System.saveObject(obj.ParameterMatrixSet);
             s.Coefficients = obj.Coefficients;
-            s.mexFlag = obj.mexFlag;            
+            s.mexFlag = obj.mexFlag;
         end
         
         function loadObjectImpl(obj,s,wasLocked)
             import saivdr.dictionary.utility.ParameterMatrixContainer
-            obj.mexFlag = s.mexFlag;                        
+            obj.mexFlag = s.mexFlag;
             obj.Coefficients = s.Coefficients;
             loadObjectImpl@matlab.System(obj,s,wasLocked);
             %
@@ -177,17 +177,17 @@ classdef AbstOvsdLpPuFb3dSystem < matlab.System %#codegen
                     'saivdr.dictionary.utility.ParameterMatrixSet')
                 s.ParameterMatrixSet.ClassNameForLoadTimeEval = ...
                     'saivdr.dictionary.utility.ParameterMatrixContainer';
-            end            
+            end
             obj.ParameterMatrixSet = matlab.System.loadObject(s.ParameterMatrixSet);
         end        
         
         function validatePropertiesImpl(obj)
             id = 'SaivDr:IllegalPropertyException';
             if prod(obj.DecimationFactor) > sum(obj.NumberOfChannels)
-                error('%s:\n sum(NumberOfChannels) must be greater than or equalto prod(DecimationFactor).',...
+                error('%s:\n sum(NumberOfChannels) must be greater than or equal to prod(DecimationFactor).',...
                     id);
             end
-        end   
+        end
         
         function resetImpl(obj)
             obj.mexFlag = false;
