@@ -1,13 +1,10 @@
 classdef OLpPuFbAnalysis1dSystem < ...
-        saivdr.dictionary.AbstAnalysisSystem %#~codegen
+        saivdr.dictionary.AbstAnalysisSystem %#codegen
     %OLPPUFBANALYSIS1DSYSTEM 1-D OLPPUFB analysis system
     %
-    % SVN identifier:
-    % $Id: OLpPuFbAnalysis1dSystem.m 690 2015-06-09 09:37:49Z sho $
+    % Requirements: MATLAB R2017a
     %
-    % Requirements: MATLAB R2013b
-    %
-    % Copyright (c) 2015, Shogo MURAMATSU
+    % Copyright (c) 2017, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -16,7 +13,7 @@ classdef OLpPuFbAnalysis1dSystem < ...
     %                8050 2-no-cho Ikarashi, Nishi-ku,
     %                Niigata, 950-2181, JAPAN
     %
-    % LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627    
+    % http://msiplab.eng.niigata-u.ac.jp/    
     %
     
     properties (Access = protected, Constant = true)
@@ -28,7 +25,7 @@ classdef OLpPuFbAnalysis1dSystem < ...
         BoundaryOperation = 'Termination'
     end
 
-    properties (Nontunable, PositiveInteger)    
+    properties (PositiveInteger)    
         NumberOfSymmetricChannels     = 2
         NumberOfAntisymmetricChannels = 2
     end
@@ -42,7 +39,7 @@ classdef OLpPuFbAnalysis1dSystem < ...
             matlab.system.StringSet({'Termination','Circular'});
     end
     
-    properties (Access = private, Nontunable)
+    properties (Access = private)
         nAllCoefs
         nAllChs
         decimationFactor
@@ -50,17 +47,13 @@ classdef OLpPuFbAnalysis1dSystem < ...
     end
 
     properties (Access = private)
-        atomExtFcn
+        %atomExtObj
         allScales
         allCoefs
     end
     
     properties (Access = private, PositiveInteger)
         nBlks
-    end
-    
-    properties (Access = private, Logical)
-        isMexFcn = false
     end
     
     methods
@@ -106,7 +99,7 @@ classdef OLpPuFbAnalysis1dSystem < ...
             s.LpPuFb1d = matlab.System.saveObject(obj.LpPuFb1d);
             
             % Save the protected & private properties
-            s.atomExtFcn = obj.atomExtFcn;            
+            %s.atomExtObj = obj.atomExtObj;            
             s.nAllCoefs  = obj.nAllCoefs;
             s.nAllChs    = obj.nAllChs;
             s.decimationFactor = obj.decimationFactor;
@@ -117,7 +110,7 @@ classdef OLpPuFbAnalysis1dSystem < ...
         
         function loadObjectImpl(obj,s,wasLocked)
             % Load protected and private properties
-            obj.atomExtFcn = s.atomExtFcn;
+            %obj.atomExtObj = s.atomExtObj;
             obj.nAllCoefs  = s.nAllCoefs;
             obj.nAllChs    = s.nAllChs;
             obj.decimationFactor = s.decimationFactor;
@@ -151,26 +144,14 @@ classdef OLpPuFbAnalysis1dSystem < ...
             obj.allCoefs  = zeros(1,obj.nAllCoefs);
             obj.allScales = zeros(obj.nAllChs,obj.DATA_DIMENSION);
             
-            % Prepare MEX function
-            if obj.NumberOfSymmetricChannels == 1 || ...
-                    obj.NumberOfAntisymmetricChannels == 1 
-                mexFcn = [];
-            elseif ~obj.isMexFcn
-                import saivdr.dictionary.olpprfb.mexsrcs.fcn_autobuild_atomext1d
-                [mexFcn, obj.isMexFcn] = ...
-                    fcn_autobuild_atomext1d(nch);
-            end
-            if ~isempty(mexFcn)
-                obj.atomExtFcn = @(coefs,scale,pmcoefs,ord,fpe) ...
-                    mexFcn(coefs,scale,pmcoefs,...
-                    nch,ord,fpe);
-            else
-                import saivdr.dictionary.olpprfb.mexsrcs.fcn_OLpPrFbAtomExtender1d
-                clear fcn_OLpPrFbAtomExtender1d
-                obj.atomExtFcn = @(coefs,scale,pmcoefs,ord,fpe) ...
-                    fcn_OLpPrFbAtomExtender1d(coefs,scale,pmcoefs,...
-                    nch,ord,fpe);
-            end
+ %           ord = uint32(obj.polyPhaseOrder);            
+ %           fpe = strcmp(obj.BoundaryOperation,'Circular');            
+ %           import saivdr.dictionary.olpprfb.OLpPrFbAtomExtender1d
+ %           obj.atomExtObj = OLpPrFbAtomExtender1d(...
+ %               'NumberOfSymmetricChannels',nch(1),...
+ %               'NumberOfAntisymmetricChannels',nch(2),...
+ %               'IsPeriodicExt',fpe,...
+ %               'PolyPhaseOrder',ord);          
         end
         
         function [ coefs, scales ] = stepImpl(obj, srcSeq, nLevels)
@@ -256,10 +237,14 @@ classdef OLpPuFbAnalysis1dSystem < ...
             
             % Atom extension
             subScale = obj.nBlks;
-            ord = uint32(obj.polyPhaseOrder);            
+            %arrayCoefs = obj.atomExtObj.step(arrayCoefs,subScale,pmCoefs);
+            nch = [ obj.NumberOfSymmetricChannels ...
+                obj.NumberOfAntisymmetricChannels ];            
+            ord = uint32(obj.polyPhaseOrder);
             fpe = strcmp(obj.BoundaryOperation,'Circular');
-            arrayCoefs = obj.atomExtFcn(arrayCoefs,subScale,pmCoefs,...
-                ord,fpe);
+            import saivdr.dictionary.olpprfb.mexsrcs.fcn_OLpPrFbAtomExtender1dCodeGen
+            arrayCoefs = fcn_OLpPrFbAtomExtender1dCodeGen(...
+                 arrayCoefs, subScale, pmCoefs, nch, ord, fpe);
         end        
         
     end
