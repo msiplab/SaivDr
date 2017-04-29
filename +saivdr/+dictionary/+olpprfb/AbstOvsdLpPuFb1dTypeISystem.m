@@ -2,9 +2,9 @@ classdef AbstOvsdLpPuFb1dTypeISystem < ...
         saivdr.dictionary.olpprfb.AbstOvsdLpPuFb1dSystem %#codegen
     %ABSTOVSDLPPUFB1DTYPEISYSTEM Abstract class 2-D Type-I OLPPUFB 
     %
-    % Requirements: MATLAB R2013b
+    % Requirements: MATLAB R2017a
     %
-    % Copyright (c) 2014-2016, Shogo MURAMATSU
+    % Copyright (c) 2014-2017, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -13,12 +13,12 @@ classdef AbstOvsdLpPuFb1dTypeISystem < ...
     %                8050 2-no-cho Ikarashi, Nishi-ku,
     %                Niigata, 950-2181, JAPAN
     %
-    % LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627    
+    % http://msiplab.eng.nigata-u.ac.jp/ 
     %
     
     properties (Access = protected)
         matrixE0
-        mexFcn
+        %mexFcn
     end
     
     properties (Access = protected,PositiveInteger)
@@ -45,11 +45,11 @@ classdef AbstOvsdLpPuFb1dTypeISystem < ...
             s = saveObjectImpl@saivdr.dictionary.olpprfb.AbstOvsdLpPuFb1dSystem(obj);
             s.nStages  = obj.nStages;
             s.matrixE0 = obj.matrixE0;
-            s.mexFcn   = obj.mexFcn;
+            %s.mexFcn   = obj.mexFcn;
         end
         
         function loadObjectImpl(obj,s,wasLocked)
-            obj.mexFcn   = s.mexFcn;
+            %obj.mexFcn   = s.mexFcn;
             obj.nStages  = s.nStages;
             obj.matrixE0 = s.matrixE0;
             loadObjectImpl@saivdr.dictionary.olpprfb.AbstOvsdLpPuFb1dSystem(obj,s,wasLocked);
@@ -63,14 +63,14 @@ classdef AbstOvsdLpPuFb1dTypeISystem < ...
         function resetImpl(obj)
             resetImpl@saivdr.dictionary.olpprfb.AbstOvsdLpPuFb1dSystem(obj);
             % Prepare MEX function
-            import saivdr.dictionary.nsoltx.mexsrcs.fcn_autobuild_bb_type1
-            [obj.mexFcn, obj.mexFlag] = fcn_autobuild_bb_type1(obj.NumberOfChannels(1));            
+            %import saivdr.dictionary.nsoltx.mexsrcs.fcn_autobuild_bb_type1
+            %[obj.mexFcn, obj.mexFlag] = fcn_autobuild_bb_type1(obj.NumberOfChannels(1));            
         end
         
         function setupImpl(obj,varargin)
             % Prepare MEX function
-            import saivdr.dictionary.nsoltx.mexsrcs.fcn_autobuild_bb_type1
-            [obj.mexFcn, obj.mexFlag] = fcn_autobuild_bb_type1(obj.NumberOfChannels(1));
+            %import saivdr.dictionary.nsoltx.mexsrcs.fcn_autobuild_bb_type1
+            %[obj.mexFcn, obj.mexFlag] = fcn_autobuild_bb_type1(obj.NumberOfChannels(1));
         end
         
         function updateProperties_(obj)
@@ -177,8 +177,8 @@ classdef AbstOvsdLpPuFb1dTypeISystem < ...
             nHalfDecs = dec/2;
             ord = obj.PolyPhaseOrder;
             pmMtxSet_  = obj.ParameterMatrixSet;
-            mexFcn_ = obj.mexFcn;
-            mexFlag_ = obj.mexFlag;
+            %mexFcn_ = obj.mexFcn;
+            %mexFlag_ = obj.mexFlag;
             %
             E0 = obj.matrixE0;
             %
@@ -198,13 +198,13 @@ classdef AbstOvsdLpPuFb1dTypeISystem < ...
                 nShift = int32(dec);
                 for iOrd = 1:ord
                     U = step(pmMtxSet_,[],iParamMtx);
-                    if mexFlag_
-                        E = mexFcn_(E, U, hChs, nShift);
-                    else
+                    %if mexFlag_
+                    %    E = mexFcn_(E, U, hChs, nShift);
+                    %else
                         import saivdr.dictionary.nsoltx.mexsrcs.Order1BuildingBlockTypeI
                         hObb = Order1BuildingBlockTypeI();
                         E = step(hObb, E, U, hChs, nShift);
-                    end
+                    %end
                     iParamMtx = iParamMtx+1;
                 end
             end
