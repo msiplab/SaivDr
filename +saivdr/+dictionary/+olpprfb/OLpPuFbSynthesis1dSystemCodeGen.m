@@ -1,5 +1,5 @@
 classdef OLpPuFbSynthesis1dSystemCodeGen  < ...
-        saivdr.dictionary.AbstSynthesisSystem %#~codegen
+        saivdr.dictionary.AbstSynthesisSystem %#codegen
     %OLPPUFBSYNTHESIS1DSYSTEM Synthesis system of Type-I OLPPURFB
     %
     % Requirements: MATLAB R2013b
@@ -25,7 +25,7 @@ classdef OLpPuFbSynthesis1dSystemCodeGen  < ...
         BoundaryOperation = 'Termination'        
     end
 
-    properties (Nontunable, PositiveInteger)    
+    properties (PositiveInteger)    
         NumberOfSymmetricChannels     = 2
         NumberOfAntisymmetricChannels = 2
     end
@@ -39,14 +39,14 @@ classdef OLpPuFbSynthesis1dSystemCodeGen  < ...
             matlab.system.StringSet({'Termination','Circular'});
     end
     
-    properties (Access = private, Nontunable)
+    properties (Access = private)
         decimationFactor
         polyPhaseOrder
     end    
 
-    properties (Access = private)
-        atomCncObj
-    end
+    %properties (Access = private)
+    %    atomCncObj
+    %end
     
     properties (Access = private, PositiveInteger)
         nBlks
@@ -97,14 +97,14 @@ classdef OLpPuFbSynthesis1dSystemCodeGen  < ...
             s.LpPuFb1d = matlab.System.saveObject(obj.LpPuFb1d);
             
             % Save the protected & private properties
-            s.atomCncObj       = obj.atomCncObj;            
+            %s.atomCncObj       = obj.atomCncObj;            
             s.decimationFactor = obj.decimationFactor;
             s.polyPhaseOrder   = obj.polyPhaseOrder;
         end
         
         function loadObjectImpl(obj,s,wasLocked)
             % Load protected and private properties            
-            obj.atomCncObj       = s.atomCncObj;
+            %obj.atomCncObj       = s.atomCncObj;
             obj.decimationFactor = s.decimationFactor;
             obj.polyPhaseOrder   = s.polyPhaseOrder;        
             % Call base class method to load public properties            
@@ -116,20 +116,18 @@ classdef OLpPuFbSynthesis1dSystemCodeGen  < ...
         function validatePropertiesImpl(~)
         end
         
-        function setupImpl(obj, ~, ~)
-            nch = [ obj.NumberOfSymmetricChannels ...
-                obj.NumberOfAntisymmetricChannels ];
-            
-            ord = uint32(obj.polyPhaseOrder);
-            fpe = strcmp(obj.BoundaryOperation,'Circular');
-            import saivdr.dictionary.olpprfb.OLpPrFbAtomConcatenator1d
-            obj.atomCncObj = OLpPrFbAtomConcatenator1d(...
-                'NumberOfSymmetricChannels',nch(1),...
-                'NumberOfAntisymmetricChannels',nch(2),...
-                'IsPeriodicExt',fpe,...
-                'PolyPhaseOrder',ord);
-            
-        end
+%        function setupImpl(obj, ~, ~)
+%            nch = [ obj.NumberOfSymmetricChannels ...
+%                obj.NumberOfAntisymmetricChannels ];           
+%            ord = uint32(obj.polyPhaseOrder);
+%            fpe = strcmp(obj.BoundaryOperation,'Circular');
+%            import saivdr.dictionary.olpprfb.OLpPrFbAtomConcatenator1d
+%            obj.atomCncObj = OLpPrFbAtomConcatenator1d(...
+%                 'NumberOfSymmetricChannels',nch(1),...
+%                 'NumberOfAntisymmetricChannels',nch(2),...
+%                 'IsPeriodicExt',fpe,...
+%                 'PolyPhaseOrder',ord);            
+%        end
         
         function recSeq = stepImpl(obj, coefs, scales)
             pmMtx = step(obj.LpPuFb1d,[],[]);
@@ -184,9 +182,16 @@ classdef OLpPuFbSynthesis1dSystemCodeGen  < ...
             end
             
             % Atom concatenation
-            subScale  = nBlks_;     
-            arrayCoefs = obj.atomCncObj.step(arrayCoefs,subScale,pmCoefs); 
-            
+            subScale  = nBlks_;
+            %arrayCoefs = obj.atomCncObj.step(arrayCoefs,subScale,pmCoefs);
+            nch = [ obj.NumberOfSymmetricChannels ...
+                obj.NumberOfAntisymmetricChannels ];
+            ord = uint32(obj.polyPhaseOrder);
+            fpe = strcmp(obj.BoundaryOperation,'Circular');
+            import saivdr.dictionary.olpprfb.mexsrcs.fcn_OLpPrFbAtomConcatenator1dCodeGen
+            arrayCoefs = fcn_OLpPrFbAtomConcatenator1dCodeGen(...
+                arrayCoefs, subScale, pmCoefs, nch, ord, fpe);
+
             % Block IDCT
             if dec_ == 1
                 subSeq = arrayCoefs(1,:);
