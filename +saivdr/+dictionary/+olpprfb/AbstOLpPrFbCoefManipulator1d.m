@@ -61,6 +61,19 @@ classdef AbstOLpPrFbCoefManipulator1d < matlab.System %#codegen
         % Constructor
         function obj = AbstOLpPrFbCoefManipulator1d(varargin)
             setProperties(obj,nargin,varargin{:});
+            %
+            ps = obj.NumberOfSymmetricChannels;
+            pa = obj.NumberOfAntisymmetricChannels;
+            %
+            if ps > pa
+                obj.OLpPrFbType = 'Type II';
+                obj.IsPsGreaterThanPa = true;
+            elseif ps < pa
+                obj.OLpPrFbType = 'Type II';
+                obj.IsPsGreaterThanPa = false;
+            else
+                obj.OLpPrFbType = 'Type I';
+            end
         end
         
     end
