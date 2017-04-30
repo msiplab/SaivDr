@@ -1,12 +1,9 @@
 classdef AbstNsoltCoefManipulator3d < matlab.System 
     %ABSTNSOLTCOEFMANIPULATOR3D 3-D NSOLT
     %
-    % SVN identifier:
-    % $Id: AbstNsoltCoefManipulator3d.m 866 2015-11-24 04:29:42Z sho $
+    % Requirements: MATLAB R2017a
     %
-    % Requirements: MATLAB R2013b
-    %
-    % Copyright (c) 2014-2015, Shogo MURAMATSU
+    % Copyright (c) 2014-2017, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -15,14 +12,14 @@ classdef AbstNsoltCoefManipulator3d < matlab.System
     %                8050 2-no-cho Ikarashi, Nishi-ku,
     %                Niigata, 950-2181, JAPAN
     %
-    % LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627
+    % http://msiplab.eng.niigata-u.ac.jp/
     %
     
     properties (Access = protected, Constant = true)
         DATA_DIMENSION = 3
     end
     
-    properties (Nontunable, PositiveInteger)
+    properties (PositiveInteger)
         NumberOfSymmetricChannels      = 4
         NumberOfAntisymmetricChannels  = 4
     end
@@ -35,7 +32,7 @@ classdef AbstNsoltCoefManipulator3d < matlab.System
         PolyPhaseOrder = [ 0 0 0 ]
     end
 
-    properties (SetAccess = protected, GetAccess = public, Nontunable)
+    properties (SetAccess = protected, GetAccess = public)
         NsoltType = 'Type I'
     end
     
@@ -44,7 +41,7 @@ classdef AbstNsoltCoefManipulator3d < matlab.System
             matlab.system.StringSet({'Type I','Type II'});
     end
     
-    properties (SetAccess = protected, GetAccess = public, Nontunable, Logical)
+    properties (SetAccess = protected, GetAccess = public, Logical)
         IsPsGreaterThanPa = true;
     end    
     
@@ -76,7 +73,9 @@ classdef AbstNsoltCoefManipulator3d < matlab.System
             elseif ps < pa
                 obj.NsoltType = 'Type II';
                 obj.IsPsGreaterThanPa = false;
-            end            
+            else
+                obj.NsoltType = 'Type I';
+            end
             %
         end
         
@@ -141,6 +140,24 @@ classdef AbstNsoltCoefManipulator3d < matlab.System
         end
 
         function processTunedPropertiesImpl(obj)
+ propChange = ...
+                isChangedProperty(obj,'NumberOfSymmetricChannels') ||...
+                isChangedProperty(obj,'NumberOfAntisymmetricChannels') ||...
+                isChangedProperty(obj,'PolyPhaseOrder');
+            if propChange
+                ps = obj.NumberOfSymmetricChannels;
+                pa = obj.NumberOfAntisymmetricChannels;
+                %
+                if ps > pa
+                    obj.NsoltType = 'Type II';
+                    obj.IsPsGreaterThanPa = true;
+                elseif ps < pa
+                    obj.NsoltType = 'Type II';
+                    obj.IsPsGreaterThanPa = false;
+                else
+                    obj.NsoltType = 'Type I';
+                end
+            end
             setupParamMtx_(obj);
         end
         

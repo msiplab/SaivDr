@@ -1806,8 +1806,8 @@ classdef NsoltAnalysis3dSystemTestCase < matlab.unittest.TestCase
             
             % Evaluation
             testCase.verifyEqual(scalesActual,scalesExpctd);
-            diff = max(abs(coefsExpctd(:) - coefsActual(:))./abs(coefsExpctd(:)));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'RelTol',1e-7,sprintf('%g',diff));
+            diff = max(abs(coefsExpctd(:) - coefsActual(:)));
+            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-10,sprintf('%g',diff));
             
         end
 

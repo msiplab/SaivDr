@@ -2,12 +2,9 @@ classdef NsoltAnalysis3dSystem < ...
         saivdr.dictionary.AbstAnalysisSystem %#~codegen
     %NSOLTANALYSISSYSTEM Abstract class of NSOLT analysis system
     %
-    % SVN identifier:
-    % $Id: NsoltAnalysis3dSystem.m 683 2015-05-29 08:22:13Z sho $
+    % Requirements: MATLAB R2017a
     %
-    % Requirements: MATLAB R2013b
-    %
-    % Copyright (c) 2014-2015, Shogo MURAMATSU
+    % Copyright (c) 2014-2017, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -16,7 +13,7 @@ classdef NsoltAnalysis3dSystem < ...
     %                8050 2-no-cho Ikarashi, Nishi-ku,
     %                Niigata, 950-2181, JAPAN
     %
-    % LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627    
+    % http://msiplab.eng.niigata-u.ac.jp/    
     %
     
     properties (Access = protected, Constant = true)
@@ -50,7 +47,7 @@ classdef NsoltAnalysis3dSystem < ...
     end
 
     properties (Access = private)
-        atomExtFcn
+        fcnAtomExt
         allScales
         allCoefs
     end
@@ -107,8 +104,7 @@ classdef NsoltAnalysis3dSystem < ...
             % Save the child System objects            
             s.LpPuFb3d = matlab.System.saveObject(obj.LpPuFb3d);
             
-            % Save the protected & private properties
-            s.atomExtFcn = obj.atomExtFcn;            
+            % Save the protected & private properties        
             s.nAllCoefs  = obj.nAllCoefs;
             s.nAllChs    = obj.nAllChs;
             s.decimationFactor = obj.decimationFactor;
@@ -119,7 +115,6 @@ classdef NsoltAnalysis3dSystem < ...
         
         function loadObjectImpl(obj,s,wasLocked)
             % Load protected and private properties
-            obj.atomExtFcn = s.atomExtFcn;
             obj.nAllCoefs  = s.nAllCoefs;
             obj.nAllChs    = s.nAllChs;
             obj.decimationFactor = s.decimationFactor;
@@ -154,21 +149,11 @@ classdef NsoltAnalysis3dSystem < ...
             obj.allScales = zeros(obj.nAllChs,obj.DATA_DIMENSION);
             
             % Prepare MEX function
-            if ~obj.isMexFcn
-                import saivdr.dictionary.nsoltx.mexsrcs.fcn_autobuild_atomext3d
-                [mexFcn, obj.isMexFcn] = ...
-                    fcn_autobuild_atomext3d(nch);
-            end
-            if ~isempty(mexFcn)
-                obj.atomExtFcn = @(coefs,scale,pmcoefs,ord,fpe) ...
-                    mexFcn(coefs,scale,pmcoefs,...
-                    nch,ord,fpe);
+            if exist('fcn_NsoltAtomExtender3dCodeGen_mex','file')==3
+                obj.fcnAtomExt = @fcn_NsoltAtomExtender3dCodeGen_mex;
             else
-                import saivdr.dictionary.nsoltx.mexsrcs.fcn_NsoltAtomExtender3d
-                clear fcn_NsoltAtomExtender3d
-                obj.atomExtFcn = @(coefs,scale,pmcoefs,ord,fpe) ...
-                    fcn_NsoltAtomExtender3d(coefs,scale,pmcoefs,...
-                    nch,ord,fpe);
+                import saivdr.dictionary.nsoltx.mexsrcs.fcn_NsoltAtomExtender3dCodeGen
+                obj.fcnAtomExt = @fcn_NsoltAtomExtender3dCodeGen;
             end
 
         end
@@ -306,10 +291,14 @@ classdef NsoltAnalysis3dSystem < ...
             
             % Atom extension
             subScale = [ obj.nRows obj.nCols obj.nLays];
-            ord   = uint32(obj.polyPhaseOrder);            
+            % arrayCoefs = obj.atomExtFcn(arrayCoefs,subScale,pmCoefs,...
+            %     ord,fpe);
+            nch = [ obj.NumberOfSymmetricChannels ...
+                obj.NumberOfAntisymmetricChannels ];
+            ord = uint32(obj.polyPhaseOrder);
             fpe = strcmp(obj.BoundaryOperation,'Circular');
-             arrayCoefs = obj.atomExtFcn(arrayCoefs,subScale,pmCoefs,...
-                 ord,fpe);
+            arrayCoefs = obj.fcnAtomExt(...
+                arrayCoefs, subScale, pmCoefs, nch, ord, fpe);            
         end        
 
         function y = vol2col_(obj,x)
