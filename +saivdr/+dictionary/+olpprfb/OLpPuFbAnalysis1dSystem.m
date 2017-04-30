@@ -47,7 +47,7 @@ classdef OLpPuFbAnalysis1dSystem < ...
     end
 
     properties (Access = private)
-        %atomExtObj
+        fcnAtomExt
         allScales
         allCoefs
     end
@@ -98,8 +98,7 @@ classdef OLpPuFbAnalysis1dSystem < ...
             % Save the child System objects            
             s.LpPuFb1d = matlab.System.saveObject(obj.LpPuFb1d);
             
-            % Save the protected & private properties
-            %s.atomExtObj = obj.atomExtObj;            
+            % Save the protected & private properties          
             s.nAllCoefs  = obj.nAllCoefs;
             s.nAllChs    = obj.nAllChs;
             s.decimationFactor = obj.decimationFactor;
@@ -110,7 +109,6 @@ classdef OLpPuFbAnalysis1dSystem < ...
         
         function loadObjectImpl(obj,s,wasLocked)
             % Load protected and private properties
-            %obj.atomExtObj = s.atomExtObj;
             obj.nAllCoefs  = s.nAllCoefs;
             obj.nAllChs    = s.nAllChs;
             obj.decimationFactor = s.decimationFactor;
@@ -144,14 +142,13 @@ classdef OLpPuFbAnalysis1dSystem < ...
             obj.allCoefs  = zeros(1,obj.nAllCoefs);
             obj.allScales = zeros(obj.nAllChs,obj.DATA_DIMENSION);
             
- %           ord = uint32(obj.polyPhaseOrder);            
- %           fpe = strcmp(obj.BoundaryOperation,'Circular');            
- %           import saivdr.dictionary.olpprfb.OLpPrFbAtomExtender1d
- %           obj.atomExtObj = OLpPrFbAtomExtender1d(...
- %               'NumberOfSymmetricChannels',nch(1),...
- %               'NumberOfAntisymmetricChannels',nch(2),...
- %               'IsPeriodicExt',fpe,...
- %               'PolyPhaseOrder',ord);          
+            if exist('fcn_OLpPrFbAtomExtender1dCodeGen_mex','file')==3
+                obj.fcnAtomExt = @fcn_OLpPrFbAtomExtender1dCodeGen_mex;
+            else
+                import saivdr.dictionary.olpprfb.mexsrcs.fcn_OLpPrFbAtomExtender1dCodeGen
+                obj.fcnAtomExt = @fcn_OLpPrFbAtomExtender1dCodeGen;
+            end
+            
         end
         
         function [ coefs, scales ] = stepImpl(obj, srcSeq, nLevels)
@@ -242,8 +239,7 @@ classdef OLpPuFbAnalysis1dSystem < ...
                 obj.NumberOfAntisymmetricChannels ];            
             ord = uint32(obj.polyPhaseOrder);
             fpe = strcmp(obj.BoundaryOperation,'Circular');
-            import saivdr.dictionary.olpprfb.mexsrcs.fcn_OLpPrFbAtomExtender1dCodeGen
-            arrayCoefs = fcn_OLpPrFbAtomExtender1dCodeGen(...
+            arrayCoefs = obj.fcnAtomExt(...
                  arrayCoefs, subScale, pmCoefs, nch, ord, fpe);
         end        
         
