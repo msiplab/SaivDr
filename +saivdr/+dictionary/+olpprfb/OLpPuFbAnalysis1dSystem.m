@@ -25,7 +25,7 @@ classdef OLpPuFbAnalysis1dSystem < ...
         BoundaryOperation = 'Termination'
     end
 
-    properties (PositiveInteger)    
+    properties (Nontunable, PositiveInteger)    
         NumberOfSymmetricChannels     = 2
         NumberOfAntisymmetricChannels = 2
     end
@@ -39,7 +39,7 @@ classdef OLpPuFbAnalysis1dSystem < ...
             matlab.system.StringSet({'Termination','Circular'});
     end
     
-    properties (Access = private)
+    properties (Access = private, Nontunable)
         nAllCoefs
         nAllChs
         decimationFactor
@@ -142,6 +142,7 @@ classdef OLpPuFbAnalysis1dSystem < ...
             obj.allCoefs  = zeros(1,obj.nAllCoefs);
             obj.allScales = zeros(obj.nAllChs,obj.DATA_DIMENSION);
             
+            % Prepare MEX function
             if exist('fcn_OLpPrFbAtomExtender1dCodeGen_mex','file')==3
                 obj.fcnAtomExt = @fcn_OLpPrFbAtomExtender1dCodeGen_mex;
             else

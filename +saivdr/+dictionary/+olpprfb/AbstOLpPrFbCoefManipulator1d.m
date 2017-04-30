@@ -1,7 +1,7 @@
 classdef AbstOLpPrFbCoefManipulator1d < matlab.System %#codegen
     %ABSTOLPPRFBCOEFMANIPULATOR1D 1-D Coefficient Manipulator for OLPPRFB
     %
-    % Requirements: MATLAB R2013b
+    % Requirements: MATLAB R2017a
     %
     % Copyright (c) 2015-2017, Shogo MURAMATSU
     %
@@ -12,7 +12,7 @@ classdef AbstOLpPrFbCoefManipulator1d < matlab.System %#codegen
     %                8050 2-no-cho Ikarashi, Nishi-ku,
     %                Niigata, 950-2181, JAPAN
     %
-    % http://msiplab.eng.niigata-u.ac.jp
+    % http://msiplab.eng.niigata-u.ac.jp/
     %
     
     properties (Access = protected, Constant = true)

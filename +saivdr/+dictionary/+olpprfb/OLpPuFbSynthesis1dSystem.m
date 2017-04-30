@@ -25,7 +25,7 @@ classdef OLpPuFbSynthesis1dSystem  < ...
         BoundaryOperation = 'Termination'        
     end
 
-    properties (PositiveInteger)    
+    properties (Nontunable, PositiveInteger)    
         NumberOfSymmetricChannels     = 2
         NumberOfAntisymmetricChannels = 2
     end

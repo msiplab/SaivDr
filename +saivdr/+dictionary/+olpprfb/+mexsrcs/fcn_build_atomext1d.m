@@ -1,4 +1,4 @@
-function [fcnhandler,flag] = fcn_build_atomext1d(nch)
+function [fcnhandler,flag] = fcn_build_atomext1d()
 %FCN_BUILD_ATOMEXT1D
 %
 %Requirements: MATLAB R2017a
