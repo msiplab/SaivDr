@@ -67,11 +67,11 @@ classdef AbstOvsdLpPuFb1dTypeISystem < ...
             %[obj.mexFcn, obj.mexFlag] = fcn_autobuild_bb_type1(obj.NumberOfChannels(1));            
         end
         
-        function setupImpl(obj,varargin)
+        %function setupImpl(obj,varargin)
             % Prepare MEX function
             %import saivdr.dictionary.nsoltx.mexsrcs.fcn_autobuild_bb_type1
             %[obj.mexFcn, obj.mexFlag] = fcn_autobuild_bb_type1(obj.NumberOfChannels(1));
-        end
+        %end
         
         function updateProperties_(obj)
             import saivdr.dictionary.nsoltx.ChannelGroup
