@@ -19,4 +19,8 @@ if license('checkout','matlab_coder')
     fcn_build_atomext1d;
     fcn_build_atomcnc1d;
     %
+    import saivdr.dictionary.nsoltx.mexsrcs.*
+    fcn_build_atomext2d;
+    fcn_build_atomcnc2d;
+    %
 end
