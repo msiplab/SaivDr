@@ -125,7 +125,7 @@ Information about SaivDr Package is given in Contents.m. The HELP command can be
      Faculty of Engineering, Niigata University,
      8050 2-no-cho Ikarashi, Nishi-ku,
      Niigata, 950-2181, JAPAN
-     LinedIn: https://www.linkedin.com/in/shogo-muramatsu-627b084b
+     http://msiplab.eng.niigata-u.ac.jp/
  
 ## References
 
