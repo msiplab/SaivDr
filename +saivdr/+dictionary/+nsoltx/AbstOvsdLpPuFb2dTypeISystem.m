@@ -18,7 +18,7 @@ classdef AbstOvsdLpPuFb2dTypeISystem < ...
     
     properties (Access = protected)
         matrixE0
-        %mexFcn
+        mexFcn
     end
     
     properties (Access = protected,PositiveInteger)
@@ -45,11 +45,11 @@ classdef AbstOvsdLpPuFb2dTypeISystem < ...
             s = saveObjectImpl@saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2dSystem(obj);
             s.nStages = obj.nStages;
             s.matrixE0 = obj.matrixE0;
-            %s.mexFcn   = obj.mexFcn;
+            s.mexFcn   = obj.mexFcn;
         end
         
         function loadObjectImpl(obj,s,wasLocked)
-            %obj.mexFcn   = s.mexFcn;
+            obj.mexFcn   = s.mexFcn;
             obj.nStages = s.nStages;
             obj.matrixE0 = s.matrixE0;
             loadObjectImpl@saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2dSystem(obj,s,wasLocked);
@@ -57,16 +57,19 @@ classdef AbstOvsdLpPuFb2dTypeISystem < ...
         
         function resetImpl(obj)
             resetImpl@saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2dSystem(obj);
-            % Prepare MEX function
-            %import saivdr.dictionary.nsoltx.mexsrcs.fcn_autobuild_bb_type1
-            %[obj.mexFcn, obj.mexFlag] = fcn_autobuild_bb_type1(obj.NumberOfChannels(1));            
         end
         
-        %function setupImpl(obj,varargin)
+        function setupImpl(obj,varargin)
             % Prepare MEX function
-            %import saivdr.dictionary.nsoltx.mexsrcs.fcn_autobuild_bb_type1
-            %[obj.mexFcn, obj.mexFlag] = fcn_autobuild_bb_type1(obj.NumberOfChannels(1));
-        %end
+            if exist('fcn_Order1BuildingBlockTypeI_mex','file')==3
+                obj.mexFcn = @fcn_Order1BuildingBlockTypeI_mex;
+                obj.mexFlag = true;
+            else
+                import saivdr.dictionary.nsoltx.mexsrcs.fcn_Order1BuildingBlockTypeI
+                obj.mexFcn = @fcn_Order1BuildingBlockTypeI;
+                obj.mexFlag = false;
+            end
+        end
         
         function updateProperties_(obj)
             import saivdr.dictionary.nsoltx.ChannelGroup
@@ -180,8 +183,7 @@ classdef AbstOvsdLpPuFb2dTypeISystem < ...
             ordX = obj.PolyPhaseOrder(Direction.HORIZONTAL);
             ordY = obj.PolyPhaseOrder(Direction.VERTICAL);
             pmMtxSet_  = obj.ParameterMatrixSet;
-            %mexFcn_ = obj.mexFcn;
-            %mexFlag_ = obj.mexFlag;
+            mexFcn_ = obj.mexFcn;
             %
             E0 = obj.matrixE0;
             %
@@ -206,16 +208,10 @@ classdef AbstOvsdLpPuFb2dTypeISystem < ...
             nShift = int32(lenY*lenX);
             for iOrdX = initOrdX:ordX
                 U = step(pmMtxSet_,[],iParamMtx);
-                %if mexFlag_
-                %    E = mexFcn_(E, U, hChs, nShift);
-                %else
-                    import saivdr.dictionary.nsoltx.mexsrcs.Order1BuildingBlockTypeI
-                    hObb = Order1BuildingBlockTypeI();
-                    E = step(hObb, E, U, hChs, nShift);
-                %end
+                E = mexFcn_(E, U, hChs, nShift);
                 iParamMtx = iParamMtx+1;
             end
-            lenX = decX*(ordX+1);                            
+            lenX = decX*(ordX+1);
             
             % Vertical extention
             if ordY > 0
@@ -223,13 +219,7 @@ classdef AbstOvsdLpPuFb2dTypeISystem < ...
                 nShift = int32(lenX*lenY);
                 for iOrdY = initOrdY:ordY
                     U = step(pmMtxSet_,[],iParamMtx);
-                    %if mexFlag_
-                    %    E = mexFcn_(E, U, hChs, nShift);
-                    %else
-                        import saivdr.dictionary.nsoltx.mexsrcs.Order1BuildingBlockTypeI
-                        hObb = Order1BuildingBlockTypeI();
-                        E = step(hObb, E, U, hChs, nShift);
-                    %end
+                    E = mexFcn_(E, U, hChs, nShift);
                     iParamMtx = iParamMtx+1;
                 end
                 lenY = decY*(ordY+1);                
