@@ -170,15 +170,15 @@ This project was supported by JSPS KAKENHI (JP23560443,JP26420347).
  
 ## Contributors
 
-- For coding
--- Shintaro HARA,  2013-2014
--- Natsuki AIZAWA, 2013-2014
--- Kosuke FURUYA,  2013-2015
--- Naotaka YUKI,   2014-2015
+### For coding
+* Shintaro HARA,  2013-2014
+* Natsuki AIZAWA, 2013-2014
+* Kosuke FURUYA,  2013-2015
+* Naotaka YUKI,   2014-2015
  
-- For testing
--- Hidenori WATANABE, 2014
--- Kota HORIUCHI,     2015
--- Masaki ISHII,      2015
--- Takumi KAWAMURA,   2015
--- Kenta SEINO,       2015
+### For testing
+* Hidenori WATANABE, 2014
+* Kota HORIUCHI,     2015
+* Masaki ISHII,      2015
+* Takumi KAWAMURA,   2015
+* Kenta SEINO,       2015
