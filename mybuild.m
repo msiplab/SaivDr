@@ -24,5 +24,7 @@ if license('checkout','matlab_coder')
     fcn_build_atomcnc2d;
     fcn_build_atomext3d;
     fcn_build_atomcnc3d;    
+    fcn_build_bb_type1;
+    fcn_build_bb_type2;
     %
 end
