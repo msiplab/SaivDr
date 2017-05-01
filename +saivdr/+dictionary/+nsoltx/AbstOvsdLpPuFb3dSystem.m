@@ -1,9 +1,9 @@
 classdef AbstOvsdLpPuFb3dSystem < matlab.System %#codegen
     %ABSTOVSDLPPUFBMDSYSTEM Abstract class M-D OLPPUFB
     %
-    % Requirements: MATLAB R2013b
+    % Requirements: MATLAB R2017a
     %
-    % Copyright (c) 2014-2016, Kosuke FURUYA and Shogo MURAMATSU
+    % Copyright (c) 2014-2017, Kosuke FURUYA and Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -12,7 +12,7 @@ classdef AbstOvsdLpPuFb3dSystem < matlab.System %#codegen
     %                8050 2-no-cho Ikarashi, Nishi-ku,
     %                Niigata, 950-2181, JAPAN
     %
-    % LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627    
+    % http://msiplab.eng.niigata-u.ac.jp/
     %
     
     properties (Nontunable)
