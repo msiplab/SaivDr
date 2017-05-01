@@ -1,12 +1,9 @@
 classdef Order2BuildingBlockTypeII < matlab.System
     %ORDER2BUILDINGBLOCKTYPEII Type-II building block with order 2
     %
-    % SVN identifier:
-    % $Id: Order2BuildingBlockTypeII.m 683 2015-05-29 08:22:13Z sho $
+    % Requirements: MATLAB R2017a
     %
-    % Requirements: MATLAB R2013b
-    %
-    % Copyright (c) 2014-2015, Shogo MURAMATSU
+    % Copyright (c) 2014-2017, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -15,26 +12,55 @@ classdef Order2BuildingBlockTypeII < matlab.System
     %                8050 2-no-cho Ikarashi, Nishi-ku,
     %                Niigata, 950-2181, JAPAN
     %
-    % LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627
+    % http://msiplab.eng.niigata-u.ac.jp/
     %
 
-  properties (Access=protected,Nontunable)
-        nPs
-        nPa
+    properties
+        NumberOfSymmetricChannels = 2 
+        NumberOfAntisymmetricChannels = 3
+    end
+    
+    properties (Access=protected)        
         nChannels
         Is
         Ia
     end
     
-    properties(Access=protected,Nontunable,Logical)
+    properties(Access=protected,Logical)
         IsPsGreaterThanPa
+    end
+    
+    methods
+        function obj = Order2BuildingBlockTypeII(varargin)
+            setProperties(obj,nargin,varargin{:});              
+        end 
     end
     
     methods (Access = protected)
 
-        function setupImpl(obj,~,~,~,ps,pa,~)
-            obj.nPs = ps;
-            obj.nPa = pa;
+        function processTunedPropertiesImpl(obj)        
+            propChange = ...
+                isChangedProperty(obj,'NumberOfSymmetricChannels') ||...
+                isChangedProperty(obj,'NumberOfAntisymmetricChannels');
+            if propChange
+                ps = obj.NumberOfSymmetricChannels;
+                pa = obj.NumberOfAntisymmetricChannels;
+                %
+                obj.nChannels = ps+pa;
+                obj.Is = eye(ps);
+                obj.Ia = eye(pa);
+                if ps > pa
+                    obj.IsPsGreaterThanPa = true;
+                else
+                    obj.IsPsGreaterThanPa = false;
+                end
+            end
+        end
+        
+        function setupImpl(obj)
+            ps = obj.NumberOfSymmetricChannels;
+            pa = obj.NumberOfAntisymmetricChannels;
+            %
             obj.nChannels = ps+pa;
             obj.Is = eye(ps);
             obj.Ia = eye(pa);
@@ -45,7 +71,7 @@ classdef Order2BuildingBlockTypeII < matlab.System
             end
         end
         
-        function output = stepImpl(obj,input,mtxW,mtxU,~,~,nshift)
+        function output = stepImpl(obj,input,mtxW,mtxU,nshift)
             if obj.IsPsGreaterThanPa
                 R = blkdiag(obj.Is,mtxU);
                 temp   = R*processQo_(obj,input, nshift);
@@ -64,8 +90,8 @@ classdef Order2BuildingBlockTypeII < matlab.System
     methods (Access = private)
         
         function value = processQo_(obj,x,nZ_)
-            ps = obj.nPs;
-            pa = obj.nPa;
+            ps = obj.NumberOfSymmetricChannels;
+            pa = obj.NumberOfAntisymmetricChannels;
             nChMx = max([ps pa]);
             nChMn = min([ps pa]);
             ch = ps+pa;
@@ -78,8 +104,8 @@ classdef Order2BuildingBlockTypeII < matlab.System
         end
         
         function value = processQe_(obj,x,nZ_)
-            ps = obj.nPs;
-            pa = obj.nPa;            
+            ps = obj.NumberOfSymmetricChannels;
+            pa = obj.NumberOfAntisymmetricChannels;
             nChMx = max([ps pa]);
             nChMn = min([ps pa]);
             ch = ps+pa;
