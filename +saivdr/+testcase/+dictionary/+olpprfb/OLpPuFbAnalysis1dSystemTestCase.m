@@ -1649,12 +1649,12 @@ classdef OLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             cloneAnalyzer = clone(testCase.analyzer);
             
             % Evaluation
-            testCase.verifyEqual(cloneAnalyzer,testCase.analyzer);
-            testCase.verifyFalse(cloneAnalyzer == testCase.analyzer);
             prpOrg = get(testCase.analyzer,'LpPuFb1d');
             prpCln = get(cloneAnalyzer,'LpPuFb1d');
             testCase.verifyEqual(prpCln,prpOrg);
             testCase.verifyFalse(prpCln == prpOrg);
+            testCase.verifyEqual(cloneAnalyzer,testCase.analyzer);
+            testCase.verifyFalse(cloneAnalyzer == testCase.analyzer);            
             %
             [coefExpctd,scaleExpctd] = step(testCase.analyzer,srcSeq,nLevels);
             [coefActual,scaleActual] = step(cloneAnalyzer,srcSeq,nLevels);
@@ -3768,12 +3768,12 @@ classdef OLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             cloneAnalyzer = clone(testCase.analyzer);
             
             % Evaluation
-            testCase.verifyEqual(cloneAnalyzer,testCase.analyzer);
-            testCase.verifyFalse(cloneAnalyzer == testCase.analyzer);
             prpOrg = get(testCase.analyzer,'LpPuFb1d');
             prpCln = get(cloneAnalyzer,'LpPuFb1d');
             testCase.verifyEqual(prpCln,prpOrg);
             testCase.verifyFalse(prpCln == prpOrg);
+            testCase.verifyEqual(cloneAnalyzer,testCase.analyzer);
+            testCase.verifyFalse(cloneAnalyzer == testCase.analyzer);            
             %            
             [coefExpctd,scaleExpctd] = step(testCase.analyzer,srcSeq,nLevels);
             [coefActual,scaleActual] = step(cloneAnalyzer,srcSeq,nLevels);
