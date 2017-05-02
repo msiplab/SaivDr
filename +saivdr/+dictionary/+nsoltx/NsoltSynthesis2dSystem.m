@@ -100,7 +100,8 @@ classdef NsoltSynthesis2dSystem  < ...
             % Save the protected & private properties          
             s.decimationFactor = obj.decimationFactor;
             s.polyPhaseOrder   = obj.polyPhaseOrder;
-            %s.nRows            = obj.nRows;
+            s.fcnAtomCnc       = obj.fcnAtomCnc;                          
+            %s.nRows            = obj.nRows;            
             %s.nCols            = obj.nCols;
         end
         
@@ -108,11 +109,12 @@ classdef NsoltSynthesis2dSystem  < ...
             % Load protected and private properties            
             obj.decimationFactor = s.decimationFactor;
             obj.polyPhaseOrder   = s.polyPhaseOrder;
+            obj.fcnAtomCnc       = s.fcnAtomCnc;
             %obj.nRows            = s.nRows;
-            %obj.nCols            = s.nCols;            
-            % Call base class method to load public properties            
+            %obj.nCols            = s.nCols;
+            % Call base class method to load public properties
             loadObjectImpl@saivdr.dictionary.AbstSynthesisSystem(obj,s,wasLocked);
-            % Load the child System objects            
+            % Load the child System objects
             obj.LpPuFb2d = matlab.System.loadObject(s.LpPuFb2d);            
         end
         

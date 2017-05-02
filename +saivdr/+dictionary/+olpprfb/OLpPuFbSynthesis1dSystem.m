@@ -99,12 +99,15 @@ classdef OLpPuFbSynthesis1dSystem  < ...
             % Save the protected & private properties           
             s.decimationFactor = obj.decimationFactor;
             s.polyPhaseOrder   = obj.polyPhaseOrder;
+            s.fcnAtomCnc       = obj.fcnAtomCnc;  
         end
         
         function loadObjectImpl(obj,s,wasLocked)
             % Load protected and private properties            
             obj.decimationFactor = s.decimationFactor;
             obj.polyPhaseOrder   = s.polyPhaseOrder;        
+            obj.fcnAtomCnc       = s.fcnAtomCnc;    
+           
             % Call base class method to load public properties            
             loadObjectImpl@saivdr.dictionary.AbstSynthesisSystem(obj,s,wasLocked);
             % Load the child System objects            

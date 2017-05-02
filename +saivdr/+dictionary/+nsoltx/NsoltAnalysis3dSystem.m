@@ -104,13 +104,14 @@ classdef NsoltAnalysis3dSystem < ...
             % Save the child System objects            
             s.LpPuFb3d = matlab.System.saveObject(obj.LpPuFb3d);
             
-            % Save the protected & private properties        
+            % Save the protected & private properties
             s.nAllCoefs  = obj.nAllCoefs;
             s.nAllChs    = obj.nAllChs;
             s.decimationFactor = obj.decimationFactor;
             s.polyPhaseOrder   = obj.polyPhaseOrder;
             s.allScales  = obj.allScales;
             s.allCoefs   = obj.allCoefs;
+            s.fcnAtomExt = obj.fcnAtomExt;
         end
         
         function loadObjectImpl(obj,s,wasLocked)
@@ -121,6 +122,7 @@ classdef NsoltAnalysis3dSystem < ...
             obj.polyPhaseOrder   = s.polyPhaseOrder;
             obj.allScales   = s.allScales;
             obj.allCoefs    = s.allCoefs;
+            obj.fcnAtomExt = s.fcnAtomExt;        
             
             % Call base class method to load public properties
             loadObjectImpl@saivdr.dictionary.AbstAnalysisSystem(obj,s,wasLocked);

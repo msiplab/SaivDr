@@ -105,6 +105,7 @@ classdef OLpPuFbAnalysis1dSystem < ...
             s.polyPhaseOrder   = obj.polyPhaseOrder;
             s.allScales  = obj.allScales;
             s.allCoefs   = obj.allCoefs;
+            s.fcnAtomExt = obj.fcnAtomExt;              
         end
         
         function loadObjectImpl(obj,s,wasLocked)
@@ -115,7 +116,8 @@ classdef OLpPuFbAnalysis1dSystem < ...
             obj.polyPhaseOrder   = s.polyPhaseOrder;
             obj.allScales   = s.allScales;
             obj.allCoefs    = s.allCoefs;
-            
+            obj.fcnAtomExt  = s.fcnAtomExt;              
+          
             % Call base class method to load public properties
             loadObjectImpl@saivdr.dictionary.AbstAnalysisSystem(obj,s,wasLocked);
             % Load the child System objects            

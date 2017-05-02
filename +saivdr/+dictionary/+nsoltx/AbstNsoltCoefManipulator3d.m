@@ -75,8 +75,7 @@ classdef AbstNsoltCoefManipulator3d < matlab.System
                 obj.IsPsGreaterThanPa = false;
             else
                 obj.NsoltType = 'Type I';
-            end
-            %
+            end            
         end
         
     end
@@ -135,12 +134,24 @@ classdef AbstNsoltCoefManipulator3d < matlab.System
             obj.nCols = subScale(saivdr.dictionary.utility.Direction.HORIZONTAL);
             obj.nLays = subScale(saivdr.dictionary.utility.Direction.DEPTH);
             %
-            setupParamMtx_(obj);
+            ps = obj.NumberOfSymmetricChannels;
+            pa = obj.NumberOfAntisymmetricChannels;
             %
+            if ps > pa
+                obj.NsoltType = 'Type II';
+                obj.IsPsGreaterThanPa = true;
+            elseif ps < pa
+                obj.NsoltType = 'Type II';
+                obj.IsPsGreaterThanPa = false;
+            else
+                obj.NsoltType = 'Type I';
+            end
+            %
+            setupParamMtx_(obj);
         end
 
         function processTunedPropertiesImpl(obj)
- propChange = ...
+            propChange = ...
                 isChangedProperty(obj,'NumberOfSymmetricChannels') ||...
                 isChangedProperty(obj,'NumberOfAntisymmetricChannels') ||...
                 isChangedProperty(obj,'PolyPhaseOrder');

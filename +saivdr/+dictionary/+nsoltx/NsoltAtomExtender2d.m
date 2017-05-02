@@ -2,12 +2,9 @@ classdef NsoltAtomExtender2d <  ...
         saivdr.dictionary.nsoltx.AbstNsoltCoefManipulator2d %#codegen
     %NSOLTATOMEXTENDER2D 2-D Atom Extender for NSOLT
     %
-    % SVN identifier:
-    % $Id: NsoltAtomExtender2d.m 683 2015-05-29 08:22:13Z sho $
+    % Requirements: MATLAB R2017a
     %
-    % Requirements: MATLAB R2013b
-    %
-    % Copyright (c) 2014-2015, Shogo MURAMATSU
+    % Copyright (c) 2014-2017, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -16,7 +13,7 @@ classdef NsoltAtomExtender2d <  ...
     %                8050 2-no-cho Ikarashi, Nishi-ku,
     %                Niigata, 950-2181, JAPAN
     %
-    % LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627
+    % http://msiplab.eng.niigata-u.ac.jp/
     %
     
     methods

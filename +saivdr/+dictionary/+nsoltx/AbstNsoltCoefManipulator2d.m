@@ -1,7 +1,7 @@
 classdef AbstNsoltCoefManipulator2d < matlab.System
     %ABSTNSOLTCOEFMANIPULATOR2D 2-D Coefficient Manipulator for NSOLT
     %
-    %  Requirements: MATLAB R2017a
+    % Requirements: MATLAB R2017a
     %
     % Copyright (c) 2014-2017, Shogo MURAMATSU
     %
@@ -74,8 +74,7 @@ classdef AbstNsoltCoefManipulator2d < matlab.System
                 obj.IsPsGreaterThanPa = false;
             else
                 obj.NsoltType = 'Type I';
-            end
-            %
+            end            
         end
         
     end
@@ -133,8 +132,20 @@ classdef AbstNsoltCoefManipulator2d < matlab.System
             obj.nRows = subScale(saivdr.dictionary.utility.Direction.VERTICAL);
             obj.nCols = subScale(saivdr.dictionary.utility.Direction.HORIZONTAL);
             %
-            setupParamMtx_(obj);
+            ps = obj.NumberOfSymmetricChannels;
+            pa = obj.NumberOfAntisymmetricChannels;
             %
+            if ps > pa
+                obj.NsoltType = 'Type II';
+                obj.IsPsGreaterThanPa = true;
+            elseif ps < pa
+                obj.NsoltType = 'Type II';
+                obj.IsPsGreaterThanPa = false;
+            else
+                obj.NsoltType = 'Type I';
+            end
+            %
+            setupParamMtx_(obj);
         end
         
         function processTunedPropertiesImpl(obj)
