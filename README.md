@@ -90,7 +90,7 @@ Information about SaivDr Package is given in Contents.m. The HELP command can be
     
 ## Requirements
  
-* MATLAB R2013b or later, R2015b is recommended.
+* MATLAB R2013b or later. R2015b is recommended.
  * Signal Processing Toolbox
  * Image Processing Toolbox
  * Optimization Toolbox
