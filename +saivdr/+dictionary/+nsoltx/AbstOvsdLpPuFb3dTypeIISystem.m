@@ -2,9 +2,9 @@ classdef AbstOvsdLpPuFb3dTypeIISystem < ...
         saivdr.dictionary.nsoltx.AbstOvsdLpPuFb3dSystem %#codegen
     %ABSTOVSDLPPUFB3DTYPEIISYSTEM Abstract class 3-D Type-II OLPPUFB
     %
-    % Requirements: MATLAB R2013b
+    % Requirements: MATLAB R2017a
     %
-    % Copyright (c) 2014-2016, Shogo MURAMATSU
+    % Copyright (c) 2014-2017, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -13,7 +13,7 @@ classdef AbstOvsdLpPuFb3dTypeIISystem < ...
     %                8050 2-no-cho Ikarashi, Nishi-ku,
     %                Niigata, 950-2181, JAPAN
     %
-    % LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627    
+    % http://msiplab.eng.niigata-u.ac.jp/
     %
     
     properties (Access = protected)
@@ -56,23 +56,20 @@ classdef AbstOvsdLpPuFb3dTypeIISystem < ...
         end
         
         function resetImpl(obj)
-            resetImpl@saivdr.dictionary.nsoltx.AbstOvsdLpPuFb3dSystem(obj);
-            % Prepare MEX function
-            import saivdr.dictionary.nsoltx.ChannelGroup
-            import saivdr.dictionary.nsoltx.mexsrcs.fcn_autobuild_bb_type2
-            [obj.mexFcn, obj.mexFlag] = fcn_autobuild_bb_type2(...
-                obj.NumberOfChannels(ChannelGroup.UPPER),...
-                obj.NumberOfChannels(ChannelGroup.LOWER));            
+            resetImpl@saivdr.dictionary.nsoltx.AbstOvsdLpPuFb3dSystem(obj);            
         end
         
         function setupImpl(obj,varargin)
-            % Prepare MEX function            
-            import saivdr.dictionary.nsoltx.ChannelGroup            
-            import saivdr.dictionary.nsoltx.mexsrcs.fcn_autobuild_bb_type2
-            [obj.mexFcn, obj.mexFlag] = fcn_autobuild_bb_type2(...
-                obj.NumberOfChannels(ChannelGroup.UPPER),...
-                obj.NumberOfChannels(ChannelGroup.LOWER));
-        end        
+            % Prepare MEX function
+            if exist('fcn_Order2BuildingBlockTypeII_mex','file')==3
+                obj.mexFcn = @fcn_Order2BuildingBlockTypeII_mex;
+                obj.mexFlag = true;
+            else
+                import saivdr.dictionary.nsoltx.mexsrcs.fcn_Order2BuildingBlockTypeII
+                obj.mexFcn = @fcn_Order2BuildingBlockTypeII;
+                obj.mexFlag = false;
+            end
+        end       
         
         function updateProperties_(obj)
             import saivdr.dictionary.nsoltx.ChannelGroup
@@ -140,16 +137,7 @@ classdef AbstOvsdLpPuFb3dTypeIISystem < ...
                 obj.NumberOfChannels(ChannelGroup.LOWER) ],...
                 obj.nStages,2);
             obj.ParameterMatrixSet = ParameterMatrixContainer(...
-                'MatrixSizeTable',paramMtxSizeTab);
-            
-%             % Prepare MEX function
-%             if ~obj.mexFlag
-%                 import saivdr.dictionary.nsoltx.mexsrcs.fcn_autobuild_bb_type2
-%                 [obj.mexFcn, obj.mexFlag] = fcn_autobuild_bb_type2(...
-%                     obj.NumberOfChannels(ChannelGroup.UPPER),...
-%                     obj.NumberOfChannels(ChannelGroup.LOWER));
-%             end
-            
+                'MatrixSizeTable',paramMtxSizeTab);            
         end
         
         function updateAngles_(obj)
@@ -229,6 +217,7 @@ classdef AbstOvsdLpPuFb3dTypeIISystem < ...
             ordX = obj.PolyPhaseOrder(Direction.HORIZONTAL);
             ordY = obj.PolyPhaseOrder(Direction.VERTICAL);
             ordZ = obj.PolyPhaseOrder(Direction.DEPTH);
+            mexFcn_ = obj.mexFcn;              
             %
             E0 = obj.matrixE0;
             %
@@ -253,13 +242,7 @@ classdef AbstOvsdLpPuFb3dTypeIISystem < ...
             for iOrdZ = 1:uint32(double(ordZ)/2)
                 W = step(pmMtxSt_,[],iParamMtx);
                 U = step(pmMtxSt_,[],iParamMtx+1);
-                if obj.mexFlag
-                    E = obj.mexFcn(E, W, U, nChs(1), nChs(2), nShift);
-                else
-                    import saivdr.dictionary.nsoltx.mexsrcs.Order2BuildingBlockTypeII
-                    hObb = Order2BuildingBlockTypeII();
-                    E = step(hObb,E, W, U, nChs(1), nChs(2), nShift);
-                end
+                E = mexFcn_(E, W, U, nChs(1), nChs(2), nShift);
                 iParamMtx = iParamMtx+2;
             end
             lenZ = decZ*(ordZ+1);
@@ -270,13 +253,7 @@ classdef AbstOvsdLpPuFb3dTypeIISystem < ...
             for iOrdX = 1:uint32(double(ordX)/2)
                 W = step(pmMtxSt_,[],iParamMtx);
                 U = step(pmMtxSt_,[],iParamMtx+1);
-                if obj.mexFlag
-                    E = obj.mexFcn(E, W, U, nChs(1), nChs(2), nShift);
-                else
-                    import saivdr.dictionary.nsoltx.mexsrcs.Order2BuildingBlockTypeII
-                    hObb = Order2BuildingBlockTypeII();
-                    E = step(hObb,E, W, U, nChs(1), nChs(2), nShift);
-                end
+                E = mexFcn_(E, W, U, nChs(1), nChs(2), nShift);
                 iParamMtx = iParamMtx+2;
             end
             lenX = decX*(ordX+1);
@@ -287,13 +264,7 @@ classdef AbstOvsdLpPuFb3dTypeIISystem < ...
             for iOrdY = 1:uint32(double(ordY)/2)
                 W = step(pmMtxSt_,[],iParamMtx);
                 U = step(pmMtxSt_,[],iParamMtx+1);
-                if obj.mexFlag
-                    E = obj.mexFcn(E, W, U, nChs(1), nChs(2), nShift);
-                else
-                    import saivdr.dictionary.nsoltx.mexsrcs.Order2BuildingBlockTypeII
-                    hObb = Order2BuildingBlockTypeII();
-                    E = step(hObb,E, W, U, nChs(1), nChs(2), nShift);
-                end
+                E = mexFcn_(E, W, U, nChs(1), nChs(2), nShift);
                 iParamMtx = iParamMtx+2;
             end
             lenY = decY*(ordY+1);

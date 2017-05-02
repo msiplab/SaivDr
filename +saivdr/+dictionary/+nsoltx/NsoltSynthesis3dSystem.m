@@ -2,12 +2,9 @@ classdef NsoltSynthesis3dSystem  < ...
         saivdr.dictionary.AbstSynthesisSystem %#~codegen
     %NsoltSynthesis3dSystem Synthesis system of Type-I NSOLT
     %
-    % SVN identifier:
-    % $Id: NsoltSynthesis3dSystem.m 683 2015-05-29 08:22:13Z sho $
+    % Requirements: MATLAB R2017a
     %
-    % Requirements: MATLAB R2013b
-    %
-    % Copyright (c) 2014-2015, Shogo MURAMATSU
+    % Copyright (c) 2014-2017, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -16,7 +13,7 @@ classdef NsoltSynthesis3dSystem  < ...
     %                8050 2-no-cho Ikarashi, Nishi-ku,
     %                Niigata, 950-2181, JAPAN
     %
-    % LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627
+    % http://msiplab.eng.niigata-u.ac.jp/
     %
 
     properties (Access = protected, Constant = true)
@@ -53,7 +50,7 @@ classdef NsoltSynthesis3dSystem  < ...
     end    
 
     properties (Access = private)
-        atomCncFcn
+        fcnAtomCnc
     end
     
     properties (Access = private, PositiveInteger)
@@ -110,19 +107,19 @@ classdef NsoltSynthesis3dSystem  < ...
             % Save the child System objects            
             s.LpPuFb3d = matlab.System.saveObject(obj.LpPuFb3d);
             
-            % Save the protected & private properties
-            s.atomCncFcn       = obj.atomCncFcn;            
+            % Save the protected & private properties           
             s.decimationFactor = obj.decimationFactor;
             s.polyPhaseOrder   = obj.polyPhaseOrder;
+            s.fcnAtomCnc       = obj.fcnAtomCnc;                          
             %s.nRows            = obj.nRows;
             %s.nCols            = obj.nCols;
         end
         
         function loadObjectImpl(obj,s,wasLocked)
             % Load protected and private properties            
-            obj.atomCncFcn       = s.atomCncFcn;
             obj.decimationFactor = s.decimationFactor;
             obj.polyPhaseOrder   = s.polyPhaseOrder;
+            obj.fcnAtomCnc       = s.fcnAtomCnc;                          
             %obj.nRows            = s.nRows;
             %obj.nCols            = s.nCols;            
             % Call base class method to load public properties            
@@ -143,27 +140,12 @@ classdef NsoltSynthesis3dSystem  < ...
         end        
         
         function setupImpl(obj, ~, ~)
-            nch = [ obj.NumberOfSymmetricChannels ...
-                obj.NumberOfAntisymmetricChannels ];
-            
-            % Prepare MEX function
-            if ~obj.isMexFcn
-                import saivdr.dictionary.nsoltx.mexsrcs.fcn_autobuild_atomcnc3d
-                [mexFcn, obj.isMexFcn] = ...
-                    fcn_autobuild_atomcnc3d(nch);
-            end
-            if ~isempty(mexFcn)
-                obj.atomCncFcn = @(coefs,scale,pmcoefs,ord,fpe) ...
-                    mexFcn(coefs,scale,pmcoefs,...
-                    nch,ord,fpe);
+            if exist('fcn_NsoltAtomConcatenator3dCodeGen_mex','file')==3
+                obj.fcnAtomCnc = @fcn_NsoltAtomConcatenator3dCodeGen_mex;
             else
-                import saivdr.dictionary.nsoltx.mexsrcs.fcn_NsoltAtomConcatenator3d
-                clear fcn_NsoltAtomConcatenator3d
-                obj.atomCncFcn = @(coefs,scale,pmcoefs,ord,fpe) ...
-                    fcn_NsoltAtomConcatenator3d(coefs,scale,pmcoefs,...
-                    nch,ord,fpe);
+                import saivdr.dictionary.nsoltx.mexsrcs.fcn_NsoltAtomConcatenator3dCodeGen
+                obj.fcnAtomCnc = @fcn_NsoltAtomConcatenator3dCodeGen;
             end
-            
         end
         
         function recImg = stepImpl(obj, coefs, scales)
@@ -230,11 +212,15 @@ classdef NsoltSynthesis3dSystem  < ...
             end
             
             % Atom concatenation
-            subScale  = [ nRows_ nCols_ nLays_ ];
-            ord  = uint32(obj.polyPhaseOrder);            
-            fpe = strcmp(obj.BoundaryOperation,'Circular');         
-            arrayCoefs = obj.atomCncFcn(arrayCoefs,subScale,pmCoefs,...
-                ord,fpe);
+            subScale  = [ nRows_ nCols_ nLays_ ];     
+            %arrayCoefs = obj.atomCncFcn(arrayCoefs,subScale,pmCoefs,...
+            %    ord,fpe);
+            nch = [ obj.NumberOfSymmetricChannels ...
+                obj.NumberOfAntisymmetricChannels ];
+            ord = uint32(obj.polyPhaseOrder);
+            fpe = strcmp(obj.BoundaryOperation,'Circular');
+            arrayCoefs = obj.fcnAtomCnc(...
+                arrayCoefs, subScale, pmCoefs, nch, ord, fpe);            
             
             % Block IDCT
             if decY_ == 1 && decX_ == 1 && decZ_ == 1

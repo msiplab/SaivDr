@@ -2,9 +2,9 @@ classdef AbstOvsdLpPuFb1dTypeIISystem < ...
         saivdr.dictionary.olpprfb.AbstOvsdLpPuFb1dSystem %#codegen
     %AbstOvsdLpPuFb1dTypeIISystem Abstract class 2-D Type-II OLPPUFB
     %
-    % Requirements: MATLAB R2013b
+    % Requirements: MATLAB R2017a
     %
-    % Copyright (c) 2014-2016, Shogo MURAMATSU
+    % Copyright (c) 2014-2017, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -13,7 +13,7 @@ classdef AbstOvsdLpPuFb1dTypeIISystem < ...
     %                8050 2-no-cho Ikarashi, Nishi-ku,
     %                Niigata, 950-2181, JAPAN
     %
-    % LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627    
+    % http://msiplab.eng.niigata-u.ac.jp/    
     %
     
     properties (Access = protected)
@@ -53,30 +53,22 @@ classdef AbstOvsdLpPuFb1dTypeIISystem < ...
             obj.nStages  = s.nStages;
             obj.matrixE0 = s.matrixE0;
             loadObjectImpl@saivdr.dictionary.olpprfb.AbstOvsdLpPuFb1dSystem(obj,s,wasLocked);
-            % Check if exist mexFcn
-%             if exist(char(obj.mexFcn),'file') ~= 3
-%                 obj.mexFcn  = [];
-%                 obj.mexFlag = false;
-%             end
         end
         
         function resetImpl(obj)
             resetImpl@saivdr.dictionary.olpprfb.AbstOvsdLpPuFb1dSystem(obj);
-            % Build MEX
-            import saivdr.dictionary.nsoltx.mexsrcs.fcn_autobuild_bb_type2
-            import saivdr.dictionary.nsoltx.ChannelGroup
-            [obj.mexFcn, obj.mexFlag] = fcn_autobuild_bb_type2(...
-                obj.NumberOfChannels(ChannelGroup.UPPER),...
-                obj.NumberOfChannels(ChannelGroup.LOWER));
         end
         
         function setupImpl(obj,varargin)
             % Prepare MEX function
-            import saivdr.dictionary.nsoltx.ChannelGroup            
-            import saivdr.dictionary.nsoltx.mexsrcs.fcn_autobuild_bb_type2
-            [obj.mexFcn, obj.mexFlag] = fcn_autobuild_bb_type2(...
-                obj.NumberOfChannels(ChannelGroup.UPPER),...
-                obj.NumberOfChannels(ChannelGroup.LOWER));
+            if exist('fcn_Order2BuildingBlockTypeII_mex','file')==3
+                obj.mexFcn = @fcn_Order2BuildingBlockTypeII_mex;
+                obj.mexFlag = true;
+            else
+                import saivdr.dictionary.nsoltx.mexsrcs.fcn_Order2BuildingBlockTypeII
+                obj.mexFcn = @fcn_Order2BuildingBlockTypeII;
+                obj.mexFlag = false;
+            end            
         end
         
         function updateProperties_(obj)
@@ -210,7 +202,6 @@ classdef AbstOvsdLpPuFb1dTypeIISystem < ...
             ord = obj.PolyPhaseOrder;
             pmMtxSt_ = obj.ParameterMatrixSet;
             mexFcn_  = obj.mexFcn;
-            mexFlag_ = obj.mexFlag;
             %
             E0 = obj.matrixE0;
             %
@@ -230,13 +221,7 @@ classdef AbstOvsdLpPuFb1dTypeIISystem < ...
                 for iOrd = 1:uint32(double(ord)/2)
                     W = step(pmMtxSt_,[],iParamMtx);
                     U = step(pmMtxSt_,[],iParamMtx+1);
-                    if mexFlag_
-                        E = mexFcn_(E, W, U, nChs(1), nChs(2), nShift);
-                    else
-                        import saivdr.dictionary.nsoltx.mexsrcs.Order2BuildingBlockTypeII
-                        hObb = Order2BuildingBlockTypeII();
-                        E = step(hObb,E, W, U, nChs(1), nChs(2), nShift);
-                    end
+                    E = mexFcn_(E, W, U, nChs(1), nChs(2), nShift);
                     iParamMtx = iParamMtx+2;
                 end
                 %len = dec*(ord+1);                

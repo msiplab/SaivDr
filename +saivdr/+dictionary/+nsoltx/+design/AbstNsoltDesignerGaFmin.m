@@ -2,9 +2,9 @@ classdef AbstNsoltDesignerGaFmin < ...
         saivdr.dictionary.nsoltx.design.AbstNsoltDesigner
     %ABSTNSOLTDESIGNERGAFMIN Abstract class of NSOLT Designer
     %
-    % Requirements: MATLAB R2013b
+    % Requirements: MATLAB R2017a
     %
-    % Copyright (c) 2014-2016, Shogo MURAMATSU
+    % Copyright (c) 2014-2017, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -13,7 +13,7 @@ classdef AbstNsoltDesignerGaFmin < ...
     %                8050 2-no-cho Ikarashi, Nishi-ku,
     %                Niigata, 950-2181, JAPAN
     %
-    % LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627    
+    % http://msiplab.eng.niigata-u.ac.jp/
     %
     
     properties (Nontunable)
@@ -108,13 +108,20 @@ classdef AbstNsoltDesignerGaFmin < ...
         
         function value = setHybridFmincon_(obj,options)
             hybridopts = optimoptions(@fmincon);
-            if strcmp(gaoptimget(options,'UseParallel'),'always')
+            if strcmp(gaoptimget(options,'UseParallel'),'true')
                 hybridopts = optimoptions(hybridopts,...
                     'UseParallel','always');
                 hybridopts = optimoptions(hybridopts,...
                     'GradObj', obj.GradObj);
                 hybridopts = optimoptions(hybridopts,...
                     'GradConstr','off');
+                %
+                strver = version('-release');
+                if strcmp(strver,'2016b') || strcmp(strver,'2017a')
+                    % Bug ID: 1563824
+                     hybridopts = optimoptions(hybridopts,...
+                    'Algorithm','sqp-legacy');
+                end
                 %hybridopts = optimoptions(hybridopts,...
                 %    'TolCon',0);
             end

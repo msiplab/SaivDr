@@ -1,12 +1,9 @@
 classdef NsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
-    %MODULEBLOCKDCT3dTESTCASE Test case for ModuleBlockDct3d
+    %NSOLTATOMCONCATENATOR3DTESTCASE Test case for ModuleBlockDct3d
     %
-    % SVN identifier:
-    % $Id: NsoltAtomConcatenator3dTestCase.m 683 2015-05-29 08:22:13Z sho $
+    % Requirements: MATLAB R2017a
     %
-    % Requirements: MATLAB R2013b
-    %
-    % Copyright (c) 2014-2015, Shogo MURAMATSU
+    % Copyright (c) 2014-2017, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -15,7 +12,7 @@ classdef NsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
     %                8050 2-no-cho Ikarashi, Nishi-ku,
     %                Niigata, 950-2181, JAPAN
     %
-    % LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627    
+    % http://msiplab.eng.niigata-u.ac.jp/    
     %
     properties
         module
@@ -124,7 +121,7 @@ classdef NsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             
             % Evaluation
             testCase.verifyEqual(ordActual,ordExpctd);
-            testCase.verifyEqual(cfsActual,cfsExpctd,'RelTol',1e-8);
+            testCase.verifyEqual(cfsActual,cfsExpctd,'AbsTol',1e-13);
             
         end           
         
@@ -159,7 +156,7 @@ classdef NsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             
             % Evaluation
             testCase.verifyEqual(ordActual,ordExpctd);
-            testCase.verifyEqual(cfsActual,cfsExpctd,'RelTol',1e-8);
+            testCase.verifyEqual(cfsActual,cfsExpctd,'AbsTol',1e-13);
             
         end                   
         
@@ -202,7 +199,7 @@ classdef NsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             
             % Evaluation
             testCase.verifyEqual(ordActual,ordExpctd);
-            testCase.verifyEqual(cfsActual,cfsExpctd,'RelTol',1e-8);
+            testCase.verifyEqual(cfsActual,cfsExpctd,'AbsTol',1e-13);
             
         end         
         
@@ -241,7 +238,7 @@ classdef NsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             
             % Evaluation
             testCase.verifyEqual(ordActual,ordExpctd);
-            testCase.verifyEqual(cfsActual,cfsExpctd,'RelTol',1e-8);
+            testCase.verifyEqual(cfsActual,cfsExpctd,'AbsTol',1e-13);
             
         end
         
@@ -280,8 +277,8 @@ classdef NsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             
             % Evaluation
             testCase.verifyEqual(ordActual,ordExpctd);
-            diff = max(abs(cfsActual(:)-cfsExpctd(:))./abs(cfsExpctd(:)));
-            testCase.verifyEqual(cfsActual,cfsExpctd,'RelTol',1e-8,...
+            diff = max(abs(cfsActual(:)-cfsExpctd(:)));
+            testCase.verifyEqual(cfsActual,cfsExpctd,'AbsTol',1e-13,...
                 sprintf('diff = %e',diff));
             
         end
@@ -321,8 +318,8 @@ classdef NsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             
             % Evaluation
             testCase.verifyEqual(ordActual,ordExpctd);
-            diff = max(abs(cfsActual(:)-cfsExpctd(:))./abs(cfsExpctd(:)));
-            testCase.verifyEqual(cfsActual,cfsExpctd,'RelTol',1e-8,...
+            diff = max(abs(cfsActual(:)-cfsExpctd(:)));
+            testCase.verifyEqual(cfsActual,cfsExpctd,'AbsTol',1e-13,...
                 sprintf('diff = %e',diff));
             
         end        
@@ -364,7 +361,7 @@ classdef NsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             
             % Evaluation
             testCase.verifyEqual(ordActual,ordExpctd);
-            testCase.verifyEqual(cfsActual,cfsExpctd,'RelTol',1e-8);
+            testCase.verifyEqual(cfsActual,cfsExpctd,'AbsTol',1e-13);
             
         end                
         
@@ -405,7 +402,7 @@ classdef NsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             
             % Evaluation
             testCase.verifyEqual(ordActual,ordExpctd);
-            testCase.verifyEqual(cfsActual,cfsExpctd,'RelTol',1e-8);
+            testCase.verifyEqual(cfsActual,cfsExpctd,'AbsTol',1e-13);
             
         end                        
         
@@ -446,8 +443,8 @@ classdef NsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             
             % Evaluation
             testCase.verifyEqual(ordActual,ordExpctd);
-            diff = max(abs(cfsActual(:)-cfsExpctd(:))./abs(cfsExpctd(:)));
-            testCase.verifyEqual(cfsActual,cfsExpctd,'RelTol',1e-8,...
+            diff = max(abs(cfsActual(:)-cfsExpctd(:)));
+            testCase.verifyEqual(cfsActual,cfsExpctd,'AbsTol',1e-13,...
                 sprintf('diff = %e',diff));
             
         end
@@ -491,7 +488,7 @@ classdef NsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             
             % Evaluation
             testCase.verifyEqual(ordActual,ordExpctd);
-            testCase.verifyEqual(cfsActual,cfsExpctd,'RelTol',1e-8);
+            testCase.verifyEqual(cfsActual,cfsExpctd,'AbsTol',1e-13);
             
         end                                        
         
@@ -536,8 +533,8 @@ classdef NsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             
             % Evaluation
             testCase.verifyEqual(ordActual,ordExpctd);
-            diff = max(abs(cfsActual(:)-cfsExpctd(:))./abs(cfsExpctd(:)));
-            testCase.verifyEqual(cfsActual,cfsExpctd,'RelTol',1e-8,...
+            diff = max(abs(cfsActual(:)-cfsExpctd(:)));
+            testCase.verifyEqual(cfsActual,cfsExpctd,'AbsTol',1e-13,...
                 sprintf('diff = %e',diff));
             
         end                                                
@@ -583,8 +580,8 @@ classdef NsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             
             % Evaluation
             testCase.verifyEqual(ordActual,ordExpctd);
-            diff = max(abs(cfsActual(:)-cfsExpctd(:))./abs(cfsExpctd(:)));
-            testCase.verifyEqual(cfsActual,cfsExpctd,'RelTol',1e-8,...
+            diff = max(abs(cfsActual(:)-cfsExpctd(:)));
+            testCase.verifyEqual(cfsActual,cfsExpctd,'AbsTol',1e-13,...
                 sprintf('diff = %e',diff));
             
         end                                                        
@@ -630,8 +627,8 @@ classdef NsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             
             % Evaluation
             testCase.verifyEqual(ordActual,ordExpctd);
-            diff = max(abs(cfsActual(:)-cfsExpctd(:))./abs(cfsExpctd(:)));
-            testCase.verifyEqual(cfsActual,cfsExpctd,'RelTol',1e-8,...
+            diff = max(abs(cfsActual(:)-cfsExpctd(:)));
+            testCase.verifyEqual(cfsActual,cfsExpctd,'AbsTol',1e-13,...
                 sprintf('diff = %e',diff));
             
         end                                                                
@@ -679,8 +676,8 @@ classdef NsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             
             % Evaluation
             testCase.verifyEqual(ordActual,ordExpctd);
-            diff = max(abs(cfsActual(:)-cfsExpctd(:))./abs(cfsExpctd(:)));
-            testCase.verifyEqual(cfsActual,cfsExpctd,'RelTol',1e-8,...
+            diff = max(abs(cfsActual(:)-cfsExpctd(:)));
+            testCase.verifyEqual(cfsActual,cfsExpctd,'AbsTol',1e-13,...
                 sprintf('diff = %e',diff));
             
         end                                                                        
@@ -724,7 +721,7 @@ classdef NsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             
             % Evaluation
             testCase.verifyEqual(ordActual,ordExpctd);
-            testCase.verifyEqual(cfsActual,cfsExpctd,'RelTol',1e-8);
+            testCase.verifyEqual(cfsActual,cfsExpctd,'AbsTol',1e-13);
             
         end           
         
@@ -763,8 +760,8 @@ classdef NsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             
             % Evaluation
             testCase.verifyEqual(ordActual,ordExpctd);
-            diff = max(abs(cfsActual(:)-cfsExpctd(:))./abs(cfsExpctd(:)));
-            testCase.verifyEqual(cfsActual,cfsExpctd,'RelTol',1e-8,...
+            diff = max(abs(cfsActual(:)-cfsExpctd(:)));
+            testCase.verifyEqual(cfsActual,cfsExpctd,'AbsTol',1e-13,...
                 sprintf('diff = %e',diff));
             
         end
@@ -804,8 +801,8 @@ classdef NsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             
             % Evaluation
             testCase.verifyEqual(ordActual,ordExpctd);
-            diff = max(abs(cfsActual(:)-cfsExpctd(:))./abs(cfsExpctd(:)));
-            testCase.verifyEqual(cfsActual,cfsExpctd,'RelTol',1e-8,...
+            diff = max(abs(cfsActual(:)-cfsExpctd(:)));
+            testCase.verifyEqual(cfsActual,cfsExpctd,'AbsTol',1e-13,...
                 sprintf('diff = %e',diff));
             
         end                           
@@ -845,8 +842,8 @@ classdef NsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             
             % Evaluation
             testCase.verifyEqual(ordActual,ordExpctd);
-            diff = max(abs(cfsActual(:)-cfsExpctd(:))./abs(cfsExpctd(:)));
-            testCase.verifyEqual(cfsActual,cfsExpctd,'RelTol',1e-8,...
+            diff = max(abs(cfsActual(:)-cfsExpctd(:)));
+            testCase.verifyEqual(cfsActual,cfsExpctd,'AbsTol',1e-13,...
                 sprintf('diff = %e',diff));
             
         end                                   
@@ -888,8 +885,8 @@ classdef NsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             
             % Evaluation
             testCase.verifyEqual(ordActual,ordExpctd);
-            diff = max(abs(cfsActual(:)-cfsExpctd(:))./abs(cfsExpctd(:)));
-            testCase.verifyEqual(cfsActual,cfsExpctd,'RelTol',1e-8,...
+            diff = max(abs(cfsActual(:)-cfsExpctd(:)));
+            testCase.verifyEqual(cfsActual,cfsExpctd,'AbsTol',1e-13,...
                 sprintf('diff = %e',diff));
             
         end                                   
@@ -931,8 +928,8 @@ classdef NsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             
             % Evaluation
             testCase.verifyEqual(ordActual,ordExpctd);
-            diff = max(abs(cfsActual(:)-cfsExpctd(:))./abs(cfsExpctd(:)));
-            testCase.verifyEqual(cfsActual,cfsExpctd,'RelTol',1e-8,...
+            diff = max(abs(cfsActual(:)-cfsExpctd(:)));
+            testCase.verifyEqual(cfsActual,cfsExpctd,'AbsTol',1e-13,...
                 sprintf('diff = %e',diff));
             
         end                                           
@@ -974,8 +971,8 @@ classdef NsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             
             % Evaluation
             testCase.verifyEqual(ordActual,ordExpctd);
-            diff = max(abs(cfsActual(:)-cfsExpctd(:))./abs(cfsExpctd(:)));
-            testCase.verifyEqual(cfsActual,cfsExpctd,'RelTol',1e-8,...
+            diff = max(abs(cfsActual(:)-cfsExpctd(:)));
+            testCase.verifyEqual(cfsActual,cfsExpctd,'AbsTol',1e-13,...
                 sprintf('diff = %e',diff));
             
         end                                                   
@@ -1019,8 +1016,8 @@ classdef NsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             
             % Evaluation
             testCase.verifyEqual(ordActual,ordExpctd);
-            diff = max(abs(cfsActual(:)-cfsExpctd(:))./abs(cfsExpctd(:)));
-            testCase.verifyEqual(cfsActual,cfsExpctd,'RelTol',1e-8,...
+            diff = max(abs(cfsActual(:)-cfsExpctd(:)));
+            testCase.verifyEqual(cfsActual,cfsExpctd,'AbsTol',1e-13,...
                 sprintf('diff = %e',diff));
             
         end                                                           
@@ -1066,8 +1063,8 @@ classdef NsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             
             % Evaluation
             testCase.verifyEqual(ordActual,ordExpctd);
-            diff = max(abs(cfsActual(:)-cfsExpctd(:))./abs(cfsExpctd(:)));
-            testCase.verifyEqual(cfsActual,cfsExpctd,'RelTol',1e-8,...
+            diff = max(abs(cfsActual(:)-cfsExpctd(:)));
+            testCase.verifyEqual(cfsActual,cfsExpctd,'AbsTol',1e-13,...
                 sprintf('diff = %e',diff));
             
         end                                                                   
@@ -1113,8 +1110,8 @@ classdef NsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             
             % Evaluation
             testCase.verifyEqual(ordActual,ordExpctd);
-            diff = max(abs(cfsActual(:)-cfsExpctd(:))./abs(cfsExpctd(:)));
-            testCase.verifyEqual(cfsActual,cfsExpctd,'RelTol',1e-8,...
+            diff = max(abs(cfsActual(:)-cfsExpctd(:)));
+            testCase.verifyEqual(cfsActual,cfsExpctd,'AbsTol',1e-13,...
                 sprintf('diff = %e',diff));
             
         end                                                                           
@@ -1160,8 +1157,8 @@ classdef NsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             
             % Evaluation
             testCase.verifyEqual(ordActual,ordExpctd);
-            diff = max(abs(cfsActual(:)-cfsExpctd(:))./abs(cfsExpctd(:)));
-            testCase.verifyEqual(cfsActual,cfsExpctd,'RelTol',1e-8,...
+            diff = max(abs(cfsActual(:)-cfsExpctd(:)));
+            testCase.verifyEqual(cfsActual,cfsExpctd,'AbsTol',1e-13,...
                 sprintf('diff = %e',diff));
             
         end                                                                                   
@@ -1209,8 +1206,8 @@ classdef NsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             
             % Evaluation
             testCase.verifyEqual(ordActual,ordExpctd);
-            diff = max(abs(cfsActual(:)-cfsExpctd(:))./abs(cfsExpctd(:)));
-            testCase.verifyEqual(cfsActual,cfsExpctd,'RelTol',1e-8,...
+            diff = max(abs(cfsActual(:)-cfsExpctd(:)));
+            testCase.verifyEqual(cfsActual,cfsExpctd,'AbsTol',1e-13,...
                 sprintf('diff = %e',diff));
             
         end  
@@ -1284,8 +1281,8 @@ classdef NsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifyEqual(ordActual,ordExpctd);
             testCase.verifySize(cfsActual,size(cfsExpctd));
-            diff = max(abs(cfsActual(:)-cfsExpctd(:))./abs(cfsExpctd(:)));
-            testCase.verifyEqual(cfsActual,cfsExpctd,'RelTol',1e-8,...
+            diff = max(abs(cfsActual(:)-cfsExpctd(:)));
+            testCase.verifyEqual(cfsActual,cfsExpctd,'AbsTol',1e-13,...
                 sprintf('diff = %e',diff));
             
         end
@@ -1367,8 +1364,8 @@ classdef NsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifyEqual(ordActual,ordExpctd);
             testCase.verifySize(cfsActual,size(cfsExpctd));
-            diff = max(abs(cfsActual(:)-cfsExpctd(:))./abs(cfsExpctd(:)));
-            testCase.verifyEqual(cfsActual,cfsExpctd,'RelTol',1e-8,...
+            diff = max(abs(cfsActual(:)-cfsExpctd(:)));
+            testCase.verifyEqual(cfsActual,cfsExpctd,'AbsTol',1e-13,...
                 sprintf('diff = %e',diff));
             
         end        
@@ -1412,7 +1409,7 @@ classdef NsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             
             % Evaluation
             testCase.verifyEqual(ordActual,ordExpctd);
-            testCase.verifyEqual(cfsActual,cfsExpctd,'RelTol',1e-8);
+            testCase.verifyEqual(cfsActual,cfsExpctd,'AbsTol',1e-13);
             
     end           
         
@@ -1451,8 +1448,8 @@ classdef NsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             
             % Evaluation
             testCase.verifyEqual(ordActual,ordExpctd);
-            diff = max(abs(cfsActual(:)-cfsExpctd(:))./abs(cfsExpctd(:)));
-            testCase.verifyEqual(cfsActual,cfsExpctd,'RelTol',1e-8,...
+            diff = max(abs(cfsActual(:)-cfsExpctd(:)));
+            testCase.verifyEqual(cfsActual,cfsExpctd,'AbsTol',1e-13,...
                 sprintf('diff = %e',diff));
             
         end
@@ -1492,8 +1489,8 @@ classdef NsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             
             % Evaluation
             testCase.verifyEqual(ordActual,ordExpctd);
-            diff = max(abs(cfsActual(:)-cfsExpctd(:))./abs(cfsExpctd(:)));
-            testCase.verifyEqual(cfsActual,cfsExpctd,'RelTol',1e-8,...
+            diff = max(abs(cfsActual(:)-cfsExpctd(:)));
+            testCase.verifyEqual(cfsActual,cfsExpctd,'AbsTol',1e-13,...
                 sprintf('diff = %e',diff));
             
         end                           
@@ -1533,8 +1530,8 @@ classdef NsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             
             % Evaluation
             testCase.verifyEqual(ordActual,ordExpctd);
-            diff = max(abs(cfsActual(:)-cfsExpctd(:))./abs(cfsExpctd(:)));
-            testCase.verifyEqual(cfsActual,cfsExpctd,'RelTol',1e-8,...
+            diff = max(abs(cfsActual(:)-cfsExpctd(:)));
+            testCase.verifyEqual(cfsActual,cfsExpctd,'AbsTol',1e-13,...
                 sprintf('diff = %e',diff));
             
         end                                   
@@ -1576,8 +1573,8 @@ classdef NsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             
             % Evaluation
             testCase.verifyEqual(ordActual,ordExpctd);
-            diff = max(abs(cfsActual(:)-cfsExpctd(:))./abs(cfsExpctd(:)));
-            testCase.verifyEqual(cfsActual,cfsExpctd,'RelTol',1e-8,...
+            diff = max(abs(cfsActual(:)-cfsExpctd(:)));
+            testCase.verifyEqual(cfsActual,cfsExpctd,'AbsTol',1e-13,...
                 sprintf('diff = %e',diff));
             
         end                                   
@@ -1619,8 +1616,8 @@ classdef NsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             
             % Evaluation
             testCase.verifyEqual(ordActual,ordExpctd);
-            diff = max(abs(cfsActual(:)-cfsExpctd(:))./abs(cfsExpctd(:)));
-            testCase.verifyEqual(cfsActual,cfsExpctd,'RelTol',1e-8,...
+            diff = max(abs(cfsActual(:)-cfsExpctd(:)));
+            testCase.verifyEqual(cfsActual,cfsExpctd,'AbsTol',1e-13,...
                 sprintf('diff = %e',diff));
             
         end                                           
@@ -1662,8 +1659,8 @@ classdef NsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             
             % Evaluation
             testCase.verifyEqual(ordActual,ordExpctd);
-            diff = max(abs(cfsActual(:)-cfsExpctd(:))./abs(cfsExpctd(:)));
-            testCase.verifyEqual(cfsActual,cfsExpctd,'RelTol',1e-8,...
+            diff = max(abs(cfsActual(:)-cfsExpctd(:)));
+            testCase.verifyEqual(cfsActual,cfsExpctd,'AbsTol',1e-13,...
                 sprintf('diff = %e',diff));
             
         end                                                   
@@ -1707,8 +1704,8 @@ classdef NsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             
             % Evaluation
             testCase.verifyEqual(ordActual,ordExpctd);
-            diff = max(abs(cfsActual(:)-cfsExpctd(:))./abs(cfsExpctd(:)));
-            testCase.verifyEqual(cfsActual,cfsExpctd,'RelTol',1e-8,...
+            diff = max(abs(cfsActual(:)-cfsExpctd(:)));
+            testCase.verifyEqual(cfsActual,cfsExpctd,'AbsTol',1e-13,...
                 sprintf('diff = %e',diff));
             
         end
@@ -1754,8 +1751,8 @@ classdef NsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             
             % Evaluation
             testCase.verifyEqual(ordActual,ordExpctd);
-            diff = max(abs(cfsActual(:)-cfsExpctd(:))./abs(cfsExpctd(:)));
-            testCase.verifyEqual(cfsActual,cfsExpctd,'RelTol',1e-8,...
+            diff = max(abs(cfsActual(:)-cfsExpctd(:)));
+            testCase.verifyEqual(cfsActual,cfsExpctd,'AbsTol',1e-13,...
                 sprintf('diff = %e',diff));
             
         end                                                                   
@@ -1801,8 +1798,8 @@ classdef NsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             
             % Evaluation
             testCase.verifyEqual(ordActual,ordExpctd);
-            diff = max(abs(cfsActual(:)-cfsExpctd(:))./abs(cfsExpctd(:)));
-            testCase.verifyEqual(cfsActual,cfsExpctd,'RelTol',1e-8,...
+            diff = max(abs(cfsActual(:)-cfsExpctd(:)));
+            testCase.verifyEqual(cfsActual,cfsExpctd,'AbsTol',1e-13,...
                 sprintf('diff = %e',diff));
             
         end                                                                           
@@ -1848,8 +1845,8 @@ classdef NsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             
             % Evaluation
             testCase.verifyEqual(ordActual,ordExpctd);
-            diff = max(abs(cfsActual(:)-cfsExpctd(:))./abs(cfsExpctd(:)));
-            testCase.verifyEqual(cfsActual,cfsExpctd,'RelTol',1e-8,...
+            diff = max(abs(cfsActual(:)-cfsExpctd(:)));
+            testCase.verifyEqual(cfsActual,cfsExpctd,'AbsTol',1e-13,...
                 sprintf('diff = %e',diff));
             
         end                                                                                   
@@ -1897,8 +1894,8 @@ classdef NsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             
             % Evaluation
             testCase.verifyEqual(ordActual,ordExpctd);
-            diff = max(abs(cfsActual(:)-cfsExpctd(:))./abs(cfsExpctd(:)));
-            testCase.verifyEqual(cfsActual,cfsExpctd,'RelTol',1e-8,...
+            diff = max(abs(cfsActual(:)-cfsExpctd(:)));
+            testCase.verifyEqual(cfsActual,cfsExpctd,'AbsTol',1e-13,...
                 sprintf('diff = %e',diff));
             
         end  
@@ -1980,8 +1977,8 @@ classdef NsoltAtomConcatenator3dTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifyEqual(ordActual,ordExpctd);
             testCase.verifySize(cfsActual,size(cfsExpctd));
-            diff = max(abs(cfsActual(:)-cfsExpctd(:))./abs(cfsExpctd(:)));
-            testCase.verifyEqual(cfsActual,cfsExpctd,'RelTol',1e-8,...
+            diff = max(abs(cfsActual(:)-cfsExpctd(:)));
+            testCase.verifyEqual(cfsActual,cfsExpctd,'AbsTol',1e-13,...
                 sprintf('diff = %e',diff));
             
         end        
