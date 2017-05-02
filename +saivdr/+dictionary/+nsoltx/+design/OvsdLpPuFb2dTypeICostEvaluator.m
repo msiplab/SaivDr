@@ -2,12 +2,9 @@ classdef OvsdLpPuFb2dTypeICostEvaluator < ... %#codegen
         saivdr.dictionary.nsoltx.design.AbstOvsdLpPuFbCostEvaluator
     %OVSDLPPUFB2DTYPEICOSTEVALUATOR Cost evaluator for Type-I NSOLT
     %
-    % SVN identifier:
-    % $Id: OvsdLpPuFb2dTypeICostEvaluator.m 868 2015-11-25 02:33:11Z sho $
+    % Requirements: MATLAB R20171
     %
-    % Requirements: MATLAB R2013b
-    %
-    % Copyright (c) 2015, Shogo MURAMATSU
+    % Copyright (c) 2015-2017, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -16,7 +13,7 @@ classdef OvsdLpPuFb2dTypeICostEvaluator < ... %#codegen
     %                8050 2-no-cho Ikarashi, Nishi-ku,
     %                Niigata, 950-2181, JAPAN
     %
-    % LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627
+    % http://msiplab.eng.niigata-u.ac.jp/
     %
     
     properties (Access = protected, Constant = true)
@@ -65,23 +62,15 @@ classdef OvsdLpPuFb2dTypeICostEvaluator < ... %#codegen
             
             % Prepare MEX function
             if ~obj.isMexFcn
-                import saivdr.dictionary.nsoltx.mexsrcs.fcn_autobuild_atomcnc2d
-                [mexFcnAcnc, isMexFcnAcnc] = fcn_autobuild_atomcnc2d(nch);
-                %
                 import saivdr.dictionary.nsoltx.mexsrcs.fcn_autobuild_gradevalsteps2d
-                [mexFcnGrad, isMexFcnGrad] = fcn_autobuild_gradevalsteps2d(nch,ord);
-                %
-                obj.isMexFcn = isMexFcnAcnc && isMexFcnGrad;
+                [mexFcnGrad, obj.isMexFcn] = fcn_autobuild_gradevalsteps2d(nch,ord);
             end
             % Atom concatenator
-            if ~isempty(mexFcnAcnc)
-                obj.atomCncFcn = @(coefs,scale,pmcoefs,ord,fpe) ...
-                    mexFcnAcnc(coefs,scale,pmcoefs,nch,ord,fpe);
+            if exist('fcn_NsoltAtomConcatenator2dCodeGen_mex','file')==3
+                obj.atomCncFcn = @fcn_NsoltAtomConcatenator2dCodeGen_mex;
             else
-                import saivdr.dictionary.nsoltx.mexsrcs.fcn_NsoltAtomConcatenator2d
-                clear fcn_NsoltAtomConcatenator2d
-                obj.atomCncFcn = @(coefs,scale,pmcoefs,ord,fpe) ...
-                    fcn_NsoltAtomConcatenator2d(coefs,scale,pmcoefs,nch,ord,fpe);
+                import saivdr.dictionary.nsoltx.mexsrcs.fcn_NsoltAtomConcatenator2dCodeGen;
+                obj.atomCncFcn = @fcn_NsoltAtomConcatenator2dCodeGen;
             end
             % Gradient evaluator
             if ~isempty(mexFcnGrad)
@@ -218,7 +207,7 @@ classdef OvsdLpPuFb2dTypeICostEvaluator < ... %#codegen
             ord  = uint32(obj.polyPhaseOrder);
             fpe = strcmp(obj.BoundaryOperation,'Circular');
             arrayCoefs = obj.atomCncFcn(arrayCoefs,subScale,pmCoefs,...
-                ord,fpe);
+                [ps ps],ord,fpe);
             
             % Block IDCT
             if decY_ == 1 && decX_ == 1
