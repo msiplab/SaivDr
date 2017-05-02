@@ -1,12 +1,9 @@
 classdef Synthesis3dSystemTestCase < matlab.unittest.TestCase
     %SYNTHESIS3DSYSTEMTESTCASE Test case for Synthesis3dSystem
     %
-    % SVN identifier:
-    % $Id: Synthesis3dSystemTestCase.m 866 2015-11-24 04:29:42Z sho $
+    % Requirements: MATLAB R2017a
     %
-    % Requirements: MATLAB R2013b
-    %
-    % Copyright (c) 2015, Shogo MURAMATSU
+    % Copyright (c) 2015-2017, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -15,7 +12,7 @@ classdef Synthesis3dSystemTestCase < matlab.unittest.TestCase
     %                8050 2-no-cho Ikarashi, Nishi-ku,
     %                Niigata, 950-2181, JAPAN
     %
-    % LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627
+    % http://msiplab.eng.niigata-u.ac.jp/
     %
     properties
         synthesizer
@@ -150,8 +147,8 @@ classdef Synthesis3dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-12,sprintf('%g',diff));
         end
         
         % Test
@@ -217,8 +214,8 @@ classdef Synthesis3dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-12,sprintf('%g',diff));
         end
         
         % Test
@@ -284,8 +281,8 @@ classdef Synthesis3dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-12,sprintf('%g',diff));
         end        
         
         % Test
@@ -352,8 +349,8 @@ classdef Synthesis3dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-12,sprintf('%g',diff));
         end
         
         % Test
@@ -420,8 +417,8 @@ classdef Synthesis3dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-12,sprintf('%g',diff));
         end
 
         % Test
@@ -509,8 +506,8 @@ classdef Synthesis3dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-12,sprintf('%g',diff));
         end
         
         % Test
@@ -605,8 +602,8 @@ classdef Synthesis3dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-12,sprintf('%g',diff));
         end
         
         % Test
@@ -672,8 +669,8 @@ classdef Synthesis3dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-8,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-12,sprintf('%g',diff));
         end
         
         % Test
@@ -740,8 +737,8 @@ classdef Synthesis3dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-7,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-12,sprintf('%g',diff));
         end
         
         % Test
@@ -808,8 +805,8 @@ classdef Synthesis3dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-8,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-12,sprintf('%g',diff));
         end        
         
         % Test
@@ -877,8 +874,8 @@ classdef Synthesis3dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-8,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-12,sprintf('%g',diff));
         end
         
         % Test
@@ -946,8 +943,8 @@ classdef Synthesis3dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-8,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-12,sprintf('%g',diff));
         end
 
         % Test
@@ -1036,8 +1033,8 @@ classdef Synthesis3dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-8,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-12,sprintf('%g',diff));
         end
         
         % Test
@@ -1133,8 +1130,8 @@ classdef Synthesis3dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-8,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-12,sprintf('%g',diff));
         end
 
         function testStepDec234Ch1414Ord222Level1(testCase)
@@ -1145,7 +1142,7 @@ classdef Synthesis3dSystemTestCase < matlab.unittest.TestCase
             depth  = 16*4;
             nDecs  = [ 2 3 4 ];
             synthesisFilters = zeros(6,9,12,28);
-            for iCh = 1:28;
+            for iCh = 1:28
                 synthesisFilters(:,:,:,iCh) = randn(6,9,12);
             end
             nLevels = 1;
@@ -1158,7 +1155,7 @@ classdef Synthesis3dSystemTestCase < matlab.unittest.TestCase
             nChs = size(synthesisFilters,4);
             subCoefs = cell(nLevels*(nChs-1)+1,1);
             subCoefs{1} = rand(height/(decY),width/(decX),depth/(decZ));
-            for iCh = 2:28;
+            for iCh = 2:28
                 subCoefs{iCh} = randn(height/(decY),width/(decX),depth/(decZ));
             end
             nSubbands = length(subCoefs);
@@ -1208,8 +1205,8 @@ classdef Synthesis3dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-8,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-12,sprintf('%g',diff));
         end
         
         
@@ -1222,7 +1219,7 @@ classdef Synthesis3dSystemTestCase < matlab.unittest.TestCase
             depth  = 16*4^2;
             nDecs  = [ 2 3 4 ];
             synthesisFilters = zeros(6,9,12,28);
-            for iCh = 1:28;
+            for iCh = 1:28
                 synthesisFilters(:,:,:,iCh) = randn(6,9,12);
             end
             nLevels = 2;
@@ -1235,7 +1232,7 @@ classdef Synthesis3dSystemTestCase < matlab.unittest.TestCase
             nChs = size(synthesisFilters,4);
             subCoefs = cell(nLevels*(nChs-1)+1,1);
             subCoefs{1} = rand(height/(decY^2),width/(decX^2),depth/(decZ^2));
-            for iCh = 2:28;
+            for iCh = 2:28
                 subCoefs{iCh} = randn(height/(decY^2),width/(decX^2),depth/(decZ^2));
                 subCoefs{iCh+27} = randn(height/(decY),width/(decX),depth/(decZ));
             end
@@ -1286,8 +1283,8 @@ classdef Synthesis3dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-8,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-12,sprintf('%g',diff));
         end
 
         %Test
@@ -1363,8 +1360,8 @@ classdef Synthesis3dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-7,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-12,sprintf('%g',diff));
         end
         
         % Test
@@ -1461,8 +1458,8 @@ classdef Synthesis3dSystemTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-7,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-12,sprintf('%g',diff));
         end        
     end
     
