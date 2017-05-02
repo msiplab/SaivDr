@@ -248,7 +248,10 @@ classdef NsoltDictionaryLearningTestCase < matlab.unittest.TestCase
             options = optimset(...
                 'MaxIter',2*nImgs,...
                 'TolX',1e-4);                
-            [~, costPst] = step(testCase.designer,options,isOptMus);
+            for iter = 1:5
+                step(testCase.designer,options,isOptMus);
+            end
+            [~, costPst] = step(testCase.designer,options,isOptMus);            
             
             % Evaluation
             import matlab.unittest.constraints.IsLessThan

@@ -13,6 +13,11 @@
 %
 % http://msiplab.eng.niigata-u.ac.jp/
 %
+
+%% Set path
+setpath
+
+%% Build mex codes
 if license('checkout','matlab_coder')
     %
     import saivdr.dictionary.olpprfb.mexsrcs.*
