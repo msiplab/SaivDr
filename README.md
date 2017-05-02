@@ -90,7 +90,7 @@ Information about SaivDr Package is given in Contents.m. The HELP command can be
     
 ## Requirements
  
-* MATLAB R2013b or later, (R2015b is recommended.)
+* MATLAB R2013b or later, R2015b is recommended.
  * Signal Processing Toolbox
  * Image Processing Toolbox
  * Optimization Toolbox
@@ -108,7 +108,11 @@ Information about SaivDr Package is given in Contents.m. The HELP command can be
 
         >> setpath
 
-3. Several example codes are found under the second layer directory 
+3. Build MEX codes if you have MATLAB Coder.
+
+        >> mybuild
+
+4. Several example codes are found under the second layer directory 
    'examples' of this package. Change current directory to one under 
    the second layer directiory 'examples' and execute an M-file of 
    which name begins with 'main,' such as
