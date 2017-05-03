@@ -68,7 +68,7 @@ classdef GradEvalSteps2d < matlab.System %#codegen
             end
             propChange = ...
                 isChangedProperty(obj,'NumberOfSymmetricChannels') ||...
-                isChangedProperty(obj,'NumberOfAntisymmetricChannels'); % ||...
+                isChangedProperty(obj,'NumberOfAntisymmetricChannels') ||...
                 isChangedProperty(obj,'PolyPhaseOrder');
             if propChange            
                 ord = obj.PolyPhaseOrder;
@@ -106,11 +106,12 @@ classdef GradEvalSteps2d < matlab.System %#codegen
             set(obj.vqStep,'NumberOfAntisymmetricChannels',pa);
             set(obj.vqStepPd,'NumberOfSymmetricChannels',ps);
             set(obj.vqStepPd,'NumberOfAntisymmetricChannels',pa);
+            
             nAngsPm = ps*(ps-1)/2;
             nMusPm  = ps;
             step(obj.omgpd,zeros(nAngsPm,1),ones(nMusPm,1),uint32(1));
-            setupParamMtx_(obj);
             %
+            setupParamMtx_(obj);
             obj.paramMtxCoefs = zeros((ps^2)*(2+sum(ord)),1);
         end
         
@@ -218,7 +219,6 @@ classdef GradEvalSteps2d < matlab.System %#codegen
     end
     
     methods (Access = private)
-        %%
         
         function state = getState_(obj,iAng)       
             ps          = obj.NumberOfSymmetricChannels;

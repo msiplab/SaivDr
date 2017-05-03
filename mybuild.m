@@ -32,6 +32,6 @@ if license('checkout','matlab_coder')
     fcn_build_bb_type1;
     fcn_build_bb_type2;
     fcn_build_gradevalsteps2d;
-    %fcn_build_gradevalsteps3d;
+    fcn_build_gradevalsteps3d;
     %
 end

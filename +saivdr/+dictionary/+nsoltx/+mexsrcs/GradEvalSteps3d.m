@@ -1,12 +1,9 @@
 classdef GradEvalSteps3d < matlab.System %#codegen
     %GRADEVALSTEPS3D Gradient Evaluation Steps for 3-D NSOLT
     %
-    % SVN identifier:
-    % $Id: GradEvalSteps3d.m 868 2015-11-25 02:33:11Z sho $
+    % Requirements: MATLAB R2017
     %
-    % Requirements: MATLAB R2013b
-    %
-    % Copyright (c) 2015, Shogo MURAMATSU
+    % Copyright (c) 2015-2017, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -15,11 +12,11 @@ classdef GradEvalSteps3d < matlab.System %#codegen
     %                8050 2-no-cho Ikarashi, Nishi-ku,
     %                Niigata, 950-2181, JAPAN
     %
-    % LinedIn: https://www.linkedin.com/in/shogo-muramatsu-627b084b
+    % http://msiplab.eng.niigata-u.ac.jp/
     %
     
     % Public, tunable properties.
-    properties (Nontunable, PositiveInteger)
+    properties (PositiveInteger)
         NumberOfSymmetricChannels      = 4
         NumberOfAntisymmetricChannels  = 4
     end
@@ -48,23 +45,15 @@ classdef GradEvalSteps3d < matlab.System %#codegen
         
         function obj = GradEvalSteps3d(varargin)
             setProperties(obj,nargin,varargin{:});
-            %
-            ps  = obj.NumberOfSymmetricChannels;
-            pa  = obj.NumberOfAntisymmetricChannels;
             
             obj.vqStep = saivdr.dictionary.nsoltx.design.NsoltVQStep3d(...
-                'PartialDifference','off',...
-                'NumberOfSymmetricChannels',ps,...
-                'NumberOfAntisymmetricChannels',pa);
+                'PartialDifference','off');
             
             obj.vqStepPd = saivdr.dictionary.nsoltx.design.NsoltVQStep3d(...
-                'PartialDifference','on',...
-                'NumberOfSymmetricChannels',ps,...
-                'NumberOfAntisymmetricChannels',pa);
+                'PartialDifference','on');
 
             obj.omgpd = saivdr.dictionary.utility.OrthonormalMatrixGenerationSystem(...
-                'PartialDifference','on',...
-                'NumberOfDimensions',ps);            
+                'PartialDifference','on');          
             
         end
     end
@@ -72,36 +61,58 @@ classdef GradEvalSteps3d < matlab.System %#codegen
     methods (Access = protected)
 
         function processTunedPropertiesImpl(obj)
-            if isChangedProperty(obj,'IsPeriodicExt');
+            if isChangedProperty(obj,'IsPeriodicExt')
                 fpe = obj.IsPeriodicExt;
                 set(obj.vqStep,'IsPeriodicExt',fpe);
                 set(obj.vqStepPd,'IsPeriodicExt',fpe);
             end
-            if isChangedProperty(obj,'PolyPhaseOrder');
+            propChange = ...
+                isChangedProperty(obj,'NumberOfSymmetricChannels') ||...
+                isChangedProperty(obj,'NumberOfAntisymmetricChannels') ||...
+                isChangedProperty(obj,'PolyPhaseOrder');
+            if propChange            
                 ord = obj.PolyPhaseOrder;
+                ps = obj.NumberOfSymmetricChannels;
+                pa = obj.NumberOfAntisymmetricChannels;
                 set(obj.vqStep,'PolyPhaseOrder',ord);
                 set(obj.vqStepPd,'PolyPhaseOrder',ord);
-                setupParamMtx_(obj);            
+                set(obj.omgpd,'NumberOfDimensions',ps);
+                set(obj.vqStep,'NumberOfSymmetricChannels',ps);
+                set(obj.vqStep,'NumberOfAntisymmetricChannels',pa);
+                set(obj.vqStepPd,'NumberOfSymmetricChannels',ps);
+                set(obj.vqStepPd,'NumberOfAntisymmetricChannels',pa);
+                nAngsPm = ps*(ps-1)/2;
+                nMusPm  = ps;
+                step(obj.omgpd,zeros(nAngsPm,1),ones(nMusPm,1),uint32(1));
+                setupParamMtx_(obj);
+                %
+                obj.paramMtxCoefs = zeros((ps^2)*(2+sum(ord)),1);                
             end
         end
 
         function setupImpl(obj,...
-                ~, ~, ~, pmCoefs, ~, ~, ~ )
+                ~, ~, ~, ~, ~, ~, ~ )
             ord = obj.PolyPhaseOrder;
             fpe = obj.IsPeriodicExt;
             ps  = obj.NumberOfSymmetricChannels;
+            pa  = obj.NumberOfAntisymmetricChannels;            
 
             set(obj.vqStep,'IsPeriodicExt',fpe);
+            set(obj.vqStepPd,'IsPeriodicExt',fpe);            
             set(obj.vqStep,'PolyPhaseOrder',ord);
-            set(obj.vqStepPd,'IsPeriodicExt',fpe);
             set(obj.vqStepPd,'PolyPhaseOrder',ord);
+            set(obj.omgpd,'NumberOfDimensions',ps);
+            set(obj.vqStep,'NumberOfSymmetricChannels',ps);
+            set(obj.vqStep,'NumberOfAntisymmetricChannels',pa);
+            set(obj.vqStepPd,'NumberOfSymmetricChannels',ps);
+            set(obj.vqStepPd,'NumberOfAntisymmetricChannels',pa);
 
             nAngsPm = ps*(ps-1)/2;
             nMusPm  = ps;
             step(obj.omgpd,zeros(nAngsPm,1),ones(nMusPm,1),uint32(1));
             %
             setupParamMtx_(obj);
-            obj.paramMtxCoefs = pmCoefs;
+            obj.paramMtxCoefs = zeros((ps^2)*(2+sum(ord)),1);
         end
         
         function grad = stepImpl(obj, ...
@@ -110,13 +121,13 @@ classdef GradEvalSteps3d < matlab.System %#codegen
             %
             ord       = obj.PolyPhaseOrder;
             ps        = obj.NumberOfSymmetricChannels;
+            %
             omgpd_    = obj.omgpd;
             nAngs     = numel(angs);
             nAngsPm   = ps*(ps-1)/2;
             nMusPm    = ps;
             vqStep_   = obj.vqStep;
             vqStepPd_ = obj.vqStepPd;
-            
             %
             arrayCoefsB = step(vqStep_,arrayCoefsB,scale,pmCoefs,...
                 uint32(1));
@@ -215,12 +226,11 @@ classdef GradEvalSteps3d < matlab.System %#codegen
             end
         end
         
-        function resetImpl(~)
-        end
+%         function resetImpl(~)
+%         end
     end
     
     methods (Access = private)
-        %%
         
         function state = getState_(obj,iAng)       
             ps          = obj.NumberOfSymmetricChannels;

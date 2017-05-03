@@ -77,6 +77,7 @@ classdef OvsdLpPuFb2dTypeICostEvaluator < ... %#codegen
         
         function [cost,grad] = stepImpl(obj,srcImg,coefs,scales)
             pmMtx = step(obj.LpPuFb,[],[]);
+            %
             [recImg,intrCoefs] = synthesize_(obj, coefs, scales, pmMtx);
             difImg = srcImg-recImg;
             cost = sum(difImg(:).^2);
