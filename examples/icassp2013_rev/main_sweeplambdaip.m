@@ -5,12 +5,9 @@
 % between the fidelity and sparsity term. Three different dictionaries
 % are compared. The results are saved under the folder './results.'
 %
-% SVN identifier:
-% $Id: main_sweeplambdaip.m 683 2015-05-29 08:22:13Z sho $
-%
 % Requirements: MATLAB R2013b
 %
-% Copyright (c) 2014-2015, Shogo MURAMATSU
+% Copyright (c) 2014-2016, Shogo MURAMATSU
 %
 % All rights reserved.
 %

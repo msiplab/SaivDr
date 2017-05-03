@@ -3,9 +3,6 @@
 % This script executes image debluring with ISTA and undecimated Haar
 % transform.
 %
-% SVN identifier:
-% $Id: main_udhaarimsr.m 683 2015-05-29 08:22:13Z sho $
-%
 % Requirements: MATLAB R2013b
 %
 % Copyright (c) 2014-2015, Shogo MURAMATSU
@@ -19,7 +16,7 @@
 % 
 % LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627
 %
-clear all; clc
+clc
 
 %% Parameter setting for image restoration
 

@@ -3,12 +3,9 @@
 % This script executes design process of NSOLT with frequency 
 % domain specification.
 %
-% SVN identifier:
-% $Id: main_parnsoltdsgn.m 683 2015-05-29 08:22:13Z sho $
-%
 % Requirements: MATLAB R2013b, Global optimization toolbox
 %
-% Copyright (c) 2014-2015, Shogo MURAMATSU
+% Copyright (c) 2014-2016, Shogo MURAMATSU
 %
 % All rights reserved.
 %

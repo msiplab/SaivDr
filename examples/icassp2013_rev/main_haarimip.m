@@ -3,12 +3,9 @@
 % This script executes image inpainting with ISTA and critically-sampled
 % Haar wavelet transform.
 %
-% SVN identifier:
-% $Id: main_haarimip.m 683 2015-05-29 08:22:13Z sho $
-%
 % Requirements: MATLAB R2013b
 %
-% Copyright (c) 2014-2015, Shogo MURAMATSU
+% Copyright (c) 2014-2016, Shogo MURAMATSU
 %
 % All rights reserved.
 %

@@ -4,12 +4,9 @@
 % designed by using MAIN_PARNSOLTDSGN. The design data placed under
 % the folder './filters' is loaded.
 %
-% SVN identifier:
-% $Id: main_nsoltimip.m 112 2014-01-16 11:13:25Z sho $
-%
 % Requirements: MATLAB R2013b
 %
-% Copyright (c) 2014-2015, Shogo MURAMATSU
+% Copyright (c) 2014-2016, Shogo MURAMATSU
 %
 % All rights reserved.
 %
@@ -20,7 +17,7 @@
 %
 % LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627
 %
-clear all; clc
+clc
 
 %% Parameter setting for image restoration
 

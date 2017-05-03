@@ -2,11 +2,9 @@
 %
 % This script executes NSOLT dictionary learning
 %
-% SVN identifier:
-% $Id: main_parnsoltdiclrn.m 683 2015-05-29 08:22:13Z sho $%
 % Requirements: MATLAB R2013b
 %
-% Copyright (c) 2014-2015, Shogo MURAMATSU
+% Copyright (c) 2014-2016, Shogo MURAMATSU
 %
 % All rights reserved.
 %
@@ -46,7 +44,7 @@ params.nIters = 15;
 %% Condition setting
 imgSet = { 'goldhill128', 'lena128', 'barbara128', 'baboon128' };   
 vmSet = { 1 };
-chSet = { [ 6 2 ], [ 5 3 ], [ 4 4 ] };
+chSet = { [ 4 4 ] }; % { [ 6 2 ], [ 5 3 ], [ 4 4 ] }; for ICASSP2014
 lvSet = num2cell(5:-1:1,[ 1 5 ]);
 
 %% Pre-build of MEX files

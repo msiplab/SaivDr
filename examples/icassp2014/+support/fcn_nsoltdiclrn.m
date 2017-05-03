@@ -54,7 +54,7 @@ function [mses, lppufbs] = fcn_nsoltdiclrn(params)
 % Parameters
 if nargin < 1
     ord = [ 4 4 ];
-    chs = [ 6 2 ];
+    chs = [ 4 4 ];
     srcImgs{1}  = imresize(im2double(imread('cameraman.tif')),[64 64]);
     nCoefs = 16;
     nLevels = 6;
