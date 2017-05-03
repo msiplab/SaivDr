@@ -203,10 +203,10 @@ classdef NsoltDictionaryLearningTestCase < matlab.unittest.TestCase
             nOrds = [ 4 4 ]; 
             nSprsCoefs = 4;
             isOptMus = false;
-            srcImgs{1} = rand(12,16);
-            srcImgs{2} = rand(12,16);
-            srcImgs{3} = rand(12,16);
-            srcImgs{4} = rand(12,16);
+            srcImgs{1} = imfilter(rand(12,16),ones(2)/4);
+            srcImgs{2} = imfilter(rand(12,16),ones(2)/4);
+            srcImgs{3} = imfilter(rand(12,16),ones(2)/4);
+            srcImgs{4} = imfilter(rand(12,16),ones(2)/4);
             
             % Instantiation of target class
             import saivdr.dictionary.nsoltx.design.*
@@ -248,9 +248,9 @@ classdef NsoltDictionaryLearningTestCase < matlab.unittest.TestCase
             options = optimset(...
                 'MaxIter',2*nImgs,...
                 'TolX',1e-4);                
-            for iter = 1:5
-                step(testCase.designer,options,isOptMus);
-            end
+%             for iter = 1:5
+%                 step(testCase.designer,options,isOptMus);
+%             end
             [~, costPst] = step(testCase.designer,options,isOptMus);            
             
             % Evaluation
