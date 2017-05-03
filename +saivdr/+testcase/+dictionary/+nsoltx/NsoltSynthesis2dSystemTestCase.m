@@ -1,7 +1,7 @@
 classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
     %NsoltSynthesis2dSystemTESTCASE Test case for NsoltSynthesis2dSystem
     %
-    % Requirements: MATLAB R2017a
+    % Requirements: MATLAB R2015b
     %
     % Copyright (c) 2014-2017, Shogo MURAMATSU
     %

@@ -2,7 +2,7 @@ classdef NsoltDesignerFrq < ...
         saivdr.dictionary.nsoltx.design.AbstNsoltDesignerGaFmin %#~codegen
     %NSOLTDESIGNERFRQ NSOLT design class with frequency specification
     %
-    % Requirements: MATLAB R2017a
+    % Requirements: MATLAB R2015b
     %
     % Copyright (c) 2014-2017, Shogo MURAMATSU
     %

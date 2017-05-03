@@ -1,7 +1,7 @@
 classdef Order2BuildingBlockTypeII < matlab.System
     %ORDER2BUILDINGBLOCKTYPEII Type-II building block with order 2
     %
-    % Requirements: MATLAB R2017a
+    % Requirements: MATLAB R2015b
     %
     % Copyright (c) 2014-2017, Shogo MURAMATSU
     %

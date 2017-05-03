@@ -2,7 +2,7 @@ classdef NsGenLotDesignerFrq < ...
         saivdr.dictionary.nsoltx.design.AbstNsoltDesignerGaFmin %#~codegen
     %NSGENLOTDESIGNERFRQ NS-GenLOT design class with frequency specifications
     %
-    % Requirements: MATLAB R2017a
+    % Requirements: MATLAB R2015b
     %
     % Copyright (c) 2014-2017, Shogo MURAMATSU
     %

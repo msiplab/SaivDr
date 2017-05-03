@@ -2,7 +2,7 @@ classdef NsoltAnalysis2dSystem < ...
         saivdr.dictionary.AbstAnalysisSystem %#codegen
     %NSOLTANALYSISSYSTEM Abstract class of NSOLT analysis system
     %
-    % Requirements: MATLAB R2017a
+    % Requirements: MATLAB R2015b
     %
     % Copyright (c) 2014-2017, Shogo MURAMATSU
     %

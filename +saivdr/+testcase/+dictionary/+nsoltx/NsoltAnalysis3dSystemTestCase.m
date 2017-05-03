@@ -1,7 +1,7 @@
 classdef NsoltAnalysis3dSystemTestCase < matlab.unittest.TestCase
     %NsoltAnalysis3dSystemTESTCASE Test case for NsoltAnalysis3dSystem
     %
-    % Requirements: MATLAB R2017a
+    % Requirements: MATLAB R2015b
     %
     % Copyright (c) 2014-2017, Shogo MURAMATSU
     %

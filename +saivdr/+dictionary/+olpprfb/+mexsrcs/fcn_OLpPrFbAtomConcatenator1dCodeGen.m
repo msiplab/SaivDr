@@ -2,7 +2,7 @@ function coefs = fcn_OLpPrFbAtomConcatenator1dCodeGen(...
     coefs, scale, pmcoefs, nch, ord, fpe ) %#codegen
 % FCN_OLPPRFBATOMCONCAtENATOR1DCODEGEN
 %    
-% Requirements: MATLAB R2017a
+% Requirements: MATLAB R2015b
 %
 % Copyright (c) 2017, Shogo MURAMATSU
 %

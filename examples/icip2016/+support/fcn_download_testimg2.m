@@ -11,7 +11,7 @@ function fcn_download_testimg2(fname)
 % SVN identifier:
 % $Id: fcn_download_testimg2.m 867 2015-11-24 04:54:56Z sho $
 %
-% Requirements: MATLAB R2013b
+% Requirements: MATLAB R2015b
 %
 % Copyright (c) 2013-2014, Shogo MURAMATSU
 %
@@ -22,7 +22,7 @@ function fcn_download_testimg2(fname)
 %                8050 2-no-cho Ikarashi, Nishi-ku,
 %                Niigata, 950-2181, JAPAN
 %
-% LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627
+% http://msiplab.eng.niigata-u.ac.jp/
 %
 if ~exist(sprintf('./images/%s',fname),'file')
     img = imread(...

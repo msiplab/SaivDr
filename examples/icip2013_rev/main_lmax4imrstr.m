@@ -1,6 +1,6 @@
 % MAIN_LMAX4IMRSTR Pre-calculation of Lipshitz Constant
 %
-% Requirements: MATLAB R2013b
+% Requirements: MATLAB R2015b
 %
 % Copyright (c) 2013-2016, Shogo MURAMATSU
 %

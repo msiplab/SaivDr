@@ -2,7 +2,7 @@ classdef OvsdLpPuFb2dTypeICostEvaluator < ... %#codegen
         saivdr.dictionary.nsoltx.design.AbstOvsdLpPuFbCostEvaluator
     %OVSDLPPUFB2DTYPEICOSTEVALUATOR Cost evaluator for Type-I NSOLT
     %
-    % Requirements: MATLAB R2017a
+    % Requirements: MATLAB R2015b
     %
     % Copyright (c) 2015-2017, Shogo MURAMATSU
     %

@@ -35,7 +35,7 @@ function output = fcn_NSGenLOT_SURELET_denoise(input,nsgenlot,sigma)
 %   [2] Shogo Muramatsu, "SURE-LET Image Denoising with Multiple DirLOTs,"
 %   Proc. of 2012 Picture Coding Symposium (PCS2012), May 2012.
 %
-% LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627
+% http://msiplab.eng.niigata-u.ac.jp/
 %
 [nx,ny] = size(input);
 

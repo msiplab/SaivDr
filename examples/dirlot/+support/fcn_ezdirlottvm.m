@@ -4,7 +4,7 @@ function [E, chkvmd] = fcn_ezdirlottvm(phi,ss,theta)
 % SVN identifier:
 % $Id: fcn_ezdirlottvm.m 683 2015-05-29 08:22:13Z sho $
 %
-% Requirements: MATLAB R2013b, Global optimization toolbox
+% Requirements: MATLAB R2015b, Global optimization toolbox
 %
 % Copyright (c) 2014-2015, Shogo MURAMATSU
 %
@@ -15,7 +15,7 @@ function [E, chkvmd] = fcn_ezdirlottvm(phi,ss,theta)
 %                8050 2-no-cho Ikarashi, Nishi-ku,
 %                Niigata, 950-2181, JAPAN
 %
-% LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627
+% http://msiplab.eng.niigata-u.ac.jp/
 %
 
 import saivdr.dictionary.utility.OrthonormalMatrixFactorizationSystem

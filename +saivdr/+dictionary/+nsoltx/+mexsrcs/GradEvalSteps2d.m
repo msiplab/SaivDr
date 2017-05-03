@@ -1,7 +1,7 @@
 classdef GradEvalSteps2d < matlab.System %#codegen
     %GRADEVALSTEPS2D Gradient Evaluation Steps for 2-D NSOLT
     %
-    % Requirements: MATLAB R2017a
+    % Requirements: MATLAB R2015b
     %
     % Copyright (c) 2015-2017, Shogo MURAMATSU
     %

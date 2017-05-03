@@ -1,7 +1,7 @@
 function [fcnhandler,flag] = fcn_build_atomcnc3d()
 %FCN_AUTOBUILD_ATOMCNC3D
 %
-% Requirements: MATLAB R2017a
+% Requirements: MATLAB R2015b
 %
 % Copyright (c) 2014-2017, Shogo MURAMATSU
 %

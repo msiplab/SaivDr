@@ -2,7 +2,7 @@ classdef AbstOvsdLpPuFb1dTypeIISystem < ...
         saivdr.dictionary.olpprfb.AbstOvsdLpPuFb1dSystem %#codegen
     %AbstOvsdLpPuFb1dTypeIISystem Abstract class 2-D Type-II OLPPUFB
     %
-    % Requirements: MATLAB R2017a
+    % Requirements: MATLAB R2015b
     %
     % Copyright (c) 2014-2017, Shogo MURAMATSU
     %

@@ -1,7 +1,7 @@
 classdef NsoltDesignerFrqTestCase < matlab.unittest.TestCase
     %NSOLTDESIGNERFRQTESTCASE Test case for AprxErrorWithSparseRep
     %
-    % Requirements: MATLAB R2017a
+    % Requirements: MATLAB R2015b
     %
     % Copyright (c) 2013-2017, Shogo MURAMATSU
     %

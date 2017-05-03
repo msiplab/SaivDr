@@ -1,7 +1,7 @@
 classdef Order1BuildingBlockTypeI < matlab.System  %#codegen
     %ORDER1BUILDINGBLOCKTYPEI  Type-I building block with order 1
     %
-    % Requirements: MATLAB R2017a
+    % Requirements: MATLAB R2015b
     %
     % Copyright (c) 2014-2017, Shogo MURAMATSU
     %

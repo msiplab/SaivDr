@@ -1,7 +1,7 @@
 classdef AbstOvsdLpPuFb3dSystem < matlab.System %#codegen
     %ABSTOVSDLPPUFBMDSYSTEM Abstract class M-D OLPPUFB
     %
-    % Requirements: MATLAB R2017a
+    % Requirements: MATLAB R2015b
     %
     % Copyright (c) 2014-2017, Kosuke FURUYA and Shogo MURAMATSU
     %

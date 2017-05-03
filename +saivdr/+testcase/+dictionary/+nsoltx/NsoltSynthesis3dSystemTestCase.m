@@ -4,7 +4,7 @@ classdef NsoltSynthesis3dSystemTestCase < matlab.unittest.TestCase
     % SVN identifier:
     % $Id: NsoltSynthesis3dSystemTestCase.m 869 2015-11-26 09:03:07Z sho $
     %
-    % Requirements: MATLAB R2017a
+    % Requirements: MATLAB R2015b
     %
     % Copyright (c) 2014-2017, Shogo MURAMATSU
     %

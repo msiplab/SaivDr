@@ -2,7 +2,7 @@ classdef OLpPuFbSynthesis1dSystem  < ...
         saivdr.dictionary.AbstSynthesisSystem %#codegen
     %OLPPUFBSYNTHESIS1DSYSTEM Synthesis system of Type-I OLPPURFB
     %
-    % Requirements: MATLAB R2017a
+    % Requirements: MATLAB R2015b
     %
     % Copyright (c) 2017, Shogo MURAMATSU
     %

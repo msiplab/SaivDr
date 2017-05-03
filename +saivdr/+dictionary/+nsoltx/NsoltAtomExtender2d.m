@@ -2,7 +2,7 @@ classdef NsoltAtomExtender2d <  ...
         saivdr.dictionary.nsoltx.AbstNsoltCoefManipulator2d %#codegen
     %NSOLTATOMEXTENDER2D 2-D Atom Extender for NSOLT
     %
-    % Requirements: MATLAB R2017a
+    % Requirements: MATLAB R2015b
     %
     % Copyright (c) 2014-2017, Shogo MURAMATSU
     %

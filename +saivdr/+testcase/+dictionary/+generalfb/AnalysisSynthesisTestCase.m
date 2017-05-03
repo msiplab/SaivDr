@@ -1,7 +1,7 @@
 classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
     %ANALYSISSYNTHESISTESTCASE Test case for AnalysisSynthesis
     %
-    % Requirements: MATLAB R2017a
+    % Requirements: MATLAB R2015b
     %
     % Copyright (c) 2015-2017, Shogo MURAMATSU
     %

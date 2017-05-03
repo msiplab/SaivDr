@@ -2,7 +2,7 @@ classdef AbstOvsdLpPuFb3dTypeIISystem < ...
         saivdr.dictionary.nsoltx.AbstOvsdLpPuFb3dSystem %#codegen
     %ABSTOVSDLPPUFB3DTYPEIISYSTEM Abstract class 3-D Type-II OLPPUFB
     %
-    % Requirements: MATLAB R2017a
+    % Requirements: MATLAB R2015b
     %
     % Copyright (c) 2014-2017, Shogo MURAMATSU
     %

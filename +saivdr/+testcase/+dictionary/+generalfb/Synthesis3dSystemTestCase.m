@@ -1,7 +1,7 @@
 classdef Synthesis3dSystemTestCase < matlab.unittest.TestCase
     %SYNTHESIS3DSYSTEMTESTCASE Test case for Synthesis3dSystem
     %
-    % Requirements: MATLAB R2017a
+    % Requirements: MATLAB R2015b
     %
     % Copyright (c) 2015-2017, Shogo MURAMATSU
     %

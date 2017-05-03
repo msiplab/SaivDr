@@ -2,7 +2,7 @@ classdef OLpPrFbAtomExtender1d <  ...
         saivdr.dictionary.olpprfb.AbstOLpPrFbCoefManipulator1d %#codegen
     %OLPPRFBATOMEXTENDER1D 1-D Atom Extender for OLPPRFB
     %
-    % Requirements: MATLAB R2017a
+    % Requirements: MATLAB R2015b
     %
     % Copyright (c) 2014-2017, Shogo MURAMATSU
     %

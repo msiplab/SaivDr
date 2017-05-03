@@ -10,7 +10,7 @@ classdef Synthesis2dSystem < saivdr.dictionary.AbstSynthesisSystem
     % SVN identifier:
     % $Id: Synthesis2dSystem.m 866 2015-11-24 04:29:42Z sho $
     %
-    % Requirements: MATLAB R2013b
+    % Requirements: MATLAB R2015b
     %
     % Copyright (c) 2015, Shogo MURAMATSU
     %
@@ -21,7 +21,7 @@ classdef Synthesis2dSystem < saivdr.dictionary.AbstSynthesisSystem
     %                8050 2-no-cho Ikarashi, Nishi-ku,
     %                Niigata, 950-2181, JAPAN
     %
-    % LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627
+    % http://msiplab.eng.niigata-u.ac.jp/
     %
     properties (Nontunable)
         SynthesisFilters
