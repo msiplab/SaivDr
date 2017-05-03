@@ -151,7 +151,7 @@ classdef AbstNsoltCoefManipulator2d < matlab.System
         function processTunedPropertiesImpl(obj)
             propChange = ...
                 isChangedProperty(obj,'NumberOfSymmetricChannels') ||...
-                isChangedProperty(obj,'NumberOfAntisymmetricChannels') ||...
+                isChangedProperty(obj,'NumberOfAntisymmetricChannels'); % ||...
                 isChangedProperty(obj,'PolyPhaseOrder');
             if propChange
                 ps = obj.NumberOfSymmetricChannels;
@@ -166,8 +166,8 @@ classdef AbstNsoltCoefManipulator2d < matlab.System
                 else
                     obj.NsoltType = 'Type I';
                 end
+                setupParamMtx_(obj);
             end
-            setupParamMtx_(obj);
         end
         
         function stepImpl(obj,coefs,subScale,pmCoefs)

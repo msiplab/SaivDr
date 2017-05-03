@@ -2,7 +2,7 @@ classdef OvsdLpPuFb2dTypeICostEvaluator < ... %#codegen
         saivdr.dictionary.nsoltx.design.AbstOvsdLpPuFbCostEvaluator
     %OVSDLPPUFB2DTYPEICOSTEVALUATOR Cost evaluator for Type-I NSOLT
     %
-    % Requirements: MATLAB R20171
+    % Requirements: MATLAB R2017a
     %
     % Copyright (c) 2015-2017, Shogo MURAMATSU
     %
@@ -36,23 +36,22 @@ classdef OvsdLpPuFb2dTypeICostEvaluator < ... %#codegen
             dim = obj.DATA_DIMENSION;
         end
         
-%         function s = saveObjectImpl(obj)
-%             s = saveObjectImpl@saivdr.dictionary.nsoltx.design.AbstOvsdLpPuFbCostEvaluator(obj);
-%         end
-%         
-%         function loadObjectImpl(obj,s,wasLocked)
-%             loadObjectImpl@saivdr.dictionary.nsoltx.design.AbstOvsdLpPuFbCostEvaluator(obj,s,wasLocked);
-%         end     
+        %         function s = saveObjectImpl(obj)
+        %             s = saveObjectImpl@saivdr.dictionary.nsoltx.design.AbstOvsdLpPuFbCostEvaluator(obj);
+        %         end
+        %
+        %         function loadObjectImpl(obj,s,wasLocked)
+        %             loadObjectImpl@saivdr.dictionary.nsoltx.design.AbstOvsdLpPuFbCostEvaluator(obj,s,wasLocked);
+        %         end
         
-        function validatePropertiesImpl(~)
-        end
+        %         function validatePropertiesImpl(~)
+        %         end
         
         function setupImpl(obj,~,~,scales)
             
             nch = [ obj.NumberOfSymmetricChannels ...
                 obj.NumberOfAntisymmetricChannels ];
             nChs = sum(nch);
-            ord = uint32(obj.polyPhaseOrder);
             
             % Check nLeves
             nLevels = (size(scales,1)-1)/(nChs-1);
@@ -60,33 +59,24 @@ classdef OvsdLpPuFb2dTypeICostEvaluator < ... %#codegen
                 error('Number of tree levels should be one.');
             end
             
-            % Prepare MEX function
-            if ~obj.isMexFcn
-                import saivdr.dictionary.nsoltx.mexsrcs.fcn_autobuild_gradevalsteps2d
-                [mexFcnGrad, obj.isMexFcn] = fcn_autobuild_gradevalsteps2d(nch,ord);
-            end
             % Atom concatenator
             if exist('fcn_NsoltAtomConcatenator2dCodeGen_mex','file')==3
                 obj.atomCncFcn = @fcn_NsoltAtomConcatenator2dCodeGen_mex;
             else
-                import saivdr.dictionary.nsoltx.mexsrcs.fcn_NsoltAtomConcatenator2dCodeGen;
+                import saivdr.dictionary.nsoltx.mexsrcs.fcn_NsoltAtomConcatenator2dCodeGen
                 obj.atomCncFcn = @fcn_NsoltAtomConcatenator2dCodeGen;
             end
             % Gradient evaluator
-            if ~isempty(mexFcnGrad)
-                obj.gradFcn = @(coefsB,coefsC,scale,pmCoefs,angs,mus,fpe,isnodc) ...
-                    mexFcnGrad(coefsB,coefsC,scale,pmCoefs,angs,mus,nch,ord,fpe,isnodc);
+            if exist('fcn_GradEvalSteps2dCodeGen_mex','file')==3
+                obj.gradFcn = @fcn_GradEvalSteps2dCodeGen_mex;
             else
-                import saivdr.dictionary.nsoltx.mexsrcs.fcn_GradEvalSteps2d
-                clear fcn_GradEvalSteps2d
-                obj.gradFcn = @(coefsB,coefsC,scale,pmCoefs,angs,mus,fpe,isnodc) ...
-                    fcn_GradEvalSteps2d(coefsB,coefsC,scale,pmCoefs,angs,mus,nch,ord,fpe,isnodc);
+                import saivdr.dictionary.nsoltx.mexsrcs.fcn_GradEvalSteps2dCodeGen
+                obj.gradFcn = @fcn_GradEvalSteps2dCodeGen;
             end
         end
         
         function [cost,grad] = stepImpl(obj,srcImg,coefs,scales)
             pmMtx = step(obj.LpPuFb,[],[]);
-            %
             [recImg,intrCoefs] = synthesize_(obj, coefs, scales, pmMtx);
             difImg = srcImg-recImg;
             cost = sum(difImg(:).^2);
@@ -160,12 +150,12 @@ classdef OvsdLpPuFb2dTypeICostEvaluator < ... %#codegen
                 arrayCoefsC(ps+1:ps+mf,:) = coefs(mc+1:end,:);
             end
             
-            % Gradient calculation steps
-            %import saivdr.dictionary.nsoltx.mexsrcs.fcn_GradEvalSteps2d                   
+            % Gradient calculation steps                  
             fpe = strcmp(obj.BoundaryOperation,'Circular');
+            ord = uint32(obj.polyPhaseOrder);
             grad = obj.gradFcn(...
                 arrayCoefsB, arrayCoefsC, scale_, pmCoefs, ...
-                angs, mus, fpe, isnodc);
+                angs, mus, [ps pa], ord, fpe, isnodc);
         end
         
         function [recImg,arrayCoefs] = synthesize_(obj,coefs,scales,pmMtx)
