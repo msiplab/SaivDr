@@ -1,8 +1,9 @@
 * Release notes on Sparsity-Aware Image and Volume Data Restoration Package
 
-- SaivDr201705xx
--- (Major) Excluded the automatic MEX code generation function
---- Prepared the code generation script MYBUILD instead.
+- SaivDr20170504
+-- (Major) Excluded the automatic MEX code generation functions
+--- Prepared the code generation script MYBUILD instead
+-- (Minor) Revised header comments of each file
 
 - SaivDr20160610
 -- (Minor) Removed the dependency on Global Optimization Toolbox when GA is not used
