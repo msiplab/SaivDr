@@ -31,9 +31,9 @@ end
 %% Design through dictionary learning 
 % Parameters for NSOLT
 nLevels = 1;       % # of wavelet tree levels (must be 1 when gradObj = 'on') 
-nDecs   = [4 4];   % Decimation factor
-nChs    = [10 10]; % # of channels
-nOrds   = [2 2];   % Polyphase order
+nDecs   = [2 2];   % Decimation factor
+nChs    = [4 4]; % # of channels
+nOrds   = [4 4];   % Polyphase order
 nVm     = 1;       % # of vanishing moments
 
 % Design conditions
