@@ -130,7 +130,7 @@
 % - Shogo Muramatsu, Masaki Ishii and Zhiyu Chen,
 %   "Efficient Parameter Optimization for Example-Based Design of 
 %   Non-separable Oversampled Lapped Transform," Proc. of 2016 IEEE Intl.
-%   Conf. on Image Processing (ICIP), Sept. 2016, to appear
+%   Conf. on Image Processing (ICIP), pp.3618-3622, Sept. 2016.
 %
 % - Shogo Muramatsu, "Structured Dictionary Learning with 2-D Non-
 %   separable Oversampled Lapped Transform," Proc. of 2014 IEEE 

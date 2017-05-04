@@ -1,5 +1,9 @@
 * Release notes on Sparsity-Aware Image and Volume Data Restoration Package
 
+- SaivDr201705xx
+-- (Major) Excluded the automatic MEX code generation function
+--- Prepared the code generation script MYBUILD instead.
+
 - SaivDr20160610
 -- (Minor) Removed the dependency on Global Optimization Toolbox when GA is not used
 --- saivdr.dictionary.nsoltx.design.AbstNsoltDesignerGaFmin
@@ -87,7 +91,12 @@
 
 * Known issues
 
-- Script 'mytest.m' sometimes fails to generate mex codes. 
-  Please try several times until the code generation is completed.
+- IMFILTER function of MATLAB R2017a has a bug with circular boundary extension mode.
+  This bug affects to some classes in saivdr.dictionary.udhaar.*. 
+  Please search #BUG: 1554862 on https://jp.mathworks.com/support/bugreports.
+
+- Parallel Computing Toolbox of MATLAB R2016b has a bug on search path priority.
+  This bug affects to class saivdr.dictionary.nsoltx.design.NsoltDesignFrq.
+  Please search #BUG: 1446838 on https://jp.mathworks.com/support/bugreports.
 
 ---
