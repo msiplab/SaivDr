@@ -7,9 +7,6 @@ classdef Analysis2dSystem < saivdr.dictionary.AbstAnalysisSystem
     %   Lattice Alteration Based on Overlap-Add and Overlap-Save Methods,'' 
     %   IEICE Trans. on Fundamentals, Vol.E78-A, No.8, pp.939-943, Aug. 1995
     %
-    % SVN identifier:
-    % $Id: Analysis2dSystem.m 866 2015-11-24 04:29:42Z sho $
-    %
     % Requirements: MATLAB R2015b
     %
     % Copyright (c) 2015, Shogo MURAMATSU
@@ -59,7 +56,9 @@ classdef Analysis2dSystem < saivdr.dictionary.AbstAnalysisSystem
     methods
         % Constractor
         function obj = Analysis2dSystem(varargin)
-            setProperties(obj,nargin,varargin{:})
+            import saivdr.dictionary.AbstAnalysisSystem 
+            obj = obj@saivdr.dictionary.AbstAnalysisSystem(...
+                varargin{:});            
             obj.nChs = size(obj.AnalysisFilters,3);
         end        
     end
@@ -152,7 +151,11 @@ classdef Analysis2dSystem < saivdr.dictionary.AbstAnalysisSystem
                     freqRes_(:,:,1) = freqRes_(:,:,1) ...
                         .* fft2(hext,nRows_,nCols_);
                 end
-                obj.freqRes = freqRes_;
+                if obj.UseGpu
+                    obj.freqRes = gpuArray(freqRes_);
+                else
+                    obj.freqRes = freqRes_;
+                end
             end
             
         end
@@ -160,6 +163,8 @@ classdef Analysis2dSystem < saivdr.dictionary.AbstAnalysisSystem
         function [coefs,scales] = stepImpl(obj,srcImg,nLevels)
             if strcmp(obj.FilterDomain,'Spatial')
                 [coefs,scales] = analyzeSpatial_(obj,srcImg,nLevels);
+            elseif obj.UseGpu
+                [coefs,scales] = analyzeFrequencyGpu_(obj,srcImg,nLevels);
             else
                 [coefs,scales] = analyzeFrequency_(obj,srcImg,nLevels);
             end
@@ -224,6 +229,71 @@ classdef Analysis2dSystem < saivdr.dictionary.AbstAnalysisSystem
                 end
             end
             subbandCoefs = real(ifft2(U))/((decY*decX)^nLevels);
+            %
+            obj.allScales(1,:) = [ nRows_ nCols_ ];
+            obj.allCoefs(1:nRows_*nCols_) = subbandCoefs(:).';
+            %
+            scales = obj.allScales;
+            coefs  = obj.allCoefs;
+        end
+        
+        function [coefs,scales] = analyzeFrequencyGpu_(obj,srcImg,nLevels)
+            % Frequency domain analysis
+            
+            import saivdr.dictionary.utility.Direction
+            %
+            nChs_  = obj.nChs;
+            decY = obj.DecimationFactor(Direction.VERTICAL);
+            decX = obj.DecimationFactor(Direction.HORIZONTAL);
+            %
+            iSubband = obj.nAllChs;
+            eIdx     = obj.nAllCoefs;
+            %
+            freqSrcImg = fft2(gpuArray(srcImg));
+            height = size(srcImg,1);
+            width  = size(srcImg,2);
+            freqRes_ = obj.freqRes;
+            for iLevel = 1:nLevels
+                nRows_ = height/(decY^iLevel);
+                nCols_ = width/(decX^iLevel);
+                for iCh = nChs_:-1:2
+                    freqRefSub = freqRes_(:,:,iSubband);
+                    freqSubImg = gather(freqSrcImg.*freqRefSub);
+                    U = zeros(nRows_,nCols_);
+                    for iPhsX=1:(decX^iLevel)
+                        sIdxX = (iPhsX-1)*nCols_+1;
+                        eIdxX = sIdxX + nCols_-1;
+                        for iPhsY=1:(decY^iLevel)
+                            sIdxY = (iPhsY-1)*nRows_+1;
+                            eIdxY = sIdxY+nRows_-1;
+                            V = freqSubImg(sIdxY:eIdxY,sIdxX:eIdxX);
+                            U = U + V;
+                        end
+                    end
+                    subbandCoefs = gather(real(ifft2(gpuArray(U)))/((decY*decX)^iLevel));
+                    obj.allScales(iSubband,:) = [ nRows_ nCols_ ];
+                    sIdx = eIdx - (nRows_*nCols_) + 1;
+                    obj.allCoefs(sIdx:eIdx) = subbandCoefs(:).';                    
+                    iSubband = iSubband - 1;
+                    eIdx = sIdx - 1;
+                end
+            end
+            nRows_ = height/(decY^nLevels);
+            nCols_ = width/(decX^nLevels);
+            freqRefSub = freqRes_(:,:,1);
+            freqSubImg = gather(freqSrcImg.*freqRefSub);
+            U = zeros(nRows_,nCols_);
+            for iPhsX=1:(decX^nLevels)
+                sIdxX = (iPhsX-1)*nCols_+1;
+                eIdxX = sIdxX + nCols_-1;
+                for iPhsY=1:(decY^nLevels)
+                    sIdxY = (iPhsY-1)*nRows_+1;
+                    eIdxY = sIdxY+nRows_-1;
+                    V = freqSubImg(sIdxY:eIdxY,sIdxX:eIdxX);
+                    U = U + V;
+                end
+            end
+            subbandCoefs = gather(real(ifft2(gpuArray(U)))/((decY*decX)^nLevels));
             %
             obj.allScales(1,:) = [ nRows_ nCols_ ];
             obj.allCoefs(1:nRows_*nCols_) = subbandCoefs(:).';
