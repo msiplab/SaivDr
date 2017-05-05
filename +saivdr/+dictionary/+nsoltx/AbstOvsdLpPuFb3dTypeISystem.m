@@ -48,11 +48,19 @@ classdef AbstOvsdLpPuFb3dTypeISystem < ...
             s.mexFcn   = obj.mexFcn;
         end
         
-        function loadObjectImpl(obj,s,wasLocked)
-            obj.mexFcn   = s.mexFcn;            
+        function loadObjectImpl(obj,s,wasLocked)         
             obj.nStages = s.nStages;
             obj.matrixE0 = s.matrixE0;
             loadObjectImpl@saivdr.dictionary.nsoltx.AbstOvsdLpPuFb3dSystem(obj,s,wasLocked);
+            %
+            if ~isempty(s.mexFcn)
+                if exist(func2str(s.mexFcn),'file') == 3
+                    obj.mexFcn  = s.mexFcn;
+                else
+                    import saivdr.dictionary.nsoltx.mexsrcs.fcn_Order1BuildingBlockTypeI
+                    obj.mexFcn = @fcn_Order1BuildingBlockTypeI;
+                end
+            end
         end
         
         function resetImpl(obj)
