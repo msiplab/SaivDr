@@ -43,16 +43,9 @@ classdef AbstIstaImRestoration < matlab.System %~#codegen
     end
     
     properties (Access = protected)
-        nItr
         x
-        y
-        r
-        hu
-        hx
-        err
         valueL
         scales
-        threshold
     end
     
     methods
