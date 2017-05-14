@@ -1,5 +1,5 @@
-classdef IstaImRestoration < saivdr.restoration.ista.AbstIstaImRestoration %~#codegen
-    %ISTAIMRESTORATION ISTA-based image restoration
+classdef IstaImRestoration2d < saivdr.restoration.ista.AbstIstaImRestoration %~#codegen
+    %ISTAIMRESTORATION2D ISTA-based image restoration
     %
     % Requirements: MATLAB R2015b
     %
@@ -15,8 +15,12 @@ classdef IstaImRestoration < saivdr.restoration.ista.AbstIstaImRestoration %~#co
     % http://msiplab.eng.niigata-u.ac.jp/    
     %
     
+     properties(Hidden,Nontunable)
+        NumberOfComponents
+    end   
+    
     methods
-        function obj = IstaImRestoration(varargin)
+        function obj = IstaImRestoration2d(varargin)
             obj = obj@saivdr.restoration.ista.AbstIstaImRestoration(...
                 varargin{:});           
         end
@@ -24,12 +28,9 @@ classdef IstaImRestoration < saivdr.restoration.ista.AbstIstaImRestoration %~#co
     
     methods(Access = protected)
         
-        function setupImpl(obj,srcImg) 
-            obj.AdjLinProcess = clone(obj.LinearProcess);
-            set(obj.AdjLinProcess,'ProcessingMode','Adjoint');            
-            obj.NumberOfComponents = size(srcImg,3); 
-            obj.x = srcImg;
-            obj.valueL  = getLipschitzConstant_(obj);            
+        function setupImpl(obj,srcImg)
+            setupImpl@saivdr.restoration.ista.AbstIstaImRestoration(obj,srcImg)
+            obj.NumberOfComponents = size(srcImg,3);
         end
         
         function resImg = stepImpl(obj,srcImg)
@@ -87,41 +88,42 @@ classdef IstaImRestoration < saivdr.restoration.ista.AbstIstaImRestoration %~#co
             reciprocalL_  = 1/obj.valueL;
             scales_  = obj.scales;
             threshold_ = obj.threshold;
+            nComps_    = obj.NumberOfComponents;
 
             % Processing per iteration
                         
             % h = P.'r = P.'(^x-x)
             h_ = step(obj.AdjLinProcess,obj.r);
             %
-            import saivdr.restoration.ista.IstaImRestoration
+            import saivdr.restoration.ista.AbstIstaImRestoration
             if obj.UseParallel
-                y_         = cell(obj.NumberOfComponents);
-                hu_        = cell(obj.NumberOfComponents);
-                for iCmp = 1:obj.NumberOfComponents
+                y_         = cell(nComps_);
+                hu_        = cell(nComps_);
+                for iCmp = 1:nComps_
                     y_{iCmp} = obj.y(:,iCmp);
                     hu_{iCmp} = obj.hu(:,:,iCmp);
                 end
-                parfor iCmp = 1:obj.NumberOfComponents
+                parfor iCmp = 1:nComps_
                     % ^v = D.'h = D.'P.'r = D.'P.'(^x-x)
                     v_ = step(adjSyn_,h_(:,:,iCmp),nLevels_);
                     % y = softshrink(y -(1/L)*D.'P.'(^x-x))
-                    y_{iCmp} = IstaImRestoration.softshrink_(...
+                    y_{iCmp} = AbstIstaImRestoration.softshrink_(...
                         y_{iCmp}-(reciprocalL_)*v_(:),threshold_);
                     % ^u = Dy
                     hu_{iCmp} = ...
                         step(syn_,y_{iCmp},scales_(:,:,iCmp));
                 end
-                for iCmp = 1:obj.NumberOfComponents
+                for iCmp = 1:nComps_
                     obj.y(:,iCmp) = y_{iCmp};
                     obj.hu(:,:,iCmp) = hu_{iCmp};
                 end
             else
-                for iCmp = 1:obj.NumberOfComponents
+                for iCmp = 1:nComps_
                     % ^v = D.'h = D.'P.'r = D.'P.'(^x-x)
                     v_ = ...
                         step(adjSyn_,h_(:,:,iCmp),nLevels_);
                     % y = softshrink(y -(1/L)*D.'P.'(^x-x))
-                    obj.y(:,iCmp) = IstaImRestoration.softshrink_(...
+                    obj.y(:,iCmp) = AbstIstaImRestoration.softshrink_(...
                         obj.y(:,iCmp)-(reciprocalL_)*v_(:),threshold_);
                     % ^u = Dy
                     obj.hu(:,:,iCmp) = ...

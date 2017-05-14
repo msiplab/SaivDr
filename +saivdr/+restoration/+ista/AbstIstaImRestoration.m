@@ -22,9 +22,7 @@ classdef AbstIstaImRestoration < matlab.System %~#codegen
         NumberOfTreeLevels = 1
     end
     
-    properties(Hidden,Nontunable)
-        NumberOfComponents
-    end
+
     
     properties
         StepMonitor
@@ -119,6 +117,13 @@ classdef AbstIstaImRestoration < matlab.System %~#codegen
                 error('SaivDr: Invalid processing mode')
             end
         end
+        
+        function setupImpl(obj,srcImg) 
+            obj.AdjLinProcess = clone(obj.LinearProcess);
+            set(obj.AdjLinProcess,'ProcessingMode','Adjoint');            
+            obj.x = srcImg;
+            obj.valueL  = getLipschitzConstant_(obj);            
+        end        
         
         function value = getLipschitzConstant_(obj)
             B_ = get(obj.Synthesizer,'FrameBound');
