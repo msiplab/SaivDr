@@ -1,12 +1,9 @@
-classdef IstaImRestoration < matlab.System %~#codegen
+classdef IstaImRestoration < saivdr.restoration.ista.AbstIstaImRestoration %~#codegen
     %ISTAIMRESTORATION ISTA-based image restoration
-    %
-    % SVN identifier:
-    % $Id: IstaImRestoration.m 683 2015-05-29 08:22:13Z sho $
     %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2014-2015, Shogo MURAMATSU
+    % Copyright (c) 2014-2017, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -18,125 +15,14 @@ classdef IstaImRestoration < matlab.System %~#codegen
     % http://msiplab.eng.niigata-u.ac.jp/    
     %
     
-    properties(Nontunable)
-        Synthesizer
-        AdjOfSynthesizer
-        LinearProcess
-        NumberOfTreeLevels = 1
-    end
-    
-    properties(Hidden,Nontunable)
-        NumberOfComponents
-    end
-    
-    properties
-        StepMonitor
-        Eps0   = 1e-6
-        Lambda 
-    end
-    
-    properties (Logical)
-        UseParallel = false;
-    end
-    
-    properties (PositiveInteger)
-        MaxIter = 1000
-    end
-       
-    properties (Access = protected,Nontunable)
-        AdjLinProcess
-    end
-    
-    properties (Access = private)
-        nItr
-        x
-        y
-        r
-        hu
-        hx
-        err
-        valueL
-        scales
-        threshold
-    end
-    
     methods
         function obj = IstaImRestoration(varargin)
-            setProperties(obj,nargin,varargin{:})
+            obj = obj@saivdr.restoration.ista.AbstIstaImRestoration(...
+                varargin{:});           
         end
     end
     
     methods(Access = protected)
-        
-        function s = saveObjectImpl(obj)
-            s = saveObjectImpl@matlab.System(obj);
-            %
-            s.Synthesizer = ...
-                matlab.System.saveObject(obj.Synthesizer);
-            s.AdjOfSynthesizer = ...
-                matlab.System.saveObject(obj.AdjOfSynthesizer);            
-            s.LinearProcess = ...
-                matlab.System.saveObject(obj.LinearProcess);
-            %
-            s.AdjLinProcess = ...
-                 matlab.System.saveObject(obj.AdjLinProcess);
-%             s.nItr = obj.nItr;
-%             s.x    = obj.x;
-%             s.y    = obj.y;
-%             s.r    = obj.r;
-%             s.hu   = obj.hu;
-%             s.hx   = obj.hx;
-%             s.err  = obj.err;
-             s.valueL = obj.valueL;
-             s.scales = obj.scales;
-%             s.threshold    = obj.threshold;
-        end
-        
-        function loadObjectImpl(obj, s, wasLocked)           
-%             obj.nItr = s.nItr;
-%             obj.x    = s.x;
-%             obj.y    = s.y;
-%             obj.r    = s.r;
-%             obj.hu   = s.hu;
-%             obj.hx   = s.hx;
-%             obj.err  = s.err;
-             obj.valueL = s.valueL;
-             obj.scales = s.scales;
-%             obj.threshold    = s.threshold;            
-            loadObjectImpl@matlab.System(obj,s,wasLocked); 
-            %
-            obj.Synthesizer = ...
-                matlab.System.loadObject(s.Synthesizer);
-            obj.AdjOfSynthesizer = ...
-                matlab.System.loadObject(s.AdjOfSynthesizer);
-            obj.LinearProcess = ...
-                matlab.System.loadObject(s.LinearProcess);
-            %
-            obj.AdjLinProcess = ...
-                matlab.System.loadObject(s.AdjLinProcess);
-            
-        end
-       
-        function validatePropertiesImpl(obj)
-            if isempty(obj.Synthesizer)
-                me = MException('SaivDr:InstantiationException',...
-                    'Synthesizer must be given.');
-                throw(me)
-            end 
-            if isempty(obj.AdjOfSynthesizer)
-                me = MException('SaivDr:InstantiationException',...
-                    'AdjOfSynthesizer must be given.');
-                throw(me)
-            end 
-            if isempty(obj.LinearProcess)
-                me = MException('SaivDr:InstantiationException',...
-                    'LinearProcess must be given.');
-                throw(me)
-            end             
-            if ~strcmp(get(obj.LinearProcess,'ProcessingMode'),'Normal')
-                error('SaivDr: Invalid processing mode')
-            end
-        end
         
         function setupImpl(obj,srcImg) 
             obj.AdjLinProcess = clone(obj.LinearProcess);
@@ -144,10 +30,6 @@ classdef IstaImRestoration < matlab.System %~#codegen
             obj.NumberOfComponents = size(srcImg,3); 
             obj.x = srcImg;
             obj.valueL  = getLipschitzConstant_(obj);            
-        end
-        
-        function resetImpl(~)
-            %            obj.valueL  = getLipschitzConstant_(obj);
         end
         
         function resImg = stepImpl(obj,srcImg)
@@ -192,14 +74,6 @@ classdef IstaImRestoration < matlab.System %~#codegen
                 end
             end
             resImg = obj.hu;
-         end
-        
-        function N = getNumInputsImpl(~)
-            N = 1;
-        end
-        
-        function N = getNumOutputsimpl(~)
-            N = 1;
         end
         
     end
@@ -260,24 +134,8 @@ classdef IstaImRestoration < matlab.System %~#codegen
             % r = ^x - x;
             obj.r  = obj.hx - obj.x;
         end
-        
-        function value = getLipschitzConstant_(obj)
-            B_ = get(obj.Synthesizer,'FrameBound');
-            step(obj.LinearProcess,obj.x);
-            value =B_*get(obj.LinearProcess,'LambdaMax');
-        end
+
    
-    end
-    
-    methods (Static = true, Access = private)
-        % Soft shrink
-        function outputcf = softshrink_(inputcf,threshold)
-            % Soft-thresholding shrinkage
-            nc = abs(inputcf)-threshold;
-            nc(nc<0) = 0;
-            outputcf = sign(inputcf).*nc;
-        end
-        
     end
     
 end
