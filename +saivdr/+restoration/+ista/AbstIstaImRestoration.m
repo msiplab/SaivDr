@@ -121,7 +121,7 @@ classdef AbstIstaImRestoration < matlab.System %~#codegen
         function value = getLipschitzConstant_(obj)
             B_ = get(obj.Synthesizer,'FrameBound');
             step(obj.LinearProcess,obj.x);
-            value =B_*get(obj.LinearProcess,'LambdaMax');
+            value = B_*get(obj.LinearProcess,'LambdaMax');
         end       
         
         function N = getNumInputsImpl(~)
@@ -139,7 +139,8 @@ classdef AbstIstaImRestoration < matlab.System %~#codegen
         function outputcf = softshrink_(inputcf,threshold)
             % Soft-thresholding shrinkage
             nc = abs(inputcf)-threshold;
-            nc(nc<0) = 0;
+            %nc(nc<0) = 0;
+            nc = (nc+abs(nc))/2;
             outputcf = sign(inputcf).*nc;
         end
         
