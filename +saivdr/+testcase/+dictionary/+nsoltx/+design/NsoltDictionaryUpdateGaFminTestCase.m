@@ -1,12 +1,10 @@
 classdef NsoltDictionaryUpdateGaFminTestCase < matlab.unittest.TestCase
-    %NsoltDictionaryUpdateGaFminTESTCASE Test case for NsoltDictionaryUpdae
-    %
-    % SVN identifier:
-    % $Id: NsoltDictionaryUpdateGaFminTestCase.m 866 2015-11-24 04:29:42Z sho $
+    %NsoltDictionaryUpdateGaFminTESTCASE Test case for
+    %NsoltDictionaryUpdateGaFmin
     %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2014-2015, Shogo MURAMATSU
+    % Copyright (c) 2014-2017, Shogo MURAMATSU
     %
     % All rights reserved.
     %
