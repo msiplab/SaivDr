@@ -163,6 +163,7 @@ synthesizer = Synthesis2dSystem(...
     'SynthesisFilters',synthesisFilters,...
     'FilterDomain','Frequency');
 setFrameBound(synthesizer,1);
+set(synthesizer,'UseGpu',true);
 
 %%
 % The following static factory methods can also be used to create
