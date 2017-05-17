@@ -65,6 +65,14 @@ classdef Analysis2dSystem < saivdr.dictionary.AbstAnalysisSystem
     
     methods (Access = protected)
         
+        function flag = isInactivePropertyImpl(obj,propertyName)
+            if strcmp(propertyName,'UseGpu')
+                flag = strcmp(obj.FilterDomain,'Frequeny');
+            else
+                flag = false;
+            end
+        end
+        
         function s = saveObjectImpl(obj)
             s = saveObjectImpl@matlab.System(obj);
             s.nChs = obj.nChs;
@@ -128,7 +136,11 @@ classdef Analysis2dSystem < saivdr.dictionary.AbstAnalysisSystem
                 iSubband = obj.nAllChs;                
                 nRows_ = size(srcImg,1);
                 nCols_ = size(srcImg,2);
-                freqRes_ = ones(nRows_,nCols_,obj.nAllChs);
+                if obj.UseGpu
+                    freqRes_ = ones(nRows_,nCols_,obj.nAllChs,'gpuArray');
+                else
+                    freqRes_ = ones(nRows_,nCols_,obj.nAllChs);
+                end
                 for iLevel = 1:nLevels
                     dec_ = obj.DecimationFactor.^(iLevel-1);
                     for iCh = nChs_:-1:2
@@ -137,9 +149,15 @@ classdef Analysis2dSystem < saivdr.dictionary.AbstAnalysisSystem
                         hext = zeros(nRows_,nCols_);
                         hext(1:size(h,1),1:size(h,2)) = h;
                         hext = circshift(hext,...
-                            -floor(size(h)./(2*dec_)).*dec_); 
-                        freqRes_(:,:,iSubband) = freqRes_(:,:,1) ...
-                            .* fft2(hext,nRows_,nCols_);
+                            -floor(size(h)./(2*dec_)).*dec_);
+                        if obj.UseGpu
+                            hext_ = gpuArray(hext);
+                            freqRes_(:,:,iSubband) = freqRes_(:,:,1) ...
+                                .* fft2(hext_,nRows_,nCols_);
+                        else
+                            freqRes_(:,:,iSubband) = freqRes_(:,:,1) ...
+                                .* fft2(hext,nRows_,nCols_);
+                        end
                         iSubband = iSubband - 1;
                     end
                     h    = obj.upsample2_(...
@@ -147,9 +165,15 @@ classdef Analysis2dSystem < saivdr.dictionary.AbstAnalysisSystem
                     hext = zeros(nRows_,nCols_);
                     hext(1:size(h,1),1:size(h,2)) = h;
                     hext = circshift(hext,...
-                        -floor(size(h)./(2*dec_)).*dec_); 
-                    freqRes_(:,:,1) = freqRes_(:,:,1) ...
-                        .* fft2(hext,nRows_,nCols_);
+                        -floor(size(h)./(2*dec_)).*dec_);
+                    if obj.UseGpu
+                        hext_ = gpuArray(hext);
+                        freqRes_(:,:,1) = freqRes_(:,:,1) ...
+                            .* fft2(hext_,nRows_,nCols_);
+                    else
+                        freqRes_(:,:,1) = freqRes_(:,:,1) ...
+                            .* fft2(hext,nRows_,nCols_);
+                    end
                 end
                 if obj.UseGpu
                     obj.freqRes = gpuArray(freqRes_);

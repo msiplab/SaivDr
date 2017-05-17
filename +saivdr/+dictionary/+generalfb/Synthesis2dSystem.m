@@ -58,6 +58,14 @@ classdef Synthesis2dSystem < saivdr.dictionary.AbstSynthesisSystem
     
     methods (Access = protected)
         
+        function flag = isInactivePropertyImpl(obj,propertyName)
+            if strcmp(propertyName,'UseGpu')
+                flag = strcmp(obj.FilterDomain,'Frequeny');
+            else
+                flag = false;
+            end
+        end        
+        
         function s = saveObjectImpl(obj)
             s = saveObjectImpl@matlab.System(obj);
             s.nChs = obj.nChs;
@@ -87,8 +95,12 @@ classdef Synthesis2dSystem < saivdr.dictionary.AbstSynthesisSystem
                 %
                 nRows_ = scales(1,1)*decY^nLevels; 
                 nCols_ = scales(1,2)*decX^nLevels;
-                freqRes_ = ones(nRows_,nCols_,nAllChs_);
                 iSubband = nAllChs_;
+                if obj.UseGpu
+                    freqRes_ = ones(nRows_,nCols_,nAllChs_,'gpuArray');
+                else
+                    freqRes_ = ones(nRows_,nCols_,nAllChs_);
+                end                
                 for iLevel = 1:nLevels
                     dec_ = obj.DecimationFactor.^(iLevel-1);
                     phase_ = mod(obj.DecimationFactor+1,2);
@@ -99,8 +111,15 @@ classdef Synthesis2dSystem < saivdr.dictionary.AbstSynthesisSystem
                         fext(1:size(f,1),1:size(f,2)) = f;
                         fext = circshift(fext,... % #TODO: Certification
                             (-floor(size(f)./(2*dec_))+phase_).*dec_);
-                        freqRes_(:,:,iSubband) = freqRes_(:,:,1) ...
-                            .* fft2(fext,nRows_,nCols_);
+                        if obj.UseGpu
+                            fext_ = gpuArray(fext);
+                            freqRes_(:,:,iSubband) = ...
+                                bsxfun(@times,freqRes_(:,:,1),...
+                                fft2(fext_,nRows_,nCols_));
+                        else
+                            freqRes_(:,:,iSubband) = freqRes_(:,:,1) ...
+                                .* fft2(fext,nRows_,nCols_);
+                        end
                         iSubband = iSubband - 1;
                     end
                     f    = obj.upsample2_(...
@@ -109,8 +128,15 @@ classdef Synthesis2dSystem < saivdr.dictionary.AbstSynthesisSystem
                     fext(1:size(f,1),1:size(f,2)) = f;
                     fext = circshift(fext,...  % #TODO: Certification
                         (-floor(size(f)./(2*dec_))+phase_).*dec_);
-                    freqRes_(:,:,1) = freqRes_(:,:,1) ...
-                        .* fft2(fext,nRows_,nCols_);
+                    if obj.UseGpu
+                        fext_ = gpuArray(fext);
+                        freqRes_(:,:,1) = ...
+                            bsxfun(@times,freqRes_(:,:,1),...
+                            fft2(fext_,nRows_,nCols_));
+                    else
+                        freqRes_(:,:,1) = freqRes_(:,:,1) ...
+                            .* fft2(fext,nRows_,nCols_);
+                    end
                 end
                 if obj.UseGpu
                     obj.freqRes = gpuArray(freqRes_);
@@ -173,7 +199,7 @@ classdef Synthesis2dSystem < saivdr.dictionary.AbstSynthesisSystem
             nChs_  = obj.nChs;
             nLevels = (size(scales,1)-1)/(nChs_-1);
             %
-            sSubband = 1;
+            eSubband = 1;
             eIdx = prod(scales(1,:));
             %
             coefs_  = gpuArray(coefs);
@@ -181,17 +207,17 @@ classdef Synthesis2dSystem < saivdr.dictionary.AbstSynthesisSystem
             updImgFreq = zeros(size(subImg).*[decY decX].^nLevels,'gpuArray');
             updImgFreq(:,:,1) = repmat(fft2(subImg),[decY decX].^nLevels);
             freqRes_ = obj.freqRes;
-            idx = 2;
             for iLevel = 1:nLevels
                 nDecs_ = [decY decX].^(nLevels-iLevel+1);
-                for iCh = 2:nChs_
-                    sSubband = sSubband + 1;
-                    sIdx = eIdx + 1;
-                    eIdx = sIdx + prod(scales(sSubband,:))-1;
-                    subImg = reshape(coefs_(sIdx:eIdx),scales(sSubband,:));
-                    updImgFreq(:,:,idx) = repmat(fft2(subImg),nDecs_);
-                    idx = idx + 1;
-                end
+                sSubband = eSubband + 1;                
+                eSubband = sSubband + nChs_ - 2;
+                sIdx = eIdx + 1;
+                eIdx = sIdx + (nChs_-1)*prod(scales(sSubband,:))-1;                
+                subImg = reshape(coefs_(sIdx:eIdx),...
+                    scales(sSubband,1),scales(sSubband,2),(nChs_-1)); 
+                % Frequency domain upsampling
+                updImgFreq(:,:,sSubband:eSubband) = ...
+                    repmat(fft2(subImg),nDecs_(1),nDecs_(2));                
             end
             recImgFreq = bsxfun(@times,updImgFreq,freqRes_);
             recImg = gather(real(ifft2(sum(recImgFreq,3))));
