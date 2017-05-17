@@ -7,9 +7,6 @@ classdef Synthesis2dSystem < saivdr.dictionary.AbstSynthesisSystem
     %   Lattice Alteration Based on Overlap-Add and Overlap-Save Methods,'' 
     %   IEICE Trans. on Fundamentals, Vol.E78-A, No.8, pp.939-943, Aug. 1995
     %
-    % SVN identifier:
-    % $Id: Synthesis2dSystem.m 866 2015-11-24 04:29:42Z sho $
-    %
     % Requirements: MATLAB R2015b
     %
     % Copyright (c) 2015, Shogo MURAMATSU
@@ -115,13 +112,19 @@ classdef Synthesis2dSystem < saivdr.dictionary.AbstSynthesisSystem
                     freqRes_(:,:,1) = freqRes_(:,:,1) ...
                         .* fft2(fext,nRows_,nCols_);
                 end
-                obj.freqRes = freqRes_;
+                if obj.UseGpu
+                    obj.freqRes = gpuArray(freqRes_);
+                else
+                    obj.freqRes = freqRes_;
+                end
             end
         end
         
         function recImg = stepImpl(obj,coefs,scales)
             if strcmp(obj.FilterDomain,'Spatial')
                 recImg = synthesizeSpatial_(obj,coefs,scales);
+            elseif obj.UseGpu
+                recImg = synthesizeFrequencyGpu_(obj,coefs,scales);
             else
                 recImg = synthesizeFrequency_(obj,coefs,scales);
             end
@@ -160,6 +163,38 @@ classdef Synthesis2dSystem < saivdr.dictionary.AbstSynthesisSystem
                 end
             end
             recImg = real(ifft2(recImgFreq));
+        end
+        
+        function recImg = synthesizeFrequencyGpu_(obj,coefs,scales)
+            import saivdr.dictionary.utility.Direction
+            %
+            decY = obj.DecimationFactor(Direction.VERTICAL);
+            decX = obj.DecimationFactor(Direction.HORIZONTAL);
+            nChs_  = obj.nChs;
+            nLevels = (size(scales,1)-1)/(nChs_-1);
+            %
+            sSubband = 1;
+            eIdx = prod(scales(1,:));
+            %
+            coefs_  = gpuArray(coefs);
+            subImg = reshape(coefs_(1:eIdx),scales(1,:));
+            updImgFreq = zeros(size(subImg).*[decY decX].^nLevels,'gpuArray');
+            updImgFreq(:,:,1) = repmat(fft2(subImg),[decY decX].^nLevels);
+            freqRes_ = obj.freqRes;
+            idx = 2;
+            for iLevel = 1:nLevels
+                nDecs_ = [decY decX].^(nLevels-iLevel+1);
+                for iCh = 2:nChs_
+                    sSubband = sSubband + 1;
+                    sIdx = eIdx + 1;
+                    eIdx = sIdx + prod(scales(sSubband,:))-1;
+                    subImg = reshape(coefs_(sIdx:eIdx),scales(sSubband,:));
+                    updImgFreq(:,:,idx) = repmat(fft2(subImg),nDecs_);
+                    idx = idx + 1;
+                end
+            end
+            recImgFreq = bsxfun(@times,updImgFreq,freqRes_);
+            recImg = gather(real(ifft2(sum(recImgFreq,3))));
         end
         
         function recImg = synthesizeSpatial_(obj,coefs,scales)
