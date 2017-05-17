@@ -246,7 +246,7 @@ classdef Analysis2dSystem < saivdr.dictionary.AbstAnalysisSystem
             decY = obj.DecimationFactor(Direction.VERTICAL);
             decX = obj.DecimationFactor(Direction.HORIZONTAL);
             %
-            iSubband = obj.nAllChs;
+            eSubband = obj.nAllChs;
             eIdx     = obj.nAllCoefs;
             %
             freqSrcImg = fft2(gpuArray(srcImg));
@@ -254,52 +254,47 @@ classdef Analysis2dSystem < saivdr.dictionary.AbstAnalysisSystem
             width  = size(srcImg,2);
             freqRes_ = obj.freqRes;
             freqSrcImgRep_ = repmat(freqSrcImg,[1 1 (nChs_-1)]);
-            % TODO: Parallelize
+            %
             for iLevel = 1:nLevels
                 nRows_ = height/(decY^iLevel);
                 nCols_ = width/(decX^iLevel);
-                freqResSubs_ = freqRes_(:,:,iSubband:-1:(iSubband-(nChs_-1)+1));
-                freqSubImgs_ = gather(bsxfun(@times,...
-                    freqSrcImgRep_,freqResSubs_));
-                for iCh = 1:(nChs_-1)
-                    freqSubImg = freqSubImgs_(:,:,iCh);
-                    U = 0;
-                    for iPhsX=1:(decX^iLevel)
-                        sIdxX = (iPhsX-1)*nCols_+1;
-                        eIdxX = sIdxX + nCols_-1;
-                        for iPhsY=1:(decY^iLevel)
-                            sIdxY = (iPhsY-1)*nRows_+1;
-                            eIdxY = sIdxY+nRows_-1;
-                            U = U + freqSubImg(sIdxY:eIdxY,sIdxX:eIdxX);
-                        end
-                    end
-                    subbandCoefs = real(ifft2(U))/((decY*decX)^iLevel);
-                    obj.allScales(iSubband,:) = [ nRows_ nCols_ ];
-                    sIdx = eIdx - (nRows_*nCols_) + 1;
-                    obj.allCoefs(sIdx:eIdx) = subbandCoefs(:).';                    
-                    iSubband = iSubband - 1;
-                    eIdx = sIdx - 1;
-                end
+                nDecs_ = (decY*decX)^iLevel;
+                sSubband = eSubband-(nChs_-1)+1;
+                % Frequency responses
+                freqResSubs_ = freqRes_(:,:,sSubband:eSubband);
+                % Frequency domain filtering
+                freqSubImgs_ = bsxfun(@times,freqSrcImgRep_,freqResSubs_);
+                % Frequency domain downsampling
+                tmp1 = reshape(freqSubImgs_,(decY^iLevel)*nRows_,nCols_,...
+                    (decX^iLevel),(nChs_-1));
+                tmp2 = sum(tmp1,3);
+                tmp3 = reshape(tmp2,nRows_,(decY^iLevel),nCols_,(nChs_-1));
+                U    = permute(sum(tmp3,2),[1 3 4 2]);
+                tmp4 = real(ifft2(U));
+                subbandCoefs = bsxfun(@times,tmp4,1/nDecs_);
+                %
+                sIdx = eIdx - (nChs_-1)*(nRows_*nCols_) + 1;
+                obj.allScales(sSubband:eSubband,:) = ...
+                    repmat([ nRows_ nCols_ ],[(nChs_-1) 1]);
+                obj.allCoefs(sIdx:eIdx) = gather(subbandCoefs(:).'); 
+                %
+                eSubband = sSubband - 1;
+                eIdx     = sIdx - 1;
             end
             nRows_ = height/(decY^nLevels);
             nCols_ = width/(decX^nLevels);
+            nDecs_ = (decY*decX)^iLevel;            
             freqRefSub = freqRes_(:,:,1);
-            freqSubImg = gather(bsxfun(@times,freqSrcImg,freqRefSub));
-            % TODO: Parallelize            
-            U = 0;
-            for iPhsX=1:(decX^nLevels)
-                sIdxX = (iPhsX-1)*nCols_+1;
-                eIdxX = sIdxX + nCols_-1;
-                for iPhsY=1:(decY^nLevels)
-                    sIdxY = (iPhsY-1)*nRows_+1;
-                    eIdxY = sIdxY+nRows_-1;
-                    U = U + freqSubImg(sIdxY:eIdxY,sIdxX:eIdxX);
-                end
-            end
-            subbandCoefs = real(ifft2(U))/((decY*decX)^nLevels);
+            freqSubImg = bsxfun(@times,freqSrcImg,freqRefSub);
+            tmp1 = reshape(freqSubImg,(decY^iLevel)*nRows_,nCols_,(decX^iLevel));
+            tmp2 = sum(tmp1,3);
+            tmp3 = reshape(tmp2,nRows_,(decY^iLevel),nCols_);
+            U    = permute(sum(tmp3,2),[1 3 2]);
+            tmp4 = real(ifft2(U));
+            subbandCoefs = bsxfun(@times,tmp4,1/nDecs_);
             %
             obj.allScales(1,:) = [ nRows_ nCols_ ];
-            obj.allCoefs(1:nRows_*nCols_) = subbandCoefs(:).';
+            obj.allCoefs(1:nRows_*nCols_) = gather(subbandCoefs(:).');
             %
             scales = obj.allScales;
             coefs  = obj.allCoefs;
