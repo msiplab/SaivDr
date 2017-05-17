@@ -242,7 +242,7 @@ classdef Analysis2dSystem < saivdr.dictionary.AbstAnalysisSystem
             
             import saivdr.dictionary.utility.Direction
             %
-            nChs_  = obj.nChs;
+            nChs_ = obj.nChs;
             decY = obj.DecimationFactor(Direction.VERTICAL);
             decX = obj.DecimationFactor(Direction.HORIZONTAL);
             %
@@ -253,13 +253,16 @@ classdef Analysis2dSystem < saivdr.dictionary.AbstAnalysisSystem
             height = size(srcImg,1);
             width  = size(srcImg,2);
             freqRes_ = obj.freqRes;
+            freqSrcImgRep_ = repmat(freqSrcImg,[1 1 (nChs_-1)]);
             % TODO: Parallelize
             for iLevel = 1:nLevels
                 nRows_ = height/(decY^iLevel);
                 nCols_ = width/(decX^iLevel);
-                for iCh = nChs_:-1:2
-                    freqRefSub = freqRes_(:,:,iSubband);
-                    freqSubImg = gather(freqSrcImg.*freqRefSub);
+                freqResSubs_ = freqRes_(:,:,iSubband:-1:(iSubband-(nChs_-1)+1));
+                freqSubImgs_ = gather(bsxfun(@times,...
+                    freqSrcImgRep_,freqResSubs_));
+                for iCh = 1:(nChs_-1)
+                    freqSubImg = freqSubImgs_(:,:,iCh);
                     U = 0;
                     for iPhsX=1:(decX^iLevel)
                         sIdxX = (iPhsX-1)*nCols_+1;
@@ -281,7 +284,7 @@ classdef Analysis2dSystem < saivdr.dictionary.AbstAnalysisSystem
             nRows_ = height/(decY^nLevels);
             nCols_ = width/(decX^nLevels);
             freqRefSub = freqRes_(:,:,1);
-            freqSubImg = gather(freqSrcImg.*freqRefSub);
+            freqSubImg = gather(bsxfun(@times,freqSrcImg,freqRefSub));
             % TODO: Parallelize            
             U = 0;
             for iPhsX=1:(decX^nLevels)
