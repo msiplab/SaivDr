@@ -48,17 +48,17 @@ chSet = { [ 4 4 ] }; % { [ 6 2 ], [ 5 3 ], [ 4 4 ] }; for ICASSP2014
 lvSet = num2cell(5:-1:1,[ 1 5 ]);
 
 %% Pre-build of MEX files
-for iCh = 1:length(chSet)
-    import saivdr.dictionary.nsoltx.mexsrcs.*
-    chs = chSet{iCh};
-    fcn_autobuild_atomcnc2d([chs(1) chs(2)]);
-    fcn_autobuild_atomext2d([chs(1) chs(2)]);    
-    if chs(1) == chs(2)
-        fcn_autobuild_bb_type1(chs(1));
-    else
-        fcn_autobuild_bb_type2(chs(1),chs(2));
-    end
-end
+% for iCh = 1:length(chSet)
+%     import saivdr.dictionary.nsoltx.mexsrcs.*
+%     chs = chSet{iCh};
+%     fcn_autobuild_atomcnc2d([chs(1) chs(2)]);
+%     fcn_autobuild_atomext2d([chs(1) chs(2)]);    
+%     if chs(1) == chs(2)
+%         fcn_autobuild_bb_type1(chs(1));
+%     else
+%         fcn_autobuild_bb_type2(chs(1),chs(2));
+%     end
+% end
 
 %%
 paramset = cell(length(imgSet)*length(vmSet)*length(chSet)*length(lvSet),1);
