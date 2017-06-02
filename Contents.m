@@ -172,4 +172,6 @@
 % -- Kenta SEINO,       2015-
 % -- Satoshi NAGAYAMA,  2017-
 % -- Shota KAYAMORI,    2017-
-
+% -- Genki FUJII,       2017-
+% -- Naoki YAMAZAKI,    2017-
+% -- Yuhei KANEKO,      2017-
