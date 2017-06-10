@@ -3,7 +3,7 @@ classdef Analysis2dSystemTestCase < matlab.unittest.TestCase
     %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2015, Shogo MURAMATSU
+    % Copyright (c) 2015-2017, Shogo MURAMATSU
     %
     % All rights reserved.
     %
