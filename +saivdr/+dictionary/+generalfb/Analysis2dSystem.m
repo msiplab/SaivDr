@@ -9,7 +9,7 @@ classdef Analysis2dSystem < saivdr.dictionary.AbstAnalysisSystem
     %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2015, Shogo MURAMATSU
+    % Copyright (c) 2015-2017, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -152,8 +152,8 @@ classdef Analysis2dSystem < saivdr.dictionary.AbstAnalysisSystem
                             -floor(size(h)./(2*dec_)).*dec_);
                         if obj.UseGpu
                             hext_ = gpuArray(hext);
-                            freqRes_(:,:,iSubband) = freqRes_(:,:,1) ...
-                                .* fft2(hext_,nRows_,nCols_);
+                            freqRes_(:,:,iSubband) = bsxfun(@times,...
+                                freqRes_(:,:,1),fft2(hext_,nRows_,nCols_));
                         else
                             freqRes_(:,:,iSubband) = freqRes_(:,:,1) ...
                                 .* fft2(hext,nRows_,nCols_);
@@ -168,8 +168,8 @@ classdef Analysis2dSystem < saivdr.dictionary.AbstAnalysisSystem
                         -floor(size(h)./(2*dec_)).*dec_);
                     if obj.UseGpu
                         hext_ = gpuArray(hext);
-                        freqRes_(:,:,1) = freqRes_(:,:,1) ...
-                            .* fft2(hext_,nRows_,nCols_);
+                        freqRes_(:,:,1) = bsxfun(@times,...
+                            freqRes_(:,:,1),fft2(hext_,nRows_,nCols_));
                     else
                         freqRes_(:,:,1) = freqRes_(:,:,1) ...
                             .* fft2(hext,nRows_,nCols_);
@@ -289,13 +289,13 @@ classdef Analysis2dSystem < saivdr.dictionary.AbstAnalysisSystem
                 % Frequency domain filtering
                 freqSubImgs_ = bsxfun(@times,freqSrcImgRep_,freqResSubs_);
                 % Frequency domain downsampling
-                tmp1 = reshape(freqSubImgs_,(decY^iLevel)*nRows_,nCols_,...
-                    (decX^iLevel),(nChs_-1));
-                tmp2 = sum(tmp1,3);
-                tmp3 = reshape(tmp2,nRows_,(decY^iLevel),nCols_,(nChs_-1));
-                U    = permute(sum(tmp3,2),[1 3 4 2]);
-                tmp4 = real(ifft2(U));
-                subbandCoefs = bsxfun(@times,tmp4,1/nDecs_);
+                foldX = reshape(freqSubImgs_,height,...
+                    nCols_,(decX^iLevel),(nChs_-1));
+                faddX = sum(foldX,3);
+                foldY = reshape(faddX,nRows_,(decY^iLevel),nCols_,(nChs_-1));
+                faddY = sum(foldY,2);
+                U     = squeeze(faddY);
+                subbandCoefs = bsxfun(@times,real(ifft2(U)),1/nDecs_);
                 %
                 sIdx = eIdx - (nChs_-1)*(nRows_*nCols_) + 1;
                 obj.allScales(sSubband:eSubband,:) = ...
@@ -307,15 +307,15 @@ classdef Analysis2dSystem < saivdr.dictionary.AbstAnalysisSystem
             end
             nRows_ = height/(decY^nLevels);
             nCols_ = width/(decX^nLevels);
-            nDecs_ = (decY*decX)^iLevel;            
+            nDecs_ = (decY*decX)^nLevels;            
             freqRefSub = freqRes_(:,:,1);
             freqSubImg = bsxfun(@times,freqSrcImg,freqRefSub);
-            tmp1 = reshape(freqSubImg,(decY^iLevel)*nRows_,nCols_,(decX^iLevel));
-            tmp2 = sum(tmp1,3);
-            tmp3 = reshape(tmp2,nRows_,(decY^iLevel),nCols_);
-            U    = permute(sum(tmp3,2),[1 3 2]);
-            tmp4 = real(ifft2(U));
-            subbandCoefs = bsxfun(@times,tmp4,1/nDecs_);
+            foldX = reshape(freqSubImg,height,nCols_,(decX^nLevels));
+            faddX = sum(foldX,3);
+            foldY = reshape(faddX,nRows_,(decY^nLevels),nCols_);
+            faddY = sum(foldY,2);
+            U     = squeeze(faddY);
+            subbandCoefs = bsxfun(@times,real(ifft2(U)),1/nDecs_);
             %
             obj.allScales(1,:) = [ nRows_ nCols_ ];
             obj.allCoefs(1:nRows_*nCols_) = gather(subbandCoefs(:).');
