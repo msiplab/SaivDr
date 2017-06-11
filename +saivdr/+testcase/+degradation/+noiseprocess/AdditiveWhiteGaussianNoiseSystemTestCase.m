@@ -1,12 +1,9 @@
 classdef AdditiveWhiteGaussianNoiseSystemTestCase < matlab.unittest.TestCase
     %ADDITIVEWHITEGAUSSIANNOISSYSTEMTESTCASE Test case for AdditiveWhiteGaussianNoiseSystem
     %
-    % SVN identifier:
-    % $Id: AdditiveWhiteGaussianNoiseSystemTestCase.m 683 2015-05-29 08:22:13Z sho $
-    %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2014-2015, Shogo MURAMATSU
+    % Copyright (c) 2014-2017, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -84,6 +81,34 @@ classdef AdditiveWhiteGaussianNoiseSystemTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(varActual,varExpctd,'AbsTol',1e-2,sprintf('%g',diff));            
             
         end        
+        
+        function testAwgnVolumetricData(testCase)
+            
+            % Preparation
+            srcImg = 0.5*ones(64,64,64);
+            
+            % Expected values
+            meanExpctd = 0;
+            varExpctd  = 0.01;
+            
+            % Instantiation of target class
+            import saivdr.degradation.noiseprocess.*
+            testCase.noiseproc = AdditiveWhiteGaussianNoiseSystem();
+            
+            % Actual values
+            resImg = step(testCase.noiseproc,srcImg);
+            noiseImg = resImg - srcImg;
+            meanActual = mean(noiseImg(:));
+            varActual  = var(noiseImg(:));
+            
+            % Evaluation
+            diff = meanExpctd - meanActual;
+            testCase.verifyEqual(meanActual,meanExpctd,'AbsTol',1e-2,sprintf('%g',diff));
+            diff = varExpctd - varActual;
+            testCase.verifyEqual(varActual,varExpctd,'AbsTol',1e-2,sprintf('%g',diff));
+            
+        end
+        
     end
     
 end

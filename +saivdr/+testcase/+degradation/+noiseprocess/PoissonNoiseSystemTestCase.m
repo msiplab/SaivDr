@@ -1,12 +1,9 @@
 classdef PoissonNoiseSystemTestCase < matlab.unittest.TestCase
     %POISSONNOISSYSTEMTESTCASE Test case for PoissonNoiseSystem
     %
-    % SVN identifier:
-    % $Id: PoissonNoiseSystemTestCase.m 683 2015-05-29 08:22:13Z sho $
-    %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2014-2015, Shogo MURAMATSU
+    % Copyright (c) 2014-2017, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -96,7 +93,7 @@ classdef PoissonNoiseSystemTestCase < matlab.unittest.TestCase
             % Instantiation of target class
             import saivdr.degradation.noiseprocess.*
             testCase.noiseproc = PoissonNoiseSystem();
-
+            
             % Actual values
             resImg = step(testCase.noiseproc,srcImg);
             meanActual = mean(resImg(:));
@@ -106,10 +103,37 @@ classdef PoissonNoiseSystemTestCase < matlab.unittest.TestCase
             diff = meanExpctd - meanActual;
             testCase.verifyEqual(meanActual,meanExpctd,'RelTol',5e-2,sprintf('%g',diff));
             diff = varExpctd - varActual;
-            testCase.verifyEqual(varActual,varExpctd,'RelTol',5e-2,sprintf('%g',diff));                        
+            testCase.verifyEqual(varActual,varExpctd,'RelTol',5e-2,sprintf('%g',diff));
             
-        end        
-
+        end
+        
+        function testPoissonNoiseLambda0_5VolumetricData(testCase)
+            
+            % Preparation
+            lambda = 0.5;
+            srcImg = lambda*ones(64,64,64);
+            
+            % Expected values
+            meanExpctd = lambda;
+            varExpctd  = lambda*1e-12;
+            
+            % Instantiation of target class
+            import saivdr.degradation.noiseprocess.*
+            testCase.noiseproc = PoissonNoiseSystem();
+            
+            % Actual values
+            resImg = step(testCase.noiseproc,srcImg);
+            meanActual = mean(resImg(:));
+            varActual  = var(resImg(:));
+            
+            % Evaluation
+            diff = meanExpctd - meanActual;
+            testCase.verifyEqual(meanActual,meanExpctd,'RelTol',5e-2,sprintf('%g',diff));
+            diff = varExpctd - varActual;
+            testCase.verifyEqual(varActual,varExpctd,'RelTol',5e-2,sprintf('%g',diff));
+            
+        end
+        
     end
     
 end
