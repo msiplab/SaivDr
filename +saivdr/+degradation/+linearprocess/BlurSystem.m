@@ -2,9 +2,6 @@ classdef BlurSystem < ...
         saivdr.degradation.linearprocess.AbstLinearSystem %#codegen
     %BLURSYSTEM Bluring process
     %   
-    % SVN identifier:
-    % $Id: BlurSystem.m 714 2015-07-30 21:44:30Z sho $
-    %
     % Requirements: MATLAB R2015b
     %
     % Copyright (c) 2014-2017, Shogo MURAMATSU
@@ -174,7 +171,7 @@ classdef BlurSystem < ...
             if strcmp(obj.BoundaryOption,'Value')
                 output = imfilter(input,obj.BlurKernel,'conv',...
                      obj.BoundaryValue);
-            elseif strcmp(obj.BlurType,'Gaussian') % Use
+            elseif strcmp(obj.BlurType,'Gaussian') 
                 if strcmp(obj.DataType,'Image')
                     output = imgaussfilt(input,...
                         obj.SigmaOfGaussianKernel,...

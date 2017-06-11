@@ -39,12 +39,16 @@ classdef AbstLinearSystem < matlab.System %#codegen
         OriginalDimension
         LambdaMax
     end
+
+    properties(DiscreteState)
+        State
+    end
     
     methods (Access = protected, Abstract = true)
         output = normalStepImpl(obj,input)
         output = adjointStepImpl(obj,input)
         flag = isInactiveSubPropertyImpl(obj,propertyName)
-        originalDim = getOriginalDimension(obj,ovservedDim)
+        originalDim = getOriginalDimension(obj,observedDim)
     end
     
     methods
@@ -72,7 +76,14 @@ classdef AbstLinearSystem < matlab.System %#codegen
         end
 
         function setupImpl(obj,input)
-            obj.ObservedDimension = [ size(input,1) size(input,2) ];
+            if strcmp(obj.DataType,'Image')
+                obj.ObservedDimension = [ size(input,1) size(input,2) ];
+            else
+                obj.ObservedDimension = [ ...
+                    size(input,1) ...
+                    size(input,2) ...
+                    size(input,3)];
+            end
             obj.OriginalDimension = getOriginalDimension(...
                 obj,obj.ObservedDimension);
             obj.LambdaMax = getMaxEigenValueGram_(...
@@ -99,8 +110,8 @@ classdef AbstLinearSystem < matlab.System %#codegen
     
     methods (Access = private)
         
-        function lmax = getMaxEigenValueGram_(obj,ovservedDim)
-            origDim = getOriginalDimension(obj,ovservedDim);
+        function lmax = getMaxEigenValueGram_(obj,observedDim)
+            origDim = getOriginalDimension(obj,observedDim);
             if obj.UseFileForLambdaMax
                 lmaxfile = obj.FileNameForLambdaMax;
                 if exist(lmaxfile,'file') == 2
