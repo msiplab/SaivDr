@@ -1,9 +1,6 @@
 classdef AbstNoiseSystem < matlab.System %#codegen
     %ABSTNOISESYSTEM Abstract class of noise system
     %   
-    % SVN identifier:
-    % $Id: AbstNoiseSystem.m 683 2015-05-29 08:22:13Z sho $
-    %
     % Requirements: MATLAB R2015b
     %
     % Copyright (c) 2014-2015, Shogo MURAMATSU
