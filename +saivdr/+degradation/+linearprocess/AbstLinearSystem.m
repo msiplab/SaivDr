@@ -78,7 +78,7 @@ classdef AbstLinearSystem < matlab.System %#codegen
         function setupImpl(obj,input)
             if strcmp(obj.DataType,'Image')
                 obj.ObservedDimension = [ size(input,1) size(input,2) ];
-            else
+            else % Volumetric Data
                 obj.ObservedDimension = [ ...
                     size(input,1) ...
                     size(input,2) ...
@@ -93,7 +93,7 @@ classdef AbstLinearSystem < matlab.System %#codegen
         function output = stepImpl(obj,input)
             if strcmp(obj.ProcessingMode,'Adjoint')
                 output = adjointStepImpl(obj,input);
-            else
+            else % Normal
                 output = normalStepImpl(obj,input);
             end
         end
