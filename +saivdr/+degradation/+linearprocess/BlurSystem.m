@@ -7,7 +7,7 @@ classdef BlurSystem < ...
     %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2014-2015, Shogo MURAMATSU
+    % Copyright (c) 2014-2017, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -47,7 +47,7 @@ classdef BlurSystem < ...
     properties(SetAccess = protected, GetAccess = public)
         BlurKernel = 1
     end
-
+    
     properties(Access = protected)
         offset
     end
@@ -59,7 +59,7 @@ classdef BlurSystem < ...
                 obj@saivdr.degradation.linearprocess.AbstLinearSystem(...
                 varargin{:});
         end
-                
+        
     end
     
     methods (Access = protected)
@@ -73,7 +73,7 @@ classdef BlurSystem < ...
         
         function loadObjectImpl(obj, s, wasLocked)
             obj.BlurKernel = s.BlurKernel;
-            obj.offset     = s.offset;    
+            obj.offset     = s.offset;
             loadObjectImpl@...
                 saivdr.degradation.linearprocess.AbstLinearSystem(obj,s,wasLocked);
         end
@@ -95,36 +95,74 @@ classdef BlurSystem < ...
         
         function setupImpl(obj,input)
             
-            switch obj.BlurType
-                case {'Identical'}
-                    obj.BlurKernel = 1;
-                case {'Average'}
-                    if isempty(obj.SizeOfKernel)
-                        obj.SizeOfKernel  = [ 3 3 ];
-                    end
-                    obj.BlurKernel = fspecial('average',obj.SizeOfKernel);
-                case {'Gaussian'}
-                    if isempty(obj.SigmaOfGaussianKernel)
-                        obj.SigmaOfGaussianKernel = 2.0;
-                    end
-                    if isempty(obj.SizeOfKernel)
-                        obj.SizeOfKernel  = ...
-                            2*round(4*obj.SigmaOfGaussianKernel)+1;
-                    end
-                    obj.BlurKernel = fspecial('gaussian',...
-                        obj.SizeOfKernel, obj.SigmaOfGaussianKernel);
-                case {'Custom'}
-                    if isempty(obj.CustomKernel)
+            if strcmp(obj.DataType,'Image')
+                switch obj.BlurType
+                    case {'Identical'}
+                        obj.BlurKernel = 1;
+                    case {'Average'}
+                        if isempty(obj.SizeOfKernel)
+                            obj.SizeOfKernel  = [ 3 3 ];
+                        end
+                        obj.BlurKernel = fspecial('average',obj.SizeOfKernel);
+                    case {'Gaussian'}
+                        if isempty(obj.SigmaOfGaussianKernel)
+                            obj.SigmaOfGaussianKernel = 2.0;
+                        end
+                        if isempty(obj.SizeOfKernel)
+                            obj.SizeOfKernel  = ...
+                                2*ceil(4*obj.SigmaOfGaussianKernel)+1;
+                        end
+                        obj.BlurKernel = fspecial('gaussian',...
+                            obj.SizeOfKernel, obj.SigmaOfGaussianKernel);
+                    case {'Custom'}
+                        if isempty(obj.CustomKernel)
+                            me = MException('SaivDr:InvalidOption',...
+                                'CustomKernel should be specified.');
+                            throw(me);
+                        else
+                            obj.BlurKernel = obj.CustomKernel;
+                        end
+                    otherwise
                         me = MException('SaivDr:InvalidOption',...
-                            'CustomKernel should be specified.');
+                            'Invalid blur type');
                         throw(me);
-                    else
-                        obj.BlurKernel = obj.CustomKernel;
-                    end
-                otherwise
-                    me = MException('SaivDr:InvalidOption',...
-                        'Invalid blur type');
-                    throw(me);
+                end
+            else % Volumetric Data
+                switch obj.BlurType
+                    case {'Identical'}
+                        obj.BlurKernel = 1;
+                    case {'Average'}
+                        if isempty(obj.SizeOfKernel)
+                            obj.SizeOfKernel  = [ 3 3 3 ];
+                        end
+                        obj.BlurKernel = ones(obj.SizeOfKernel)/...
+                            prod(obj.SizeOfKernel);
+                    case {'Gaussian'}
+                        if isempty(obj.SigmaOfGaussianKernel)
+                            obj.SigmaOfGaussianKernel = 2.0;
+                        end
+                        if isempty(obj.SizeOfKernel)
+                            obj.SizeOfKernel  = ...
+                                2*ceil(4*obj.SigmaOfGaussianKernel)+1;
+                        end
+                        hs = (obj.SizeOfKernel-1)/2;
+                        sg = obj.SigmaOfGaussianKernel;
+                        [ X, Y, Z ] = meshgrid(-hs:hs,-hs:hs,-hs:hs);
+                        kernel_ = exp(-(X.^2+Y.^2+Z.^2)/(2*sg^2));
+                        obj.BlurKernel = kernel_/sum(kernel_(:));
+                    case {'Custom'}
+                        if isempty(obj.CustomKernel)
+                            me = MException('SaivDr:InvalidOption',...
+                                'CustomKernel should be specified.');
+                            throw(me);
+                        else
+                            obj.BlurKernel = obj.CustomKernel;
+                        end
+                    otherwise
+                        me = MException('SaivDr:InvalidOption',...
+                            'Invalid blur type');
+                        throw(me);
+                end
             end
             obj.offset = mod(size(obj.BlurKernel)+1,2);
             %
@@ -136,6 +174,18 @@ classdef BlurSystem < ...
             if strcmp(obj.BoundaryOption,'Value')
                 output = imfilter(input,obj.BlurKernel,'conv',...
                      obj.BoundaryValue);
+            elseif strcmp(obj.BlurType,'Gaussian') % Use
+                if strcmp(obj.DataType,'Image')
+                    output = imgaussfilt(input,...
+                        obj.SigmaOfGaussianKernel,...
+                        'FilterSize',obj.SizeOfKernel,...
+                        'Padding',lower(obj.BoundaryOption));
+                else
+                    output = imgaussfilt3(input,...
+                        obj.SigmaOfGaussianKernel,...
+                        'FilterSize',obj.SizeOfKernel,...
+                        'Padding',lower(obj.BoundaryOption));
+                end
             else
                 output = imfilter(input,obj.BlurKernel,'conv',...
                     lower(obj.BoundaryOption));
@@ -146,6 +196,18 @@ classdef BlurSystem < ...
             if strcmp(obj.BoundaryOption,'Value')            
                 output = imfilter(input,obj.BlurKernel,'corr',...
                     obj.BoundaryValue);
+            elseif strcmp(obj.BlurType,'Gaussian')
+                if strcmp(obj.DataType,'Image')
+                    output = imgaussfilt(input,...
+                        obj.SigmaOfGaussianKernel,...
+                        'FilterSize',obj.SizeOfKernel,...
+                        'Padding',lower(obj.BoundaryOption));
+                else
+                    output = imgaussfilt3(input,...
+                        obj.SigmaOfGaussianKernel,...
+                        'FilterSize',obj.SizeOfKernel,...
+                        'Padding',lower(obj.BoundaryOption));
+                end                
             else
                 output = imfilter(input,obj.BlurKernel,'corr',...
                     lower(obj.BoundaryOption));                

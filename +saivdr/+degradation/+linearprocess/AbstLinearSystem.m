@@ -1,12 +1,9 @@
 classdef AbstLinearSystem < matlab.System %#codegen
     %ABSTLINEARSYSTEM Abstract class of linear system
     %
-    % SVN identifier:
-    % $Id: AbstLinearSystem.m 683 2015-05-29 08:22:13Z sho $
-    %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2014-2015, Shogo MURAMATSU
+    % Copyright (c) 2014-2017, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -18,8 +15,10 @@ classdef AbstLinearSystem < matlab.System %#codegen
     % http://msiplab.eng.niigata-u.ac.jp/    
     %      
     properties (Nontunable)
-        EpsOfPowerMethod = 1e-6;
-        UseFileForLambdaMax = false;
+        DataType             = 'Image';
+        %
+        EpsOfPowerMethod     = 1e-6;
+        UseFileForLambdaMax  = false;
         %
         FileNameForLambdaMax = 'lmax';
     end
@@ -31,6 +30,8 @@ classdef AbstLinearSystem < matlab.System %#codegen
     properties (Hidden, Transient)
         ProcessingModeSet = ...
             matlab.system.StringSet({'Normal','Adjoint'})
+        DataTypeSet = ...
+            matlab.system.StringSet({'Image','Volumetric Data'})
     end
     
     properties (Hidden, Nontunable)
