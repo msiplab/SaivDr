@@ -9,7 +9,7 @@ classdef Synthesis2dSystem < saivdr.dictionary.AbstSynthesisSystem
     %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2015, Shogo MURAMATSU
+    % Copyright (c) 2015-2017, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -138,11 +138,7 @@ classdef Synthesis2dSystem < saivdr.dictionary.AbstSynthesisSystem
                             .* fft2(fext,nRows_,nCols_);
                     end
                 end
-                if obj.UseGpu
-                    obj.freqRes = gpuArray(freqRes_);
-                else
-                    obj.freqRes = freqRes_;
-                end
+                obj.freqRes = freqRes_;
             end
         end
         

@@ -1364,6 +1364,85 @@ classdef Synthesis3dSystemTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-10,sprintf('%g',diff));
         end
         
+    %Test
+        function testStepDec234Ch1414Ord222Level2FreqUseGpuFalse(testCase)
+            
+            % Parameters
+            height = 8*2^2;
+            width  = 12*3^2;
+            depth  = 16*4^2;
+            nDecs  = [ 2 3 4 ];
+            useGpu = false;
+            synthesisFilters = zeros(6,9,12,28);
+            for iCh = 1:28
+                synthesisFilters(:,:,:,iCh) = randn(6,9,12);
+            end
+            nLevels = 2;
+            
+            % Preparation
+            import saivdr.dictionary.utility.Direction
+            decY = nDecs(Direction.VERTICAL);
+            decX = nDecs(Direction.HORIZONTAL);
+            decZ = nDecs(Direction.DEPTH);
+            nChs = size(synthesisFilters,4);
+            subCoefs = cell(nLevels*(nChs-1)+1,1);
+            subCoefs{1} = rand(height/(decY^2),width/(decX^2),depth/(decZ^2));
+            for iCh = 2:28
+                subCoefs{iCh} = randn(height/(decY^2),width/(decX^2),depth/(decZ^2));
+                subCoefs{iCh+27} = randn(height/(decY),width/(decX),depth/(decZ));
+            end
+            nSubbands = length(subCoefs);
+            scales = zeros(nSubbands,3);
+            sIdx = 1;
+            for iSubband = 1:nSubbands
+                scales(iSubband,:) = size(subCoefs{iSubband});
+                eIdx = sIdx + prod(scales(iSubband,:))-1;
+                coefs(sIdx:eIdx) = subCoefs{iSubband}(:).';
+                sIdx = eIdx + 1;
+            end
+            
+            % Expected values
+            upsample3_ = @(x,d,p) ...
+                shiftdim(upsample(...
+                shiftdim(upsample(...
+                shiftdim(upsample(x,d(1),p(1)),1),d(2),p(2)),1),d(3),p(3)),1);            
+            phase = [ 1 0 1 ]; % for phase adjustment required experimentaly
+            subsubCoefs = cell(nChs,1);
+            subsubCoefs{1} = subCoefs{1};
+            for iLevel = 1:nLevels
+                f = synthesisFilters(:,:,:,1);
+                imgExpctd = imfilter(...
+                    upsample3_(subsubCoefs{1},nDecs,phase),...
+                    f,'conv','circ');
+                for iCh = 2:nChs
+                    f = synthesisFilters(:,:,:,iCh);
+                    iSubband = (iLevel-1)*(nChs-1)+iCh;
+                    subbandImg = imfilter(...
+                        upsample3_(subCoefs{iSubband},nDecs,phase),...
+                        f,'conv','circ');
+                    imgExpctd = imgExpctd + subbandImg;
+                end
+                subsubCoefs{1}=imgExpctd;
+            end
+            
+            % Instantiation of target class
+            import saivdr.dictionary.generalfb.*
+            testCase.synthesizer = Synthesis3dSystem(...
+                'DecimationFactor',nDecs,...
+                'SynthesisFilters',synthesisFilters,...
+                'FilterDomain','Frequency',...
+                'UseGpu',useGpu);
+            
+            % Actual values
+            imgActual = step(testCase.synthesizer,coefs,scales);
+            
+            % Evaluation
+            testCase.verifySize(imgActual,size(imgExpctd),...
+                'Actual image size is different from the expected one.');
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-10,sprintf('%g',diff));
+        end
+        
         % Test
         function testClone(testCase)
             

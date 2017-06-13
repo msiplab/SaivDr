@@ -4,15 +4,12 @@ classdef Synthesis3dSystem < saivdr.dictionary.AbstSynthesisSystem
     % Reference:
     %   Shogo Muramatsu and Hitoshi Kiya,
     %   ''Parallel Processing Techniques for Multidimensional Sampling
-    %   Lattice Alteration Based on Overlap-Add and Overlap-Save Methods,'' 
+    %   Lattice Alteration Based on Overlap-Add and Overlap-Save Methods,''
     %   IEICE Trans. on Fundamentals, Vol.E78-A, No.8, pp.939-943, Aug. 1995
-    %
-    % SVN identifier:
-    % $Id: Synthesis3dSystem.m 866 2015-11-24 04:29:42Z sho $
     %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2015, Shogo MURAMATSU
+    % Copyright (c) 2015-2017, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -21,8 +18,8 @@ classdef Synthesis3dSystem < saivdr.dictionary.AbstSynthesisSystem
     %                8050 2-no-cho Ikarashi, Nishi-ku,
     %                Niigata, 950-2181, JAPAN
     %
-    % http://msiplab.eng.niigata-u.ac.jp/    
-    %      
+    % http://msiplab.eng.niigata-u.ac.jp/
+    %
     properties (Nontunable)
         SynthesisFilters
         DecimationFactor = [2 2 2]
@@ -34,12 +31,12 @@ classdef Synthesis3dSystem < saivdr.dictionary.AbstSynthesisSystem
         BoundaryOperationSet = ...
             matlab.system.StringSet({'Circular'});
         FilterDomainSet = ...
-            matlab.system.StringSet({'Spatial','Frequency'});  
+            matlab.system.StringSet({'Spatial','Frequency'});
     end
     
     properties (Access = private, Nontunable, PositiveInteger)
         nChs
-    end   
+    end
     
     properties (Access = private)
         freqRes
@@ -50,7 +47,7 @@ classdef Synthesis3dSystem < saivdr.dictionary.AbstSynthesisSystem
         % Constractor
         function obj = Synthesis3dSystem(varargin)
             setProperties(obj,nargin,varargin{:})
-            obj.nChs = size(obj.SynthesisFilters,4); 
+            obj.nChs = size(obj.SynthesisFilters,4);
         end
         
         function setFrameBound(obj,frameBound)
@@ -60,22 +57,22 @@ classdef Synthesis3dSystem < saivdr.dictionary.AbstSynthesisSystem
     end
     
     methods (Access = protected)
-
+        
         function s = saveObjectImpl(obj)
             s = saveObjectImpl@matlab.System(obj);
             s.nChs = obj.nChs;
             s.SynthesisFilters = obj.SynthesisFilters;
             s.FilterDomain = obj.FilterDomain;
-            s.freqRes = obj.freqRes;            
+            s.freqRes = obj.freqRes;
         end
         
         function loadObjectImpl(obj,s,wasLocked)
             obj.nChs = s.nChs;
             obj.SynthesisFilters = s.SynthesisFilters;
             obj.FilterDomain = s.FilterDomain;
-            obj.freqRes = s.freqRes;            
+            obj.freqRes = s.freqRes;
             loadObjectImpl@matlab.System(obj,s,wasLocked);
-        end      
+        end
         
         function flag = isInactivePropertyImpl(obj,propertyName)
             if strcmp(propertyName,'UseGPU')
@@ -100,8 +97,12 @@ classdef Synthesis3dSystem < saivdr.dictionary.AbstSynthesisSystem
                 nRows_ = scales(1,1)*decY^nLevels;
                 nCols_ = scales(1,2)*decX^nLevels;
                 nLays_ = scales(1,3)*decZ^nLevels;
-                freqRes_ = ones(nRows_,nCols_,nLays_,nAllChs_);
                 iSubband = nAllChs_;
+                if obj.UseGpu
+                    freqRes_ = ones(nRows_,nCols_,nLays_,nAllChs_,'gpuArray');
+                else
+                    freqRes_ = ones(nRows_,nCols_,nLays_,nAllChs_);
+                end
                 for iLevel = 1:nLevels
                     dec_ = obj.DecimationFactor.^(iLevel-1);
                     phase_ = mod(obj.DecimationFactor+1,2);
@@ -112,8 +113,15 @@ classdef Synthesis3dSystem < saivdr.dictionary.AbstSynthesisSystem
                         fext(1:size(f,1),1:size(f,2),1:size(f,3)) = f;
                         fext = circshift(fext,... % #TODO: Certification
                             (-floor(size(f)./(2*dec_))+phase_).*dec_);
-                        freqRes_(:,:,:,iSubband) = freqRes_(:,:,:,1) ...
-                            .* fftn(fext,[nRows_,nCols_,nLays_]);
+                        if obj.UseGpu
+                            fext_ = gpuArray(fext);
+                            freqRes_(:,:,:,iSubband) = ...
+                                bsxfun(@times,freqRes_(:,:,:,1),...
+                                fftn(fext_,[nRows_,nCols_,nLays_]));
+                        else
+                            freqRes_(:,:,:,iSubband) = freqRes_(:,:,:,1) ...
+                                .* fftn(fext,[nRows_,nCols_,nLays_]);
+                        end
                         iSubband = iSubband - 1;
                     end
                     f    = obj.upsample3_(...
@@ -122,8 +130,15 @@ classdef Synthesis3dSystem < saivdr.dictionary.AbstSynthesisSystem
                     fext(1:size(f,1),1:size(f,2),1:size(f,3)) = f;
                     fext = circshift(fext,...  % #TODO: Certification
                         (-floor(size(f)./(2*dec_))+phase_).*dec_);
-                    freqRes_(:,:,:,1) = freqRes_(:,:,:,1) ...
-                        .* fftn(fext,[nRows_,nCols_,nLays_]);
+                    if obj.UseGpu
+                        fext_ = gpuArray(fext);
+                        freqRes_(:,:,:,1) = ...
+                            bsxfun(@times,freqRes_(:,:,:,1), ...
+                            fftn(fext_,[nRows_,nCols_,nLays_]));
+                    else
+                        freqRes_(:,:,:,1) = freqRes_(:,:,:,1) ...
+                            .* fftn(fext,[nRows_,nCols_,nLays_]);
+                    end
                 end
                 obj.freqRes = freqRes_;
             end
@@ -132,6 +147,8 @@ classdef Synthesis3dSystem < saivdr.dictionary.AbstSynthesisSystem
         function recImg = stepImpl(obj,coefs,scales)
             if strcmp(obj.FilterDomain,'Spatial')
                 recImg = synthesizeSpatial_(obj,coefs,scales);
+            elseif obj.UseGpu
+                recImg = synthesizeFrequencyGpu_(obj,coefs,scales);
             else
                 recImg = synthesizeFrequency_(obj,coefs,scales);
             end
@@ -173,6 +190,40 @@ classdef Synthesis3dSystem < saivdr.dictionary.AbstSynthesisSystem
             recImg = real(ifftn(recImgFreq));
         end
         
+        function recImg = synthesizeFrequencyGpu_(obj,coefs,scales)
+            import saivdr.dictionary.utility.Direction
+            %
+            decY = obj.DecimationFactor(Direction.VERTICAL);
+            decX = obj.DecimationFactor(Direction.HORIZONTAL);
+            decZ = obj.DecimationFactor(Direction.DEPTH);
+            nChs_  = obj.nChs;
+            nLevels = (size(scales,1)-1)/(nChs_-1);
+            %
+            eSubband = 1;
+            eIdx = prod(scales(1,:));
+            %
+            coefs_ = gpuArray(coefs);
+            subImg = reshape(coefs_(1:eIdx),scales(1,:));
+            updImgFreq = zeros(size(subImg).*[decY decX decZ].^nLevels,'gpuArray');
+            updImgFreq(:,:,:,1) = repmat(fftn(subImg),[decY decX decZ].^nLevels);
+            freqRes_ = obj.freqRes;
+            for iLevel = 1:nLevels
+                nDecs_ = [decY decX decZ].^(nLevels-iLevel+1);
+                sSubband = eSubband + 1;
+                eSubband = sSubband + nChs_ - 2;
+                sIdx = eIdx + 1;
+                eIdx = sIdx + (nChs_-1)*prod(scales(sSubband,:))-1;
+                subImg = reshape(coefs_(sIdx:eIdx),...
+                    scales(sSubband,1),scales(sSubband,2),scales(sSubband,3),...
+                    (nChs_-1));
+                % Frequency domain upsampling
+                updImgFreq(:,:,:,sSubband:eSubband) = ...
+                    repmat(fft2(fft(subImg,[],3)),nDecs_(1),nDecs_(2),nDecs_(3));
+            end
+            recImgFreq = bsxfun(@times,updImgFreq,freqRes_);
+            recImg = gather(real(ifftn(sum(recImgFreq,4))));
+        end
+        
         function recImg = synthesizeSpatial_(obj,coefs,scales)
             import saivdr.dictionary.utility.Direction
             %
@@ -211,7 +262,7 @@ classdef Synthesis3dSystem < saivdr.dictionary.AbstSynthesisSystem
                 end
             end
         end
-            
+        
     end
     
     methods (Access = private, Static = true)
@@ -223,12 +274,12 @@ classdef Synthesis3dSystem < saivdr.dictionary.AbstSynthesisSystem
                 d(1)),1),d(2)),1),d(3)),1);
         end
         
-        function y = upsample3_(x,d,p) 
+        function y = upsample3_(x,d,p)
             y = shiftdim(upsample(...
                 shiftdim(upsample(...
                 shiftdim(upsample(x,...
                 d(1),p(1)),1),d(2),p(2)),1),d(3),p(3)),1);
-        end                
+        end
     end
     
 end
