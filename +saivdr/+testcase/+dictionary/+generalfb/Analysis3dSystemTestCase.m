@@ -1782,6 +1782,83 @@ classdef Analysis3dSystemTestCase < matlab.unittest.TestCase
             
         end
         
+         % Test
+        function testStepDec234Ch1414Ord222Level2FreqGpuFalse(testCase) 
+            
+            % Parameters
+            height = 8*2^2;
+            width = 12*3^2;
+            depth = 16*4^2;
+            srcImg = rand(height,width,depth);
+            nDecs = [ 2 3 4 ];
+            useGpu = false;
+            analysisFilters = zeros(6,9,12,28);
+            for iCh = 1:28
+                analysisFilters(:,:,:,iCh) = randn(6,9,12);
+            end
+            nLevels = 2;
+            
+            % Expected values
+            import saivdr.dictionary.utility.Direction
+            downsample3_ = @(x,d) ...
+                shiftdim(downsample(...
+                shiftdim(downsample(...
+                shiftdim(downsample(x,d(1)),1),d(2)),1),d(3)),1);
+            nChs = size(analysisFilters,4);
+            coefsExpctdLv1 = cell(nChs,1);
+            for iSubband = 1:nChs
+                h = analysisFilters(:,:,:,iSubband);
+                coefsExpctdLv1{iSubband} = downsample3_(...
+                    imfilter(srcImg,h,...
+                    'conv','circ'),...
+                    nDecs);
+            end
+            coefsExpctdLv2 = cell(nChs,1);
+            for iSubband = 1:nChs
+                h = analysisFilters(:,:,:,iSubband);
+                coefsExpctdLv2{iSubband} = downsample3_(...
+                    imfilter(coefsExpctdLv1{1},h,...
+                    'conv','circ'),...
+                    nDecs);
+            end
+            coefs = cell(nLevels*(nChs-1)+1,1);
+            coefs{1} = coefsExpctdLv2{1};            
+            for iCh = 2:nChs
+               coefs{iCh} = coefsExpctdLv2{iCh};
+               coefs{iCh+27} = coefsExpctdLv1{iCh};
+            end
+            nSubbands = length(coefs);
+            scalesExpctd = zeros(nSubbands,3);
+            sIdx = 1;
+            for iSubband = 1:nSubbands
+                scalesExpctd(iSubband,:) = size(coefs{iSubband});
+                eIdx = sIdx + prod(scalesExpctd(iSubband,:))-1;
+                coefsExpctd(sIdx:eIdx) = coefs{iSubband}(:).';
+                sIdx = eIdx + 1;
+            end
+            
+            % Instantiation of target class
+            import saivdr.dictionary.generalfb.*
+            testCase.analyzer = Analysis3dSystem(...
+                'DecimationFactor',nDecs,...
+                'AnalysisFilters',analysisFilters,...
+                'FilterDomain','Frequency',...
+                'UseGpu',useGpu);
+            
+            % Actual values
+            [coefsActual,scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            
+            % Evaluation
+            testCase.verifySize(scalesActual,size(scalesExpctd));
+            testCase.verifyEqual(scalesActual,scalesExpctd);
+            testCase.verifySize(coefsActual,size(coefsExpctd));
+            diff = max(abs(coefsExpctd - coefsActual));
+            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-8,...
+                sprintf('%g',diff));
+            
+        end
+        
+        
         
         % Test
         function testClone(testCase) 

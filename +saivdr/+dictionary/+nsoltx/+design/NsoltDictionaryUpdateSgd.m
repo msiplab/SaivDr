@@ -4,7 +4,7 @@ classdef NsoltDictionaryUpdateSgd < ...
     %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2015-2016, Shogo MURAMATSU
+    % Copyright (c) 2015-2017, Shogo MURAMATSU and Genki FUJII
     %
     % All rights reserved.
     %
@@ -24,17 +24,19 @@ classdef NsoltDictionaryUpdateSgd < ...
     properties (Hidden, Transient)
         StepSet = ...
             matlab.system.StringSet(...
-            {'LineSearch','Reciprocal','Constant','Exponential'});
+            {'LineSearch','Reciprocal','Constant','Exponential','AdaGrad'});
         GaAngInitSet = ...
             matlab.system.StringSet(...
             {'on','off'});
     end
-    
+
     properties (Hidden, Nontunable)
         NumberOfTreeLevels = 1
         IsFixedCoefs       = true
         StepStart = 1
         StepFinal = 1e-4
+        AdaGradEta = 1e-2;
+        AdaGradEps = 1e-8;
     end    
 
     properties (Hidden)
@@ -173,6 +175,8 @@ classdef NsoltDictionaryUpdateSgd < ...
             problem.step      = obj.Step;
             problem.stepStart = obj.StepStart;
             problem.stepFinal = obj.StepFinal;          
+            problem.adaGradEta = obj.AdaGradEta;
+            problem.adaGradEps = obj.AdaGradEps;
             
             %
             [optAngs, fval, exitflag] = obj.fminsgd_(problem);
@@ -247,6 +251,8 @@ classdef NsoltDictionaryUpdateSgd < ...
             step_      = problem.step;
             stepStart_ = problem.stepStart;            
             stepFinal_ = problem.stepFinal;
+            agEta_     = problem.adaGradEta;
+            agEps_     = problem.adaGradEps;
             %
             TolX_     = options_.TolX;
             TolFun_   = options_.TolFun;
@@ -270,6 +276,7 @@ classdef NsoltDictionaryUpdateSgd < ...
             end
             eta0 = stepStart_;
             etaf = stepFinal_;
+            sumgrdAng = 0;
             for iItr = 1:maxIter_
                 % Cost is evaluated for all images
                 % Gradient is evaluated for a randomly selected image
@@ -298,12 +305,17 @@ classdef NsoltDictionaryUpdateSgd < ...
                         'Algorithm','quasi-newton');
                     eta = fminunc(fun,eta0,stepoptions);
                     eta0 = eta;
+                elseif  strcmp(step_,'AdaGrad')
+                    grdAng02 = grdAngs.^2;
+                    sumgrdAng = sumgrdAng + grdAng02;
+                    sqgradAng = sqrt(sumgrdAng) + agEps_;
+                    eta = agEta_./sqgradAng;
                 else
                     eta = stepStart_/iItr;
                 end
 
-                % Update 
-                dltAngs = eta*grdAngs;
+                % Update
+                dltAngs = eta.*grdAngs;
                 optAngs = optAngs - dltAngs;
                 %
                 if isDisplay

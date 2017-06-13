@@ -1,12 +1,9 @@
 classdef AbstAnalysisSystem < matlab.System %#codegen
     % ABSTANALYSISSYSTEM Abstract class of analysis system
     %
-    % SVN identifier:
-    % $Id: AbstAnalysisSystem.m 683 2015-05-29 08:22:13Z sho $
-    %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2014-2015, Shogo MURAMATSU
+    % Copyright (c) 2014-2017, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -15,10 +12,28 @@ classdef AbstAnalysisSystem < matlab.System %#codegen
     %                8050 2-no-cho Ikarashi, Nishi-ku,
     %                Niigata, 950-2181, JAPAN
     %
-    % http://msiplab.eng.niigata-u.ac.jp/    
+    % http://msiplab.eng.niigata-u.ac.jp/
     %
     
-   methods (Access = protected, Sealed = true)
+    properties (Logical)
+        UseGpu = false
+    end
+    
+    methods
+        
+        % Constractor
+        function obj = AbstAnalysisSystem(varargin)
+            setProperties(obj,nargin,varargin{:})
+            %if ~license('checkout','distrib_computing_toolbox')
+            %    obj.UseGpu = false;
+            %elseif gpuDeviceCount() < 1
+            %    obj.UseGpu = false;
+            %end
+        end
+        
+    end
+    
+    methods (Access = protected, Sealed = true)
         
         function N = getNumInputsImpl(~)
             % Specify number of System inputs
@@ -29,7 +44,7 @@ classdef AbstAnalysisSystem < matlab.System %#codegen
             % Specify number of System outputs
             N = 2; % Because stepImpl has one output
         end
-   end
+    end
     
 end
 
