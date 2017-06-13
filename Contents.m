@@ -158,16 +158,20 @@
 %
 % * Contributors
 % 
-% - For coding
+% - Developpers
 % -- Shintaro HARA,  2013-2014
 % -- Natsuki AIZAWA, 2013-2014
 % -- Kosuke FURUYA,  2013-2015
 % -- Naotaka YUKI,   2014-2015
-%
-% - For testing
-% -- Hidenori WATANABE, 2014
-% -- Kota HORIUCHI,     2015
-% -- Masaki ISHII,      2015
-% -- Takumi KAWAMURA,   2015
-% -- Kenta SEINO,       2015
-
+% 
+% - Test contributers
+% -- Hidenori WATANABE, 2014-
+% -- Kota HORIUCHI,     2015-
+% -- Masaki ISHII,      2015-
+% -- Takumi KAWAMURA,   2015-
+% -- Kenta SEINO,       2015-
+% -- Satoshi NAGAYAMA,  2017-
+% -- Shota KAYAMORI,    2017-
+% -- Genki FUJII,       2017-
+% -- Naoki YAMAZAKI,    2017-
+% -- Yuhei KANEKO,      2017-

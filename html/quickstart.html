@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>Quickstart of SaivDr Package</title><meta name="generator" content="MATLAB 9.2"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-05-04"><meta name="DC.source" content="quickstart.m"><style type="text/css">
+      --><title>Quickstart of SaivDr Package</title><meta name="generator" content="MATLAB 9.2"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-06-02"><meta name="DC.source" content="quickstart.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -227,18 +227,23 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
  
   * Contributors
   
-  - For coding
+  - Developpers
   -- Shintaro HARA,  2013-2014
   -- Natsuki AIZAWA, 2013-2014
   -- Kosuke FURUYA,  2013-2015
   -- Naotaka YUKI,   2014-2015
- 
-  - For testing
-  -- Hidenori WATANABE, 2014
-  -- Kota HORIUCHI,     2015
-  -- Masaki ISHII,      2015
-  -- Takumi KAWAMURA,   2015
-  -- Kenta SEINO,       2015
+  
+  - Test contributers
+  -- Hidenori WATANABE, 2014-
+  -- Kota HORIUCHI,     2015-
+  -- Masaki ISHII,      2015-
+  -- Takumi KAWAMURA,   2015-
+  -- Kenta SEINO,       2015-
+  -- Satoshi NAGAYAMA,  2017-
+  -- Shota KAYAMORI,    2017-
+  -- Genki FUJII,       2017-
+  -- Naoki YAMAZAKI,    2017-
+  -- Yuhei KANEKO,      2017-
 
 </pre><h2 id="2">Add the package to search path</h2><p>Before using <b>SaivDr Package</b> , it is required to add the package top and 'mexcode' directory in the second layer to the MATLAB's search path. After moving to the top directory, execute the following command:</p><pre class="codeinput">setpath
 </pre><h2 id="3">Read a source image</h2><p>In the followings, an image restoration procedure with this package is described. As a preliminary, let us read an RGB picture as the source image.</p><pre class="codeinput">srcImg = imread(<span class="string">'peppers.png'</span>);
@@ -559,6 +564,10 @@ title([<span class="string">'{\bf u}\^ by Wiener: '</span> num2str(psnr_wfdc) <s
 - Parallel Computing Toolbox of MATLAB R2016b has a bug on search path priority.
   This bug affects to class saivdr.dictionary.nsoltx.design.NsoltDesignFrq.
   Please search #BUG: 1446838 on https://jp.mathworks.com/support/bugreports.
+
+- On R2017a, if PARPOOL starts automatically when MYTEST is executed,
+  an error occurs in the second test of NsoltDesignerFrqTestCase.
+  For now, this problem is avoided by running PARPOOL before running MYTEST.
 
 ---
 </pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2017a</a><br></p></div><!--

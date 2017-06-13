@@ -100,4 +100,8 @@
   This bug affects to class saivdr.dictionary.nsoltx.design.NsoltDesignFrq.
   Please search #BUG: 1446838 on https://jp.mathworks.com/support/bugreports.
 
+- On R2017a, if PARPOOL starts automatically when MYTEST is executed,
+  an error occurs in the second test of NsoltDesignerFrqTestCase.
+  For now, this problem is avoided by running PARPOOL before running MYTEST.
+
 ---
