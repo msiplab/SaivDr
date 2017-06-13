@@ -16,7 +16,7 @@ classdef AbstSynthesisSystem < matlab.System %#~codegen
     %
         
     properties (Logical)
-        UseGpu = true
+        UseGpu = false
     end
     
     properties (SetAccess = protected, GetAccess = public)
@@ -28,11 +28,11 @@ classdef AbstSynthesisSystem < matlab.System %#~codegen
         % Constractor
         function obj = AbstSynthesisSystem(varargin)
             setProperties(obj,nargin,varargin{:})
-            if ~license('checkout','distrib_computing_toolbox')
-                obj.UseGpu = false;
-            elseif gpuDeviceCount() < 1
-                obj.UseGpu = false;
-            end
+            %if ~license('checkout','distrib_computing_toolbox')
+            %    obj.UseGpu = false;
+            %elseif gpuDeviceCount() < 1
+            %    obj.UseGpu = false;
+            %end
         end
         
     end

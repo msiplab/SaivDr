@@ -137,13 +137,13 @@ classdef Synthesis3dSystem < saivdr.dictionary.AbstSynthesisSystem
         function recImg = stepImpl(obj,coefs,scales)
             if strcmp(obj.FilterDomain,'Spatial')
                 recImg = synthesizeSpatial_(obj,coefs,scales);
-            else
-                if obj.UseGpu
-                    coefs  = gpuArray(coefs);
-                    scales = gpuArray(scales);
-                end
+            elseif obj.UseGpu
+                coefs  = gpuArray(coefs);
+                scales = gpuArray(scales);
                 recImg = synthesizeFrequency_(obj,coefs,scales);
                 recImg = gather(recImg);
+            else
+                recImg = synthesizeFrequencyOrg_(obj,coefs,scales);
             end
         end
         
@@ -151,7 +151,6 @@ classdef Synthesis3dSystem < saivdr.dictionary.AbstSynthesisSystem
     
     methods (Access = private)
         
-        %{
         function recImg = synthesizeFrequencyOrg_(obj,coefs,scales)
             import saivdr.dictionary.utility.Direction
             %
@@ -183,7 +182,6 @@ classdef Synthesis3dSystem < saivdr.dictionary.AbstSynthesisSystem
             end
             recImg = real(ifftn(recImgFreq));
         end
-        %}
         
         function recImg = synthesizeFrequency_(obj,coefs,scales)
             import saivdr.dictionary.utility.Direction

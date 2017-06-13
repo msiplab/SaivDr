@@ -181,21 +181,21 @@ classdef Analysis3dSystem < saivdr.dictionary.AbstAnalysisSystem
         function [coefs,scales] = stepImpl(obj,srcImg,nLevels)
             if strcmp(obj.FilterDomain,'Spatial')
                 [coefs,scales] = analyzeSpatial_(obj,srcImg,nLevels);
-            else
-                if obj.UseGpu
-                    srcImg = gpuArray(srcImg);
-                end
+            elseif obj.UseGpu
+                 srcImg = gpuArray(srcImg);
                 [coefs,scales] = analyzeFrequency_(obj,srcImg,nLevels);
                 coefs  = gather(coefs);
                 scales = gather(scales);
+            else
+                [coefs,scales] = analyzeFrequencyOrg_(obj,srcImg,nLevels);
             end
+            
         end
         
     end
     
     methods (Access = private)
         
-        %{
         function [coefs,scales] = analyzeFrequencyOrg_(obj,srcImg,nLevels)
             % Frequency domain analysis
             
@@ -276,7 +276,6 @@ classdef Analysis3dSystem < saivdr.dictionary.AbstAnalysisSystem
             scales = obj.allScales;
             coefs  = obj.allCoefs;
         end
-        %}
         
         function [coefs,scales] = analyzeFrequency_(obj,srcImg,nLevels)
             % Frequency domain analysis

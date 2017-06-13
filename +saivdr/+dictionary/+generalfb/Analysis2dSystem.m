@@ -128,7 +128,7 @@ classdef Analysis2dSystem < saivdr.dictionary.AbstAnalysisSystem
                      (nChs_-nDec_)/((nDec_-1)*nDec_^nLevels)));
             end
             obj.nAllChs = nLevels*(nChs_-1)+1; 
-            
+
             % Set data types
             isFrequency_ = strcmp(obj.FilterDomain,'Frequency');
             if obj.UseGpu && isFrequency_
@@ -175,13 +175,13 @@ classdef Analysis2dSystem < saivdr.dictionary.AbstAnalysisSystem
         function [coefs,scales] = stepImpl(obj,srcImg,nLevels)
             if strcmp(obj.FilterDomain,'Spatial')
                 [coefs,scales] = analyzeSpatial_(obj,srcImg,nLevels);
-            else
-                if obj.UseGpu
-                    srcImg = gpuArray(srcImg);
-                end
+            elseif obj.UseGpu
+                srcImg = gpuArray(srcImg);
                 [coefs,scales] = analyzeFrequency_(obj,srcImg,nLevels);
                 coefs  = gather(coefs);
                 scales = gather(scales);
+            else
+                [coefs,scales] = analyzeFrequencyOrg_(obj,srcImg,nLevels);
             end
         end
         
@@ -189,7 +189,6 @@ classdef Analysis2dSystem < saivdr.dictionary.AbstAnalysisSystem
     
     methods (Access = private)
                 
-        %{
         function [coefs,scales] = analyzeFrequencyOrg_(obj,srcImg,nLevels)
             % Frequency domain analysis
             
@@ -252,7 +251,6 @@ classdef Analysis2dSystem < saivdr.dictionary.AbstAnalysisSystem
             scales = obj.allScales;
             coefs  = obj.allCoefs;
         end
-        %}
         
         function [coefs,scales] = analyzeFrequency_(obj,srcImg,nLevels)
             % Frequency domain analysis
