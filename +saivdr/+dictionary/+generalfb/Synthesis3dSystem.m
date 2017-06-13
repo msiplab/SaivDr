@@ -86,7 +86,13 @@ classdef Synthesis3dSystem < saivdr.dictionary.AbstSynthesisSystem
             import saivdr.dictionary.utility.Direction
             
             % Set up for frequency domain filtering
-            if strcmp(obj.FilterDomain,'Frequency')
+            isFrequency_ = strcmp(obj.FilterDomain,'Frequency');
+            if obj.UseGpu && isFrequency_
+                datatype_ = 'gpuArray';
+            else
+                datatype_ = 'double';
+            end
+            if isFrequency_
                 decY = obj.DecimationFactor(Direction.VERTICAL);
                 decX = obj.DecimationFactor(Direction.HORIZONTAL);
                 decZ = obj.DecimationFactor(Direction.DEPTH);
@@ -98,47 +104,31 @@ classdef Synthesis3dSystem < saivdr.dictionary.AbstSynthesisSystem
                 nCols_ = scales(1,2)*decX^nLevels;
                 nLays_ = scales(1,3)*decZ^nLevels;
                 iSubband = nAllChs_;
-                if obj.UseGpu
-                    freqRes_ = ones(nRows_,nCols_,nLays_,nAllChs_,'gpuArray');
-                else
-                    freqRes_ = ones(nRows_,nCols_,nLays_,nAllChs_);
-                end
+                freqRes_ = ones(nRows_,nCols_,nLays_,nAllChs_,datatype_);
                 for iLevel = 1:nLevels
                     dec_ = obj.DecimationFactor.^(iLevel-1);
                     phase_ = mod(obj.DecimationFactor+1,2);
                     for iCh = nChs_:-1:2
                         f    = obj.upsample3_(...
                             obj.SynthesisFilters(:,:,:,iCh),dec_,[0 0 0]);
-                        fext = zeros(nRows_,nCols_,nLays_);
+                        fext = zeros(nRows_,nCols_,nLays_,datatype_);
                         fext(1:size(f,1),1:size(f,2),1:size(f,3)) = f;
                         fext = circshift(fext,... % #TODO: Certification
                             (-floor(size(f)./(2*dec_))+phase_).*dec_);
-                        if obj.UseGpu
-                            fext_ = gpuArray(fext);
-                            freqRes_(:,:,:,iSubband) = ...
-                                bsxfun(@times,freqRes_(:,:,:,1),...
-                                fftn(fext_,[nRows_,nCols_,nLays_]));
-                        else
-                            freqRes_(:,:,:,iSubband) = freqRes_(:,:,:,1) ...
-                                .* fftn(fext,[nRows_,nCols_,nLays_]);
-                        end
+                        freqRes_(:,:,:,iSubband) = ...
+                            bsxfun(@times,freqRes_(:,:,:,1),...
+                            fftn(fext,[nRows_,nCols_,nLays_]));
                         iSubband = iSubband - 1;
                     end
                     f    = obj.upsample3_(...
                         obj.SynthesisFilters(:,:,:,1),dec_,[0 0 0]);
-                    fext = zeros(nRows_,nCols_,nLays_);
+                    fext = zeros(nRows_,nCols_,nLays_,datatype_);
                     fext(1:size(f,1),1:size(f,2),1:size(f,3)) = f;
                     fext = circshift(fext,...  % #TODO: Certification
                         (-floor(size(f)./(2*dec_))+phase_).*dec_);
-                    if obj.UseGpu
-                        fext_ = gpuArray(fext);
-                        freqRes_(:,:,:,1) = ...
-                            bsxfun(@times,freqRes_(:,:,:,1), ...
-                            fftn(fext_,[nRows_,nCols_,nLays_]));
-                    else
-                        freqRes_(:,:,:,1) = freqRes_(:,:,:,1) ...
-                            .* fftn(fext,[nRows_,nCols_,nLays_]);
-                    end
+                    freqRes_(:,:,:,1) = ...
+                        bsxfun(@times,freqRes_(:,:,:,1), ...
+                        fftn(fext,[nRows_,nCols_,nLays_]));
                 end
                 obj.freqRes = freqRes_;
             end
@@ -147,10 +137,13 @@ classdef Synthesis3dSystem < saivdr.dictionary.AbstSynthesisSystem
         function recImg = stepImpl(obj,coefs,scales)
             if strcmp(obj.FilterDomain,'Spatial')
                 recImg = synthesizeSpatial_(obj,coefs,scales);
-            elseif obj.UseGpu
-                recImg = synthesizeFrequencyGpu_(obj,coefs,scales);
             else
+                if obj.UseGpu
+                    coefs  = gpuArray(coefs);
+                    scales = gpuArray(scales);
+                end
                 recImg = synthesizeFrequency_(obj,coefs,scales);
+                recImg = gather(recImg);
             end
         end
         
@@ -158,7 +151,8 @@ classdef Synthesis3dSystem < saivdr.dictionary.AbstSynthesisSystem
     
     methods (Access = private)
         
-        function recImg = synthesizeFrequency_(obj,coefs,scales)
+        %{
+        function recImg = synthesizeFrequencyOrg_(obj,coefs,scales)
             import saivdr.dictionary.utility.Direction
             %
             decY = obj.DecimationFactor(Direction.VERTICAL);
@@ -189,8 +183,9 @@ classdef Synthesis3dSystem < saivdr.dictionary.AbstSynthesisSystem
             end
             recImg = real(ifftn(recImgFreq));
         end
+        %}
         
-        function recImg = synthesizeFrequencyGpu_(obj,coefs,scales)
+        function recImg = synthesizeFrequency_(obj,coefs,scales)
             import saivdr.dictionary.utility.Direction
             %
             decY = obj.DecimationFactor(Direction.VERTICAL);
@@ -202,9 +197,8 @@ classdef Synthesis3dSystem < saivdr.dictionary.AbstSynthesisSystem
             eSubband = 1;
             eIdx = prod(scales(1,:));
             %
-            coefs_ = gpuArray(coefs);
-            subImg = reshape(coefs_(1:eIdx),scales(1,:));
-            updImgFreq = zeros(size(subImg).*[decY decX decZ].^nLevels,'gpuArray');
+            subImg = reshape(coefs(1:eIdx),scales(1,:));
+            updImgFreq = zeros(size(subImg).*[decY decX decZ].^nLevels,'like',subImg);
             updImgFreq(:,:,:,1) = repmat(fftn(subImg),[decY decX decZ].^nLevels);
             freqRes_ = obj.freqRes;
             for iLevel = 1:nLevels
@@ -213,7 +207,7 @@ classdef Synthesis3dSystem < saivdr.dictionary.AbstSynthesisSystem
                 eSubband = sSubband + nChs_ - 2;
                 sIdx = eIdx + 1;
                 eIdx = sIdx + (nChs_-1)*prod(scales(sSubband,:))-1;
-                subImg = reshape(coefs_(sIdx:eIdx),...
+                subImg = reshape(coefs(sIdx:eIdx),...
                     scales(sSubband,1),scales(sSubband,2),scales(sSubband,3),...
                     (nChs_-1));
                 % Frequency domain upsampling
@@ -221,7 +215,7 @@ classdef Synthesis3dSystem < saivdr.dictionary.AbstSynthesisSystem
                     repmat(fft2(fft(subImg,[],3)),nDecs_(1),nDecs_(2),nDecs_(3));
             end
             recImgFreq = bsxfun(@times,updImgFreq,freqRes_);
-            recImg = gather(real(ifftn(sum(recImgFreq,4))));
+            recImg = real(ifftn(sum(recImgFreq,4)));
         end
         
         function recImg = synthesizeSpatial_(obj,coefs,scales)

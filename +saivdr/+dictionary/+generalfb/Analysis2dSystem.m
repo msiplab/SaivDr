@@ -127,70 +127,61 @@ classdef Analysis2dSystem < saivdr.dictionary.AbstAnalysisSystem
                      (nChs_-1)/(nDec_-1)-...
                      (nChs_-nDec_)/((nDec_-1)*nDec_^nLevels)));
             end
-            obj.nAllChs = nLevels*(nChs_-1)+1;            
-            obj.allCoefs  = zeros(1,obj.nAllCoefs);
-            obj.allScales = zeros(obj.nAllChs,obj.DATA_DIMENSION);  
+            obj.nAllChs = nLevels*(nChs_-1)+1; 
             
+            % Set data types
+            isFrequency_ = strcmp(obj.FilterDomain,'Frequency');
+            if obj.UseGpu && isFrequency_
+                datatype_ = 'gpuArray';
+            else
+                datatype_ = 'double';
+            end        
+            obj.allCoefs  = zeros(1,obj.nAllCoefs,datatype_);
+            obj.allScales = zeros(obj.nAllChs,obj.DATA_DIMENSION,datatype_);              
+
             % Set up for frequency domain filtering
-            if strcmp(obj.FilterDomain,'Frequency')
-                iSubband = obj.nAllChs;                
+            if isFrequency_
+                iSubband = obj.nAllChs;
                 nRows_ = size(srcImg,1);
                 nCols_ = size(srcImg,2);
-                if obj.UseGpu
-                    freqRes_ = ones(nRows_,nCols_,obj.nAllChs,'gpuArray');
-                else
-                    freqRes_ = ones(nRows_,nCols_,obj.nAllChs);
-                end
+                freqRes_ = ones(nRows_,nCols_,obj.nAllChs,datatype_);
                 for iLevel = 1:nLevels
                     dec_ = obj.DecimationFactor.^(iLevel-1);
                     for iCh = nChs_:-1:2
                         h    = obj.upsample2_(...
                             obj.AnalysisFilters(:,:,iCh),dec_,[0 0]);
-                        hext = zeros(nRows_,nCols_);
+                        hext = zeros(nRows_,nCols_,datatype_);
                         hext(1:size(h,1),1:size(h,2)) = h;
                         hext = circshift(hext,...
                             -floor(size(h)./(2*dec_)).*dec_);
-                        if obj.UseGpu
-                            hext_ = gpuArray(hext);
-                            freqRes_(:,:,iSubband) = bsxfun(@times,...
-                                freqRes_(:,:,1),fft2(hext_,nRows_,nCols_));
-                        else
-                            freqRes_(:,:,iSubband) = freqRes_(:,:,1) ...
-                                .* fft2(hext,nRows_,nCols_);
-                        end
+                        freqRes_(:,:,iSubband) = bsxfun(@times,...
+                            freqRes_(:,:,1),fft2(hext,nRows_,nCols_));
                         iSubband = iSubband - 1;
                     end
                     h    = obj.upsample2_(...
                         obj.AnalysisFilters(:,:,1),dec_,[0 0]);
-                    hext = zeros(nRows_,nCols_);
+                    hext = zeros(nRows_,nCols_,datatype_);
                     hext(1:size(h,1),1:size(h,2)) = h;
                     hext = circshift(hext,...
                         -floor(size(h)./(2*dec_)).*dec_);
-                    if obj.UseGpu
-                        hext_ = gpuArray(hext);
-                        freqRes_(:,:,1) = bsxfun(@times,...
-                            freqRes_(:,:,1),fft2(hext_,nRows_,nCols_));
-                    else
-                        freqRes_(:,:,1) = freqRes_(:,:,1) ...
-                            .* fft2(hext,nRows_,nCols_);
-                    end
+                    freqRes_(:,:,1) = bsxfun(@times,...
+                        freqRes_(:,:,1),fft2(hext,nRows_,nCols_));
                 end
-                if obj.UseGpu
-                    obj.freqRes = gpuArray(freqRes_);
-                else
-                    obj.freqRes = freqRes_;
-                end
+                obj.freqRes = freqRes_;
             end
             
         end
-
+        
         function [coefs,scales] = stepImpl(obj,srcImg,nLevels)
             if strcmp(obj.FilterDomain,'Spatial')
                 [coefs,scales] = analyzeSpatial_(obj,srcImg,nLevels);
-            elseif obj.UseGpu
-                [coefs,scales] = analyzeFrequencyGpu_(obj,srcImg,nLevels);
             else
+                if obj.UseGpu
+                    srcImg = gpuArray(srcImg);
+                end
                 [coefs,scales] = analyzeFrequency_(obj,srcImg,nLevels);
+                coefs  = gather(coefs);
+                scales = gather(scales);
             end
         end
         
@@ -198,7 +189,8 @@ classdef Analysis2dSystem < saivdr.dictionary.AbstAnalysisSystem
     
     methods (Access = private)
                 
-        function [coefs,scales] = analyzeFrequency_(obj,srcImg,nLevels)
+        %{
+        function [coefs,scales] = analyzeFrequencyOrg_(obj,srcImg,nLevels)
             % Frequency domain analysis
             
             import saivdr.dictionary.utility.Direction                        
@@ -260,8 +252,9 @@ classdef Analysis2dSystem < saivdr.dictionary.AbstAnalysisSystem
             scales = obj.allScales;
             coefs  = obj.allCoefs;
         end
+        %}
         
-        function [coefs,scales] = analyzeFrequencyGpu_(obj,srcImg,nLevels)
+        function [coefs,scales] = analyzeFrequency_(obj,srcImg,nLevels)
             % Frequency domain analysis
             
             import saivdr.dictionary.utility.Direction
@@ -273,7 +266,7 @@ classdef Analysis2dSystem < saivdr.dictionary.AbstAnalysisSystem
             eSubband = obj.nAllChs;
             eIdx     = obj.nAllCoefs;
             %
-            freqSrcImg = fft2(gpuArray(srcImg));
+            freqSrcImg = fft2(srcImg);
             height = size(srcImg,1);
             width  = size(srcImg,2);
             freqRes_ = obj.freqRes;
@@ -300,7 +293,7 @@ classdef Analysis2dSystem < saivdr.dictionary.AbstAnalysisSystem
                 sIdx = eIdx - (nChs_-1)*(nRows_*nCols_) + 1;
                 obj.allScales(sSubband:eSubband,:) = ...
                     repmat([ nRows_ nCols_ ],[(nChs_-1) 1]);
-                obj.allCoefs(sIdx:eIdx) = gather(subbandCoefs(:).'); 
+                obj.allCoefs(sIdx:eIdx) = subbandCoefs(:).'; 
                 %
                 eSubband = sSubband - 1;
                 eIdx     = sIdx - 1;
@@ -318,7 +311,7 @@ classdef Analysis2dSystem < saivdr.dictionary.AbstAnalysisSystem
             subbandCoefs = bsxfun(@times,real(ifft2(U)),1/nDecs_);
             %
             obj.allScales(1,:) = [ nRows_ nCols_ ];
-            obj.allCoefs(1:nRows_*nCols_) = gather(subbandCoefs(:).');
+            obj.allCoefs(1:nRows_*nCols_) = subbandCoefs(:).';
             %
             scales = obj.allScales;
             coefs  = obj.allCoefs;
