@@ -24,12 +24,12 @@ classdef NsoltDictionaryUpdateSgd < ...
     properties (Hidden, Transient)
         StepSet = ...
             matlab.system.StringSet(...
-            {'LineSearch','Reciprocal','Constant','Exponential'});
+            {'LineSearch','Reciprocal','Constant','Exponential','AdaGrad'});
         GaAngInitSet = ...
             matlab.system.StringSet(...
             {'on','off'});
     end
-    
+
     properties (Hidden, Nontunable)
         NumberOfTreeLevels = 1
         IsFixedCoefs       = true
@@ -270,6 +270,7 @@ classdef NsoltDictionaryUpdateSgd < ...
             end
             eta0 = stepStart_;
             etaf = stepFinal_;
+            sumgrdAng = 0;
             for iItr = 1:maxIter_
                 % Cost is evaluated for all images
                 % Gradient is evaluated for a randomly selected image
@@ -298,12 +299,17 @@ classdef NsoltDictionaryUpdateSgd < ...
                         'Algorithm','quasi-newton');
                     eta = fminunc(fun,eta0,stepoptions);
                     eta0 = eta;
+                elseif  strcmp(step_,'AdaGrad')
+                    grdAng02 = grdAngs.^2;
+                    sumgrdAng = sumgrdAng + grdAng02;
+                    sqgradAng = sqrt(sumgrdAng) + 1.0000e-08;
+                    eta = (0.01)./sqgradAng;
                 else
                     eta = stepStart_/iItr;
                 end
 
-                % Update 
-                dltAngs = eta*grdAngs;
+                % Update
+                dltAngs = eta.*grdAngs;
                 optAngs = optAngs - dltAngs;
                 %
                 if isDisplay
