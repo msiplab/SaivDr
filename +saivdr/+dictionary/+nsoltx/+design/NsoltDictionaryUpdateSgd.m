@@ -4,7 +4,7 @@ classdef NsoltDictionaryUpdateSgd < ...
     %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2015-2016, Shogo MURAMATSU
+    % Copyright (c) 2015-2017, Shogo MURAMATSU and Genki FUJII
     %
     % All rights reserved.
     %
@@ -35,6 +35,8 @@ classdef NsoltDictionaryUpdateSgd < ...
         IsFixedCoefs       = true
         StepStart = 1
         StepFinal = 1e-4
+        AdaGradEta = 1e-2;
+        AdaGradEps = 1e-8;
     end    
 
     properties (Hidden)
@@ -173,6 +175,8 @@ classdef NsoltDictionaryUpdateSgd < ...
             problem.step      = obj.Step;
             problem.stepStart = obj.StepStart;
             problem.stepFinal = obj.StepFinal;          
+            problem.adaGradEta = obj.AdaGradEta;
+            problem.adaGradEps = obj.AdaGradEps;
             
             %
             [optAngs, fval, exitflag] = obj.fminsgd_(problem);
@@ -247,6 +251,8 @@ classdef NsoltDictionaryUpdateSgd < ...
             step_      = problem.step;
             stepStart_ = problem.stepStart;            
             stepFinal_ = problem.stepFinal;
+            agEta_     = problem.adaGradEta;
+            agEps_     = problem.adaGradEps;
             %
             TolX_     = options_.TolX;
             TolFun_   = options_.TolFun;
@@ -302,8 +308,8 @@ classdef NsoltDictionaryUpdateSgd < ...
                 elseif  strcmp(step_,'AdaGrad')
                     grdAng02 = grdAngs.^2;
                     sumgrdAng = sumgrdAng + grdAng02;
-                    sqgradAng = sqrt(sumgrdAng) + 1.0000e-08;
-                    eta = (0.01)./sqgradAng;
+                    sqgradAng = sqrt(sumgrdAng) + agEps_;
+                    eta = agEta_./sqgradAng;
                 else
                     eta = stepStart_/iItr;
                 end
