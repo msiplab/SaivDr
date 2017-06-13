@@ -291,30 +291,25 @@ classdef NsoltDictionaryUpdateSgd < ...
                 grdAngs = reshape(stcgrad,size(optAngs));
                 if  strcmp(step_,'Constant')
                     eta  = eta0;
-                    dltAngs = eta*grdAngs;
                 elseif strcmp(step_,'Exponential')
                     eta  = eta0*(etaf/eta0)^(iItr/maxIter_);
-                    dltAngs = eta*grdAngs;
                 elseif strcmp(step_,'LineSearch')
                     fun = @(x) problem.objective(optAngs-x*grdAngs);
                     stepoptions = optimoptions('fminunc',...
                         'Algorithm','quasi-newton');
                     eta = fminunc(fun,eta0,stepoptions);
                     eta0 = eta;
-                    dltAngs = eta*grdAngs;
                 elseif  strcmp(step_,'AdaGrad')
                     grdAng02 = grdAngs.^2;
                     sumgrdAng = sumgrdAng + grdAng02;
                     sqgradAng = sqrt(sumgrdAng) + 1.0000e-08;
                     eta = (0.01)./sqgradAng;
-                    dltAngs = eta.*grdAngs;
                 else
                     eta = stepStart_/iItr;
-                    dltAngs = eta*grdAngs;
                 end
 
                 % Update
-                %dltAngs = eta*grdAngs;
+                dltAngs = eta.*grdAngs;
                 optAngs = optAngs - dltAngs;
                 %
                 if isDisplay
