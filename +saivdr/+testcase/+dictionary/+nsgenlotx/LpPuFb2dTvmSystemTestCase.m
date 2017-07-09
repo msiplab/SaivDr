@@ -243,7 +243,7 @@ classdef LpPuFb2dTvmSystemTestCase < matlab.unittest.TestCase
             set(testCase.lppufb,'OutputMode','AnalysisFilterAt');
             H = step(testCase.lppufb,[],[],1);
             dc = abs(sum(H(:)));
-            testCase.verifyEqual(dc,sqrt(prod(dec)),'RelTol',1e-15,...
+            testCase.verifyEqual(dc,sqrt(prod(dec)),'RelTol',1e-14,...
                 sprintf('%g',dc));
             for iSubband = 2:prod(dec)
                 H = step(testCase.lppufb,[],[],iSubband);
