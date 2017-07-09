@@ -3,7 +3,7 @@ classdef BlurSystemTestCase < matlab.unittest.TestCase
     %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2014-2015, Shogo MURAMATSU
+    % Copyright (c) 2014-2017, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -52,7 +52,7 @@ classdef BlurSystemTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,...
                 sprintf('%g',diff));
             diff = abs(lmaxExpctd - lmaxActual)/abs(lmaxExpctd);
-            testCase.verifyEqual(lmaxActual,lmaxExpctd,'RelTol',1e-10,...
+            testCase.verifyEqual(lmaxActual,lmaxExpctd,'RelTol',1e-3,...
                 sprintf('%g',diff));            
             
         end
@@ -85,11 +85,11 @@ classdef BlurSystemTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,...
                 sprintf('%g',diff));
             diff = abs(lmaxExpctd - lmaxActual)/abs(lmaxExpctd);
-            testCase.verifyEqual(lmaxActual,lmaxExpctd,'RelTol',1e-10,...
+            testCase.verifyEqual(lmaxActual,lmaxExpctd,'RelTol',1e-3,...
                 sprintf('%g',diff));            
             
         end
- 
+        
         % Test 
         function testGaussianBlur(testCase)
 
@@ -415,7 +415,7 @@ classdef BlurSystemTestCase < matlab.unittest.TestCase
                 lmaxActual = s.lmax;
                 delete(fnameExpctd)
                 diff = abs(lmaxExpctd - lmaxActual)/abs(lmaxExpctd);
-                testCase.verifyEqual(lmaxActual,lmaxExpctd,'RelTol',1e-10,...
+                testCase.verifyEqual(lmaxActual,lmaxExpctd,'RelTol',1e-3,...
                     sprintf('%g',diff));
             end
 
@@ -450,7 +450,7 @@ classdef BlurSystemTestCase < matlab.unittest.TestCase
                 lmaxActual = s.lmax;
                 delete(fnameExpctd)
                 diff = abs(lmaxExpctd - lmaxActual)/abs(lmaxExpctd);
-                testCase.verifyEqual(lmaxActual,lmaxExpctd,'RelTol',1e-10,...
+                testCase.verifyEqual(lmaxActual,lmaxExpctd,'RelTol',1e-3,...
                     sprintf('%g',diff));
             end
 
@@ -487,7 +487,7 @@ classdef BlurSystemTestCase < matlab.unittest.TestCase
                                     
             % Evaluation
             diff = abs(lmaxExpctd - lmaxActual)/abs(lmaxExpctd);
-            testCase.verifyEqual(lmaxActual,lmaxExpctd,'RelTol',1e-10,...
+            testCase.verifyEqual(lmaxActual,lmaxExpctd,'RelTol',1e-3,...
                 sprintf('%g',diff));
             
             % 
@@ -529,6 +529,42 @@ classdef BlurSystemTestCase < matlab.unittest.TestCase
             testCase.verifyThat(lmaxActual,IsLessThan(lmaxExpctd));
             import matlab.unittest.constraints.IsGreaterThan
             testCase.verifyThat(lmaxActual,IsGreaterThan(0));
+        end
+        
+        
+        % Test
+        function testBlurWithCustomKernelSobel(testCase)
+            
+            % Preperation
+            height = 128;
+            width  = 128;
+            srcImg = rand(height,width);
+            kernel = fspecial('sobel');
+            tolPm  = 1e-15;
+            
+            % Expected values
+            imgExpctd = imfilter(srcImg,kernel,'conv');
+            lmaxExpctd = sum(abs(kernel(:)))^2;
+            
+            % Instantiation of target class
+            import saivdr.degradation.linearprocess.*
+            testCase.linearproc = BlurSystem(...
+                'BlurType','Custom',...
+                'CustomKernel',kernel,...
+                'TolOfPowerMethod',tolPm);
+            
+            % Actual values
+            step(testCase.linearproc,srcImg);
+            lmaxActual = get(testCase.linearproc,'LambdaMax');
+            imgActual  = step(testCase.linearproc,srcImg);
+            
+            % Evaluation
+            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,...
+                sprintf('%g',diff));
+            diff = abs(lmaxExpctd - lmaxActual)/abs(lmaxExpctd);
+            testCase.verifyEqual(lmaxActual,lmaxExpctd,'RelTol',1e-3,...
+                sprintf('%g',diff)); 
         end
         
         % Test
@@ -626,7 +662,7 @@ classdef BlurSystemTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,...
                 sprintf('%g',diff));
             diff = abs(lmaxExpctd - lmaxActual)/abs(lmaxExpctd);
-            testCase.verifyEqual(lmaxActual,lmaxExpctd,'RelTol',1e-10,...
+            testCase.verifyEqual(lmaxActual,lmaxExpctd,'RelTol',1e-3,...
                 sprintf('%g',diff)); 
         end  
         
@@ -662,7 +698,7 @@ classdef BlurSystemTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,...
                 sprintf('%g',diff));
             diff = abs(lmaxExpctd - lmaxActual)/abs(lmaxExpctd);
-            testCase.verifyEqual(lmaxActual,lmaxExpctd,'RelTol',1e-10,...
+            testCase.verifyEqual(lmaxActual,lmaxExpctd,'RelTol',1e-3,...
                 sprintf('%g',diff)); 
         end  
         
@@ -697,7 +733,7 @@ classdef BlurSystemTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,...
                 sprintf('%g',diff));
             diff = abs(lmaxExpctd - lmaxActual)/abs(lmaxExpctd);
-            testCase.verifyEqual(lmaxActual,lmaxExpctd,'RelTol',1e-10,...
+            testCase.verifyEqual(lmaxActual,lmaxExpctd,'RelTol',1e-3,...
                 sprintf('%g',diff)); 
         end          
         
@@ -805,7 +841,7 @@ classdef BlurSystemTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,...
                 sprintf('%g',diff));
             diff = abs(lmaxExpctd - lmaxActual)/abs(lmaxExpctd);
-            testCase.verifyEqual(lmaxActual,lmaxExpctd,'RelTol',1e-10,...
+            testCase.verifyEqual(lmaxActual,lmaxExpctd,'RelTol',1e-3,...
                 sprintf('%g',diff));            
             
         end
@@ -878,7 +914,7 @@ classdef BlurSystemTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,...
                 sprintf('%g',diff));
             diff = abs(lmaxExpctd - lmaxActual)/abs(lmaxExpctd);
-            testCase.verifyEqual(lmaxActual,lmaxExpctd,'RelTol',1e-10,...
+            testCase.verifyEqual(lmaxActual,lmaxExpctd,'RelTol',1e-3,...
                 sprintf('%g',diff));            
             
         end
@@ -1253,7 +1289,7 @@ classdef BlurSystemTestCase < matlab.unittest.TestCase
                 lmaxActual = s.lmax;
                 delete(fnameExpctd)
                 diff = abs(lmaxExpctd - lmaxActual)/abs(lmaxExpctd);
-                testCase.verifyEqual(lmaxActual,lmaxExpctd,'RelTol',1e-10,...
+                testCase.verifyEqual(lmaxActual,lmaxExpctd,'RelTol',1e-3,...
                     sprintf('%g',diff));
             end
 
@@ -1291,7 +1327,7 @@ classdef BlurSystemTestCase < matlab.unittest.TestCase
                 lmaxActual = s.lmax;
                 delete(fnameExpctd)
                 diff = abs(lmaxExpctd - lmaxActual)/abs(lmaxExpctd);
-                testCase.verifyEqual(lmaxActual,lmaxExpctd,'RelTol',1e-10,...
+                testCase.verifyEqual(lmaxActual,lmaxExpctd,'RelTol',1e-3,...
                     sprintf('%g',diff));
             end
 
@@ -1331,7 +1367,7 @@ classdef BlurSystemTestCase < matlab.unittest.TestCase
                                     
             % Evaluation
             diff = abs(lmaxExpctd - lmaxActual)/abs(lmaxExpctd);
-            testCase.verifyEqual(lmaxActual,lmaxExpctd,'RelTol',1e-10,...
+            testCase.verifyEqual(lmaxActual,lmaxExpctd,'RelTol',1e-3,...
                 sprintf('%g',diff));
             
             % 
@@ -1484,7 +1520,7 @@ classdef BlurSystemTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,...
                 sprintf('%g',diff));
             diff = abs(lmaxExpctd - lmaxActual)/abs(lmaxExpctd);
-            testCase.verifyEqual(lmaxActual,lmaxExpctd,'RelTol',1e-10,...
+            testCase.verifyEqual(lmaxActual,lmaxExpctd,'RelTol',1e-3,...
                 sprintf('%g',diff)); 
         end  
         
@@ -1526,7 +1562,7 @@ classdef BlurSystemTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,...
                 sprintf('%g',diff));
             diff = abs(lmaxExpctd - lmaxActual)/abs(lmaxExpctd);
-            testCase.verifyEqual(lmaxActual,lmaxExpctd,'RelTol',1e-10,...
+            testCase.verifyEqual(lmaxActual,lmaxExpctd,'RelTol',1e-3,...
                 sprintf('%g',diff)); 
         end  
 
@@ -1564,7 +1600,7 @@ classdef BlurSystemTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,...
                 sprintf('%g',diff));
             diff = abs(lmaxExpctd - lmaxActual)/abs(lmaxExpctd);
-            testCase.verifyEqual(lmaxActual,lmaxExpctd,'RelTol',1e-10,...
+            testCase.verifyEqual(lmaxActual,lmaxExpctd,'RelTol',1e-3,...
                 sprintf('%g',diff)); 
         end          
         

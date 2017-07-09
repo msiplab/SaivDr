@@ -17,7 +17,8 @@ classdef AbstLinearSystem < matlab.System %#codegen
     properties (Nontunable)
         DataType             = 'Image';
         %
-        EpsOfPowerMethod     = 1e-6;
+        TolOfPowerMethod     = 1e-8;
+        MaxIterOfPowerMethod = 1e+6;
         UseFileForLambdaMax  = false;
         %
         FileNameForLambdaMax = 'lmax';
@@ -39,7 +40,11 @@ classdef AbstLinearSystem < matlab.System %#codegen
         OriginalDimension
         LambdaMax
     end
-
+    
+    properties (Access = private)
+        scurr
+    end
+    
     properties(DiscreteState)
         State
     end
@@ -54,6 +59,7 @@ classdef AbstLinearSystem < matlab.System %#codegen
     methods
         function obj = AbstLinearSystem(varargin)
             setProperties(obj,nargin,varargin{:})
+            obj.scurr = rng;
         end
     end
     
@@ -68,11 +74,13 @@ classdef AbstLinearSystem < matlab.System %#codegen
         end
         
         function s = saveObjectImpl(obj)
-            s = saveObjectImpl@matlab.System(obj);
+            s = saveObjectImpl@matlab.System(obj);    
+            s.scurr = obj.scurr;
         end
         
         function loadObjectImpl(obj,s,wasLocked)
-            loadObjectImpl@matlab.System(obj,s,wasLocked);
+            obj.scurr = s.scurr;
+            loadObjectImpl@matlab.System(obj,s,wasLocked);           
         end
 
         function setupImpl(obj,input)
@@ -134,19 +142,28 @@ classdef AbstLinearSystem < matlab.System %#codegen
         end
         
         function lmax = getLambdaMax_(obj,origDim)
-            upst = ones(origDim);
+            rng(obj.scurr);
+            upst = rand(origDim);
             lpre = 1.0;
             err_ = Inf;
-            while ( err_ > obj.EpsOfPowerMethod ) % Power method
+            cnt_ = 0;
+            % Power method
+            while ( err_ > obj.TolOfPowerMethod ) % || ...
+                %cnt_ >= obj.MaxIterOfPowerMethod )
+                cnt_ = cnt_ + 1;
                 % upst = (P.'*P)*upre
                 upre = upst/norm(upst(:));
                 v    = normalStepImpl(obj,upre); % P
-                upst = adjointStepImpl(obj,v);  % P.'
+                upst = adjointStepImpl(obj,v);   % P.'
                 n = (upst(:).'*upst(:));
                 d = (upst(:).'*upre(:));
                 lpst = n/d;
-                err_ = norm(lpst-lpre(:))^2;
+                err_ = abs(lpst-lpre)/abs(lpre);
                 lpre = lpst;
+                if cnt_ >= obj.MaxIterOfPowerMethod  
+                    warning('# of iterations reached to MaxIterPowerMethod');
+                    break;
+                end
             end
             lmax = lpst;
         end

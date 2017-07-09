@@ -53,7 +53,7 @@ classdef DecimationSystemTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,...
                 sprintf('%g',diff));
             diff = abs(lmaxExpctd - lmaxActual)/abs(lmaxExpctd);
-            testCase.verifyEqual(lmaxActual,lmaxExpctd,'RelTol',1e-10,...
+            testCase.verifyEqual(lmaxActual,lmaxExpctd,'RelTol',1e-3,...
                 sprintf('%g',diff));            
             
         end
@@ -88,7 +88,7 @@ classdef DecimationSystemTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,...
                 sprintf('%g',diff));
             diff = abs(lmaxExpctd - lmaxActual)/abs(lmaxExpctd);
-            testCase.verifyEqual(lmaxActual,lmaxExpctd,'RelTol',1e-10,...
+            testCase.verifyEqual(lmaxActual,lmaxExpctd,'RelTol',1e-3,...
                 sprintf('%g',diff));            
             
         end
@@ -123,7 +123,7 @@ classdef DecimationSystemTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,...
                 sprintf('%g',diff));
             diff = abs(lmaxExpctd - lmaxActual)/abs(lmaxExpctd);
-            testCase.verifyEqual(lmaxActual,lmaxExpctd,'RelTol',1e-10,...
+            testCase.verifyEqual(lmaxActual,lmaxExpctd,'RelTol',1e-3,...
                 sprintf('%g',diff));            
             
         end        
@@ -650,7 +650,7 @@ classdef DecimationSystemTestCase < matlab.unittest.TestCase
                 lmaxActual = s.lmax;
                 delete(fnameExpctd)
                 diff = abs(lmaxExpctd - lmaxActual)/abs(lmaxExpctd);
-                testCase.verifyEqual(lmaxActual,lmaxExpctd,'RelTol',1e-10,...
+                testCase.verifyEqual(lmaxActual,lmaxExpctd,'RelTol',1e-3,...
                     sprintf('%g',diff));
             end
 
@@ -685,7 +685,7 @@ classdef DecimationSystemTestCase < matlab.unittest.TestCase
                 lmaxActual = s.lmax;
                 delete(fnameExpctd)
                 diff = abs(lmaxExpctd - lmaxActual)/abs(lmaxExpctd);
-                testCase.verifyEqual(lmaxActual,lmaxExpctd,'RelTol',1e-10,...
+                testCase.verifyEqual(lmaxActual,lmaxExpctd,'RelTol',1e-3,...
                     sprintf('%g',diff));
             end
 
@@ -722,7 +722,7 @@ classdef DecimationSystemTestCase < matlab.unittest.TestCase
                                     
             % Evaluation
             diff = abs(lmaxExpctd - lmaxActual)/abs(lmaxExpctd);
-            testCase.verifyEqual(lmaxActual,lmaxExpctd,'RelTol',1e-10,...
+            testCase.verifyEqual(lmaxActual,lmaxExpctd,'RelTol',1e-3,...
                 sprintf('%g',diff));
             
             % 
@@ -978,7 +978,7 @@ classdef DecimationSystemTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,...
                 sprintf('%g',diff));
             diff = abs(lmaxExpctd - lmaxActual)/abs(lmaxExpctd);
-            testCase.verifyEqual(lmaxActual,lmaxExpctd,'RelTol',1e-10,...
+            testCase.verifyEqual(lmaxActual,lmaxExpctd,'RelTol',1e-3,...
                 sprintf('%g',diff));
             
         end
@@ -1015,7 +1015,7 @@ classdef DecimationSystemTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,...
                 sprintf('%g',diff));
             diff = abs(lmaxExpctd - lmaxActual)/abs(lmaxExpctd);
-            testCase.verifyEqual(lmaxActual,lmaxExpctd,'RelTol',1e-10,...
+            testCase.verifyEqual(lmaxActual,lmaxExpctd,'RelTol',1e-3,...
                 sprintf('%g',diff));
             
         end
@@ -1056,7 +1056,7 @@ classdef DecimationSystemTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,...
                 sprintf('%g',diff));
             diff = abs(lmaxExpctd - lmaxActual)/abs(lmaxExpctd);
-            testCase.verifyEqual(lmaxActual,lmaxExpctd,'RelTol',1e-10,...
+            testCase.verifyEqual(lmaxActual,lmaxExpctd,'RelTol',1e-3,...
                 sprintf('%g',diff));            
             
         end
@@ -1101,7 +1101,7 @@ classdef DecimationSystemTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,...
                 sprintf('%g',diff));
             diff = abs(lmaxExpctd - lmaxActual)/abs(lmaxExpctd);
-            testCase.verifyEqual(lmaxActual,lmaxExpctd,'RelTol',1e-10,...
+            testCase.verifyEqual(lmaxActual,lmaxExpctd,'RelTol',1e-3,...
                 sprintf('%g',diff));            
             
         end
@@ -1146,7 +1146,7 @@ classdef DecimationSystemTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,...
                 sprintf('%g',diff));
             diff = abs(lmaxExpctd - lmaxActual)/abs(lmaxExpctd);
-            testCase.verifyEqual(lmaxActual,lmaxExpctd,'RelTol',1e-10,...
+            testCase.verifyEqual(lmaxActual,lmaxExpctd,'RelTol',1e-3,...
                 sprintf('%g',diff));            
         end        
         
@@ -1252,13 +1252,13 @@ classdef DecimationSystemTestCase < matlab.unittest.TestCase
         end                  
         
         % Test
-        function testDecimation4x4x5WithGaussianBlurDataTypeVolumetric(testCase)
+        function testDecimation4x4x4WithGaussianBlurDataTypeVolumetric(testCase)
 
             % Preperation
             dFactor = [4 4 4];
-            height = 16;
-            width = 16;
-            depth = 8;
+            height  = 16;
+            width   = 16;
+            depth   = 8;
             dataType = 'Volumetric Data';
             srcImg = rand(height,width,depth);
             sizeOfKernel = 4*dFactor + 1;
@@ -1267,6 +1267,8 @@ classdef DecimationSystemTestCase < matlab.unittest.TestCase
             [ X, Y, Z ] = meshgrid(-hs:hs,-hs:hs,-hs:hs);
             kernel = exp(-(X.^2+Y.^2+Z.^2)/(2*sigmaOfKernel^2));
             kernel = kernel/sum(kernel(:));
+            tolPm  = 1e-2;
+            itrPm  = 10;
             
             % Expected values
             v = imfilter(srcImg,kernel,'conv');
@@ -1286,7 +1288,9 @@ classdef DecimationSystemTestCase < matlab.unittest.TestCase
                 'VerticalDecimationFactor',dFactor(1),...
                 'HorizontalDecimationFactor',dFactor(2),...                
                 'DepthDecimationFactor',dFactor(3),...  
-                'BlurType','Gaussian');
+                'BlurType','Gaussian',...
+                'TolOfPowerMethod',tolPm,...
+                'MaxIterOfPowerMethod',itrPm);            
             
             % Actual values
             step(testCase.linearproc,srcImg);
@@ -1372,6 +1376,8 @@ classdef DecimationSystemTestCase < matlab.unittest.TestCase
             [ X, Y, Z ] = meshgrid(-hs:hs,-hs:hs,-hs:hs);
             kernel = exp(-(X.^2+Y.^2+Z.^2)/(2*sigmaOfKernel^2));
             kernel = kernel/sum(kernel(:));
+            tolPm  = 1e-2;
+            itrPm  = 10;            
             
             % Expected values
             v = imfilter(srcImg,kernel,'conv');
@@ -1392,7 +1398,9 @@ classdef DecimationSystemTestCase < matlab.unittest.TestCase
                 'HorizontalDecimationFactor',dFactor(2),...                
                 'DepthDecimationFactor',dFactor(3),...                                
                 'BlurType','Gaussian',...
-                'SigmaOfGaussianKernel',sigmaOfKernel);
+                'SigmaOfGaussianKernel',sigmaOfKernel,...
+                'TolOfPowerMethod',tolPm,...
+                'MaxIterOfPowerMethod',itrPm);            
             
             % Actual values
             step(testCase.linearproc,srcImg);
@@ -1425,6 +1433,8 @@ classdef DecimationSystemTestCase < matlab.unittest.TestCase
             [ X, Y, Z ] = meshgrid(-hs:hs,-hs:hs,-hs:hs);
             kernel = exp(-(X.^2+Y.^2+Z.^2)/(2*sigmaOfKernel^2));
             kernel = kernel/sum(kernel(:));
+            tolPm  = 1e-2;
+            itrPm  = 10;            
             
             % Expected values
             v = imfilter(srcImg,kernel,'conv');
@@ -1446,7 +1456,9 @@ classdef DecimationSystemTestCase < matlab.unittest.TestCase
                 'DepthDecimationFactor',dFactor(3),...               
                 'BlurType','Gaussian',...
                 'SizeOfGaussianKernel',sizeOfKernel,...
-                'SigmaOfGaussianKernel',sigmaOfKernel);
+                'SigmaOfGaussianKernel',sigmaOfKernel,...
+                'TolOfPowerMethod',tolPm,...
+                'MaxIterOfPowerMethod',itrPm);            
             
             % Actual values
             step(testCase.linearproc,srcImg);
@@ -1825,7 +1837,7 @@ classdef DecimationSystemTestCase < matlab.unittest.TestCase
                 lmaxActual = s.lmax;
                 delete(fnameExpctd)
                 diff = abs(lmaxExpctd - lmaxActual)/abs(lmaxExpctd);
-                testCase.verifyEqual(lmaxActual,lmaxExpctd,'RelTol',1e-10,...
+                testCase.verifyEqual(lmaxActual,lmaxExpctd,'RelTol',1e-3,...
                     sprintf('%g',diff));
             end
 
@@ -1863,7 +1875,7 @@ classdef DecimationSystemTestCase < matlab.unittest.TestCase
                 lmaxActual = s.lmax;
                 delete(fnameExpctd)
                 diff = abs(lmaxExpctd - lmaxActual)/abs(lmaxExpctd);
-                testCase.verifyEqual(lmaxActual,lmaxExpctd,'RelTol',1e-10,...
+                testCase.verifyEqual(lmaxActual,lmaxExpctd,'RelTol',1e-3,...
                     sprintf('%g',diff));
             end
 
@@ -1903,7 +1915,7 @@ classdef DecimationSystemTestCase < matlab.unittest.TestCase
                                     
             % Evaluation
             diff = abs(lmaxExpctd - lmaxActual)/abs(lmaxExpctd);
-            testCase.verifyEqual(lmaxActual,lmaxExpctd,'RelTol',1e-10,...
+            testCase.verifyEqual(lmaxActual,lmaxExpctd,'RelTol',1e-3,...
                 sprintf('%g',diff));
             
             % 
@@ -2138,7 +2150,7 @@ classdef DecimationSystemTestCase < matlab.unittest.TestCase
         end                          
         
         % Test
-        function testAdjoint2x2WithCustomBlurCircularVolumetric(testCase)
+        function testAdjoint2x2x2WithCustomBlurCircularVolumetric(testCase)
 
             % Preperation
             dFactor = [2 2 2];
