@@ -1,6 +1,6 @@
-classdef BlurSystem < ...
+classdef ComplexBlurSystem < ...
         saivdr.degradation.linearprocess.AbstLinearSystem %#codegen
-    %BLURSYSTEM Bluring process
+    %COMPLEXBLURSYSTEM Bluring process
     %   
     % SVN identifier:
     % $Id: BlurSystem.m 714 2015-07-30 21:44:30Z sho $
@@ -54,7 +54,7 @@ classdef BlurSystem < ...
     
     methods
         % Constractor
-        function obj = BlurSystem(varargin)
+        function obj = ComplexBlurSystem(varargin)
             obj = ...
                 obj@saivdr.degradation.linearprocess.AbstLinearSystem(...
                 varargin{:});

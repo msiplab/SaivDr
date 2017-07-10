@@ -35,11 +35,9 @@ height = 256; % Height
 px     = 64;  % Horizontal position of cropping
 py     = 64;  % Vertical position of cropping
 %orgImg = im2double(srcImg(py:py+height-1,px:px+width-1,:));
-orgImg = cropImg/max(abs(cropImg(:)));
+%orgImg = cropImg/max(abs(cropImg(:)));
 
-% srcImg1 = im2double(imread('cameraman.tif'));
-% srcImg2 = im2double(rgb2gray(imread('peppers.png')));
-% orgImg = srcImg1(1:256,1:256) + 1i*srcImg2(1:256,1:256);
+orgImg = im2double(imread('cameraman.tif'));
 
 %% Create a degradation system object
 % Suppose that we only have a degraded image $\mathbf{x}$ which is 
@@ -57,20 +55,19 @@ orgImg = cropImg/max(abs(cropImg(:)));
 % * saivdr.degradation.noiseprocess.AdditiveWhiteGaussianNoiseSystem
 % * saivdr.degradation.DegradationSystem
 
-import saivdr.degradation.linearprocess.BlurSystem
+import saivdr.degradation.linearprocess.ComplexBlurSystem
 blurtype = 'Identical';  % Blur type
 boundary = 'Symmetric'; % Boundary option
 hsigma   = 2;           % Sigma for Gausian kernel
-blur = BlurSystem(...   % Instantiation of blur process              
+blur = ComplexBlurSystem(...   % Instantiation of blur process              
     'BlurType',              blurtype,...
     'SigmaOfGaussianKernel', hsigma,...
-    'BoundaryOption',boundary,...
-    'IsComplexValue',true);
+    'BoundaryOption',boundary);
 
-import saivdr.degradation.noiseprocess.AdditiveWhiteGaussianNoiseSystem
+import saivdr.degradation.noiseprocess.ComplexAdditiveWhiteGaussianNoiseSystem
 nsigma    = 0;              % Sigma for AWGN for scale [0..255]
 noise_var = (nsigma/255)^2; % Normalize sigma to scale [0..1]
-awgn = AdditiveWhiteGaussianNoiseSystem(... % Instantiation of AWGN
+awgn = ComplexAdditiveWhiteGaussianNoiseSystem(... % Instantiation of AWGN
     'Mean',     0,...
     'Variance', noise_var);
 

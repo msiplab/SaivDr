@@ -1,4 +1,4 @@
-classdef AdditiveWhiteGaussianNoiseSystem < ...
+classdef ComplexAdditiveWhiteGaussianNoiseSystem < ...
         saivdr.degradation.noiseprocess.AbstNoiseSystem %#codegen
     %ADDITIVEWHITEGAUSSIANOISESYSTEM Additive white Gaussian noise system
     %   
@@ -25,14 +25,15 @@ classdef AdditiveWhiteGaussianNoiseSystem < ...
     
     methods
         % Constractor
-        function obj = AdditiveWhiteGaussianNoiseSystem(varargin)
+        function obj = ComplexAdditiveWhiteGaussianNoiseSystem(varargin)
             setProperties(obj,nargin,varargin{:});
         end
     end
     
     methods (Access = protected)
         function output = stepImpl(obj,input)
-            output = imnoise(input,'gaussian',obj.Mean,obj.Variance);
+                output = input + obj.Mean + sqrt(obj.Variance/2)...
+                    *(randn(size(input)) + 1i*randn(size(input)));
         end
     end
 end
