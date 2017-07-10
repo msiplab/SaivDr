@@ -21,7 +21,7 @@ help SaivDr
 % and 'mexcode' directory in the second layer to the MATLAB's search path. 
 % After moving to the top directory, execute the following command:
 
-setpath
+%setpath
 
 %% Read a source image
 % In the followings, an image restoration procedure with this package 
@@ -118,12 +118,12 @@ nOrd    = [2 2]; % Polyphase order
 nVm     = 1;     % # of vanishing moments
 
 % Location which containts a pre-designed NSOLT
-sdir = './examples/quickdesign/results';
+sdir = '../examples/quickdesign/results';
 
 % Load a pre-designed dictionary from a MAT-file
 s = load(sprintf('%s/cnsolt_d%dx%d_c%d+%d_o%d+%d_v%d_l%d_n%d_%s.mat',...
     sdir,nDec(1),nDec(2),nChs(1),nChs(2),nOrd(1),nOrd(2),nVm,nLevels,...
-    512,'cameraman+peppers64x64'),'nsolt');
+    128,'ibushi64x64'),'nsolt');
 nsolt = s.nsolt; % saivdr.dictionary.nsolt.OvsdLpPuFb2dTypeIVm1System
 
 % Conversion of nsolt to new package style
@@ -140,11 +140,11 @@ set(hfig1,'Name','Atomic images of NSOLT')
 % synthesis system for analyzing and synthesizing an image, respectively.
 % The following two systems can do these tasks:
 %
-% * saivdr.dictionary.generalfb.Synthesis2dSystem
-% * saivdr.dictionary.generalfb.Analysis2dSystem
+% * saivdr.dictionary.generalfb.ComplexSynthesis2dSystem
+% * saivdr.dictionary.generalfb.ComplexAnalysis2dSystem
 
-import saivdr.dictionary.generalfb.Analysis2dSystem
-import saivdr.dictionary.generalfb.Synthesis2dSystem
+import saivdr.dictionary.generalfb.ComplexAnalysis2dSystem
+import saivdr.dictionary.generalfb.ComplexSynthesis2dSystem
 
 % Change the output mode of NSOLT to 'AnalysisFilters' and
 % draw inpulse responses of the analysis filters.
@@ -160,16 +160,14 @@ synthesisFilters = step(nsolt,[],[]);
 
 % Create analysis ans synthesis system objects with
 % frequency domain filtering mode.
-analyzer    = Analysis2dSystem(...
+analyzer    = ComplexAnalysis2dSystem(...
     'DecimationFactor',nDec,...
     'AnalysisFilters',analysisFilters,...
-    'FilterDomain','Frequency',...
-    'IsRealValue',false);
-synthesizer = Synthesis2dSystem(...
+    'FilterDomain','Frequency');
+synthesizer = ComplexSynthesis2dSystem(...
     'DecimationFactor',nDec,...
     'SynthesisFilters',synthesisFilters,...
-    'FilterDomain','Frequency',...
-    'IsRealValue',false);
+    'FilterDomain','Frequency');
 setFrameBound(synthesizer,1);
 
 %%
