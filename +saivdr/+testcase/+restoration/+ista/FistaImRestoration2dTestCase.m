@@ -1,12 +1,9 @@
 classdef FistaImRestoration2dTestCase < matlab.unittest.TestCase
-    %FistaImRestoration2dTESTCASE Test Case for FistaImRestoration2d
-    %
-    % SVN identifier:
-    % $Id: FistaImRestoration2dTestCase.m 683 2015-05-29 08:22:13Z sho $
+    %FistaImRestoration2dTestCase Test Case for FistaImRestoration2d
     %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2014-2015, Shogo MURAMATSU
+    % Copyright (c) 2017, Shogo MURAMATSU
     %
     % All rights reserved.
     %

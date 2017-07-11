@@ -1,5 +1,5 @@
 classdef IstaImRestoration3dTestCase < matlab.unittest.TestCase
-    %IstaImRestoration3dTESTCASE Test Case for IstaImRestoration3d
+    %IstaImRestoration3dTestCase Test Case for IstaImRestoration3d
     %
     % Requirements: MATLAB R2015b
     %
