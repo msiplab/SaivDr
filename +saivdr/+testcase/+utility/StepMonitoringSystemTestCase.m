@@ -827,6 +827,7 @@ classdef StepMonitoringSystemTestCase < matlab.unittest.TestCase
             testCase.assertEqual(stitleActual,stitleExpctd,'RelTol',1e-15);
 
         end  
+        
         % Test
         function testDataTypeImageException(testCase)
             
@@ -959,26 +960,26 @@ classdef StepMonitoringSystemTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testSuccessiveSrcObsResVolumeImShowMap(testCase)
+        function testSuccessiveSrcObsResVolumeImShowFcn(testCase)
 
             % Preperation
             height = 48;
             width  = 64;
             depth  = 16;
-            srcImg = randn(height,width,depth); 
-            obsImg = imfilter(srcImg,ones(3,3,3)/3^3);
+            srcImg = rand(height,width,depth); 
+            obsImg = imfilter(srcImg,ones(3,3,3)/(3^3));
             resImg1 = round(srcImg*2)/2;
             resImg2 = round(srcImg*4)/4;
             resImg3 = round(srcImg*8)/8;
             dataType = 'Volumetric Data';
-            map     = colormap('gray');
+            imShowFcn = @(x) 0.5*x+128;
             
             % Expected values
-            srcImgExpctd = im2uint8(srcImg(:,:,depth/2));
-            obsImgExpctd = im2uint8(obsImg(:,:,depth/2));
-            resImg1Expctd = im2uint8(resImg1(:,:,depth/2));
-            resImg2Expctd = im2uint8(resImg2(:,:,depth/2));
-            resImg3Expctd = im2uint8(resImg3(:,:,depth/2));
+            srcImgExpctd = imShowFcn(im2uint8(srcImg(:,:,depth/2)));
+            obsImgExpctd = imShowFcn(im2uint8(obsImg(:,:,depth/2)));
+            resImg1Expctd = imShowFcn(im2uint8(resImg1(:,:,depth/2)));
+            resImg2Expctd = imShowFcn(im2uint8(resImg2(:,:,depth/2)));
+            resImg3Expctd = imShowFcn(im2uint8(resImg3(:,:,depth/2)));
             
             % Instantiation of target class
             import saivdr.utility.*
@@ -988,8 +989,8 @@ classdef StepMonitoringSystemTestCase < matlab.unittest.TestCase
                 'ObservedImage',obsImg,...
                 'IsVisible',true,...
                 'ImageFigureHandle',testCase.testfigure,...
+                'ImShowFcn',imShowFcn,...
                 'MaxIter', 3,...
-                'ImShowMap', map, ...
                 'IsVerbose', false);
 
             % Evaluation for Step = 1
@@ -1041,7 +1042,7 @@ classdef StepMonitoringSystemTestCase < matlab.unittest.TestCase
             stitleActual = get(get(get(hresimg,'Parent'),'Title'),'String');
             testCase.assertEqual(stitleActual,stitleExpctd,'RelTol',1e-15);
 
-        end        
+        end         
         
         % Test
         function testMseIsConversionToEvaluationTypeFalse(testCase)

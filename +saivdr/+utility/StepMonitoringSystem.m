@@ -23,7 +23,7 @@ classdef StepMonitoringSystem < matlab.System %#codegen
         %
         EvaluationType = 'uint8'
         %
-        ImShowMap
+        ImShowFcn
     end
 
     properties
@@ -96,7 +96,7 @@ classdef StepMonitoringSystem < matlab.System %#codegen
         end
         
         function flag = isInactiveSubPropertyImpl(obj,propertyName)
-            if strcmp(propertyName,'ImageFigureHandle')
+            if strcmp(propertyName,'ImageFigureHandle') 
                 flag = ~obj.IsVisible;
             elseif strcmp(propertyName,'IsPlotPSNR')
                 flag = ~obj.IsPSNR;
@@ -104,6 +104,9 @@ classdef StepMonitoringSystem < matlab.System %#codegen
                 flag = ~obj.IsPlotPSNR;
             elseif strcmp(propertyName,'PeakValue')
                 flag = obj.IsConversionToEvaluationType;
+            elseif strcmp(propertyName,'SliceNumber')
+                flag = ~strcmp(obj.DataType,'Volumetric Data') || ...
+                       ~obj.IsVisible;
             else
                 flag = false;
             end
@@ -220,10 +223,14 @@ classdef StepMonitoringSystem < matlab.System %#codegen
                 if ~isempty(obj.SourceImage)
                     subplot(1,nPics,iPic)
                     if strcmp(obj.DataType,'Image')
-                        obj.hSrcImg = imshow(obj.SourceImage);
+                        srcImg = obj.SourceImage;
                     else % Volumetric Data
-                        obj.hSrcImg = imshow(obj.SourceImage(:,:,ceil(end/2)));
+                        srcImg = obj.SourceImage(:,:,ceil(end/2));
                     end
+                    if isa(obj.ImShowFcn,'function_handle')
+                        srcImg = obj.ImShowFcn(srcImg);
+                    end
+                    obj.hSrcImg = imshow(srcImg);
                     set(obj.hSrcImg,'UserData','Source');
                     title('Source')
                     iPic = iPic + 1; 
@@ -232,10 +239,14 @@ classdef StepMonitoringSystem < matlab.System %#codegen
                 if ~isempty(obj.ObservedImage)
                     subplot(1,nPics,iPic)
                     if strcmp(obj.DataType,'Image')
-                        obj.hObsImg = imshow(obj.ObservedImage);
+                        obsImg = obj.ObservedImage;
                     else % Volumetric Data
-                        obj.hObsImg = imshow(obj.ObservedImage(:,:,ceil(end/2)));
+                        obsImg = obj.ObservedImage(:,:,ceil(end/2));
                     end
+                    if isa(obj.ImShowFcn,'function_handle')
+                        obsImg = obj.ImShowFcn(obsImg);
+                    end                    
+                    obj.hObsImg = imshow(obsImg);
                     set(obj.hObsImg,'UserData','Observed');
                     title('Observed')
                     iPic = iPic + 1;
@@ -247,11 +258,13 @@ classdef StepMonitoringSystem < matlab.System %#codegen
                     resImg = varargin{1};
                 end
                 subplot(1,nPics,iPic)
-                if strcmp(obj.DataType,'Image')
-                    obj.hResImg = imshow(resImg);
-                else % Volumetric Data
-                    obj.hResImg = imshow(resImg(:,:,ceil(end/2)));
+                if strcmp(obj.DataType,'Volumetric Data')
+                    resImg = resImg(:,:,ceil(end/2));
                 end
+                if isa(obj.ImShowFcn,'function_handle')
+                    resImg = obj.ImShowFcn(resImg);
+                end                                    
+                obj.hResImg = imshow(resImg);
                 set(obj.hResImg,'UserData','Result');
                 title('Result (nItr =    0)');                                
             end
@@ -337,6 +350,9 @@ classdef StepMonitoringSystem < matlab.System %#codegen
                     else % Volumetric Data
                         srcImg = obj.SourceImage(:,:,ceil(end/2));
                     end
+                    if isa(obj.ImShowFcn,'function_handle')
+                        srcImg = obj.ImShowFcn(srcImg);
+                    end                                                        
                     set(obj.hSrcImg,'CData',srcImg);
                 end
                 %
@@ -346,12 +362,18 @@ classdef StepMonitoringSystem < matlab.System %#codegen
                     else % Volumetric Data
                         obsImg = obj.ObservedImage(:,:,ceil(end/2));
                     end
+                    if isa(obj.ImShowFcn,'function_handle')
+                        obsImg = obj.ImShowFcn(obsImg);
+                    end                                                                            
                     set(obj.hObsImg,'CData',obsImg);
                 end
                 %
                 if strcmp(obj.DataType,'Volumetric Data')
                     resImg = resImg(:,:,ceil(end/2));
                 end
+                if isa(obj.ImShowFcn,'function_handle')
+                    resImg = obj.ImShowFcn(resImg);
+                end                                                                                            
                 set(obj.hResImg,'CData',resImg);
                 title(get(obj.hResImg,'Parent'),...
                     sprintf('Result (nItr = % 4d)',obj.nItr))
