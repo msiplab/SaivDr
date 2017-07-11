@@ -1,12 +1,9 @@
 classdef StepMonitoringSystemTestCase < matlab.unittest.TestCase
     %STEPMONITORINGSYSTEMTESTCASE Test Case for StepMonitoringSystem
     %
-    % SVN identifier:
-    % $Id: StepMonitoringSystemTestCase.m 683 2015-05-29 08:22:13Z sho $
-    %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2014-2015, Shogo MURAMATSU
+    % Copyright (c) 2014-2017, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -748,7 +745,6 @@ classdef StepMonitoringSystemTestCase < matlab.unittest.TestCase
 
         end  
         
-        
         % Test
         function testSuccessiveSrcObsResVolume(testCase)
 
@@ -761,6 +757,7 @@ classdef StepMonitoringSystemTestCase < matlab.unittest.TestCase
             resImg1 = round(srcImg*2)/2;
             resImg2 = round(srcImg*4)/4;
             resImg3 = round(srcImg*8)/8;
+            dataType = 'Volumetric Data';
             
             % Expected values
             srcImgExpctd = im2uint8(srcImg(:,:,depth/2));
@@ -772,6 +769,7 @@ classdef StepMonitoringSystemTestCase < matlab.unittest.TestCase
             % Instantiation of target class
             import saivdr.utility.*
             testCase.stepmonitor = StepMonitoringSystem(...
+                'DataType',dataType,...
                 'SourceImage',srcImg,...
                 'ObservedImage',obsImg,...
                 'IsVisible',true,...
@@ -829,7 +827,221 @@ classdef StepMonitoringSystemTestCase < matlab.unittest.TestCase
             testCase.assertEqual(stitleActual,stitleExpctd,'RelTol',1e-15);
 
         end  
-                
+        % Test
+        function testDataTypeImageException(testCase)
+            
+            % Preperation
+            height = 24;
+            width  = 32;
+            dataType = 'Image';
+            
+            %
+            srcImg1 = rand(height,width,1);
+            srcImg2 = rand(height,width,2);
+            srcImg3 = rand(height,width,3);            
+            srcImg4 = rand(height,width,4);
+            
+            %
+            obsImg1 = rand(height,width,1);
+            obsImg2 = rand(height,width,2);
+            obsImg3 = rand(height,width,3);            
+            obsImg4 = rand(height,width,4);            
+            
+            %
+            resImg1 = rand(height,width,1);
+            resImg2 = rand(height,width,2);
+            resImg3 = rand(height,width,3);
+            resImg4 = rand(height,width,4);            
+
+            %
+            exceptionIdExpctd = 'SaivDr:InvalidDataFormatException';
+            messageExpctd = 'The third dimension must be 1 or 3.';
+            
+            % 
+            import saivdr.utility.*
+
+            % size(SrcImg,3)=2, size(ObsImg,3)=1, size(ResImg,3)=1 
+            try
+                testCase.stepmonitor = StepMonitoringSystem(...
+                    'DataType',dataType,...
+                    'SourceImage',srcImg2,...
+                    'ObservedImage',obsImg1);
+                step(testCase.stepmonitor,resImg1);                
+                testCase.verifyFail(sprintf('%s must be thrown.',...
+                    exceptionIdExpctd));                
+            catch me
+                exceptionIdActual = me.identifier;
+                testCase.verifyEqual(exceptionIdActual,exceptionIdExpctd);
+                messageActual = me.message;
+                testCase.verifyEqual(messageActual, messageExpctd);                
+            end
+            
+            % size(SrcImg,3)=4, size(ObsImg,3)=3, size(ResImg,3)=3 
+            try
+                testCase.stepmonitor = StepMonitoringSystem(...
+                    'DataType',dataType,...
+                    'SourceImage',srcImg4,...
+                    'ObservedImage',obsImg3);
+                step(testCase.stepmonitor,resImg3);                
+                testCase.verifyFail(sprintf('%s must be thrown.',...
+                    exceptionIdExpctd));                
+            catch me
+                exceptionIdActual = me.identifier;
+                testCase.verifyEqual(exceptionIdActual,exceptionIdExpctd);
+                messageActual = me.message;
+                testCase.verifyEqual(messageActual, messageExpctd);                
+            end            
+
+            % size(SrcImg,3)=1, size(ObsImg,3)=2, size(ResImg,3)=1 
+            try
+                testCase.stepmonitor = StepMonitoringSystem(...
+                    'DataType',dataType,...
+                    'SourceImage',srcImg1,...
+                    'ObservedImage',obsImg2);
+                step(testCase.stepmonitor,resImg1);                
+                testCase.verifyFail(sprintf('%s must be thrown.',...
+                    exceptionIdExpctd));                
+            catch me
+                exceptionIdActual = me.identifier;
+                testCase.verifyEqual(exceptionIdActual,exceptionIdExpctd);
+                messageActual = me.message;
+                testCase.verifyEqual(messageActual, messageExpctd);                
+            end      
+            
+            % size(SrcImg,3)=3, size(ObsImg,3)=4, size(ResImg,3)=3 
+            try
+                testCase.stepmonitor = StepMonitoringSystem(...
+                    'DataType',dataType,...
+                    'SourceImage',srcImg3,...
+                    'ObservedImage',obsImg4);
+                step(testCase.stepmonitor,resImg3);                
+                testCase.verifyFail(sprintf('%s must be thrown.',...
+                    exceptionIdExpctd));                
+            catch me
+                exceptionIdActual = me.identifier;
+                testCase.verifyEqual(exceptionIdActual,exceptionIdExpctd);
+                messageActual = me.message;
+                testCase.verifyEqual(messageActual, messageExpctd);                
+            end                            
+            
+            % size(SrcImg,3)=1, size(ObsImg,3)=1, size(ResImg,3)=2 
+            try
+                testCase.stepmonitor = StepMonitoringSystem(...
+                    'DataType',dataType,...
+                    'SourceImage',srcImg1,...
+                    'ObservedImage',obsImg1);
+                step(testCase.stepmonitor,resImg2);                
+                testCase.verifyFail(sprintf('%s must be thrown.',...
+                    exceptionIdExpctd));                
+            catch me
+                exceptionIdActual = me.identifier;
+                testCase.verifyEqual(exceptionIdActual,exceptionIdExpctd);
+                messageActual = me.message;
+                testCase.verifyEqual(messageActual, messageExpctd);                
+            end              
+            
+            % size(SrcImg,3)=3, size(ObsImg,3)=3, size(ResImg,3)=4 
+            try
+                testCase.stepmonitor = StepMonitoringSystem(...
+                    'DataType',dataType,...
+                    'SourceImage',srcImg3,...
+                    'ObservedImage',obsImg3);
+                step(testCase.stepmonitor,resImg4);                
+                testCase.verifyFail(sprintf('%s must be thrown.',...
+                    exceptionIdExpctd));                
+            catch me
+                exceptionIdActual = me.identifier;
+                testCase.verifyEqual(exceptionIdActual,exceptionIdExpctd);
+                messageActual = me.message;
+                testCase.verifyEqual(messageActual, messageExpctd);                
+            end                   
+            
+        end
+        
+        % Test
+        function testSuccessiveSrcObsResVolumeImShowMap(testCase)
+
+            % Preperation
+            height = 48;
+            width  = 64;
+            depth  = 16;
+            srcImg = randn(height,width,depth); 
+            obsImg = imfilter(srcImg,ones(3,3,3)/3^3);
+            resImg1 = round(srcImg*2)/2;
+            resImg2 = round(srcImg*4)/4;
+            resImg3 = round(srcImg*8)/8;
+            dataType = 'Volumetric Data';
+            map     = colormap('gray');
+            
+            % Expected values
+            srcImgExpctd = im2uint8(srcImg(:,:,depth/2));
+            obsImgExpctd = im2uint8(obsImg(:,:,depth/2));
+            resImg1Expctd = im2uint8(resImg1(:,:,depth/2));
+            resImg2Expctd = im2uint8(resImg2(:,:,depth/2));
+            resImg3Expctd = im2uint8(resImg3(:,:,depth/2));
+            
+            % Instantiation of target class
+            import saivdr.utility.*
+            testCase.stepmonitor = StepMonitoringSystem(...
+                'DataType',dataType,...
+                'SourceImage',srcImg,...
+                'ObservedImage',obsImg,...
+                'IsVisible',true,...
+                'ImageFigureHandle',testCase.testfigure,...
+                'MaxIter', 3,...
+                'ImShowMap', map, ...
+                'IsVerbose', false);
+
+            % Evaluation for Step = 1
+            step(testCase.stepmonitor,resImg1);
+            hsrcimg = findobj(testCase.testfigure,'Type','image',...
+                '-and','UserData','Source');
+            srcImgActual = get(hsrcimg,'CData');
+            %
+            hobsimg = findobj(testCase.testfigure,'Type','image',...
+                '-and','UserData','Observed');
+            obsImgActual = get(hobsimg,'CData');
+            %
+            hresimg = findobj(testCase.testfigure,'Type','image',...
+                '-and','UserData','Result');
+            resImg1Actual = get(hresimg,'CData');
+            %
+            testCase.assertEqual(srcImgActual,srcImgExpctd,'RelTol',1e-15);            
+            testCase.assertEqual(obsImgActual,obsImgExpctd,'RelTol',1e-15);            
+            testCase.assertEqual(resImg1Actual,resImg1Expctd,'RelTol',1e-15);      
+            %
+            stitleExpctd = 'Result (nItr =    1)';
+            stitleActual = get(get(get(hresimg,'Parent'),'Title'),'String');
+            testCase.assertEqual(stitleActual,stitleExpctd,'RelTol',1e-15);
+            
+
+            % Evaluation for Step = 2
+            step(testCase.stepmonitor,resImg2);
+            srcImgActual = get(hsrcimg,'CData');
+            obsImgActual = get(hobsimg,'CData');            
+            resImg2Actual = get(hresimg,'CData');
+            testCase.assertEqual(srcImgActual,srcImgExpctd,'RelTol',1e-15);            
+            testCase.assertEqual(obsImgActual,obsImgExpctd,'RelTol',1e-15);            
+            testCase.assertEqual(resImg2Actual,resImg2Expctd,'RelTol',1e-15);            
+            %
+            stitleExpctd = 'Result (nItr =    2)';
+            stitleActual = get(get(get(hresimg,'Parent'),'Title'),'String');
+            testCase.assertEqual(stitleActual,stitleExpctd,'RelTol',1e-15);
+            
+            % Evaluation for Step = 3
+            step(testCase.stepmonitor,resImg3);
+            srcImgActual = get(hsrcimg,'CData');
+            obsImgActual = get(hobsimg,'CData');                        
+            resImg3Actual = get(hresimg,'CData');
+            testCase.assertEqual(srcImgActual,srcImgExpctd,'RelTol',1e-15);
+            testCase.assertEqual(obsImgActual,obsImgExpctd,'RelTol',1e-15);            
+            testCase.assertEqual(resImg3Actual,resImg3Expctd,'RelTol',1e-15);                        
+            %
+            stitleExpctd = 'Result (nItr =    3)';
+            stitleActual = get(get(get(hresimg,'Parent'),'Title'),'String');
+            testCase.assertEqual(stitleActual,stitleExpctd,'RelTol',1e-15);
+
+        end        
         
         % Test
         function testMseIsConversionToEvaluationTypeFalse(testCase)
