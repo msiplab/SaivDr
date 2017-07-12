@@ -368,9 +368,7 @@ classdef StepMonitoringSystem < matlab.System %#codegen
         
         function value = mse_(obj,resImg)
             srcImg = obj.SourceImage;
-%             value = sum((double(srcImg(:))-double(resImg(:))).^2)...
-%                 /numel(srcImg);
-            value = sum(abs(double(srcImg(:))-double(resImg(:))).^2);
+            value = sum(abs(double(srcImg(:))-double(resImg(:))).^2)/numel(srcImg);
         end
         
         function value = psnr_(obj,resImg)
