@@ -1,8 +1,8 @@
-classdef NsoltDictionaryLearningTestCase < matlab.unittest.TestCase
-    %NSOLTDICTIONARYLEARNINGTESTCASE Test case for NsoltDictionaryLearning
+classdef CnsoltDictionaryLearningTestCase < matlab.unittest.TestCase
+    %CnsoltDictionaryLEARNINGTESTCASE Test case for CnsoltDictionaryLearning
     %
     % SVN identifier:
-    % $Id: NsoltDictionaryLearningTestCase.m 866 2015-11-24 04:29:42Z sho $
+    % $Id: CnsoltDictionaryLearningTestCase.m 866 2015-11-24 04:29:42Z sho $
     %
     % Requirements: MATLAB R2013b
     %
@@ -30,20 +30,20 @@ classdef NsoltDictionaryLearningTestCase < matlab.unittest.TestCase
     methods (Test)
         
         % Test 
-        function testNsoltDictionaryLearningGpDec22Ch62Ord44(testCase)
+        function testCnsoltDictionaryLearningGpDec22Ch8Ord44(testCase)
     
             % Parameter settings
             nCoefs = 4;
             nLevels = 1;
-            nChs = [ 6 2 ];
+            nChs = 8;
             nOrds = [ 4 4 ];
             nSprsCoefs = 4;
             isOptMus = false;
-            srcImgs{1} = rand(16,16);            
+            srcImgs{1} = rand(16,16).*exp(1i*2*pi*rand(16,16));            
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.design.*
-            testCase.designer = NsoltDictionaryLearning(...
+            import saivdr.dictionary.cnsoltx.design.*
+            testCase.designer = CnsoltDictionaryLearning(...
                 'SourceImages',srcImgs,...
                 'NumberOfSparseCoefficients',nCoefs,...
                 'NumberOfTreeLevels',nLevels,...
@@ -53,7 +53,7 @@ classdef NsoltDictionaryLearningTestCase < matlab.unittest.TestCase
             
             % Pre
             lppufbPre = get(testCase.designer,'OvsdLpPuFb');
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             synthesizer = NsoltFactory.createSynthesis2dSystem(lppufbPre);
             analyzer  = NsoltFactory.createAnalysis2dSystem(lppufbPre);
             import saivdr.sparserep.*
@@ -81,7 +81,7 @@ classdef NsoltDictionaryLearningTestCase < matlab.unittest.TestCase
         end
         
         % Test 
-        function testNsoltDictionaryLearningGpDec22Ch62Ord44Ga(testCase)
+        function testCnsoltDictionaryLearningGpDec22Ch62Ord44Ga(testCase)
     
             % Parameter settings
             nCoefs = 4;
@@ -90,12 +90,12 @@ classdef NsoltDictionaryLearningTestCase < matlab.unittest.TestCase
             nOrds = [ 4 4 ];
             nSprsCoefs = 4;
             isOptMus = true;
-            srcImgs{1} = rand(16,16);            
+            srcImgs{1} = rand(16,16).*exp(1i*2*pi*rand(16,16));            
             optfcn = @ga;
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.design.*
-            testCase.designer = NsoltDictionaryLearning(...
+            import saivdr.dictionary.cnsoltx.design.*
+            testCase.designer = CnsoltDictionaryLearning(...
                 'SourceImages',srcImgs,...
                 'NumberOfSparseCoefficients',nCoefs,...
                 'NumberOfTreeLevels',nLevels,...
@@ -109,7 +109,7 @@ classdef NsoltDictionaryLearningTestCase < matlab.unittest.TestCase
             % Pre
             import saivdr.sparserep.*
             lppufbPre = get(testCase.designer,'OvsdLpPuFb');
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             synthesizer = NsoltFactory.createSynthesis2dSystem(lppufbPre);
             analyzer    = NsoltFactory.createAnalysis2dSystem(lppufbPre);            
             gpnsolt = GradientPursuit(...
@@ -142,7 +142,7 @@ classdef NsoltDictionaryLearningTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testNsoltDictionaryLearningIhtDec22Ch62Ord44(testCase)
+        function testCnsoltDictionaryLearningIhtDec22Ch62Ord44(testCase)
             
             % Parameter settings
             nCoefs = 4;
@@ -151,11 +151,11 @@ classdef NsoltDictionaryLearningTestCase < matlab.unittest.TestCase
             nOrds = [ 4 4 ];
             nSprsCoefs = 4;
             isOptMus = false;
-            srcImgs{1} = rand(16,16);
+            srcImgs{1} = rand(16,16).*exp(1i*2*pi*rand(16,16));
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.design.*
-            testCase.designer = NsoltDictionaryLearning(...
+            import saivdr.dictionary.cnsoltx.design.*
+            testCase.designer = CnsoltDictionaryLearning(...
                 'SourceImages',srcImgs,...
                 'SparseCoding','IterativeHardThresholding',...
                 'NumberOfSparseCoefficients',nCoefs,...
@@ -166,7 +166,7 @@ classdef NsoltDictionaryLearningTestCase < matlab.unittest.TestCase
             
             % Pre
             lppufbPre = get(testCase.designer,'OvsdLpPuFb');
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             synthesizer = NsoltFactory.createSynthesis2dSystem(lppufbPre);
             analyzer  = NsoltFactory.createAnalysis2dSystem(lppufbPre);
             import saivdr.sparserep.*
@@ -194,7 +194,7 @@ classdef NsoltDictionaryLearningTestCase < matlab.unittest.TestCase
         end
                 
         % Test
-        function testNsoltDictionaryLearningIhtDec22Ch44Ord44Sgd(testCase)
+        function testCnsoltDictionaryLearningIhtDec22Ch44Ord44Sgd(testCase)
             
             % Parameter settings
             nCoefs = 4;
@@ -209,11 +209,11 @@ classdef NsoltDictionaryLearningTestCase < matlab.unittest.TestCase
             srcImgs{4} = rand(12,16);
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.design.*
-            testCase.designer = NsoltDictionaryLearning(...
+            import saivdr.dictionary.cnsoltx.design.*
+            testCase.designer = CnsoltDictionaryLearning(...
                 'SourceImages',srcImgs,...
                 'SparseCoding','IterativeHardThresholding',...
-                'DictionaryUpdater','NsoltDictionaryUpdateSgd',...
+                'DictionaryUpdater','CnsoltDictionaryUpdateSgd',...
                 'IsFixedCoefs',true,...
                 'NumberOfSparseCoefficients',nCoefs,...
                 'NumberOfTreeLevels',nLevels,...
@@ -224,7 +224,7 @@ classdef NsoltDictionaryLearningTestCase < matlab.unittest.TestCase
             
             % Pre
             lppufbPre = get(testCase.designer,'OvsdLpPuFb');
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             synthesizer = NsoltFactory.createSynthesis2dSystem(lppufbPre);
             analyzer  = NsoltFactory.createAnalysis2dSystem(lppufbPre);
             import saivdr.sparserep.*
@@ -257,7 +257,7 @@ classdef NsoltDictionaryLearningTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testNsoltDictionaryLearningIhtDec22Ch44Ord44GradObj(testCase)
+        function testCnsoltDictionaryLearningIhtDec22Ch44Ord44GradObj(testCase)
             
             % Parameter settings
             nLevels = 1;
@@ -268,8 +268,8 @@ classdef NsoltDictionaryLearningTestCase < matlab.unittest.TestCase
             srcImgs{1} = rand(12,16);
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.design.*
-            testCase.designer = NsoltDictionaryLearning(...
+            import saivdr.dictionary.cnsoltx.design.*
+            testCase.designer = CnsoltDictionaryLearning(...
                 'SourceImages',srcImgs,...
                 'SparseCoding','IterativeHardThresholding',...
                 'NumberOfSparseCoefficients',nSprsCoefs,...
@@ -282,7 +282,7 @@ classdef NsoltDictionaryLearningTestCase < matlab.unittest.TestCase
             
             % Pre
             lppufbPre = get(testCase.designer,'OvsdLpPuFb');
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             synthesizer = NsoltFactory.createSynthesis2dSystem(lppufbPre);
             analyzer  = NsoltFactory.createAnalysis2dSystem(lppufbPre);
             import saivdr.sparserep.*
@@ -311,7 +311,7 @@ classdef NsoltDictionaryLearningTestCase < matlab.unittest.TestCase
         end
         
         % Test 
-        function testNsoltDictionaryLearningIhtDec22Ch62Ord44Ga(testCase)
+        function testCnsoltDictionaryLearningIhtDec22Ch62Ord44Ga(testCase)
     
             % Parameter settings
             nCoefs = 4;
@@ -320,12 +320,12 @@ classdef NsoltDictionaryLearningTestCase < matlab.unittest.TestCase
             nOrds = [ 4 4 ];
             nSprsCoefs = 4;
             isOptMus = true;
-            srcImgs{1} = rand(16,16);            
+            srcImgs{1} = rand(16,16).*exp(1i*2*pi*rand(16,16));            
             optfcn = @ga;
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.design.*
-            testCase.designer = NsoltDictionaryLearning(...
+            import saivdr.dictionary.cnsoltx.design.*
+            testCase.designer = CnsoltDictionaryLearning(...
                 'SourceImages',srcImgs,...
                 'SparseCoding','IterativeHardThresholding',...
                 'NumberOfSparseCoefficients',nCoefs,...
@@ -340,7 +340,7 @@ classdef NsoltDictionaryLearningTestCase < matlab.unittest.TestCase
             % Pre
             import saivdr.sparserep.*
             lppufbPre = get(testCase.designer,'OvsdLpPuFb');
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             synthesizer = NsoltFactory.createSynthesis2dSystem(lppufbPre);
             analyzer    = NsoltFactory.createAnalysis2dSystem(lppufbPre);            
             gpnsolt = IterativeHardThresholding(...
@@ -373,7 +373,7 @@ classdef NsoltDictionaryLearningTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testNsoltDictionaryLearningGpDec222Ch55Ord222(testCase)
+        function testCnsoltDictionaryLearningGpDec222Ch55Ord222(testCase)
             
             % Parameter settings
             nCoefs = 4;
@@ -385,8 +385,8 @@ classdef NsoltDictionaryLearningTestCase < matlab.unittest.TestCase
             srcImgs{1} = rand(16,16,16);
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.design.*
-            testCase.designer = NsoltDictionaryLearning(...
+            import saivdr.dictionary.cnsoltx.design.*
+            testCase.designer = CnsoltDictionaryLearning(...
                 'NumberOfDimensions','Three',...
                 'SourceImages',srcImgs,...
                 'NumberOfSparseCoefficients',nCoefs,...
@@ -397,7 +397,7 @@ classdef NsoltDictionaryLearningTestCase < matlab.unittest.TestCase
             
             % Pre
             lppufbPre = get(testCase.designer,'OvsdLpPuFb');
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             synthesizer = NsoltFactory.createSynthesis3dSystem(lppufbPre);
             analyzer  = NsoltFactory.createAnalysis3dSystem(lppufbPre);
             import saivdr.sparserep.*
@@ -426,7 +426,7 @@ classdef NsoltDictionaryLearningTestCase < matlab.unittest.TestCase
         
                 
         % Test 
-        function testNsoltDictionaryLearningGpDec222Ch64Ord222Ga(testCase)
+        function testCnsoltDictionaryLearningGpDec222Ch64Ord222Ga(testCase)
     
             % Parameter settings
             nCoefs = 4;
@@ -439,8 +439,8 @@ classdef NsoltDictionaryLearningTestCase < matlab.unittest.TestCase
             optfcn = @ga;
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.design.*
-            testCase.designer = NsoltDictionaryLearning(...
+            import saivdr.dictionary.cnsoltx.design.*
+            testCase.designer = CnsoltDictionaryLearning(...
                 'NumberOfDimensions','Three',...
                 'SourceImages',srcImgs,...
                 'NumberOfSparseCoefficients',nCoefs,...
@@ -455,7 +455,7 @@ classdef NsoltDictionaryLearningTestCase < matlab.unittest.TestCase
             % Pre
             import saivdr.sparserep.*
             lppufbPre = get(testCase.designer,'OvsdLpPuFb');
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             synthesizer = NsoltFactory.createSynthesis3dSystem(lppufbPre);
             analyzer    = NsoltFactory.createAnalysis3dSystem(lppufbPre);            
             gpnsolt = GradientPursuit(...
@@ -487,7 +487,7 @@ classdef NsoltDictionaryLearningTestCase < matlab.unittest.TestCase
         end
 
      % Test 
-        function testNsoltDictionaryLearningIhtDec222Ch64Ord222(testCase)
+        function testCnsoltDictionaryLearningIhtDec222Ch64Ord222(testCase)
     
             % Parameter settings
             nCoefs = 4;
@@ -499,8 +499,8 @@ classdef NsoltDictionaryLearningTestCase < matlab.unittest.TestCase
             srcImgs{1} = rand(16,16,16);            
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.design.*
-            testCase.designer = NsoltDictionaryLearning(...
+            import saivdr.dictionary.cnsoltx.design.*
+            testCase.designer = CnsoltDictionaryLearning(...
                 'NumberOfDimensions','Three',...
                 'SourceImages',srcImgs,...
                 'SparseCoding','IterativeHardThresholding',...
@@ -512,7 +512,7 @@ classdef NsoltDictionaryLearningTestCase < matlab.unittest.TestCase
             
             % Pre
             lppufbPre = get(testCase.designer,'OvsdLpPuFb');
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             synthesizer = NsoltFactory.createSynthesis3dSystem(lppufbPre);
             analyzer  = NsoltFactory.createAnalysis3dSystem(lppufbPre);
             import saivdr.sparserep.*
@@ -540,7 +540,7 @@ classdef NsoltDictionaryLearningTestCase < matlab.unittest.TestCase
         end        
         
       % Test 
-        function testNsoltDictionaryLearningIhtDec222Ch55Ord222Ga(testCase)
+        function testCnsoltDictionaryLearningIhtDec222Ch55Ord222Ga(testCase)
     
             % Parameter settings
             nCoefs = 4;
@@ -553,8 +553,8 @@ classdef NsoltDictionaryLearningTestCase < matlab.unittest.TestCase
             optfcn = @ga;
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.design.*
-            testCase.designer = NsoltDictionaryLearning(...
+            import saivdr.dictionary.cnsoltx.design.*
+            testCase.designer = CnsoltDictionaryLearning(...
                 'NumberOfDimensions','Three',...
                 'SourceImages',srcImgs,...
                 'SparseCoding','IterativeHardThresholding',...
@@ -570,7 +570,7 @@ classdef NsoltDictionaryLearningTestCase < matlab.unittest.TestCase
             % Pre
             import saivdr.sparserep.*
             lppufbPre = get(testCase.designer,'OvsdLpPuFb');
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             synthesizer = NsoltFactory.createSynthesis3dSystem(lppufbPre);
             analyzer    = NsoltFactory.createAnalysis3dSystem(lppufbPre);            
             gpnsolt = IterativeHardThresholding(...
@@ -605,20 +605,20 @@ classdef NsoltDictionaryLearningTestCase < matlab.unittest.TestCase
         % Test 
         
         % Test 
-        function testNsoltDictionaryLearningIhtDec22Ch44Ord22(testCase)
+        function testCnsoltDictionaryLearningIhtDec22Ch44Ord22(testCase)
     
             % Parameter settings
             nCoefs   = 4;
             nLevels  = 1;
             nChs     = [ 4 4 ];
             nOrds    = [ 2 2 ];
-            srcImgs{1} = rand(16,16);
+            srcImgs{1} = rand(16,16).*exp(1i*2*pi*rand(16,16));
             optfcn = @fminunc;
             nUnfixedSteps = 1;
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.design.*
-            testCase.designer = NsoltDictionaryLearning(...
+            import saivdr.dictionary.cnsoltx.design.*
+            testCase.designer = CnsoltDictionaryLearning(...
                 'IsFixedCoefs',true,...
                 'NumberOfUnfixedInitialSteps', nUnfixedSteps,...
                 'NumberOfDimensions','Two',...
@@ -655,7 +655,7 @@ classdef NsoltDictionaryLearningTestCase < matlab.unittest.TestCase
         
         
         % Test 
-        function testNsoltDictionaryLearningIhtDec222Ch55Ord222(testCase)
+        function testCnsoltDictionaryLearningIhtDec222Ch55Ord222(testCase)
     
             % Parameter settings
             nCoefs   = 4;
@@ -667,8 +667,8 @@ classdef NsoltDictionaryLearningTestCase < matlab.unittest.TestCase
             nUnfixedSteps = 2;
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.design.*
-            testCase.designer = NsoltDictionaryLearning(...
+            import saivdr.dictionary.cnsoltx.design.*
+            testCase.designer = CnsoltDictionaryLearning(...
                 'IsFixedCoefs',true,...
                 'NumberOfUnfixedInitialSteps',nUnfixedSteps,...
                 'NumberOfDimensions','Three',...
@@ -711,7 +711,7 @@ classdef NsoltDictionaryLearningTestCase < matlab.unittest.TestCase
         end        
         
         % Test 
-        function testNsoltDictionaryLearningIhtDec112Ch22Ord222(testCase)
+        function testCnsoltDictionaryLearningIhtDec112Ch22Ord222(testCase)
     
             % Parameter settings
             nCoefs   = 4;
@@ -724,8 +724,8 @@ classdef NsoltDictionaryLearningTestCase < matlab.unittest.TestCase
             nUnfixedSteps = 2;
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.design.*
-            testCase.designer = NsoltDictionaryLearning(...
+            import saivdr.dictionary.cnsoltx.design.*
+            testCase.designer = CnsoltDictionaryLearning(...
                 'IsFixedCoefs',true,...
                 'NumberOfUnfixedInitialSteps',nUnfixedSteps,...
                 'NumberOfDimensions','Three',...
