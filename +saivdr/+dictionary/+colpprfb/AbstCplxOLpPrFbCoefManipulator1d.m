@@ -19,7 +19,7 @@ classdef AbstCplxOLpPrFbCoefManipulator1d < matlab.System %#codegen
         DATA_DIMENSION = 1
     end
     
-    properties (Nontunable, PositiveInteger)
+    properties (PositiveInteger)
         NumberOfChannels = 4
         NumberOfHalfChannels = 2
     end
@@ -32,7 +32,7 @@ classdef AbstCplxOLpPrFbCoefManipulator1d < matlab.System %#codegen
         PolyPhaseOrder = 0;
     end
 
-    properties (SetAccess = protected, GetAccess = public, Nontunable)
+    properties (SetAccess = protected, GetAccess = public)
         OLpPrFbType = 'Type I'
     end
     
@@ -61,6 +61,8 @@ classdef AbstCplxOLpPrFbCoefManipulator1d < matlab.System %#codegen
             obj.NumberOfHalfChannels = floor(obj.NumberOfChannels/2);
             if mod(obj.NumberOfChannels,2) ~= 0
                 obj.OLpPrFbType = 'Type II';
+            else
+                obj.OLpPrFbType = 'Type I';
             end
         end
         

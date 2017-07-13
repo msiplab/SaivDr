@@ -22,7 +22,7 @@ classdef AbstCnsoltCoefManipulator3d < matlab.System
         DATA_DIMENSION = 3
     end
     
-    properties (Nontunable, PositiveInteger)
+    properties (PositiveInteger)
         NumberOfChannels      = 8
         NumberOfHalfChannels  = 4
     end
@@ -35,7 +35,7 @@ classdef AbstCnsoltCoefManipulator3d < matlab.System
         PolyPhaseOrder = [ 0 0 0 ]
     end
 
-    properties (SetAccess = protected, GetAccess = public, Nontunable)
+    properties (SetAccess = protected, GetAccess = public)
         NsoltType = 'Type I'
     end
     
@@ -66,6 +66,8 @@ classdef AbstCnsoltCoefManipulator3d < matlab.System
             obj.NumberOfHalfChannels = floor(obj.NumberOfChannels/2);
             if mod(obj.NumberOfChannels,2) ~= 0
                 obj.NsoltType = 'Type II';
+            else
+                obj.NsoltType = 'Type I';
             end
         end
         

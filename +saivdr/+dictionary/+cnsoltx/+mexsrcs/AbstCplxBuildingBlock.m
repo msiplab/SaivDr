@@ -18,7 +18,7 @@ classdef AbstCplxBuildingBlock < matlab.System  %#codegen
     % LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627
     %
     
-    properties (Access=protected,Nontunable)
+    properties (Access=protected)
         nHalfChannels
         I
         bmg

@@ -2,7 +2,7 @@ classdef ButterflyMatrixGenerationSystem < matlab.System
     %BUTTERFLYMATRIXGENERATIONSYSTEM このクラスの概要をここに記述
     %   詳細説明をここに記述
     
-    properties (Nontunable)
+    properties %(Nontunable)
         NumberOfSubmatrices
     end
     
