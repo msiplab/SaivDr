@@ -20,6 +20,7 @@ if isempty(h)
     h = saivdr.dictionary.colpprfb.CplxOLpPrFbAtomExtender1d();
 end
 set(h,'NumberOfChannels',nch);
+set(h,'NumberOfHalfChannels',floor(nch/2));
 set(h,'IsPeriodicExt',fpe);
 set(h,'PolyPhaseOrder',ord);
 coefs = step(h, coefs, scale, pmcoefs);

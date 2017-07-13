@@ -1,4 +1,4 @@
-function coefs = fcn_CnsoltAtomConcatenator3d( coefs, scale, pmcoefs, ...
+function coefs = fcn_CnsoltAtomConcatenator3dCodeGen( coefs, scale, pmcoefs, ...
     nch, ord, fpe ) %#codegen
 % FCN_NSOLTX_SUPEXT_TYPE1
 %    
@@ -17,9 +17,9 @@ function coefs = fcn_CnsoltAtomConcatenator3d( coefs, scale, pmcoefs, ...
 %
 persistent h;
 if isempty(h)
-    h = saivdr.dictionary.cnsoltx.CnsoltAtomConcatenator3d();
+    h = saivdr.dictionary.cnsoltx.CnsoltAtomConcatenator3d(...
+        'NumberOfChannels',nch);
 end
-set(h,'NumberOfChannels',nch);
 set(h,'IsPeriodicExt',fpe);
 set(h,'PolyPhaseOrder',ord);
 coefs = step(h, coefs, scale, pmcoefs);

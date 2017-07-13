@@ -17,9 +17,9 @@ function coefs = fcn_CnsoltAtomConcatenator2dCodeGen(...
 %
 persistent h;
 if isempty(h)
-    h = saivdr.dictionary.cnsoltx.CnsoltAtomConcatenator2d();
+    h = saivdr.dictionary.cnsoltx.CnsoltAtomConcatenator2d(...
+        'NumberOfChannels',nch);
 end
-set(h,'NumberOfChannels',nch);
 set(h,'IsPeriodicExt',fpe);
 set(h,'PolyPhaseOrder',ord);
 coefs = step(h, coefs, scale, pmcoefs);

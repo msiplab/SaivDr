@@ -17,9 +17,9 @@ function coefs = fcn_CnsoltAtomExtender3dCodeGen( coefs, scale, pmcoefs, ...
 %
 persistent h;
 if isempty(h)
-    h = saivdr.dictionary.cnsoltx.CnsoltAtomExtender3d();
+    h = saivdr.dictionary.cnsoltx.CnsoltAtomExtender3d(...
+        'NumberOfChannels',nch);
 end
-set(h,'NumberOfChannels',nch);
 set(h,'IsPeriodicExt',fpe);
 set(h,'PolyPhaseOrder',ord);
 coefs = step(h, coefs, scale, pmcoefs);
