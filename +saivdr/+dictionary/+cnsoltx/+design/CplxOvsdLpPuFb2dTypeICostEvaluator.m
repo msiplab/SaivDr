@@ -52,9 +52,8 @@ classdef CplxOvsdLpPuFb2dTypeICostEvaluator < ... %#codegen
         
         function setupImpl(obj,~,~,scales)
             
-            nch = [ obj.NumberOfSymmetricChannels ...
-                obj.NumberOfAntisymmetricChannels ];
-            nChs = sum(nch);
+            nChs = obj.NumberOfChannels;
+            nch = [ceil(nChs/2) floor(nChs/2)];
             ord = uint32(obj.polyPhaseOrder);
             
             % Check nLeves
@@ -66,7 +65,7 @@ classdef CplxOvsdLpPuFb2dTypeICostEvaluator < ... %#codegen
             % Prepare MEX function
             if ~obj.isMexFcn
                 import saivdr.dictionary.cnsoltx.mexsrcs.fcn_autobuild_catomcnc2d
-                [mexFcnAcnc, isMexFcnAcnc] = fcn_autobuild_catomcnc2d(nch);
+                [mexFcnAcnc, isMexFcnAcnc] = fcn_autobuild_catomcnc2d(nChs);
                 %
                 import saivdr.dictionary.cnsoltx.mexsrcs.fcn_autobuild_gradevalsteps2d
                 [mexFcnGrad, isMexFcnGrad] = fcn_autobuild_gradevalsteps2d(nch,ord);
@@ -76,12 +75,12 @@ classdef CplxOvsdLpPuFb2dTypeICostEvaluator < ... %#codegen
             % Atom concatenator
             if ~isempty(mexFcnAcnc)
                 obj.atomCncFcn = @(coefs,scale,pmcoefs,ord,fpe) ...
-                    mexFcnAcnc(coefs,scale,pmcoefs,nch,ord,fpe);
+                    mexFcnAcnc(coefs,scale,pmcoefs,nChs,ord,fpe);
             else
                 import saivdr.dictionary.cnsoltx.mexsrcs.fcn_CnsoltAtomConcatenator2d
                 clear fcn_CnsoltAtomConcatenator2d
                 obj.atomCncFcn = @(coefs,scale,pmcoefs,ord,fpe) ...
-                    fcn_CnsoltAtomConcatenator2d(coefs,scale,pmcoefs,nch,ord,fpe);
+                    fcn_CnsoltAtomConcatenator2d(coefs,scale,pmcoefs,nChs,ord,fpe);
             end
             % Gradient evaluator
             if ~isempty(mexFcnGrad)
@@ -120,8 +119,8 @@ classdef CplxOvsdLpPuFb2dTypeICostEvaluator < ... %#codegen
             %
             pmCoefs = get(pmMtx,'Coefficients');
             %
-            ps  = obj.NumberOfSymmetricChannels;
-            pa  = obj.NumberOfAntisymmetricChannels;
+            ps  = ceil(obj.NumberOfChannels/2);
+            pa  = floor(obj.NumberOfChannels/2);
             nChs  = ps + pa;
             %
             decY_  = obj.decimationFactor(Direction.VERTICAL);
@@ -169,7 +168,8 @@ classdef CplxOvsdLpPuFb2dTypeICostEvaluator < ... %#codegen
 %                 coefs = im2col(dctCoefs,blockSize,'distinct');
 %                 arrayCoefsC(1:mc,:) = coefs(1:mc,:);
 %                 arrayCoefsC(ps+1:ps+mf,:) = coefs(mc+1:end,:);
-                dftCoefs = blockproc(difImg,blockSize,@obj.hsdft2_);
+                dftCoefs = blockproc(difImg,blockSize,...
+                    @(x) saivdr.utility.HermitianSymmetricDFT.hsdft2(x.data));
                 coefs = im2col(dftCoefs,blockSize,'distinct');
                 arrayCoefsC(1:decX_*decY_,:) = coefs;
             end
@@ -186,8 +186,7 @@ classdef CplxOvsdLpPuFb2dTypeICostEvaluator < ... %#codegen
             import saivdr.dictionary.utility.Direction
             %
             pmCoefs = get(pmMtx,'Coefficients');
-            nChs = obj.NumberOfSymmetricChannels ...
-                + obj.NumberOfAntisymmetricChannels;
+            nChs = obj.NumberOfChannels;
             %
             iSubband = 1;
             eIdx = prod(scales(iSubband,:));
@@ -223,7 +222,7 @@ classdef CplxOvsdLpPuFb2dTypeICostEvaluator < ... %#codegen
             arrayCoefs = obj.atomCncFcn(arrayCoefs,subScale,pmCoefs,...
                 ord,fpe);
             
-            % Block IDCT
+            % Block IDFT
             if decY_ == 1 && decX_ == 1
                 scale = double(subScale);
                 coefs = zeros(nDec,nRows_*nCols_);
@@ -261,56 +260,11 @@ classdef CplxOvsdLpPuFb2dTypeICostEvaluator < ... %#codegen
                 coefs = arrayCoefs(1:nDec,:);
                 scale = double(subScale) .* obj.decimationFactor;
                 dftCoefs = col2im(coefs,blockSize,scale,'distinct');
-                recImg = blockproc(dftCoefs,blockSize,@obj.ihsdft);
-                fprintf('Hello World!!!\n');
+                recImg = blockproc(dftCoefs,blockSize,...
+                    @(x) saivdr.utility.HermitianSymmetricDFT.ihsdft2(x.data));
+                %fprintf('Hello World!!!\n');
             end
         end
-        
-    end
-    
-    methods (Access = private, Static = true)
-        
-%         function value = idct2_(x)
-%             value = idct2(x.data);
-%         end
-%         
-%         function value = permuteIdctCoefs_(x)
-%             coefs = x.data;
-%             decY_ = x.blockSize(1);
-%             decX_ = x.blockSize(2);
-%             nQDecsee = ceil(decY_/2)*ceil(decX_/2);
-%             nQDecsoo = floor(decY_/2)*floor(decX_/2);
-%             nQDecsoe = floor(decY_/2)*ceil(decX_/2);
-%             cee = coefs(         1:  nQDecsee);
-%             coo = coefs(nQDecsee+1:nQDecsee+nQDecsoo);
-%             coe = coefs(nQDecsee+nQDecsoo+1:nQDecsee+nQDecsoo+nQDecsoe);
-%             ceo = coefs(nQDecsee+nQDecsoo+nQDecsoe+1:end);
-%             value = zeros(decY_,decX_);
-%             value(1:2:decY_,1:2:decX_) = ...
-%                 reshape(cee,ceil(decY_/2),ceil(decX_/2));
-%             value(2:2:decY_,2:2:decX_) = ...
-%                 reshape(coo,floor(decY_/2),floor(decX_/2));
-%             value(2:2:decY_,1:2:decX_) = ...
-%                 reshape(coe,floor(decY_/2),ceil(decX_/2));
-%             value(1:2:decY_,2:2:decX_) = ...
-%                 reshape(ceo,ceil(decY_/2),floor(decX_/2));
-%         end
-%         
-%         function value = dct2_(x)
-%             value = dct2(x.data);
-%         end
-%         
-%         function value = permuteDctCoefs_(x)
-%             coefs = x.data;
-%             decY_ = x.blockSize(1);
-%             decX_ = x.blockSize(2);
-%             cee = coefs(1:2:end,1:2:end);
-%             coo = coefs(2:2:end,2:2:end);
-%             coe = coefs(2:2:end,1:2:end);
-%             ceo = coefs(1:2:end,2:2:end);
-%             value = [ cee(:) ; coo(:) ; coe(:) ; ceo(:) ];
-%             value = reshape(value,decY_,decX_);
-%         end
         
     end
     

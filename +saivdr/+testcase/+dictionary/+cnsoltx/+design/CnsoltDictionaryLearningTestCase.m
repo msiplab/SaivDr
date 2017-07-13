@@ -30,12 +30,12 @@ classdef CnsoltDictionaryLearningTestCase < matlab.unittest.TestCase
     methods (Test)
         
         % Test 
-        function testCnsoltDictionaryLearningGpDec22Ch8Ord44(testCase)
+        function testCnsoltDictionaryLearningGpDec22Ch7Ord44(testCase)
     
             % Parameter settings
             nCoefs = 4;
             nLevels = 1;
-            nChs = 8;
+            nChs = 7;
             nOrds = [ 4 4 ];
             nSprsCoefs = 4;
             isOptMus = false;
@@ -47,15 +47,14 @@ classdef CnsoltDictionaryLearningTestCase < matlab.unittest.TestCase
                 'SourceImages',srcImgs,...
                 'NumberOfSparseCoefficients',nCoefs,...
                 'NumberOfTreeLevels',nLevels,...
-                'NumberOfSymmetricChannel',nChs(1),...
-                'NumberOfAntisymmetricChannel',nChs(2),...
+                'NumberOfChannels',nChs,...
                 'NumbersOfPolyphaseOrder',nOrds);
             
             % Pre
             lppufbPre = get(testCase.designer,'OvsdLpPuFb');
             import saivdr.dictionary.cnsoltx.*
-            synthesizer = NsoltFactory.createSynthesis2dSystem(lppufbPre);
-            analyzer  = NsoltFactory.createAnalysis2dSystem(lppufbPre);
+            synthesizer = CnsoltFactory.createSynthesis2dSystem(lppufbPre);
+            analyzer  = CnsoltFactory.createAnalysis2dSystem(lppufbPre);
             import saivdr.sparserep.*
             gpnsolt = GradientPursuit(...
                 'Synthesizer',synthesizer,...
@@ -81,12 +80,12 @@ classdef CnsoltDictionaryLearningTestCase < matlab.unittest.TestCase
         end
         
         % Test 
-        function testCnsoltDictionaryLearningGpDec22Ch62Ord44Ga(testCase)
+        function testCnsoltDictionaryLearningGpDec22Ch7Ord44Ga(testCase)
     
             % Parameter settings
             nCoefs = 4;
             nLevels = 1;
-            nChs = [ 6 2 ];
+            nChs = 7;
             nOrds = [ 4 4 ];
             nSprsCoefs = 4;
             isOptMus = true;
@@ -99,8 +98,7 @@ classdef CnsoltDictionaryLearningTestCase < matlab.unittest.TestCase
                 'SourceImages',srcImgs,...
                 'NumberOfSparseCoefficients',nCoefs,...
                 'NumberOfTreeLevels',nLevels,...
-                'NumberOfSymmetricChannel',nChs(1),...
-                'NumberOfAntisymmetricChannel',nChs(2),...
+                'NumberOfChannels',nChs,...
                 'OptimizationFunction',optfcn,...                
                 'NumbersOfPolyphaseOrder',nOrds,...
                 'MaxIterOfHybridFmin',2,...
@@ -110,8 +108,8 @@ classdef CnsoltDictionaryLearningTestCase < matlab.unittest.TestCase
             import saivdr.sparserep.*
             lppufbPre = get(testCase.designer,'OvsdLpPuFb');
             import saivdr.dictionary.cnsoltx.*
-            synthesizer = NsoltFactory.createSynthesis2dSystem(lppufbPre);
-            analyzer    = NsoltFactory.createAnalysis2dSystem(lppufbPre);            
+            synthesizer = CnsoltFactory.createSynthesis2dSystem(lppufbPre);
+            analyzer    = CnsoltFactory.createAnalysis2dSystem(lppufbPre);            
             gpnsolt = GradientPursuit(...
                 'Synthesizer',synthesizer,...
                 'AdjOfSynthesizer',analyzer,...
@@ -142,12 +140,12 @@ classdef CnsoltDictionaryLearningTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testCnsoltDictionaryLearningIhtDec22Ch62Ord44(testCase)
+        function testCnsoltDictionaryLearningIhtDec22Ch7Ord44(testCase)
             
             % Parameter settings
             nCoefs = 4;
             nLevels = 1;
-            nChs = [ 6 2 ];
+            nChs = 7;
             nOrds = [ 4 4 ];
             nSprsCoefs = 4;
             isOptMus = false;
@@ -160,15 +158,14 @@ classdef CnsoltDictionaryLearningTestCase < matlab.unittest.TestCase
                 'SparseCoding','IterativeHardThresholding',...
                 'NumberOfSparseCoefficients',nCoefs,...
                 'NumberOfTreeLevels',nLevels,...
-                'NumberOfSymmetricChannel',nChs(1),...
-                'NumberOfAntisymmetricChannel',nChs(2),...
+                'NumberOfChannels',nChs,...
                 'NumbersOfPolyphaseOrder',nOrds);
             
             % Pre
             lppufbPre = get(testCase.designer,'OvsdLpPuFb');
             import saivdr.dictionary.cnsoltx.*
-            synthesizer = NsoltFactory.createSynthesis2dSystem(lppufbPre);
-            analyzer  = NsoltFactory.createAnalysis2dSystem(lppufbPre);
+            synthesizer = CnsoltFactory.createSynthesis2dSystem(lppufbPre);
+            analyzer  = CnsoltFactory.createAnalysis2dSystem(lppufbPre);
             import saivdr.sparserep.*
             gpnsolt = IterativeHardThresholding(...
                 'Synthesizer',synthesizer,...
@@ -194,129 +191,127 @@ classdef CnsoltDictionaryLearningTestCase < matlab.unittest.TestCase
         end
                 
         % Test
-        function testCnsoltDictionaryLearningIhtDec22Ch44Ord44Sgd(testCase)
-            
-            % Parameter settings
-            nCoefs = 4;
-            nLevels = 1;
-            nChs  = [ 4 4 ];
-            nOrds = [ 4 4 ]; 
-            nSprsCoefs = 4;
-            isOptMus = false;
-            srcImgs{1} = rand(12,16);
-            srcImgs{2} = rand(12,16);
-            srcImgs{3} = rand(12,16);
-            srcImgs{4} = rand(12,16);
-            
-            % Instantiation of target class
-            import saivdr.dictionary.cnsoltx.design.*
-            testCase.designer = CnsoltDictionaryLearning(...
-                'SourceImages',srcImgs,...
-                'SparseCoding','IterativeHardThresholding',...
-                'DictionaryUpdater','CnsoltDictionaryUpdateSgd',...
-                'IsFixedCoefs',true,...
-                'NumberOfSparseCoefficients',nCoefs,...
-                'NumberOfTreeLevels',nLevels,...
-                'NumberOfSymmetricChannel',nChs(1),...
-                'NumberOfAntisymmetricChannel',nChs(2),...
-                'NumbersOfPolyphaseOrder',nOrds,...
-                'GradObj', 'on');
-            
-            % Pre
-            lppufbPre = get(testCase.designer,'OvsdLpPuFb');
-            import saivdr.dictionary.cnsoltx.*
-            synthesizer = NsoltFactory.createSynthesis2dSystem(lppufbPre);
-            analyzer  = NsoltFactory.createAnalysis2dSystem(lppufbPre);
-            import saivdr.sparserep.*
-            ihtnsolt = IterativeHardThresholding(...
-                'Synthesizer',synthesizer,...
-                'AdjOfSynthesizer',analyzer,...
-                'NumberOfTreeLevels',nLevels);
-            nImgs = length(srcImgs);
-            coefsPre = cell(nImgs,1);
-            setOfScales   = cell(nImgs,1);
-            for iImg = 1:nImgs
-                [~, coefsPre{iImg},setOfScales{iImg}] = ...
-                    step(ihtnsolt,srcImgs{iImg},nSprsCoefs);
-            end
-            aprxErr = AprxErrorWithSparseRep(...
-                'SourceImages', srcImgs,...
-                'NumberOfTreeLevels',nLevels);
-            costPre = step(aprxErr,lppufbPre,coefsPre,setOfScales);
-            
-            % Pst
-            options = optimset(...
-                'MaxIter',2*nImgs,...
-                'TolX',1e-4);                
-            [~, costPst] = step(testCase.designer,options,isOptMus);
-            
-            % Evaluation
-            import matlab.unittest.constraints.IsLessThan
-            testCase.verifyThat(costPst, IsLessThan(costPre));
-            
-        end
-        
-        % Test
-        function testCnsoltDictionaryLearningIhtDec22Ch44Ord44GradObj(testCase)
-            
-            % Parameter settings
-            nLevels = 1;
-            nChs  = [ 4 4 ];
-            nOrds = [ 4 4 ];
-            nSprsCoefs = 4;
-            isOptMus = false;
-            srcImgs{1} = rand(12,16);
-            
-            % Instantiation of target class
-            import saivdr.dictionary.cnsoltx.design.*
-            testCase.designer = CnsoltDictionaryLearning(...
-                'SourceImages',srcImgs,...
-                'SparseCoding','IterativeHardThresholding',...
-                'NumberOfSparseCoefficients',nSprsCoefs,...
-                'NumberOfTreeLevels',nLevels,...
-                'NumberOfSymmetricChannel',nChs(1),...
-                'NumberOfAntisymmetricChannel',nChs(2),...
-                'NumbersOfPolyphaseOrder',nOrds,...
-                'IsFixedCoefs',true,...
-                'GradObj', 'on');
-            
-            % Pre
-            lppufbPre = get(testCase.designer,'OvsdLpPuFb');
-            import saivdr.dictionary.cnsoltx.*
-            synthesizer = NsoltFactory.createSynthesis2dSystem(lppufbPre);
-            analyzer  = NsoltFactory.createAnalysis2dSystem(lppufbPre);
-            import saivdr.sparserep.*
-            gpnsolt = IterativeHardThresholding(...
-                'Synthesizer',synthesizer,...
-                'AdjOfSynthesizer',analyzer,...
-                'NumberOfTreeLevels',nLevels);
-            [~, coefsPre{1},scales{1}] = step(gpnsolt,srcImgs{1},nSprsCoefs);
-            aprxErr = AprxErrorWithSparseRep(...
-                'SourceImages', srcImgs,...
-                'NumberOfTreeLevels',nLevels);
-            costPre = step(aprxErr,lppufbPre,coefsPre,scales);
-            
-            % Pst
-            options = optimoptions('fminunc');
-            options = optimoptions(options,'Algorithm','trust-region');
-            options = optimoptions(options,'Display','off');
-            options = optimoptions(options,'MaxIter',2);
-            options = optimoptions(options,'GradObj','on');
-            [~, costPst] = step(testCase.designer,options,isOptMus);
-            
-            % Evaluation
-            import matlab.unittest.constraints.IsLessThan
-            testCase.verifyThat(costPst, IsLessThan(costPre));
-            
-        end
+%         function testCnsoltDictionaryLearningIhtDec22Ch8Ord44Sgd(testCase)
+%             
+%             % Parameter settings
+%             nCoefs = 4;
+%             nLevels = 1;
+%             nChs  = 8;
+%             nOrds = [ 4 4 ]; 
+%             nSprsCoefs = 4;
+%             isOptMus = false;
+%             srcImgs{1} = rand(12,16).*exp(1i*2*pi*rand(12,16));
+%             srcImgs{2} = rand(12,16).*exp(1i*2*pi*rand(12,16));
+%             srcImgs{3} = rand(12,16).*exp(1i*2*pi*rand(12,16));
+%             srcImgs{4} = rand(12,16).*exp(1i*2*pi*rand(12,16));
+%             
+%             % Instantiation of target class
+%             import saivdr.dictionary.cnsoltx.design.*
+%             testCase.designer = CnsoltDictionaryLearning(...
+%                 'SourceImages',srcImgs,...
+%                 'SparseCoding','IterativeHardThresholding',...
+%                 'DictionaryUpdater','CnsoltDictionaryUpdateSgd',...
+%                 'IsFixedCoefs',true,...
+%                 'NumberOfSparseCoefficients',nCoefs,...
+%                 'NumberOfTreeLevels',nLevels,...
+%                 'NumberOfChannels',nChs,...
+%                 'NumbersOfPolyphaseOrder',nOrds,...
+%                 'GradObj', 'on');
+%             
+%             % Pre
+%             lppufbPre = get(testCase.designer,'OvsdLpPuFb');
+%             import saivdr.dictionary.cnsoltx.*
+%             synthesizer = CnsoltFactory.createSynthesis2dSystem(lppufbPre);
+%             analyzer  = CnsoltFactory.createAnalysis2dSystem(lppufbPre);
+%             import saivdr.sparserep.*
+%             ihtnsolt = IterativeHardThresholding(...
+%                 'Synthesizer',synthesizer,...
+%                 'AdjOfSynthesizer',analyzer,...
+%                 'NumberOfTreeLevels',nLevels);
+%             nImgs = length(srcImgs);
+%             coefsPre = cell(nImgs,1);
+%             setOfScales   = cell(nImgs,1);
+%             for iImg = 1:nImgs
+%                 [~, coefsPre{iImg},setOfScales{iImg}] = ...
+%                     step(ihtnsolt,srcImgs{iImg},nSprsCoefs);
+%             end
+%             aprxErr = AprxErrorWithSparseRep(...
+%                 'SourceImages', srcImgs,...
+%                 'NumberOfTreeLevels',nLevels);
+%             costPre = step(aprxErr,lppufbPre,coefsPre,setOfScales);
+%             
+%             % Pst
+%             options = optimset(...
+%                 'MaxIter',2*nImgs,...
+%                 'TolX',1e-4);                
+%             [~, costPst] = step(testCase.designer,options,isOptMus);
+%             
+%             % Evaluation
+%             import matlab.unittest.constraints.IsLessThan
+%             testCase.verifyThat(costPst, IsLessThan(costPre));
+%             
+%         end
+%         
+%         % Test
+%         function testCnsoltDictionaryLearningIhtDec22Ch8Ord44GradObj(testCase)
+%             
+%             % Parameter settings
+%             nLevels = 1;
+%             nChs  = 8;
+%             nOrds = [ 4 4 ];
+%             nSprsCoefs = 4;
+%             isOptMus = false;
+%             srcImgs{1} = rand(12,16).*exp(1i*2*pi*rand(12,16));
+%             
+%             % Instantiation of target class
+%             import saivdr.dictionary.cnsoltx.design.*
+%             testCase.designer = CnsoltDictionaryLearning(...
+%                 'SourceImages',srcImgs,...
+%                 'SparseCoding','IterativeHardThresholding',...
+%                 'NumberOfSparseCoefficients',nSprsCoefs,...
+%                 'NumberOfTreeLevels',nLevels,...
+%                 'NumberOfChannels',nChs,...
+%                 'NumbersOfPolyphaseOrder',nOrds,...
+%                 'IsFixedCoefs',true,...
+%                 'GradObj', 'on');
+%             
+%             % Pre
+%             lppufbPre = get(testCase.designer,'OvsdLpPuFb');
+%             import saivdr.dictionary.cnsoltx.*
+%             synthesizer = CnsoltFactory.createSynthesis2dSystem(lppufbPre);
+%             analyzer  = CnsoltFactory.createAnalysis2dSystem(lppufbPre);
+%             import saivdr.sparserep.*
+%             gpnsolt = IterativeHardThresholding(...
+%                 'Synthesizer',synthesizer,...
+%                 'AdjOfSynthesizer',analyzer,...
+%                 'NumberOfTreeLevels',nLevels);
+%             [~, coefsPre{1},scales{1}] = step(gpnsolt,srcImgs{1},nSprsCoefs);
+%             aprxErr = AprxErrorWithSparseRep(...
+%                 'SourceImages', srcImgs,...
+%                 'NumberOfTreeLevels',nLevels);
+%             costPre = step(aprxErr,lppufbPre,coefsPre,scales);
+%             
+%             % Pst
+%             options = optimoptions('fminunc');
+%             options = optimoptions(options,'Algorithm','trust-region');
+%             options = optimoptions(options,'Display','off');
+%             options = optimoptions(options,'MaxIter',2);
+%             options = optimoptions(options,'GradObj','on');
+%             [~, costPst] = step(testCase.designer,options,isOptMus);
+%             
+%             % Evaluation
+%             import matlab.unittest.constraints.IsLessThan
+%             testCase.verifyThat(costPst, IsLessThan(costPre));
+%             
+%         end
         
         % Test 
-        function testCnsoltDictionaryLearningIhtDec22Ch62Ord44Ga(testCase)
+        function testCnsoltDictionaryLearningIhtDec22Ch7Ord44Ga(testCase)
     
             % Parameter settings
             nCoefs = 4;
             nLevels = 1;
-            nChs = [ 6 2 ];
+            nChs = 7;
             nOrds = [ 4 4 ];
             nSprsCoefs = 4;
             isOptMus = true;
@@ -330,8 +325,7 @@ classdef CnsoltDictionaryLearningTestCase < matlab.unittest.TestCase
                 'SparseCoding','IterativeHardThresholding',...
                 'NumberOfSparseCoefficients',nCoefs,...
                 'NumberOfTreeLevels',nLevels,...
-                'NumberOfSymmetricChannel',nChs(1),...
-                'NumberOfAntisymmetricChannel',nChs(2),...
+                'NumberOfChannels',nChs,...
                 'OptimizationFunction',optfcn,...                
                 'NumbersOfPolyphaseOrder',nOrds,...
                 'MaxIterOfHybridFmin',2,...
@@ -341,8 +335,8 @@ classdef CnsoltDictionaryLearningTestCase < matlab.unittest.TestCase
             import saivdr.sparserep.*
             lppufbPre = get(testCase.designer,'OvsdLpPuFb');
             import saivdr.dictionary.cnsoltx.*
-            synthesizer = NsoltFactory.createSynthesis2dSystem(lppufbPre);
-            analyzer    = NsoltFactory.createAnalysis2dSystem(lppufbPre);            
+            synthesizer = CnsoltFactory.createSynthesis2dSystem(lppufbPre);
+            analyzer    = CnsoltFactory.createAnalysis2dSystem(lppufbPre);            
             gpnsolt = IterativeHardThresholding(...
                 'Synthesizer',synthesizer,...
                 'AdjOfSynthesizer',analyzer,...
@@ -373,16 +367,16 @@ classdef CnsoltDictionaryLearningTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testCnsoltDictionaryLearningGpDec222Ch55Ord222(testCase)
+        function testCnsoltDictionaryLearningGpDec222Ch10Ord222(testCase)
             
             % Parameter settings
             nCoefs = 4;
             nLevels = 1;
-            nChs = [ 5 5 ];
+            nChs = 10;
             nOrds = [ 2 2 2 ];
             nSprsCoefs = 4;
             isOptMus = false;
-            srcImgs{1} = rand(16,16,16);
+            srcImgs{1} = rand(16,16,16).*exp(1i*2*pi*rand(16,16,16));
             
             % Instantiation of target class
             import saivdr.dictionary.cnsoltx.design.*
@@ -391,15 +385,14 @@ classdef CnsoltDictionaryLearningTestCase < matlab.unittest.TestCase
                 'SourceImages',srcImgs,...
                 'NumberOfSparseCoefficients',nCoefs,...
                 'NumberOfTreeLevels',nLevels,...
-                'NumberOfSymmetricChannel',nChs(1),...
-                'NumberOfAntisymmetricChannel',nChs(2),...
+                'NumberOfChannels',nChs,...
                 'NumbersOfPolyphaseOrder',nOrds);
             
             % Pre
             lppufbPre = get(testCase.designer,'OvsdLpPuFb');
             import saivdr.dictionary.cnsoltx.*
-            synthesizer = NsoltFactory.createSynthesis3dSystem(lppufbPre);
-            analyzer  = NsoltFactory.createAnalysis3dSystem(lppufbPre);
+            synthesizer = CnsoltFactory.createSynthesis3dSystem(lppufbPre);
+            analyzer  = CnsoltFactory.createAnalysis3dSystem(lppufbPre);
             import saivdr.sparserep.*
             gpnsolt = GradientPursuit(...
                 'Synthesizer',synthesizer,...
@@ -426,16 +419,16 @@ classdef CnsoltDictionaryLearningTestCase < matlab.unittest.TestCase
         
                 
         % Test 
-        function testCnsoltDictionaryLearningGpDec222Ch64Ord222Ga(testCase)
+        function testCnsoltDictionaryLearningGpDec222Ch9Ord222Ga(testCase)
     
             % Parameter settings
             nCoefs = 4;
             nLevels = 1;
-            nChs = [ 6 4 ];
+            nChs = 9;
             nOrds = [ 2 2 2 ];
             nSprsCoefs = 4;
             isOptMus = true;
-            srcImgs{1} = rand(16,16,16);            
+            srcImgs{1} = rand(16,16,16).*exp(1i*2*pi*rand(16,16,16));            
             optfcn = @ga;
             
             % Instantiation of target class
@@ -445,8 +438,7 @@ classdef CnsoltDictionaryLearningTestCase < matlab.unittest.TestCase
                 'SourceImages',srcImgs,...
                 'NumberOfSparseCoefficients',nCoefs,...
                 'NumberOfTreeLevels',nLevels,...
-                'NumberOfSymmetricChannel',nChs(1),...
-                'NumberOfAntisymmetricChannel',nChs(2),...
+                'NumberOfChannels',nChs,...
                 'OptimizationFunction',optfcn,...                
                 'NumbersOfPolyphaseOrder',nOrds,...
                 'MaxIterOfHybridFmin',2,...
@@ -456,8 +448,8 @@ classdef CnsoltDictionaryLearningTestCase < matlab.unittest.TestCase
             import saivdr.sparserep.*
             lppufbPre = get(testCase.designer,'OvsdLpPuFb');
             import saivdr.dictionary.cnsoltx.*
-            synthesizer = NsoltFactory.createSynthesis3dSystem(lppufbPre);
-            analyzer    = NsoltFactory.createAnalysis3dSystem(lppufbPre);            
+            synthesizer = CnsoltFactory.createSynthesis3dSystem(lppufbPre);
+            analyzer    = CnsoltFactory.createAnalysis3dSystem(lppufbPre);            
             gpnsolt = GradientPursuit(...
                 'Synthesizer',synthesizer,...
                 'AdjOfSynthesizer',analyzer,...
@@ -487,16 +479,16 @@ classdef CnsoltDictionaryLearningTestCase < matlab.unittest.TestCase
         end
 
      % Test 
-        function testCnsoltDictionaryLearningIhtDec222Ch64Ord222(testCase)
+        function testCnsoltDictionaryLearningIhtDec222Ch9Ord222(testCase)
     
             % Parameter settings
             nCoefs = 4;
             nLevels = 1;
-            nChs = [ 6 4 ];
+            nChs = 9;
             nOrds = [ 2 2 2 ];
             nSprsCoefs = 4;
             isOptMus = false;
-            srcImgs{1} = rand(16,16,16);            
+            srcImgs{1} = rand(16,16,16).*exp(1i*2*pi*rand(16,16,16));            
             
             % Instantiation of target class
             import saivdr.dictionary.cnsoltx.design.*
@@ -506,15 +498,14 @@ classdef CnsoltDictionaryLearningTestCase < matlab.unittest.TestCase
                 'SparseCoding','IterativeHardThresholding',...
                 'NumberOfSparseCoefficients',nCoefs,...
                 'NumberOfTreeLevels',nLevels,...
-                'NumberOfSymmetricChannel',nChs(1),...
-                'NumberOfAntisymmetricChannel',nChs(2),...
+                'NumberOfChannels',nChs,...
                 'NumbersOfPolyphaseOrder',nOrds);
             
             % Pre
             lppufbPre = get(testCase.designer,'OvsdLpPuFb');
             import saivdr.dictionary.cnsoltx.*
-            synthesizer = NsoltFactory.createSynthesis3dSystem(lppufbPre);
-            analyzer  = NsoltFactory.createAnalysis3dSystem(lppufbPre);
+            synthesizer = CnsoltFactory.createSynthesis3dSystem(lppufbPre);
+            analyzer  = CnsoltFactory.createAnalysis3dSystem(lppufbPre);
             import saivdr.sparserep.*
             gpnsolt = IterativeHardThresholding(...
                 'Synthesizer',synthesizer,...
@@ -540,16 +531,16 @@ classdef CnsoltDictionaryLearningTestCase < matlab.unittest.TestCase
         end        
         
       % Test 
-        function testCnsoltDictionaryLearningIhtDec222Ch55Ord222Ga(testCase)
+        function testCnsoltDictionaryLearningIhtDec222Ch10Ord222Ga(testCase)
     
             % Parameter settings
             nCoefs = 4;
             nLevels = 1;
-            nChs = [ 5 5 ];
+            nChs = 10;
             nOrds = [ 2 2 2 ];
             nSprsCoefs = 4;
             isOptMus = true;
-            srcImgs{1} = rand(16,16,16);            
+            srcImgs{1} = rand(16,16,16).*exp(1i*2*pi*rand(16,16,16));            
             optfcn = @ga;
             
             % Instantiation of target class
@@ -560,8 +551,7 @@ classdef CnsoltDictionaryLearningTestCase < matlab.unittest.TestCase
                 'SparseCoding','IterativeHardThresholding',...
                 'NumberOfSparseCoefficients',nCoefs,...
                 'NumberOfTreeLevels',nLevels,...
-                'NumberOfSymmetricChannel',nChs(1),...
-                'NumberOfAntisymmetricChannel',nChs(2),...
+                'NumberOfChannels',nChs,...
                 'OptimizationFunction',optfcn,...                
                 'NumbersOfPolyphaseOrder',nOrds,...
                 'MaxIterOfHybridFmin',2,...
@@ -571,8 +561,8 @@ classdef CnsoltDictionaryLearningTestCase < matlab.unittest.TestCase
             import saivdr.sparserep.*
             lppufbPre = get(testCase.designer,'OvsdLpPuFb');
             import saivdr.dictionary.cnsoltx.*
-            synthesizer = NsoltFactory.createSynthesis3dSystem(lppufbPre);
-            analyzer    = NsoltFactory.createAnalysis3dSystem(lppufbPre);            
+            synthesizer = CnsoltFactory.createSynthesis3dSystem(lppufbPre);
+            analyzer    = CnsoltFactory.createAnalysis3dSystem(lppufbPre);            
             gpnsolt = IterativeHardThresholding(...
                 'Synthesizer',synthesizer,...
                 'AdjOfSynthesizer',analyzer,...
@@ -605,12 +595,12 @@ classdef CnsoltDictionaryLearningTestCase < matlab.unittest.TestCase
         % Test 
         
         % Test 
-        function testCnsoltDictionaryLearningIhtDec22Ch44Ord22(testCase)
+        function testCnsoltDictionaryLearningIhtDec22Ch8Ord22(testCase)
     
             % Parameter settings
             nCoefs   = 4;
             nLevels  = 1;
-            nChs     = [ 4 4 ];
+            nChs     = 8;
             nOrds    = [ 2 2 ];
             srcImgs{1} = rand(16,16).*exp(1i*2*pi*rand(16,16));
             optfcn = @fminunc;
@@ -626,8 +616,7 @@ classdef CnsoltDictionaryLearningTestCase < matlab.unittest.TestCase
                 'SparseCoding','IterativeHardThresholding',...
                 'NumberOfSparseCoefficients',nCoefs,...
                 'NumberOfTreeLevels',nLevels,...
-                'NumberOfSymmetricChannel',nChs(1),...
-                'NumberOfAntisymmetricChannel',nChs(2),...
+                'NumberOfChannels',nChs,...
                 'OptimizationFunction',optfcn,...                
                 'NumbersOfPolyphaseOrder',nOrds);
 
@@ -655,14 +644,14 @@ classdef CnsoltDictionaryLearningTestCase < matlab.unittest.TestCase
         
         
         % Test 
-        function testCnsoltDictionaryLearningIhtDec222Ch55Ord222(testCase)
+        function testCnsoltDictionaryLearningIhtDec222Ch10Ord222(testCase)
     
             % Parameter settings
             nCoefs   = 4;
             nLevels  = 1;
-            nChs     = [ 5 5];
+            nChs     = 10;
             nOrds    = [ 2 2 2 ];
-            srcImgs{1} = rand(16,16,16);
+            srcImgs{1} = rand(16,16,16).*exp(1i*2*pi*rand(16,16,16));
             optfcn = @fminunc;
             nUnfixedSteps = 2;
             
@@ -676,8 +665,7 @@ classdef CnsoltDictionaryLearningTestCase < matlab.unittest.TestCase
                 'SparseCoding','IterativeHardThresholding',...
                 'NumberOfSparseCoefficients',nCoefs,...
                 'NumberOfTreeLevels',nLevels,...
-                'NumberOfSymmetricChannel',nChs(1),...
-                'NumberOfAntisymmetricChannel',nChs(2),...
+                'NumberOfChannels',nChs,...
                 'OptimizationFunction',optfcn,...                
                 'NumbersOfPolyphaseOrder',nOrds);
 
@@ -711,15 +699,15 @@ classdef CnsoltDictionaryLearningTestCase < matlab.unittest.TestCase
         end        
         
         % Test 
-        function testCnsoltDictionaryLearningIhtDec112Ch22Ord222(testCase)
+        function testCnsoltDictionaryLearningIhtDec112Ch4Ord222(testCase)
     
             % Parameter settings
             nCoefs   = 4;
             nLevels  = 1;
             nDecs    = [ 1 1 2 ];
-            nChs     = [ 2 2 ];
+            nChs     = 4;
             nOrds    = [ 2 2 2 ];
-            srcImgs{1} = rand(16,16,16);
+            srcImgs{1} = rand(16,16,16).*exp(1i*2*pi*rand(16,16,16));
             optfcn = @fminunc;
             nUnfixedSteps = 2;
             
@@ -733,8 +721,7 @@ classdef CnsoltDictionaryLearningTestCase < matlab.unittest.TestCase
                 'SparseCoding','IterativeHardThresholding',...
                 'NumberOfSparseCoefficients',nCoefs,...
                 'NumberOfTreeLevels',nLevels,...
-                'NumberOfSymmetricChannel',nChs(1),...
-                'NumberOfAntisymmetricChannel',nChs(2),...
+                'NumberOfChannels',nChs,...
                 'OptimizationFunction',optfcn,...                
                 'NumbersOfPolyphaseOrder',nOrds,...
                 'DecimationFactor',nDecs);
