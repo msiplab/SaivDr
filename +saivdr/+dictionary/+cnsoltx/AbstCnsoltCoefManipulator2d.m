@@ -131,6 +131,19 @@ classdef AbstCnsoltCoefManipulator2d < matlab.System
         end
 
         function processTunedPropertiesImpl(obj)
+            propChange = ...
+                isChangedProperty(obj,'NumberOfChannels') ||...
+                isChangedProperty(obj,'NumberOfHalfChannels') ||...
+                isChangedProperty(obj,'PolyPhaseOrder');
+            if propChange
+                %
+                obj.NumberOfHalfChannels = floor(obj.NumberOfChannels/2);
+                if mod(obj.NumberOfChannels,2) ~= 0
+                    obj.NsoltType = 'Type II';
+                else
+                    obj.NsoltType = 'Type I';
+                end
+            end
             setupParamMtx_(obj);
         end
         

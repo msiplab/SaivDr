@@ -53,7 +53,7 @@ classdef CnsoltSynthesis3dSystem  < ...
     end    
 
     properties (Access = private)
-        atomCncFcn
+        fcnAtomCnc
     end
     
     properties (Access = private, PositiveInteger)
@@ -108,7 +108,7 @@ classdef CnsoltSynthesis3dSystem  < ...
             s.LpPuFb3d = matlab.System.saveObject(obj.LpPuFb3d);
             
             % Save the protected & private properties
-            s.atomCncFcn       = obj.atomCncFcn;            
+            s.fcnAtomCnc       = obj.fcnAtomCnc;            
             s.decimationFactor = obj.decimationFactor;
             s.polyPhaseOrder   = obj.polyPhaseOrder;
             %s.nRows            = obj.nRows;
@@ -117,7 +117,7 @@ classdef CnsoltSynthesis3dSystem  < ...
         
         function loadObjectImpl(obj,s,wasLocked)
             % Load protected and private properties            
-            obj.atomCncFcn       = s.atomCncFcn;
+            obj.fcnAtomCnc       = s.fcnAtomCnc;
             obj.decimationFactor = s.decimationFactor;
             obj.polyPhaseOrder   = s.polyPhaseOrder;
             %obj.nRows            = s.nRows;
@@ -142,22 +142,11 @@ classdef CnsoltSynthesis3dSystem  < ...
         function setupImpl(obj, ~, ~)
             nch = obj.NumberOfChannels;
             
-            % Prepare MEX function
-            if ~obj.isMexFcn
-                import saivdr.dictionary.cnsoltx.mexsrcs.fcn_autobuild_catomcnc3d
-                [mexFcn, obj.isMexFcn] = ...
-                    fcn_autobuild_catomcnc3d(nch);
-            end
-            if ~isempty(mexFcn)
-                obj.atomCncFcn = @(coefs,scale,pmcoefs,ord,fpe) ...
-                    mexFcn(coefs,scale,pmcoefs,...
-                    nch,ord,fpe);
+            if exist('fcn_CnsoltAtomConcatenator3dCodeGen_mex','file')==3
+                obj.fcnAtomCnc = @fcn_CnsoltAtomConcatenator3dCodeGen_mex;
             else
-                import saivdr.dictionary.cnsoltx.mexsrcs.fcn_CnsoltAtomConcatenator3d
-                clear fcn_CnsoltAtomConcatenator3d
-                obj.atomCncFcn = @(coefs,scale,pmcoefs,ord,fpe) ...
-                    fcn_CnsoltAtomConcatenator3d(coefs,scale,pmcoefs,...
-                    nch,ord,fpe);
+                import saivdr.dictionary.cnsoltx.mexsrcs.fcn_CnsoltAtomConcatenator3dCodeGen
+                obj.fcnAtomCnc = @fcn_CnsoltAtomConcatenator3dCodeGen;
             end
             
         end
@@ -227,10 +216,11 @@ classdef CnsoltSynthesis3dSystem  < ...
             % Atom concatenation
             S = diag(exp(-1i*symmetry));
             subScale  = [ nRows_ nCols_ nLays_ ];
+            nch = obj.NumberOfChannels;
             ord  = uint32(obj.polyPhaseOrder);            
             fpe = strcmp(obj.BoundaryOperation,'Circular');         
-            arrayCoefs = obj.atomCncFcn(S*arrayCoefs,subScale,pmCoefs,...
-                ord,fpe);
+            arrayCoefs = obj.fcnAtomCnc(S*arrayCoefs,subScale,pmCoefs,...
+                nch,ord,fpe);
             
             % Block IDCT
             if decY_ == 1 && decX_ == 1 && decZ_ == 1

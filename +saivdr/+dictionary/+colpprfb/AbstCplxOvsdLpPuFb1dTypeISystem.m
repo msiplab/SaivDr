@@ -83,7 +83,7 @@ classdef AbstCplxOvsdLpPuFb1dTypeISystem < ...
                 import saivdr.dictionary.cnsoltx.mexsrcs.fcn_Order1CplxBuildingBlockTypeI
                 obj.mexFcn = @fcn_Order1CplxBuildingBlockTypeI;
                 obj.mexFlag = false;
-            end  
+            end
         end
 
         function updateProperties_(obj)

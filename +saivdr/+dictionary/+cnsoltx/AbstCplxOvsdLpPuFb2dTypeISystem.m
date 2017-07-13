@@ -53,23 +53,37 @@ classdef AbstCplxOvsdLpPuFb2dTypeISystem < ...
         end
 
         function loadObjectImpl(obj,s,wasLocked)
-            obj.mexFcn   = s.mexFcn;
             obj.nStages = s.nStages;
             obj.matrixE0 = s.matrixE0;
             loadObjectImpl@saivdr.dictionary.cnsoltx.AbstCplxOvsdLpPuFb2dSystem(obj,s,wasLocked);
+            %
+            if ~isempty(s.mexFcn)
+                if exist(func2str(s.mexFcn),'file') == 3
+                    obj.mexFcn  = s.mexFcn;
+                else
+                    import saivdr.dictionary.cnsoltx.mexsrcs.fcn_Order1CplxBuildingBlockTypeI
+                    obj.mexFcn = @fcn_Order1CplxBuildingBlockTypeI;
+                end
+            end
         end
 
         function resetImpl(obj)
             resetImpl@saivdr.dictionary.cnsoltx.AbstCplxOvsdLpPuFb2dSystem(obj);
             % Prepare MEX function
-            import saivdr.dictionary.cnsoltx.mexsrcs.fcn_autobuild_cbb_type1
-            [obj.mexFcn, obj.mexFlag] = fcn_autobuild_cbb_type1(floor(obj.NumberOfChannels/2));
+%             import saivdr.dictionary.cnsoltx.mexsrcs.fcn_autobuild_cbb_type1
+%             [obj.mexFcn, obj.mexFlag] = fcn_autobuild_cbb_type1(floor(obj.NumberOfChannels/2));
         end
 
         function setupImpl(obj,varargin)
             % Prepare MEX function
-            import saivdr.dictionary.cnsoltx.mexsrcs.fcn_autobuild_cbb_type1
-            [obj.mexFcn, obj.mexFlag] = fcn_autobuild_cbb_type1(floor(obj.NumberOfChannels/2));
+            if exist('fcn_Order1CplxBuildingBlockTypeI_mex','file')==3
+                obj.mexFcn = @fcn_Order1CplxBuildingBlockTypeI_mex;
+                obj.mexFlag = true;
+            else
+                import saivdr.dictionary.cnsoltx.mexsrcs.fcn_Order1CplxBuildingBlockTypeI
+                obj.mexFcn = @fcn_Order1CplxBuildingBlockTypeI;
+                obj.mexFlag = false;
+            end
         end
 
         function updateProperties_(obj)
