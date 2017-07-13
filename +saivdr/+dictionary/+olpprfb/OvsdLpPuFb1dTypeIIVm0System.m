@@ -5,7 +5,7 @@ classdef OvsdLpPuFb1dTypeIIVm0System < ...
     % SVN identifier:
     % $Id: OvsdLpPuFb1dTypeIIVm0System.m 653 2015-02-04 05:21:08Z sho $
     %
-    % Requirements: MATLAB R2013b
+    % Requirements: MATLAB R2015b
     %
     % Copyright (c) 2014, Shogo MURAMATSU
     %
@@ -16,7 +16,7 @@ classdef OvsdLpPuFb1dTypeIIVm0System < ...
     %                8050 2-no-cho Ikarashi, Nishi-ku,
     %                Niigata, 950-2181, JAPAN
     %
-    % LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627    
+    % http://msiplab.eng.niigata-u.ac.jp/    
     % 
 
     properties (Access = private)

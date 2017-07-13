@@ -1,12 +1,10 @@
-classdef NsGenLotDesignerFrq < saivdr.dictionary.nsoltx.design.AbstNsoltDesignerGaFmin %#~codegen
+classdef NsGenLotDesignerFrq < ...
+        saivdr.dictionary.nsoltx.design.AbstNsoltDesignerGaFmin %#~codegen
     %NSGENLOTDESIGNERFRQ NS-GenLOT design class with frequency specifications
     %
-    % SVN identifier:
-    % $Id: NsGenLotDesignerFrq.m 759 2015-09-10 02:16:40Z sho $
+    % Requirements: MATLAB R2015b
     %
-    % Requirements: MATLAB R2013b
-    %
-    % Copyright (c) 2014-2015, Shogo MURAMATSU
+    % Copyright (c) 2014-2017, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -15,7 +13,7 @@ classdef NsGenLotDesignerFrq < saivdr.dictionary.nsoltx.design.AbstNsoltDesigner
     %                8050 2-no-cho Ikarashi, Nishi-ku,
     %                Niigata, 950-2181, JAPAN
     %
-    % LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627    
+    % http://msiplab.eng.niigata-u.ac.jp/  
     %
  
     properties (Nontunable)

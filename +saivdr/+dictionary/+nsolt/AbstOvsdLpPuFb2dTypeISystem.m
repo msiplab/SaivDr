@@ -5,7 +5,7 @@ classdef AbstOvsdLpPuFb2dTypeISystem < ...
     % SVN identifier:
     % $Id: AbstOvsdLpPuFb2dTypeISystem.m 683 2015-05-29 08:22:13Z sho $
     %
-    % Requirements: MATLAB R2013b
+    % Requirements: MATLAB R2015b
     %
     % Copyright (c) 2014-2015, Shogo MURAMATSU
     %
@@ -16,7 +16,7 @@ classdef AbstOvsdLpPuFb2dTypeISystem < ...
     %                8050 2-no-cho Ikarashi, Nishi-ku,
     %                Niigata, 950-2181, JAPAN
     %
-    % LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627    
+    % http://msiplab.eng.niigata-u.ac.jp/    
     %
     
     properties (Access = protected)
@@ -154,6 +154,7 @@ classdef AbstOvsdLpPuFb2dTypeISystem < ...
             if size(obj.Angles,1) ~= sizeOfAngles(1) || ...
                     size(obj.Angles,2) ~= sizeOfAngles(2)
                 id = 'SaivDr:IllegalArgumentException';
+                coder.extrinsic('sprintf')
                 msg = sprintf(...
                     'Size of angles must be [ %d %d ]',...
                     sizeOfAngles(1), sizeOfAngles(2));

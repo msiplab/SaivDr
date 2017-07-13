@@ -2,7 +2,7 @@ classdef OvsdLpPuFb1dTypeIVm0System < ...
         saivdr.dictionary.olpprfb.AbstOvsdLpPuFb1dTypeISystem %#codegen
     %OVSDLPPUFBMDTYPEIVM0SYSTEM 2-D Type-I Oversapled LPPUFB without VM
     %
-    % Requirements: MATLAB R2013b
+    % Requirements: MATLAB R2015b
     %
     % Copyright (c) 2014-2016, Shogo MURAMATSU
     %
@@ -13,7 +13,7 @@ classdef OvsdLpPuFb1dTypeIVm0System < ...
     %                8050 2-no-cho Ikarashi, Nishi-ku,
     %                Niigata, 950-2181, JAPAN
     %
-    % LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627    
+    % http://msiplab.eng.niigata-u.ac.jp/    
     % 
     
     properties (Access = private)

@@ -1,9 +1,9 @@
 classdef AbstOvsdLpPuFb2dSystem < matlab.System %#codegen
     %ABSTOVSDLPPUFB2DSYSTEM Abstract class 2-D OLPPUFB
     %
-    % Requirements: MATLAB R2013b
+    % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2014-2015, Shogo MURAMATSU
+    % Copyright (c) 2014-2017, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -12,7 +12,7 @@ classdef AbstOvsdLpPuFb2dSystem < matlab.System %#codegen
     %                8050 2-no-cho Ikarashi, Nishi-ku,
     %                Niigata, 950-2181, JAPAN
     %
-    % LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627    
+    % http://msiplab.eng.niigata-u.ac.jp/    
     %
     
     properties (Nontunable)
@@ -67,6 +67,7 @@ classdef AbstOvsdLpPuFb2dSystem < matlab.System %#codegen
             updateParameterMatrixSet_(obj);
             obj.mexFlag = false;
             H = getAnalysisFilterBank_(obj);
+            coder.extrinsic('imshow')
             for ib=1:sum(obj.NumberOfChannels)
                 subplot(2,obj.NumberOfChannels(1),ib);
                 imshow(rot90(H(:,:,ib),2)+0.5);
@@ -195,8 +196,8 @@ classdef AbstOvsdLpPuFb2dSystem < matlab.System %#codegen
             nRows = obj.DecimationFactor(Direction.VERTICAL);
             nCols = obj.DecimationFactor(Direction.HORIZONTAL);
             nElmBi = nRows*nCols;
-            dctY = dctmtx(nRows);
-            dctX = dctmtx(nCols);
+            dctY = dct(eye(nRows)); %dctmtx(nRows);
+            dctX = dct(eye(nCols)); %dctmtx(nCols);
             coefs = zeros(nElmBi);
             iElm = 1; % E0.'= [ Bee Boo Boe Beo ] % Byx
             for iCol = 1:2:nCols % x-e

@@ -1,13 +1,10 @@
 classdef OLpPuFbSynthesis1dSystem  < ...
-        saivdr.dictionary.AbstSynthesisSystem %#~codegen
+        saivdr.dictionary.AbstSynthesisSystem %#codegen
     %OLPPUFBSYNTHESIS1DSYSTEM Synthesis system of Type-I OLPPURFB
     %
-    % SVN identifier:
-    % $Id: OLpPuFbSynthesis1dSystem.m 657 2015-03-17 00:45:15Z sho $
+    % Requirements: MATLAB R2015b
     %
-    % Requirements: MATLAB R2013b
-    %
-    % Copyright (c) 2015, Shogo MURAMATSU
+    % Copyright (c) 2017, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -16,7 +13,7 @@ classdef OLpPuFbSynthesis1dSystem  < ...
     %                8050 2-no-cho Ikarashi, Nishi-ku,
     %                Niigata, 950-2181, JAPAN
     %
-    % LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627
+    % http://msiplab.eng.niigata-u.ac.jp/
     %
 
     properties (Access = protected, Constant = true)
@@ -42,22 +39,18 @@ classdef OLpPuFbSynthesis1dSystem  < ...
             matlab.system.StringSet({'Termination','Circular'});
     end
     
-    properties (Access = private, Nontunable)
+    properties (Access = private)
         decimationFactor
         polyPhaseOrder
     end    
 
     properties (Access = private)
-        atomCncFcn
+        fcnAtomCnc
     end
     
     properties (Access = private, PositiveInteger)
         nBlks
     end 
-    
-    properties (Access = private, Logical)
-        isMexFcn = false
-    end
     
     methods
         
@@ -103,17 +96,18 @@ classdef OLpPuFbSynthesis1dSystem  < ...
             % Save the child System objects            
             s.LpPuFb1d = matlab.System.saveObject(obj.LpPuFb1d);
             
-            % Save the protected & private properties
-            s.atomCncFcn       = obj.atomCncFcn;            
+            % Save the protected & private properties           
             s.decimationFactor = obj.decimationFactor;
             s.polyPhaseOrder   = obj.polyPhaseOrder;
+            s.fcnAtomCnc       = obj.fcnAtomCnc;  
         end
         
         function loadObjectImpl(obj,s,wasLocked)
             % Load protected and private properties            
-            obj.atomCncFcn       = s.atomCncFcn;
             obj.decimationFactor = s.decimationFactor;
             obj.polyPhaseOrder   = s.polyPhaseOrder;        
+            obj.fcnAtomCnc       = s.fcnAtomCnc;    
+           
             % Call base class method to load public properties            
             loadObjectImpl@saivdr.dictionary.AbstSynthesisSystem(obj,s,wasLocked);
             % Load the child System objects            
@@ -124,30 +118,12 @@ classdef OLpPuFbSynthesis1dSystem  < ...
         end
         
         function setupImpl(obj, ~, ~)
-            nch = [ obj.NumberOfSymmetricChannels ...
-                obj.NumberOfAntisymmetricChannels ];
-            
-            % Prepare MEX function
-            if obj.NumberOfSymmetricChannels == 1 || ...
-                    obj.NumberOfAntisymmetricChannels == 1 
-                mexFcn = [];
-            elseif ~obj.isMexFcn
-                import saivdr.dictionary.olpprfb.mexsrcs.fcn_autobuild_atomcnc1d
-                [mexFcn, obj.isMexFcn] = ...
-                    fcn_autobuild_atomcnc1d(nch);
-            end
-            if ~isempty(mexFcn)
-                obj.atomCncFcn = @(coefs,scale,pmcoefs,ord,fpe) ...
-                    mexFcn(coefs,scale,pmcoefs,...
-                    nch,ord,fpe);
+            if exist('fcn_OLpPrFbAtomConcatenator1dCodeGen_mex','file')==3
+                obj.fcnAtomCnc = @fcn_OLpPrFbAtomConcatenator1dCodeGen_mex;
             else
-                import saivdr.dictionary.olpprfb.mexsrcs.fcn_OLpPrFbAtomConcatenator1d
-                clear fcn_OLpPrFbAtomConcatenator1d
-                obj.atomCncFcn = @(coefs,scale,pmcoefs,ord,fpe) ...
-                    fcn_OLpPrFbAtomConcatenator1d(coefs,scale,pmcoefs,...
-                    nch,ord,fpe);
+                import saivdr.dictionary.olpprfb.mexsrcs.fcn_OLpPrFbAtomConcatenator1dCodeGen
+                obj.fcnAtomCnc = @fcn_OLpPrFbAtomConcatenator1dCodeGen;
             end
-            
         end
         
         function recSeq = stepImpl(obj, coefs, scales)
@@ -204,11 +180,14 @@ classdef OLpPuFbSynthesis1dSystem  < ...
             
             % Atom concatenation
             subScale  = nBlks_;
-            ord = uint32(obj.polyPhaseOrder);            
-            fpe = strcmp(obj.BoundaryOperation,'Circular');        
-            arrayCoefs = obj.atomCncFcn(arrayCoefs,subScale,pmCoefs,...
-                ord,fpe);
-            
+            %arrayCoefs = obj.atomCncObj.step(arrayCoefs,subScale,pmCoefs);
+            nch = [ obj.NumberOfSymmetricChannels ...
+                obj.NumberOfAntisymmetricChannels ];
+            ord = uint32(obj.polyPhaseOrder);
+            fpe = strcmp(obj.BoundaryOperation,'Circular');
+            arrayCoefs = obj.fcnAtomCnc(...
+                arrayCoefs, subScale, pmCoefs, nch, ord, fpe);
+
             % Block IDCT
             if dec_ == 1
                 subSeq = arrayCoefs(1,:);

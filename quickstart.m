@@ -157,11 +157,13 @@ analyzer    = Analysis2dSystem(...
     'DecimationFactor',nDec,...
     'AnalysisFilters',analysisFilters,...
     'FilterDomain','Frequency');
+set(analyzer,'UseGpu',false)
 synthesizer = Synthesis2dSystem(...
     'DecimationFactor',nDec,...
     'SynthesisFilters',synthesisFilters,...
     'FilterDomain','Frequency');
 setFrameBound(synthesizer,1);
+set(synthesizer,'UseGpu',false);
 
 %%
 % The following static factory methods can also be used to create
@@ -199,14 +201,15 @@ setFrameBound(synthesizer,1);
 % * saivdr.restoration.ista.IstaImRestoration
 
 % Instantiation of ISTA system object
-import saivdr.restoration.ista.IstaImRestoration
+import saivdr.restoration.ista.IstaImRestoration2d
 lambda    = 0.00185;                      % lambda
-ista = IstaImRestoration(...
+ista = IstaImRestoration2d(...
     'Synthesizer',        synthesizer,... % Synthesizer (Dictionary)
     'AdjOfSynthesizer',   analyzer,...    % Analyzer (Adj. of dictionary)
     'LinearProcess',      blur,...        % Blur process
     'NumberOfTreeLevels', nLevels,...     % # of tree levels of NSOLT
     'Lambda',             lambda);        % Parameter lambda
+set(ista,'Eps0',1e-6)
 
 %% Create a step monitor system object
 % ISTA iteratively approaches to the optimum solution. In order to 

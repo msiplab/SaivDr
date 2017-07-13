@@ -73,7 +73,7 @@
 %
 % * Requirements
 % 
-% - MATLAB R2013b or later, 
+% - MATLAB R2013b or later. R2015b is recommended.
 % -- Signal Processing Toolbox
 % -- Image Processing Toolbox
 % -- Optimization Toolbox
@@ -92,7 +92,11 @@
 % 
 %  >> setpath
 % 
-% 3. Several example codes are found under the second layer directory 
+% 3. Build MEX codes if you have MATLAB Coder.
+%
+%  >> mybuild
+%
+% 4. Several example codes are found under the second layer directory 
 %    'examples' of this package. Change current directory to one under 
 %    the second layer directiory 'examples' and execute an M-file of 
 %    which name begins with 'main,' such as
@@ -109,23 +113,24 @@
 %    Faculty of Engineering, Niigata University,
 %    8050 2-no-cho Ikarashi, Nishi-ku,
 %    Niigata, 950-2181, JAPAN
-%    LinedIn: https://www.linkedin.com/in/shogo-muramatsu-627b084b
+%    https://msiplab.eng.niigata-u.ac.jp/
 % 
 % * References
 % 
 % - Shogo Muramatsu, Kosuke Furuya and Naotaka Yuki, "Multidimensional 
 %   Nonseparable Oversampled Lapped Transforms: Theory and Design," 
-%   IEEE Trans. on Signal Process. (T-SP), to appear
+%   IEEE Trans. on Signal Process.Vol.65, No.5, pp.1251?1264,
+%   DOI:10.1109/TSP.2016.2633240, March 2017.
 %
 % - Kota Horiuchi and Shogo Muramatsu, "Fast convolution technique for 
 %   Non-separable Oversampled Lapped transforms," Proc. of Asia Pacific 
 %   Signal and Information Proc. Assoc. Annual Summit and Conf. 
-%   (APSIPA ASC), Dec. 2016, to appear
+%   (APSIPA ASC), Dec. 2016.
 %
 % - Shogo Muramatsu, Masaki Ishii and Zhiyu Chen,
 %   "Efficient Parameter Optimization for Example-Based Design of 
 %   Non-separable Oversampled Lapped Transform," Proc. of 2016 IEEE Intl.
-%   Conf. on Image Processing (ICIP), Sept. 2016, to appear
+%   Conf. on Image Processing (ICIP), pp.3618-3622, Sept. 2016.
 %
 % - Shogo Muramatsu, "Structured Dictionary Learning with 2-D Non-
 %   separable Oversampled Lapped Transform," Proc. of 2014 IEEE 
@@ -149,20 +154,24 @@
 %
 % * Acknowledgement
 %
-%   This project was supported by JSPS KAKENHI (23560443,26420347).
+%   This project was supported by JSPS KAKENHI (JP23560443,JP26420347).
 %
 % * Contributors
 % 
-% - For coding
+% - Developpers
 % -- Shintaro HARA,  2013-2014
 % -- Natsuki AIZAWA, 2013-2014
 % -- Kosuke FURUYA,  2013-2015
 % -- Naotaka YUKI,   2014-2015
-%
-% - For testing
-% -- Hidenori WATANABE, 2014
-% -- Kota HORIUCHI,     2015
-% -- Masaki ISHII,      2015
-% -- Takumi KAWAMURA,   2015
-% -- Kenta SEINO,       2015
-
+% 
+% - Test contributers
+% -- Hidenori WATANABE, 2014-
+% -- Kota HORIUCHI,     2015-
+% -- Masaki ISHII,      2015-
+% -- Takumi KAWAMURA,   2015-
+% -- Kenta SEINO,       2015-
+% -- Satoshi NAGAYAMA,  2017-
+% -- Shota KAYAMORI,    2017-
+% -- Genki FUJII,       2017-
+% -- Naoki YAMAZAKI,    2017-
+% -- Yuhei KANEKO,      2017-

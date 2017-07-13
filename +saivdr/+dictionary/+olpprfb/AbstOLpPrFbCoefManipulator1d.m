@@ -1,9 +1,9 @@
 classdef AbstOLpPrFbCoefManipulator1d < matlab.System %#codegen
     %ABSTOLPPRFBCOEFMANIPULATOR1D 1-D Coefficient Manipulator for OLPPRFB
     %
-    % Requirements: MATLAB R2013b
+    % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2015-2016, Shogo MURAMATSU
+    % Copyright (c) 2015-2017, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -12,14 +12,14 @@ classdef AbstOLpPrFbCoefManipulator1d < matlab.System %#codegen
     %                8050 2-no-cho Ikarashi, Nishi-ku,
     %                Niigata, 950-2181, JAPAN
     %
-    % LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627
+    % http://msiplab.eng.niigata-u.ac.jp/
     %
     
     properties (Access = protected, Constant = true)
         DATA_DIMENSION = 1
     end
     
-    properties (Nontunable, PositiveInteger)
+    properties (PositiveInteger)
         NumberOfSymmetricChannels      = 2
         NumberOfAntisymmetricChannels  = 2
     end
@@ -32,7 +32,7 @@ classdef AbstOLpPrFbCoefManipulator1d < matlab.System %#codegen
         PolyPhaseOrder = 0;
     end
 
-    properties (SetAccess = protected, GetAccess = public, Nontunable)
+    properties (SetAccess = protected, GetAccess = public)
         OLpPrFbType = 'Type I'
     end
     
@@ -41,7 +41,7 @@ classdef AbstOLpPrFbCoefManipulator1d < matlab.System %#codegen
             matlab.system.StringSet({'Type I','Type II'});
     end
     
-    properties (SetAccess = protected, GetAccess = public, Nontunable, Logical)
+    properties (SetAccess = protected, GetAccess = public, Logical)
         IsPsGreaterThanPa = true;
     end    
     
@@ -71,8 +71,9 @@ classdef AbstOLpPrFbCoefManipulator1d < matlab.System %#codegen
             elseif ps < pa
                 obj.OLpPrFbType = 'Type II';
                 obj.IsPsGreaterThanPa = false;
-            end            
-            %
+            else
+                obj.OLpPrFbType = 'Type I';
+            end
         end
         
     end
@@ -112,15 +113,7 @@ classdef AbstOLpPrFbCoefManipulator1d < matlab.System %#codegen
             if lenOrd ~= saivdr.dictionary.olpprfb.AbstOLpPrFbCoefManipulator1d.DATA_DIMENSION
                 error('%s:\n lentgh(PolyPhaseOrder) must be %d.',...
                     id, saivdr.dictionary.olpprfb.AbstOLpPrFbCoefManipulator1d.DATA_DIMENSION);
-            end
-%             if obj.NumberOfSymmetricChannels < 2
-%                 error('%s: NumberOfSymmetricChannels must be more than one.',...
-%                     id);
-%             end
-%             if obj.NumberOfAntisymmetricChannels < 2
-%                 error('%s: NumberOfAntisymmetricChannels must be more than one.',...
-%                     id);
-%             end            
+            end           
         end
         
         function validateInputsImpl(~, coefs, subScale, ~)
@@ -132,13 +125,31 @@ classdef AbstOLpPrFbCoefManipulator1d < matlab.System %#codegen
             end
             %
         end
+              
+        function processTunedPropertiesImpl(obj)
+            propChange = ...
+                isChangedProperty(obj,'NumberOfSymmetricChannels') ||...
+                isChangedProperty(obj,'NumberOfAntisymmetricChannels') ||...
+                isChangedProperty(obj,'PolyPhaseOrder');
+            if propChange
+                ps = obj.NumberOfSymmetricChannels;
+                pa = obj.NumberOfAntisymmetricChannels;
+                %
+                if ps > pa
+                    obj.OLpPrFbType = 'Type II';
+                    obj.IsPsGreaterThanPa = true;
+                elseif ps < pa
+                    obj.OLpPrFbType = 'Type II';
+                    obj.IsPsGreaterThanPa = false;
+                else
+                    obj.OLpPrFbType = 'Type I';
+                end
+            end
+            setupParamMtx_(obj);
+        end
         
         function setupImpl(obj, ~, subScale, ~)
             obj.nBlks = subScale;
-            setupParamMtx_(obj);
-        end
-
-        function processTunedPropertiesImpl(obj)
             setupParamMtx_(obj);
         end
         

@@ -10,7 +10,7 @@ function [img,strpartpic] = fcn_load_testimg2(strpic)
 % SVN identifier:
 % $Id: fcn_load_testimg2.m 749 2015-09-02 07:58:45Z sho $
 %
-% Requirements: MATLAB R2013b
+% Requirements: MATLAB R2015b
 %
 % Copyright (c) 2014, Shogo MURAMATSU
 %
@@ -21,7 +21,7 @@ function [img,strpartpic] = fcn_load_testimg2(strpic)
 %                8050 2-no-cho Ikarashi, Nishi-ku,
 %                Niigata, 950-2181, JAPAN
 % 
-% LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627
+% http://msiplab.eng.niigata-u.ac.jp/
 %
 
 switch strpic

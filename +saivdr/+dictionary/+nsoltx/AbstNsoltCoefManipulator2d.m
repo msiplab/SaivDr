@@ -1,12 +1,9 @@
-classdef AbstNsoltCoefManipulator2d < matlab.System 
+classdef AbstNsoltCoefManipulator2d < matlab.System
     %ABSTNSOLTCOEFMANIPULATOR2D 2-D Coefficient Manipulator for NSOLT
     %
-    % SVN identifier:
-    % $Id: AbstNsoltCoefManipulator2d.m 866 2015-11-24 04:29:42Z sho $
+    % Requirements: MATLAB R2015b
     %
-    % Requirements: MATLAB R2013b
-    %
-    % Copyright (c) 2014-2015, Shogo MURAMATSU
+    % Copyright (c) 2014-2017, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -15,27 +12,27 @@ classdef AbstNsoltCoefManipulator2d < matlab.System
     %                8050 2-no-cho Ikarashi, Nishi-ku,
     %                Niigata, 950-2181, JAPAN
     %
-    % LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627
+    % http://msiplab.eng.niigata-u.ac.jp/
     %
     
     properties (Access = protected, Constant = true)
         DATA_DIMENSION = 2
     end
     
-    properties (Nontunable, PositiveInteger)
+    properties (PositiveInteger)
         NumberOfSymmetricChannels      = 2
         NumberOfAntisymmetricChannels  = 2
     end
-
+    
     properties (Logical)
         IsPeriodicExt = false
     end
-
-    properties 
+    
+    properties
         PolyPhaseOrder = [ 0 0 ]
     end
-
-    properties (SetAccess = protected, GetAccess = public, Nontunable)
+    
+    properties (SetAccess = protected, GetAccess = public)
         NsoltType = 'Type I'
     end
     
@@ -44,9 +41,9 @@ classdef AbstNsoltCoefManipulator2d < matlab.System
             matlab.system.StringSet({'Type I','Type II'});
     end
     
-    properties (SetAccess = protected, GetAccess = public, Nontunable, Logical)
+    properties (SetAccess = protected, GetAccess = public, Logical)
         IsPsGreaterThanPa = true;
-    end    
+    end
     
     properties (Access = protected)
         paramMtxCoefs
@@ -75,8 +72,9 @@ classdef AbstNsoltCoefManipulator2d < matlab.System
             elseif ps < pa
                 obj.NsoltType = 'Type II';
                 obj.IsPsGreaterThanPa = false;
+            else
+                obj.NsoltType = 'Type I';
             end            
-            %
         end
         
     end
@@ -104,7 +102,7 @@ classdef AbstNsoltCoefManipulator2d < matlab.System
             obj.indexOfParamMtxSzTab = s.indexOfParamMtxSzTab;
             obj.paramMtxSzTab = s.paramMtxSzTab;
             obj.NsoltType = s.NsoltType;
-        
+            
             % Call base class method to load public properties
             loadObjectImpl@matlab.System(obj,s,wasLocked);
         end
@@ -134,12 +132,42 @@ classdef AbstNsoltCoefManipulator2d < matlab.System
             obj.nRows = subScale(saivdr.dictionary.utility.Direction.VERTICAL);
             obj.nCols = subScale(saivdr.dictionary.utility.Direction.HORIZONTAL);
             %
-            setupParamMtx_(obj);
+            ps = obj.NumberOfSymmetricChannels;
+            pa = obj.NumberOfAntisymmetricChannels;
             %
-        end
-
-        function processTunedPropertiesImpl(obj)
+            if ps > pa
+                obj.NsoltType = 'Type II';
+                obj.IsPsGreaterThanPa = true;
+            elseif ps < pa
+                obj.NsoltType = 'Type II';
+                obj.IsPsGreaterThanPa = false;
+            else
+                obj.NsoltType = 'Type I';
+            end
+            %
             setupParamMtx_(obj);
+        end
+        
+        function processTunedPropertiesImpl(obj)
+            propChange = ...
+                isChangedProperty(obj,'NumberOfSymmetricChannels') ||...
+                isChangedProperty(obj,'NumberOfAntisymmetricChannels'); % ||...
+                isChangedProperty(obj,'PolyPhaseOrder');
+            if propChange
+                ps = obj.NumberOfSymmetricChannels;
+                pa = obj.NumberOfAntisymmetricChannels;
+                %
+                if ps > pa
+                    obj.NsoltType = 'Type II';
+                    obj.IsPsGreaterThanPa = true;
+                elseif ps < pa
+                    obj.NsoltType = 'Type II';
+                    obj.IsPsGreaterThanPa = false;
+                else
+                    obj.NsoltType = 'Type I';
+                end
+                setupParamMtx_(obj);
+            end
         end
         
         function stepImpl(obj,coefs,subScale,pmCoefs)
@@ -147,30 +175,30 @@ classdef AbstNsoltCoefManipulator2d < matlab.System
             obj.paramMtxCoefs = pmCoefs;
             %
             if size(coefs,2) ~= (obj.nRows*obj.nCols)
-                obj.tmpArray = zeros(size(coefs)); 
+                obj.tmpArray = zeros(size(coefs));
             end
             %
             obj.nRows = subScale(saivdr.dictionary.utility.Direction.VERTICAL);
-            obj.nCols = subScale(saivdr.dictionary.utility.Direction.HORIZONTAL);            
+            obj.nCols = subScale(saivdr.dictionary.utility.Direction.HORIZONTAL);
             %
         end
-
+        
         function value = getNumInputsImpl(~)
             value = 3;
         end
-
+        
         function value = getNumOutputsImpl(~)
             value = 1;
         end
         
         function setupParamMtx_(obj)
-            ord = obj.PolyPhaseOrder; 
+            ord = obj.PolyPhaseOrder;
             ps  = obj.NumberOfSymmetricChannels;
             pa  = obj.NumberOfAntisymmetricChannels;
             %
             paramMtxSzTab_ = zeros(sum(ord)+2,2);
             paramMtxSzTab_(1,:) = [ ps ps ];
-            paramMtxSzTab_(2,:) = [ pa pa ];            
+            paramMtxSzTab_(2,:) = [ pa pa ];
             if strcmp(obj.NsoltType,'Type I')
                 for iOrd = 1:sum(ord)
                     paramMtxSzTab_(iOrd+2,:) = [ pa pa ];
@@ -179,7 +207,7 @@ classdef AbstNsoltCoefManipulator2d < matlab.System
                 for iOrd = 1:sum(ord)/2
                     paramMtxSzTab_(2*iOrd+1,:)   = [ ps ps ];
                     paramMtxSzTab_(2*iOrd+2,:) = [ pa pa ];
-                end                
+                end
             end
             %
             nRowsPm = size(paramMtxSzTab_,1);
@@ -189,7 +217,7 @@ classdef AbstNsoltCoefManipulator2d < matlab.System
                 indexOfParamMtxSzTab_(iRow,:) = ...
                     [ cidx paramMtxSzTab_(iRow,:)];
                 cidx = cidx + prod(paramMtxSzTab_(iRow,:));
-            end            
+            end
             obj.paramMtxSzTab = paramMtxSzTab_;
             obj.indexOfParamMtxSzTab = indexOfParamMtxSzTab_;
         end
@@ -229,7 +257,7 @@ classdef AbstNsoltCoefManipulator2d < matlab.System
         
         function arrayCoefs = lowerBlockRot_(obj,arrayCoefs,iCol,U)
             hLen = obj.NumberOfSymmetricChannels;
-            nRows_ = obj.nRows; 
+            nRows_ = obj.nRows;
             indexCol = (iCol-1)*nRows_;
             arrayCoefs(hLen+1:end,indexCol+1:indexCol+nRows_) = ...
                 U*arrayCoefs(hLen+1:end,indexCol+1:indexCol+nRows_);
@@ -252,7 +280,7 @@ classdef AbstNsoltCoefManipulator2d < matlab.System
                     obj.tmpArray(:,idx+1:nRows_:end);
             end
             obj.nRows = nCols_;
-            obj.nCols = nRows_;                                
+            obj.nCols = nRows_;
         end
         
         function arrayCoefs = ipermuteCoefs_(obj,arrayCoefs)

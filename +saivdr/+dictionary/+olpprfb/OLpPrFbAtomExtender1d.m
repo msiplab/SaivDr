@@ -2,12 +2,9 @@ classdef OLpPrFbAtomExtender1d <  ...
         saivdr.dictionary.olpprfb.AbstOLpPrFbCoefManipulator1d %#codegen
     %OLPPRFBATOMEXTENDER1D 1-D Atom Extender for OLPPRFB
     %
-    % SVN identifier:
-    % $Id: OLpPrFbAtomExtender1d.m 657 2015-03-17 00:45:15Z sho $
+    % Requirements: MATLAB R2015b
     %
-    % Requirements: MATLAB R2013b
-    %
-    % Copyright (c) 2014, Shogo MURAMATSU
+    % Copyright (c) 2014-2017, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -16,7 +13,7 @@ classdef OLpPrFbAtomExtender1d <  ...
     %                8050 2-no-cho Ikarashi, Nishi-ku,
     %                Niigata, 950-2181, JAPAN
     %
-    % LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627
+    % http://msiplab.eng.niigata-u.ac.jp/
     %
     
     methods

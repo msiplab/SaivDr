@@ -4,7 +4,7 @@ classdef NsoltDictionaryLearningTestCase < matlab.unittest.TestCase
     % SVN identifier:
     % $Id: NsoltDictionaryLearningTestCase.m 866 2015-11-24 04:29:42Z sho $
     %
-    % Requirements: MATLAB R2013b
+    % Requirements: MATLAB R2015b
     %
     % Copyright (c) 2014-2015, Shogo MURAMATSU
     %
@@ -15,7 +15,7 @@ classdef NsoltDictionaryLearningTestCase < matlab.unittest.TestCase
     %                8050 2-no-cho Ikarashi, Nishi-ku,
     %                Niigata, 950-2181, JAPAN
     %
-    % LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627    
+    % http://msiplab.eng.niigata-u.ac.jp/    
     %
     properties
         designer
@@ -203,10 +203,10 @@ classdef NsoltDictionaryLearningTestCase < matlab.unittest.TestCase
             nOrds = [ 4 4 ]; 
             nSprsCoefs = 4;
             isOptMus = false;
-            srcImgs{1} = rand(12,16);
-            srcImgs{2} = rand(12,16);
-            srcImgs{3} = rand(12,16);
-            srcImgs{4} = rand(12,16);
+            srcImgs{1} = imfilter(rand(12,16),ones(2)/4);
+            srcImgs{2} = imfilter(rand(12,16),ones(2)/4);
+            srcImgs{3} = imfilter(rand(12,16),ones(2)/4);
+            srcImgs{4} = imfilter(rand(12,16),ones(2)/4);
             
             % Instantiation of target class
             import saivdr.dictionary.nsoltx.design.*
@@ -248,7 +248,10 @@ classdef NsoltDictionaryLearningTestCase < matlab.unittest.TestCase
             options = optimset(...
                 'MaxIter',2*nImgs,...
                 'TolX',1e-4);                
-            [~, costPst] = step(testCase.designer,options,isOptMus);
+%             for iter = 1:5
+%                 step(testCase.designer,options,isOptMus);
+%             end
+            [~, costPst] = step(testCase.designer,options,isOptMus);            
             
             % Evaluation
             import matlab.unittest.constraints.IsLessThan

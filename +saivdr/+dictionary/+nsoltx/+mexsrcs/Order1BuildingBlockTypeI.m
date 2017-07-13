@@ -1,12 +1,9 @@
 classdef Order1BuildingBlockTypeI < matlab.System  %#codegen
     %ORDER1BUILDINGBLOCKTYPEI  Type-I building block with order 1
     %
-    % SVN identifier:
-    % $Id: Order1BuildingBlockTypeI.m 683 2015-05-29 08:22:13Z sho $
+    % Requirements: MATLAB R2015b
     %
-    % Requirements: MATLAB R2013b
-    %
-    % Copyright (c) 2014-2015, Shogo MURAMATSU
+    % Copyright (c) 2014-2017, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -15,23 +12,45 @@ classdef Order1BuildingBlockTypeI < matlab.System  %#codegen
     %                8050 2-no-cho Ikarashi, Nishi-ku,
     %                Niigata, 950-2181, JAPAN
     %
-    % LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627
+    % http://msiplab.eng.niigata-u.ac.jp/
     %
+
+    properties
+            HalfNumberOfChannels
+    end
     
-    properties (Access=protected,Nontunable)
-        nHalfChannels
+    properties (Access=protected)
         nChannels
         I
     end
     
+    methods
+        function obj = Order1BuildingBlockTypeI(varargin)
+            setProperties(obj,nargin,varargin{:});
+        end
+    end
+    
     methods (Access = protected)
-        function setupImpl(obj,~,~,p,~)
-            obj.nHalfChannels = p;
-            obj.nChannels     = 2*p;
-            obj.I             = eye(p);
+        
+        function processTunedPropertiesImpl(obj)
+            propChange = isChangedProperty(obj,'HalfNumberOfChannels');
+            if propChange
+                p = obj.HalfNumberOfChannels;
+                %
+                obj.nChannels = 2*p;
+                obj.I = eye(p);
+            end
         end
         
-        function output = stepImpl(obj,input,mtxU,~,nshift)
+        
+        function setupImpl(obj)
+            p = obj.HalfNumberOfChannels;
+            %
+            obj.nChannels = 2*p;
+            obj.I = eye(p);
+        end
+        
+        function output = stepImpl(obj,input,mtxU,nshift)
             R = blkdiag(obj.I,mtxU);
             output = R*processQ_(obj,input,nshift);
         end
@@ -40,7 +59,7 @@ classdef Order1BuildingBlockTypeI < matlab.System  %#codegen
     methods (Access = private)
 
         function value = processQ_(obj,x,nZ_)
-            hChs = obj.nHalfChannels;
+            hChs = obj.HalfNumberOfChannels;
             nChs = obj.nChannels;
             nLen = size(x,2);
             x = butterfly_(obj,x);
@@ -51,7 +70,7 @@ classdef Order1BuildingBlockTypeI < matlab.System  %#codegen
         end
         
         function value = butterfly_(obj,x)
-            hChs = obj.nHalfChannels;
+            hChs = obj.HalfNumberOfChannels;
             upper = x(1:hChs,:);
             lower = x(hChs+1:end,:);
             value = [

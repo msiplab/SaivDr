@@ -2,11 +2,9 @@
 %
 % This script executes NSOLT dictionary learning
 %
-% SVN identifier:
-% $Id: main_parnsoltdiclrn.m 683 2015-05-29 08:22:13Z sho $%
-% Requirements: MATLAB R2013b
+% Requirements: MATLAB R2015b
 %
-% Copyright (c) 2014-2015, Shogo MURAMATSU
+% Copyright (c) 2014-2016, Shogo MURAMATSU
 %
 % All rights reserved.
 %
@@ -15,7 +13,7 @@
 %                8050 2-no-cho Ikarashi, Nishi-ku,
 %                Niigata, 950-2181, JAPAN
 % 
-% LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627
+% http://msiplab.eng.niigata-u.ac.jp/
 %
 
 %% Parameter settings
@@ -46,21 +44,21 @@ params.nIters = 15;
 %% Condition setting
 imgSet = { 'goldhill128', 'lena128', 'barbara128', 'baboon128' };   
 vmSet = { 1 };
-chSet = { [ 6 2 ], [ 5 3 ], [ 4 4 ] };
+chSet = { [ 4 4 ] }; % { [ 6 2 ], [ 5 3 ], [ 4 4 ] }; for ICASSP2014
 lvSet = num2cell(5:-1:1,[ 1 5 ]);
 
 %% Pre-build of MEX files
-for iCh = 1:length(chSet)
-    import saivdr.dictionary.nsoltx.mexsrcs.*
-    chs = chSet{iCh};
-    fcn_autobuild_atomcnc2d([chs(1) chs(2)]);
-    fcn_autobuild_atomext2d([chs(1) chs(2)]);    
-    if chs(1) == chs(2)
-        fcn_autobuild_bb_type1(chs(1));
-    else
-        fcn_autobuild_bb_type2(chs(1),chs(2));
-    end
-end
+% for iCh = 1:length(chSet)
+%     import saivdr.dictionary.nsoltx.mexsrcs.*
+%     chs = chSet{iCh};
+%     fcn_autobuild_atomcnc2d([chs(1) chs(2)]);
+%     fcn_autobuild_atomext2d([chs(1) chs(2)]);    
+%     if chs(1) == chs(2)
+%         fcn_autobuild_bb_type1(chs(1));
+%     else
+%         fcn_autobuild_bb_type2(chs(1),chs(2));
+%     end
+% end
 
 %%
 paramset = cell(length(imgSet)*length(vmSet)*length(chSet)*length(lvSet),1);

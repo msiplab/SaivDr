@@ -4,9 +4,9 @@ classdef NsoltSynthesis3dSystemTestCase < matlab.unittest.TestCase
     % SVN identifier:
     % $Id: NsoltSynthesis3dSystemTestCase.m 869 2015-11-26 09:03:07Z sho $
     %
-    % Requirements: MATLAB R2013b
+    % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2014-2015, Shogo MURAMATSU
+    % Copyright (c) 2014-2017, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -15,7 +15,7 @@ classdef NsoltSynthesis3dSystemTestCase < matlab.unittest.TestCase
     %                8050 2-no-cho Ikarashi, Nishi-ku,
     %                Niigata, 950-2181, JAPAN
     %
-    % LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627
+    % http://msiplab.eng.niigata-u.ac.jp/
     %
     properties
         synthesizer
@@ -125,8 +125,8 @@ classdef NsoltSynthesis3dSystemTestCase < matlab.unittest.TestCase
                 step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,...
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,...
                 sprintf('%g',diff));
             
         end
@@ -167,8 +167,8 @@ function testInverseBlockDctDec44(testCase)
                 step(testCase.synthesizer,coefs,scales);
                                     
             % Evaluation
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
             
         end
         %}
@@ -227,8 +227,8 @@ function testInverseBlockDctDec44(testCase)
                 step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
             
         end
         
@@ -293,8 +293,8 @@ function testInverseBlockDctDec44(testCase)
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(dec+1:end-dec,dec+1:end-dec,dec+1:end-dec); % ignore border
             imgActual = imgActual(dec+1:end-dec,dec+1:end-dec,dec+1:end-dec); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-7,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         % Test
@@ -362,8 +362,8 @@ function testInverseBlockDctDec44(testCase)
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         
@@ -428,8 +428,8 @@ function testInverseBlockDctDec44(testCase)
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(dec+1:end-dec,dec+1:end-dec,dec+1:end-dec); % ignore border
             imgActual = imgActual(dec+1:end-dec,dec+1:end-dec,dec+1:end-dec); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-7,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         % Test
@@ -497,8 +497,8 @@ function testInverseBlockDctDec44(testCase)
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         % Test
@@ -562,8 +562,8 @@ function testInverseBlockDctDec44(testCase)
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(dec+1:end-dec,dec+1:end-dec,dec+1:end-dec); % ignore border
             imgActual = imgActual(dec+1:end-dec,dec+1:end-dec,dec+1:end-dec); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-7,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         % Test
@@ -631,8 +631,8 @@ function testInverseBlockDctDec44(testCase)
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         % Test
@@ -696,8 +696,8 @@ function testInverseBlockDctDec44(testCase)
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(dec+1:end-dec,dec+1:end-dec,dec+1:end-dec); % ignore border
             imgActual = imgActual(dec+1:end-dec,dec+1:end-dec,dec+1:end-dec); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-6,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         % Test
@@ -765,8 +765,8 @@ function testInverseBlockDctDec44(testCase)
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         % Test
@@ -830,8 +830,8 @@ function testInverseBlockDctDec44(testCase)
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(dec+1:end-dec,dec+1:end-dec,dec+1:end-dec); % ignore border
             imgActual = imgActual(dec+1:end-dec,dec+1:end-dec,dec+1:end-dec); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-7,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         % Test
@@ -899,8 +899,8 @@ function testInverseBlockDctDec44(testCase)
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-8,...
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,...
                 sprintf('%g',diff));
         end
         
@@ -972,8 +972,8 @@ function testInverseBlockDctDec44(testCase)
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         % Test
@@ -1040,8 +1040,8 @@ function testInverseBlockDctDec44(testCase)
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(2*dec+1:end-2*dec,2*dec+1:end-2*dec,2*dec+1:end-2*dec); % ignore border
             imgActual = imgActual(2*dec+1:end-2*dec,2*dec+1:end-2*dec,2*dec+1:end-2*dec); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         % Test
@@ -1107,8 +1107,8 @@ function testInverseBlockDctDec44(testCase)
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         % Test
@@ -1174,8 +1174,8 @@ function testInverseBlockDctDec44(testCase)
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(3*dec+1:end-3*dec,3*dec+1:end-3*dec,3*dec+1:end-3*dec); % ignore border
             imgActual = imgActual(3*dec+1:end-3*dec,3*dec+1:end-3*dec,3*dec+1:end-3*dec); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         % Test
@@ -1239,8 +1239,8 @@ function testInverseBlockDctDec44(testCase)
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         %{
         
@@ -1301,8 +1301,8 @@ function testStepDec222Ch666Ord00(testCase)
             
             
             % Evaluation
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
             
         end
         
@@ -1364,8 +1364,8 @@ function testStepDec22Ch8Ord00(testCase)
             
             
             % Evaluation
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
             
         end
         
@@ -1430,8 +1430,8 @@ function testStepDec11Ch4Ord22(testCase)
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(dec+1:end-dec,dec+1:end-dec); % ignore border
             imgActual = imgActual(dec+1:end-dec,dec+1:end-dec); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         %Dec22Ch4Ord22
@@ -1496,8 +1496,8 @@ function testStepDec22Ch4Ord22(testCase)
             border = dec;
             imgExpctd = imgExpctd(border+1:end-border,border+1:end-border); % ignore border
             imgActual = imgActual(border+1:end-border,border+1:end-border); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         %Dec22Ch6Ord22
@@ -1562,8 +1562,8 @@ function testStepDec22Ch6Ord22(testCase)
             border = dec;
             imgExpctd = imgExpctd(border+1:end-border,border+1:end-border); % ignore border
             imgActual = imgActual(border+1:end-border,border+1:end-border); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         %Dec22Ch8Ord22
@@ -1628,8 +1628,8 @@ function testStepDec22Ch8Ord22(testCase)
             border = dec;
             imgExpctd = imgExpctd(border+1:end-border,border+1:end-border); % ignore border
             imgActual = imgActual(border+1:end-border,border+1:end-border); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         %Dec11Ch4Ord44
@@ -1694,8 +1694,8 @@ function testStepDec11Ch4Ord44(testCase)
             border = ord*dec/2;
             imgExpctd = imgExpctd(border+1:end-border,border+1:end-border); % ignore border
             imgActual = imgActual(border+1:end-border,border+1:end-border); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         %Dec22Ch4Ord44
@@ -1759,8 +1759,8 @@ function testStepDec22Ch4Ord44(testCase)
             border = ord*dec/2;
             imgExpctd = imgExpctd(border+1:end-border,border+1:end-border); % ignore border
             imgActual = imgActual(border+1:end-border,border+1:end-border); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         %Dec22Ch6Ord44
@@ -1825,8 +1825,8 @@ function testStepDec22Ch6Ord44(testCase)
             border = ord*dec/2;
             imgExpctd = imgExpctd(border+1:end-border,border+1:end-border); % ignore border
             imgActual = imgActual(border+1:end-border,border+1:end-border); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         %Dec22Ch8Ord44
@@ -1891,8 +1891,8 @@ function testStepDec22Ch8Ord44(testCase)
             border = ord*dec/2;
             imgExpctd = imgExpctd(border+1:end-border,border+1:end-border); % ignore border
             imgActual = imgActual(border+1:end-border,border+1:end-border); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         %Dec11Ch4Ord66
@@ -1957,8 +1957,8 @@ function testStepDec11Ch4Ord66(testCase)
             border = ord*dec/2;
             imgExpctd = imgExpctd(border+1:end-border,border+1:end-border); % ignore border
             imgActual = imgActual(border+1:end-border,border+1:end-border); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         %Dec22Ch4Ord66
@@ -2022,8 +2022,8 @@ function testStepDec2Ch4Ord66(testCase)
             border = ord*dec/2;
             imgExpctd = imgExpctd(border+1:end-border,border+1:end-border); % ignore border
             imgActual = imgActual(border+1:end-border,border+1:end-border); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         %Dec22Ch6Ord66
@@ -2086,8 +2086,8 @@ function testStepDec22Ch6Ord66(testCase)
             border = ord*dec/2;
             imgExpctd = imgExpctd(border+1:end-border,border+1:end-border); % ignore border
             imgActual = imgActual(border+1:end-border,border+1:end-border); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         %Dec22Ch8Ord66
@@ -2151,8 +2151,8 @@ function testStepDec22Ch8Ord66(testCase)
             border = ord*dec/2;
             imgExpctd = imgExpctd(border+1:end-border,border+1:end-border); % ignore border
             imgActual = imgActual(border+1:end-border,border+1:end-border); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         %Dec11Ch4Ord66PeriodicExt
@@ -2216,8 +2216,8 @@ function testStepDec11Ch4Ord66PeriodicExt(testCase)
             border = 0;
             imgExpctd = imgExpctd(border+1:end-border,border+1:end-border); % ignore border
             imgActual = imgActual(border+1:end-border,border+1:end-border); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         %Dec22Ch4Ord66PeriodicExt
@@ -2282,8 +2282,8 @@ function testStepDec22Ch4Ord66PeriodicExt(testCase)
             border = 0;
             imgExpctd = imgExpctd(border+1:end-border,border+1:end-border); % ignore border
             imgActual = imgActual(border+1:end-border,border+1:end-border); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         %Dec22Ch6Ord66PeriodicExt
@@ -2349,8 +2349,8 @@ function testStepDec22Ch6Ord66PeriodicExt(testCase)
             border = 0;
             imgExpctd = imgExpctd(border+1:end-border,border+1:end-border); % ignore border
             imgActual = imgActual(border+1:end-border,border+1:end-border); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         %Dec22Ch8Ord66PeriodicExt
@@ -2415,8 +2415,8 @@ function testStepDec22Ch8Ord66PeriodicExt(testCase)
             border = 0;
             imgExpctd = imgExpctd(border+1:end-border,border+1:end-border); % ignore border
             imgActual = imgActual(border+1:end-border,border+1:end-border); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         %Dec11Ch4Ord00Level1
@@ -2478,8 +2478,8 @@ function testStepDec11Ch4Ord00Level1(testCase)
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         %Dec22Ch4Ord00Level1
@@ -2542,8 +2542,8 @@ function testStepDec22Ch4Ord00Level1(testCase)
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         %Dec22Ch6Ord00Level1
@@ -2606,8 +2606,8 @@ function testStepDec22Ch6Ord00Level1(testCase)
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         %Dec22Ch8Ord00Level1
@@ -2669,8 +2669,8 @@ function testStepDec22Ch8Ord00Level1(testCase)
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         %Dec11Ch4Ord00Level2
@@ -2748,8 +2748,8 @@ function testStepDec11Ch4Ord00Level2(testCase)
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         %Dec22Ch4Ord00Level2
@@ -2827,8 +2827,8 @@ function testStepDec22Ch4Ord00Level2(testCase)
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         %Dec22Ch6Ord00Level2
@@ -2909,8 +2909,8 @@ function testStepDec22Ch6Ord00Level2(testCase)
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         %Dec22Ch8Ord00Level2
@@ -2995,8 +2995,8 @@ function testStepDec22Ch8Ord00Level2(testCase)
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         %Dec11Ch4Ord22Level1
@@ -3061,8 +3061,8 @@ function testStepDec11Ch4Ord22Level1(testCase)
             border = dec;
             imgExpctd = imgExpctd(border+1:end-border,border+1:end-border); % ignore border
             imgActual = imgActual(border+1:end-border,border+1:end-border); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         %Dec22Ch4Ord22Level1
@@ -3127,8 +3127,8 @@ function testStepDec22Ch4Ord22Level1(testCase)
             border = dec;
             imgExpctd = imgExpctd(border+1:end-border,border+1:end-border); % ignore border
             imgActual = imgActual(border+1:end-border,border+1:end-border); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         %Dec22Ch6Ord22Level1
@@ -3193,8 +3193,8 @@ function testStepDec22Ch6Ord22Level1(testCase)
             border = dec;
             imgExpctd = imgExpctd(border+1:end-border,border+1:end-border); % ignore border
             imgActual = imgActual(border+1:end-border,border+1:end-border); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         %Dec22Ch8Ord22Level1
@@ -3259,8 +3259,8 @@ function testStepDec22Ch8Ord22Level1(testCase)
             border = dec;
             imgExpctd = imgExpctd(border+1:end-border,border+1:end-border); % ignore border
             imgActual = imgActual(border+1:end-border,border+1:end-border); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         %Dec11Ch4Ord22Level2PeriodicExt
@@ -3338,8 +3338,8 @@ function testStepDec11Ch4Ord22Level2PeriodicExt(testCase)
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         %Dec22Ch4Ord22Level2PeriodicExt
@@ -3416,8 +3416,8 @@ function testStepDec22Ch4Ord22Level2PeriodicExt(testCase)
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         %Dec22Ch6Ord22Level2PeriodicExt
@@ -3497,8 +3497,8 @@ function testStepDec22Ch6Ord22Level2PeriodicExt(testCase)
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         %Dec22Ch44Ord22Level2PeriodicExt
@@ -3584,8 +3584,8 @@ function testStepDec22Ch44Ord22Level2PeriodicExt(testCase)
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-8,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         %Dec22Ch44Ord44Level3PeriodicExt
@@ -3677,8 +3677,8 @@ function testStepDec22Ch44Ord44Level3PeriodicExt(testCase)
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-8,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
 function testSetLpPuFb3dDec22Ch44Ord44(testCase)
@@ -3947,8 +3947,8 @@ function testClone(testCase)
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         % Test
@@ -4018,8 +4018,8 @@ function testClone(testCase)
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         % Test
@@ -4113,8 +4113,8 @@ function testClone(testCase)
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(dec+1:end-dec,dec+1:end-dec,dec+1:end-dec); % ignore border
             imgActual = imgActual(dec+1:end-dec,dec+1:end-dec,dec+1:end-dec); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         function testStepDec222Ch54Ord222Vm1(testCase)
@@ -4182,8 +4182,8 @@ function testClone(testCase)
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(dec+1:end-dec,dec+1:end-dec,dec+1:end-dec); % ignore border
             imgActual = imgActual(dec+1:end-dec,dec+1:end-dec,dec+1:end-dec); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         % Test
@@ -4249,8 +4249,8 @@ function testClone(testCase)
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         % Test
@@ -4316,8 +4316,8 @@ function testClone(testCase)
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         % Test
@@ -4384,8 +4384,8 @@ function testClone(testCase)
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(:,:,dec+1:end-dec); % ignore border
             imgActual = imgActual(:,:,dec+1:end-dec); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         % Test
@@ -4452,8 +4452,8 @@ function testClone(testCase)
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(:,dec+1:end-dec,:); % ignore border
             imgActual = imgActual(:,dec+1:end-dec,:); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         % Test
@@ -4520,8 +4520,8 @@ function testClone(testCase)
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(dec+1:end-dec,:,:); % ignore border
             imgActual = imgActual(dec+1:end-dec,:,:); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         % Test
@@ -4588,8 +4588,8 @@ function testClone(testCase)
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(dec+1:end-dec,dec+1:end-dec,dec+1:end-dec); % ignore border
             imgActual = imgActual(dec+1:end-dec,dec+1:end-dec,dec+1:end-dec); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         % Test
@@ -4656,8 +4656,8 @@ function testClone(testCase)
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(:,dec+1:end-dec,dec+1:end-dec); % ignore border
             imgActual = imgActual(:,dec+1:end-dec,dec+1:end-dec); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         % Test
@@ -4724,8 +4724,8 @@ function testClone(testCase)
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(dec+1:end-dec,:,dec+1:end-dec); % ignore border
             imgActual = imgActual(dec+1:end-dec,:,dec+1:end-dec); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         % Test
@@ -4792,8 +4792,8 @@ function testClone(testCase)
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(dec+1:end-dec,dec+1:end-dec,:); % ignore border
             imgActual = imgActual(dec+1:end-dec,dec+1:end-dec,:); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         % Test
@@ -4860,8 +4860,8 @@ function testClone(testCase)
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(2*dec+1:end-2*dec,2*dec+1:end-2*dec,2*dec+1:end-2*dec); % ignore border
             imgActual = imgActual(2*dec+1:end-2*dec,2*dec+1:end-2*dec,2*dec+1:end-2*dec); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         % Test
@@ -4928,8 +4928,8 @@ function testClone(testCase)
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(2*dec+1:end-2*dec,2*dec+1:end-2*dec,2*dec+1:end-2*dec); % ignore border
             imgActual = imgActual(2*dec+1:end-2*dec,2*dec+1:end-2*dec,2*dec+1:end-2*dec); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         % Test
@@ -4995,8 +4995,8 @@ function testClone(testCase)
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         %Test
@@ -5055,8 +5055,8 @@ function testClone(testCase)
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         %Dec11Ch5Ord00
@@ -5115,8 +5115,8 @@ function testClone(testCase)
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         %Test
@@ -5177,8 +5177,8 @@ function testClone(testCase)
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(dec+1:end-dec,dec+1:end-dec,dec+1:end-dec); % ignore border
             imgActual = imgActual(dec+1:end-dec,dec+1:end-dec,dec+1:end-dec); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         %Dec11Ch5Ord00
@@ -5239,8 +5239,8 @@ function testClone(testCase)
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(dec+1:end-dec,dec+1:end-dec,dec+1:end-dec); % ignore border
             imgActual = imgActual(dec+1:end-dec,dec+1:end-dec,dec+1:end-dec); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         %Test
@@ -5305,8 +5305,8 @@ function testClone(testCase)
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-8,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
 
         %Test
@@ -5392,8 +5392,8 @@ function testClone(testCase)
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-8,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         %Test
@@ -5480,8 +5480,8 @@ function testClone(testCase)
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-7,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         %Test
@@ -5575,8 +5575,8 @@ function testClone(testCase)
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-8,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         %Test
@@ -5682,8 +5682,8 @@ function testClone(testCase)
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-8,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         
@@ -5774,8 +5774,8 @@ function testClone(testCase)
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-8,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         %Test
@@ -5864,8 +5864,8 @@ function testClone(testCase)
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-8,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         %Test
@@ -5962,8 +5962,8 @@ function testClone(testCase)
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-8,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         %Test
@@ -6063,8 +6063,8 @@ function testClone(testCase)
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-8,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         % Test        
@@ -6287,7 +6287,7 @@ function testClone(testCase)
             % Evaluation
             %testCase.verifyEqual(scalesActual,scalesExpctd);
             %diff = max(abs(coefsExpctd - coefsActual)./abs(coefsExpctd));
-            %testCase.verifyEqual(coefsActual,coefsExpctd,'RelTol',1e-7,...
+            %testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-13,...
             %    sprintf('%g',diff));
         end
         %}
@@ -6350,8 +6350,8 @@ function testClone(testCase)
                 step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
             
         end
         %}
@@ -6423,8 +6423,8 @@ function testClone(testCase)
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         % Test
@@ -6494,8 +6494,8 @@ function testClone(testCase)
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         % Test
@@ -6589,8 +6589,8 @@ function testClone(testCase)
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(dec+1:end-dec,dec+1:end-dec,dec+1:end-dec); % ignore border
             imgActual = imgActual(dec+1:end-dec,dec+1:end-dec,dec+1:end-dec); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         function testStepDec222Ch45Ord222Vm1(testCase)
@@ -6658,8 +6658,8 @@ function testClone(testCase)
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(dec+1:end-dec,dec+1:end-dec,dec+1:end-dec); % ignore border
             imgActual = imgActual(dec+1:end-dec,dec+1:end-dec,dec+1:end-dec); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-8,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         % Test
@@ -6725,8 +6725,8 @@ function testClone(testCase)
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-8,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         % Test
@@ -6792,8 +6792,8 @@ function testClone(testCase)
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         % Test
@@ -6860,8 +6860,8 @@ function testClone(testCase)
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(:,:,dec+1:end-dec); % ignore border
             imgActual = imgActual(:,:,dec+1:end-dec); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         % Test
@@ -6928,8 +6928,8 @@ function testClone(testCase)
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(:,dec+1:end-dec,:); % ignore border
             imgActual = imgActual(:,dec+1:end-dec,:); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         % Test
@@ -6996,8 +6996,8 @@ function testClone(testCase)
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(dec+1:end-dec,:,:); % ignore border
             imgActual = imgActual(dec+1:end-dec,:,:); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         % Test
@@ -7064,8 +7064,8 @@ function testClone(testCase)
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(dec+1:end-dec,dec+1:end-dec,dec+1:end-dec); % ignore border
             imgActual = imgActual(dec+1:end-dec,dec+1:end-dec,dec+1:end-dec); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         % Test
@@ -7132,8 +7132,8 @@ function testClone(testCase)
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(:,dec+1:end-dec,dec+1:end-dec); % ignore border
             imgActual = imgActual(:,dec+1:end-dec,dec+1:end-dec); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         % Test
@@ -7200,8 +7200,8 @@ function testClone(testCase)
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(dec+1:end-dec,:,dec+1:end-dec); % ignore border
             imgActual = imgActual(dec+1:end-dec,:,dec+1:end-dec); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         % Test
@@ -7268,8 +7268,8 @@ function testClone(testCase)
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(dec+1:end-dec,dec+1:end-dec,:); % ignore border
             imgActual = imgActual(dec+1:end-dec,dec+1:end-dec,:); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         % Test
@@ -7336,8 +7336,8 @@ function testClone(testCase)
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(2*dec+1:end-2*dec,2*dec+1:end-2*dec,2*dec+1:end-2*dec); % ignore border
             imgActual = imgActual(2*dec+1:end-2*dec,2*dec+1:end-2*dec,2*dec+1:end-2*dec); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         % Test
@@ -7404,8 +7404,8 @@ function testClone(testCase)
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(2*dec+1:end-2*dec,2*dec+1:end-2*dec,2*dec+1:end-2*dec); % ignore border
             imgActual = imgActual(2*dec+1:end-2*dec,2*dec+1:end-2*dec,2*dec+1:end-2*dec); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         % Test
@@ -7471,8 +7471,8 @@ function testClone(testCase)
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
 
         %Dec11Ch5Ord00
@@ -7531,8 +7531,8 @@ function testClone(testCase)
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         %Dec11Ch5Ord00
@@ -7593,8 +7593,8 @@ function testClone(testCase)
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(dec+1:end-dec,dec+1:end-dec,dec+1:end-dec); % ignore border
             imgActual = imgActual(dec+1:end-dec,dec+1:end-dec,dec+1:end-dec); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-10,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         %Test
@@ -7659,8 +7659,8 @@ function testClone(testCase)
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-8,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
     
         %Test
@@ -7748,8 +7748,8 @@ function testClone(testCase)
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-9,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         %Test
@@ -7838,8 +7838,8 @@ function testClone(testCase)
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-8,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         %Test
@@ -7936,8 +7936,8 @@ function testClone(testCase)
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-8,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         %Test
@@ -8037,8 +8037,8 @@ function testClone(testCase)
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-8,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         % Test        
@@ -8235,8 +8235,8 @@ function testClone(testCase)
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(nDecs(1)+1:end-nDecs(1),nDecs(2)+1:end-nDecs(2),nDecs(3)+1:end-nDecs(3)); % ignore border
             imgActual = imgActual(nDecs(1)+1:end-nDecs(1),nDecs(2)+1:end-nDecs(2),nDecs(3)+1:end-nDecs(3)); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-7,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
 
         % Test
@@ -8302,8 +8302,8 @@ function testClone(testCase)
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(nDecs(1)+1:end-nDecs(1),nDecs(2)+1:end-nDecs(2),nDecs(3)+1:end-nDecs(3)); % ignore border
             imgActual = imgActual(nDecs(1)+1:end-nDecs(1),nDecs(2)+1:end-nDecs(2),nDecs(3)+1:end-nDecs(3)); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-7,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         % Test
@@ -8369,8 +8369,8 @@ function testClone(testCase)
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(nDecs(1)+1:end-nDecs(1),nDecs(2)+1:end-nDecs(2),nDecs(3)+1:end-nDecs(3)); % ignore border
             imgActual = imgActual(nDecs(1)+1:end-nDecs(1),nDecs(2)+1:end-nDecs(2),nDecs(3)+1:end-nDecs(3)); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-7,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         % Test
@@ -8436,8 +8436,8 @@ function testClone(testCase)
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(nDecs(1)+1:end-nDecs(1),nDecs(2)+1:end-nDecs(2),nDecs(3)+1:end-nDecs(3)); % ignore border
             imgActual = imgActual(nDecs(1)+1:end-nDecs(1),nDecs(2)+1:end-nDecs(2),nDecs(3)+1:end-nDecs(3)); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-7,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
 
         % Test
@@ -8503,8 +8503,8 @@ function testClone(testCase)
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(nDecs(1)+1:end-nDecs(1),nDecs(2)+1:end-nDecs(2),nDecs(3)+1:end-nDecs(3)); % ignore border
             imgActual = imgActual(nDecs(1)+1:end-nDecs(1),nDecs(2)+1:end-nDecs(2),nDecs(3)+1:end-nDecs(3)); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-7,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         % Test
@@ -8570,8 +8570,8 @@ function testClone(testCase)
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(nDecs(1)+1:end-nDecs(1),nDecs(2)+1:end-nDecs(2),nDecs(3)+1:end-nDecs(3)); % ignore border
             imgActual = imgActual(nDecs(1)+1:end-nDecs(1),nDecs(2)+1:end-nDecs(2),nDecs(3)+1:end-nDecs(3)); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-7,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         % Test
@@ -8637,8 +8637,8 @@ function testClone(testCase)
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(nDecs(1)+1:end-nDecs(1),nDecs(2)+1:end-nDecs(2),nDecs(3)+1:end-nDecs(3)); % ignore border
             imgActual = imgActual(nDecs(1)+1:end-nDecs(1),nDecs(2)+1:end-nDecs(2),nDecs(3)+1:end-nDecs(3)); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-7,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
 
         % Test
@@ -8704,8 +8704,8 @@ function testClone(testCase)
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(nDecs(1)+1:end-nDecs(1),nDecs(2)+1:end-nDecs(2),nDecs(3)+1:end-nDecs(3)); % ignore border
             imgActual = imgActual(nDecs(1)+1:end-nDecs(1),nDecs(2)+1:end-nDecs(2),nDecs(3)+1:end-nDecs(3)); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-7,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         % Test
@@ -8771,8 +8771,8 @@ function testClone(testCase)
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(nDecs(1)+1:end-nDecs(1),nDecs(2)+1:end-nDecs(2),nDecs(3)+1:end-nDecs(3)); % ignore border
             imgActual = imgActual(nDecs(1)+1:end-nDecs(1),nDecs(2)+1:end-nDecs(2),nDecs(3)+1:end-nDecs(3)); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-7,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         % Test
@@ -8838,8 +8838,8 @@ function testClone(testCase)
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(nDecs(1)+1:end-nDecs(1),nDecs(2)+1:end-nDecs(2),nDecs(3)+1:end-nDecs(3)); % ignore border
             imgActual = imgActual(nDecs(1)+1:end-nDecs(1),nDecs(2)+1:end-nDecs(2),nDecs(3)+1:end-nDecs(3)); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-7,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
 
         % Test
@@ -8905,8 +8905,8 @@ function testClone(testCase)
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(nDecs(1)+1:end-nDecs(1),nDecs(2)+1:end-nDecs(2),nDecs(3)+1:end-nDecs(3)); % ignore border
             imgActual = imgActual(nDecs(1)+1:end-nDecs(1),nDecs(2)+1:end-nDecs(2),nDecs(3)+1:end-nDecs(3)); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-7,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         % Test
@@ -8972,8 +8972,8 @@ function testClone(testCase)
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(nDecs(1)+1:end-nDecs(1),nDecs(2)+1:end-nDecs(2),nDecs(3)+1:end-nDecs(3)); % ignore border
             imgActual = imgActual(nDecs(1)+1:end-nDecs(1),nDecs(2)+1:end-nDecs(2),nDecs(3)+1:end-nDecs(3)); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-7,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         
@@ -9040,8 +9040,8 @@ function testClone(testCase)
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(nDecs(1)+1:end-nDecs(1),nDecs(2)+1:end-nDecs(2),nDecs(3)+1:end-nDecs(3)); % ignore border
             imgActual = imgActual(nDecs(1)+1:end-nDecs(1),nDecs(2)+1:end-nDecs(2),nDecs(3)+1:end-nDecs(3)); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-7,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
 
         % Test
@@ -9107,8 +9107,8 @@ function testClone(testCase)
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(nDecs(1)+1:end-nDecs(1),nDecs(2)+1:end-nDecs(2),nDecs(3)+1:end-nDecs(3)); % ignore border
             imgActual = imgActual(nDecs(1)+1:end-nDecs(1),nDecs(2)+1:end-nDecs(2),nDecs(3)+1:end-nDecs(3)); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-7,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         % Test
@@ -9174,8 +9174,8 @@ function testClone(testCase)
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(nDecs(1)+1:end-nDecs(1),nDecs(2)+1:end-nDecs(2),nDecs(3)+1:end-nDecs(3)); % ignore border
             imgActual = imgActual(nDecs(1)+1:end-nDecs(1),nDecs(2)+1:end-nDecs(2),nDecs(3)+1:end-nDecs(3)); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-7,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         % Test
@@ -9241,8 +9241,8 @@ function testClone(testCase)
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(nDecs(1)+1:end-nDecs(1),nDecs(2)+1:end-nDecs(2),nDecs(3)+1:end-nDecs(3)); % ignore border
             imgActual = imgActual(nDecs(1)+1:end-nDecs(1),nDecs(2)+1:end-nDecs(2),nDecs(3)+1:end-nDecs(3)); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-7,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
 
         % Test
@@ -9308,8 +9308,8 @@ function testClone(testCase)
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(nDecs(1)+1:end-nDecs(1),nDecs(2)+1:end-nDecs(2),nDecs(3)+1:end-nDecs(3)); % ignore border
             imgActual = imgActual(nDecs(1)+1:end-nDecs(1),nDecs(2)+1:end-nDecs(2),nDecs(3)+1:end-nDecs(3)); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-7,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
         
         % Test
@@ -9375,8 +9375,8 @@ function testClone(testCase)
                 'Actual image size is different from the expected one.');
             imgExpctd = imgExpctd(nDecs(1)+1:end-nDecs(1),nDecs(2)+1:end-nDecs(2),nDecs(3)+1:end-nDecs(3)); % ignore border
             imgActual = imgActual(nDecs(1)+1:end-nDecs(1),nDecs(2)+1:end-nDecs(2),nDecs(3)+1:end-nDecs(3)); % ignore border
-            diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-7,sprintf('%g',diff));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-13,sprintf('%g',diff));
         end
     end
     

@@ -3,12 +3,9 @@
 % This script executes design process of NSOLT with frequency 
 % domain specification.
 %
-% SVN identifier:
-% $Id: main_parnsoltdsgn.m 683 2015-05-29 08:22:13Z sho $
+% Requirements: MATLAB R2015b, Global optimization toolbox
 %
-% Requirements: MATLAB R2013b, Global optimization toolbox
-%
-% Copyright (c) 2014-2015, Shogo MURAMATSU
+% Copyright (c) 2014-2016, Shogo MURAMATSU
 %
 % All rights reserved.
 %
@@ -17,7 +14,7 @@
 %                8050 2-no-cho Ikarashi, Nishi-ku,
 %                Niigata, 950-2181, JAPAN
 % 
-% LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627
+% http://msiplab.eng.niigata-u.ac.jp/
 %
 
 %% Parameter settings

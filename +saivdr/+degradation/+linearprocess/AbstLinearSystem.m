@@ -1,12 +1,9 @@
 classdef AbstLinearSystem < matlab.System %#codegen
     %ABSTLINEARSYSTEM Abstract class of linear system
     %
-    % SVN identifier:
-    % $Id: AbstLinearSystem.m 683 2015-05-29 08:22:13Z sho $
+    % Requirements: MATLAB R2015b
     %
-    % Requirements: MATLAB R2013b
-    %
-    % Copyright (c) 2014-2015, Shogo MURAMATSU
+    % Copyright (c) 2014-2017, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -15,11 +12,14 @@ classdef AbstLinearSystem < matlab.System %#codegen
     %                8050 2-no-cho Ikarashi, Nishi-ku,
     %                Niigata, 950-2181, JAPAN
     %
-    % LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627    
+    % http://msiplab.eng.niigata-u.ac.jp/    
     %      
     properties (Nontunable)
-        EpsOfPowerMethod = 1e-6;
-        UseFileForLambdaMax = false;
+        DataType             = 'Image';
+        %
+        TolOfPowerMethod     = 1e-8;
+        MaxIterOfPowerMethod = 1e+6;
+        UseFileForLambdaMax  = false;
         %
         FileNameForLambdaMax = 'lmax';
     end
@@ -31,6 +31,8 @@ classdef AbstLinearSystem < matlab.System %#codegen
     properties (Hidden, Transient)
         ProcessingModeSet = ...
             matlab.system.StringSet({'Normal','Adjoint'})
+        DataTypeSet = ...
+            matlab.system.StringSet({'Image','Volumetric Data'})
     end
     
     properties (Hidden, Nontunable)
@@ -39,16 +41,25 @@ classdef AbstLinearSystem < matlab.System %#codegen
         LambdaMax
     end
     
+    properties (Access = private)
+        scurr
+    end
+    
+    properties(DiscreteState)
+        State
+    end
+    
     methods (Access = protected, Abstract = true)
         output = normalStepImpl(obj,input)
         output = adjointStepImpl(obj,input)
         flag = isInactiveSubPropertyImpl(obj,propertyName)
-        originalDim = getOriginalDimension(obj,ovservedDim)
+        originalDim = getOriginalDimension(obj,observedDim)
     end
     
     methods
         function obj = AbstLinearSystem(varargin)
             setProperties(obj,nargin,varargin{:})
+            obj.scurr = rng;
         end
     end
     
@@ -63,15 +74,24 @@ classdef AbstLinearSystem < matlab.System %#codegen
         end
         
         function s = saveObjectImpl(obj)
-            s = saveObjectImpl@matlab.System(obj);
+            s = saveObjectImpl@matlab.System(obj);    
+            s.scurr = obj.scurr;
         end
         
         function loadObjectImpl(obj,s,wasLocked)
-            loadObjectImpl@matlab.System(obj,s,wasLocked);
+            obj.scurr = s.scurr;
+            loadObjectImpl@matlab.System(obj,s,wasLocked);           
         end
 
         function setupImpl(obj,input)
-            obj.ObservedDimension = [ size(input,1) size(input,2) ];
+            if strcmp(obj.DataType,'Image')
+                obj.ObservedDimension = [ size(input,1) size(input,2) ];
+            else % Volumetric Data
+                obj.ObservedDimension = [ ...
+                    size(input,1) ...
+                    size(input,2) ...
+                    size(input,3)];
+            end
             obj.OriginalDimension = getOriginalDimension(...
                 obj,obj.ObservedDimension);
             obj.LambdaMax = getMaxEigenValueGram_(...
@@ -81,7 +101,7 @@ classdef AbstLinearSystem < matlab.System %#codegen
         function output = stepImpl(obj,input)
             if strcmp(obj.ProcessingMode,'Adjoint')
                 output = adjointStepImpl(obj,input);
-            else
+            else % Normal
                 output = normalStepImpl(obj,input);
             end
         end
@@ -98,8 +118,8 @@ classdef AbstLinearSystem < matlab.System %#codegen
     
     methods (Access = private)
         
-        function lmax = getMaxEigenValueGram_(obj,ovservedDim)
-            origDim = getOriginalDimension(obj,ovservedDim);
+        function lmax = getMaxEigenValueGram_(obj,observedDim)
+            origDim = getOriginalDimension(obj,observedDim);
             if obj.UseFileForLambdaMax
                 lmaxfile = obj.FileNameForLambdaMax;
                 if exist(lmaxfile,'file') == 2
@@ -122,19 +142,30 @@ classdef AbstLinearSystem < matlab.System %#codegen
         end
         
         function lmax = getLambdaMax_(obj,origDim)
-            upst = ones(origDim);
+            rng(obj.scurr);
+            upst = rand(origDim);
             lpre = 1.0;
             err_ = Inf;
-            while ( err_ > obj.EpsOfPowerMethod ) % Power method
+            
+            cnt_ = 0;
+            % Power method
+            while ( err_ > obj.TolOfPowerMethod ) % || ...
+                %cnt_ >= obj.MaxIterOfPowerMethod )
+                cnt_ = cnt_ + 1;
                 % upst = (P'*P)*upre
                 upre = upst/norm(upst(:));
                 v    = normalStepImpl(obj,upre); % P
-                upst = adjointStepImpl(obj,v);  % P'
+                upst = adjointStepImpl(obj,v);   % P.'
                 n = (upst(:)'*upst(:));
                 d = (upst(:)'*upre(:));
+                
                 lpst = n/d;
-                err_ = norm(lpst-lpre(:))^2;
+                err_ = abs(lpst-lpre)/abs(lpre);
                 lpre = lpst;
+                if cnt_ >= obj.MaxIterOfPowerMethod  
+                    warning('# of iterations reached to MaxIterPowerMethod');
+                    break;
+                end
             end
             lmax = lpst;
         end

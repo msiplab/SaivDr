@@ -29,7 +29,7 @@
 %                8050 2-no-cho Ikarashi, Nishi-ku,
 %                Niigata, 950-2181, JAPAN
 %
-% LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627
+% http://msiplab.eng.niigata-u.ac.jp/
 %
 nfig = 3;       % Figure number
 

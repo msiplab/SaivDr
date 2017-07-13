@@ -5,10 +5,7 @@
 % between the fidelity and sparsity term. Two different dictionaries
 % are compared. The results are saved under the folder './results.'
 %
-% SVN identifier:
-% $Id: main_sweeplambdadb.m 683 2015-05-29 08:22:13Z sho $
-%
-% Requirements: MATLAB R2013b
+% Requirements: MATLAB R2015b
 %
 % Copyright (c) 2014-2015, Shogo MURAMATSU
 %
@@ -19,9 +16,9 @@
 %                8050 2-no-cho Ikarashi, Nishi-ku,
 %                Niigata, 950-2181, JAPAN
 %
-% LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627
+% http://msiplab.eng.niigata-u.ac.jp/
 %
-clear all; clc
+clc
 
 %% Parameters for lambda sweep
 nLambdas     = 200;  % # of lambdas
@@ -93,16 +90,16 @@ S = load(sprintf('%s/nsolt_d%dx%d_c%d+%d_o%d+%d_v%d.mat',sdir,...
 lppufb = saivdr.dictionary.utility.fcn_upgrade(S.lppufb);
 release(lppufb);
 set(lppufb,'OutputMode','ParameterMatrixSet');
-synthesizer{iDic} = NsoltFactory.createSynthesis2dSystem(lppufb);
-analyzer{iDic}    = NsoltFactory.createAnalysis2dSystem(lppufb);
+synthesizers{iDic} = NsoltFactory.createSynthesis2dSystem(lppufb);
+analyzers{iDic}    = NsoltFactory.createAnalysis2dSystem(lppufb);
 
 % Undecimated (non-subsampled) Haar transform
 iDic = iDic+1;
 strdics{iDic}  = 'UdHaar';
 nLevels{iDic} = 2;
 import saivdr.dictionary.udhaar.*
-synthesizer{iDic} = UdHaarSynthesis2dSystem();
-analyzer{iDic}    = UdHaarAnalysis2dSystem();
+synthesizers{iDic} = UdHaarSynthesis2dSystem();
+analyzers{iDic}    = UdHaarAnalysis2dSystem();
 
 %
 nDics = iDic;
@@ -127,8 +124,8 @@ import saivdr.restoration.ista.IstaImRestoration
 rstrset = cell(nDics,1);
 for iDic = 1:nDics
     rstrset{iDic} = IstaImRestoration(...
-        'Synthesizer',synthesizer{iDic},...
-        'AdjOfSynthesizer',analyzer{iDic},...
+        'Synthesizer',synthesizers{iDic},...
+        'AdjOfSynthesizer',analyzers{iDic},...
         'LinearProcess',linproc,...
         'NumberOfTreeLevels',nLevels{iDic},...
         'Lambda',lambda_);

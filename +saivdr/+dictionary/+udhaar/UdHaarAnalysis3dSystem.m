@@ -4,7 +4,7 @@ classdef UdHaarAnalysis3dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
     % SVN identifier:
     % $Id: UdHaarAnalysis3dSystem.m 683 2015-05-29 08:22:13Z sho $
     %
-    % Requirements: MATLAB R2013b
+    % Requirements: MATLAB R2015b
     %
     % Copyright (c) 2014-2015, Shogo MURAMATSU
     %
@@ -15,7 +15,7 @@ classdef UdHaarAnalysis3dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
     %                8050 2-no-cho Ikarashi, Nishi-ku,
     %                Niigata, 950-2181, JAPAN
     %
-    % LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627    
+    % http://msiplab.eng.niigata-u.ac.jp/    
     %
    
     properties (Access = private)
@@ -76,7 +76,14 @@ classdef UdHaarAnalysis3dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
         
         function [ coefs, scales ] = stepImpl(obj, u, nLevels)
             scales = repmat(size(u),[7*nLevels+1, 1]);
-            yaa = u;
+            % NOTE:
+            % imfilter of R2017a has a bug for double precision array
+            if strcmp(version('-release'),'2017a') && ...
+                    isa(u,'double')
+                warning(['IMFILTER of R2017a with CIRCULAR option has a bug for double precison array.' ...
+                    ' Please visit https://jp.mathworks.com/support/bugreports/ and search #BugID: 1554862.' ])
+            end               
+            yaa = u;          
             hdd = obj.kernels.DD;
             hvd = obj.kernels.VD;
             hhd = obj.kernels.HD;

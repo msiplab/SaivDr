@@ -5,12 +5,9 @@
 %  IEEE Trans. on Image Processing, Vol.21, No.5, pp.2434-2448, May 2012.
 %  (DOI: 10.1109/TIP.2011.2182055)
 %
-% SVN identifier:
-% $Id: main_tvmramprot.m 683 2015-05-29 08:22:13Z sho $
+% Requirements: MATLAB R2015b, Global optimization toolbox
 %
-% Requirements: MATLAB R2013b, Global optimization toolbox
-%
-% Copyright (c) 2014-2015, Shogo MURAMATSU
+% Copyright (c) 2014-2017, Shogo MURAMATSU
 %
 % All rights reserved.
 %
@@ -19,7 +16,7 @@
 %                8050 2-no-cho Ikarashi, Nishi-ku,
 %                Niigata, 950-2181, JAPAN
 %
-% LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627
+% http://msiplab.eng.niigata-u.ac.jp/
 %
 isDisplay = false;
 if isDisplay 
