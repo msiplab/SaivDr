@@ -1,8 +1,8 @@
-classdef NsoltDesignerFrqTestCase < matlab.unittest.TestCase
+classdef CnsoltDesignerFrqTestCase < matlab.unittest.TestCase
     %NSOLTDESIGNERFRQTESTCASE Test case for AprxErrorWithSparseRep
     %
     % SVN identifier:
-    % $Id: NsoltDesignerFrqTestCase.m 683 2015-05-29 08:22:13Z sho $
+    % $Id: CnsoltDesignerFrqTestCase.m 683 2015-05-29 08:22:13Z sho $
     %
     % Requirements: MATLAB R2013a
     %
@@ -29,19 +29,19 @@ classdef NsoltDesignerFrqTestCase < matlab.unittest.TestCase
     methods (Test)
         
         % Test for default construction
-        function testDesignFrqDec22Ch6plus2Ord44Vm1(testCase)
+        function testDesignFrqDec22Ch7Ord44Vm1(testCase)
             
             % Parameters
             nPoints  = [ 16 16 ];
             nDecs = [ 2 2 ];
-            nChs  = [ 6 2 ];
+            nChs  = 7;
             nOrds = [ 4 4 ];
             nVm = 1;
 
             % Preperation
-            import saivdr.dictionary.nsoltx.design.*
-            specBand = zeros(nPoints(1),nPoints(2),sum(nChs));
-            for idx = 1:sum(nChs)
+            import saivdr.dictionary.cnsoltx.design.*
+            specBand = zeros(nPoints(1),nPoints(2),nChs);
+            for idx = 1:nChs
                 ros = round(rand(nPoints));
                 specBand(:,:,idx) = 2*ros-1;
             end            
@@ -49,9 +49,9 @@ classdef NsoltDesignerFrqTestCase < matlab.unittest.TestCase
                 'AmplitudeSpecs',specBand);
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             import saivdr.dictionary.utility.*
-            lppufb = NsoltFactory.createOvsdLpPuFb2dSystem(...
+            lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor', nDecs, ...
                 'NumberOfChannels', nChs,...
                 'PolyPhaseOrder', nOrds,...
@@ -59,7 +59,7 @@ classdef NsoltDesignerFrqTestCase < matlab.unittest.TestCase
                 'OutputMode','AnalysisFilters');
             
             % Instantiation of target
-            testCase.dsgnfrq = NsoltDesignerFrq(...
+            testCase.dsgnfrq = CnsoltDesignerFrq(...
                 'AmplitudeSpecs',specBand);
             
             % Before optimization
@@ -85,7 +85,7 @@ classdef NsoltDesignerFrqTestCase < matlab.unittest.TestCase
         end
   
         % Test for default construction
-        function testDesignFrqDec22Ch5plus3Ord44Vm1Ga(testCase)
+        function testDesignFrqDec22Ch8Ord44Vm1Ga(testCase)
             
             [isGaAvailable, ~] = license('checkout','gads_toolbox');
             if ~isGaAvailable ...
@@ -97,14 +97,14 @@ classdef NsoltDesignerFrqTestCase < matlab.unittest.TestCase
             % Parameters
             nPoints  = [ 16 16 ];
             nDecs = [ 2 2 ];
-            nChs  = [ 5 3 ];
+            nChs  = 8;
             nOrds = [ 4 4 ];
             nVm = 1;
 
             % Preperation
-            import saivdr.dictionary.nsoltx.design.*
-            specBand = zeros(nPoints(1),nPoints(2),sum(nChs));
-            for idx = 1:sum(nChs)
+            import saivdr.dictionary.cnsoltx.design.*
+            specBand = zeros(nPoints(1),nPoints(2),nChs);
+            for idx = 1:nChs
                 ros = round(rand(nPoints));
                 specBand(:,:,idx) = 2*ros-1;
             end            
@@ -112,9 +112,9 @@ classdef NsoltDesignerFrqTestCase < matlab.unittest.TestCase
                 'AmplitudeSpecs',specBand);
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             import saivdr.dictionary.utility.*
-            lppufb = NsoltFactory.createOvsdLpPuFb2dSystem(...
+            lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor', nDecs, ...
                 'NumberOfChannels', nChs,...
                 'PolyPhaseOrder', nOrds,...
@@ -122,7 +122,7 @@ classdef NsoltDesignerFrqTestCase < matlab.unittest.TestCase
                 'OutputMode','AnalysisFilters');
             
             % Instantiation of target
-            testCase.dsgnfrq = NsoltDesignerFrq(...
+            testCase.dsgnfrq = CnsoltDesignerFrq(...
                 'AmplitudeSpecs',specBand,...
                 'OptimizationFunction',@ga,...
                 'MaxIterOfHybridFmin',2);
@@ -155,7 +155,7 @@ classdef NsoltDesignerFrqTestCase < matlab.unittest.TestCase
         end
  
         % Test for default construction
-        function testDesignFrqDec22Ch4plus4Ord44Vm1GaOptMus(testCase)
+        function testDesignFrqDec22Ch8Ord44Vm1GaOptMus(testCase)
             
             [isGaAvailable, ~] = license('checkout','gads_toolbox');
             if ~isGaAvailable ...
@@ -167,14 +167,14 @@ classdef NsoltDesignerFrqTestCase < matlab.unittest.TestCase
             % Parameters
             nPoints  = [ 16 16 ];
             nDecs = [ 2 2 ];
-            nChs  = [ 4 4 ];
+            nChs  = 8;
             nOrds = [ 4 4 ];
             nVm = 1;
 
             % Preperation
-            import saivdr.dictionary.nsoltx.design.*
-            specBand = zeros(nPoints(1),nPoints(2),sum(nChs));
-            for idx = 1:sum(nChs)
+            import saivdr.dictionary.cnsoltx.design.*
+            specBand = zeros(nPoints(1),nPoints(2),nChs);
+            for idx = 1:nChs
                 ros = round(rand(nPoints));
                 specBand(:,:,idx) = 2*ros-1;
             end            
@@ -182,9 +182,9 @@ classdef NsoltDesignerFrqTestCase < matlab.unittest.TestCase
                 'AmplitudeSpecs',specBand);
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.*
+            import saivdr.dictionary.cnsoltx.*
             import saivdr.dictionary.utility.*
-            lppufb = NsoltFactory.createOvsdLpPuFb2dSystem(...
+            lppufb = CnsoltFactory.createCplxOvsdLpPuFb2dSystem(...
                 'DecimationFactor', nDecs, ...
                 'NumberOfChannels', nChs,...
                 'PolyPhaseOrder', nOrds,...
@@ -192,7 +192,7 @@ classdef NsoltDesignerFrqTestCase < matlab.unittest.TestCase
                 'OutputMode','AnalysisFilters');
             
             % Instantiation of target
-            testCase.dsgnfrq = NsoltDesignerFrq(...
+            testCase.dsgnfrq = CnsoltDesignerFrq(...
                 'AmplitudeSpecs',specBand,...
                 'OptimizationFunction',@ga,...
                 'MaxIterOfHybridFmin',2,...
