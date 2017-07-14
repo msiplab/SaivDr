@@ -50,7 +50,7 @@ classdef CplxOLpPuFbAnalysis1dSystem < ...
     end
 
     properties (Access = private)
-        atomExtFcn
+        fcnAtomExt
         allScales
         allCoefs
     end
@@ -104,7 +104,7 @@ classdef CplxOLpPuFbAnalysis1dSystem < ...
             s.LpPuFb1d = matlab.System.saveObject(obj.LpPuFb1d);
             
             % Save the protected & private properties
-            s.atomExtFcn = obj.atomExtFcn;            
+            s.fcnAtomExt = obj.fcnAtomExt;            
             s.nAllCoefs  = obj.nAllCoefs;
             s.nAllChs    = obj.nAllChs;
             s.decimationFactor = obj.decimationFactor;
@@ -115,7 +115,7 @@ classdef CplxOLpPuFbAnalysis1dSystem < ...
         
         function loadObjectImpl(obj,s,wasLocked)
             % Load protected and private properties
-            obj.atomExtFcn = s.atomExtFcn;
+            obj.fcnAtomExt = s.fcnAtomExt;
             obj.nAllCoefs  = s.nAllCoefs;
             obj.nAllChs    = s.nAllChs;
             obj.decimationFactor = s.decimationFactor;
@@ -149,25 +149,31 @@ classdef CplxOLpPuFbAnalysis1dSystem < ...
             obj.allScales = zeros(obj.nAllChs,obj.DATA_DIMENSION);
             
             % Prepare MEX function
-            
-            if obj.NumberOfChannels <= 3
-                mexFcn = [];
-            elseif ~obj.isMexFcn
-                import saivdr.dictionary.colpprfb.mexsrcs.fcn_autobuild_catomext1d
-                [mexFcn, obj.isMexFcn] = ...
-                    fcn_autobuild_catomext1d(nch);
-            end
-            if ~isempty(mexFcn)
-                obj.atomExtFcn = @(coefs,scale,pmcoefs,ord,fpe) ...
-                    mexFcn(coefs,scale,pmcoefs,...
-                    nch,ord,fpe);
+            if exist('fcn_CplxOLpPrFbAtomExtender1dCodeGen_mex','file')==3
+                obj.fcnAtomExt = @fcn_CplxOLpPrFbAtomExtender1dCodeGen_mex;
             else
-                import saivdr.dictionary.colpprfb.mexsrcs.fcn_CplxOLpPrFbAtomExtender1d
-                clear fcn_CplxOLpPrFbAtomExtender1d
-                obj.atomExtFcn = @(coefs,scale,pmcoefs,ord,fpe) ...
-                    fcn_CplxOLpPrFbAtomExtender1d(coefs,scale,pmcoefs,...
-                    nch,ord,fpe);
+                import saivdr.dictionary.colpprfb.mexsrcs.fcn_CplxOLpPrFbAtomExtender1dCodeGen
+                obj.fcnAtomExt = @fcn_CplxOLpPrFbAtomExtender1dCodeGen;
             end
+%             
+%             if obj.NumberOfChannels <= 3
+%                 mexFcn = [];
+%             elseif ~obj.isMexFcn
+%                 import saivdr.dictionary.colpprfb.mexsrcs.fcn_autobuild_catomext1d
+%                 [mexFcn, obj.isMexFcn] = ...
+%                     fcn_autobuild_catomext1d(nch);
+%             end
+%             if ~isempty(mexFcn)
+%                 obj.fcnAtomExt = @(coefs,scale,pmcoefs,ord,fpe) ...
+%                     mexFcn(coefs,scale,pmcoefs,...
+%                     nch,ord,fpe);
+%             else
+%                 import saivdr.dictionary.colpprfb.mexsrcs.fcn_CplxOLpPrFbAtomExtender1d
+%                 clear fcn_CplxOLpPrFbAtomExtender1d
+%                 obj.fcnAtomExt = @(coefs,scale,pmcoefs,ord,fpe) ...
+%                     fcn_CplxOLpPrFbAtomExtender1d(coefs,scale,pmcoefs,...
+%                     nch,ord,fpe);
+%             end
         end
         
         function [ coefs, scales ] = stepImpl(obj, srcSeq, nLevels)
@@ -249,10 +255,11 @@ classdef CplxOLpPuFbAnalysis1dSystem < ...
             
             % Atom extension
             subScale = obj.nBlks;
+            nch = obj.NumberOfChannels;
             ord = uint32(obj.polyPhaseOrder);            
             fpe = strcmp(obj.BoundaryOperation,'Circular');
-            arrayCoefs = obj.atomExtFcn(arrayCoefs,subScale,pmCoefs,...
-                ord,fpe);
+            arrayCoefs = obj.fcnAtomExt(arrayCoefs,subScale,pmCoefs,...
+                nch,ord,fpe);
         end
         
     end

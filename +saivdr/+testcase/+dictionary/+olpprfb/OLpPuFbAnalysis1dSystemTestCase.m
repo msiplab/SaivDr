@@ -4,7 +4,7 @@ classdef OLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
     % SVN identifier:
     % $Id: OLpPuFbAnalysis1dSystemTestCase.m 659 2015-03-17 01:05:52Z sho $
     %
-    % Requirements: MATLAB R2013b
+    % Requirements: MATLAB R2015b
     %
     % Copyright (c) 2015, Shogo MURAMATSU
     %
@@ -15,7 +15,7 @@ classdef OLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
     %                8050 2-no-cho Ikarashi, Nishi-ku,
     %                Niigata, 950-2181, JAPAN
     %
-    % LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627    
+    % http://msiplab.eng.niigata-u.ac.jp/    
     %
     properties
         analyzer
@@ -1649,12 +1649,12 @@ classdef OLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             cloneAnalyzer = clone(testCase.analyzer);
             
             % Evaluation
-            testCase.verifyEqual(cloneAnalyzer,testCase.analyzer);
-            testCase.verifyFalse(cloneAnalyzer == testCase.analyzer);
             prpOrg = get(testCase.analyzer,'LpPuFb1d');
             prpCln = get(cloneAnalyzer,'LpPuFb1d');
             testCase.verifyEqual(prpCln,prpOrg);
             testCase.verifyFalse(prpCln == prpOrg);
+            testCase.verifyEqual(cloneAnalyzer,testCase.analyzer);
+            testCase.verifyFalse(cloneAnalyzer == testCase.analyzer);            
             %
             [coefExpctd,scaleExpctd] = step(testCase.analyzer,srcSeq,nLevels);
             [coefActual,scaleActual] = step(cloneAnalyzer,srcSeq,nLevels);
@@ -3768,12 +3768,12 @@ classdef OLpPuFbAnalysis1dSystemTestCase < matlab.unittest.TestCase
             cloneAnalyzer = clone(testCase.analyzer);
             
             % Evaluation
-            testCase.verifyEqual(cloneAnalyzer,testCase.analyzer);
-            testCase.verifyFalse(cloneAnalyzer == testCase.analyzer);
             prpOrg = get(testCase.analyzer,'LpPuFb1d');
             prpCln = get(cloneAnalyzer,'LpPuFb1d');
             testCase.verifyEqual(prpCln,prpOrg);
             testCase.verifyFalse(prpCln == prpOrg);
+            testCase.verifyEqual(cloneAnalyzer,testCase.analyzer);
+            testCase.verifyFalse(cloneAnalyzer == testCase.analyzer);            
             %            
             [coefExpctd,scaleExpctd] = step(testCase.analyzer,srcSeq,nLevels);
             [coefActual,scaleActual] = step(cloneAnalyzer,srcSeq,nLevels);

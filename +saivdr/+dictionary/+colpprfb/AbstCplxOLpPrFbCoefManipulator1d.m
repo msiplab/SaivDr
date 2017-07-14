@@ -19,7 +19,7 @@ classdef AbstCplxOLpPrFbCoefManipulator1d < matlab.System %#codegen
         DATA_DIMENSION = 1
     end
     
-    properties (Nontunable, PositiveInteger)
+    properties (PositiveInteger)
         NumberOfChannels = 4
         NumberOfHalfChannels = 2
     end
@@ -32,7 +32,7 @@ classdef AbstCplxOLpPrFbCoefManipulator1d < matlab.System %#codegen
         PolyPhaseOrder = 0;
     end
 
-    properties (SetAccess = protected, GetAccess = public, Nontunable)
+    properties (SetAccess = protected, GetAccess = public)
         OLpPrFbType = 'Type I'
     end
     
@@ -61,6 +61,8 @@ classdef AbstCplxOLpPrFbCoefManipulator1d < matlab.System %#codegen
             obj.NumberOfHalfChannels = floor(obj.NumberOfChannels/2);
             if mod(obj.NumberOfChannels,2) ~= 0
                 obj.OLpPrFbType = 'Type II';
+            else
+                obj.OLpPrFbType = 'Type I';
             end
         end
         
@@ -108,7 +110,7 @@ classdef AbstCplxOLpPrFbCoefManipulator1d < matlab.System %#codegen
                 error('%s:\n NumberOfChannels must be more than 2.',id);
             end
             if obj.NumberOfHalfChannels ~= floor(obj.NumberOfChannels/2)
-                error('%s;\n NumberOfHalfChannels must be %d.',id,floor(obj.NumberOfChannels/2));
+                error('%s;\n NumberOfHalfChannels must be %d. (Actual = %d)',id,floor(obj.NumberOfChannels/2),obj.NumberOfHalfChannels);
             end
         end
         
@@ -128,6 +130,19 @@ classdef AbstCplxOLpPrFbCoefManipulator1d < matlab.System %#codegen
         end
 
         function processTunedPropertiesImpl(obj)
+            propChange = ...
+                isChangedProperty(obj,'NumberOfChannels') ||...
+                isChangedProperty(obj,'NumberOfHalfChannels') ||...
+                isChangedProperty(obj,'PolyPhaseOrder');
+            if propChange
+                %
+                obj.NumberOfHalfChannels = floor(obj.NumberOfChannels/2);
+                if mod(obj.NumberOfChannels,2) ~= 0
+                    obj.OLpPrFbType = 'Type II';
+                else
+                    obj.OLpPrFbType = 'Type I';
+                end
+            end
             setupParamMtx_(obj);
         end
         

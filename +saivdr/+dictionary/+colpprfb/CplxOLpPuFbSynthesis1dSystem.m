@@ -48,7 +48,7 @@ classdef CplxOLpPuFbSynthesis1dSystem  < ...
     end    
 
     properties (Access = private)
-        atomCncFcn
+        fcnAtomCnc
     end
     
     properties (Access = private, PositiveInteger)
@@ -102,14 +102,14 @@ classdef CplxOLpPuFbSynthesis1dSystem  < ...
             s.LpPuFb1d = matlab.System.saveObject(obj.LpPuFb1d);
             
             % Save the protected & private properties
-            s.atomCncFcn       = obj.atomCncFcn;            
+            s.fcnAtomCnc       = obj.fcnAtomCnc;            
             s.decimationFactor = obj.decimationFactor;
             s.polyPhaseOrder   = obj.polyPhaseOrder;
         end
         
         function loadObjectImpl(obj,s,wasLocked)
             % Load protected and private properties            
-            obj.atomCncFcn       = s.atomCncFcn;
+            obj.fcnAtomCnc       = s.fcnAtomCnc;
             obj.decimationFactor = s.decimationFactor;
             obj.polyPhaseOrder   = s.polyPhaseOrder;        
             % Call base class method to load public properties            
@@ -122,29 +122,34 @@ classdef CplxOLpPuFbSynthesis1dSystem  < ...
         end
         
         function setupImpl(obj, ~, ~)
-            nch = obj.NumberOfChannels;
-            
-            % Prepare MEX function
-            
-            if obj.NumberOfChannels <= 3
-                mexFcn = [];
-            elseif ~obj.isMexFcn
-                import saivdr.dictionary.colpprfb.mexsrcs.fcn_autobuild_catomcnc1d
-                [mexFcn, obj.isMexFcn] = ...
-                    fcn_autobuild_catomcnc1d(nch);
-            end
-            
-            if ~isempty(mexFcn)
-                obj.atomCncFcn = @(coefs,scale,pmcoefs,ord,fpe) ...
-                    mexFcn(coefs,scale,pmcoefs,...
-                    nch,ord,fpe);
+            if exist('fcn_CplxOLpPrFbAtomConcatenator1dCodeGen_mex','file')==3
+                obj.fcnAtomCnc = @fcn_CplxOLpPrFbAtomConcatenator1dCodeGen_mex;
             else
-                import saivdr.dictionary.colpprfb.mexsrcs.fcn_CplxOLpPrFbAtomConcatenator1d
-                clear fcn_CplxOLpPrFbAtomConcatenator1d
-                obj.atomCncFcn = @(coefs,scale,pmcoefs,ord,fpe) ...
-                    fcn_CplxOLpPrFbAtomConcatenator1d(coefs,scale,pmcoefs,...
-                    nch,ord,fpe);
+                import saivdr.dictionary.colpprfb.mexsrcs.fcn_CplxOLpPrFbAtomConcatenator1dCodeGen
+                obj.fcnAtomCnc = @fcn_CplxOLpPrFbAtomConcatenator1dCodeGen;
             end
+            
+%             % Prepare MEX function
+%             
+%             if obj.NumberOfChannels <= 3
+%                 mexFcn = [];
+%             elseif ~obj.isMexFcn
+%                 import saivdr.dictionary.colpprfb.mexsrcs.fcn_autobuild_catomcnc1d
+%                 [mexFcn, obj.isMexFcn] = ...
+%                     fcn_autobuild_catomcnc1d(nch);
+%             end
+%             
+%             if ~isempty(mexFcn)
+%                 obj.fcnAtomCnc = @(coefs,scale,pmcoefs,ord,fpe) ...
+%                     mexFcn(coefs,scale,pmcoefs,...
+%                     nch,ord,fpe);
+%             else
+%                 import saivdr.dictionary.colpprfb.mexsrcs.fcn_CplxOLpPrFbAtomConcatenator1d
+%                 clear fcn_CplxOLpPrFbAtomConcatenator1d
+%                 obj.fcnAtomCnc = @(coefs,scale,pmcoefs,ord,fpe) ...
+%                     fcn_CplxOLpPrFbAtomConcatenator1d(coefs,scale,pmcoefs,...
+%                     nch,ord,fpe);
+%             end
             
         end
         
@@ -201,10 +206,11 @@ classdef CplxOLpPuFbSynthesis1dSystem  < ...
             
             % Atom concatenation
             subScale  = nBlks_;
+            nch = obj.NumberOfChannels;
             ord = uint32(obj.polyPhaseOrder);            
             fpe = strcmp(obj.BoundaryOperation,'Circular');        
-            arrayCoefs = obj.atomCncFcn(arrayCoefs,subScale,pmCoefs,...
-                ord,fpe);
+            arrayCoefs = obj.fcnAtomCnc(arrayCoefs,subScale,pmCoefs,...
+                nch,ord,fpe);
             
             %TODO: IDCT‚Å‚Í‚È‚¢‚Ì‚Å–¼Ì•ÏX‚·‚é
             % Block IDCT

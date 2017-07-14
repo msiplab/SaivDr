@@ -1,9 +1,9 @@
 classdef OrthonormalMatrixGenerationSystem < matlab.System %#codegen
     %ORTHONORMALMATRIXGENERATIONSYSTEM Orthonormal matrix generator
     %
-    % Requirements: MATLAB R2013b
+    % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2014-2016, Shogo MURAMATSU
+    % Copyright (c) 2014-2017, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -12,10 +12,10 @@ classdef OrthonormalMatrixGenerationSystem < matlab.System %#codegen
     %                8050 2-no-cho Ikarashi, Nishi-ku,
     %                Niigata, 950-2181, JAPAN
     %
-    % LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627    
+    % http://msiplab.eng.niigata-u.ac.jp/    
     %
     
-    properties(Nontunable)
+    properties (Nontunable)
         PartialDifference = 'off'
     end
     
@@ -24,7 +24,7 @@ classdef OrthonormalMatrixGenerationSystem < matlab.System %#codegen
             matlab.system.StringSet({'on','off'});
     end    
     
-    properties (Nontunable)
+    properties
         NumberOfDimensions
     end
     

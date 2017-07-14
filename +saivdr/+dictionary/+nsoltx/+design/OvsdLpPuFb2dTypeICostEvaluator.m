@@ -2,12 +2,9 @@ classdef OvsdLpPuFb2dTypeICostEvaluator < ... %#codegen
         saivdr.dictionary.nsoltx.design.AbstOvsdLpPuFbCostEvaluator
     %OVSDLPPUFB2DTYPEICOSTEVALUATOR Cost evaluator for Type-I NSOLT
     %
-    % SVN identifier:
-    % $Id: OvsdLpPuFb2dTypeICostEvaluator.m 868 2015-11-25 02:33:11Z sho $
+    % Requirements: MATLAB R2015b
     %
-    % Requirements: MATLAB R2013b
-    %
-    % Copyright (c) 2015, Shogo MURAMATSU
+    % Copyright (c) 2015-2017, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -16,7 +13,7 @@ classdef OvsdLpPuFb2dTypeICostEvaluator < ... %#codegen
     %                8050 2-no-cho Ikarashi, Nishi-ku,
     %                Niigata, 950-2181, JAPAN
     %
-    % LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627
+    % http://msiplab.eng.niigata-u.ac.jp/
     %
     
     properties (Access = protected, Constant = true)
@@ -39,23 +36,22 @@ classdef OvsdLpPuFb2dTypeICostEvaluator < ... %#codegen
             dim = obj.DATA_DIMENSION;
         end
         
-%         function s = saveObjectImpl(obj)
-%             s = saveObjectImpl@saivdr.dictionary.nsoltx.design.AbstOvsdLpPuFbCostEvaluator(obj);
-%         end
-%         
-%         function loadObjectImpl(obj,s,wasLocked)
-%             loadObjectImpl@saivdr.dictionary.nsoltx.design.AbstOvsdLpPuFbCostEvaluator(obj,s,wasLocked);
-%         end     
+        %         function s = saveObjectImpl(obj)
+        %             s = saveObjectImpl@saivdr.dictionary.nsoltx.design.AbstOvsdLpPuFbCostEvaluator(obj);
+        %         end
+        %
+        %         function loadObjectImpl(obj,s,wasLocked)
+        %             loadObjectImpl@saivdr.dictionary.nsoltx.design.AbstOvsdLpPuFbCostEvaluator(obj,s,wasLocked);
+        %         end
         
-        function validatePropertiesImpl(~)
-        end
+        %         function validatePropertiesImpl(~)
+        %         end
         
         function setupImpl(obj,~,~,scales)
             
             nch = [ obj.NumberOfSymmetricChannels ...
                 obj.NumberOfAntisymmetricChannels ];
             nChs = sum(nch);
-            ord = uint32(obj.polyPhaseOrder);
             
             % Check nLeves
             nLevels = (size(scales,1)-1)/(nChs-1);
@@ -63,35 +59,19 @@ classdef OvsdLpPuFb2dTypeICostEvaluator < ... %#codegen
                 error('Number of tree levels should be one.');
             end
             
-            % Prepare MEX function
-            if ~obj.isMexFcn
-                import saivdr.dictionary.nsoltx.mexsrcs.fcn_autobuild_atomcnc2d
-                [mexFcnAcnc, isMexFcnAcnc] = fcn_autobuild_atomcnc2d(nch);
-                %
-                import saivdr.dictionary.nsoltx.mexsrcs.fcn_autobuild_gradevalsteps2d
-                [mexFcnGrad, isMexFcnGrad] = fcn_autobuild_gradevalsteps2d(nch,ord);
-                %
-                obj.isMexFcn = isMexFcnAcnc && isMexFcnGrad;
-            end
             % Atom concatenator
-            if ~isempty(mexFcnAcnc)
-                obj.atomCncFcn = @(coefs,scale,pmcoefs,ord,fpe) ...
-                    mexFcnAcnc(coefs,scale,pmcoefs,nch,ord,fpe);
+            if exist('fcn_NsoltAtomConcatenator2dCodeGen_mex','file')==3
+                obj.atomCncFcn = @fcn_NsoltAtomConcatenator2dCodeGen_mex;
             else
-                import saivdr.dictionary.nsoltx.mexsrcs.fcn_NsoltAtomConcatenator2d
-                clear fcn_NsoltAtomConcatenator2d
-                obj.atomCncFcn = @(coefs,scale,pmcoefs,ord,fpe) ...
-                    fcn_NsoltAtomConcatenator2d(coefs,scale,pmcoefs,nch,ord,fpe);
+                import saivdr.dictionary.nsoltx.mexsrcs.fcn_NsoltAtomConcatenator2dCodeGen
+                obj.atomCncFcn = @fcn_NsoltAtomConcatenator2dCodeGen;
             end
             % Gradient evaluator
-            if ~isempty(mexFcnGrad)
-                obj.gradFcn = @(coefsB,coefsC,scale,pmCoefs,angs,mus,fpe,isnodc) ...
-                    mexFcnGrad(coefsB,coefsC,scale,pmCoefs,angs,mus,nch,ord,fpe,isnodc);
+            if exist('fcn_GradEvalSteps2dCodeGen_mex','file')==3
+                obj.gradFcn = @fcn_GradEvalSteps2dCodeGen_mex;
             else
-                import saivdr.dictionary.nsoltx.mexsrcs.fcn_GradEvalSteps2d
-                clear fcn_GradEvalSteps2d
-                obj.gradFcn = @(coefsB,coefsC,scale,pmCoefs,angs,mus,fpe,isnodc) ...
-                    fcn_GradEvalSteps2d(coefsB,coefsC,scale,pmCoefs,angs,mus,nch,ord,fpe,isnodc);
+                import saivdr.dictionary.nsoltx.mexsrcs.fcn_GradEvalSteps2dCodeGen
+                obj.gradFcn = @fcn_GradEvalSteps2dCodeGen;
             end
         end
         
@@ -171,12 +151,12 @@ classdef OvsdLpPuFb2dTypeICostEvaluator < ... %#codegen
                 arrayCoefsC(ps+1:ps+mf,:) = coefs(mc+1:end,:);
             end
             
-            % Gradient calculation steps
-            %import saivdr.dictionary.nsoltx.mexsrcs.fcn_GradEvalSteps2d                   
+            % Gradient calculation steps                  
             fpe = strcmp(obj.BoundaryOperation,'Circular');
+            ord = uint32(obj.polyPhaseOrder);
             grad = obj.gradFcn(...
                 arrayCoefsB, arrayCoefsC, scale_, pmCoefs, ...
-                angs, mus, fpe, isnodc);
+                angs, mus, [ps pa], ord, fpe, isnodc);
         end
         
         function [recImg,arrayCoefs] = synthesize_(obj,coefs,scales,pmMtx)
@@ -218,7 +198,7 @@ classdef OvsdLpPuFb2dTypeICostEvaluator < ... %#codegen
             ord  = uint32(obj.polyPhaseOrder);
             fpe = strcmp(obj.BoundaryOperation,'Circular');
             arrayCoefs = obj.atomCncFcn(arrayCoefs,subScale,pmCoefs,...
-                ord,fpe);
+                [ps ps],ord,fpe);
             
             % Block IDCT
             if decY_ == 1 && decX_ == 1

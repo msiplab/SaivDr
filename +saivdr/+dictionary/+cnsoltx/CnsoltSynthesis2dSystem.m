@@ -48,7 +48,7 @@ classdef CnsoltSynthesis2dSystem  < ...
     end    
 
     properties (Access = private)
-        atomCncFcn
+        fcnAtomCnc
     end
     
     properties (Access = private, PositiveInteger)
@@ -102,7 +102,7 @@ classdef CnsoltSynthesis2dSystem  < ...
             s.LpPuFb2d = matlab.System.saveObject(obj.LpPuFb2d);
             
             % Save the protected & private properties
-            s.atomCncFcn       = obj.atomCncFcn;            
+            s.fcnAtomCnc       = obj.fcnAtomCnc;            
             s.decimationFactor = obj.decimationFactor;
             s.polyPhaseOrder   = obj.polyPhaseOrder;
             %s.nRows            = obj.nRows;
@@ -111,7 +111,7 @@ classdef CnsoltSynthesis2dSystem  < ...
         
         function loadObjectImpl(obj,s,wasLocked)
             % Load protected and private properties            
-            obj.atomCncFcn       = s.atomCncFcn;
+            obj.fcnAtomCnc       = s.fcnAtomCnc;
             obj.decimationFactor = s.decimationFactor;
             obj.polyPhaseOrder   = s.polyPhaseOrder;
             %obj.nRows            = s.nRows;
@@ -129,23 +129,29 @@ classdef CnsoltSynthesis2dSystem  < ...
             nch = obj.NumberOfChannels;
             
             % Prepare MEX function
-            
-            if ~obj.isMexFcn
-                import saivdr.dictionary.cnsoltx.mexsrcs.fcn_autobuild_catomcnc2d
-                [mexFcn, obj.isMexFcn] = ...
-                    fcn_autobuild_catomcnc2d(nch);
-            end
-            if ~isempty(mexFcn)
-                obj.atomCncFcn = @(coefs,scale,pmcoefs,ord,fpe) ...
-                    mexFcn(coefs,scale,pmcoefs,...
-                    nch,ord,fpe);
+            if exist('fcn_CnsoltAtomConcatenator2dCodeGen_mex','file')==3
+                obj.fcnAtomCnc = @fcn_CnsoltAtomConcatenator2dCodeGen_mex;
             else
-                import saivdr.dictionary.cnsoltx.mexsrcs.fcn_CnsoltAtomConcatenator2d
-                clear fcn_CnsoltAtomConcatenator2d
-                obj.atomCncFcn = @(coefs,scale,pmcoefs,ord,fpe) ...
-                    fcn_CnsoltAtomConcatenator2d(coefs,scale,pmcoefs,...
-                    nch,ord,fpe);
+                import saivdr.dictionary.cnsoltx.mexsrcs.fcn_CnsoltAtomConcatenator2dCodeGen
+                obj.fcnAtomCnc = @fcn_CnsoltAtomConcatenator2dCodeGen;
             end
+            
+%             if ~obj.isMexFcn
+%                 import saivdr.dictionary.cnsoltx.mexsrcs.fcn_autobuild_catomcnc2d
+%                 [mexFcn, obj.isMexFcn] = ...
+%                     fcn_autobuild_catomcnc2d(nch);
+%             end
+%             if ~isempty(mexFcn)
+%                 obj.fcnAtomCnc = @(coefs,scale,pmcoefs,ord,fpe) ...
+%                     mexFcn(coefs,scale,pmcoefs,...
+%                     nch,ord,fpe);
+%             else
+%                 import saivdr.dictionary.cnsoltx.mexsrcs.fcn_CnsoltAtomConcatenator2d
+%                 clear fcn_CnsoltAtomConcatenator2d
+%                 obj.fcnAtomCnc = @(coefs,scale,pmcoefs,ord,fpe) ...
+%                     fcn_CnsoltAtomConcatenator2d(coefs,scale,pmcoefs,...
+%                     nch,ord,fpe);
+%             end
             
         end
         
@@ -210,10 +216,11 @@ classdef CnsoltSynthesis2dSystem  < ...
             % Atom concatenation
             S = diag(exp(-1i*symmetry));
             subScale  = [ nRows_ nCols_ ];
+            nch = obj.NumberOfChannels;
             ord  = uint32(obj.polyPhaseOrder);            
             fpe = strcmp(obj.BoundaryOperation,'Circular');
-            arrayCoefs = obj.atomCncFcn(S*arrayCoefs,subScale,pmCoefs,...
-                ord,fpe);
+            arrayCoefs = obj.fcnAtomCnc(S*arrayCoefs,subScale,pmCoefs,...
+                nch,ord,fpe);
             
             % Block IDFT
             if decY_ == 1 && decX_ == 1

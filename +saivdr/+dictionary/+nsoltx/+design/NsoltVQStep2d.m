@@ -2,12 +2,9 @@ classdef NsoltVQStep2d <  ...
         saivdr.dictionary.nsoltx.AbstNsoltCoefManipulator2d %#codegen
     %NSOLTVQSTEP2D 2-D Atom Extender for NSOLT
     %
-    % SVN identifier:
-    % $Id: NsoltVQStep2d.m 866 2015-11-24 04:29:42Z sho $
+    % Requirements: MATLAB R2015b
     %
-    % Requirements: MATLAB R2013b
-    %
-    % Copyright (c) 2015, Shogo MURAMATSU
+    % Copyright (c) 2015-2017, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -16,7 +13,7 @@ classdef NsoltVQStep2d <  ...
     %                8050 2-no-cho Ikarashi, Nishi-ku,
     %                Niigata, 950-2181, JAPAN
     %
-    % LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627
+    % http://msiplab.eng.niigata-u.ac.jp/
     %
     
     properties(Nontunable)
@@ -61,7 +58,7 @@ classdef NsoltVQStep2d <  ...
         function validateInputsImpl(obj, coefs, subScale, pmCoefs, ~)
             validateInputsImpl@saivdr.dictionary.nsoltx.AbstNsoltCoefManipulator2d(obj, coefs, subScale, pmCoefs);
             if size(coefs,1) ~= obj.NumberOfSymmetricChannels ...
-                    + obj.NumberOfAntisymmetricChannels;
+                    + obj.NumberOfAntisymmetricChannels
                 error('SaivDr: Coefficient array has invalid size.');
             end
         end

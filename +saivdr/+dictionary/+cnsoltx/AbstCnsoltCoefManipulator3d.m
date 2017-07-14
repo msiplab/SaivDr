@@ -22,7 +22,7 @@ classdef AbstCnsoltCoefManipulator3d < matlab.System
         DATA_DIMENSION = 3
     end
     
-    properties (Nontunable, PositiveInteger)
+    properties (PositiveInteger)
         NumberOfChannels      = 8
         NumberOfHalfChannels  = 4
     end
@@ -35,7 +35,7 @@ classdef AbstCnsoltCoefManipulator3d < matlab.System
         PolyPhaseOrder = [ 0 0 0 ]
     end
 
-    properties (SetAccess = protected, GetAccess = public, Nontunable)
+    properties (SetAccess = protected, GetAccess = public)
         NsoltType = 'Type I'
     end
     
@@ -66,6 +66,8 @@ classdef AbstCnsoltCoefManipulator3d < matlab.System
             obj.NumberOfHalfChannels = floor(obj.NumberOfChannels/2);
             if mod(obj.NumberOfChannels,2) ~= 0
                 obj.NsoltType = 'Type II';
+            else
+                obj.NsoltType = 'Type I';
             end
         end
         
@@ -114,7 +116,7 @@ classdef AbstCnsoltCoefManipulator3d < matlab.System
             %
             id = 'SaivDr:IllegalArgumentException';
             if size(coefs,2) ~= prod(subScale)
-                error('%s:\n size(coefs,2) should be equalt to prod(subScale)',...
+                error('%s:\n size(coefs,2) should be equal to prod(subScale)',...
                     id);
             end
             %
@@ -130,6 +132,19 @@ classdef AbstCnsoltCoefManipulator3d < matlab.System
         end
 
         function processTunedPropertiesImpl(obj)
+            propChange = ...
+                isChangedProperty(obj,'NumberOfChannels') ||...
+                isChangedProperty(obj,'NumberOfHalfChannels') ||...
+                isChangedProperty(obj,'PolyPhaseOrder');
+            if propChange
+                %
+                obj.NumberOfHalfChannels = floor(obj.NumberOfChannels/2);
+                if mod(obj.NumberOfChannels,2) ~= 0
+                    obj.NsoltType = 'Type II';
+                else
+                    obj.NsoltType = 'Type I';
+                end
+            end
             setupParamMtx_(obj);
         end
         

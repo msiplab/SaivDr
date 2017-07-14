@@ -50,7 +50,7 @@ classdef CnsoltAnalysis2dSystem < ...
     end
 
     properties (Access = private)
-        atomExtFcn
+        fcnAtomExt
         allScales
         allCoefs
     end
@@ -104,7 +104,7 @@ classdef CnsoltAnalysis2dSystem < ...
             s.LpPuFb2d = matlab.System.saveObject(obj.LpPuFb2d);
             
             % Save the protected & private properties
-            s.atomExtFcn = obj.atomExtFcn;            
+            s.fcnAtomExt = obj.fcnAtomExt;            
             s.nAllCoefs  = obj.nAllCoefs;
             s.nAllChs    = obj.nAllChs;
             s.decimationFactor = obj.decimationFactor;
@@ -115,7 +115,7 @@ classdef CnsoltAnalysis2dSystem < ...
         
         function loadObjectImpl(obj,s,wasLocked)
             % Load protected and private properties
-            obj.atomExtFcn = s.atomExtFcn;
+            obj.fcnAtomExt = s.fcnAtomExt;
             obj.nAllCoefs  = s.nAllCoefs;
             obj.nAllChs    = s.nAllChs;
             obj.decimationFactor = s.decimationFactor;
@@ -149,23 +149,29 @@ classdef CnsoltAnalysis2dSystem < ...
             obj.allScales = zeros(obj.nAllChs,obj.DATA_DIMENSION);
             
             % Prepare MEX function
-            
-            if ~obj.isMexFcn
-                import saivdr.dictionary.cnsoltx.mexsrcs.fcn_autobuild_catomext2d
-                [mexFcn, obj.isMexFcn] = ...
-                    fcn_autobuild_catomext2d(nch);
-            end
-            if ~isempty(mexFcn)
-                obj.atomExtFcn = @(coefs,scale,pmcoefs,ord,fpe) ...
-                    mexFcn(coefs,scale,pmcoefs,...
-                    nch,ord,fpe);
+            if exist('fcn_CnsoltAtomExtender2dCodeGen_mex','file')==3
+                obj.fcnAtomExt = @fcn_CnsoltAtomExtender2dCodeGen_mex;
             else
-                import saivdr.dictionary.cnsoltx.mexsrcs.fcn_CnsoltAtomExtender2d
-                clear fcn_CnsoltAtomExtender2d
-                obj.atomExtFcn = @(coefs,scale,pmcoefs,ord,fpe) ...
-                    fcn_CnsoltAtomExtender2d(coefs,scale,pmcoefs,...
-                    nch,ord,fpe);
+                import saivdr.dictionary.cnsoltx.mexsrcs.fcn_CnsoltAtomExtender2dCodeGen
+                obj.fcnAtomExt = @fcn_CnsoltAtomExtender2dCodeGen;
             end
+            
+%             if ~obj.isMexFcn
+%                 import saivdr.dictionary.cnsoltx.mexsrcs.fcn_autobuild_catomext2d
+%                 [mexFcn, obj.isMexFcn] = ...
+%                     fcn_autobuild_catomext2d(nch);
+%             end
+%             if ~isempty(mexFcn)
+%                 obj.fcnAtomExt = @(coefs,scale,pmcoefs,ord,fpe) ...
+%                     mexFcn(coefs,scale,pmcoefs,...
+%                     nch,ord,fpe);
+%             else
+%                 import saivdr.dictionary.cnsoltx.mexsrcs.fcn_CnsoltAtomExtender2d
+%                 clear fcn_CnsoltAtomExtender2d
+%                 obj.fcnAtomExt = @(coefs,scale,pmcoefs,ord,fpe) ...
+%                     fcn_CnsoltAtomExtender2d(coefs,scale,pmcoefs,...
+%                     nch,ord,fpe);
+%             end
 
         end
         
@@ -269,11 +275,12 @@ classdef CnsoltAnalysis2dSystem < ...
             % Atom extension
             S = diag(exp(1i*symmetry));
             subScale = [ obj.nRows obj.nCols ];
+            nch = obj.NumberOfChannels;
             ord   = uint32(obj.polyPhaseOrder);            
             fpe = strcmp(obj.BoundaryOperation,'Circular');
-            arrayCoefs = S*obj.atomExtFcn(arrayCoefs,subScale,pmCoefs,...
-                ord,fpe);
-        end        
+            arrayCoefs = S*obj.fcnAtomExt(arrayCoefs,subScale,pmCoefs,...
+                nch,ord,fpe);
+        end
         
     end   
     

@@ -1,12 +1,9 @@
 classdef AbstSynthesisSystem < matlab.System %#~codegen
     %ABSTSYNTHESISSYSTEM Abstract class of synthesis system
     %
-    % SVN identifier:
-    % $Id: AbstSynthesisSystem.m 683 2015-05-29 08:22:13Z sho $
+    % Requirements: MATLAB R2015b
     %
-    % Requirements: MATLAB R2013b
-    %
-    % Copyright (c) 2014-2015, Shogo MURAMATSU
+    % Copyright (c) 2014-2017, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -15,13 +12,31 @@ classdef AbstSynthesisSystem < matlab.System %#~codegen
     %                8050 2-no-cho Ikarashi, Nishi-ku,
     %                Niigata, 950-2181, JAPAN
     %
-    % LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627    
+    % http://msiplab.eng.niigata-u.ac.jp/    
     %
+        
+    properties (Logical)
+        UseGpu = false
+    end
     
     properties (SetAccess = protected, GetAccess = public)
         FrameBound
     end
-   
+        
+    methods
+        
+        % Constractor
+        function obj = AbstSynthesisSystem(varargin)
+            setProperties(obj,nargin,varargin{:})
+            %if ~license('checkout','distrib_computing_toolbox')
+            %    obj.UseGpu = false;
+            %elseif gpuDeviceCount() < 1
+            %    obj.UseGpu = false;
+            %end
+        end
+        
+    end
+    
     methods (Access = protected)
         
         function s = saveObjectImpl(obj)

@@ -53,25 +53,38 @@ classdef AbstCplxOvsdLpPuFb1dTypeIISystem < ...
         end
 
         function loadObjectImpl(obj,s,wasLocked)
-            obj.mexFcn   = s.mexFcn;
             obj.nStages  = s.nStages;
             obj.matrixE0 = s.matrixE0;
             loadObjectImpl@saivdr.dictionary.colpprfb.AbstCplxOvsdLpPuFb1dSystem(obj,s,wasLocked);
+            %
+            if ~isempty(s.mexFcn)
+                if exist(func2str(s.mexFcn),'file') == 3
+                    obj.mexFcn  = s.mexFcn;
+                else
+                    import saivdr.dictionary.cnsoltx.mexsrcs.fcn_Order2CplxBuildingBlockTypeII
+                    obj.mexFcn = @fcn_Order2CplxBuildingBlockTypeII;
+                end
+            end
         end
 
         function resetImpl(obj)
             resetImpl@saivdr.dictionary.colpprfb.AbstCplxOvsdLpPuFb1dSystem(obj);
             % Build MEX
-            import saivdr.dictionary.cnsoltx.mexsrcs.fcn_autobuild_cbb_type2
-            [obj.mexFcn, obj.mexFlag] = fcn_autobuild_cbb_type2(...
-                floor(obj.NumberOfChannels/2));
+%             import saivdr.dictionary.cnsoltx.mexsrcs.fcn_autobuild_cbb_type2
+%             [obj.mexFcn, obj.mexFlag] = fcn_autobuild_cbb_type2(...
+%                 floor(obj.NumberOfChannels/2));
         end
 
         function setupImpl(obj,varargin)
             % Prepare MEX function
-            import saivdr.dictionary.cnsoltx.mexsrcs.fcn_autobuild_cbb_type2
-            [obj.mexFcn, obj.mexFlag] = fcn_autobuild_cbb_type2(...
-                floor(obj.NumberOfChannels/2));
+            if exist('fcn_Order2CplxBuildingBlockTypeII_mex','file')==3
+                obj.mexFcn = @fcn_Order2CplxBuildingBlockTypeII_mex;
+                obj.mexFlag = true;
+            else
+                import saivdr.dictionary.cnsoltx.mexsrcs.fcn_Order2CplxBuildingBlockTypeII
+                obj.mexFcn = @fcn_Order2CplxBuildingBlockTypeII;
+                obj.mexFlag = false;
+            end   
         end
 
         function updateProperties_(obj)
@@ -122,12 +135,12 @@ classdef AbstCplxOvsdLpPuFb1dTypeIISystem < ...
             obj.ParameterMatrixSet = ParameterMatrixContainer(...
                 'MatrixSizeTable',paramMtxSizeTab);
 
-            % Prepare MEX function
-            if ~obj.mexFlag
-                import saivdr.dictionary.cnsoltx.mexsrcs.fcn_autobuild_cbb_type2
-                [obj.mexFcn, obj.mexFlag] = fcn_autobuild_cbb_type2(...
-                    floor(obj.NumberOfChannels/2));
-            end
+%             % Prepare MEX function
+%             if ~obj.mexFlag
+%                 import saivdr.dictionary.cnsoltx.mexsrcs.fcn_autobuild_cbb_type2
+%                 [obj.mexFcn, obj.mexFlag] = fcn_autobuild_cbb_type2(...
+%                     floor(obj.NumberOfChannels/2));
+%             end
         end
 
         function updateAngles_(obj)

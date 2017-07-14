@@ -2,12 +2,9 @@ classdef NsoltSynthesis2dSystem  < ...
         saivdr.dictionary.AbstSynthesisSystem %#~codegen
     %NsoltSynthesis2dSystem Synthesis system of Type-I NSOLT
     %
-    % SVN identifier:
-    % $Id: NsoltSynthesis2dSystem.m 683 2015-05-29 08:22:13Z sho $
+    % Requirements: MATLAB R2015b
     %
-    % Requirements: MATLAB R2013b
-    %
-    % Copyright (c) 2014-2015, Shogo MURAMATSU
+    % Copyright (c) 2014-2017, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -16,7 +13,7 @@ classdef NsoltSynthesis2dSystem  < ...
     %                8050 2-no-cho Ikarashi, Nishi-ku,
     %                Niigata, 950-2181, JAPAN
     %
-    % LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627
+    % http://msiplab.eng.niigata-u.ac.jp/
     %
 
     properties (Access = protected, Constant = true)
@@ -48,17 +45,13 @@ classdef NsoltSynthesis2dSystem  < ...
     end    
 
     properties (Access = private)
-        atomCncFcn
+        fcnAtomCnc
     end
     
     properties (Access = private, PositiveInteger)
         nRows 
         nCols 
     end 
-    
-    properties (Access = private, Logical)
-        isMexFcn = false
-    end
     
     methods
         
@@ -104,24 +97,24 @@ classdef NsoltSynthesis2dSystem  < ...
             % Save the child System objects            
             s.LpPuFb2d = matlab.System.saveObject(obj.LpPuFb2d);
             
-            % Save the protected & private properties
-            s.atomCncFcn       = obj.atomCncFcn;            
+            % Save the protected & private properties          
             s.decimationFactor = obj.decimationFactor;
             s.polyPhaseOrder   = obj.polyPhaseOrder;
-            %s.nRows            = obj.nRows;
+            s.fcnAtomCnc       = obj.fcnAtomCnc;                          
+            %s.nRows            = obj.nRows;            
             %s.nCols            = obj.nCols;
         end
         
         function loadObjectImpl(obj,s,wasLocked)
             % Load protected and private properties            
-            obj.atomCncFcn       = s.atomCncFcn;
             obj.decimationFactor = s.decimationFactor;
             obj.polyPhaseOrder   = s.polyPhaseOrder;
+            obj.fcnAtomCnc       = s.fcnAtomCnc;
             %obj.nRows            = s.nRows;
-            %obj.nCols            = s.nCols;            
-            % Call base class method to load public properties            
+            %obj.nCols            = s.nCols;
+            % Call base class method to load public properties
             loadObjectImpl@saivdr.dictionary.AbstSynthesisSystem(obj,s,wasLocked);
-            % Load the child System objects            
+            % Load the child System objects
             obj.LpPuFb2d = matlab.System.loadObject(s.LpPuFb2d);            
         end
         
@@ -129,27 +122,12 @@ classdef NsoltSynthesis2dSystem  < ...
         end
         
         function setupImpl(obj, ~, ~)
-            nch = [ obj.NumberOfSymmetricChannels ...
-                obj.NumberOfAntisymmetricChannels ];
-            
-            % Prepare MEX function
-            if ~obj.isMexFcn
-                import saivdr.dictionary.nsoltx.mexsrcs.fcn_autobuild_atomcnc2d
-                [mexFcn, obj.isMexFcn] = ...
-                    fcn_autobuild_atomcnc2d(nch);
-            end
-            if ~isempty(mexFcn)
-                obj.atomCncFcn = @(coefs,scale,pmcoefs,ord,fpe) ...
-                    mexFcn(coefs,scale,pmcoefs,...
-                    nch,ord,fpe);
+            if exist('fcn_NsoltAtomConcatenator2dCodeGen_mex','file')==3
+                obj.fcnAtomCnc = @fcn_NsoltAtomConcatenator2dCodeGen_mex;
             else
-                import saivdr.dictionary.nsoltx.mexsrcs.fcn_NsoltAtomConcatenator2d
-                clear fcn_NsoltAtomConcatenator2d
-                obj.atomCncFcn = @(coefs,scale,pmcoefs,ord,fpe) ...
-                    fcn_NsoltAtomConcatenator2d(coefs,scale,pmcoefs,...
-                    nch,ord,fpe);
+                import saivdr.dictionary.nsoltx.mexsrcs.fcn_NsoltAtomConcatenator2dCodeGen
+                obj.fcnAtomCnc = @fcn_NsoltAtomConcatenator2dCodeGen;
             end
-            
         end
         
         function recImg = stepImpl(obj, coefs, scales)
@@ -214,10 +192,14 @@ classdef NsoltSynthesis2dSystem  < ...
             
             % Atom concatenation
             subScale  = [ nRows_ nCols_ ];
-            ord  = uint32(obj.polyPhaseOrder);            
-            fpe = strcmp(obj.BoundaryOperation,'Circular');            
-            arrayCoefs = obj.atomCncFcn(arrayCoefs,subScale,pmCoefs,...
-                ord,fpe);
+            %arrayCoefs = obj.atomCncFcn(arrayCoefs,subScale,pmCoefs,...
+            %    ord,fpe);
+            nch = [ obj.NumberOfSymmetricChannels ...
+                obj.NumberOfAntisymmetricChannels ];
+            ord = uint32(obj.polyPhaseOrder);
+            fpe = strcmp(obj.BoundaryOperation,'Circular');
+            arrayCoefs = obj.fcnAtomCnc(...
+                arrayCoefs, subScale, pmCoefs, nch, ord, fpe);
             
             % Block IDCT
             if decY_ == 1 && decX_ == 1

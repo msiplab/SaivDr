@@ -4,7 +4,7 @@ classdef LpPuFb2dTvmSystemTestCase < matlab.unittest.TestCase
     % SVN identifier:
     % $Id: LpPuFb2dTvmSystemTestCase.m 866 2015-11-24 04:29:42Z sho $
     %
-    % Requirements: MATLAB R2013b
+    % Requirements: MATLAB R2015b
     %
     % Copyright (c) 2014-2015, Shogo MURAMATSU
     %
@@ -15,7 +15,7 @@ classdef LpPuFb2dTvmSystemTestCase < matlab.unittest.TestCase
     %                8050 2-no-cho Ikarashi, Nishi-ku,
     %                Niigata, 950-2181, JAPAN
     %
-    % LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627    
+    % http://msiplab.eng.niigata-u.ac.jp/    
     %
     
     properties
@@ -243,7 +243,7 @@ classdef LpPuFb2dTvmSystemTestCase < matlab.unittest.TestCase
             set(testCase.lppufb,'OutputMode','AnalysisFilterAt');
             H = step(testCase.lppufb,[],[],1);
             dc = abs(sum(H(:)));
-            testCase.verifyEqual(dc,sqrt(prod(dec)),'RelTol',1e-15,...
+            testCase.verifyEqual(dc,sqrt(prod(dec)),'RelTol',1e-14,...
                 sprintf('%g',dc));
             for iSubband = 2:prod(dec)
                 H = step(testCase.lppufb,[],[],iSubband);

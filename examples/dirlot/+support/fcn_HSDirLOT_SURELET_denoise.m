@@ -21,7 +21,7 @@ function output = fcn_HSDirLOT_SURELET_denoise(input)
 %                8050 2-no-cho Ikarashi, Nishi-ku,
 %                Niigata, 950-2181, JAPAN
 %
-% LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627
+% http://msiplab.eng.niigata-u.ac.jp/
 %
 
 sdir = './filters/';

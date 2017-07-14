@@ -50,7 +50,7 @@ classdef PassBandErrorStopBandEnergyTestCase < matlab.unittest.TestCase
             energyExpctd = 0.0;
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.design.*
+            import saivdr.dictionary.cnsoltx.design.*
             testCase.psbe = PassBandErrorStopBandEnergy(...
                 'AmplitudeSpecs',specBand);
             
@@ -81,7 +81,7 @@ classdef PassBandErrorStopBandEnergyTestCase < matlab.unittest.TestCase
             energyExpctd = nChs*prod(nPoints);
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.design.*
+            import saivdr.dictionary.cnsoltx.design.*
             testCase.psbe = PassBandErrorStopBandEnergy(...
                 'AmplitudeSpecs',specBand);
             
@@ -113,7 +113,7 @@ classdef PassBandErrorStopBandEnergyTestCase < matlab.unittest.TestCase
             energyExpctd = 0.0;
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.design.*
+            import saivdr.dictionary.cnsoltx.design.*
             testCase.psbe = PassBandErrorStopBandEnergy(...
                 'AmplitudeSpecs',specBand);
             
@@ -145,7 +145,7 @@ classdef PassBandErrorStopBandEnergyTestCase < matlab.unittest.TestCase
             energyExpctd = 0.0;
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.design.*
+            import saivdr.dictionary.cnsoltx.design.*
             testCase.psbe = PassBandErrorStopBandEnergy(...
                 'AmplitudeSpecs',specBand,...
                 'EvaluationMode','Individual');
@@ -179,7 +179,7 @@ classdef PassBandErrorStopBandEnergyTestCase < matlab.unittest.TestCase
             energyExpctd = 0.0;
             
             % Instantiation of target class
-            import saivdr.dictionary.nsoltx.design.*
+            import saivdr.dictionary.cnsoltx.design.*
             testCase.psbe = PassBandErrorStopBandEnergy(...
                 'AmplitudeSpecs',specBand,...
                 'EvaluationMode','Individual');

@@ -1,12 +1,9 @@
 classdef Analysis2dSystemTestCase < matlab.unittest.TestCase
-    %Analysis2dSystemTESTCASE Test case for Analysis2dSystem
+    %ANALYSIS2DSYSTEMTESTCASE Test case for Analysis2dSystem
     %
-    % SVN identifier:
-    % $Id: Analysis2dSystemTestCase.m 866 2015-11-24 04:29:42Z sho $
+    % Requirements: MATLAB R2015b
     %
-    % Requirements: MATLAB R2013b
-    %
-    % Copyright (c) 2015, Shogo MURAMATSU
+    % Copyright (c) 2015-2017, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -15,7 +12,7 @@ classdef Analysis2dSystemTestCase < matlab.unittest.TestCase
     %                8050 2-no-cho Ikarashi, Nishi-ku,
     %                Niigata, 950-2181, JAPAN
     %
-    % LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627    
+    % http://msiplab.eng.niigata-u.ac.jp/
     %
     properties
         analyzer
@@ -125,8 +122,8 @@ classdef Analysis2dSystemTestCase < matlab.unittest.TestCase
             testCase.verifySize(scalesActual,size(scalesExpctd));
             testCase.verifyEqual(scalesActual,scalesExpctd);
             testCase.verifySize(coefsActual,size(coefsExpctd));
-            diff = max(abs(coefsExpctd - coefsActual)./abs(coefsExpctd));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'RelTol',1e-7,...
+            diff = max(abs(coefsExpctd - coefsActual));
+            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-10,...
                 sprintf('%g',diff));
 
         end
@@ -176,8 +173,8 @@ classdef Analysis2dSystemTestCase < matlab.unittest.TestCase
             testCase.verifySize(scalesActual,size(scalesExpctd));
             testCase.verifyEqual(scalesActual,scalesExpctd);
             testCase.verifySize(coefsActual,size(coefsExpctd));
-            diff = max(abs(coefsExpctd - coefsActual)./abs(coefsExpctd));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'RelTol',1e-7,...
+            diff = max(abs(coefsExpctd - coefsActual));
+            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-10,...
                 sprintf('%g',diff));
 
         end
@@ -227,8 +224,8 @@ classdef Analysis2dSystemTestCase < matlab.unittest.TestCase
             testCase.verifySize(scalesActual,size(scalesExpctd));
             testCase.verifyEqual(scalesActual,scalesExpctd);
             testCase.verifySize(coefsActual,size(coefsExpctd));
-            diff = max(abs(coefsExpctd - coefsActual)./abs(coefsExpctd));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'RelTol',1e-7,...
+            diff = max(abs(coefsExpctd - coefsActual));
+            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-10,...
                 sprintf('%g',diff));
 
         end
@@ -278,8 +275,8 @@ classdef Analysis2dSystemTestCase < matlab.unittest.TestCase
             testCase.verifySize(scalesActual,size(scalesExpctd));
             testCase.verifyEqual(scalesActual,scalesExpctd);
             testCase.verifySize(coefsActual,size(coefsExpctd));
-            diff = max(abs(coefsExpctd - coefsActual)./abs(coefsExpctd));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'RelTol',1e-7,...
+            diff = max(abs(coefsExpctd - coefsActual));
+            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-10,...
                 sprintf('%g',diff));
 
         end
@@ -332,8 +329,8 @@ classdef Analysis2dSystemTestCase < matlab.unittest.TestCase
             testCase.verifySize(scalesActual,size(scalesExpctd));
             testCase.verifyEqual(scalesActual,scalesExpctd);
             testCase.verifySize(coefsActual,size(coefsExpctd));
-            diff = max(abs(coefsExpctd - coefsActual)./abs(coefsExpctd));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'RelTol',1e-7,...
+            diff = max(abs(coefsExpctd - coefsActual));
+            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-10,...
                 sprintf('%g',diff));
 
         end
@@ -381,8 +378,8 @@ classdef Analysis2dSystemTestCase < matlab.unittest.TestCase
             testCase.verifySize(scalesActual,size(scalesExpctd));
             testCase.verifyEqual(scalesActual,scalesExpctd);
             testCase.verifySize(coefsActual,size(coefsExpctd));
-            diff = max(abs(coefsExpctd - coefsActual)./abs(coefsExpctd));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'RelTol',1e-7,...
+            diff = max(abs(coefsExpctd - coefsActual));
+            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-10,...
                 sprintf('%g',diff));
 
         end
@@ -450,8 +447,8 @@ classdef Analysis2dSystemTestCase < matlab.unittest.TestCase
             testCase.verifySize(scalesActual,size(scalesExpctd));
             testCase.verifyEqual(scalesActual,scalesExpctd);
             testCase.verifySize(coefsActual,size(coefsExpctd));
-            diff = max(abs(coefsExpctd - coefsActual)./abs(coefsExpctd));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'RelTol',1e-7,...
+            diff = max(abs(coefsExpctd - coefsActual));
+            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-10,...
                 sprintf('%g',diff));  
             
         end
@@ -529,8 +526,8 @@ classdef Analysis2dSystemTestCase < matlab.unittest.TestCase
             testCase.verifySize(scalesActual,size(scalesExpctd));
             testCase.verifyEqual(scalesActual,scalesExpctd);
             testCase.verifySize(coefsActual,size(coefsExpctd));
-            diff = max(abs(coefsExpctd - coefsActual)./abs(coefsExpctd));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'RelTol',1e-7,...
+            diff = max(abs(coefsExpctd - coefsActual));
+            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-10,...
                 sprintf('%g',diff));
             
         end
@@ -624,8 +621,8 @@ classdef Analysis2dSystemTestCase < matlab.unittest.TestCase
             testCase.verifySize(scalesActual,size(scalesExpctd));
             testCase.verifyEqual(scalesActual,scalesExpctd);
             testCase.verifySize(coefsActual,size(coefsExpctd));
-            diff = max(abs(coefsExpctd - coefsActual)./abs(coefsExpctd));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'RelTol',1e-7,...
+            diff = max(abs(coefsExpctd - coefsActual));
+            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-10,...
                 sprintf('%g',diff));            
             
         end
@@ -674,8 +671,8 @@ classdef Analysis2dSystemTestCase < matlab.unittest.TestCase
             testCase.verifySize(scalesActual,size(scalesExpctd));
             testCase.verifyEqual(scalesActual,scalesExpctd);
             testCase.verifySize(coefsActual,size(coefsExpctd));
-            diff = max(abs(coefsExpctd - coefsActual)./abs(coefsExpctd));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'RelTol',1e-7,...
+            diff = max(abs(coefsExpctd - coefsActual));
+            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-10,...
                 sprintf('%g',diff));
 
         end
@@ -726,8 +723,8 @@ classdef Analysis2dSystemTestCase < matlab.unittest.TestCase
             testCase.verifySize(scalesActual,size(scalesExpctd));
             testCase.verifyEqual(scalesActual,scalesExpctd);
             testCase.verifySize(coefsActual,size(coefsExpctd));
-            diff = max(abs(coefsExpctd - coefsActual)./abs(coefsExpctd));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'RelTol',1e-7,...
+            diff = max(abs(coefsExpctd - coefsActual));
+            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-10,...
                 sprintf('%g',diff));
 
         end
@@ -778,8 +775,8 @@ classdef Analysis2dSystemTestCase < matlab.unittest.TestCase
             testCase.verifySize(scalesActual,size(scalesExpctd));
             testCase.verifyEqual(scalesActual,scalesExpctd);
             testCase.verifySize(coefsActual,size(coefsExpctd));
-            diff = max(abs(coefsExpctd - coefsActual)./abs(coefsExpctd));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'RelTol',1e-7,...
+            diff = max(abs(coefsExpctd - coefsActual));
+            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-10,...
                 sprintf('%g',diff));
             
         end
@@ -830,8 +827,8 @@ classdef Analysis2dSystemTestCase < matlab.unittest.TestCase
             testCase.verifySize(scalesActual,size(scalesExpctd));
             testCase.verifyEqual(scalesActual,scalesExpctd);
             testCase.verifySize(coefsActual,size(coefsExpctd));
-            diff = max(abs(coefsExpctd - coefsActual)./abs(coefsExpctd));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'RelTol',1e-7,...
+            diff = max(abs(coefsExpctd - coefsActual));
+            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-10,...
                 sprintf('%g',diff));
             
         end
@@ -885,8 +882,8 @@ classdef Analysis2dSystemTestCase < matlab.unittest.TestCase
             testCase.verifySize(scalesActual,size(scalesExpctd));
             testCase.verifyEqual(scalesActual,scalesExpctd);
             testCase.verifySize(coefsActual,size(coefsExpctd));
-            diff = max(abs(coefsExpctd - coefsActual)./abs(coefsExpctd));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'RelTol',1e-7,...
+            diff = max(abs(coefsExpctd - coefsActual));
+            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-10,...
                 sprintf('%g',diff));
             
         end
@@ -936,8 +933,8 @@ classdef Analysis2dSystemTestCase < matlab.unittest.TestCase
             testCase.verifySize(scalesActual,size(scalesExpctd));
             testCase.verifyEqual(scalesActual,scalesExpctd);
             testCase.verifySize(coefsActual,size(coefsExpctd));
-            diff = max(abs(coefsExpctd - coefsActual)./abs(coefsExpctd));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'RelTol',1e-7,...
+            diff = max(abs(coefsExpctd - coefsActual));
+            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-10,...
                 sprintf('%g',diff));
             
         end
@@ -1006,8 +1003,8 @@ classdef Analysis2dSystemTestCase < matlab.unittest.TestCase
             testCase.verifySize(scalesActual,size(scalesExpctd));
             testCase.verifyEqual(scalesActual,scalesExpctd);
             testCase.verifySize(coefsActual,size(coefsExpctd));
-            diff = max(abs(coefsExpctd - coefsActual)./abs(coefsExpctd));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'RelTol',1e-7,...
+            diff = max(abs(coefsExpctd - coefsActual));
+            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-10,...
                 sprintf('%g',diff));  
             
         end
@@ -1086,8 +1083,8 @@ classdef Analysis2dSystemTestCase < matlab.unittest.TestCase
             testCase.verifySize(scalesActual,size(scalesExpctd));
             testCase.verifyEqual(scalesActual,scalesExpctd);
             testCase.verifySize(coefsActual,size(coefsExpctd));
-            diff = max(abs(coefsExpctd - coefsActual)./abs(coefsExpctd));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'RelTol',1e-7,...
+            diff = max(abs(coefsExpctd - coefsActual));
+            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-10,...
                 sprintf('%g',diff));
             
         end
@@ -1182,8 +1179,8 @@ classdef Analysis2dSystemTestCase < matlab.unittest.TestCase
             testCase.verifySize(scalesActual,size(scalesExpctd));
             testCase.verifyEqual(scalesActual,scalesExpctd);
             testCase.verifySize(coefsActual,size(coefsExpctd));
-            diff = max(abs(coefsExpctd - coefsActual)./abs(coefsExpctd));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'RelTol',1e-7,...
+            diff = max(abs(coefsExpctd - coefsActual));
+            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-10,...
                 sprintf('%g',diff));            
             
         end
@@ -1281,8 +1278,8 @@ classdef Analysis2dSystemTestCase < matlab.unittest.TestCase
             testCase.verifySize(scalesActual,size(scalesExpctd));
             testCase.verifyEqual(scalesActual,scalesExpctd);
             testCase.verifySize(coefsActual,size(coefsExpctd));
-            diff = max(abs(coefsExpctd - coefsActual)./abs(coefsExpctd));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'RelTol',1e-7,...
+            diff = max(abs(coefsExpctd - coefsActual));
+            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-10,...
                 sprintf('%g',diff));            
             
         end
@@ -1357,8 +1354,8 @@ classdef Analysis2dSystemTestCase < matlab.unittest.TestCase
             testCase.verifySize(scalesActual,size(scalesExpctd));
             testCase.verifyEqual(scalesActual,scalesExpctd);
             testCase.verifySize(coefsActual,size(coefsExpctd));
-            diff = max(abs(coefsExpctd - coefsActual)./abs(coefsExpctd));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'RelTol',1e-7,...
+            diff = max(abs(coefsExpctd - coefsActual));
+            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-10,...
                 sprintf('%g',diff));            
             
         end
@@ -1457,8 +1454,8 @@ classdef Analysis2dSystemTestCase < matlab.unittest.TestCase
             testCase.verifySize(scalesActual,size(scalesExpctd));
             testCase.verifyEqual(scalesActual,scalesExpctd);
             testCase.verifySize(coefsActual,size(coefsExpctd));
-            diff = max(abs(coefsExpctd - coefsActual)./abs(coefsExpctd));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'RelTol',1e-7,...
+            diff = max(abs(coefsExpctd - coefsActual));
+            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-10,...
                 sprintf('%g',diff));            
             
         end
@@ -1534,8 +1531,8 @@ classdef Analysis2dSystemTestCase < matlab.unittest.TestCase
             testCase.verifySize(scalesActual,size(scalesExpctd));
             testCase.verifyEqual(scalesActual,scalesExpctd);
             testCase.verifySize(coefsActual,size(coefsExpctd));
-            diff = max(abs(coefsExpctd - coefsActual)./abs(coefsExpctd));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'RelTol',1e-7,...
+            diff = max(abs(coefsExpctd - coefsActual));
+            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-10,...
                 sprintf('%g',diff));            
             
         end
@@ -1617,8 +1614,8 @@ classdef Analysis2dSystemTestCase < matlab.unittest.TestCase
             testCase.verifySize(scalesActual,size(scalesExpctd));
             testCase.verifyEqual(scalesActual,scalesExpctd);
             testCase.verifySize(coefsActual,size(coefsExpctd));
-            diff = max(abs(coefsExpctd - coefsActual)./abs(coefsExpctd));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'RelTol',1e-7,...
+            diff = max(abs(coefsExpctd - coefsActual));
+            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-10,...
                 sprintf('%g',diff));            
             
         end
@@ -1701,13 +1698,98 @@ classdef Analysis2dSystemTestCase < matlab.unittest.TestCase
             testCase.verifySize(scalesActual,size(scalesExpctd));
             testCase.verifyEqual(scalesActual,scalesExpctd);
             testCase.verifySize(coefsActual,size(coefsExpctd));
-            diff = max(abs(coefsExpctd - coefsActual)./abs(coefsExpctd));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'RelTol',1e-7,...
+            diff = max(abs(coefsExpctd - coefsActual));
+            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-10,...
                 sprintf('%g',diff));            
             
         end        
         
-                
+               % Test
+        function testStepDec33Ch54Ord22Level2FreqUseGpuFalse(testCase)
+            
+            % Parameters
+            height = 108;
+            width = 135;
+            srcImg = rand(height,width);
+            nDecs = [ 3 3 ];
+            useGpu = false;
+            analysisFilters(:,:,1) = randn(9,9);
+            analysisFilters(:,:,2) = randn(9,9);
+            analysisFilters(:,:,3) = randn(9,9);
+            analysisFilters(:,:,4) = randn(9,9);
+            analysisFilters(:,:,5) = randn(9,9);
+            analysisFilters(:,:,6) = randn(9,9);
+            analysisFilters(:,:,7) = randn(9,9);
+            analysisFilters(:,:,8) = randn(9,9);
+            analysisFilters(:,:,9) = randn(9,9);
+            nLevels = 2;
+            
+            import saivdr.dictionary.utility.Direction
+            nChs = size(analysisFilters,3);
+            coefsExpctdLv1 = cell(nChs,1);
+            for iSubband = 1:nChs
+                coefsExpctdLv1{iSubband} = downsample(...
+                    downsample(...
+                    imfilter(srcImg,analysisFilters(:,:,iSubband),...
+                    'conv','circ').',nDecs(Direction.VERTICAL)).',...
+                    nDecs(Direction.HORIZONTAL));
+            end
+            coefsExpctdLv2 = cell(nChs,1);
+            for iSubband = 1:nChs
+                coefsExpctdLv2{iSubband} = downsample(...
+                    downsample(...
+                    imfilter(coefsExpctdLv1{1},analysisFilters(:,:,iSubband),...
+                    'conv','circ').',nDecs(Direction.VERTICAL)).',...
+                    nDecs(Direction.HORIZONTAL));
+            end
+            coefs{1} = coefsExpctdLv2{1};            
+            coefs{2} = coefsExpctdLv2{2};
+            coefs{3} = coefsExpctdLv2{3};
+            coefs{4} = coefsExpctdLv2{4};            
+            coefs{5} = coefsExpctdLv2{5};
+            coefs{6} = coefsExpctdLv2{6};
+            coefs{7} = coefsExpctdLv2{7};            
+            coefs{8} = coefsExpctdLv2{8};                        
+            coefs{9} = coefsExpctdLv2{9};
+            coefs{10} = coefsExpctdLv1{2};
+            coefs{11} = coefsExpctdLv1{3};
+            coefs{12} = coefsExpctdLv1{4};
+            coefs{13} = coefsExpctdLv1{5};
+            coefs{14} = coefsExpctdLv1{6};
+            coefs{15} = coefsExpctdLv1{7};
+            coefs{16} = coefsExpctdLv1{8};
+            coefs{17} = coefsExpctdLv1{9};
+            nSubbands = length(coefs);
+            scalesExpctd = zeros(nSubbands,2);
+            sIdx = 1;
+            for iSubband = 1:nSubbands
+                scalesExpctd(iSubband,:) = size(coefs{iSubband});
+                eIdx = sIdx + prod(scalesExpctd(iSubband,:))-1;
+                coefsExpctd(sIdx:eIdx) = coefs{iSubband}(:).';
+                sIdx = eIdx + 1;
+            end
+            
+            % Instantiation of target class
+            import saivdr.dictionary.generalfb.*
+            testCase.analyzer = Analysis2dSystem(...
+                'DecimationFactor',nDecs,...
+                'AnalysisFilters',analysisFilters,...
+                'FilterDomain','Frequency',...
+                'UseGpu',useGpu);
+            
+            % Actual values
+            [coefsActual,scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            
+            % Evaluation
+            testCase.verifySize(scalesActual,size(scalesExpctd));
+            testCase.verifyEqual(scalesActual,scalesExpctd);
+            testCase.verifySize(coefsActual,size(coefsExpctd));
+            diff = max(abs(coefsExpctd - coefsActual));
+            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-10,...
+                sprintf('%g',diff));            
+            
+        end        
+                 
         % Test
         function testClone(testCase)
             
@@ -1787,8 +1869,8 @@ classdef Analysis2dSystemTestCase < matlab.unittest.TestCase
             testCase.verifySize(scalesActual,size(scalesExpctd));
             testCase.verifyEqual(scalesActual,scalesExpctd);
             testCase.verifySize(coefsActual,size(coefsExpctd));
-            diff = max(abs(coefsExpctd - coefsActual)./abs(coefsExpctd));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'RelTol',1e-7,...
+            diff = max(abs(coefsExpctd - coefsActual));
+            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-10,...
                 sprintf('%g',diff));            
             
         end            

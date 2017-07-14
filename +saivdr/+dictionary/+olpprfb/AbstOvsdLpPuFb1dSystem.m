@@ -1,9 +1,9 @@
 classdef AbstOvsdLpPuFb1dSystem < matlab.System %#codegen
     %ABSTOVSDLPPUFB1DSYSTEM Abstract class 1-D OLPPUFB
     %
-    % Requirements: MATLAB R2013b
+    % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2015-2016, Shogo MURAMATSU
+    % Copyright (c) 2015-2017, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -12,10 +12,10 @@ classdef AbstOvsdLpPuFb1dSystem < matlab.System %#codegen
     %                8050 2-no-cho Ikarashi, Nishi-ku,
     %                Niigata, 950-2181, JAPAN
     %
-    % LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627    
+    % http://msiplab.eng.niigata-u.ac.jp/
     %
 
-    properties (Nontunable)
+    properties
         DecimationFactor = 4;
         PolyPhaseOrder   = [];
         NumberOfChannels = [];
@@ -77,7 +77,7 @@ classdef AbstOvsdLpPuFb1dSystem < matlab.System %#codegen
     end
     
     methods (Access = protected)
-
+        
         function s = saveObjectImpl(obj)
             s = saveObjectImpl@matlab.System(obj);
             s.ParameterMatrixSet = matlab.System.saveObject(obj.ParameterMatrixSet);
@@ -180,20 +180,22 @@ classdef AbstOvsdLpPuFb1dSystem < matlab.System %#codegen
         function value = getMatrixE0_(obj)
             nCoefs = obj.DecimationFactor;
             nElmBi = nCoefs;
-            dctMtx = dctmtx(nCoefs);
+            %dctMtx = dctmtx(nCoefs);
             coefs = zeros(nElmBi);
             iElm = 1; % E0.'= [ Bee Boo Boe Beo ] % Byx
             for iCoef = 1:2:nCoefs % y-e
                 dctCoef = zeros(nCoefs,1);
                 dctCoef(iCoef) = 1;
-                basisVector = dctMtx.'*dctCoef;
+                %basisVector = dctMtx.'*dctCoef;
+                basisVector = idct(dctCoef);
                 coefs(iElm,:) = basisVector(:).';
                 iElm = iElm + 1;
             end
             for iCoef = 2:2:nCoefs % y-e
                 dctCoef = zeros(nCoefs,1);
                 dctCoef(iCoef) = 1;
-                basisVector = dctMtx.'*dctCoef;
+                %basisVector = dctMtx.'*dctCoef;
+                basisVector = idct(dctCoef);
                 coefs(iElm,:) = basisVector(:).';
                 iElm = iElm + 1;
             end

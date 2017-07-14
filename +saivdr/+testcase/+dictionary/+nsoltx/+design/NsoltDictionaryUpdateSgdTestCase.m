@@ -1,12 +1,9 @@
 classdef NsoltDictionaryUpdateSgdTestCase < matlab.unittest.TestCase
     %NsoltDictionaryUpdateSgdTESTCASE Test case for NsoltDictionaryUpdae
     %
-    % SVN identifier:
-    % $Id: NsoltDictionaryUpdateSgdTestCase.m 787 2015-09-20 08:33:25Z sho $
+    % Requirements: MATLAB R2015b
     %
-    % Requirements: MATLAB R2013b
-    %
-    % Copyright (c) 2014-2015, Shogo MURAMATSU
+    % Copyright (c) 2014-2017, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -15,7 +12,7 @@ classdef NsoltDictionaryUpdateSgdTestCase < matlab.unittest.TestCase
     %                8050 2-no-cho Ikarashi, Nishi-ku,
     %                Niigata, 950-2181, JAPAN
     %
-    % LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627
+    % http://msiplab.eng.niigata-u.ac.jp/
     %
     
     properties
@@ -81,7 +78,7 @@ classdef NsoltDictionaryUpdateSgdTestCase < matlab.unittest.TestCase
                 sIdx = eIdx + 1;
             end
             sprsCoefs{2} = coefs;
-            setOfScales{2} = scales;            
+            setOfScales{2} = scales;
             
             % Instantiation of target class
             import saivdr.dictionary.nsoltx.design.*
@@ -89,7 +86,7 @@ classdef NsoltDictionaryUpdateSgdTestCase < matlab.unittest.TestCase
                 'SourceImages', srcImgs,...
                 'GradObj','on',...
                 'IsOptimizationOfMus',false);
-
+            
             % Evaluation
             import saivdr.dictionary.nsoltx.*
             lppufb = NsoltFactory.createOvsdLpPuFb2dSystem(...
@@ -115,22 +112,23 @@ classdef NsoltDictionaryUpdateSgdTestCase < matlab.unittest.TestCase
                 'Display',testCase.display);
             if strcmp(testCase.display,'iter')
                 options = optimset(options,'PlotFcns',@optimplotfval);
-            end            
-                
+            end
+            
             [~,costPst] = step(testCase.updater,lppufb,options);
             
             testCase.verifyThat(costPst, IsLessThanOrEqualTo(costPre));
             
         end
-                
-        % Test for default construction
-        function testDictionaryUpdateDec22Ch44Ord44Exponential(testCase)
+        
+        % Test for Constant step
+        function testDictionaryUpdateDec22Ch44Ord44Constant(testCase)
             
             nDecs = [ 2 2 ];
             nChs  = [ 4 4 ];
             nOrds = [ 4 4 ];
             nLevels    = 1;
             nVm = 1;
+            stepMode = 'Constant';
             %
             srcImgs{1} = rand(12,16);
             subCoefs{1} = ones(6,8);
@@ -173,16 +171,16 @@ classdef NsoltDictionaryUpdateSgdTestCase < matlab.unittest.TestCase
                 sIdx = eIdx + 1;
             end
             sprsCoefs{2} = coefs;
-            setOfScales{2} = scales;            
+            setOfScales{2} = scales;
             
             % Instantiation of target class
             import saivdr.dictionary.nsoltx.design.*
             testCase.updater = NsoltDictionaryUpdateSgd(...
                 'SourceImages', srcImgs,...
                 'GradObj','on',...
-                'Step','Constant',...
+                'Step',stepMode,...
                 'IsOptimizationOfMus',false);
-
+            
             % Evaluation
             import saivdr.dictionary.nsoltx.*
             lppufb = NsoltFactory.createOvsdLpPuFb2dSystem(...
@@ -209,13 +207,295 @@ classdef NsoltDictionaryUpdateSgdTestCase < matlab.unittest.TestCase
             if strcmp(testCase.display,'iter')
                 options = optimset(options,'PlotFcns',@optimplotfval);
             end
-                
+            
             [~,costPst] = step(testCase.updater,lppufb,options);
             
             testCase.verifyThat(costPst, IsLessThan(costPre));
             
-        end        
+        end
         
+        % Test for Reciprolac step control
+        function testDictionaryUpdateDec22Ch44Ord44Reciprocal(testCase)
+            
+            nDecs = [ 2 2 ];
+            nChs  = [ 4 4 ];
+            nOrds = [ 4 4 ];
+            nLevels    = 1;
+            nVm = 1;
+            stepMode = 'Reciprocal';
+            %
+            srcImgs{1} = rand(12,16);
+            subCoefs{1} = ones(6,8);
+            subCoefs{2} = ones(6,8);
+            subCoefs{3} = zeros(6,8);
+            subCoefs{4} = ones(6,8);
+            subCoefs{5} = zeros(6,8);
+            subCoefs{6} = zeros(6,8);
+            subCoefs{7} = ones(6,8);
+            subCoefs{8} = zeros(6,8);
+            nSubbands = length(subCoefs);
+            scales = zeros(nSubbands,2);
+            sIdx = 1;
+            for iSubband = 1:nSubbands
+                scales(iSubband,:) = size(subCoefs{iSubband});
+                eIdx = sIdx + prod(scales(iSubband,:))-1;
+                coefs(sIdx:eIdx) = subCoefs{iSubband}(:).';
+                sIdx = eIdx + 1;
+            end
+            sprsCoefs{1} = coefs;
+            setOfScales{1} = scales;
+            
+            %
+            srcImgs{2} = rand(12,16);
+            subCoefs{1} = ones(6,8);
+            subCoefs{2} = ones(6,8);
+            subCoefs{3} = ones(6,8);
+            subCoefs{4} = zeros(6,8);
+            subCoefs{5} = zeros(6,8);
+            subCoefs{6} = zeros(6,8);
+            subCoefs{7} = zeros(6,8);
+            subCoefs{8} = ones(6,8);
+            nSubbands = length(subCoefs);
+            scales = zeros(nSubbands,2);
+            sIdx = 1;
+            for iSubband = 1:nSubbands
+                scales(iSubband,:) = size(subCoefs{iSubband});
+                eIdx = sIdx + prod(scales(iSubband,:))-1;
+                coefs(sIdx:eIdx) = subCoefs{iSubband}(:).';
+                sIdx = eIdx + 1;
+            end
+            sprsCoefs{2} = coefs;
+            setOfScales{2} = scales;
+            
+            % Instantiation of target class
+            import saivdr.dictionary.nsoltx.design.*
+            testCase.updater = NsoltDictionaryUpdateSgd(...
+                'SourceImages', srcImgs,...
+                'GradObj','on',...
+                'Step',stepMode,...
+                'IsOptimizationOfMus',false);
+            
+            % Evaluation
+            import saivdr.dictionary.nsoltx.*
+            lppufb = NsoltFactory.createOvsdLpPuFb2dSystem(...
+                'DecimationFactor', nDecs, ...
+                'NumberOfChannels',nChs,...
+                'PolyPhaseOrder', nOrds,...
+                'NumberOfVanishingMoments',nVm,...
+                'OutputMode','ParameterMatrixSet');
+            
+            import matlab.unittest.constraints.IsLessThan;
+            aprxErr = AprxErrorWithSparseRep(...
+                'SourceImages', srcImgs,...
+                'NumberOfTreeLevels',nLevels);
+            costPre = step(aprxErr,lppufb,sprsCoefs,setOfScales);
+            %
+            set(testCase.updater,...
+                'SparseCoefficients',sprsCoefs,...
+                'SetOfScales',setOfScales);
+            %
+            options = optimset(...
+                'MaxIter',10,...
+                'TolX',1e-4,...
+                'Display',testCase.display);
+            if strcmp(testCase.display,'iter')
+                options = optimset(options,'PlotFcns',@optimplotfval);
+            end
+            
+            [~,costPst] = step(testCase.updater,lppufb,options);
+            testCase.verifyThat(costPst, IsLessThan(costPre));
+            
+        end
+        
+        % Test for Exponential step control
+        function testDictionaryUpdateDec22Ch44Ord44Exponential(testCase)
+            
+            nDecs = [ 2 2 ];
+            nChs  = [ 4 4 ];
+            nOrds = [ 4 4 ];
+            nLevels    = 1;
+            nVm = 1;
+            stepMode = 'Exponential';
+            %
+            srcImgs{1} = rand(12,16);
+            subCoefs{1} = ones(6,8);
+            subCoefs{2} = ones(6,8);
+            subCoefs{3} = zeros(6,8);
+            subCoefs{4} = ones(6,8);
+            subCoefs{5} = zeros(6,8);
+            subCoefs{6} = zeros(6,8);
+            subCoefs{7} = ones(6,8);
+            subCoefs{8} = zeros(6,8);
+            nSubbands = length(subCoefs);
+            scales = zeros(nSubbands,2);
+            sIdx = 1;
+            for iSubband = 1:nSubbands
+                scales(iSubband,:) = size(subCoefs{iSubband});
+                eIdx = sIdx + prod(scales(iSubband,:))-1;
+                coefs(sIdx:eIdx) = subCoefs{iSubband}(:).';
+                sIdx = eIdx + 1;
+            end
+            sprsCoefs{1} = coefs;
+            setOfScales{1} = scales;
+            
+            %
+            srcImgs{2} = rand(12,16);
+            subCoefs{1} = ones(6,8);
+            subCoefs{2} = ones(6,8);
+            subCoefs{3} = ones(6,8);
+            subCoefs{4} = zeros(6,8);
+            subCoefs{5} = zeros(6,8);
+            subCoefs{6} = zeros(6,8);
+            subCoefs{7} = zeros(6,8);
+            subCoefs{8} = ones(6,8);
+            nSubbands = length(subCoefs);
+            scales = zeros(nSubbands,2);
+            sIdx = 1;
+            for iSubband = 1:nSubbands
+                scales(iSubband,:) = size(subCoefs{iSubband});
+                eIdx = sIdx + prod(scales(iSubband,:))-1;
+                coefs(sIdx:eIdx) = subCoefs{iSubband}(:).';
+                sIdx = eIdx + 1;
+            end
+            sprsCoefs{2} = coefs;
+            setOfScales{2} = scales;
+            
+            % Instantiation of target class
+            import saivdr.dictionary.nsoltx.design.*
+            testCase.updater = NsoltDictionaryUpdateSgd(...
+                'SourceImages', srcImgs,...
+                'GradObj','on',...
+                'Step',stepMode,...
+                'IsOptimizationOfMus',false);
+            
+            % Evaluation
+            import saivdr.dictionary.nsoltx.*
+            lppufb = NsoltFactory.createOvsdLpPuFb2dSystem(...
+                'DecimationFactor', nDecs, ...
+                'NumberOfChannels',nChs,...
+                'PolyPhaseOrder', nOrds,...
+                'NumberOfVanishingMoments',nVm,...
+                'OutputMode','ParameterMatrixSet');
+            
+            import matlab.unittest.constraints.IsLessThan;
+            aprxErr = AprxErrorWithSparseRep(...
+                'SourceImages', srcImgs,...
+                'NumberOfTreeLevels',nLevels);
+            costPre = step(aprxErr,lppufb,sprsCoefs,setOfScales);
+            %
+            set(testCase.updater,...
+                'SparseCoefficients',sprsCoefs,...
+                'SetOfScales',setOfScales);
+            %
+            options = optimset(...
+                'MaxIter',10,...
+                'TolX',1e-4,...
+                'Display',testCase.display);
+            if strcmp(testCase.display,'iter')
+                options = optimset(options,'PlotFcns',@optimplotfval);
+            end
+            
+            [~,costPst] = step(testCase.updater,lppufb,options);
+            testCase.verifyThat(costPst, IsLessThan(costPre));
+            
+        end
+        
+        % Test for AdaGrad step control
+        function testDictionaryUpdateDec22Ch44Ord44AdaGrad(testCase)
+            
+            nDecs = [ 2 2 ];
+            nChs  = [ 4 4 ];
+            nOrds = [ 4 4 ];
+            nLevels    = 1;
+            nVm = 1;
+            stepMode = 'AdaGrad';
+            %
+            srcImgs{1} = rand(12,16);
+            subCoefs{1} = ones(6,8);
+            subCoefs{2} = ones(6,8);
+            subCoefs{3} = zeros(6,8);
+            subCoefs{4} = ones(6,8);
+            subCoefs{5} = zeros(6,8);
+            subCoefs{6} = zeros(6,8);
+            subCoefs{7} = ones(6,8);
+            subCoefs{8} = zeros(6,8);
+            nSubbands = length(subCoefs);
+            scales = zeros(nSubbands,2);
+            sIdx = 1;
+            for iSubband = 1:nSubbands
+                scales(iSubband,:) = size(subCoefs{iSubband});
+                eIdx = sIdx + prod(scales(iSubband,:))-1;
+                coefs(sIdx:eIdx) = subCoefs{iSubband}(:).';
+                sIdx = eIdx + 1;
+            end
+            sprsCoefs{1} = coefs;
+            setOfScales{1} = scales;
+            
+            %
+            srcImgs{2} = rand(12,16);
+            subCoefs{1} = ones(6,8);
+            subCoefs{2} = ones(6,8);
+            subCoefs{3} = ones(6,8);
+            subCoefs{4} = zeros(6,8);
+            subCoefs{5} = zeros(6,8);
+            subCoefs{6} = zeros(6,8);
+            subCoefs{7} = zeros(6,8);
+            subCoefs{8} = ones(6,8);
+            nSubbands = length(subCoefs);
+            scales = zeros(nSubbands,2);
+            sIdx = 1;
+            for iSubband = 1:nSubbands
+                scales(iSubband,:) = size(subCoefs{iSubband});
+                eIdx = sIdx + prod(scales(iSubband,:))-1;
+                coefs(sIdx:eIdx) = subCoefs{iSubband}(:).';
+                sIdx = eIdx + 1;
+            end
+            sprsCoefs{2} = coefs;
+            setOfScales{2} = scales;
+            
+            % Instantiation of target class
+            import saivdr.dictionary.nsoltx.design.*
+            testCase.updater = NsoltDictionaryUpdateSgd(...
+                'SourceImages', srcImgs,...
+                'GradObj','on',...
+                'Step',stepMode,...
+                'IsOptimizationOfMus',false);
+            
+            % Evaluation
+            import saivdr.dictionary.nsoltx.*
+            lppufb = NsoltFactory.createOvsdLpPuFb2dSystem(...
+                'DecimationFactor', nDecs, ...
+                'NumberOfChannels',nChs,...
+                'PolyPhaseOrder', nOrds,...
+                'NumberOfVanishingMoments',nVm,...
+                'OutputMode','ParameterMatrixSet');
+            
+            import matlab.unittest.constraints.IsLessThan;
+            aprxErr = AprxErrorWithSparseRep(...
+                'SourceImages', srcImgs,...
+                'NumberOfTreeLevels',nLevels);
+            costPre = step(aprxErr,lppufb,sprsCoefs,setOfScales);
+            %
+            set(testCase.updater,...
+                'SparseCoefficients',sprsCoefs,...
+                'SetOfScales',setOfScales);
+            %
+            options = optimset(...
+                'MaxIter',10,...
+                'TolX',1e-4,...
+                'Display',testCase.display);
+            if strcmp(testCase.display,'iter')
+                options = optimset(options,'PlotFcns',@optimplotfval);
+            end
+            
+            [~,costPst] = step(testCase.updater,lppufb,options);
+            testCase.verifyThat(costPst, IsLessThan(costPre));
+            
+        end
+        
+        
+        
+        % Test
         function testDictionaryUpdateDec22Ch44Ord22Lv1OptMus(testCase)
             
             isGaAvailable = license('checkout','gads_toolbox');
@@ -272,14 +552,14 @@ classdef NsoltDictionaryUpdateSgdTestCase < matlab.unittest.TestCase
                 sIdx = eIdx + 1;
             end
             sprsCoefs{2} = coefs;
-            setOfScales{2} = scales;            
+            setOfScales{2} = scales;
             
             % Instantiation of target class
             import saivdr.dictionary.nsoltx.design.*
             testCase.updater = NsoltDictionaryUpdateSgd(...
                 'SourceImages', srcImgs,...
                 'GradObj','on',...
-                'GenerationFactorForMus',2,...                
+                'GenerationFactorForMus',2,...
                 'Step','Constant',...
                 'IsOptimizationOfMus',true);
             
@@ -303,7 +583,7 @@ classdef NsoltDictionaryUpdateSgdTestCase < matlab.unittest.TestCase
                 'SetOfScales',setOfScales);
             %
             options = gaoptimset('ga');
-            options = gaoptimset(options,'Display',testCase.display);            
+            options = gaoptimset(options,'Display',testCase.display);
             options = gaoptimset(options,'PopulationSize',4);
             options = gaoptimset(options,'EliteCount',2);
             options = gaoptimset(options,'Generations',2);

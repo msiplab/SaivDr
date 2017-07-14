@@ -2,12 +2,9 @@ classdef NsoltDesignerFrq < ...
         saivdr.dictionary.nsoltx.design.AbstNsoltDesignerGaFmin %#~codegen
     %NSOLTDESIGNERFRQ NSOLT design class with frequency specification
     %
-    % SVN identifier:
-    % $Id: NsoltDesignerFrq.m 754 2015-09-03 09:04:14Z sho $
+    % Requirements: MATLAB R2015b
     %
-    % Requirements: MATLAB R2013b
-    %
-    % Copyright (c) 2014-2015, Shogo MURAMATSU
+    % Copyright (c) 2014-2017, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -16,7 +13,7 @@ classdef NsoltDesignerFrq < ...
     %                8050 2-no-cho Ikarashi, Nishi-ku,
     %                Niigata, 950-2181, JAPAN
     %
-    % LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627    
+    % http://msiplab.eng.niigata-u.ac.jp/
     %
  
     properties (Nontunable)

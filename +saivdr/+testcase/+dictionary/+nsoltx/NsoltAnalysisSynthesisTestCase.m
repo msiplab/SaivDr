@@ -1,7 +1,7 @@
 classdef NsoltAnalysisSynthesisTestCase < matlab.unittest.TestCase
     %NsoltAnalysis2dSystemTESTCASE Test case for NsoltAnalysis2dSystem
     %
-    % Requirements: MATLAB R2013b
+    % Requirements: MATLAB R2015b
     %
     % Copyright (c) 2014-2016, Shogo MURAMATSU
     %
@@ -12,7 +12,7 @@ classdef NsoltAnalysisSynthesisTestCase < matlab.unittest.TestCase
     %                8050 2-no-cho Ikarashi, Nishi-ku,
     %                Niigata, 950-2181, JAPAN
     %
-    % LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627
+    % http://msiplab.eng.niigata-u.ac.jp/
     %
     properties
         analyzer
@@ -296,8 +296,8 @@ classdef NsoltAnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(norm(coefs(:)),norm(srcImg(:)),...
                 'AbsTol',1e-10,sprintf('diff = %g',diff));
             testCase.verifySize(recImg,[ height width ]);
-            diff = max(abs(recImg(:)-srcImg(:))./abs(srcImg(:)));
-            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-10,...
+            diff = max(abs(recImg(:)-srcImg(:)));
+            testCase.verifyEqual(recImg,srcImg,'AbsTol',1e-14,...
                 sprintf('diff = %g',diff));
         end
         
@@ -772,8 +772,8 @@ classdef NsoltAnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(norm(coefs(:)),norm(srcImg(:)),...
                 'AbsTol',1e-10,sprintf('diff = %g',diff));
             testCase.verifySize(recImg,[ height width ]);
-            diff = max(abs(recImg(:)-srcImg(:))./abs(srcImg(:)));
-            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-10,...
+            diff = max(abs(recImg(:)-srcImg(:)));
+            testCase.verifyEqual(recImg,srcImg,'AbsTol',1e-14,...
                 sprintf('diff = %g',diff));
         end
         

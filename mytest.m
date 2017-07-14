@@ -6,9 +6,9 @@ function testRes = mytest(testCaseStr,isProfiling)
 %
 % http://www.mathworks.co.jp/jp/help/matlab/matlab-unit-test-framework.html
 %
-% Requirements: MATLAB R2013a
+% Requirements: MATLAB R2015b
 %
-% Copyright (c) 2014-2016, Shogo MURAMATSU
+% Copyright (c) 2014-2017, Shogo MURAMATSU
 %
 % All rights reserved.
 %
@@ -17,7 +17,7 @@ function testRes = mytest(testCaseStr,isProfiling)
 %    8050 2-no-cho Ikarashi, Nishi-ku,
 %    Niigata, 950-2181, JAPAN
 %
-% LinedIn: https://www.linkedin.com/in/shogo-muramatsu-627b084b
+% http://msiplab.eng.niigata-u.ac.jp/
 %
 
 %%
@@ -35,9 +35,7 @@ if nargin < 2
 end
 
 %% Package list
-packageList = { ...
-    'saivdr.testcase.dictionary.colpprfb',...
-    'saivdr.testcase.dictionary.cnsoltx',...
+packageList = { ...'saivdr.testcase.dictionary.colpprfb',...'saivdr.testcase.dictionary.cnsoltx',...
     'saivdr.testcase.dictionary.olpprfb',...
     'saivdr.testcase.dictionary.udhaar',...
     'saivdr.testcase.dictionary.nsoltx',...
@@ -53,7 +51,8 @@ packageList = { ...
     'saivdr.testcase.degradation.noiseprocess',...
     'saivdr.testcase.degradation.linearprocess',...
     'saivdr.testcase.restoration.ista',...
-    'saivdr.testcase.embedded' };
+    'saivdr.testcase.embedded'...
+    };
 
 %% Set path
 setpath

@@ -1,11 +1,8 @@
 % MAIN_LMAX4IMRSTR Pre-calculation of Lipshitz Constant
 %
-% SVN identifier:
-% $Id: main_lmaxdegradation4imrstr.m 144 2013-05-16 03:23:18Z sho $
+% Requirements: MATLAB R2015b
 %
-% Requirements: MATLAB R2013b
-%
-% Copyright (c) 2013-2015, Shogo MURAMATSU
+% Copyright (c) 2013-2016, Shogo MURAMATSU
 %
 % All rights reserved.
 %
@@ -14,7 +11,7 @@
 %                8050 2-no-cho Ikarashi, Nishi-ku,
 %                Niigata, 950-2181, JAPAN
 %
-clear all; clc
+clc
 
 %% Parameter settings
 nDim = [128 128];

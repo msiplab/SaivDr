@@ -1,12 +1,9 @@
 classdef NsoltDesignerFrqTestCase < matlab.unittest.TestCase
     %NSOLTDESIGNERFRQTESTCASE Test case for AprxErrorWithSparseRep
     %
-    % SVN identifier:
-    % $Id: NsoltDesignerFrqTestCase.m 683 2015-05-29 08:22:13Z sho $
+    % Requirements: MATLAB R2015b
     %
-    % Requirements: MATLAB R2013a
-    %
-    % Copyright (c) 2013-2015, Shogo MURAMATSU
+    % Copyright (c) 2013-2017, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -14,6 +11,8 @@ classdef NsoltDesignerFrqTestCase < matlab.unittest.TestCase
     %                Faculty of Engineering, Niigata University,
     %                8050 2-no-cho Ikarashi, Nishi-ku,
     %                Niigata, 950-2181, JAPAN
+    %
+    % http://msiplab.eng.niigata-u.ac.jp/
     %
     properties
         dsgnfrq
@@ -134,7 +133,7 @@ classdef NsoltDesignerFrqTestCase < matlab.unittest.TestCase
             % Optimization
             options = gaoptimset('ga');
             options = gaoptimset(options,'Display',testCase.display);
-            options = gaoptimset(options,'UseParallel','always');
+            options = gaoptimset(options,'UseParallel',true);
             options = gaoptimset(options,'PopulationSize',4);
             options = gaoptimset(options,'EliteCount',2);
             popInitRange = [angles(:)-pi angles(:)+pi].';
@@ -205,7 +204,7 @@ classdef NsoltDesignerFrqTestCase < matlab.unittest.TestCase
             % Optimization
             options = gaoptimset('ga');
             options = gaoptimset(options,'Display',testCase.display);
-            options = gaoptimset(options,'UseParallel','always');
+            options = gaoptimset(options,'UseParallel',true);
             options = gaoptimset(options,'PopulationSize',4);
             options = gaoptimset(options,'EliteCount',2);
             popInitRange = [angles(:)-pi angles(:)+pi].';

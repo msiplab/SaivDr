@@ -3,12 +3,9 @@
 % This script displays the evaluation result of TVM characteristics 
 % obtained by the script MAIN_TVMRAMPROT.
 %
-% SVN identifier:
-% $Id: disp_tvmramprot.m 683 2015-05-29 08:22:13Z sho $
+% Requirements: MATLAB R2015b
 %
-% Requirements: MATLAB R2013b
-%
-% Copyright (c) 2014-2015, Shogo MURAMATSU
+% Copyright (c) 2014-2017, Shogo MURAMATSU
 %
 % All rights reserved.
 %
@@ -17,18 +14,22 @@
 %                8050 2-no-cho Ikarashi, Nishi-ku,
 %                Niigata, 950-2181, JAPAN
 % 
-% LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627
+% http://msiplab.eng.niigata-u.ac.jp/
 %
 close all
-clear all
 
-load results/tvmramprot_results
+filename = 'results/tvmramprot_results';
+if exist(filename,'file')
+    load results/tvmramprot_results
+else
+    error('tvmramprot_results.mat is required. Please execute main_tvmrmprot.m first.')
+end
 
 %%
 import saivdr.dictionary.nsgenlotx.NsGenLotUtility
 phixd = 30;
 dim = [ 32 32 ];
-display(phixd);
+disp(phixd);
 srcImg = NsGenLotUtility.trendSurface(phixd,dim);
 figure(1), imshow(srcImg)
 imwrite(srcImg,sprintf('images/ramp%03d.tif',phixd))

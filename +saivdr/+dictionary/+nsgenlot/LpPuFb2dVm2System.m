@@ -9,7 +9,7 @@ classdef LpPuFb2dVm2System < saivdr.dictionary.nsolt.AbstOvsdLpPuFb2dTypeISystem
     % SVN identifier:
     % $Id: LpPuFb2dVm2System.m 683 2015-05-29 08:22:13Z sho $
     %
-    % Requirements: MATLAB R2013b
+    % Requirements: MATLAB R2015b
     %
     % Copyright (c) 2014-2015, Shogo MURAMATSU
     %
@@ -20,7 +20,7 @@ classdef LpPuFb2dVm2System < saivdr.dictionary.nsolt.AbstOvsdLpPuFb2dTypeISystem
     %                8050 2-no-cho Ikarashi, Nishi-ku,
     %                Niigata, 950-2181, JAPAN
     %
-    % LinedIn: http://www.linkedin.com/pub/shogo-muramatsu/4b/b08/627    
+    % http://msiplab.eng.niigata-u.ac.jp/    
     %      
     properties
         DirectionOfTriangleX = -1
