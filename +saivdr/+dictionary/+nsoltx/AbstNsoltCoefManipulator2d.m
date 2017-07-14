@@ -196,7 +196,7 @@ classdef AbstNsoltCoefManipulator2d < matlab.System
             ps  = obj.NumberOfSymmetricChannels;
             pa  = obj.NumberOfAntisymmetricChannels;
             %
-            paramMtxSzTab_ = zeros(sum(ord)+2, 2);
+            paramMtxSzTab_ = zeros(sum(ord)+2,2);
             paramMtxSzTab_(1,:) = [ ps ps ];
             paramMtxSzTab_(2,:) = [ pa pa ];
             if strcmp(obj.NsoltType,'Type I')
@@ -246,13 +246,13 @@ classdef AbstNsoltCoefManipulator2d < matlab.System
                 obj.NumberOfAntisymmetricChannels ];
             nChMx = max(chs);
             nChMn = min(chs);
-            upper = arrayCoefs(1:nChMn,:);
+            upper  = arrayCoefs(1:nChMn,:);
             middle = arrayCoefs(nChMn+1:nChMx,:);
-            lower = arrayCoefs(nChMx+1:end,:);
+            lower  = arrayCoefs(nChMx+1:end,:);
             
-            arrayCoefs(1:nChMn,:) = upper + lower;
+            arrayCoefs(1:nChMn,:)       = upper + lower;
             arrayCoefs(nChMn+1:nChMx,:) = 1.414213562373095*middle;
-            arrayCoefs(nChMx+1:end,:) =  upper - lower;
+            arrayCoefs(nChMx+1:end,:)   = upper - lower;
         end
         
         function arrayCoefs = lowerBlockRot_(obj,arrayCoefs,iCol,U)

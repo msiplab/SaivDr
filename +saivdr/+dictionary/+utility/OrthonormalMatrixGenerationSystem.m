@@ -27,6 +27,17 @@ classdef OrthonormalMatrixGenerationSystem < matlab.System %#codegen
     properties
         NumberOfDimensions
     end
+    
+    properties (Nontunable)
+        OrderOfProduction = 'Descending';
+    end
+    
+    properties (Access = private, Transient)
+        OrderOfProductionSet = ...
+            matlab.system.StringSet({...
+            'Ascending',...
+            'Descending'});
+    end
        
     methods
         function obj = OrthonormalMatrixGenerationSystem(varargin)
@@ -107,6 +118,9 @@ classdef OrthonormalMatrixGenerationSystem < matlab.System %#codegen
                     matrix(iTop,:) = vt;
                 end
                 matrix = diag(mus)*matrix;
+                if strcmp(obj.OrderOfProduction,'Ascending')
+                    matrix = matrix.';
+                end
             end
             
         end

@@ -31,7 +31,7 @@ classdef NsoltAnalysis3dSystem < ...
     end
     
     properties (Nontunable, Logical)
-        IsCloneLpPuFb3d = true;
+        IsCloneLpPuFb3d = true
     end
     
     properties (Hidden, Transient)
@@ -177,7 +177,7 @@ classdef NsoltAnalysis3dSystem < ...
             nChs = obj.NumberOfSymmetricChannels ...
                 + obj.NumberOfAntisymmetricChannels;
             decY = obj.decimationFactor(Direction.VERTICAL);
-            decX = obj.decimationFactor(Direction.HORIZONTAL);   
+            decX = obj.decimationFactor(Direction.HORIZONTAL);
             decZ = obj.decimationFactor(Direction.DEPTH);   
             %
             iSubband = obj.nAllChs;
@@ -211,7 +211,7 @@ classdef NsoltAnalysis3dSystem < ...
         
         function arrayCoefs = subAnalyze_(obj,subImg,pmCoefs)
             import saivdr.dictionary.utility.Direction
-           %
+            %
             nChs = obj.NumberOfSymmetricChannels ...
                 + obj.NumberOfAntisymmetricChannels;
             ps = obj.NumberOfSymmetricChannels;
@@ -280,7 +280,7 @@ classdef NsoltAnalysis3dSystem < ...
                 arrayCoefs(ps+4,:) = subImg1m2p3m4 + subImg5m6p7m8;
                 %
                 arrayCoefs = arrayCoefs/(2*sqrt(2));
-            else 
+            else
                 nDec_=decY_*decX_*decZ_;
                 mc = ceil(nDec_/2);
                 mf = floor(nDec_/2);
