@@ -113,14 +113,14 @@ classdef NsoltAtomExtender3d <  ...
         function arrayCoefs = fullAtomExtTypeII_(obj,arrayCoefs)
             %
             isPeriodicExt = obj.IsPeriodicExt; % BoundaryOperation = 'Circular'
-            isPsGtPa      = obj.IsPsGreaterThanPa;
+            isPsGtPa      = obj.IsPsGreaterThanPa;                        
             %
             ordY = obj.PolyPhaseOrder(saivdr.dictionary.utility.Direction.VERTICAL);
             ordX = obj.PolyPhaseOrder(saivdr.dictionary.utility.Direction.HORIZONTAL);
             ordZ = obj.PolyPhaseOrder(saivdr.dictionary.utility.Direction.DEPTH);
             
             % Depth extension
-            for iOrd = uint32(1):uint32(ordZ/2)
+            for iOrd = uint32(1):uint32(ordZ/2) 
                 paramMtx1 = getParamMtx_(obj,2*iOrd+1); % W
                 paramMtx2 = getParamMtx_(obj,2*iOrd+2); % U
                 %
@@ -193,12 +193,12 @@ classdef NsoltAtomExtender3d <  ...
             arrayCoefs = blockButterflyTypeI_(obj,arrayCoefs);
             arrayCoefs = arrayCoefs/2.0;
             % Lower channel rotation
-            arrayCoefs(hLen+1:end,:) = Ux2*arrayCoefs(hLen+1:end,:);
+            arrayCoefs(hLen+1:end,:) = Ux2*arrayCoefs(hLen+1:end,:);            
         end
         
         function arrayCoefs = supportExtTypeIIPsGtPa_(obj,arrayCoefs,paramMtx1,paramMtx2,isPeriodicExt)
             hLen = obj.NumberOfSymmetricChannels;
-            nLays_ = obj.nLays;
+            nLays_ = obj.nLays;        
             
             % Phase 1
             Ux = paramMtx2;
@@ -233,7 +233,7 @@ classdef NsoltAtomExtender3d <  ...
         
         function arrayCoefs = supportExtTypeIIPsLtPa_(obj,arrayCoefs,paramMtx1,paramMtx2,isPeriodicExt)
             hLen = obj.NumberOfSymmetricChannels;
-            nLays_ = obj.nLays;
+            nLays_ = obj.nLays;        
             
             % Phase 1
             Wx = paramMtx1;
@@ -265,6 +265,7 @@ classdef NsoltAtomExtender3d <  ...
             % Lower channel rotation
             arrayCoefs(hLen+1:end,:) = Ux*arrayCoefs(hLen+1:end,:);
         end
+                
         
         function arrayCoefs = rightShiftLowerCoefs_(obj,arrayCoefs)
             hLenMn = min([ obj.NumberOfSymmetricChannels
@@ -277,7 +278,7 @@ classdef NsoltAtomExtender3d <  ...
             arrayCoefs(hLenMn+1:end,1:nRowsxnCols_) = ...
                 lowerCoefsPre;
         end
-        
+
         function arrayCoefs = leftShiftUpperCoefs_(obj,arrayCoefs)
             hLenMx = max([ obj.NumberOfSymmetricChannels
                 obj.NumberOfAntisymmetricChannels]);
@@ -287,7 +288,7 @@ classdef NsoltAtomExtender3d <  ...
             arrayCoefs(1:hLenMx,1:end-nRowsxnCols_) = ...
                 arrayCoefs(1:hLenMx,nRowsxnCols_+1:end);
             arrayCoefs(1:hLenMx,end-nRowsxnCols_+1:end) = ...
-                upperCoefsPost;
+                upperCoefsPost;    
         end
     end
     

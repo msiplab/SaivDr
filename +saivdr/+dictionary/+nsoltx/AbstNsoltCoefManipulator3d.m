@@ -222,7 +222,7 @@ classdef AbstNsoltCoefManipulator3d < matlab.System
                 cidx = cidx + prod(paramMtxSzTab_(iRow,:));
             end            
             obj.paramMtxSzTab = paramMtxSzTab_;
-            obj.indexOfParamMtxSzTab = indexOfParamMtxSzTab_;
+            obj.indexOfParamMtxSzTab = indexOfParamMtxSzTab_;            
         end
         
         function value = getParamMtx_(obj,index)
@@ -247,7 +247,7 @@ classdef AbstNsoltCoefManipulator3d < matlab.System
             lower = arrayCoefs(hLen+1:end,:);
             
             arrayCoefs(1:hLen,:)     = upper + lower;
-            arrayCoefs(hLen+1:end,:) = upper - lower;
+            arrayCoefs(hLen+1:end,:) =  upper - lower;
         end
         
         function arrayCoefs = blockButterflyTypeII_(obj,arrayCoefs)
@@ -263,7 +263,7 @@ classdef AbstNsoltCoefManipulator3d < matlab.System
             arrayCoefs(nChMn+1:nChMx,:) = 1.414213562373095*middle;
             arrayCoefs(nChMx+1:end,:)   = upper - lower;
         end
-        
+       
         function arrayCoefs = lowerBlockRot_(obj,arrayCoefs,iLay,U)
             hLen = obj.NumberOfSymmetricChannels;
             nRowsxnCols_ = obj.nRows*obj.nCols; 
@@ -274,7 +274,7 @@ classdef AbstNsoltCoefManipulator3d < matlab.System
         
         function arrayCoefs = upperBlockRot_(obj,arrayCoefs,iLay,W)
             hLen = obj.NumberOfSymmetricChannels;
-            nRowsxnCols_ = obj.nRows*obj.nCols;
+            nRowsxnCols_ = obj.nRows*obj.nCols; 
             indexLay = (iLay-1)*nRowsxnCols_;
             arrayCoefs(1:hLen,indexLay+1:indexLay+nRowsxnCols_) = ...
                 W*arrayCoefs(1:hLen,indexLay+1:indexLay+nRowsxnCols_);
@@ -305,7 +305,7 @@ classdef AbstNsoltCoefManipulator3d < matlab.System
                 arrayCoefs(:,idx+1:nColsxnLays_:end) = ...
                     obj.tmpArray(:,idx*nRows_+1:(idx+1)*nRows_);
             end
-            obj.nRows = nCols_;
+            obj.nRows = nCols_;                                            
             obj.nCols = nLays_;
             obj.nLays = nRows_;
         end
