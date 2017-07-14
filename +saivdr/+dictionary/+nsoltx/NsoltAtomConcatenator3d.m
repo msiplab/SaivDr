@@ -39,7 +39,7 @@ classdef NsoltAtomConcatenator3d < ...
             % Call base class method to load public properties
             loadObjectImpl@saivdr.dictionary.nsoltx.AbstNsoltCoefManipulator3d(obj,s,wasLocked);
         end
-        
+
         function arrayCoefs = stepImpl(obj,arrayCoefs,subScale,pmCoefs)
             stepImpl@saivdr.dictionary.nsoltx.AbstNsoltCoefManipulator3d(obj,arrayCoefs,subScale,pmCoefs);
             %
@@ -57,7 +57,7 @@ classdef NsoltAtomConcatenator3d < ...
     methods ( Access = private )
         
         function arrayCoefs = finalStep_(obj,arrayCoefs)
-            
+
             hLenU = obj.NumberOfSymmetricChannels;
             %
             if ~isempty(obj.paramMtxCoefs)
@@ -77,25 +77,25 @@ classdef NsoltAtomConcatenator3d < ...
             ordX = obj.PolyPhaseOrder(saivdr.dictionary.utility.Direction.HORIZONTAL);
             ordZ = obj.PolyPhaseOrder(saivdr.dictionary.utility.Direction.DEPTH);
             numOfPMtx = size(obj.paramMtxSzTab,1);
-            
+
             % Vertical concatenation
             arrayCoefs = ipermuteCoefs_(obj,arrayCoefs); % Y X Z -> X Z Y
             for iOrd = uint32(1):uint32(ordY/2)
-                paramMtx1 = getParamMtx_(obj,numOfPMtx-2*iOrd+2); % U2
+                paramMtx1 = getParamMtx_(obj,numOfPMtx-2*iOrd+2); % U2 
                 paramMtx2 = getParamMtx_(obj,numOfPMtx-2*iOrd+1); % U1
                 %
                 arrayCoefs = atomCncTypeI_(obj,arrayCoefs,paramMtx1,paramMtx2,isPeriodicExt);
             end
             
             % Horizontal concatenation
-            arrayCoefs = ipermuteCoefs_(obj,arrayCoefs); % X Z Y -> Z Y X
+            arrayCoefs = ipermuteCoefs_(obj,arrayCoefs); % X Z Y -> Z Y X 
             for iOrd = uint32(1):uint32(ordX/2);
                 paramMtx1 = getParamMtx_(obj,numOfPMtx-2*iOrd-ordY+2);
                 paramMtx2 = getParamMtx_(obj,numOfPMtx-2*iOrd-ordY+1);
                 %
                 arrayCoefs = atomCncTypeI_(obj,arrayCoefs,paramMtx1,paramMtx2,isPeriodicExt);
             end
-            
+
             % Depth concatenation
             arrayCoefs = ipermuteCoefs_(obj,arrayCoefs); % Z Y X -> Y X Z
             for iOrd = uint32(1):uint32(ordZ/2)
@@ -104,13 +104,13 @@ classdef NsoltAtomConcatenator3d < ...
                 %
                 arrayCoefs = atomCncTypeI_(obj,arrayCoefs,paramMtx1,paramMtx2,isPeriodicExt);
             end
-            
+
         end
         
         function arrayCoefs = fullAtomCncTypeII_(obj,arrayCoefs)
             %
             isPeriodicExt = obj.IsPeriodicExt; % BoundaryOperation = 'Circular';
-            isPsGtPa      = obj.IsPsGreaterThanPa;
+            isPsGtPa      = obj.IsPsGreaterThanPa;            
             %
             ordY = obj.PolyPhaseOrder(saivdr.dictionary.utility.Direction.VERTICAL);
             ordX = obj.PolyPhaseOrder(saivdr.dictionary.utility.Direction.HORIZONTAL);
@@ -161,16 +161,16 @@ classdef NsoltAtomConcatenator3d < ...
         function arrayCoefs = atomCncTypeI_(obj,arrayCoefs,paramMtx1,paramMtx2,isPeriodicExt)
             hLen = obj.NumberOfSymmetricChannels;
             nLays_ = obj.nLays;
-            
+
             % Phase 1
             Ux2 = paramMtx1.';
             % Lower channel rotation
-            arrayCoefs(hLen+1:end,:) = Ux2*arrayCoefs(hLen+1:end,:);
+            arrayCoefs(hLen+1:end,:) = Ux2*arrayCoefs(hLen+1:end,:);           
             arrayCoefs = blockButterflyTypeI_(obj,arrayCoefs);
             arrayCoefs = rightShiftUpperCoefs_(obj,arrayCoefs);
             arrayCoefs = blockButterflyTypeI_(obj,arrayCoefs);
             arrayCoefs = arrayCoefs/2.0;
-            
+
             %arrayCoefs
             % Phase 2
             Ux1 = paramMtx2.';
@@ -262,7 +262,7 @@ classdef NsoltAtomConcatenator3d < ...
             arrayCoefs = leftShiftLowerCoefs_(obj,arrayCoefs);
             arrayCoefs = blockButterflyTypeII_(obj,arrayCoefs);
             arrayCoefs = arrayCoefs/2.0;
-        end
+        end        
         
         function arrayCoefs = leftShiftLowerCoefs_(obj,arrayCoefs)
             hLenMn = min([ obj.NumberOfSymmetricChannels
@@ -277,15 +277,15 @@ classdef NsoltAtomConcatenator3d < ...
         end
         
         function arrayCoefs = rightShiftUpperCoefs_(obj,arrayCoefs)
-            hLenMx = max([ obj.NumberOfSymmetricChannels
-                obj.NumberOfAntisymmetricChannels]);
-            nRowsxnCols_ = obj.nRows*obj.nCols;
-            %
-            upperCoefsPre = arrayCoefs(1:hLenMx,end-nRowsxnCols_+1:end);
-            arrayCoefs(1:hLenMx,nRowsxnCols_+1:end) = ...
-                arrayCoefs(1:hLenMx,1:end-nRowsxnCols_);
-            arrayCoefs(1:hLenMx,1:nRowsxnCols_) = ...
-                upperCoefsPre;
+             hLenMx = max([ obj.NumberOfSymmetricChannels
+                 obj.NumberOfAntisymmetricChannels]);
+             nRowsxnCols_ = obj.nRows*obj.nCols;
+             %
+             upperCoefsPre = arrayCoefs(1:hLenMx,end-nRowsxnCols_+1:end);
+             arrayCoefs(1:hLenMx,nRowsxnCols_+1:end) = ...
+                 arrayCoefs(1:hLenMx,1:end-nRowsxnCols_);
+             arrayCoefs(1:hLenMx,1:nRowsxnCols_) = ...
+                 upperCoefsPre;
         end
     end
     

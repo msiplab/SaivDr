@@ -32,7 +32,7 @@ classdef NsoltAnalysis2dSystem < ...
     
     properties (Nontunable, Logical)
         IsCloneLpPuFb2d = true
-    end
+    end    
     
     properties (Hidden, Transient)
         BoundaryOperationSet = ...
@@ -125,7 +125,7 @@ classdef NsoltAnalysis2dSystem < ...
             obj.LpPuFb2d = matlab.System.loadObject(s.LpPuFb2d);
         end
         
-        function setupImpl(obj,srcImg,nLevels)
+        function setupImpl(obj, srcImg, nLevels)
             dec = obj.decimationFactor;
             nch = [ obj.NumberOfSymmetricChannels ...
                 obj.NumberOfAntisymmetricChannels ];
@@ -155,7 +155,7 @@ classdef NsoltAnalysis2dSystem < ...
 
         end
         
-        function [ coefs, scales ] = stepImpl(obj,srcImg,nLevels)
+        function [ coefs, scales ] = stepImpl(obj, srcImg, nLevels)
             %if obj.IsDifferentiation
             %else
                 pmMtx = step(obj.LpPuFb2d,[],[]);
@@ -169,13 +169,13 @@ classdef NsoltAnalysis2dSystem < ...
     methods (Access = private)
         
         function [ coefs, scales ] = ...
-                analyze_(obj,srcImg,nLevels,pmCoefs)
+                analyze_(obj, srcImg, nLevels, pmCoefs)
             import saivdr.dictionary.utility.Direction            
             %
             nChs = obj.NumberOfSymmetricChannels ...
                 + obj.NumberOfAntisymmetricChannels;
-            decY = obj.decimationFactor(Direction.VERTICAL);
-            decX = obj.decimationFactor(Direction.HORIZONTAL);
+            decY  = obj.decimationFactor(Direction.VERTICAL);
+            decX  = obj.decimationFactor(Direction.HORIZONTAL);            
             %
             iSubband = obj.nAllChs;
             eIdx     = obj.nAllCoefs;
@@ -211,7 +211,7 @@ classdef NsoltAnalysis2dSystem < ...
                 + obj.NumberOfAntisymmetricChannels;
             ps = obj.NumberOfSymmetricChannels;
             nRows_ = obj.nRows;
-            nCols_ = obj.nCols;
+            nCols_ = obj.nCols;            
             decY_  = obj.decimationFactor(Direction.VERTICAL);
             decX_  = obj.decimationFactor(Direction.HORIZONTAL);
             %
@@ -220,7 +220,7 @@ classdef NsoltAnalysis2dSystem < ...
             if isinteger(subImg)
                 subImg = im2double(subImg);
             end
-            
+
             % Prepare array
             arrayCoefs = zeros(nChs,nRows_*nCols_);
             
@@ -269,7 +269,7 @@ classdef NsoltAnalysis2dSystem < ...
             fpe = strcmp(obj.BoundaryOperation,'Circular');
             arrayCoefs = obj.fcnAtomExt(...
                 arrayCoefs, subScale, pmCoefs, nch, ord, fpe);
-        end
+        end        
         
     end
     
@@ -291,6 +291,6 @@ classdef NsoltAnalysis2dSystem < ...
             value = reshape(value,decY_,decX_);
         end
         
-    end
+    end    
     
 end
