@@ -226,6 +226,7 @@ set(hfig2,'Name','ISTA-based Image Restoration')
 % Instantiation of StepMonitoringSystem
 import saivdr.utility.StepMonitoringSystem
 stepmonitor = StepMonitoringSystem(...
+    'DataType', 'Image',...
     'SourceImage',   orgImg,...    % Original image
     'ObservedImage', obsImg,...    % Observed image
     'IsMSE',         false,...     % Switch for MSE  evaluation

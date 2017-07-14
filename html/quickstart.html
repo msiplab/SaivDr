@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>Quickstart of SaivDr Package</title><meta name="generator" content="MATLAB 9.2"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-06-02"><meta name="DC.source" content="quickstart.m"><style type="text/css">
+      --><title>Quickstart of SaivDr Package</title><meta name="generator" content="MATLAB 9.2"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2017-07-14"><meta name="DC.source" content="quickstart.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -317,25 +317,28 @@ analyzer    = Analysis2dSystem(<span class="keyword">...</span>
     <span class="string">'DecimationFactor'</span>,nDec,<span class="keyword">...</span>
     <span class="string">'AnalysisFilters'</span>,analysisFilters,<span class="keyword">...</span>
     <span class="string">'FilterDomain'</span>,<span class="string">'Frequency'</span>);
+set(analyzer,<span class="string">'UseGpu'</span>,false)
 synthesizer = Synthesis2dSystem(<span class="keyword">...</span>
     <span class="string">'DecimationFactor'</span>,nDec,<span class="keyword">...</span>
     <span class="string">'SynthesisFilters'</span>,synthesisFilters,<span class="keyword">...</span>
     <span class="string">'FilterDomain'</span>,<span class="string">'Frequency'</span>);
 setFrameBound(synthesizer,1);
+set(synthesizer,<span class="string">'UseGpu'</span>,false);
 </pre><p>The following static factory methods can also be used to create lattice-based analysis and synthesis systems:</p><div><ul><li>saivdr.dictionary.nsoltx.NsoltFactory.createSynthesis2dSystem()</li><li>saivdr.dictionary.nsoltx.NsoltFactory.createAnalysis2dSystem()</li></ul></div><p>An available implementation is illustrated below.</p><pre class="language-matlab">import <span class="string">saivdr.dictionary.nsoltx.NsoltFactory</span>
 </pre><pre class="language-matlab"><span class="comment">% saivdr.dictionary.nsoltx.NsoltAnalysis2dSystem</span>
 analyzer    = NsoltFactory.createAnalysis2dSystem(nsolt);
 </pre><pre class="language-matlab"><span class="comment">% saivdr.dictionary.nsoltx.NsoltSynthesis2dSystem</span>
 synthesizer = NsoltFactory.createSynthesis2dSystem(nsolt);
 </pre><h2 id="10">Create an ISTA-based image restoration system object</h2><p>Let the <img src="quickstart_eq07491953565008501379.png" alt="$\ell_1$">-norm of <img src="quickstart_eq01759449390978539805.png" alt="$\mathbf{y}$">, i.e. <img src="quickstart_eq03981472617682197909.png" alt="$\|\mathbf{y}\|_1$">, be the sparsity measure of the coefficients. Then, the debluring problem can be formulated as</p><p><img src="quickstart_eq04865511837010530479.png" alt="$\hat{\mathbf{y}} = \arg\min_{\mathbf{y}}\frac{1}{2}\|\mathbf{x}-\mathbf{PDy}\|_2^2+\lambda\|\mathbf{y}\|_1$">.</p><p>Provided that the blur process <img src="quickstart_eq04341845410467366200.png" alt="$\mathbf{P}$"> is known and given as a linear process, the iterative shrinkage/thresholding algorithm (ISTA) becomes applicable to solve the above problem. In <b>SaivDr Package</b>, image restoration with ISTA is implemented in the following class:</p><div><ul><li>saivdr.restoration.ista.IstaImRestoration</li></ul></div><pre class="codeinput"><span class="comment">% Instantiation of ISTA system object</span>
-import <span class="string">saivdr.restoration.ista.IstaImRestoration</span>
+import <span class="string">saivdr.restoration.ista.IstaImRestoration2d</span>
 lambda    = 0.00185;                      <span class="comment">% lambda</span>
-ista = IstaImRestoration(<span class="keyword">...</span>
+ista = IstaImRestoration2d(<span class="keyword">...</span>
     <span class="string">'Synthesizer'</span>,        synthesizer,<span class="keyword">...</span><span class="comment"> % Synthesizer (Dictionary)</span>
     <span class="string">'AdjOfSynthesizer'</span>,   analyzer,<span class="keyword">...</span><span class="comment">    % Analyzer (Adj. of dictionary)</span>
     <span class="string">'LinearProcess'</span>,      blur,<span class="keyword">...</span><span class="comment">        % Blur process</span>
     <span class="string">'NumberOfTreeLevels'</span>, nLevels,<span class="keyword">...</span><span class="comment">     % # of tree levels of NSOLT</span>
     <span class="string">'Lambda'</span>,             lambda);        <span class="comment">% Parameter lambda</span>
+set(ista,<span class="string">'Eps0'</span>,1e-6)
 </pre><h2 id="11">Create a step monitor system object</h2><p>ISTA iteratively approaches to the optimum solution. In order to observe the intermediate results, the following class can be used:</p><div><ul><li>saivdr.utility.StepMonitoringSystem</li></ul></div><pre class="codeinput"><span class="comment">% Parameters for StepMonitoringSystem</span>
 isverbose = true;  <span class="comment">% Verbose mode</span>
 isvisible = true;  <span class="comment">% Monitor intermediate results</span>
@@ -345,6 +348,7 @@ set(hfig2,<span class="string">'Name'</span>,<span class="string">'ISTA-based Im
 <span class="comment">% Instantiation of StepMonitoringSystem</span>
 import <span class="string">saivdr.utility.StepMonitoringSystem</span>
 stepmonitor = StepMonitoringSystem(<span class="keyword">...</span>
+    <span class="string">'DataType'</span>, <span class="string">'Image'</span>,<span class="keyword">...</span>
     <span class="string">'SourceImage'</span>,   orgImg,<span class="keyword">...</span><span class="comment">    % Original image</span>
     <span class="string">'ObservedImage'</span>, obsImg,<span class="keyword">...</span><span class="comment">    % Observed image</span>
     <span class="string">'IsMSE'</span>,         false,<span class="keyword">...</span><span class="comment">     % Switch for MSE  evaluation</span>
@@ -361,57 +365,57 @@ resImg = step(ista,obsImg); <span class="comment">% STEP method of IstaImRestora
 </pre><pre class="codeoutput">
  ISTA
 (   1)  PSNR =  27.20 [dB] 
-(   2)  PSNR =  27.94 [dB] 
+(   2)  PSNR =  27.95 [dB] 
 (   3)  PSNR =  28.39 [dB] 
 (   4)  PSNR =  28.69 [dB] 
 (   5)  PSNR =  28.91 [dB] 
 (   6)  PSNR =  29.08 [dB] 
 (   7)  PSNR =  29.22 [dB] 
-(   8)  PSNR =  29.34 [dB] 
-(   9)  PSNR =  29.43 [dB] 
-(  10)  PSNR =  29.51 [dB] 
-(  11)  PSNR =  29.58 [dB] 
-(  12)  PSNR =  29.64 [dB] 
-(  13)  PSNR =  29.69 [dB] 
+(   8)  PSNR =  29.33 [dB] 
+(   9)  PSNR =  29.42 [dB] 
+(  10)  PSNR =  29.50 [dB] 
+(  11)  PSNR =  29.57 [dB] 
+(  12)  PSNR =  29.63 [dB] 
+(  13)  PSNR =  29.68 [dB] 
 (  14)  PSNR =  29.73 [dB] 
 (  15)  PSNR =  29.77 [dB] 
-(  16)  PSNR =  29.81 [dB] 
+(  16)  PSNR =  29.80 [dB] 
 (  17)  PSNR =  29.84 [dB] 
-(  18)  PSNR =  29.87 [dB] 
-(  19)  PSNR =  29.90 [dB] 
+(  18)  PSNR =  29.86 [dB] 
+(  19)  PSNR =  29.89 [dB] 
 (  20)  PSNR =  29.92 [dB] 
-(  21)  PSNR =  29.95 [dB] 
-(  22)  PSNR =  29.97 [dB] 
-(  23)  PSNR =  29.99 [dB] 
-(  24)  PSNR =  30.00 [dB] 
-(  25)  PSNR =  30.02 [dB] 
-(  26)  PSNR =  30.03 [dB] 
+(  21)  PSNR =  29.94 [dB] 
+(  22)  PSNR =  29.96 [dB] 
+(  23)  PSNR =  29.98 [dB] 
+(  24)  PSNR =  29.99 [dB] 
+(  25)  PSNR =  30.01 [dB] 
+(  26)  PSNR =  30.02 [dB] 
 (  27)  PSNR =  30.04 [dB] 
 (  28)  PSNR =  30.05 [dB] 
-(  29)  PSNR =  30.07 [dB] 
-(  30)  PSNR =  30.08 [dB] 
+(  29)  PSNR =  30.06 [dB] 
+(  30)  PSNR =  30.07 [dB] 
 (  31)  PSNR =  30.08 [dB] 
 (  32)  PSNR =  30.09 [dB] 
 (  33)  PSNR =  30.10 [dB] 
 (  34)  PSNR =  30.11 [dB] 
-(  35)  PSNR =  30.11 [dB] 
+(  35)  PSNR =  30.12 [dB] 
 (  36)  PSNR =  30.12 [dB] 
 (  37)  PSNR =  30.13 [dB] 
 (  38)  PSNR =  30.13 [dB] 
-(  39)  PSNR =  30.13 [dB] 
+(  39)  PSNR =  30.14 [dB] 
 (  40)  PSNR =  30.14 [dB] 
-(  41)  PSNR =  30.14 [dB] 
+(  41)  PSNR =  30.15 [dB] 
 (  42)  PSNR =  30.15 [dB] 
-(  43)  PSNR =  30.15 [dB] 
-(  44)  PSNR =  30.15 [dB] 
-(  45)  PSNR =  30.15 [dB] 
+(  43)  PSNR =  30.16 [dB] 
+(  44)  PSNR =  30.16 [dB] 
+(  45)  PSNR =  30.16 [dB] 
 (  46)  PSNR =  30.16 [dB] 
-(  47)  PSNR =  30.16 [dB] 
-(  48)  PSNR =  30.16 [dB] 
-(  49)  PSNR =  30.16 [dB] 
-(  50)  PSNR =  30.16 [dB] 
-(  51)  PSNR =  30.17 [dB] 
-(  52)  PSNR =  30.17 [dB] 
+(  47)  PSNR =  30.17 [dB] 
+(  48)  PSNR =  30.17 [dB] 
+(  49)  PSNR =  30.17 [dB] 
+(  50)  PSNR =  30.17 [dB] 
+(  51)  PSNR =  30.18 [dB] 
+(  52)  PSNR =  30.18 [dB] 
 </pre><img vspace="5" hspace="5" src="quickstart_02.png" alt=""> <h2 id="13">Extract the final evaluation</h2><p>The object of StepMonitoringSystem, <i>stepmonitor</i> , stores the evaluation values calculated iteratively in ISTA as a vector. The GET method of <i>stepmonitor</i>  can be used to extract the number of iterations and the sequence of PSNRs.</p><pre class="codeinput">nItr  = get(stepmonitor,<span class="string">'nItr'</span>);
 psnrs = get(stepmonitor,<span class="string">'PSNRs'</span>);
 psnr_ista = psnrs(nItr);
@@ -439,7 +443,7 @@ fprintf(<span class="string">'\n Wiener'</span>)
 psnr_wfdc = step(stepmonitor,wnfImg); <span class="comment">% STEP method of StepMonitoringSystem</span>
 </pre><pre class="codeoutput">
  Wiener
-(   1)  PSNR =  25.55 [dB] 
+(   1)  PSNR =  25.57 [dB] 
 </pre><h2 id="15">Compare deblurring performances</h2><p>In order to compare the deblurring performances between two methods, ISTA-based deblurring with NSOLT and Wiener filter, let us show the original, observed and two results in one figure together.</p><pre class="codeinput">hfig3 = figure(3);
 
 <span class="comment">% Original image x</span>
@@ -731,11 +735,13 @@ analyzer    = Analysis2dSystem(...
     'DecimationFactor',nDec,...
     'AnalysisFilters',analysisFilters,...
     'FilterDomain','Frequency');
+set(analyzer,'UseGpu',false)
 synthesizer = Synthesis2dSystem(...
     'DecimationFactor',nDec,...
     'SynthesisFilters',synthesisFilters,...
     'FilterDomain','Frequency');
 setFrameBound(synthesizer,1);
+set(synthesizer,'UseGpu',false);
 
 %%
 % The following static factory methods can also be used to create
@@ -773,14 +779,15 @@ setFrameBound(synthesizer,1);
 % * saivdr.restoration.ista.IstaImRestoration
 
 % Instantiation of ISTA system object
-import saivdr.restoration.ista.IstaImRestoration
+import saivdr.restoration.ista.IstaImRestoration2d
 lambda    = 0.00185;                      % lambda
-ista = IstaImRestoration(...
+ista = IstaImRestoration2d(...
     'Synthesizer',        synthesizer,... % Synthesizer (Dictionary)
     'AdjOfSynthesizer',   analyzer,...    % Analyzer (Adj. of dictionary)
     'LinearProcess',      blur,...        % Blur process
     'NumberOfTreeLevels', nLevels,...     % # of tree levels of NSOLT
     'Lambda',             lambda);        % Parameter lambda
+set(ista,'Eps0',1e-6)
 
 %% Create a step monitor system object
 % ISTA iteratively approaches to the optimum solution. In order to 
@@ -797,6 +804,7 @@ set(hfig2,'Name','ISTA-based Image Restoration')
 % Instantiation of StepMonitoringSystem
 import saivdr.utility.StepMonitoringSystem
 stepmonitor = StepMonitoringSystem(...
+    'DataType', 'Image',...
     'SourceImage',   orgImg,...    % Original image
     'ObservedImage', obsImg,...    % Observed image
     'IsMSE',         false,...     % Switch for MSE  evaluation
