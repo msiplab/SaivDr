@@ -43,7 +43,7 @@ classdef AbstIstaImRestoration < matlab.System %~#codegen
     end
     
     properties (Nontunable)
-        isFista = false;
+        IsFista = false;
     end
     
     properties (Access = protected)

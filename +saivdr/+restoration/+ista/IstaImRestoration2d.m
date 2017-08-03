@@ -114,7 +114,7 @@ classdef IstaImRestoration2d < saivdr.restoration.ista.AbstIstaImRestoration %~#
             scales_       = obj.scales;
             threshold_    = obj.threshold;
             nComps_       = obj.NumberOfComponents;
-            isFista_      = obj.isFista;
+            isFista_      = obj.IsFista;
 
             % Processing per iteration
             t_ = (1+sqrt(1+4*obj.tpre^2))/2;

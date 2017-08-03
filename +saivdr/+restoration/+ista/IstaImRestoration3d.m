@@ -56,7 +56,7 @@ classdef IstaImRestoration3d < saivdr.restoration.ista.AbstIstaImRestoration %~#
             % ^u = P.'r = P.'x
             obj.hu = step(obj.AdjLinProcess,obj.x);
             %  wpre = D.'P.'r =  D.'P.'x = D.'^u
-            [ obj.w(:,1), obj.scales ] = ...
+            [ obj.wpre(:,1), obj.scales ] = ...
                 step(obj.AdjOfSynthesizer,...
                 obj.hu,obj.NumberOfTreeLevels);
             % y = wpre;
@@ -106,7 +106,7 @@ classdef IstaImRestoration3d < saivdr.restoration.ista.AbstIstaImRestoration %~#
             reciprocalL_  = 1/obj.valueL;
             scales_       = obj.scales;
             threshold_    = obj.threshold;
-            isFista_      = obj.isFista;
+            isFista_      = obj.IsFista;
             
             % Processing per iteration
             t_ = (1+sqrt(1+4*obj.tpre^2))/2;
