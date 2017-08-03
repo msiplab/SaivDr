@@ -18,11 +18,14 @@ classdef IstaImRestoration3d < saivdr.restoration.ista.AbstIstaImRestoration %~#
     properties (Access = protected)
         nItr
         y
+        w
         r
         hu
         hx
         err
         threshold
+        wpre
+        tpre
     end
     
     methods
@@ -34,6 +37,14 @@ classdef IstaImRestoration3d < saivdr.restoration.ista.AbstIstaImRestoration %~#
     
     methods(Access = protected)
         
+        function s = saveObjectImpl(obj)
+            s = saveObjectImpl@saivdr.restoration.ista.AbstIstaImRestoration(obj);
+        end
+        
+        function loadObjectImpl(obj, s, wasLocked)
+            loadObjectImpl@saivdr.restoration.ista.AbstIstaImRestoration(obj,s,wasLocked);
+        end
+        
         function setupImpl(obj,srcImg)
             setupImpl@saivdr.restoration.ista.AbstIstaImRestoration(obj,srcImg)
         end
@@ -44,10 +55,13 @@ classdef IstaImRestoration3d < saivdr.restoration.ista.AbstIstaImRestoration %~#
             obj.nItr  = 0;
             % ^u = P.'r = P.'x
             obj.hu = step(obj.AdjLinProcess,obj.x);
-            %  y = D.'P.'r =  D.'P.'x = D.'^u
-            [ obj.y(:,1), obj.scales ] = ...
+            %  wpre = D.'P.'r =  D.'P.'x = D.'^u
+            [ obj.w(:,1), obj.scales ] = ...
                 step(obj.AdjOfSynthesizer,...
                 obj.hu,obj.NumberOfTreeLevels);
+            % y = wpre;
+            obj.y = obj.wpre;
+            obj.w = zeros(size(obj.wpre),'like',obj.wpre);
             %  ^x = P^u = PP.'r = PP.'x
             obj.hx = step(obj.LinearProcess,obj.hu);
             % r = ^x - x;
@@ -60,6 +74,7 @@ classdef IstaImRestoration3d < saivdr.restoration.ista.AbstIstaImRestoration %~#
             
             % Iterative processing
             obj.err = Inf;
+            obj.tpre = 1;
             % ypre = y
             ypre = obj.y;
             while ( obj.err > obj.Eps0 && obj.nItr < obj.MaxIter )
@@ -85,15 +100,17 @@ classdef IstaImRestoration3d < saivdr.restoration.ista.AbstIstaImRestoration %~#
     methods (Access = private)
         
         function procPerIter_(obj)
-            adjSyn_  = obj.AdjOfSynthesizer;
-            syn_     = obj.Synthesizer;
-            nLevels_ = obj.NumberOfTreeLevels;
+            adjSyn_       = obj.AdjOfSynthesizer;
+            syn_          = obj.Synthesizer;
+            nLevels_      = obj.NumberOfTreeLevels;
             reciprocalL_  = 1/obj.valueL;
-            scales_  = obj.scales;
-            threshold_ = obj.threshold;
+            scales_       = obj.scales;
+            threshold_    = obj.threshold;
+            isFista_      = obj.isFista;
             
             % Processing per iteration
-            
+            t_ = (1+sqrt(1+4*obj.tpre^2))/2;
+            tau_ = ((obj.tpre-1)/t_);
             % h = P.'r = P.'(^x-x)
             h_ = step(obj.AdjLinProcess,obj.r);
             %
@@ -102,8 +119,14 @@ classdef IstaImRestoration3d < saivdr.restoration.ista.AbstIstaImRestoration %~#
             % ^v = D.'h = D.'P.'r = D.'P.'(^x-x)
             v_ = step(adjSyn_,h_,nLevels_);
             % y = softshrink(y -(1/L)*D.'P.'(^x-x))
-            obj.y = AbstIstaImRestoration.softshrink_(...
+            obj.w = AbstIstaImRestoration.softshrink_(...
                 obj.y(:)-(reciprocalL_)*v_(:),threshold_);
+            if isFista_
+                obj.y = obj.w + tau_*(obj.w - obj.wpre);
+            else
+                obj.y = obj.w;
+            end
+            obj.wpre = obj.w;
             % ^u = Dy
             obj.hu = step(syn_,obj.y,scales_);
             
@@ -111,6 +134,8 @@ classdef IstaImRestoration3d < saivdr.restoration.ista.AbstIstaImRestoration %~#
             obj.hx = step(obj.LinearProcess,obj.hu);
             % r = ^x - x;
             obj.r  = obj.hx - obj.x;
+            
+            obj.tpre = t_;
         end
 
     end

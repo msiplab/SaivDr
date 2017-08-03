@@ -42,6 +42,10 @@ classdef AbstIstaImRestoration < matlab.System %~#codegen
         AdjLinProcess
     end
     
+    properties (Nontunable)
+        isFista = false;
+    end
+    
     properties (Access = protected)
         x
         valueL
