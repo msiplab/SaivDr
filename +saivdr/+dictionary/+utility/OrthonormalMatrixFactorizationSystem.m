@@ -22,6 +22,17 @@ classdef OrthonormalMatrixFactorizationSystem < matlab.System %#codegen
         NumberOfDimensions
     end
     
+    properties (Nontunable)
+        OrderOfProduction = 'Descending';
+    end
+    
+    properties (Access = private, Transient)
+        OrderOfProductionSet = ...
+            matlab.system.StringSet({...
+            'Ascending',...
+            'Descending'});
+    end
+    
     methods
         function obj = OrthonormalMatrixFactorizationSystem(varargin)
             % Support name-value pair arguments
@@ -30,7 +41,7 @@ classdef OrthonormalMatrixFactorizationSystem < matlab.System %#codegen
     end
     
     methods (Access = protected)
-    
+        
         function s = saveObjectImpl(obj)
             s = saveObjectImpl@matlab.System(obj);
             s.NumberOfDimensions = obj.NumberOfDimensions;
@@ -39,14 +50,21 @@ classdef OrthonormalMatrixFactorizationSystem < matlab.System %#codegen
         function loadObjectImpl(obj,s,wasLocked)
             obj.NumberOfDimensions = s.NumberOfDimensions;
             loadObjectImpl@matlab.System(obj,s,wasLocked);
-        end           
+        end
         
         function setupImpl(obj,matrix)
             obj.NumberOfDimensions = size(matrix.',2);
         end
         
         function [angles,mus] = stepImpl(obj,matrix)
-            T = matrix.';
+            if strcmp(obj.OrderOfProduction,'Descending')
+                T = matrix.';
+            elseif strcmp(obj.OrderOfProduction,'Ascending')
+                T = matrix;
+            else
+                % TODO: ????
+            end
+            
             iAng = 1;
             nDim = obj.NumberOfDimensions;
             angles = zeros(nDim*(nDim-1)/2,1);
@@ -69,7 +87,6 @@ classdef OrthonormalMatrixFactorizationSystem < matlab.System %#codegen
                 end
             end
             mus = round(diag(T));
-            
         end
         
         function N = getNumInputsImpl(~)
@@ -78,7 +95,7 @@ classdef OrthonormalMatrixFactorizationSystem < matlab.System %#codegen
         
         function N = getNumOutputsImpl(~)
             N = 2;
-        end        
+        end
     end
-            
+    
 end
