@@ -70,9 +70,11 @@ classdef AbstIstaImRestoration < matlab.System %~#codegen
                 matlab.System.saveObject(obj.AdjLinProcess);
             s.valueL = obj.valueL;
             s.scales = obj.scales;
+            s.x      = obj.x;
         end
         
         function loadObjectImpl(obj, s, wasLocked)
+            obj.x      = s.x;
             obj.valueL = s.valueL;
             obj.scales = s.scales;
             %

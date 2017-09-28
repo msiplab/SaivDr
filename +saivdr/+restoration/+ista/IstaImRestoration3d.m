@@ -34,6 +34,16 @@ classdef IstaImRestoration3d < saivdr.restoration.ista.AbstIstaImRestoration %~#
     
     methods(Access = protected)
         
+        function s = saveObjectImpl(obj)
+            s = saveObjectImpl@...
+                saivdr.restoration.ista.AbstIstaImRestoration(obj);
+        end
+        
+        function loadObjectImpl(obj, s, wasLocked)
+            loadObjectImpl@...
+                saivdr.restoration.ista.AbstIstaImRestoration(obj,s,wasLocked);
+        end
+        
         function setupImpl(obj,srcImg)
             setupImpl@saivdr.restoration.ista.AbstIstaImRestoration(obj,srcImg)
         end
