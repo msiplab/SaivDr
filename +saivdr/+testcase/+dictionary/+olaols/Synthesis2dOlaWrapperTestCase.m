@@ -1,5 +1,5 @@
 classdef Synthesis2dOlaWrapperTestCase < matlab.unittest.TestCase
-    %SYNTHESIS2DOLASYSTEMTESTCASE Test case for Synthesis2dSystem
+    %SYNTHESIS2DOLASYSTEMTESTCASE Test case for Synthesis2dOlaWrapper
     %
     % Requirements: MATLAB R2015b
     %
@@ -25,66 +25,48 @@ classdef Synthesis2dOlaWrapperTestCase < matlab.unittest.TestCase
     end
     
     methods (Test)
-        function testDefaultConstruction(testCase)     
-            testCase.assertFail('Dummy')
-        end        
-        
-        %{
+
         % Test
         function testDefaultConstruction(testCase)
             
             % Expected values
-            import saivdr.dictionary.generalfb.*
-            synthesisFiltersExpctd = [];
-            decimationFactorExpctd = [ 2 2 ];
-            frmbdExpctd  = [];
-            filterDomainExpctd = 'Spatial';
+            import saivdr.dictionary.olaols.*
+            synthesizerExpctd = [];
             boundaryOperationExpctd = 'Circular';            
             
             % Instantiation
-            testCase.synthesizer = Synthesis2dSystem();
+            testCase.synthesizer = Synthesis2dOlaWrapper();
             
             % Actual value
-            synthesisFiltersActual = get(testCase.synthesizer,'SynthesisFilters');
-            decimationFactorActual = get(testCase.synthesizer,'DecimationFactor');
-            frmbdActual  = get(testCase.synthesizer,'FrameBound');
-            filterDomainActual = get(testCase.synthesizer,'FilterDomain');
+            synthesizerActual = get(testCase.synthesizer,'Synthesizer');
             boundaryOperationActual = get(testCase.synthesizer,'BoundaryOperation');  
             
             % Evaluation
-            testCase.assertEqual(synthesisFiltersActual,synthesisFiltersExpctd);
-            testCase.assertEqual(decimationFactorActual,decimationFactorExpctd);
-            testCase.assertEqual(frmbdActual,frmbdExpctd);
-            testCase.assertEqual(filterDomainActual,filterDomainExpctd);
+            testCase.assertEqual(synthesizerActual,synthesizerExpctd);
             testCase.assertEqual(boundaryOperationActual,boundaryOperationExpctd);                
         end
         
         % Test
-        function testSynthesisFilters(testCase)
+        function testSynthesizer(testCase)
             
             % Expected values
-            synthesisFiltersExpctd(:,:,1) = randn(2,2);
-            synthesisFiltersExpctd(:,:,2) = randn(2,2);
-            synthesisFiltersExpctd(:,:,3) = randn(2,2);
-            synthesisFiltersExpctd(:,:,4) = randn(2,2);
+            import saivdr.dictionary.udhaar.*
+            synthesizerExpctd = UdHaarSynthesis2dSystem();
             
             % Instantiation
-            import saivdr.dictionary.generalfb.*
-            testCase.synthesizer = Synthesis2dSystem(...
-                'SynthesisFilters',synthesisFiltersExpctd);
+            import saivdr.dictionary.olaols.*
+            testCase.synthesizer = Synthesis2dOlaWrapper(...
+                'Synthesizer',synthesizerExpctd);
             
             % Actual value
-            synthesisFiltersActual = get(testCase.synthesizer,'SynthesisFilters');
+            synthesizerActual = get(testCase.synthesizer,'Synthesizer');
             
             % Evaluation
-            nChs = size(synthesisFiltersExpctd,3);
-            for iCh = 1:nChs
-                testCase.assertEqual(synthesisFiltersActual(:,:,iCh),...
-                    synthesisFiltersExpctd(:,:,iCh));
-            end
-            
+            testCase.assertEqual(synthesizerActual, synthesizerExpctd);
+
         end
         
+        %{        
         % Test
         function testStepDec22Ch22Ord00Level1(testCase)
             
