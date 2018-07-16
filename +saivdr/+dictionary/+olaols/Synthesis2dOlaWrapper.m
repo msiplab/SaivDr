@@ -28,7 +28,7 @@ classdef Synthesis2dOlaWrapper < saivdr.dictionary.AbstSynthesisSystem
     end
     
     properties (Logical)
-        UseParallel = true
+        UseParallel = false
     end
     
     properties (Nontunable, PositiveInteger)
@@ -103,14 +103,21 @@ classdef Synthesis2dOlaWrapper < saivdr.dictionary.AbstSynthesisSystem
             nSplit = length(subCoefs);
             subRecImg = cell(nSplit,1);
             %
+            synthesizer_ = cell(nSplit,1);            
             if obj.UseParallel
                 nWorkers = nSplit;
+                for iSplit=1:nSplit
+                   synthesizer_{iSplit} = clone(obj.Synthesizer);
+                end            
             else
                 nWorkers = 0;
+                for iSplit=1:nSplit
+                   synthesizer_{iSplit} = obj.Synthesizer;
+                end                            
             end
-            parfor (iSplit = 1:nSplit,nWorkers)
+            parfor (iSplit=1:nSplit,nWorkers)
                subCoefs_ = subCoefs{iSplit};
-               subRecImg{iSplit} = step(obj.Synthesizer,subCoefs_,subScales);            
+               subRecImg{iSplit} = step(synthesizer_{iSplit},subCoefs_,subScales);            
             end
             % 4. Overlap add (Circular)
             recImg = circular_ola_(obj,subRecImg);

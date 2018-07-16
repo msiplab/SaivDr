@@ -195,7 +195,8 @@ classdef Synthesis2dOlaWrapperTestCase < matlab.unittest.TestCase
                 'Synthesizer',clone(refSynthesizer),...
                 'VerticalSplitFactor',nVerSplit,...
                 'HorizontalSplitFactor',nHorSplit,...
-                'PadSize',[nVerPad,nHorPad]);
+                'PadSize',[nVerPad,nHorPad],...
+                'UseParallel',false);
             
             % Actual values
             imgActual = step(testCase.synthesizer,subCoefs,scales);
@@ -207,6 +208,45 @@ classdef Synthesis2dOlaWrapperTestCase < matlab.unittest.TestCase
             diff = max(abs(imgExpctd(:) - imgActual(:)));
             testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-10,sprintf('%g',diff));
         end
+        
+         % Test
+        function testUdHaarSplittingUseParallel(testCase,width,height,level)
+            
+            % Parameters
+            nVerSplit = 2;
+            nHorSplit = 2;
+            nVerPad = 2^(level-1)-1;
+            nHorPad = 2^(level-1)-1;
+            nChs = 3*level+1;
+            subCoefs = repmat(rand(1,height*width),[1 nChs]);
+            scales = repmat([ height width ],[3*level+1, 1]);
+            useParallel = true;
+            
+            % Preparation
+            % Expected values
+            import saivdr.dictionary.udhaar.*
+            refSynthesizer = UdHaarSynthesis2dSystem();
+            imgExpctd = step(refSynthesizer,subCoefs,scales);
+            
+            % Instantiation of target class
+            import saivdr.dictionary.olaols.*
+            testCase.synthesizer = Synthesis2dOlaWrapper(...
+                'Synthesizer',clone(refSynthesizer),...
+                'VerticalSplitFactor',nVerSplit,...
+                'HorizontalSplitFactor',nHorSplit,...
+                'PadSize',[nVerPad,nHorPad],...
+                'UseParallel',useParallel);
+            
+            % Actual values
+            imgActual = step(testCase.synthesizer,subCoefs,scales);
+            
+            % Evaluation
+            %testCase.assertFail('TODO: Check for split');            
+            testCase.verifySize(imgActual,size(imgExpctd),...
+                'Actual image size is different from the expected one.');
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-10,sprintf('%g',diff));
+        end        
         
        %{         
         % Test
