@@ -16,8 +16,8 @@ classdef Synthesis2dOlaWrapperTestCase < matlab.unittest.TestCase
     %
     
     properties (TestParameter)
-        width = struct('small', 16, 'medium', 32, 'large', 64);
-        height = struct('small', 16, 'medium', 32, 'large', 64);
+        width = struct('small', 64, 'medium', 96, 'large', 128);
+        height = struct('small', 64, 'medium', 96, 'large', 128);
         level = struct('flat',1, 'sharrow',3,'deep', 5);
     end
     
@@ -147,7 +147,7 @@ classdef Synthesis2dOlaWrapperTestCase < matlab.unittest.TestCase
         function testUdHaarLevel3(testCase,width,height,level)
             % Parameters
             nChs = 3*level+1;
-            subCoefs = repmat(rand(1,height*width),[nChs 1]);
+            subCoefs = repmat(rand(1,height*width),[1 nChs]);
             scales = repmat([ height width ],[3*level+1, 1]);
             
             % Preparation
@@ -177,8 +177,10 @@ classdef Synthesis2dOlaWrapperTestCase < matlab.unittest.TestCase
             % Parameters
             nVerSplit = 2;
             nHorSplit = 2;
+            nVerPad = 2^(level-1)-1;
+            nHorPad = 2^(level-1)-1;
             nChs = 3*level+1;
-            subCoefs = repmat(rand(1,height*width),[nChs 1]);
+            subCoefs = repmat(rand(1,height*width),[1 nChs]);
             scales = repmat([ height width ],[3*level+1, 1]);
             
             % Preparation
@@ -190,21 +192,21 @@ classdef Synthesis2dOlaWrapperTestCase < matlab.unittest.TestCase
             % Instantiation of target class
             import saivdr.dictionary.olaols.*
             testCase.synthesizer = Synthesis2dOlaWrapper(...
-                'Synthesizer',refSynthesizer,...
+                'Synthesizer',clone(refSynthesizer),...
                 'VerticalSplitFactor',nVerSplit,...
-                'HorizontalSplitFactor',nHorSplit);
+                'HorizontalSplitFactor',nHorSplit,...
+                'PadSize',[nVerPad,nHorPad]);
             
             % Actual values
             imgActual = step(testCase.synthesizer,subCoefs,scales);
             
             % Evaluation
-            testCase.assertFail('TODO: Check for split');            
+            %testCase.assertFail('TODO: Check for split');            
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
             diff = max(abs(imgExpctd(:) - imgActual(:)));
             testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-10,sprintf('%g',diff));
         end
-        
         
        %{         
         % Test
