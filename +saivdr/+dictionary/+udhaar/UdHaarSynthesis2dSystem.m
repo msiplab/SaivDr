@@ -18,6 +18,15 @@ classdef UdHaarSynthesis2dSystem < saivdr.dictionary.AbstSynthesisSystem %#codeg
     % http://msiplab.eng.niigata-u.ac.jp/    
     %
     
+    properties (Nontunable)
+        BoundaryOperation = 'Circular'
+    end
+    
+    properties (Hidden, Transient)
+        BoundaryOperationSet = ...
+            matlab.system.StringSet({'Circular'});
+    end
+    
     properties (Access = private)
         kernels
         nPixels
