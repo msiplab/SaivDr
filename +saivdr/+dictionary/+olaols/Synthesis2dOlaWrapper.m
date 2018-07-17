@@ -23,7 +23,7 @@ classdef Synthesis2dOlaWrapper < saivdr.dictionary.AbstSynthesisSystem
     
     properties (Nontunable)
         Synthesizer
-        BoundaryOperation = 'Circular'
+        BoundaryOperation
         PadSize = [0 0]
     end
     
@@ -52,6 +52,9 @@ classdef Synthesis2dOlaWrapper < saivdr.dictionary.AbstSynthesisSystem
         % Constractor
         function obj = Synthesis2dOlaWrapper(varargin)
             setProperties(obj,nargin,varargin{:})
+            if ~isempty(obj.Synthesizer)
+                obj.BoundaryOperation = obj.Synthesizer.BoundaryOperation;
+            end
         end
         %{
         function setFrameBound(obj,frameBound)
@@ -83,14 +86,27 @@ classdef Synthesis2dOlaWrapper < saivdr.dictionary.AbstSynthesisSystem
 
         function setupImpl(obj,coefs,scales)
             obj.Synthesizer.release();
-            obj.refSynthesizer = clone(obj.Synthesizer);
-            recImg = stepImpl(obj.refSynthesizer,coefs,scales);
+            obj.refSynthesizer = obj.Synthesizer.clone();
+            recImg = step(obj.refSynthesizer,coefs,scales);
             obj.refSize = size(recImg);            
             obj.refSubSize = obj.refSize*...
                 diag(1./[obj.VerticalSplitFactor,obj.HorizontalSplitFactor]);
-            % TODO
+            % Evaluate
             % Check if scales are divisible by split factors
-            % 0. Extract filter support
+            exceptionId = 'SaivDr:IllegalSplitFactorException';            
+            message = 'Split factor must be a divisor of array size.';
+            if sum(mod(obj.refSubSize,1)) ~= 0
+                throw(MException(exceptionId,message))                
+            end
+            % Check identity
+            exceptionId = 'SaivDr:ReconstructionFailureException';            
+            message = 'Failure occurs in reconstruction. Please check the split and padding size.';
+            diffImg = recImg - stepImpl(obj,coefs,scales);
+            if norm(diffImg(:))/numel(diffImg) > 1e-6
+                throw(MException(exceptionId,message))
+            end
+            % Delete reference synthesizer
+            obj.refSynthesizer.delete()
         end
         
         function recImg = stepImpl(obj,coefs,scales)
@@ -162,7 +178,7 @@ classdef Synthesis2dOlaWrapper < saivdr.dictionary.AbstSynthesisSystem
                 -overlap/2);
         end
         
-        function [subCoefs,subScales] = convert_(obj,subCoefArrays)
+        function [subCoefs,subScales] = convert_(~,subCoefArrays)
             nSplit = size(subCoefArrays,1);
             nChs = size(subCoefArrays,2);
             subScales = zeros(nChs,2);

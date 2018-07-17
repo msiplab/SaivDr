@@ -39,14 +39,14 @@ classdef Synthesis2dOlaWrapperTestCase < matlab.unittest.TestCase
             % Expected values
             import saivdr.dictionary.olaols.*
             synthesizerExpctd = [];
-            boundaryOperationExpctd = 'Circular';            
+            boundaryOperationExpctd = [];
             
             % Instantiation
             testCase.synthesizer = Synthesis2dOlaWrapper();
             
             % Actual value
-            synthesizerActual = get(testCase.synthesizer,'Synthesizer');
-            boundaryOperationActual = get(testCase.synthesizer,'BoundaryOperation');  
+            synthesizerActual = testCase.synthesizer.Synthesizer;
+            boundaryOperationActual = testCase.synthesizer.BoundaryOperation;
             
             % Evaluation
             testCase.assertEqual(synthesizerActual,synthesizerExpctd);
@@ -231,7 +231,7 @@ classdef Synthesis2dOlaWrapperTestCase < matlab.unittest.TestCase
             % Instantiation of target class
             import saivdr.dictionary.olaols.*
             testCase.synthesizer = Synthesis2dOlaWrapper(...
-                'Synthesizer',clone(refSynthesizer),...
+                'Synthesizer',refSynthesizer,...
                 'VerticalSplitFactor',nVerSplit,...
                 'HorizontalSplitFactor',nHorSplit,...
                 'PadSize',[nVerPad,nHorPad],...
@@ -248,847 +248,100 @@ classdef Synthesis2dOlaWrapperTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-10,sprintf('%g',diff));
         end        
         
-       %{         
         % Test
-        function testStepDec33Ch54Ord22Level2(testCase)
-            % Parameters
-            height = 108;
-            width  = 135;
-            nDecs  = [ 3 3 ];
-            synthesisFilters(:,:,1) = randn(9,9);
-            synthesisFilters(:,:,2) = randn(9,9);
-            synthesisFilters(:,:,3) = randn(9,9);
-            synthesisFilters(:,:,4) = randn(9,9);
-            synthesisFilters(:,:,5) = randn(9,9);
-            synthesisFilters(:,:,6) = randn(9,9);
-            synthesisFilters(:,:,7) = randn(9,9);
-            synthesisFilters(:,:,8) = randn(9,9);
-            synthesisFilters(:,:,9) = randn(9,9);
-            nLevels = 2;
+        function testUdHaarSplittingWarningReconstruction(testCase,width,height)
             
-            % Preparation
-            import saivdr.dictionary.utility.Direction
-            decY = nDecs(Direction.VERTICAL);
-            decX = nDecs(Direction.HORIZONTAL);
-            nChs = size(synthesisFilters,3);
-            subCoefs = cell(nLevels*(nChs-1)+1,1);
-            subCoefs{1} = rand(height/(decY^2),width/(decX^2));
-            subCoefs{2} = rand(height/(decY^2),width/(decX^2));
-            subCoefs{3} = rand(height/(decY^2),width/(decX^2));
-            subCoefs{4} = rand(height/(decY^2),width/(decX^2));
-            subCoefs{5} = rand(height/(decY^2),width/(decX^2));
-            subCoefs{6} = rand(height/(decY^2),width/(decX^2));
-            subCoefs{7} = rand(height/(decY^2),width/(decX^2));
-            subCoefs{8} = rand(height/(decY^2),width/(decX^2));
-            subCoefs{9} = rand(height/(decY^2),width/(decX^2));
-            subCoefs{10} = rand(height/(decY),width/(decX));
-            subCoefs{11} = rand(height/(decY),width/(decX));
-            subCoefs{12} = rand(height/(decY),width/(decX));
-            subCoefs{13} = rand(height/(decY),width/(decX));
-            subCoefs{14} = rand(height/(decY),width/(decX));            
-            subCoefs{15} = rand(height/(decY),width/(decX));
-            subCoefs{16} = rand(height/(decY),width/(decX));
-            subCoefs{17} = rand(height/(decY),width/(decX));            
-            nSubbands = length(subCoefs);
-            scales = zeros(nSubbands,2);
-            sIdx = 1;
-            for iSubband = 1:nSubbands
-                scales(iSubband,:) = size(subCoefs{iSubband});
-                eIdx = sIdx + prod(scales(iSubband,:))-1;
-                coefs(sIdx:eIdx) = subCoefs{iSubband}(:).';
-                sIdx = eIdx + 1;
-            end
+            % Parameters
+            level_ = 2;
+            nVerSplit = 2;
+            nHorSplit = 2;
+            nVerPad = 2^(level_-1)-2;
+            nHorPad = 2^(level_-1)-2;
+            nChs = 3*level_+1;
+            subCoefs = repmat(rand(1,height*width),[1 nChs]);
+            scales = repmat([ height width ],[3*level_+1, 1]);
             
             % Expected values
-            phase = 0; % for phase adjustment required experimentaly
-            subsubCoefs = cell(nChs,1);
-            subsubCoefs{1} = subCoefs{1};
-            for iLevel = 1:nLevels
-                f = synthesisFilters(:,:,1);
-                imgExpctd = imfilter(...
-                    upsample(...
-                    upsample(subsubCoefs{1}.',decX,phase).',...
-                    decY,phase),f,'conv','circ');
-                for iCh = 2:nChs
-                    f = synthesisFilters(:,:,iCh);
-                    iSubband = (iLevel-1)*(nChs-1)+iCh;
-                    subbandImg = imfilter(...
-                        upsample(...
-                        upsample(subCoefs{iSubband}.',decX,phase).',...
-                        decY,phase),f,'conv','circ');
-                    imgExpctd = imgExpctd + subbandImg;
-                end
-                subsubCoefs{1}=imgExpctd;
-            end
+            exceptionIdExpctd = 'SaivDr:ReconstructionFailureException';
+            messageExpctd = 'Failure occurs in reconstruction. Please check the split and padding size.';
+            
+            % Preparation
+            import saivdr.dictionary.udhaar.*
+            refSynthesizer = UdHaarSynthesis2dSystem();
             
             % Instantiation of target class
-            import saivdr.dictionary.generalfb.*
-            testCase.synthesizer = Synthesis2dSystem(...
-                'DecimationFactor',nDecs,...
-                'SynthesisFilters',synthesisFilters);
+            import saivdr.dictionary.olaols.*
+            testCase.synthesizer = Synthesis2dOlaWrapper(...
+                'Synthesizer',refSynthesizer,...
+                'VerticalSplitFactor',nVerSplit,...
+                'HorizontalSplitFactor',nHorSplit,...
+                'PadSize',[nVerPad,nHorPad],...
+                'UseParallel',false);
             
             % Actual values
-            imgActual = step(testCase.synthesizer,coefs,scales);
-            
-            % Evaluation
-            testCase.verifySize(imgActual,size(imgExpctd),...
-                'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-10,sprintf('%g',diff));
-            
+            try
+                step(testCase.synthesizer,subCoefs,scales);
+                testCase.verifyFail(sprintf('%s must be thrown.',...
+                    exceptionIdExpctd));
+            catch me
+                switch me.identifier
+                    case exceptionIdExpctd
+                        messageActual = me.message;
+                        testCase.verifyEqual(messageActual, messageExpctd);
+                    otherwise
+                        testCase.verifyFail(sprintf('%s must be thrown.',...
+                            exceptionIdExpctd));
+                end
+            end
         end
         
         % Test
-        function testStepDec44Ch1212Ord22Level2(testCase)
-            % Parameters
-            height = 12*4*4;
-            width  = 16*4*4;
-            nDecs  = [ 4 4 ];
-            synthesisFilters = zeros(12,12,24);
-            for iCh = 1:24
-                synthesisFilters(:,:,iCh) = randn(12,12);
-            end
-            nLevels = 2;
+        function testUdHaarSplittingWarningFactor(testCase,width,height,level)
             
-            % Preparation
-            import saivdr.dictionary.utility.Direction
-            decY = nDecs(Direction.VERTICAL);
-            decX = nDecs(Direction.HORIZONTAL);
-            nChs = size(synthesisFilters,3);
-            subCoefs = cell(nLevels*(nChs-1)+1,1);
-            subCoefs{1} = randn(height/(decY^2),width/(decX^2));
-            for iCh = 2:24
-                subCoefs{iCh} = randn(height/(decY^2),width/(decX^2));
-                subCoefs{iCh+23} = rand(height/(decY),width/(decX));
-            end
-            nSubbands = length(subCoefs);
-            scales = zeros(nSubbands,2);
-            sIdx = 1;
-            for iSubband = 1:nSubbands
-                scales(iSubband,:) = size(subCoefs{iSubband});
-                eIdx = sIdx + prod(scales(iSubband,:))-1;
-                coefs(sIdx:eIdx) = subCoefs{iSubband}(:).';
-                sIdx = eIdx + 1;
-            end
+            % Parameters
+            nVerSplit = 3;
+            nHorSplit = 3;
+            nVerPad = 2^(level-1)-1;
+            nHorPad = 2^(level-1)-1;
+            nChs = 3*level+1;
+            subCoefs = repmat(rand(1,height*width),[1 nChs]);
+            scales = repmat([ height width ],[3*level+1, 1]);
             
             % Expected values
-            phase = 1; % for phase adjustment required experimentaly
-            subsubCoefs = cell(nChs,1);
-            subsubCoefs{1} = subCoefs{1};
-            for iLevel = 1:nLevels
-                f = synthesisFilters(:,:,1);
-                imgExpctd = imfilter(...
-                    upsample(...
-                    upsample(subsubCoefs{1}.',decX,phase).',...
-                    decY,phase),f,'conv','circ');
-                for iCh = 2:nChs
-                    f = synthesisFilters(:,:,iCh);
-                    iSubband = (iLevel-1)*(nChs-1)+iCh;
-                    subbandImg = imfilter(...
-                        upsample(...
-                        upsample(subCoefs{iSubband}.',decX,phase).',...
-                        decY,phase),f,'conv','circ');
-                    imgExpctd = imgExpctd + subbandImg;
-                end
-                subsubCoefs{1}=imgExpctd;
-            end
+            exceptionIdExpctd = 'SaivDr:IllegalSplitFactorException';
+            messageExpctd = 'Split factor must be a divisor of array size.';
+            
+            % Preparation
+            import saivdr.dictionary.udhaar.*
+            refSynthesizer = UdHaarSynthesis2dSystem();
             
             % Instantiation of target class
-            import saivdr.dictionary.generalfb.*
-            testCase.synthesizer = Synthesis2dSystem(...
-                'DecimationFactor',nDecs,...
-                'SynthesisFilters',synthesisFilters);
+            import saivdr.dictionary.olaols.*
+            testCase.synthesizer = Synthesis2dOlaWrapper(...
+                'Synthesizer',refSynthesizer,...
+                'VerticalSplitFactor',nVerSplit,...
+                'HorizontalSplitFactor',nHorSplit,...
+                'PadSize',[nVerPad,nHorPad],...
+                'UseParallel',false);
             
             % Actual values
-            imgActual = step(testCase.synthesizer,coefs,scales);
-            
-            % Evaluation
-            testCase.verifySize(imgActual,size(imgExpctd),...
-                'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-10,sprintf('%g',diff));
-            
+            try
+                step(testCase.synthesizer,subCoefs,scales);
+                if mod(width,nHorSplit) ~=0 || mod(height,nVerSplit) ~= 0
+                    testCase.verifyFail(sprintf('%s must be thrown.',...
+                        exceptionIdExpctd));
+                end
+            catch me
+                switch me.identifier
+                    case exceptionIdExpctd
+                        messageActual = me.message;
+                        testCase.verifyEqual(messageActual, messageExpctd);
+                    otherwise
+                        testCase.verifyFail(sprintf('%s must be thrown.',...
+                            exceptionIdExpctd));
+                end
+            end
         end
 
-        % Test
-        function testStepDec44Ch1212Ord22Level2Freq(testCase)
-            % Parameters
-            height = 12*4*4;
-            width  = 16*4*4;
-            nDecs  = [ 4 4 ];
-            synthesisFilters = zeros(12,12,24);
-            for iCh = 1:24
-                synthesisFilters(:,:,iCh) = randn(12,12);
-            end
-            nLevels = 2;
-            
-            % Preparation
-            import saivdr.dictionary.utility.Direction
-            decY = nDecs(Direction.VERTICAL);
-            decX = nDecs(Direction.HORIZONTAL);
-            nChs = size(synthesisFilters,3);
-            subCoefs = cell(nLevels*(nChs-1)+1,1);
-            subCoefs{1} = randn(height/(decY^2),width/(decX^2));
-            for iCh = 2:24
-                subCoefs{iCh} = randn(height/(decY^2),width/(decX^2));
-                subCoefs{iCh+23} = rand(height/(decY),width/(decX));
-            end
-            nSubbands = length(subCoefs);
-            scales = zeros(nSubbands,2);
-            sIdx = 1;
-            for iSubband = 1:nSubbands
-                scales(iSubband,:) = size(subCoefs{iSubband});
-                eIdx = sIdx + prod(scales(iSubband,:))-1;
-                coefs(sIdx:eIdx) = subCoefs{iSubband}(:).';
-                sIdx = eIdx + 1;
-            end
-            
-            % Expected values
-            phase = 1; % for phase adjustment required experimentaly
-            subsubCoefs = cell(nChs,1);
-            subsubCoefs{1} = subCoefs{1};
-            for iLevel = 1:nLevels
-                f = synthesisFilters(:,:,1);
-                imgExpctd = imfilter(...
-                    upsample(...
-                    upsample(subsubCoefs{1}.',decX,phase).',...
-                    decY,phase),f,'conv','circ');
-                for iCh = 2:nChs
-                    f = synthesisFilters(:,:,iCh);
-                    iSubband = (iLevel-1)*(nChs-1)+iCh;
-                    subbandImg = imfilter(...
-                        upsample(...
-                        upsample(subCoefs{iSubband}.',decX,phase).',...
-                        decY,phase),f,'conv','circ');
-                    imgExpctd = imgExpctd + subbandImg;
-                end
-                subsubCoefs{1}=imgExpctd;
-            end
-            
-            % Instantiation of target class
-            import saivdr.dictionary.generalfb.*
-            testCase.synthesizer = Synthesis2dSystem(...
-                'DecimationFactor',nDecs,...
-                'SynthesisFilters',synthesisFilters,...
-                'FilterDomain','Frequency');
-            
-            % Actual values
-            imgActual = step(testCase.synthesizer,coefs,scales);
-            
-            % Evaluation
-            testCase.verifySize(imgActual,size(imgExpctd),...
-                'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-10,sprintf('%g',diff));
-            
-        end        
-        
-        % Test
-        function testStepDec33Ch54Ord22Level3(testCase)
-            % Parameters
-            height = 108;
-            width  = 135;
-            nDecs  = [ 3 3 ];
-            synthesisFilters(:,:,1) = randn(6,6);
-            synthesisFilters(:,:,2) = randn(6,6);
-            synthesisFilters(:,:,3) = randn(6,6);
-            synthesisFilters(:,:,4) = randn(6,6);
-            synthesisFilters(:,:,5) = randn(6,6);
-            synthesisFilters(:,:,6) = randn(6,6);
-            synthesisFilters(:,:,7) = randn(6,6);
-            synthesisFilters(:,:,8) = randn(6,6);            
-            synthesisFilters(:,:,9) = randn(6,6);            
-            nLevels = 3;
-            
-            % Preparation
-            import saivdr.dictionary.utility.Direction
-            decY = nDecs(Direction.VERTICAL);
-            decX = nDecs(Direction.HORIZONTAL);
-            nChs = size(synthesisFilters,3);
-            subCoefs = cell(nLevels*(nChs-1)+1,1);
-            subCoefs{1} = rand(height/(decY^3),width/(decX^3));
-            subCoefs{2} = rand(height/(decY^3),width/(decX^3));
-            subCoefs{3} = rand(height/(decY^3),width/(decX^3));
-            subCoefs{4} = rand(height/(decY^3),width/(decX^3));
-            subCoefs{5} = rand(height/(decY^3),width/(decX^3));
-            subCoefs{6} = rand(height/(decY^3),width/(decX^3));
-            subCoefs{7} = rand(height/(decY^3),width/(decX^3));
-            subCoefs{8} = rand(height/(decY^3),width/(decX^3));
-            subCoefs{9} = rand(height/(decY^3),width/(decX^3));
-            subCoefs{10} = rand(height/(decY^2),width/(decX^2));
-            subCoefs{11} = rand(height/(decY^2),width/(decX^2));
-            subCoefs{12} = rand(height/(decY^2),width/(decX^2));
-            subCoefs{13} = rand(height/(decY^2),width/(decX^2));
-            subCoefs{14} = rand(height/(decY^2),width/(decX^2));            
-            subCoefs{15} = rand(height/(decY^2),width/(decX^2));
-            subCoefs{16} = rand(height/(decY^2),width/(decX^2));
-            subCoefs{17} = rand(height/(decY^2),width/(decX^2));            
-            subCoefs{18} = rand(height/(decY),width/(decX));
-            subCoefs{19} = rand(height/(decY),width/(decX));
-            subCoefs{20} = rand(height/(decY),width/(decX));            
-            subCoefs{21} = rand(height/(decY),width/(decX));
-            subCoefs{22} = rand(height/(decY),width/(decX));
-            subCoefs{23} = rand(height/(decY),width/(decX));            
-            subCoefs{24} = rand(height/(decY),width/(decX));
-            subCoefs{25} = rand(height/(decY),width/(decX));                        
-            nSubbands = length(subCoefs);
-            scales = zeros(nSubbands,2);
-            sIdx = 1;
-            for iSubband = 1:nSubbands
-                scales(iSubband,:) = size(subCoefs{iSubband});
-                eIdx = sIdx + prod(scales(iSubband,:))-1;
-                coefs(sIdx:eIdx) = subCoefs{iSubband}(:).';
-                sIdx = eIdx + 1;
-            end
-            
-            % Expected values
-            phase = 0; % for phase adjustment required experimentaly
-            subsubCoefs = cell(nChs,1);
-            subsubCoefs{1} = subCoefs{1};
-            for iLevel = 1:nLevels
-                f = synthesisFilters(:,:,1);
-                imgExpctd = imfilter(...
-                    upsample(...
-                    upsample(subsubCoefs{1}.',decX,phase).',...
-                    decY,phase),f,'conv','circ');
-                for iCh = 2:nChs
-                    f = synthesisFilters(:,:,iCh);
-                    iSubband = (iLevel-1)*(nChs-1)+iCh;
-                    subbandImg = imfilter(...
-                        upsample(...
-                        upsample(subCoefs{iSubband}.',decX,phase).',...
-                        decY,phase),f,'conv','circ');
-                    imgExpctd = imgExpctd + subbandImg;
-                end
-                subsubCoefs{1}=imgExpctd;
-            end
-            
-            % Instantiation of target class
-            import saivdr.dictionary.generalfb.*
-            testCase.synthesizer = Synthesis2dSystem(...
-                'DecimationFactor',nDecs,...
-                'SynthesisFilters',synthesisFilters);
-            
-            % Actual values
-            imgActual = step(testCase.synthesizer,coefs,scales);
-            
-            % Evaluation
-            testCase.verifySize(imgActual,size(imgExpctd),...
-                'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-10,sprintf('%g',diff));
-            
-        end
-        
-        % Test
-        function testStepDec33Ch54Ord22Level2Freq(testCase)
-            % Parameters
-            height = 108;
-            width  = 135;
-            nDecs  = [ 3 3 ];
-            synthesisFilters(:,:,1) = randn(6,6);
-            synthesisFilters(:,:,2) = randn(6,6);
-            synthesisFilters(:,:,3) = randn(6,6);
-            synthesisFilters(:,:,4) = randn(6,6);
-            synthesisFilters(:,:,5) = randn(6,6);
-            synthesisFilters(:,:,6) = randn(6,6);
-            synthesisFilters(:,:,7) = randn(6,6);
-            synthesisFilters(:,:,8) = randn(6,6);            
-            synthesisFilters(:,:,9) = randn(6,6);            
-            nLevels = 2;
-            
-            % Preparation
-            import saivdr.dictionary.utility.Direction
-            decY = nDecs(Direction.VERTICAL);
-            decX = nDecs(Direction.HORIZONTAL);
-            nChs = size(synthesisFilters,3);
-            subCoefs = cell(nLevels*(nChs-1)+1,1);
-            subCoefs{1} = rand(height/(decY^2),width/(decX^2));
-            subCoefs{2} = rand(height/(decY^2),width/(decX^2));
-            subCoefs{3} = rand(height/(decY^2),width/(decX^2));
-            subCoefs{4} = rand(height/(decY^2),width/(decX^2));
-            subCoefs{5} = rand(height/(decY^2),width/(decX^2));
-            subCoefs{6} = rand(height/(decY^2),width/(decX^2));
-            subCoefs{7} = rand(height/(decY^2),width/(decX^2));
-            subCoefs{8} = rand(height/(decY^2),width/(decX^2));
-            subCoefs{9} = rand(height/(decY^2),width/(decX^2));
-            subCoefs{10} = rand(height/(decY),width/(decX));
-            subCoefs{11} = rand(height/(decY),width/(decX));
-            subCoefs{12} = rand(height/(decY),width/(decX));
-            subCoefs{13} = rand(height/(decY),width/(decX));
-            subCoefs{14} = rand(height/(decY),width/(decX));            
-            subCoefs{15} = rand(height/(decY),width/(decX));
-            subCoefs{16} = rand(height/(decY),width/(decX));
-            subCoefs{17} = rand(height/(decY),width/(decX));            
-            nSubbands = length(subCoefs);
-            scales = zeros(nSubbands,2);
-            sIdx = 1;
-            for iSubband = 1:nSubbands
-                scales(iSubband,:) = size(subCoefs{iSubband});
-                eIdx = sIdx + prod(scales(iSubband,:))-1;
-                coefs(sIdx:eIdx) = subCoefs{iSubband}(:).';
-                sIdx = eIdx + 1;
-            end
-            
-            % Expected values
-            phase = 0; % for phase adjustment required experimentaly
-            subsubCoefs = cell(nChs,1);
-            subsubCoefs{1} = subCoefs{1};
-            for iLevel = 1:nLevels
-                f = synthesisFilters(:,:,1);
-                imgExpctd = imfilter(...
-                    upsample(...
-                    upsample(subsubCoefs{1}.',decX,phase).',...
-                    decY,phase),f,'conv','circ');
-                for iCh = 2:nChs
-                    f = synthesisFilters(:,:,iCh);
-                    iSubband = (iLevel-1)*(nChs-1)+iCh;
-                    subbandImg = imfilter(...
-                        upsample(...
-                        upsample(subCoefs{iSubband}.',decX,phase).',...
-                        decY,phase),f,'conv','circ');
-                    imgExpctd = imgExpctd + subbandImg;
-                end
-                subsubCoefs{1}=imgExpctd;
-            end
-            
-            % Instantiation of target class
-            import saivdr.dictionary.generalfb.*
-            testCase.synthesizer = Synthesis2dSystem(...
-                'DecimationFactor',nDecs,...
-                'SynthesisFilters',synthesisFilters,...
-                'FilterDomain','Frequency');
-            
-            % Actual values
-            imgActual = step(testCase.synthesizer,coefs,scales);
-            
-            % Evaluation
-            testCase.verifySize(imgActual,size(imgExpctd),...
-                'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-10,sprintf('%g',diff));
-            
-        end
-        
-        % Test
-        function testStepDec33Ch54Ord22Level3Freq(testCase)
-            % Parameters
-            height = 108;
-            width  = 135;
-            nDecs  = [ 3 3 ];
-            synthesisFilters(:,:,1) = randn(9,9);
-            synthesisFilters(:,:,2) = randn(9,9);
-            synthesisFilters(:,:,3) = randn(9,9);
-            synthesisFilters(:,:,4) = randn(9,9);
-            synthesisFilters(:,:,5) = randn(9,9);
-            synthesisFilters(:,:,6) = randn(9,9);
-            synthesisFilters(:,:,7) = randn(9,9);
-            synthesisFilters(:,:,8) = randn(9,9);
-            synthesisFilters(:,:,9) = randn(9,9);
-            nLevels = 3;
-            
-            % Preparation
-            import saivdr.dictionary.utility.Direction
-            decY = nDecs(Direction.VERTICAL);
-            decX = nDecs(Direction.HORIZONTAL);
-            nChs = size(synthesisFilters,3);
-            subCoefs = cell(nLevels*(nChs-1)+1,1);
-            subCoefs{1} = rand(height/(decY^3),width/(decX^3));
-            subCoefs{2} = rand(height/(decY^3),width/(decX^3));
-            subCoefs{3} = rand(height/(decY^3),width/(decX^3));
-            subCoefs{4} = rand(height/(decY^3),width/(decX^3));
-            subCoefs{5} = rand(height/(decY^3),width/(decX^3));
-            subCoefs{6} = rand(height/(decY^3),width/(decX^3));
-            subCoefs{7} = rand(height/(decY^3),width/(decX^3));
-            subCoefs{8} = rand(height/(decY^3),width/(decX^3));
-            subCoefs{9} = rand(height/(decY^3),width/(decX^3));
-            subCoefs{10} = rand(height/(decY^2),width/(decX^2));
-            subCoefs{11} = rand(height/(decY^2),width/(decX^2));
-            subCoefs{12} = rand(height/(decY^2),width/(decX^2));
-            subCoefs{13} = rand(height/(decY^2),width/(decX^2));
-            subCoefs{14} = rand(height/(decY^2),width/(decX^2));            
-            subCoefs{15} = rand(height/(decY^2),width/(decX^2));
-            subCoefs{16} = rand(height/(decY^2),width/(decX^2));
-            subCoefs{17} = rand(height/(decY^2),width/(decX^2));            
-            subCoefs{18} = rand(height/(decY),width/(decX));
-            subCoefs{19} = rand(height/(decY),width/(decX));
-            subCoefs{20} = rand(height/(decY),width/(decX));            
-            subCoefs{21} = rand(height/(decY),width/(decX));
-            subCoefs{22} = rand(height/(decY),width/(decX));
-            subCoefs{23} = rand(height/(decY),width/(decX));            
-            subCoefs{24} = rand(height/(decY),width/(decX));
-            subCoefs{25} = rand(height/(decY),width/(decX));                        
-            nSubbands = length(subCoefs);
-            scales = zeros(nSubbands,2);
-            sIdx = 1;
-            for iSubband = 1:nSubbands
-                scales(iSubband,:) = size(subCoefs{iSubband});
-                eIdx = sIdx + prod(scales(iSubband,:))-1;
-                coefs(sIdx:eIdx) = subCoefs{iSubband}(:).';
-                sIdx = eIdx + 1;
-            end
-            
-            % Expected values
-            phase = 0; % for phase adjustment required experimentaly
-            subsubCoefs = cell(nChs,1);
-            subsubCoefs{1} = subCoefs{1};
-            for iLevel = 1:nLevels
-                f = synthesisFilters(:,:,1);
-                imgExpctd = imfilter(...
-                    upsample(...
-                    upsample(subsubCoefs{1}.',decX,phase).',...
-                    decY,phase),f,'conv','circ');
-                for iCh = 2:nChs
-                    f = synthesisFilters(:,:,iCh);
-                    iSubband = (iLevel-1)*(nChs-1)+iCh;
-                    subbandImg = imfilter(...
-                        upsample(...
-                        upsample(subCoefs{iSubband}.',decX,phase).',...
-                        decY,phase),f,'conv','circ');
-                    imgExpctd = imgExpctd + subbandImg;
-                end
-                subsubCoefs{1}=imgExpctd;
-            end
-            
-            % Instantiation of target class
-            import saivdr.dictionary.generalfb.*
-            testCase.synthesizer = Synthesis2dSystem(...
-                'DecimationFactor',nDecs,...
-                'SynthesisFilters',synthesisFilters,...
-                'FilterDomain','Frequency');
-            
-            % Actual values
-            imgActual = step(testCase.synthesizer,coefs,scales);
-            
-            % Evaluation
-            testCase.verifySize(imgActual,size(imgExpctd),...
-                'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-10,sprintf('%g',diff));
-            
-        end
-        
-        % Test
-        function testStepDec44Ch1212Ord22Level3(testCase)
-            % Parameters
-            height = 12*4^3;
-            width  = 16*4^3;
-            nDecs  = [ 4 4 ];
-            synthesisFilters = zeros(12,12,24);
-            for iCh = 1:24
-                synthesisFilters(:,:,iCh) = randn(12,12);
-            end
-            nLevels = 3;
-            
-            % Preparation
-            import saivdr.dictionary.utility.Direction
-            decY = nDecs(Direction.VERTICAL);
-            decX = nDecs(Direction.HORIZONTAL);
-            nChs = size(synthesisFilters,3);
-            subCoefs = cell(nLevels*(nChs-1)+1,1);
-            subCoefs{1} = randn(height/(decY^3),width/(decX^3));
-            for iCh = 2:24
-                subCoefs{iCh}    = randn(height/(decY^3),width/(decX^3));
-                subCoefs{iCh+23} = randn(height/(decY^2),width/(decX^2));
-                subCoefs{iCh+46} = randn(height/(decY),width/(decX));
-            end
-            nSubbands = length(subCoefs);
-            scales = zeros(nSubbands,2);
-            sIdx = 1;
-            for iSubband = 1:nSubbands
-                scales(iSubband,:) = size(subCoefs{iSubband});
-                eIdx = sIdx + prod(scales(iSubband,:))-1;
-                coefs(sIdx:eIdx) = subCoefs{iSubband}(:).';
-                sIdx = eIdx + 1;
-            end
-            
-            % Expected values
-            phase = 1; % for phase adjustment required experimentaly
-            subsubCoefs = cell(nChs,1);
-            subsubCoefs{1} = subCoefs{1};
-            for iLevel = 1:nLevels
-                f = synthesisFilters(:,:,1);
-                imgExpctd = imfilter(...
-                    upsample(...
-                    upsample(subsubCoefs{1}.',decX,phase).',...
-                    decY,phase),f,'conv','circ');
-                for iCh = 2:nChs
-                    f = synthesisFilters(:,:,iCh);
-                    iSubband = (iLevel-1)*(nChs-1)+iCh;
-                    subbandImg = imfilter(...
-                        upsample(...
-                        upsample(subCoefs{iSubband}.',decX,phase).',...
-                        decY,phase),f,'conv','circ');
-                    imgExpctd = imgExpctd + subbandImg;
-                end
-                subsubCoefs{1}=imgExpctd;
-            end
-            
-            % Instantiation of target class
-            import saivdr.dictionary.generalfb.*
-            testCase.synthesizer = Synthesis2dSystem(...
-                'DecimationFactor',nDecs,...
-                'SynthesisFilters',synthesisFilters);
-            
-            % Actual values
-            imgActual = step(testCase.synthesizer,coefs,scales);
-            
-            % Evaluation
-            testCase.verifySize(imgActual,size(imgExpctd),...
-                'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-10,sprintf('%g',diff));
-            
-        end
-        
-        % Test
-        function testStepDec44Ch1212Ord22Level3Freq(testCase)
-            % Parameters
-            height = 12*4^3;
-            width  = 16*4^3;
-            nDecs  = [ 4 4 ];
-            synthesisFilters = zeros(12,12,24);
-            for iCh = 1:24
-                synthesisFilters(:,:,iCh) = randn(12,12);
-            end
-            nLevels = 3;
-            
-            % Preparation
-            import saivdr.dictionary.utility.Direction
-            decY = nDecs(Direction.VERTICAL);
-            decX = nDecs(Direction.HORIZONTAL);
-            nChs = size(synthesisFilters,3);
-            subCoefs = cell(nLevels*(nChs-1)+1,1);
-            subCoefs{1} = randn(height/(decY^3),width/(decX^3));
-            for iCh = 2:24
-                subCoefs{iCh}    = randn(height/(decY^3),width/(decX^3));
-                subCoefs{iCh+23} = randn(height/(decY^2),width/(decX^2));
-                subCoefs{iCh+46} = randn(height/(decY),width/(decX));
-            end
-            nSubbands = length(subCoefs);
-            scales = zeros(nSubbands,2);
-            sIdx = 1;
-            for iSubband = 1:nSubbands
-                scales(iSubband,:) = size(subCoefs{iSubband});
-                eIdx = sIdx + prod(scales(iSubband,:))-1;
-                coefs(sIdx:eIdx) = subCoefs{iSubband}(:).';
-                sIdx = eIdx + 1;
-            end
-            
-            % Expected values
-            phase = 1; % for phase adjustment required experimentaly
-            subsubCoefs = cell(nChs,1);
-            subsubCoefs{1} = subCoefs{1};
-            for iLevel = 1:nLevels
-                f = synthesisFilters(:,:,1);
-                imgExpctd = imfilter(...
-                    upsample(...
-                    upsample(subsubCoefs{1}.',decX,phase).',...
-                    decY,phase),f,'conv','circ');
-                for iCh = 2:nChs
-                    f = synthesisFilters(:,:,iCh);
-                    iSubband = (iLevel-1)*(nChs-1)+iCh;
-                    subbandImg = imfilter(...
-                        upsample(...
-                        upsample(subCoefs{iSubband}.',decX,phase).',...
-                        decY,phase),f,'conv','circ');
-                    imgExpctd = imgExpctd + subbandImg;
-                end
-                subsubCoefs{1}=imgExpctd;
-            end
-            
-            % Instantiation of target class
-            import saivdr.dictionary.generalfb.*
-            testCase.synthesizer = Synthesis2dSystem(...
-                'DecimationFactor',nDecs,...
-                'SynthesisFilters',synthesisFilters,...
-                'FilterDomain','Frequency');
-            
-            % Actual values
-            imgActual = step(testCase.synthesizer,coefs,scales);
-            
-            % Evaluation
-            testCase.verifySize(imgActual,size(imgExpctd),...
-                'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-10,sprintf('%g',diff));
-            
-        end
-        
-        % Test
-        function testStepDec44Ch1212Ord22Level3FreqUseGpuFalse(testCase)
-            % Parameters
-            height = 12*4^3;
-            width  = 16*4^3;
-            nDecs  = [ 4 4 ];
-            useGpu = false;
-            synthesisFilters = zeros(12,12,24);
-            for iCh = 1:24
-                synthesisFilters(:,:,iCh) = randn(12,12);
-            end
-            nLevels = 3;
-            
-            % Preparation
-            import saivdr.dictionary.utility.Direction
-            decY = nDecs(Direction.VERTICAL);
-            decX = nDecs(Direction.HORIZONTAL);
-            nChs = size(synthesisFilters,3);
-            subCoefs = cell(nLevels*(nChs-1)+1,1);
-            subCoefs{1} = randn(height/(decY^3),width/(decX^3));
-            for iCh = 2:24
-                subCoefs{iCh}    = randn(height/(decY^3),width/(decX^3));
-                subCoefs{iCh+23} = randn(height/(decY^2),width/(decX^2));
-                subCoefs{iCh+46} = randn(height/(decY),width/(decX));
-            end
-            nSubbands = length(subCoefs);
-            scales = zeros(nSubbands,2);
-            sIdx = 1;
-            for iSubband = 1:nSubbands
-                scales(iSubband,:) = size(subCoefs{iSubband});
-                eIdx = sIdx + prod(scales(iSubband,:))-1;
-                coefs(sIdx:eIdx) = subCoefs{iSubband}(:).';
-                sIdx = eIdx + 1;
-            end
-            
-            % Expected values
-            phase = 1; % for phase adjustment required experimentaly
-            subsubCoefs = cell(nChs,1);
-            subsubCoefs{1} = subCoefs{1};
-            for iLevel = 1:nLevels
-                f = synthesisFilters(:,:,1);
-                imgExpctd = imfilter(...
-                    upsample(...
-                    upsample(subsubCoefs{1}.',decX,phase).',...
-                    decY,phase),f,'conv','circ');
-                for iCh = 2:nChs
-                    f = synthesisFilters(:,:,iCh);
-                    iSubband = (iLevel-1)*(nChs-1)+iCh;
-                    subbandImg = imfilter(...
-                        upsample(...
-                        upsample(subCoefs{iSubband}.',decX,phase).',...
-                        decY,phase),f,'conv','circ');
-                    imgExpctd = imgExpctd + subbandImg;
-                end
-                subsubCoefs{1}=imgExpctd;
-            end
-            
-            % Instantiation of target class
-            import saivdr.dictionary.generalfb.*
-            testCase.synthesizer = Synthesis2dSystem(...
-                'DecimationFactor',nDecs,...
-                'SynthesisFilters',synthesisFilters,...
-                'FilterDomain','Frequency',...
-                'UseGpu',useGpu);
-            
-            % Actual values
-            imgActual = step(testCase.synthesizer,coefs,scales);
-            
-            % Evaluation
-            testCase.verifySize(imgActual,size(imgExpctd),...
-                'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-10,sprintf('%g',diff));
-            
-        end
-                
-        % Test
-        function testClone(testCase)
-            % Parameters
-            height = 108;
-            width  = 135;
-            nDecs  = [ 3 3 ];
-            synthesisFilters(:,:,1) = randn(6,6);
-            synthesisFilters(:,:,2) = randn(6,6);
-            synthesisFilters(:,:,3) = randn(6,6);
-            synthesisFilters(:,:,4) = randn(6,6);
-            synthesisFilters(:,:,5) = randn(6,6);
-            synthesisFilters(:,:,6) = randn(6,6);
-            synthesisFilters(:,:,7) = randn(6,6);
-            synthesisFilters(:,:,8) = randn(6,6);            
-            synthesisFilters(:,:,9) = randn(6,6);            
-            nLevels = 3;
-            
-            % Preparation
-            import saivdr.dictionary.utility.Direction
-            decY = nDecs(Direction.VERTICAL);
-            decX = nDecs(Direction.HORIZONTAL);
-            nChs = size(synthesisFilters,3);
-            subCoefs = cell(nLevels*(nChs-1)+1,1);
-            subCoefs{1} = rand(height/(decY^3),width/(decX^3));
-            subCoefs{2} = rand(height/(decY^3),width/(decX^3));
-            subCoefs{3} = rand(height/(decY^3),width/(decX^3));
-            subCoefs{4} = rand(height/(decY^3),width/(decX^3));
-            subCoefs{5} = rand(height/(decY^3),width/(decX^3));
-            subCoefs{6} = rand(height/(decY^3),width/(decX^3));
-            subCoefs{7} = rand(height/(decY^3),width/(decX^3));
-            subCoefs{8} = rand(height/(decY^3),width/(decX^3));
-            subCoefs{9} = rand(height/(decY^3),width/(decX^3));
-            subCoefs{10} = rand(height/(decY^2),width/(decX^2));
-            subCoefs{11} = rand(height/(decY^2),width/(decX^2));
-            subCoefs{12} = rand(height/(decY^2),width/(decX^2));
-            subCoefs{13} = rand(height/(decY^2),width/(decX^2));
-            subCoefs{14} = rand(height/(decY^2),width/(decX^2));            
-            subCoefs{15} = rand(height/(decY^2),width/(decX^2));
-            subCoefs{16} = rand(height/(decY^2),width/(decX^2));
-            subCoefs{17} = rand(height/(decY^2),width/(decX^2));            
-            subCoefs{18} = rand(height/(decY),width/(decX));
-            subCoefs{19} = rand(height/(decY),width/(decX));
-            subCoefs{20} = rand(height/(decY),width/(decX));            
-            subCoefs{21} = rand(height/(decY),width/(decX));
-            subCoefs{22} = rand(height/(decY),width/(decX));
-            subCoefs{23} = rand(height/(decY),width/(decX));            
-            subCoefs{24} = rand(height/(decY),width/(decX));
-            subCoefs{25} = rand(height/(decY),width/(decX));                        
-            nSubbands = length(subCoefs);
-            scales = zeros(nSubbands,2);
-            sIdx = 1;
-            for iSubband = 1:nSubbands
-                scales(iSubband,:) = size(subCoefs{iSubband});
-                eIdx = sIdx + prod(scales(iSubband,:))-1;
-                coefs(sIdx:eIdx) = subCoefs{iSubband}(:).';
-                sIdx = eIdx + 1;
-            end
-            
-            % Expected values
-            phase = 0; % for phase adjustment required experimentaly
-            subsubCoefs = cell(nChs,1);
-            subsubCoefs{1} = subCoefs{1};
-            for iLevel = 1:nLevels
-                f = synthesisFilters(:,:,1);
-                imgExpctd = imfilter(...
-                    upsample(...
-                    upsample(subsubCoefs{1}.',decX,phase).',...
-                    decY,phase),f,'conv','circ');
-                for iCh = 2:nChs
-                    f = synthesisFilters(:,:,iCh);
-                    iSubband = (iLevel-1)*(nChs-1)+iCh;
-                    subbandImg = imfilter(...
-                        upsample(...
-                        upsample(subCoefs{iSubband}.',decX,phase).',...
-                        decY,phase),f,'conv','circ');
-                    imgExpctd = imgExpctd + subbandImg;
-                end
-                subsubCoefs{1}=imgExpctd;
-            end
-            
-            % Instantiation of target class
-            import saivdr.dictionary.generalfb.*
-            testCase.synthesizer = Synthesis2dSystem(...
-                'DecimationFactor',nDecs,...
-                'SynthesisFilters',synthesisFilters,...
-                'FilterDomain','Frequency');
-            cloneSynthesizer = clone(testCase.synthesizer);
-            
-            % Actual values
-            imgActual = step(cloneSynthesizer,coefs,scales);
-            
-            % Evaluation
-            testCase.verifySize(imgActual,size(imgExpctd),...
-                'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-10,sprintf('%g',diff));
-            
-        end 
-        %}
     end
 end
