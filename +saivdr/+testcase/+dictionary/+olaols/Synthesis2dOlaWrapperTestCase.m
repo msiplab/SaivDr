@@ -16,6 +16,7 @@ classdef Synthesis2dOlaWrapperTestCase < matlab.unittest.TestCase
     %
     
     properties (TestParameter)
+        useparallel = { true, false };
         width = struct('small', 64, 'medium', 96, 'large', 128);
         height = struct('small', 64, 'medium', 96, 'large', 128);
         level = struct('flat',1, 'sharrow',3,'deep', 5);
@@ -172,7 +173,7 @@ classdef Synthesis2dOlaWrapperTestCase < matlab.unittest.TestCase
         end
         
          % Test
-        function testUdHaarSplitting(testCase,width,height,level)
+        function testUdHaarSplitting(testCase,width,height,level,useparallel)
             
             % Parameters
             nVerSplit = 2;
@@ -182,45 +183,6 @@ classdef Synthesis2dOlaWrapperTestCase < matlab.unittest.TestCase
             nChs = 3*level+1;
             subCoefs = repmat(rand(1,height*width),[1 nChs]);
             scales = repmat([ height width ],[3*level+1, 1]);
-            
-            % Preparation
-            % Expected values
-            import saivdr.dictionary.udhaar.*
-            refSynthesizer = UdHaarSynthesis2dSystem();
-            imgExpctd = step(refSynthesizer,subCoefs,scales);
-            
-            % Instantiation of target class
-            import saivdr.dictionary.olaols.*
-            testCase.synthesizer = Synthesis2dOlaWrapper(...
-                'Synthesizer',clone(refSynthesizer),...
-                'VerticalSplitFactor',nVerSplit,...
-                'HorizontalSplitFactor',nHorSplit,...
-                'PadSize',[nVerPad,nHorPad],...
-                'UseParallel',false);
-            
-            % Actual values
-            imgActual = step(testCase.synthesizer,subCoefs,scales);
-            
-            % Evaluation
-            %testCase.assertFail('TODO: Check for split');            
-            testCase.verifySize(imgActual,size(imgExpctd),...
-                'Actual image size is different from the expected one.');
-            diff = max(abs(imgExpctd(:) - imgActual(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-10,sprintf('%g',diff));
-        end
-        
-         % Test
-        function testUdHaarSplittingUseParallel(testCase,width,height,level)
-            
-            % Parameters
-            nVerSplit = 2;
-            nHorSplit = 2;
-            nVerPad = 2^(level-1)-1;
-            nHorPad = 2^(level-1)-1;
-            nChs = 3*level+1;
-            subCoefs = repmat(rand(1,height*width),[1 nChs]);
-            scales = repmat([ height width ],[3*level+1, 1]);
-            useParallel = true;
             
             % Preparation
             % Expected values
@@ -235,7 +197,7 @@ classdef Synthesis2dOlaWrapperTestCase < matlab.unittest.TestCase
                 'VerticalSplitFactor',nVerSplit,...
                 'HorizontalSplitFactor',nHorSplit,...
                 'PadSize',[nVerPad,nHorPad],...
-                'UseParallel',useParallel);
+                'UseParallel',useparallel);
             
             % Actual values
             imgActual = step(testCase.synthesizer,subCoefs,scales);
@@ -246,7 +208,7 @@ classdef Synthesis2dOlaWrapperTestCase < matlab.unittest.TestCase
                 'Actual image size is different from the expected one.');
             diff = max(abs(imgExpctd(:) - imgActual(:)));
             testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-10,sprintf('%g',diff));
-        end        
+        end
         
         % Test
         function testUdHaarSplittingWarningReconstruction(testCase,width,height)
