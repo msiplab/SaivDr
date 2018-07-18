@@ -1,12 +1,9 @@
 classdef UdHaarAnalysis2dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
     %UDHAARANALYZSISSYSTEM Analysis system for undecimated Haar transform
     %
-    % SVN identifier:
-    % $Id: UdHaarAnalysis2dSystem.m 683 2015-05-29 08:22:13Z sho $
-    %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2014-2015, Shogo MURAMATSU
+    % Copyright (c) 2014-2018, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -18,6 +15,15 @@ classdef UdHaarAnalysis2dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
     % http://msiplab.eng.niigata-u.ac.jp/    
     %
    
+    properties (Nontunable)
+        BoundaryOperation = 'Circular'
+    end
+    
+    properties (Hidden, Transient)
+        BoundaryOperationSet = ...
+            matlab.system.StringSet({'Circular'});
+    end
+    
     properties (Access = private)
         kernels
         coefs
