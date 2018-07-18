@@ -1,5 +1,5 @@
 classdef UdHaarSynthesis2dSystem < saivdr.dictionary.AbstSynthesisSystem %#codegen
-    %UdHaarSynthesis2dSystem Synthesis system for undecimated Haar transform
+    %UDHAARSYNTHESIS2DSYSTEM Synthesis system for undecimated Haar transform
     %
     % Requirements: MATLAB R2015b
     %
