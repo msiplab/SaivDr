@@ -1,5 +1,5 @@
 classdef Synthesis2dOlaWrapperTestCase < matlab.unittest.TestCase
-    %SYNTHESIS2DOLASYSTEMTESTCASE Test case for Synthesis2dOlaWrapper
+    %SYNTHESIS2DOLAWRAPPERTESTCASE Test case for Synthesis2dOlaWrapper
     %
     % Requirements: MATLAB R2018a
     %
@@ -78,6 +78,7 @@ classdef Synthesis2dOlaWrapperTestCase < matlab.unittest.TestCase
         % Test
         function testUdHaarLevel1(testCase,width,height)
             
+            % Parameters
             nLevels = 1;
             ca  = rand(height,width);
             ch  = rand(height,width);
@@ -103,7 +104,8 @@ classdef Synthesis2dOlaWrapperTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifySize(imgActual,dimExpctd);
             diff = max(abs(imgExpctd(:) - imgActual(:))./abs(imgExpctd(:)));
-            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-7,sprintf('%g',diff));
+            testCase.verifyEqual(imgActual,imgExpctd,'RelTol',1e-7,...
+                sprintf('%g',diff));
         end
         
         
