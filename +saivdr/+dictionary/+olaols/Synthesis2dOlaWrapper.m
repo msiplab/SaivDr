@@ -141,25 +141,25 @@ classdef Synthesis2dOlaWrapper < saivdr.dictionary.AbstSynthesisSystem
         
     end
     
-    methods(Access = private)
+    methods (Access = private)
 
         function recImg = circular_ola_(obj,subRecImg)
             import saivdr.dictionary.utility.Direction
-            step = obj.refSubSize;
-            overlap = size(subRecImg{1})-step;
+            stepsize = obj.refSubSize;
+            overlap = size(subRecImg{1})-stepsize;
             recImg = zeros(obj.refSize+overlap);
             % Overlap add
             iSplit = 0;
             tIdxHor = 0;
             for iHorSplit = 1:obj.HorizontalSplitFactor
                 sIdxHor = tIdxHor + 1;
-                tIdxHor= sIdxHor + step(Direction.HORIZONTAL) - 1;
+                tIdxHor= sIdxHor + stepsize(Direction.HORIZONTAL) - 1;
                 eIdxHor = tIdxHor + overlap(Direction.HORIZONTAL);
                 tIdxVer = 0;
                 for iVerSplit = 1:obj.VerticalSplitFactor
                     iSplit = iSplit + 1;
                     sIdxVer = tIdxVer + 1;
-                    tIdxVer = sIdxVer + step(Direction.VERTICAL) - 1;
+                    tIdxVer = sIdxVer + stepsize(Direction.VERTICAL) - 1;
                     eIdxVer = tIdxVer + overlap(Direction.VERTICAL);
                     recImg(sIdxVer:eIdxVer,sIdxHor:eIdxHor) = ...
                         recImg(sIdxVer:eIdxVer,sIdxHor:eIdxHor) + ...
@@ -209,6 +209,7 @@ classdef Synthesis2dOlaWrapper < saivdr.dictionary.AbstSynthesisSystem
         end
         
         function subCoefArrays = split_(obj,coefs,scales)
+            import saivdr.dictionary.utility.Direction
             nSplit = obj.VerticalSplitFactor*obj.HorizontalSplitFactor;
             % # of channels
             nChs = size(scales,1);
@@ -220,12 +221,12 @@ classdef Synthesis2dOlaWrapper < saivdr.dictionary.AbstSynthesisSystem
             for iCh = 1:nChs
                 sIdx = eIdx + 1;
                 eIdx = sIdx + prod(scales(iCh,:)) - 1;                
-                nRows = scales(iCh,1);
-                nCols = scales(iCh,2);                
+                nRows = scales(iCh,Direction.VERTICAL);
+                nCols = scales(iCh,Direction.HORIZONTAL);                
                 coefArrays = reshape(coefs(sIdx:eIdx),[nRows nCols]);                
                 %
-                nSubRows = subScales(iCh,1);
-                nSubCols = subScales(iCh,2);
+                nSubRows = subScales(iCh,Direction.VERTICAL);
+                nSubCols = subScales(iCh,Direction.HORIZONTAL);
                 iSplit = 0;
                 for iHorSplit = 1:obj.HorizontalSplitFactor
                     sColIdx = (iHorSplit-1)*nSubCols + 1;
