@@ -972,8 +972,8 @@ classdef NsoltAnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(norm(coefs(:)),norm(srcImg(:)),...
                 'AbsTol',1e-10,sprintf('diff = %g',diff));
             testCase.verifySize(recImg,[ height width depth ]);
-            diff = max(abs(recImg(:)-srcImg(:))./abs(srcImg(:)));
-            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-7,...
+            diff = max(abs(recImg(:)-srcImg(:)));%./abs(srcImg(:)));
+            testCase.verifyEqual(recImg,srcImg,'AbsTol',1e-7,...
                 sprintf('diff = %g',diff));
         end
         
