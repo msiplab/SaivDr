@@ -89,13 +89,18 @@ classdef Analysis2dOlsWrapper < saivdr.dictionary.AbstAnalysisSystem
                 diag(1./[obj.VerticalSplitFactor,obj.HorizontalSplitFactor]);
             % Evaluate
             % Check if srcImg is divisible by split factors
+            exceptionId = 'SaivDr:IllegalSplitFactorException';            
+            message = 'Split factor must be a divisor of array size.';
+            if sum(mod(obj.refSubSize,1)) ~= 0
+                throw(MException(exceptionId,message))                
+            end            
             % Check identity
-            %exceptionId = 'SaivDr:ReconstructionFailureException';            
-            %message = 'Failure occurs in reconstruction. Please check the split and padding size.';
+            exceptionId = 'SaivDr:ReconstructionFailureException';            
+            message = 'Failure occurs in reconstruction. Please check the split and padding size.';
             newcoefs = stepImpl(obj,srcImg,nLevels);
             diffCoefs = coefs - newcoefs;
             if norm(diffCoefs(:))/numel(diffCoefs) > 1e-6
-                throw(MException('SaivDr:fail','fail')) %exceptionId,message))
+                throw(MException(exceptionId,message))
             end            
             % Delete reference synthesizer
             obj.refAnalyzer.delete()
@@ -110,15 +115,21 @@ classdef Analysis2dOlsWrapper < saivdr.dictionary.AbstAnalysisSystem
            % 3. Analyze
            nSplit = length(subImgs);
            subCoefs_ = cell(nSplit,1);
-           subScales_ = cell(nSplit,1);           
+           subScales_ = cell(nSplit,1);
            %
            analyzer_ = cell(nSplit,1);
-           %
-           nWorkers = 0;
-           %
-           for iSplit = 1:nSplit
-                analyzer_{iSplit} = obj.Analyzer;
+           if obj.UseParallel
+               nWorkers = nSplit;
+               for iSplit=1:nSplit
+                   analyzer_{iSplit} = clone(obj.Analyzer);
+               end
+           else
+               nWorkers = 0;
+               for iSplit=1:nSplit
+                   analyzer_{iSplit} = obj.Analyzer;
+               end
            end
+           %
            parfor (iSplit=1:nSplit,nWorkers)
                [subCoefs_{iSplit}, subScales_{iSplit}] = ...
                    step(analyzer_{iSplit},subImgs{iSplit},nLevels);               
