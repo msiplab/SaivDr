@@ -242,7 +242,7 @@ classdef Synthesis2dOlaWrapperTestCase < matlab.unittest.TestCase
                 'PadSize',[nVerPad,nHorPad],...
                 'UseParallel',false);
             
-            % Actual values
+            % Evaluation
             try
                 step(testCase.synthesizer,subCoefs,scales);
                 testCase.verifyFail(sprintf('%s must be thrown.',...
