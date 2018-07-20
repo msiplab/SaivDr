@@ -1,5 +1,5 @@
 classdef Analysis3dOlsWrapperTestCase < matlab.unittest.TestCase
-    %ANALYSIS3DSYSTEMTESTCASE Test case for Analysis3dSystem
+    %ANALYSIS3DOLSWRAPPERTESTCASE Test case for Analysis3dOlsWrapper
     %
     % Requirements: MATLAB R2015b
     %
@@ -12,8 +12,17 @@ classdef Analysis3dOlsWrapperTestCase < matlab.unittest.TestCase
     %                8050 2-no-cho Ikarashi, Nishi-ku,
     %                Niigata, 950-2181, JAPAN
     %
-    % http://msiplab.eng.niigata-u.ac.jp/   
+    % http://msiplab.eng.niigata-u.ac.jp/
     %
+
+    properties (TestParameter)
+        useparallel = { true, false };
+        width = struct('small', 32, 'medium', 48, 'large', 64);
+        height = struct('small', 32, 'medium', 48, 'large', 64);
+        depth = struct('small', 32, 'medium', 48, 'large', 64);        
+        level = struct('flat',1, 'sharrow',2,'deep', 3);
+    end
+    
     properties
         analyzer
     end
@@ -25,111 +34,65 @@ classdef Analysis3dOlsWrapperTestCase < matlab.unittest.TestCase
     end
     
     methods (Test)
+        
+        % Test
+        
         function testDefaultConstruction(testCase)     
-            testCase.assertFail('Dummy')
-        end        
-        
-%{
-        % Test
-        function testDefaultConstruction(testCase)
             
             % Expected values
-            import saivdr.dictionary.generalfb.*
-            analysisFiltersExpctd = [];
-            decimationFactorExpctd =  [ 2 2 2 ];
-            filterDomainExpctd = 'Spatial';
-            boundaryOperationExpctd = 'Circular';
+            import saivdr.dictionary.olaols.*
+            analyzerExpctd = [];
+            boundaryOperationExpctd = [];
             
             % Instantiation
-            testCase.analyzer = Analysis3dSystem();
+            testCase.analyzer = Analysis3dOlsWrapper();
             
             % Actual value
-            analysisFiltersActual = get(testCase.analyzer,'AnalysisFilters');
-            decimationFactorActual = get(testCase.analyzer,'DecimationFactor');
-            filterDomainActual = get(testCase.analyzer,'FilterDomain');
-            boundaryOperationActual = get(testCase.analyzer,'BoundaryOperation');            
+            analyzerActual = testCase.analyzer.Analyzer;
+            boundaryOperationActual = testCase.analyzer.BoundaryOperation;
             
             % Evaluation
-            testCase.assertEqual(analysisFiltersActual,analysisFiltersExpctd);
-            testCase.assertEqual(decimationFactorActual,decimationFactorExpctd);
-            testCase.assertEqual(filterDomainActual,filterDomainExpctd);
+            testCase.assertEqual(analyzerActual,analyzerExpctd);
             testCase.assertEqual(boundaryOperationActual,boundaryOperationExpctd);  
-            
         end
+
         
         % Test
-        function testAnalysisFilters(testCase)
+        function testAnalyzer(testCase)
             
             % Expected values
-            analysisFiltersExpctd(:,:,:,1) = randn(2,2,2);
-            analysisFiltersExpctd(:,:,:,2) = randn(2,2,2);
-            analysisFiltersExpctd(:,:,:,3) = randn(2,2,2);
-            analysisFiltersExpctd(:,:,:,4) = randn(2,2,2);
-            analysisFiltersExpctd(:,:,:,5) = randn(2,2,2);
-            analysisFiltersExpctd(:,:,:,6) = randn(2,2,2);
-            analysisFiltersExpctd(:,:,:,7) = randn(2,2,2);
-            analysisFiltersExpctd(:,:,:,8) = randn(2,2,2);
-                        
+            import saivdr.dictionary.udhaar.*
+            analyzerExpctd = UdHaarAnalysis3dSystem();
+
             % Instantiation
-            import saivdr.dictionary.generalfb.*
-            testCase.analyzer = Analysis3dSystem(...
-                'AnalysisFilters',analysisFiltersExpctd);
+            import saivdr.dictionary.olaols.*
+            testCase.analyzer = Analysis3dOlsWrapper(...
+                'Analyzer',analyzerExpctd);
             
             % Actual value
-            analysisFiltersActual = get(testCase.analyzer,'AnalysisFilters');
+            analyzerActual = get(testCase.analyzer,'Analyzer');
             
             % Evaluation
-            nChs = size(analysisFiltersExpctd,4);
-            for iCh = 1:nChs
-                testCase.assertEqual(analysisFiltersActual(:,:,:,iCh),...
-                    analysisFiltersExpctd(:,:,:,iCh));
-            end
-            
-        end
-        
+            testCase.assertEqual(analyzerActual,analyzerExpctd);
+
+        end        
+
         % Test
-        function testStepDec222Ch44Ord000Level1(testCase)
+        function testUdHaar(testCase,height,width,depth,level)
 
             % Parameters
-            height = 48;
-            width = 64;
-            depth = 32;
+            nLevels = level;
             srcImg = rand(height,width,depth);
-            nDecs = [ 2 2 2 ]; 
-            analysisFilters(:,:,:,1) = randn(2,2,2);
-            analysisFilters(:,:,:,2) = randn(2,2,2);
-            analysisFilters(:,:,:,3) = randn(2,2,2);
-            analysisFilters(:,:,:,4) = randn(2,2,2);
-            analysisFilters(:,:,:,5) = randn(2,2,2);
-            analysisFilters(:,:,:,6) = randn(2,2,2);
-            analysisFilters(:,:,:,7) = randn(2,2,2);
-            analysisFilters(:,:,:,8) = randn(2,2,2);
-            nLevels = 1;
             
             % Expected values
-            import saivdr.dictionary.utility.Direction
-            import saivdr.dictionary.generalfb.*
-            nChs = size(analysisFilters,4);
-            nSubCoefs = numel(srcImg)/prod(nDecs);
-            coefsExpctd = zeros(1,nChs*nSubCoefs);
-            downsample3_ = @(x,d) ...
-                shiftdim(downsample(...
-                shiftdim(downsample(...
-                shiftdim(downsample(x,d(1)),1),d(2)),1),d(3)),1);            
-            for iSubband = 1:nChs
-                h = analysisFilters(:,:,:,iSubband);
-                subCoef = downsample3_(...
-                    imfilter(srcImg,h,...
-                    'conv','circ'),nDecs);
-                coefsExpctd((iSubband-1)*nSubCoefs+1:iSubband*nSubCoefs) = ...
-                    subCoef(:).';
-            end
-            scalesExpctd = repmat(size(srcImg)./nDecs,nChs,1);
-
+            import saivdr.dictionary.udhaar.*
+            refAnalyzer = UdHaarAnalysis3dSystem();
+            [coefsExpctd,scalesExpctd] = step(refAnalyzer,srcImg,nLevels);
+            
             % Instantiation of target class
-            testCase.analyzer = Analysis3dSystem(...
-                'DecimationFactor',nDecs,...
-                'AnalysisFilters',analysisFilters);
+            import saivdr.dictionary.olaols.*
+            testCase.analyzer = Analysis3dOlsWrapper(...
+                'Analyzer',refAnalyzer);
             
             % Actual values
             [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
@@ -138,1835 +101,150 @@ classdef Analysis3dOlsWrapperTestCase < matlab.unittest.TestCase
             testCase.verifySize(scalesActual,size(scalesExpctd));
             testCase.verifyEqual(scalesActual,scalesExpctd);
             testCase.verifySize(coefsActual,size(coefsExpctd));
-            diff = max(abs(coefsExpctd - coefsActual));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-8,...
+            diff = max(abs(coefsExpctd(:) - coefsActual(:)));
+            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-10,...
                 sprintf('%g',diff));
-
         end
-
-        % Test
-        function testStepDec222Ch54Ord000Level1(testCase)
-
-            % Parameters
-            height = 48;
-            width = 64;
-            depth = 32;
-            srcImg = rand(height,width,depth);
-            nDecs = [ 2 2 2 ]; 
-            analysisFilters(:,:,:,1) = randn(2,2,2);
-            analysisFilters(:,:,:,2) = randn(2,2,2);
-            analysisFilters(:,:,:,3) = randn(2,2,2);
-            analysisFilters(:,:,:,4) = randn(2,2,2);
-            analysisFilters(:,:,:,5) = randn(2,2,2);
-            analysisFilters(:,:,:,6) = randn(2,2,2);
-            analysisFilters(:,:,:,7) = randn(2,2,2);
-            analysisFilters(:,:,:,8) = randn(2,2,2);
-            analysisFilters(:,:,:,9) = randn(2,2,2);
-            nLevels = 1;
-            
-            % Expected values
-            import saivdr.dictionary.utility.Direction
-            import saivdr.dictionary.generalfb.*
-            nChs = size(analysisFilters,4);
-            nSubCoefs = numel(srcImg)/prod(nDecs);
-            coefsExpctd = zeros(1,nChs*nSubCoefs);
-            downsample3_ = @(x,d) ...
-                shiftdim(downsample(...
-                shiftdim(downsample(...
-                shiftdim(downsample(x,d(1)),1),d(2)),1),d(3)),1);            
-            for iSubband = 1:nChs
-                h = analysisFilters(:,:,:,iSubband);                
-                subCoef = downsample3_(...
-                    imfilter(srcImg,h,...
-                    'conv','circ'),nDecs);
-                coefsExpctd((iSubband-1)*nSubCoefs+1:iSubband*nSubCoefs) = ...
-                    subCoef(:).';
-            end
-            scalesExpctd = repmat(size(srcImg)./nDecs,nChs,1);
-
-            % Instantiation of target class
-            testCase.analyzer = Analysis3dSystem(...
-                'DecimationFactor',nDecs,...
-                'AnalysisFilters',analysisFilters);
-            
-            % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
-            
-            % Evaluation
-            testCase.verifySize(scalesActual,size(scalesExpctd));
-            testCase.verifyEqual(scalesActual,scalesExpctd);
-            testCase.verifySize(coefsActual,size(coefsExpctd));
-            diff = max(abs(coefsExpctd - coefsActual));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-8,...
-                sprintf('%g',diff));
-
-        end
-
-        % Test        
-        function testStepDec222Ch54Ord222Level1(testCase)
-
-            % Parameters
-            height = 48;
-            width = 64;
-            depth = 32;
-            srcImg = rand(height,width,depth);
-            nDecs = [ 2 2 2 ]; 
-            analysisFilters(:,:,:,1) = randn(6,6,6);
-            analysisFilters(:,:,:,2) = randn(6,6,6);
-            analysisFilters(:,:,:,3) = randn(6,6,6);
-            analysisFilters(:,:,:,4) = randn(6,6,6);
-            analysisFilters(:,:,:,5) = randn(6,6,6);
-            analysisFilters(:,:,:,6) = randn(6,6,6);
-            analysisFilters(:,:,:,7) = randn(6,6,6);
-            analysisFilters(:,:,:,8) = randn(6,6,6);
-            analysisFilters(:,:,:,9) = randn(6,6,6);
-            nLevels = 1;
-            
-            % Expected values
-            import saivdr.dictionary.utility.Direction
-            import saivdr.dictionary.generalfb.*
-            nChs = size(analysisFilters,4);
-            nSubCoefs = numel(srcImg)/prod(nDecs);
-            coefsExpctd = zeros(1,nChs*nSubCoefs);
-            downsample3_ = @(x,d) ...
-                shiftdim(downsample(...
-                shiftdim(downsample(...
-                shiftdim(downsample(x,d(1)),1),d(2)),1),d(3)),1);            
-            for iSubband = 1:nChs
-                h = analysisFilters(:,:,:,iSubband);
-                subCoef = downsample3_(...
-                    imfilter(srcImg,h,...
-                    'conv','circ'),nDecs);
-                coefsExpctd((iSubband-1)*nSubCoefs+1:iSubband*nSubCoefs) = ...
-                    subCoef(:).';
-            end
-            scalesExpctd = repmat(size(srcImg)./nDecs,nChs,1);
-
-            % Instantiation of target class
-            testCase.analyzer = Analysis3dSystem(...
-                'DecimationFactor',nDecs,...
-                'AnalysisFilters',analysisFilters);
-            
-            % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
-            
-            % Evaluation
-            testCase.verifySize(scalesActual,size(scalesExpctd));
-            testCase.verifyEqual(scalesActual,scalesExpctd);
-            testCase.verifySize(coefsActual,size(coefsExpctd));
-            diff = max(abs(coefsExpctd - coefsActual));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-8,...
-                sprintf('%g',diff));
-
-        end
-
-        % Test
-        function testStepDec111Ch54Ord111Level1(testCase)
-
-            % Parameters
-            height = 48;
-            width = 64;
-            depth = 32;
-            srcImg = rand(height,width,depth);
-            nDecs = [ 1 1 1 ]; 
-            analysisFilters(:,:,:,1) = randn(2,2,2);
-            analysisFilters(:,:,:,2) = randn(2,2,2);
-            analysisFilters(:,:,:,3) = randn(2,2,2);
-            analysisFilters(:,:,:,4) = randn(2,2,2);
-            analysisFilters(:,:,:,5) = randn(2,2,2);
-            analysisFilters(:,:,:,6) = randn(2,2,2);
-            analysisFilters(:,:,:,7) = randn(2,2,2);
-            analysisFilters(:,:,:,8) = randn(2,2,2);
-            analysisFilters(:,:,:,9) = randn(2,2,2);
-            nLevels = 1;
-            
-            % Expected values
-            import saivdr.dictionary.utility.Direction
-            import saivdr.dictionary.generalfb.*
-            nChs = size(analysisFilters,4);
-            nSubCoefs = numel(srcImg)/prod(nDecs);
-            coefsExpctd = zeros(1,nChs*nSubCoefs);
-            downsample3_ = @(x,d) ...
-                shiftdim(downsample(...
-                shiftdim(downsample(...
-                shiftdim(downsample(x,d(1)),1),d(2)),1),d(3)),1);            
-            for iSubband = 1:nChs
-                h = analysisFilters(:,:,:,iSubband);
-                subCoef = downsample3_(...
-                    imfilter(srcImg,h,...
-                    'conv','circ'),nDecs);
-                coefsExpctd((iSubband-1)*nSubCoefs+1:iSubband*nSubCoefs) = ...
-                    subCoef(:).';
-            end
-            scalesExpctd = repmat(size(srcImg)./nDecs,nChs,1);
-
-            % Instantiation of target class
-            testCase.analyzer = Analysis3dSystem(...
-                'DecimationFactor',nDecs,...
-                'AnalysisFilters',analysisFilters);
-            
-            % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
-            
-            % Evaluation
-            testCase.verifySize(scalesActual,size(scalesExpctd));
-            testCase.verifyEqual(scalesActual,scalesExpctd);
-            testCase.verifySize(coefsActual,size(coefsExpctd));
-            diff = max(abs(coefsExpctd - coefsActual));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-8,...
-                sprintf('%g',diff));
-
-        end
-        
-        % Test        
-        function testStepDec321Ch44Ord222Level1(testCase)
-
-            % Parameters
-            height = 48;
-            width = 64;
-            depth = 32;
-            srcImg = rand(height,width,depth);
-            nDecs = [ 3 2 1 ]; 
-            analysisFilters(:,:,:,1) = randn(9,6,3);
-            analysisFilters(:,:,:,2) = randn(9,6,3);
-            analysisFilters(:,:,:,3) = randn(9,6,3);
-            analysisFilters(:,:,:,4) = randn(9,6,3);
-            analysisFilters(:,:,:,5) = randn(9,6,3);
-            analysisFilters(:,:,:,6) = randn(9,6,3);
-            analysisFilters(:,:,:,7) = randn(9,6,3);
-            analysisFilters(:,:,:,8) = randn(9,6,3);
-            nLevels = 1;
-            
-            % Expected values
-            import saivdr.dictionary.utility.Direction
-            import saivdr.dictionary.generalfb.*
-            nChs = size(analysisFilters,4);
-            nSubCoefs = numel(srcImg)/prod(nDecs);
-            coefsExpctd = zeros(1,nChs*nSubCoefs);
-            downsample3_ = @(x,d) ...
-                shiftdim(downsample(...
-                shiftdim(downsample(...
-                shiftdim(downsample(x,d(1)),1),d(2)),1),d(3)),1);            
-            for iSubband = 1:nChs
-                h = analysisFilters(:,:,:,iSubband);
-                subCoef = downsample3_(...
-                    imfilter(srcImg,h,...
-                    'conv','circ'),nDecs);
-                coefsExpctd((iSubband-1)*nSubCoefs+1:iSubband*nSubCoefs) = ...
-                    subCoef(:).';
-            end
-            scalesExpctd = repmat(size(srcImg)./nDecs,nChs,1);
-
-            % Instantiation of target class
-            testCase.analyzer = Analysis3dSystem(...
-                'DecimationFactor',nDecs,...
-                'AnalysisFilters',analysisFilters);
-            
-            % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
-            
-            % Evaluation
-            testCase.verifySize(scalesActual,size(scalesExpctd));
-            testCase.verifyEqual(scalesActual,scalesExpctd);
-            testCase.verifySize(coefsActual,size(coefsExpctd));
-            diff = max(abs(coefsExpctd - coefsActual));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-8,...
-                sprintf('%g',diff));
-
-        end
-        
-        % Test
-        function testStepDec222Ch44Ord222Level2(testCase)
-            
-            % Parameters
-            height = 48;
-            width = 64;
-            depth = 32;
-            srcImg = rand(height,width,depth);
-            nDecs = [ 2 2 2 ]; 
-            analysisFilters(:,:,:,1) = randn(6,6,6);
-            analysisFilters(:,:,:,2) = randn(6,6,6);
-            analysisFilters(:,:,:,3) = randn(6,6,6);
-            analysisFilters(:,:,:,4) = randn(6,6,6);
-            analysisFilters(:,:,:,5) = randn(6,6,6);
-            analysisFilters(:,:,:,6) = randn(6,6,6);
-            analysisFilters(:,:,:,7) = randn(6,6,6);
-            analysisFilters(:,:,:,8) = randn(6,6,6);        
-            nLevels = 2;
-            
-            % Expected values
-            import saivdr.dictionary.utility.Direction
-            downsample3_ = @(x,d) ...
-                shiftdim(downsample(...
-                shiftdim(downsample(...
-                shiftdim(downsample(x,d(1)),1),d(2)),1),d(3)),1);              
-            nChs = size(analysisFilters,4);
-            coefsExpctdLv1 = cell(nChs,1);
-            for iSubband = 1:nChs
-                h = analysisFilters(:,:,:,iSubband);
-                coefsExpctdLv1{iSubband} = downsample3_(...
-                    imfilter(srcImg,h,...
-                    'conv','circ'),nDecs);
-            end
-            coefsExpctdLv2 = cell(nChs,1);
-            for iSubband = 1:nChs
-                h = analysisFilters(:,:,:,iSubband);
-                coefsExpctdLv2{iSubband} = downsample3_(...
-                    imfilter(coefsExpctdLv1{1},h,...
-                    'conv','circ'),...
-                    nDecs);
-            end            
-            coefs{1} = coefsExpctdLv2{1};
-            coefs{2} = coefsExpctdLv2{2};
-            coefs{3} = coefsExpctdLv2{3};
-            coefs{4} = coefsExpctdLv2{4};
-            coefs{5} = coefsExpctdLv2{5};
-            coefs{6} = coefsExpctdLv2{6};        
-            coefs{7} = coefsExpctdLv2{7};                
-            coefs{8} = coefsExpctdLv2{8};                        
-            coefs{9} = coefsExpctdLv1{2};
-            coefs{10} = coefsExpctdLv1{3};            
-            coefs{11} = coefsExpctdLv1{4};
-            coefs{12} = coefsExpctdLv1{5};
-            coefs{13} = coefsExpctdLv1{6};                    
-            coefs{14} = coefsExpctdLv1{7};
-            coefs{15} = coefsExpctdLv1{8};                            
-            nSubbands = length(coefs);
-            scalesExpctd = zeros(nSubbands,3);
-            sIdx = 1; 
-            for iSubband = 1:nSubbands
-                scalesExpctd(iSubband,:) = size(coefs{iSubband});
-                eIdx = sIdx + prod(scalesExpctd(iSubband,:))-1;
-                coefsExpctd(sIdx:eIdx) = coefs{iSubband}(:).';
-                sIdx = eIdx + 1;
-            end
-            
-            % Instantiation of target class
-            import saivdr.dictionary.generalfb.*
-            testCase.analyzer = Analysis3dSystem(...
-                'DecimationFactor',nDecs,...
-                'AnalysisFilters',analysisFilters);
-            
-            % Actual values
-            [coefsActual,scalesActual] = step(testCase.analyzer,srcImg,nLevels);
-            
-            % Evaluation
-            testCase.verifySize(scalesActual,size(scalesExpctd));
-            testCase.verifyEqual(scalesActual,scalesExpctd);
-            testCase.verifySize(coefsActual,size(coefsExpctd));
-            diff = max(abs(coefsExpctd - coefsActual));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-8,...
-                sprintf('%g',diff));  
-            
-        end
-        
-        % Test
-        function testStepDec222Ch44Ord222Level3(testCase)
-            
-            % Parameters
-            height = 48;
-            width = 64;
-            depth = 32;
-            srcImg = rand(height,width,depth);
-            nDecs = [ 2 2 2 ];
-            analysisFilters(:,:,:,1) = randn(6,6,6);
-            analysisFilters(:,:,:,2) = randn(6,6,6);
-            analysisFilters(:,:,:,3) = randn(6,6,6);
-            analysisFilters(:,:,:,4) = randn(6,6,6);
-            analysisFilters(:,:,:,5) = randn(6,6,6);
-            analysisFilters(:,:,:,6) = randn(6,6,6);
-            analysisFilters(:,:,:,7) = randn(6,6,6);
-            analysisFilters(:,:,:,8) = randn(6,6,6);
-            nLevels = 3;
-            
-            % Expected values
-            import saivdr.dictionary.utility.Direction
-            downsample3_ = @(x,d) ...
-                shiftdim(downsample(...
-                shiftdim(downsample(...
-                shiftdim(downsample(x,d(1)),1),d(2)),1),d(3)),1);
-            nChs = size(analysisFilters,4);
-            coefsExpctdLv1 = cell(nChs,1);
-            for iSubband = 1:nChs
-                h = analysisFilters(:,:,:,iSubband);
-                coefsExpctdLv1{iSubband} = downsample3_(...
-                    imfilter(srcImg,h,...
-                    'conv','circ'),...
-                    nDecs);
-            end
-            coefsExpctdLv2 = cell(nChs,1);
-            for iSubband = 1:nChs
-                h = analysisFilters(:,:,:,iSubband);
-                coefsExpctdLv2{iSubband} = downsample3_(...
-                    imfilter(coefsExpctdLv1{1},h,...
-                    'conv','circ'),...
-                    nDecs);
-            end
-            coefsExpctdLv3 = cell(nChs,1);
-            for iSubband = 1:nChs
-                h = analysisFilters(:,:,:,iSubband);
-                coefsExpctdLv3{iSubband} = downsample3_(...
-                    imfilter(coefsExpctdLv2{1},h,...
-                    'conv','circ'),...
-                    nDecs);
-            end            
-            coefs{1} = coefsExpctdLv3{1};
-            coefs{2} = coefsExpctdLv3{2};
-            coefs{3} = coefsExpctdLv3{3};
-            coefs{4} = coefsExpctdLv3{4};
-            coefs{5} = coefsExpctdLv3{5};
-            coefs{6} = coefsExpctdLv3{6};
-            coefs{7} = coefsExpctdLv3{7};
-            coefs{8} = coefsExpctdLv3{8};
-            coefs{9} = coefsExpctdLv2{2};
-            coefs{10} = coefsExpctdLv2{3};
-            coefs{11} = coefsExpctdLv2{4};
-            coefs{12} = coefsExpctdLv2{5};
-            coefs{13} = coefsExpctdLv2{6};
-            coefs{14} = coefsExpctdLv2{7};
-            coefs{15} = coefsExpctdLv2{8};            
-            coefs{16} = coefsExpctdLv1{2};
-            coefs{17} = coefsExpctdLv1{3};
-            coefs{18} = coefsExpctdLv1{4};
-            coefs{19} = coefsExpctdLv1{5};
-            coefs{20} = coefsExpctdLv1{6};
-            coefs{21} = coefsExpctdLv1{7};
-            coefs{22} = coefsExpctdLv1{8};
-            nSubbands = length(coefs);
-            scalesExpctd = zeros(nSubbands,3);
-            sIdx = 1;
-            for iSubband = 1:nSubbands
-                scalesExpctd(iSubband,:) = size(coefs{iSubband});
-                eIdx = sIdx + prod(scalesExpctd(iSubband,:))-1;
-                coefsExpctd(sIdx:eIdx) = coefs{iSubband}(:).';
-                sIdx = eIdx + 1;
-            end
-            
-            % Instantiation of target class
-            import saivdr.dictionary.generalfb.*
-            testCase.analyzer = Analysis3dSystem(...
-                'DecimationFactor',nDecs,...
-                'AnalysisFilters',analysisFilters);
-            
-            % Actual values
-            [coefsActual,scalesActual] = step(testCase.analyzer,srcImg,nLevels);
-            
-            % Evaluation
-            testCase.verifySize(scalesActual,size(scalesExpctd));
-            testCase.verifyEqual(scalesActual,scalesExpctd);
-            testCase.verifySize(coefsActual,size(coefsExpctd));
-            diff = max(abs(coefsExpctd - coefsActual));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-8,...
-                sprintf('%g',diff));
-            
-        end
-        
-        % Test
-        function testStepDec222Ch55Ord444Level3(testCase)
-            
-            % Parameters
-            height = 48;
-            width = 64;
-            depth = 32;
-            srcImg = rand(height,width,depth);
-            nDecs = [ 2 2 2 ];
-            analysisFilters(:,:,:,1) = randn(10,10,10);
-            analysisFilters(:,:,:,2) = randn(10,10,10);
-            analysisFilters(:,:,:,3) = randn(10,10,10);
-            analysisFilters(:,:,:,4) = randn(10,10,10);
-            analysisFilters(:,:,:,5) = randn(10,10,10);
-            analysisFilters(:,:,:,6) = randn(10,10,10);
-            analysisFilters(:,:,:,7) = randn(10,10,10);
-            analysisFilters(:,:,:,8) = randn(10,10,10);
-            analysisFilters(:,:,:,9) = randn(10,10,10);
-            analysisFilters(:,:,:,10) = randn(10,10,10);
-            nLevels = 3;
-            
-            % Expected values
-            import saivdr.dictionary.utility.Direction
-            downsample3_ = @(x,d) ...
-                shiftdim(downsample(...
-                shiftdim(downsample(...
-                shiftdim(downsample(x,d(1)),1),d(2)),1),d(3)),1);
-            nChs = size(analysisFilters,4);
-            coefsExpctdLv1 = cell(nChs,1);
-            for iSubband = 1:nChs
-                h = analysisFilters(:,:,:,iSubband);
-                coefsExpctdLv1{iSubband} = downsample3_(...
-                    imfilter(srcImg,h,...
-                    'conv','circ'),...
-                    nDecs);
-            end
-            coefsExpctdLv2 = cell(nChs,1);
-            for iSubband = 1:nChs
-                h = analysisFilters(:,:,:,iSubband);
-                coefsExpctdLv2{iSubband} = downsample3_(...
-                    imfilter(coefsExpctdLv1{1},h,...
-                    'conv','circ'),...
-                    nDecs);
-            end
-            coefsExpctdLv3 = cell(nChs,1);
-            for iSubband = 1:nChs
-                h = analysisFilters(:,:,:,iSubband);
-                coefsExpctdLv3{iSubband} = downsample3_(...
-                    imfilter(coefsExpctdLv2{1},h,...
-                    'conv','circ'),...
-                    nDecs);
-            end                       
-            coefs{1} = coefsExpctdLv3{1};
-            coefs{2} = coefsExpctdLv3{2};
-            coefs{3} = coefsExpctdLv3{3};
-            coefs{4} = coefsExpctdLv3{4};
-            coefs{5} = coefsExpctdLv3{5};
-            coefs{6} = coefsExpctdLv3{6};
-            coefs{7} = coefsExpctdLv3{7};
-            coefs{8} = coefsExpctdLv3{8};            
-            coefs{9} = coefsExpctdLv3{9};            
-            coefs{10} = coefsExpctdLv3{10};            
-            coefs{11} = coefsExpctdLv2{2};
-            coefs{12} = coefsExpctdLv2{3};
-            coefs{13} = coefsExpctdLv2{4};            
-            coefs{14} = coefsExpctdLv2{5};
-            coefs{15} = coefsExpctdLv2{6};
-            coefs{16} = coefsExpctdLv2{7};            
-            coefs{17} = coefsExpctdLv2{8};                        
-            coefs{18} = coefsExpctdLv2{9};            
-            coefs{19} = coefsExpctdLv2{10};                                    
-            coefs{20} = coefsExpctdLv1{2};
-            coefs{21} = coefsExpctdLv1{3};
-            coefs{22} = coefsExpctdLv1{4};
-            coefs{23} = coefsExpctdLv1{5};
-            coefs{24} = coefsExpctdLv1{6};
-            coefs{25} = coefsExpctdLv1{7};
-            coefs{26} = coefsExpctdLv1{8};
-            coefs{27} = coefsExpctdLv1{9};
-            coefs{28} = coefsExpctdLv1{10};            
-            nSubbands = length(coefs);
-            scalesExpctd = zeros(nSubbands,3);
-            sIdx = 1;
-            for iSubband = 1:nSubbands
-                scalesExpctd(iSubband,:) = size(coefs{iSubband});
-                eIdx = sIdx + prod(scalesExpctd(iSubband,:))-1;
-                coefsExpctd(sIdx:eIdx) = coefs{iSubband}(:).';
-                sIdx = eIdx + 1;
-            end
-            
-            % Instantiation of target class
-            import saivdr.dictionary.generalfb.*
-            testCase.analyzer = Analysis3dSystem(...
-                'DecimationFactor',nDecs,...
-                'AnalysisFilters',analysisFilters);
-            
-            % Actual values
-            [coefsActual,scalesActual] = step(testCase.analyzer,srcImg,nLevels);
-            
-            % Evaluation
-            testCase.verifySize(scalesActual,size(scalesExpctd));
-            testCase.verifyEqual(scalesActual,scalesExpctd);
-            testCase.verifySize(coefsActual,size(coefsExpctd));
-            diff = max(abs(coefsExpctd - coefsActual));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-8,...
-                sprintf('%g',diff));            
-            
-        end
-        
-                % Test
-        function testStepDec222Ch44Ord000Level1Freq(testCase)
-
-            % Parameters
-            height = 48;
-            width = 64;
-            depth = 32;
-            srcImg = rand(height,width,depth);
-            nDecs = [ 2 2 2 ]; 
-            analysisFilters(:,:,:,1) = randn(2,2,2);
-            analysisFilters(:,:,:,2) = randn(2,2,2);
-            analysisFilters(:,:,:,3) = randn(2,2,2);
-            analysisFilters(:,:,:,4) = randn(2,2,2);
-            analysisFilters(:,:,:,5) = randn(2,2,2);
-            analysisFilters(:,:,:,6) = randn(2,2,2);
-            analysisFilters(:,:,:,7) = randn(2,2,2);
-            analysisFilters(:,:,:,8) = randn(2,2,2);
-            nLevels = 1;
-            
-            % Expected values
-            import saivdr.dictionary.utility.Direction
-            import saivdr.dictionary.generalfb.*
-            nChs = size(analysisFilters,4);
-            nSubCoefs = numel(srcImg)/prod(nDecs);
-            coefsExpctd = zeros(1,nChs*nSubCoefs);
-            downsample3_ = @(x,d) ...
-                shiftdim(downsample(...
-                shiftdim(downsample(...
-                shiftdim(downsample(x,d(1)),1),d(2)),1),d(3)),1);            
-            for iSubband = 1:nChs
-                h = analysisFilters(:,:,:,iSubband);
-                subCoef = downsample3_(...
-                    imfilter(srcImg,h,...
-                    'conv','circ'),nDecs);
-                coefsExpctd((iSubband-1)*nSubCoefs+1:iSubband*nSubCoefs) = ...
-                    subCoef(:).';
-            end
-            scalesExpctd = repmat(size(srcImg)./nDecs,nChs,1);
-
-            % Instantiation of target class
-            testCase.analyzer = Analysis3dSystem(...
-                'DecimationFactor',nDecs,...
-                'AnalysisFilters',analysisFilters,...
-                'FilterDomain','Frequency');
-            
-            % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
-            
-            % Evaluation
-            testCase.verifySize(scalesActual,size(scalesExpctd));
-            testCase.verifyEqual(scalesActual,scalesExpctd);
-            testCase.verifySize(coefsActual,size(coefsExpctd));
-            diff = max(abs(coefsExpctd - coefsActual));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-8,...
-                sprintf('%g',diff));
-
-        end
-
-        % Test
-        function testStepDec222Ch54Ord000Level1Freq(testCase)
-
-            % Parameters
-            height = 48;
-            width = 64;
-            depth = 32;
-            srcImg = rand(height,width,depth);
-            nDecs = [ 2 2 2 ]; 
-            analysisFilters(:,:,:,1) = randn(2,2,2);
-            analysisFilters(:,:,:,2) = randn(2,2,2);
-            analysisFilters(:,:,:,3) = randn(2,2,2);
-            analysisFilters(:,:,:,4) = randn(2,2,2);
-            analysisFilters(:,:,:,5) = randn(2,2,2);
-            analysisFilters(:,:,:,6) = randn(2,2,2);
-            analysisFilters(:,:,:,7) = randn(2,2,2);
-            analysisFilters(:,:,:,8) = randn(2,2,2);
-            analysisFilters(:,:,:,9) = randn(2,2,2);
-            nLevels = 1;
-            
-            % Expected values
-            import saivdr.dictionary.utility.Direction
-            import saivdr.dictionary.generalfb.*
-            nChs = size(analysisFilters,4);
-            nSubCoefs = numel(srcImg)/prod(nDecs);
-            coefsExpctd = zeros(1,nChs*nSubCoefs);
-            downsample3_ = @(x,d) ...
-                shiftdim(downsample(...
-                shiftdim(downsample(...
-                shiftdim(downsample(x,d(1)),1),d(2)),1),d(3)),1);            
-            for iSubband = 1:nChs
-                h = analysisFilters(:,:,:,iSubband);                
-                subCoef = downsample3_(...
-                    imfilter(srcImg,h,...
-                    'conv','circ'),nDecs);
-                coefsExpctd((iSubband-1)*nSubCoefs+1:iSubband*nSubCoefs) = ...
-                    subCoef(:).';
-            end
-            scalesExpctd = repmat(size(srcImg)./nDecs,nChs,1);
-
-            % Instantiation of target class
-            testCase.analyzer = Analysis3dSystem(...
-                'DecimationFactor',nDecs,...
-                'AnalysisFilters',analysisFilters,...
-                'FilterDomain','Frequency');
-            
-            % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
-            
-            % Evaluation
-            testCase.verifySize(scalesActual,size(scalesExpctd));
-            testCase.verifyEqual(scalesActual,scalesExpctd);
-            testCase.verifySize(coefsActual,size(coefsExpctd));
-            diff = max(abs(coefsExpctd - coefsActual));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-8,...
-                sprintf('%g',diff));
-
-        end
-
-        % Test        
-        function testStepDec222Ch54Ord222Level1Freq(testCase)
-
-            % Parameters
-            height = 48;
-            width = 64;
-            depth = 32;
-            srcImg = rand(height,width,depth);
-            nDecs = [ 2 2 2 ]; 
-            analysisFilters(:,:,:,1) = randn(6,6,6);
-            analysisFilters(:,:,:,2) = randn(6,6,6);
-            analysisFilters(:,:,:,3) = randn(6,6,6);
-            analysisFilters(:,:,:,4) = randn(6,6,6);
-            analysisFilters(:,:,:,5) = randn(6,6,6);
-            analysisFilters(:,:,:,6) = randn(6,6,6);
-            analysisFilters(:,:,:,7) = randn(6,6,6);
-            analysisFilters(:,:,:,8) = randn(6,6,6);
-            analysisFilters(:,:,:,9) = randn(6,6,6);
-            nLevels = 1;
-            
-            % Expected values
-            import saivdr.dictionary.utility.Direction
-            import saivdr.dictionary.generalfb.*
-            nChs = size(analysisFilters,4);
-            nSubCoefs = numel(srcImg)/prod(nDecs);
-            coefsExpctd = zeros(1,nChs*nSubCoefs);
-            downsample3_ = @(x,d) ...
-                shiftdim(downsample(...
-                shiftdim(downsample(...
-                shiftdim(downsample(x,d(1)),1),d(2)),1),d(3)),1);            
-            for iSubband = 1:nChs
-                h = analysisFilters(:,:,:,iSubband);
-                subCoef = downsample3_(...
-                    imfilter(srcImg,h,...
-                    'conv','circ'),nDecs);
-                coefsExpctd((iSubband-1)*nSubCoefs+1:iSubband*nSubCoefs) = ...
-                    subCoef(:).';
-            end
-            scalesExpctd = repmat(size(srcImg)./nDecs,nChs,1);
-
-            % Instantiation of target class
-            testCase.analyzer = Analysis3dSystem(...
-                'DecimationFactor',nDecs,...
-                'AnalysisFilters',analysisFilters,...
-                'FilterDomain','Frequency');
-            
-            % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
-            
-            % Evaluation
-            testCase.verifySize(scalesActual,size(scalesExpctd));
-            testCase.verifyEqual(scalesActual,scalesExpctd);
-            testCase.verifySize(coefsActual,size(coefsExpctd));
-            diff = max(abs(coefsExpctd - coefsActual));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-8,...
-                sprintf('%g',diff));
-
-        end
-
-        % Test
-        function testStepDec111Ch54Ord111Level1Freq(testCase)
-
-            % Parameters
-            height = 48;
-            width = 64;
-            depth = 32;
-            srcImg = rand(height,width,depth);
-            nDecs = [ 1 1 1 ]; 
-            analysisFilters(:,:,:,1) = randn(2,2,2);
-            analysisFilters(:,:,:,2) = randn(2,2,2);
-            analysisFilters(:,:,:,3) = randn(2,2,2);
-            analysisFilters(:,:,:,4) = randn(2,2,2);
-            analysisFilters(:,:,:,5) = randn(2,2,2);
-            analysisFilters(:,:,:,6) = randn(2,2,2);
-            analysisFilters(:,:,:,7) = randn(2,2,2);
-            analysisFilters(:,:,:,8) = randn(2,2,2);
-            analysisFilters(:,:,:,9) = randn(2,2,2);
-            nLevels = 1;
-            
-            % Expected values
-            import saivdr.dictionary.utility.Direction
-            import saivdr.dictionary.generalfb.*
-            nChs = size(analysisFilters,4);
-            nSubCoefs = numel(srcImg)/prod(nDecs);
-            coefsExpctd = zeros(1,nChs*nSubCoefs);
-            downsample3_ = @(x,d) ...
-                shiftdim(downsample(...
-                shiftdim(downsample(...
-                shiftdim(downsample(x,d(1)),1),d(2)),1),d(3)),1);            
-            for iSubband = 1:nChs
-                h = analysisFilters(:,:,:,iSubband);
-                subCoef = downsample3_(...
-                    imfilter(srcImg,h,...
-                    'conv','circ'),nDecs);
-                coefsExpctd((iSubband-1)*nSubCoefs+1:iSubband*nSubCoefs) = ...
-                    subCoef(:).';
-            end
-            scalesExpctd = repmat(size(srcImg)./nDecs,nChs,1);
-
-            % Instantiation of target class
-            testCase.analyzer = Analysis3dSystem(...
-                'DecimationFactor',nDecs,...
-                'AnalysisFilters',analysisFilters,...
-                'FilterDomain','Frequency');
-            
-            % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
-            
-            % Evaluation
-            testCase.verifySize(scalesActual,size(scalesExpctd));
-            testCase.verifyEqual(scalesActual,scalesExpctd);
-            testCase.verifySize(coefsActual,size(coefsExpctd));
-            diff = max(abs(coefsExpctd - coefsActual));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-8,...
-                sprintf('%g',diff));
-
-        end
-        
-        % Test        
-        function testStepDec321Ch44Ord222Level1Freq(testCase)
-
-            % Parameters
-            height = 48;
-            width = 64;
-            depth = 32;
-            srcImg = rand(height,width,depth);
-            nDecs = [ 3 2 1 ]; 
-            analysisFilters(:,:,:,1) = randn(9,6,3);
-            analysisFilters(:,:,:,2) = randn(9,6,3);
-            analysisFilters(:,:,:,3) = randn(9,6,3);
-            analysisFilters(:,:,:,4) = randn(9,6,3);
-            analysisFilters(:,:,:,5) = randn(9,6,3);
-            analysisFilters(:,:,:,6) = randn(9,6,3);
-            analysisFilters(:,:,:,7) = randn(9,6,3);
-            analysisFilters(:,:,:,8) = randn(9,6,3);
-            nLevels = 1;
-            
-            % Expected values
-            import saivdr.dictionary.utility.Direction
-            import saivdr.dictionary.generalfb.*
-            nChs = size(analysisFilters,4);
-            nSubCoefs = numel(srcImg)/prod(nDecs);
-            coefsExpctd = zeros(1,nChs*nSubCoefs);
-            downsample3_ = @(x,d) ...
-                shiftdim(downsample(...
-                shiftdim(downsample(...
-                shiftdim(downsample(x,d(1)),1),d(2)),1),d(3)),1);            
-            for iSubband = 1:nChs
-                h = analysisFilters(:,:,:,iSubband);
-                subCoef = downsample3_(...
-                    imfilter(srcImg,h,...
-                    'conv','circ'),nDecs);
-                coefsExpctd((iSubband-1)*nSubCoefs+1:iSubband*nSubCoefs) = ...
-                    subCoef(:).';
-            end
-            scalesExpctd = repmat(size(srcImg)./nDecs,nChs,1);
-
-            % Instantiation of target class
-            testCase.analyzer = Analysis3dSystem(...
-                'DecimationFactor',nDecs,...
-                'AnalysisFilters',analysisFilters,...
-                'FilterDomain','Frequency');
-            
-            % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
-            
-            % Evaluation
-            testCase.verifySize(scalesActual,size(scalesExpctd));
-            testCase.verifyEqual(scalesActual,scalesExpctd);
-            testCase.verifySize(coefsActual,size(coefsExpctd));
-            diff = max(abs(coefsExpctd - coefsActual));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-8,...
-                sprintf('%g',diff));
-
-        end
-        
-        % Test
-        function testStepDec222Ch44Ord222Level2Freq(testCase)
-            
-            % Parameters
-            height = 48;
-            width = 64;
-            depth = 32;
-            srcImg = rand(height,width,depth);
-            nDecs = [ 2 2 2 ]; 
-            analysisFilters(:,:,:,1) = randn(6,6,6);
-            analysisFilters(:,:,:,2) = randn(6,6,6);
-            analysisFilters(:,:,:,3) = randn(6,6,6);
-            analysisFilters(:,:,:,4) = randn(6,6,6);
-            analysisFilters(:,:,:,5) = randn(6,6,6);
-            analysisFilters(:,:,:,6) = randn(6,6,6);
-            analysisFilters(:,:,:,7) = randn(6,6,6);
-            analysisFilters(:,:,:,8) = randn(6,6,6);        
-            nLevels = 2;
-            
-            % Expected values
-            import saivdr.dictionary.utility.Direction
-            downsample3_ = @(x,d) ...
-                shiftdim(downsample(...
-                shiftdim(downsample(...
-                shiftdim(downsample(x,d(1)),1),d(2)),1),d(3)),1);              
-            nChs = size(analysisFilters,4);
-            coefsExpctdLv1 = cell(nChs,1);
-            for iSubband = 1:nChs
-                h = analysisFilters(:,:,:,iSubband);
-                coefsExpctdLv1{iSubband} = downsample3_(...
-                    imfilter(srcImg,h,...
-                    'conv','circ'),nDecs);
-            end
-            coefsExpctdLv2 = cell(nChs,1);
-            for iSubband = 1:nChs
-                h = analysisFilters(:,:,:,iSubband);
-                coefsExpctdLv2{iSubband} = downsample3_(...
-                    imfilter(coefsExpctdLv1{1},h,...
-                    'conv','circ'),...
-                    nDecs);
-            end            
-            coefs{1} = coefsExpctdLv2{1};
-            coefs{2} = coefsExpctdLv2{2};
-            coefs{3} = coefsExpctdLv2{3};
-            coefs{4} = coefsExpctdLv2{4};
-            coefs{5} = coefsExpctdLv2{5};
-            coefs{6} = coefsExpctdLv2{6};        
-            coefs{7} = coefsExpctdLv2{7};                
-            coefs{8} = coefsExpctdLv2{8};                        
-            coefs{9} = coefsExpctdLv1{2};
-            coefs{10} = coefsExpctdLv1{3};            
-            coefs{11} = coefsExpctdLv1{4};
-            coefs{12} = coefsExpctdLv1{5};
-            coefs{13} = coefsExpctdLv1{6};                    
-            coefs{14} = coefsExpctdLv1{7};
-            coefs{15} = coefsExpctdLv1{8};                            
-            nSubbands = length(coefs);
-            scalesExpctd = zeros(nSubbands,3);
-            sIdx = 1; 
-            for iSubband = 1:nSubbands
-                scalesExpctd(iSubband,:) = size(coefs{iSubband});
-                eIdx = sIdx + prod(scalesExpctd(iSubband,:))-1;
-                coefsExpctd(sIdx:eIdx) = coefs{iSubband}(:).';
-                sIdx = eIdx + 1;
-            end
-            
-            % Instantiation of target class
-            import saivdr.dictionary.generalfb.*
-            testCase.analyzer = Analysis3dSystem(...
-                'DecimationFactor',nDecs,...
-                'AnalysisFilters',analysisFilters,...
-                'FilterDomain','Frequency');
-            
-            % Actual values
-            [coefsActual,scalesActual] = step(testCase.analyzer,srcImg,nLevels);
-            
-            % Evaluation
-            testCase.verifySize(scalesActual,size(scalesExpctd));
-            testCase.verifyEqual(scalesActual,scalesExpctd);
-            testCase.verifySize(coefsActual,size(coefsExpctd));
-            diff = max(abs(coefsExpctd - coefsActual));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-8,...
-                sprintf('%g',diff));  
-            
-        end
-        
-        % Test
-        function testStepDec222Ch44Ord222Level3Freq(testCase)
-            
-            % Parameters
-            height = 48;
-            width = 64;
-            depth = 32;
-            srcImg = rand(height,width,depth);
-            nDecs = [ 2 2 2 ];
-            analysisFilters(:,:,:,1) = randn(6,6,6);
-            analysisFilters(:,:,:,2) = randn(6,6,6);
-            analysisFilters(:,:,:,3) = randn(6,6,6);
-            analysisFilters(:,:,:,4) = randn(6,6,6);
-            analysisFilters(:,:,:,5) = randn(6,6,6);
-            analysisFilters(:,:,:,6) = randn(6,6,6);
-            analysisFilters(:,:,:,7) = randn(6,6,6);
-            analysisFilters(:,:,:,8) = randn(6,6,6);
-            nLevels = 3;
-            
-            % Expected values
-            import saivdr.dictionary.utility.Direction
-            downsample3_ = @(x,d) ...
-                shiftdim(downsample(...
-                shiftdim(downsample(...
-                shiftdim(downsample(x,d(1)),1),d(2)),1),d(3)),1);
-            nChs = size(analysisFilters,4);
-            coefsExpctdLv1 = cell(nChs,1);
-            for iSubband = 1:nChs
-                h = analysisFilters(:,:,:,iSubband);
-                coefsExpctdLv1{iSubband} = downsample3_(...
-                    imfilter(srcImg,h,...
-                    'conv','circ'),...
-                    nDecs);
-            end
-            coefsExpctdLv2 = cell(nChs,1);
-            for iSubband = 1:nChs
-                h = analysisFilters(:,:,:,iSubband);
-                coefsExpctdLv2{iSubband} = downsample3_(...
-                    imfilter(coefsExpctdLv1{1},h,...
-                    'conv','circ'),...
-                    nDecs);
-            end
-            coefsExpctdLv3 = cell(nChs,1);
-            for iSubband = 1:nChs
-                h = analysisFilters(:,:,:,iSubband);
-                coefsExpctdLv3{iSubband} = downsample3_(...
-                    imfilter(coefsExpctdLv2{1},h,...
-                    'conv','circ'),...
-                    nDecs);
-            end            
-            coefs{1} = coefsExpctdLv3{1};
-            coefs{2} = coefsExpctdLv3{2};
-            coefs{3} = coefsExpctdLv3{3};
-            coefs{4} = coefsExpctdLv3{4};
-            coefs{5} = coefsExpctdLv3{5};
-            coefs{6} = coefsExpctdLv3{6};
-            coefs{7} = coefsExpctdLv3{7};
-            coefs{8} = coefsExpctdLv3{8};
-            coefs{9} = coefsExpctdLv2{2};
-            coefs{10} = coefsExpctdLv2{3};
-            coefs{11} = coefsExpctdLv2{4};
-            coefs{12} = coefsExpctdLv2{5};
-            coefs{13} = coefsExpctdLv2{6};
-            coefs{14} = coefsExpctdLv2{7};
-            coefs{15} = coefsExpctdLv2{8};            
-            coefs{16} = coefsExpctdLv1{2};
-            coefs{17} = coefsExpctdLv1{3};
-            coefs{18} = coefsExpctdLv1{4};
-            coefs{19} = coefsExpctdLv1{5};
-            coefs{20} = coefsExpctdLv1{6};
-            coefs{21} = coefsExpctdLv1{7};
-            coefs{22} = coefsExpctdLv1{8};
-            nSubbands = length(coefs);
-            scalesExpctd = zeros(nSubbands,3);
-            sIdx = 1;
-            for iSubband = 1:nSubbands
-                scalesExpctd(iSubband,:) = size(coefs{iSubband});
-                eIdx = sIdx + prod(scalesExpctd(iSubband,:))-1;
-                coefsExpctd(sIdx:eIdx) = coefs{iSubband}(:).';
-                sIdx = eIdx + 1;
-            end
-            
-            % Instantiation of target class
-            import saivdr.dictionary.generalfb.*
-            testCase.analyzer = Analysis3dSystem(...
-                'DecimationFactor',nDecs,...
-                'AnalysisFilters',analysisFilters,...
-                'FilterDomain','Frequency');
-            
-            % Actual values
-            [coefsActual,scalesActual] = step(testCase.analyzer,srcImg,nLevels);
-            
-            % Evaluation
-            testCase.verifySize(scalesActual,size(scalesExpctd));
-            testCase.verifyEqual(scalesActual,scalesExpctd);
-            testCase.verifySize(coefsActual,size(coefsExpctd));
-            diff = max(abs(coefsExpctd - coefsActual));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-8,...
-                sprintf('%g',diff));
-            
-        end
-        
-        % Test
-        function testStepDec222Ch55Ord444Level3Freq(testCase)
-            
-            % Parameters
-            height = 48;
-            width = 64;
-            depth = 48;
-            srcImg = rand(height,width,depth);
-            nDecs = [ 2 2 2 ];
-            analysisFilters(:,:,:,1) = randn(10,10,10);
-            analysisFilters(:,:,:,2) = randn(10,10,10);
-            analysisFilters(:,:,:,3) = randn(10,10,10);
-            analysisFilters(:,:,:,4) = randn(10,10,10);
-            analysisFilters(:,:,:,5) = randn(10,10,10);
-            analysisFilters(:,:,:,6) = randn(10,10,10);
-            analysisFilters(:,:,:,7) = randn(10,10,10);
-            analysisFilters(:,:,:,8) = randn(10,10,10);
-            analysisFilters(:,:,:,9) = randn(10,10,10);
-            analysisFilters(:,:,:,10) = randn(10,10,10);
-            nLevels = 3;
-            
-            % Expected values
-            import saivdr.dictionary.utility.Direction
-            downsample3_ = @(x,d) ...
-                shiftdim(downsample(...
-                shiftdim(downsample(...
-                shiftdim(downsample(x,d(1)),1),d(2)),1),d(3)),1);
-            nChs = size(analysisFilters,4);
-            coefsExpctdLv1 = cell(nChs,1);
-            for iSubband = 1:nChs
-                h = analysisFilters(:,:,:,iSubband);
-                coefsExpctdLv1{iSubband} = downsample3_(...
-                    imfilter(srcImg,h,...
-                    'conv','circ'),...
-                    nDecs);
-            end
-            coefsExpctdLv2 = cell(nChs,1);
-            for iSubband = 1:nChs
-                h = analysisFilters(:,:,:,iSubband);
-                coefsExpctdLv2{iSubband} = downsample3_(...
-                    imfilter(coefsExpctdLv1{1},h,...
-                    'conv','circ'),...
-                    nDecs);
-            end
-            coefsExpctdLv3 = cell(nChs,1);
-            for iSubband = 1:nChs
-                h = analysisFilters(:,:,:,iSubband);
-                coefsExpctdLv3{iSubband} = downsample3_(...
-                    imfilter(coefsExpctdLv2{1},h,...
-                    'conv','circ'),...
-                    nDecs);
-            end                       
-            coefs{1} = coefsExpctdLv3{1};
-            coefs{2} = coefsExpctdLv3{2};
-            coefs{3} = coefsExpctdLv3{3};
-            coefs{4} = coefsExpctdLv3{4};
-            coefs{5} = coefsExpctdLv3{5};
-            coefs{6} = coefsExpctdLv3{6};
-            coefs{7} = coefsExpctdLv3{7};
-            coefs{8} = coefsExpctdLv3{8};            
-            coefs{9} = coefsExpctdLv3{9};            
-            coefs{10} = coefsExpctdLv3{10};            
-            coefs{11} = coefsExpctdLv2{2};
-            coefs{12} = coefsExpctdLv2{3};
-            coefs{13} = coefsExpctdLv2{4};            
-            coefs{14} = coefsExpctdLv2{5};
-            coefs{15} = coefsExpctdLv2{6};
-            coefs{16} = coefsExpctdLv2{7};            
-            coefs{17} = coefsExpctdLv2{8};                        
-            coefs{18} = coefsExpctdLv2{9};            
-            coefs{19} = coefsExpctdLv2{10};                                    
-            coefs{20} = coefsExpctdLv1{2};
-            coefs{21} = coefsExpctdLv1{3};
-            coefs{22} = coefsExpctdLv1{4};
-            coefs{23} = coefsExpctdLv1{5};
-            coefs{24} = coefsExpctdLv1{6};
-            coefs{25} = coefsExpctdLv1{7};
-            coefs{26} = coefsExpctdLv1{8};
-            coefs{27} = coefsExpctdLv1{9};
-            coefs{28} = coefsExpctdLv1{10};            
-            nSubbands = length(coefs);
-            scalesExpctd = zeros(nSubbands,3);
-            sIdx = 1;
-            for iSubband = 1:nSubbands
-                scalesExpctd(iSubband,:) = size(coefs{iSubband});
-                eIdx = sIdx + prod(scalesExpctd(iSubband,:))-1;
-                coefsExpctd(sIdx:eIdx) = coefs{iSubband}(:).';
-                sIdx = eIdx + 1;
-            end
-            
-            % Instantiation of target class
-            import saivdr.dictionary.generalfb.*
-            testCase.analyzer = Analysis3dSystem(...
-                'DecimationFactor',nDecs,...
-                'AnalysisFilters',analysisFilters,...
-                'FilterDomain','Frequency');
-            
-            % Actual values
-            [coefsActual,scalesActual] = step(testCase.analyzer,srcImg,nLevels);
-            
-            % Evaluation
-            testCase.verifySize(scalesActual,size(scalesExpctd));
-            testCase.verifyEqual(scalesActual,scalesExpctd);
-            testCase.verifySize(coefsActual,size(coefsExpctd));
-            diff = max(abs(coefsExpctd - coefsActual));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-8,...
-                sprintf('%g',diff));            
-            
-        end
-        
-        % Test
-        function testStepDec321Ch44Ord222Level2(testCase) 
-            
-            % Parameters
-            height = 108;
-            width = 64;
-            depth = 32;
-            srcImg = rand(height,width,depth);
-            nDecs = [ 3 2 1 ];
-            analysisFilters(:,:,:,1) = randn(9,6,3);
-            analysisFilters(:,:,:,2) = randn(9,6,3);
-            analysisFilters(:,:,:,3) = randn(9,6,3);
-            analysisFilters(:,:,:,4) = randn(9,6,3);
-            analysisFilters(:,:,:,5) = randn(9,6,3);
-            analysisFilters(:,:,:,6) = randn(9,6,3);
-            analysisFilters(:,:,:,7) = randn(9,6,3);
-            analysisFilters(:,:,:,8) = randn(9,6,3);
-            nLevels = 2;
-            
-            % Expected values
-            import saivdr.dictionary.utility.Direction
-            downsample3_ = @(x,d) ...
-                shiftdim(downsample(...
-                shiftdim(downsample(...
-                shiftdim(downsample(x,d(1)),1),d(2)),1),d(3)),1);
-            nChs = size(analysisFilters,4);
-            coefsExpctdLv1 = cell(nChs,1);
-            for iSubband = 1:nChs
-                h = analysisFilters(:,:,:,iSubband);
-                coefsExpctdLv1{iSubband} = downsample3_(...
-                    imfilter(srcImg,h,...
-                    'conv','circ'),...
-                    nDecs);
-            end
-            coefsExpctdLv2 = cell(nChs,1);
-            for iSubband = 1:nChs
-                h = analysisFilters(:,:,:,iSubband);
-                coefsExpctdLv2{iSubband} = downsample3_(...
-                    imfilter(coefsExpctdLv1{1},h,...
-                    'conv','circ'),...
-                    nDecs);
-            end
-            coefs{1} = coefsExpctdLv2{1};
-            coefs{2} = coefsExpctdLv2{2};
-            coefs{3} = coefsExpctdLv2{3};
-            coefs{4} = coefsExpctdLv2{4};
-            coefs{5} = coefsExpctdLv2{5};
-            coefs{6} = coefsExpctdLv2{6};
-            coefs{7} = coefsExpctdLv2{7};
-            coefs{8} = coefsExpctdLv2{8};
-            coefs{9} = coefsExpctdLv1{2};
-            coefs{10} = coefsExpctdLv1{3};
-            coefs{11} = coefsExpctdLv1{4};
-            coefs{12} = coefsExpctdLv1{5};
-            coefs{13} = coefsExpctdLv1{6};
-            coefs{14} = coefsExpctdLv1{7};
-            coefs{15} = coefsExpctdLv1{8};            
-            nSubbands = length(coefs);
-            scalesExpctd = zeros(nSubbands,3);
-            sIdx = 1;
-            for iSubband = 1:nSubbands
-                scalesExpctd(iSubband,:) = size(coefs{iSubband});
-                eIdx = sIdx + prod(scalesExpctd(iSubband,:))-1;
-                coefsExpctd(sIdx:eIdx) = coefs{iSubband}(:).';
-                sIdx = eIdx + 1;
-            end
-            
-            % Instantiation of target class
-            import saivdr.dictionary.generalfb.*
-            testCase.analyzer = Analysis3dSystem(...
-                'DecimationFactor',nDecs,...
-                'AnalysisFilters',analysisFilters);
-            
-            % Actual values
-            [coefsActual,scalesActual] = step(testCase.analyzer,srcImg,nLevels);
-            
-            % Evaluation
-            testCase.verifySize(scalesActual,size(scalesExpctd));
-            testCase.verifyEqual(scalesActual,scalesExpctd);
-            testCase.verifySize(coefsActual,size(coefsExpctd));
-            diff = max(abs(coefsExpctd - coefsActual));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-8,...
-                sprintf('%g',diff));
-            
-        end
-        
-        % Test
-        function testStepDec321Ch44Ord222Level2Freq(testCase) 
-            
-            % Parameters
-            height = 108;
-            width = 64;
-            depth = 32;
-            srcImg = rand(height,width,depth);
-            nDecs = [ 3 2 1 ];
-            analysisFilters(:,:,:,1) = randn(9,6,3);
-            analysisFilters(:,:,:,2) = randn(9,6,3);
-            analysisFilters(:,:,:,3) = randn(9,6,3);
-            analysisFilters(:,:,:,4) = randn(9,6,3);
-            analysisFilters(:,:,:,5) = randn(9,6,3);
-            analysisFilters(:,:,:,6) = randn(9,6,3);
-            analysisFilters(:,:,:,7) = randn(9,6,3);
-            analysisFilters(:,:,:,8) = randn(9,6,3);
-            nLevels = 2;
-            
-            % Expected values
-            import saivdr.dictionary.utility.Direction
-            downsample3_ = @(x,d) ...
-                shiftdim(downsample(...
-                shiftdim(downsample(...
-                shiftdim(downsample(x,d(1)),1),d(2)),1),d(3)),1);
-            nChs = size(analysisFilters,4);
-            coefsExpctdLv1 = cell(nChs,1);
-            for iSubband = 1:nChs
-                h = analysisFilters(:,:,:,iSubband);
-                coefsExpctdLv1{iSubband} = downsample3_(...
-                    imfilter(srcImg,h,...
-                    'conv','circ'),...
-                    nDecs);
-            end
-            coefsExpctdLv2 = cell(nChs,1);
-            for iSubband = 1:nChs
-                h = analysisFilters(:,:,:,iSubband);
-                coefsExpctdLv2{iSubband} = downsample3_(...
-                    imfilter(coefsExpctdLv1{1},h,...
-                    'conv','circ'),...
-                    nDecs);
-            end
-            coefs{1} = coefsExpctdLv2{1};
-            coefs{2} = coefsExpctdLv2{2};
-            coefs{3} = coefsExpctdLv2{3};
-            coefs{4} = coefsExpctdLv2{4};
-            coefs{5} = coefsExpctdLv2{5};
-            coefs{6} = coefsExpctdLv2{6};
-            coefs{7} = coefsExpctdLv2{7};
-            coefs{8} = coefsExpctdLv2{8};
-            coefs{9} = coefsExpctdLv1{2};
-            coefs{10} = coefsExpctdLv1{3};
-            coefs{11} = coefsExpctdLv1{4};
-            coefs{12} = coefsExpctdLv1{5};
-            coefs{13} = coefsExpctdLv1{6};
-            coefs{14} = coefsExpctdLv1{7};
-            coefs{15} = coefsExpctdLv1{8};            
-            nSubbands = length(coefs);
-            scalesExpctd = zeros(nSubbands,3);
-            sIdx = 1;
-            for iSubband = 1:nSubbands
-                scalesExpctd(iSubband,:) = size(coefs{iSubband});
-                eIdx = sIdx + prod(scalesExpctd(iSubband,:))-1;
-                coefsExpctd(sIdx:eIdx) = coefs{iSubband}(:).';
-                sIdx = eIdx + 1;
-            end
-            
-            % Instantiation of target class
-            import saivdr.dictionary.generalfb.*
-            testCase.analyzer = Analysis3dSystem(...
-                'DecimationFactor',nDecs,...
-                'AnalysisFilters',analysisFilters,...
-                'FilterDomain','Frequency');
-            
-            % Actual values
-            [coefsActual,scalesActual] = step(testCase.analyzer,srcImg,nLevels);
-            
-            % Evaluation
-            testCase.verifySize(scalesActual,size(scalesExpctd));
-            testCase.verifyEqual(scalesActual,scalesExpctd);
-            testCase.verifySize(coefsActual,size(coefsExpctd));
-            diff = max(abs(coefsExpctd - coefsActual));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-8,...
-                sprintf('%g',diff));
-            
-        end
-        
-        % Test
-        function testStepDec321Ch44Ord222Level3(testCase) 
-            
-            % Parameters
-            height = 108;
-            width = 64;
-            depth = 32;
-            srcImg = rand(height,width,depth);
-            nDecs = [ 3 2 1 ];
-            analysisFilters(:,:,:,1) = randn(9,6,3);
-            analysisFilters(:,:,:,2) = randn(9,6,3);
-            analysisFilters(:,:,:,3) = randn(9,6,3);
-            analysisFilters(:,:,:,4) = randn(9,6,3);
-            analysisFilters(:,:,:,5) = randn(9,6,3);
-            analysisFilters(:,:,:,6) = randn(9,6,3);
-            analysisFilters(:,:,:,7) = randn(9,6,3);
-            analysisFilters(:,:,:,8) = randn(9,6,3);
-            nLevels = 3;
-            
-            % Expected values
-            import saivdr.dictionary.utility.Direction
-            downsample3_ = @(x,d) ...
-                shiftdim(downsample(...
-                shiftdim(downsample(...
-                shiftdim(downsample(x,d(1)),1),d(2)),1),d(3)),1);
-            nChs = size(analysisFilters,4);
-            coefsExpctdLv1 = cell(nChs,1);
-            for iSubband = 1:nChs
-                h = analysisFilters(:,:,:,iSubband);
-                coefsExpctdLv1{iSubband} = downsample3_(...
-                    imfilter(srcImg,h,...
-                    'conv','circ'),...
-                    nDecs);
-            end
-            coefsExpctdLv2 = cell(nChs,1);
-            for iSubband = 1:nChs
-                h = analysisFilters(:,:,:,iSubband);
-                coefsExpctdLv2{iSubband} = downsample3_(...
-                    imfilter(coefsExpctdLv1{1},h,...
-                    'conv','circ'),...
-                    nDecs);
-            end
-            coefsExpctdLv3 = cell(nChs,1);
-            for iSubband = 1:nChs
-                h = analysisFilters(:,:,:,iSubband);
-                coefsExpctdLv3{iSubband} = downsample3_(...
-                    imfilter(coefsExpctdLv2{1},h,...
-                    'conv','circ'),...
-                    nDecs);
-            end            
-            coefs{1} = coefsExpctdLv3{1};
-            coefs{2} = coefsExpctdLv3{2};
-            coefs{3} = coefsExpctdLv3{3};
-            coefs{4} = coefsExpctdLv3{4};
-            coefs{5} = coefsExpctdLv3{5};
-            coefs{6} = coefsExpctdLv3{6};
-            coefs{7} = coefsExpctdLv3{7};
-            coefs{8} = coefsExpctdLv3{8};
-            coefs{9} = coefsExpctdLv2{2};
-            coefs{10} = coefsExpctdLv2{3};
-            coefs{11} = coefsExpctdLv2{4};
-            coefs{12} = coefsExpctdLv2{5};
-            coefs{13} = coefsExpctdLv2{6};
-            coefs{14} = coefsExpctdLv2{7};
-            coefs{15} = coefsExpctdLv2{8};            
-            coefs{16} = coefsExpctdLv1{2};
-            coefs{17} = coefsExpctdLv1{3};
-            coefs{18} = coefsExpctdLv1{4};
-            coefs{19} = coefsExpctdLv1{5};
-            coefs{20} = coefsExpctdLv1{6};
-            coefs{21} = coefsExpctdLv1{7};
-            coefs{22} = coefsExpctdLv1{8};
-            nSubbands = length(coefs);
-            scalesExpctd = zeros(nSubbands,3);
-            sIdx = 1;
-            for iSubband = 1:nSubbands
-                scalesExpctd(iSubband,:) = size(coefs{iSubband});
-                eIdx = sIdx + prod(scalesExpctd(iSubband,:))-1;
-                coefsExpctd(sIdx:eIdx) = coefs{iSubband}(:).';
-                sIdx = eIdx + 1;
-            end
-            
-            % Instantiation of target class
-            import saivdr.dictionary.generalfb.*
-            testCase.analyzer = Analysis3dSystem(...
-                'DecimationFactor',nDecs,...
-                'AnalysisFilters',analysisFilters);
-            
-            % Actual values
-            [coefsActual,scalesActual] = step(testCase.analyzer,srcImg,nLevels);
-            
-            % Evaluation
-            testCase.verifySize(scalesActual,size(scalesExpctd));
-            testCase.verifyEqual(scalesActual,scalesExpctd);
-            testCase.verifySize(coefsActual,size(coefsExpctd));
-            diff = max(abs(coefsExpctd - coefsActual));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-8,...
-                sprintf('%g',diff));
-            
-        end
-        
-        % Test
-        function testStepDec321Ch44Ord222Level3Freq(testCase) 
-            
-            % Parameters
-            height = 108;
-            width = 64;
-            depth = 32;
-            srcImg = rand(height,width,depth);
-            nDecs = [ 3 2 1 ];
-            analysisFilters(:,:,:,1) = randn(9,6,3);
-            analysisFilters(:,:,:,2) = randn(9,6,3);
-            analysisFilters(:,:,:,3) = randn(9,6,3);
-            analysisFilters(:,:,:,4) = randn(9,6,3);
-            analysisFilters(:,:,:,5) = randn(9,6,3);
-            analysisFilters(:,:,:,6) = randn(9,6,3);
-            analysisFilters(:,:,:,7) = randn(9,6,3);
-            analysisFilters(:,:,:,8) = randn(9,6,3);
-            nLevels = 3;
-            
-            % Expected values
-            import saivdr.dictionary.utility.Direction
-            downsample3_ = @(x,d) ...
-                shiftdim(downsample(...
-                shiftdim(downsample(...
-                shiftdim(downsample(x,d(1)),1),d(2)),1),d(3)),1);
-            nChs = size(analysisFilters,4);
-            coefsExpctdLv1 = cell(nChs,1);
-            for iSubband = 1:nChs
-                h = analysisFilters(:,:,:,iSubband);
-                coefsExpctdLv1{iSubband} = downsample3_(...
-                    imfilter(srcImg,h,...
-                    'conv','circ'),...
-                    nDecs);
-            end
-            coefsExpctdLv2 = cell(nChs,1);
-            for iSubband = 1:nChs
-                h = analysisFilters(:,:,:,iSubband);
-                coefsExpctdLv2{iSubband} = downsample3_(...
-                    imfilter(coefsExpctdLv1{1},h,...
-                    'conv','circ'),...
-                    nDecs);
-            end
-            coefsExpctdLv3 = cell(nChs,1);
-            for iSubband = 1:nChs
-                h = analysisFilters(:,:,:,iSubband);
-                coefsExpctdLv3{iSubband} = downsample3_(...
-                    imfilter(coefsExpctdLv2{1},h,...
-                    'conv','circ'),...
-                    nDecs);
-            end            
-            coefs{1} = coefsExpctdLv3{1};
-            coefs{2} = coefsExpctdLv3{2};
-            coefs{3} = coefsExpctdLv3{3};
-            coefs{4} = coefsExpctdLv3{4};
-            coefs{5} = coefsExpctdLv3{5};
-            coefs{6} = coefsExpctdLv3{6};
-            coefs{7} = coefsExpctdLv3{7};
-            coefs{8} = coefsExpctdLv3{8};
-            coefs{9} = coefsExpctdLv2{2};
-            coefs{10} = coefsExpctdLv2{3};
-            coefs{11} = coefsExpctdLv2{4};
-            coefs{12} = coefsExpctdLv2{5};
-            coefs{13} = coefsExpctdLv2{6};
-            coefs{14} = coefsExpctdLv2{7};
-            coefs{15} = coefsExpctdLv2{8};            
-            coefs{16} = coefsExpctdLv1{2};
-            coefs{17} = coefsExpctdLv1{3};
-            coefs{18} = coefsExpctdLv1{4};
-            coefs{19} = coefsExpctdLv1{5};
-            coefs{20} = coefsExpctdLv1{6};
-            coefs{21} = coefsExpctdLv1{7};
-            coefs{22} = coefsExpctdLv1{8};
-            nSubbands = length(coefs);
-            scalesExpctd = zeros(nSubbands,3);
-            sIdx = 1;
-            for iSubband = 1:nSubbands
-                scalesExpctd(iSubband,:) = size(coefs{iSubband});
-                eIdx = sIdx + prod(scalesExpctd(iSubband,:))-1;
-                coefsExpctd(sIdx:eIdx) = coefs{iSubband}(:).';
-                sIdx = eIdx + 1;
-            end
-            
-            % Instantiation of target class
-            import saivdr.dictionary.generalfb.*
-            testCase.analyzer = Analysis3dSystem(...
-                'DecimationFactor',nDecs,...
-                'AnalysisFilters',analysisFilters,...
-                'FilterDomain','Frequency');
-            
-            % Actual values
-            [coefsActual,scalesActual] = step(testCase.analyzer,srcImg,nLevels);
-            
-            % Evaluation
-            testCase.verifySize(scalesActual,size(scalesExpctd));
-            testCase.verifyEqual(scalesActual,scalesExpctd);
-            testCase.verifySize(coefsActual,size(coefsExpctd));
-            diff = max(abs(coefsExpctd - coefsActual));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-8,...
-                sprintf('%g',diff));
-            
-        end
-        
-        % Test
-        function testStepDec234Ch1414Ord222Level2(testCase) 
-            
-            % Parameters
-            height = 8*2^2;
-            width = 12*3^2;
-            depth = 16*4^2;
-            srcImg = rand(height,width,depth);
-            nDecs = [ 2 3 4 ];
-            analysisFilters = zeros(6,9,12,28);
-            for iCh = 1:28
-                analysisFilters(:,:,:,iCh) = randn(6,9,12);
-            end
-            nLevels = 2;
-            
-            % Expected values
-            import saivdr.dictionary.utility.Direction
-            downsample3_ = @(x,d) ...
-                shiftdim(downsample(...
-                shiftdim(downsample(...
-                shiftdim(downsample(x,d(1)),1),d(2)),1),d(3)),1);
-            nChs = size(analysisFilters,4);
-            coefsExpctdLv1 = cell(nChs,1);
-            for iSubband = 1:nChs
-                h = analysisFilters(:,:,:,iSubband);
-                coefsExpctdLv1{iSubband} = downsample3_(...
-                    imfilter(srcImg,h,...
-                    'conv','circ'),...
-                    nDecs);
-            end
-            coefsExpctdLv2 = cell(nChs,1);
-            for iSubband = 1:nChs
-                h = analysisFilters(:,:,:,iSubband);
-                coefsExpctdLv2{iSubband} = downsample3_(...
-                    imfilter(coefsExpctdLv1{1},h,...
-                    'conv','circ'),...
-                    nDecs);
-            end
-            coefs = cell(nLevels*(nChs-1)+1,1);
-            coefs{1} = coefsExpctdLv2{1};            
-            for iCh = 2:nChs
-               coefs{iCh} = coefsExpctdLv2{iCh};
-               coefs{iCh+27} = coefsExpctdLv1{iCh};
-            end
-            nSubbands = length(coefs);
-            scalesExpctd = zeros(nSubbands,3);
-            sIdx = 1;
-            for iSubband = 1:nSubbands
-                scalesExpctd(iSubband,:) = size(coefs{iSubband});
-                eIdx = sIdx + prod(scalesExpctd(iSubband,:))-1;
-                coefsExpctd(sIdx:eIdx) = coefs{iSubband}(:).';
-                sIdx = eIdx + 1;
-            end
-            
-            % Instantiation of target class
-            import saivdr.dictionary.generalfb.*
-            testCase.analyzer = Analysis3dSystem(...
-                'DecimationFactor',nDecs,...
-                'AnalysisFilters',analysisFilters,...
-                'FilterDomain','Spatial');
-            
-            % Actual values
-            [coefsActual,scalesActual] = step(testCase.analyzer,srcImg,nLevels);
-            
-            % Evaluation
-            testCase.verifySize(scalesActual,size(scalesExpctd));
-            testCase.verifyEqual(scalesActual,scalesExpctd);
-            testCase.verifySize(coefsActual,size(coefsExpctd));
-            diff = max(abs(coefsExpctd - coefsActual));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-8,...
-                sprintf('%g',diff));
-            
-        end
-
-        
-        % Test
-        function testStepDec234Ch1414Ord222Level2Freq(testCase) 
-            
-            % Parameters
-            height = 8*2^2;
-            width = 12*3^2;
-            depth = 16*4^2;
-            srcImg = rand(height,width,depth);
-            nDecs = [ 2 3 4 ];
-            analysisFilters = zeros(6,9,12,28);
-            for iCh = 1:28
-                analysisFilters(:,:,:,iCh) = randn(6,9,12);
-            end
-            nLevels = 2;
-            
-            % Expected values
-            import saivdr.dictionary.utility.Direction
-            downsample3_ = @(x,d) ...
-                shiftdim(downsample(...
-                shiftdim(downsample(...
-                shiftdim(downsample(x,d(1)),1),d(2)),1),d(3)),1);
-            nChs = size(analysisFilters,4);
-            coefsExpctdLv1 = cell(nChs,1);
-            for iSubband = 1:nChs
-                h = analysisFilters(:,:,:,iSubband);
-                coefsExpctdLv1{iSubband} = downsample3_(...
-                    imfilter(srcImg,h,...
-                    'conv','circ'),...
-                    nDecs);
-            end
-            coefsExpctdLv2 = cell(nChs,1);
-            for iSubband = 1:nChs
-                h = analysisFilters(:,:,:,iSubband);
-                coefsExpctdLv2{iSubband} = downsample3_(...
-                    imfilter(coefsExpctdLv1{1},h,...
-                    'conv','circ'),...
-                    nDecs);
-            end
-            coefs = cell(nLevels*(nChs-1)+1,1);
-            coefs{1} = coefsExpctdLv2{1};            
-            for iCh = 2:nChs
-               coefs{iCh} = coefsExpctdLv2{iCh};
-               coefs{iCh+27} = coefsExpctdLv1{iCh};
-            end
-            nSubbands = length(coefs);
-            scalesExpctd = zeros(nSubbands,3);
-            sIdx = 1;
-            for iSubband = 1:nSubbands
-                scalesExpctd(iSubband,:) = size(coefs{iSubband});
-                eIdx = sIdx + prod(scalesExpctd(iSubband,:))-1;
-                coefsExpctd(sIdx:eIdx) = coefs{iSubband}(:).';
-                sIdx = eIdx + 1;
-            end
-            
-            % Instantiation of target class
-            import saivdr.dictionary.generalfb.*
-            testCase.analyzer = Analysis3dSystem(...
-                'DecimationFactor',nDecs,...
-                'AnalysisFilters',analysisFilters,...
-                'FilterDomain','Frequency');
-            
-            % Actual values
-            [coefsActual,scalesActual] = step(testCase.analyzer,srcImg,nLevels);
-            
-            % Evaluation
-            testCase.verifySize(scalesActual,size(scalesExpctd));
-            testCase.verifyEqual(scalesActual,scalesExpctd);
-            testCase.verifySize(coefsActual,size(coefsExpctd));
-            diff = max(abs(coefsExpctd - coefsActual));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-8,...
-                sprintf('%g',diff));
-            
-        end
-        
-         % Test
-        function testStepDec234Ch1414Ord222Level2FreqGpuFalse(testCase) 
-            
-            % Parameters
-            height = 8*2^2;
-            width = 12*3^2;
-            depth = 16*4^2;
-            srcImg = rand(height,width,depth);
-            nDecs = [ 2 3 4 ];
-            useGpu = false;
-            analysisFilters = zeros(6,9,12,28);
-            for iCh = 1:28
-                analysisFilters(:,:,:,iCh) = randn(6,9,12);
-            end
-            nLevels = 2;
-            
-            % Expected values
-            import saivdr.dictionary.utility.Direction
-            downsample3_ = @(x,d) ...
-                shiftdim(downsample(...
-                shiftdim(downsample(...
-                shiftdim(downsample(x,d(1)),1),d(2)),1),d(3)),1);
-            nChs = size(analysisFilters,4);
-            coefsExpctdLv1 = cell(nChs,1);
-            for iSubband = 1:nChs
-                h = analysisFilters(:,:,:,iSubband);
-                coefsExpctdLv1{iSubband} = downsample3_(...
-                    imfilter(srcImg,h,...
-                    'conv','circ'),...
-                    nDecs);
-            end
-            coefsExpctdLv2 = cell(nChs,1);
-            for iSubband = 1:nChs
-                h = analysisFilters(:,:,:,iSubband);
-                coefsExpctdLv2{iSubband} = downsample3_(...
-                    imfilter(coefsExpctdLv1{1},h,...
-                    'conv','circ'),...
-                    nDecs);
-            end
-            coefs = cell(nLevels*(nChs-1)+1,1);
-            coefs{1} = coefsExpctdLv2{1};            
-            for iCh = 2:nChs
-               coefs{iCh} = coefsExpctdLv2{iCh};
-               coefs{iCh+27} = coefsExpctdLv1{iCh};
-            end
-            nSubbands = length(coefs);
-            scalesExpctd = zeros(nSubbands,3);
-            sIdx = 1;
-            for iSubband = 1:nSubbands
-                scalesExpctd(iSubband,:) = size(coefs{iSubband});
-                eIdx = sIdx + prod(scalesExpctd(iSubband,:))-1;
-                coefsExpctd(sIdx:eIdx) = coefs{iSubband}(:).';
-                sIdx = eIdx + 1;
-            end
-            
-            % Instantiation of target class
-            import saivdr.dictionary.generalfb.*
-            testCase.analyzer = Analysis3dSystem(...
-                'DecimationFactor',nDecs,...
-                'AnalysisFilters',analysisFilters,...
-                'FilterDomain','Frequency',...
-                'UseGpu',useGpu);
-            
-            % Actual values
-            [coefsActual,scalesActual] = step(testCase.analyzer,srcImg,nLevels);
-            
-            % Evaluation
-            testCase.verifySize(scalesActual,size(scalesExpctd));
-            testCase.verifyEqual(scalesActual,scalesExpctd);
-            testCase.verifySize(coefsActual,size(coefsExpctd));
-            diff = max(abs(coefsExpctd - coefsActual));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-8,...
-                sprintf('%g',diff));
-            
-        end
-        
-        
-        
-        % Test
-        function testClone(testCase) 
-            
-            % Parameters
-            height = 108;
-            width = 64;
-            depth = 32;
-            srcImg = rand(height,width,depth);
-            nDecs = [ 3 2 1 ];
-            analysisFilters(:,:,:,1) = randn(9,6,3);
-            analysisFilters(:,:,:,2) = randn(9,6,3);
-            analysisFilters(:,:,:,3) = randn(9,6,3);
-            analysisFilters(:,:,:,4) = randn(9,6,3);
-            analysisFilters(:,:,:,5) = randn(9,6,3);
-            analysisFilters(:,:,:,6) = randn(9,6,3);
-            analysisFilters(:,:,:,7) = randn(9,6,3);
-            analysisFilters(:,:,:,8) = randn(9,6,3);
-            nLevels = 3;
-            
-            % Expected values
-            import saivdr.dictionary.utility.Direction
-            downsample3_ = @(x,d) ...
-                shiftdim(downsample(...
-                shiftdim(downsample(...
-                shiftdim(downsample(x,d(1)),1),d(2)),1),d(3)),1);
-            nChs = size(analysisFilters,4);
-            coefsExpctdLv1 = cell(nChs,1);
-            for iSubband = 1:nChs
-                h = analysisFilters(:,:,:,iSubband);
-                coefsExpctdLv1{iSubband} = downsample3_(...
-                    imfilter(srcImg,h,...
-                    'conv','circ'),...
-                    nDecs);
-            end
-            coefsExpctdLv2 = cell(nChs,1);
-            for iSubband = 1:nChs
-                h = analysisFilters(:,:,:,iSubband);
-                coefsExpctdLv2{iSubband} = downsample3_(...
-                    imfilter(coefsExpctdLv1{1},h,...
-                    'conv','circ'),...
-                    nDecs);
-            end
-            coefsExpctdLv3 = cell(nChs,1);
-            for iSubband = 1:nChs
-                h = analysisFilters(:,:,:,iSubband);
-                coefsExpctdLv3{iSubband} = downsample3_(...
-                    imfilter(coefsExpctdLv2{1},h,...
-                    'conv','circ'),...
-                    nDecs);
-            end            
-            coefs{1} = coefsExpctdLv3{1};
-            coefs{2} = coefsExpctdLv3{2};
-            coefs{3} = coefsExpctdLv3{3};
-            coefs{4} = coefsExpctdLv3{4};
-            coefs{5} = coefsExpctdLv3{5};
-            coefs{6} = coefsExpctdLv3{6};
-            coefs{7} = coefsExpctdLv3{7};
-            coefs{8} = coefsExpctdLv3{8};
-            coefs{9} = coefsExpctdLv2{2};
-            coefs{10} = coefsExpctdLv2{3};
-            coefs{11} = coefsExpctdLv2{4};
-            coefs{12} = coefsExpctdLv2{5};
-            coefs{13} = coefsExpctdLv2{6};
-            coefs{14} = coefsExpctdLv2{7};
-            coefs{15} = coefsExpctdLv2{8};            
-            coefs{16} = coefsExpctdLv1{2};
-            coefs{17} = coefsExpctdLv1{3};
-            coefs{18} = coefsExpctdLv1{4};
-            coefs{19} = coefsExpctdLv1{5};
-            coefs{20} = coefsExpctdLv1{6};
-            coefs{21} = coefsExpctdLv1{7};
-            coefs{22} = coefsExpctdLv1{8};
-            nSubbands = length(coefs);
-            scalesExpctd = zeros(nSubbands,3);
-            sIdx = 1;
-            for iSubband = 1:nSubbands
-                scalesExpctd(iSubband,:) = size(coefs{iSubband});
-                eIdx = sIdx + prod(scalesExpctd(iSubband,:))-1;
-                coefsExpctd(sIdx:eIdx) = coefs{iSubband}(:).';
-                sIdx = eIdx + 1;
-            end
-            
-            % Instantiation of target class
-            import saivdr.dictionary.generalfb.*
-            testCase.analyzer = Analysis3dSystem(...
-                'DecimationFactor',nDecs,...
-                'AnalysisFilters',analysisFilters,...
-                'FilterDomain','Frequency');
-            cloneAnalyzer = clone(testCase.analyzer);
-            
-            % Actual values
-            [coefsActual,scalesActual] = step(cloneAnalyzer,srcImg,nLevels);
-            
-            % Evaluation
-            testCase.verifySize(scalesActual,size(scalesExpctd));
-            testCase.verifyEqual(scalesActual,scalesExpctd);
-            testCase.verifySize(coefsActual,size(coefsExpctd));
-            diff = max(abs(coefsExpctd - coefsActual));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-8,...
-                sprintf('%g',diff));
-            
-        end       
-        %}
-    end
     
+        
+        % Test
+        function testUdHaarSplitting(testCase,width,height,depth,level,useparallel)
+            
+            % Parameters
+            nVerSplit = 2;
+            nHorSplit = 2;
+            nDepSplit = 2;
+            nVerPad = 2^(level-1);
+            nHorPad = 2^(level-1);
+            nDepPad = 2^(level-1);
+            srcImg = rand(height,width,depth);
+            
+            % Expected values
+            import saivdr.dictionary.udhaar.*
+            refAnalyzer = UdHaarAnalysis3dSystem();
+            [coefsExpctd,scalesExpctd] = step(refAnalyzer,srcImg,level);
+            
+            % Instantiation of target class
+            import saivdr.dictionary.olaols.*
+            testCase.analyzer = Analysis3dOlsWrapper(...
+                'Analyzer',refAnalyzer,...
+                'VerticalSplitFactor',nVerSplit,...
+                'HorizontalSplitFactor',nHorSplit,...
+                'DepthSplitFactor',nDepSplit,...
+                'PadSize',[nVerPad,nHorPad,nDepPad],...
+                'UseParallel',useparallel);
+            
+            % Actual values
+            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,level);
+            
+            % Evaluation
+            testCase.verifySize(scalesActual,size(scalesExpctd));
+            testCase.verifyEqual(scalesActual,scalesExpctd);
+            testCase.verifySize(coefsActual,size(coefsExpctd));
+            diff = max(abs(coefsExpctd(:) - coefsActual(:)));
+            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-10,...
+                sprintf('%g',diff));            
+        end
+        
+        
+        % Test
+        function testUdHaarSplittingWarningReconstruction(testCase,width,height)
+            
+            % Parameters
+            level_ = 2;
+            nVerSplit = 2;
+            nHorSplit = 2;
+            nDepSplit = 2;
+            nVerPad = 2^(level_-1)-1;
+            nHorPad = 2^(level_-1)-1;
+            nDepPad = 2^(level_-1)-1;
+            srcImg = rand(height,width,depth);
+            
+            % Expected values
+            exceptionIdExpctd = 'SaivDr:ReconstructionFailureException';
+            messageExpctd = 'Failure occurs in reconstruction. Please check the split and padding size.';
+            
+            % Preparation
+            import saivdr.dictionary.udhaar.*
+            refAnalyzer = UdHaarAnalysis3dSystem();
+            
+            % Instantiation of target class
+            import saivdr.dictionary.olaols.*
+            testCase.analyzer = Analysis3dOlsWrapper(...
+                'Analyzer',refAnalyzer,...
+                'VerticalSplitFactor',nVerSplit,...
+                'HorizontalSplitFactor',nHorSplit,...
+                'DepthSplitFactor',nDepSplit,...
+                'PadSize',[nVerPad,nHorPad,nDepPad],...
+                'UseParallel',false);
+            
+            % Evaluation
+            try
+                step(testCase.analyzer,srcImg,level_);
+                testCase.verifyFail(sprintf('%s must be thrown.',...
+                    exceptionIdExpctd));
+            catch me
+                switch me.identifier
+                    case exceptionIdExpctd
+                        messageActual = me.message;
+                        testCase.verifyEqual(messageActual, messageExpctd);
+                    otherwise
+                        testCase.verifyFail(sprintf('%s must be thrown.',...
+                            exceptionIdExpctd));
+                end
+            end
+        end
+        
+        % Test
+        function testUdHaarSplittingWarningFactor(testCase,width,height,level)
+            
+            % Parameters
+            nVerSplit = 3;
+            nHorSplit = 3;
+            nDepSplit = 3;
+            nVerPad = 2^(level-1);
+            nHorPad = 2^(level-1);
+            nDepSpad = 2^(level-1);
+            srcImg = rand(height,width,depth);
+            
+            % Expected values
+            exceptionIdExpctd = 'SaivDr:IllegalSplitFactorException';
+            messageExpctd = 'Split factor must be a divisor of array size.';
+            
+            % Preparation
+            import saivdr.dictionary.udhaar.*
+            refAnalyzer = UdHaarAnalysis3dSystem();
+            
+            % Instantiation of target class
+            import saivdr.dictionary.olaols.*
+            testCase.analyzer = Analysis3dOlsWrapper(...
+                'Analyzer',refAnalyzer,...
+                'VerticalSplitFactor',nVerSplit,...
+                'HorizontalSplitFactor',nHorSplit,...
+                'DepthSplitFactor',nDepSplit,...
+                'PadSize',[nVerPad,nHorPad,nDepPad],...
+                'UseParallel',false);
+            
+            % Evaluation
+            try
+                step(testCase.analyzer,srcImg,level);
+                if mod(width,nHorSplit) ~=0 || ...
+                    mod(height,nVerSplit) ~= 0 || ...
+                     mod(depth,nDepSplit) ~=0
+                    testCase.verifyFail(sprintf('%s must be thrown.',...
+                        exceptionIdExpctd));
+                end
+            catch me
+                switch me.identifier
+                    case exceptionIdExpctd
+                        messageActual = me.message;
+                        testCase.verifyEqual(messageActual, messageExpctd);
+                    otherwise
+                        testCase.verifyFail(sprintf('%s must be thrown.',...
+                            exceptionIdExpctd));
+                end
+            end
+        end
+    
+    end
 end
