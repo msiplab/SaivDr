@@ -3,7 +3,7 @@ System object definitions for sparsity-aware image and volume data restoration
 
 ## Summary
 
-SaivDr is an abbreviation of Sparsity-Aware Image and Volume Data Restoration. This package is developed in order for making
+SaivDr is an abbreviation of Sparsity-Aware Image and Volumetric Data Restoration. This package is developed in order for making
 
 * Experiments,
 * Development and
