@@ -45,7 +45,7 @@ classdef UdHaarAnalysis2dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
     methods (Access=protected)
         
         function s = saveObjectImpl(obj)
-            s = saveObjectImpl@matlab.System(obj);
+            s = saveObjectImpl@saivdr.dictionary.AbstAnalysisSystem(obj);
             s.kernels = obj.kernels;
             s.coefs = obj.coefs;
             s.nPixels = obj.nPixels;
@@ -55,7 +55,7 @@ classdef UdHaarAnalysis2dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
             obj.kernels = s.kernels;
             obj.coefs = s.coefs;
             obj.nPixels = s.nPixels;
-            loadObjectImpl@matlab.System(obj,s,wasLocked); 
+            loadObjectImpl@saivdr.dictionary.AbstAnalysisSystem(obj,s,wasLocked); 
         end
         
         function setupImpl(obj,u,nLevels)

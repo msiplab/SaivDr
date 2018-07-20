@@ -18,6 +18,16 @@ classdef UdHaarAnalysis3dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
     % http://msiplab.eng.niigata-u.ac.jp/
     %
     
+   
+    properties (Nontunable)
+        BoundaryOperation = 'Circular'
+    end
+    
+    properties (Hidden, Transient)
+        BoundaryOperationSet = ...
+            matlab.system.StringSet({'Circular'});
+    end
+    
     properties (Nontunable)
         NumLevels = 1
     end
@@ -63,7 +73,7 @@ classdef UdHaarAnalysis3dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
     methods (Access=protected)
         
         function s = saveObjectImpl(obj)
-            s = saveObjectImpl@matlab.System(obj);
+            s = saveObjectImpl@saivdr.dictionary.AbstAnalysisSystem(obj);
             s.kernels = obj.kernels;
             s.coefs = obj.coefs;
             s.nPixels = obj.nPixels;
@@ -73,7 +83,7 @@ classdef UdHaarAnalysis3dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
             obj.kernels = s.kernels;
             obj.coefs = s.coefs;
             obj.nPixels = s.nPixels;
-            loadObjectImpl@matlab.System(obj,s,wasLocked);
+            loadObjectImpl@saivdr.dictionary.AbstAnalysisSystem(obj,s,wasLocked);
         end
         
         function setupImpl(obj,u,nLevels)
