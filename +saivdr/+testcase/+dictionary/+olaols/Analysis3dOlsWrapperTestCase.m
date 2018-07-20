@@ -204,7 +204,7 @@ classdef Analysis3dOlsWrapperTestCase < matlab.unittest.TestCase
             nDepSplit = 3;
             nVerPad = 2^(level-1);
             nHorPad = 2^(level-1);
-            nDepSpad = 2^(level-1);
+            nDepPad = 2^(level-1);
             srcImg = rand(height,width,depth);
             
             % Expected values
