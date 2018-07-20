@@ -76,13 +76,11 @@ classdef Analysis2dOlsWrapperTestCase < matlab.unittest.TestCase
         end        
 
         % Test
-        function testUdHaarLevel1(testCase)
+        function testUdHaar(testCase,height,width,level)
 
             % Parameters
-            nLevels = 1;
-            height_ = 16;
-            width_ = 16;
-            srcImg = rand(height_,width_);
+            nLevels = level;
+            srcImg = rand(height,width);
             
             % Expected values
             import saivdr.dictionary.udhaar.*
@@ -104,8 +102,44 @@ classdef Analysis2dOlsWrapperTestCase < matlab.unittest.TestCase
             diff = max(abs(coefsExpctd(:) - coefsActual(:)));
             testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-10,...
                 sprintf('%g',diff));
-
         end
+    
+        % Test
+        function testUdHaarSplitting(testCase,width,height,level)
+            
+            % Parameters
+            nVerSplit = 2;
+            nHorSplit = 2;
+            nVerPad = 2^(level-1);
+            nHorPad = 2^(level-1);
+            srcImg = rand(height,width);
+            
+            % Expected values
+            import saivdr.dictionary.udhaar.*
+            refAnalyzer = UdHaarAnalysis2dSystem();
+            [coefsExpctd,scalesExpctd] = step(refAnalyzer,srcImg,level);
+            
+            % Instantiation of target class
+            import saivdr.dictionary.olaols.*
+            testCase.analyzer = Analysis2dOlsWrapper(...
+                'Analyzer',refAnalyzer,...
+                'VerticalSplitFactor',nVerSplit,...
+                'HorizontalSplitFactor',nHorSplit,...
+                'PadSize',[nVerPad,nHorPad],...
+                'UseParallel',false);
+            
+            % Actual values
+            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,level);
+            
+            % Evaluation
+            testCase.verifySize(scalesActual,size(scalesExpctd));
+            testCase.verifyEqual(scalesActual,scalesExpctd);
+            testCase.verifySize(coefsActual,size(coefsExpctd));
+            diff = max(abs(coefsExpctd(:) - coefsActual(:)));
+            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-10,...
+                sprintf('%g',diff));            
+        end
+        
     end
     
 end
