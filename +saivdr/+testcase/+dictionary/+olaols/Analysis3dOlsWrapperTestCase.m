@@ -148,7 +148,7 @@ classdef Analysis3dOlsWrapperTestCase < matlab.unittest.TestCase
         
         
         % Test
-        function testUdHaarSplittingWarningReconstruction(testCase,width,height)
+        function testUdHaarSplittingWarningReconstruction(testCase,width,height,depth)
             
             % Parameters
             level_ = 2;
@@ -196,7 +196,7 @@ classdef Analysis3dOlsWrapperTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testUdHaarSplittingWarningFactor(testCase,width,height,level)
+        function testUdHaarSplittingWarningFactor(testCase,width,height,depth,level)
             
             % Parameters
             nVerSplit = 3;
