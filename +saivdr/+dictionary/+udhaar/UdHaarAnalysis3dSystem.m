@@ -28,6 +28,10 @@ classdef UdHaarAnalysis3dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
             matlab.system.StringSet({'Circular'});
     end
     
+    properties (Logical)
+        UseParallel = false
+    end
+    
     properties (Nontunable)
         NumLevels = 1
     end
@@ -36,6 +40,7 @@ classdef UdHaarAnalysis3dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
         kernels
         coefs
         nPixels
+        nWorkers
     end
     
     methods
@@ -91,6 +96,13 @@ classdef UdHaarAnalysis3dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
             obj.nPixels = numel(u);
             obj.coefs = zeros(1,(7*nLevels+1)*obj.nPixels);
             
+            if obj.UseParallel
+                pool = gcp;
+                obj.nWorkers = pool.NumWorkers;
+            else
+                obj.nWorkers = 0;
+            end
+            
             % NOTE:
             % imfilter of R2017a has a bug for double precision array
             if strcmp(version('-release'),'2017a') && ...
@@ -125,7 +137,7 @@ classdef UdHaarAnalysis3dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
                     offset = -[1 1 1]*(2^(iLevel-2)-1);
                 end
                 %
-                parfor idx = 1:8
+                parfor (idx = 1:8, obj.nWorkers)
                     Y{idx} = circshift(upsmplfilter3_(obj,yaa,K{idx},ufactor),offset);
                 end
                 for idx = 1:7

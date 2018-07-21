@@ -24,10 +24,15 @@ classdef UdHaarSynthesis3dSystem <  saivdr.dictionary.AbstSynthesisSystem  %#cod
             matlab.system.StringSet({'Circular'});
     end
     
+    properties (Logical)
+        UseParallel = false
+    end
+    
     properties (Nontunable, Access = private)
         kernels
         nPixels
         nLevels
+        nWorkers
         dim
     end
     
@@ -97,6 +102,13 @@ classdef UdHaarSynthesis3dSystem <  saivdr.dictionary.AbstSynthesisSystem  %#cod
             obj.dim = scales(1,:);
             obj.nPixels = prod(obj.dim);
             obj.nLevels = (size(scales,1)-1)/7;
+            %
+            if obj.UseParallel
+                pool = gcp;
+                obj.nWorkers = pool.NumWorkers;
+            else
+                obj.nWorkers = 0;
+            end
         end
         
         function resetImpl(~)
@@ -122,7 +134,7 @@ classdef UdHaarSynthesis3dSystem <  saivdr.dictionary.AbstSynthesisSystem  %#cod
                 U{idx} = reshape(coefs((idx-1)*nPixels_+1:idx*nPixels_),dim_);
             end
             K = obj.kernels;
-            parfor idx = 1:8 % TODO ポリフェーズ実現 or IntegralBoxFilter3実現
+            parfor (idx = 1:8, obj.nWorkers) % TODO ポリフェーズ実現 or IntegralBoxFilter3実現
                 %     Y{idx} = imfilter(U{idx},upsample3_(K{idx},ufactor),...
                 %         'conv','circular')*weight;
                 Y{idx} = upsmplfilter3_(obj,U{idx},K{idx},ufactor)*weight;
