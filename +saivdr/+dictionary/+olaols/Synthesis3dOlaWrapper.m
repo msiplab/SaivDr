@@ -46,6 +46,7 @@ classdef Synthesis3dOlaWrapper < saivdr.dictionary.AbstSynthesisSystem
         refSize
         refSubSize
         refSynthesizer
+        subPadSize
     end
     
     methods
@@ -94,6 +95,9 @@ classdef Synthesis3dOlaWrapper < saivdr.dictionary.AbstSynthesisSystem
                 diag(1./[obj.VerticalSplitFactor,...
                 obj.HorizontalSplitFactor,...
                 obj.DepthSplitFactor ]);
+            %
+            scaleRatio = scales*diag(1./obj.refSize);
+            obj.subPadSize = scaleRatio*diag(obj.PadSize);
             % Evaluate
             % Check if scales are divisible by split factors
             exceptionId = 'SaivDr:IllegalSplitFactorException';            
@@ -101,6 +105,12 @@ classdef Synthesis3dOlaWrapper < saivdr.dictionary.AbstSynthesisSystem
             if sum(mod(obj.refSubSize,1)) ~= 0
                 throw(MException(exceptionId,message))                
             end
+            % Check if subPadSizes are integer
+            %exceptionId = 'SaivDr:IllegalSplitFactorException';            
+            %message = 'Split factor must be a divisor of array size.';            
+            if sum(mod(obj.subPadSize,1)) ~= 0
+                throw(MException('SaivDr','Illegal Pad Size.'))                
+            end            
             % Check identity
             exceptionId = 'SaivDr:ReconstructionFailureException';            
             message = 'Failure occurs in reconstruction. Please check the split and padding size.';
@@ -217,7 +227,7 @@ classdef Synthesis3dOlaWrapper < saivdr.dictionary.AbstSynthesisSystem
                 for iCh = 1:nChs
                     subCoefArrays{iSplit,iCh} = ...
                         padarray(subCoefArrays{iSplit,iCh},...
-                        obj.PadSize,0,'both');
+                        obj.subPadSize(iCh,:),0,'both');
                 end
             end
         end
