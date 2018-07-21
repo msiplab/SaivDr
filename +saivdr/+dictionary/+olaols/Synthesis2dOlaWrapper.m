@@ -31,7 +31,11 @@ classdef Synthesis2dOlaWrapper < saivdr.dictionary.AbstSynthesisSystem
         UseParallel = false
     end
     
-    properties (Nontunable, PositiveInteger)
+    properties (Nontunable)
+        SplitFactor = []
+    end
+    
+    properties (Nontunable, PositiveInteger, Hidden)
         VerticalSplitFactor = 1
         HorizontalSplitFactor = 1
     end
@@ -52,10 +56,15 @@ classdef Synthesis2dOlaWrapper < saivdr.dictionary.AbstSynthesisSystem
         
         % Constractor
         function obj = Synthesis2dOlaWrapper(varargin)
+            import saivdr.dictionary.utility.Direction
             setProperties(obj,nargin,varargin{:})
             if ~isempty(obj.Synthesizer)
                 obj.BoundaryOperation = obj.Synthesizer.BoundaryOperation;
             end
+            if ~isempty(obj.SplitFactor)
+                obj.VerticalSplitFactor = obj.SplitFactor(Direction.VERTICAL);
+                obj.HorizontalSplitFactor = obj.SplitFactor(Direction.HORIZONTAL);                
+            end            
         end
         %{
         function setFrameBound(obj,frameBound)
@@ -66,15 +75,15 @@ classdef Synthesis2dOlaWrapper < saivdr.dictionary.AbstSynthesisSystem
     
     methods (Access = protected)
         
-        %{
         function flag = isInactivePropertyImpl(obj,propertyName)
-            if strcmp(propertyName,'UseGpu')
-                flag = strcmp(obj.FilterDomain,'Frequeny');
+            if strcmp(propertyName,'VerticalSplitFactor') || ...
+                    strcmp(propertyName,'HorizontalSplitFactor') 
+                flag = ~isempty(obj.SplitFactor);
             else
                 flag = false;
             end
-        end        
-        %}
+        end 
+        
         function s = saveObjectImpl(obj)
             s = saveObjectImpl@saivdr.dictionary.AbstSynthesisSystem(obj);
             s.Synthesizer = matlab.System.saveObject(obj.Synthesizer);

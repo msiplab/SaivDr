@@ -31,7 +31,11 @@ classdef Analysis2dOlsWrapper < saivdr.dictionary.AbstAnalysisSystem
         UseParallel = false
     end
     
-    properties (Nontunable, PositiveInteger)
+    properties (Nontunable)
+        SplitFactor = []
+    end
+    
+    properties (Nontunable, PositiveInteger, Hidden)
         VerticalSplitFactor = 1
         HorizontalSplitFactor = 1
     end
@@ -51,24 +55,29 @@ classdef Analysis2dOlsWrapper < saivdr.dictionary.AbstAnalysisSystem
         
         % Constractor
         function obj = Analysis2dOlsWrapper(varargin)
+            import saivdr.dictionary.utility.Direction
             setProperties(obj,nargin,varargin{:})
             if ~isempty(obj.Analyzer)
                 obj.BoundaryOperation = obj.Analyzer.BoundaryOperation;
+            end
+            if ~isempty(obj.SplitFactor)
+                obj.VerticalSplitFactor = obj.SplitFactor(Direction.VERTICAL);
+                obj.HorizontalSplitFactor = obj.SplitFactor(Direction.HORIZONTAL);                
             end
         end
     end
     
     methods (Access=protected)
        
-         %{
         function flag = isInactivePropertyImpl(obj,propertyName)
-            if strcmp(propertyName,'UseGpu')
-                flag = strcmp(obj.FilterDomain,'Frequeny');
+            if strcmp(propertyName,'VerticalSplitFactor') || ...
+                    strcmp(propertyName,'HorizontalSplitFactor') 
+                flag = ~isempty(obj.SplitFactor);
             else
                 flag = false;
             end
         end        
-        %}
+
         function s = saveObjectImpl(obj)
             s = saveObjectImpl@saivdr.dictionary.AbstAnalysisSystem(obj);
             s.Synthesizer = matlab.System.saveObject(obj.Analyzer);

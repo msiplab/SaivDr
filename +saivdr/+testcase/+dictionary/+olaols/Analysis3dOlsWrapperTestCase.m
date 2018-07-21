@@ -246,5 +246,90 @@ classdef Analysis3dOlsWrapperTestCase < matlab.unittest.TestCase
             end
         end
     
+         % Test
+        function testUdHaarSplitFactor(testCase,width,height,depth,level,useparallel)
+            
+            % Parameters
+            nVerSplit = 2;
+            nHorSplit = 2;
+            nDepSplit = 2;
+            nVerPad = 2^(level-1);
+            nHorPad = 2^(level-1);
+            nDepPad = 2^(level-1);
+            srcImg = rand(height,width,depth);
+            
+            % Expected values
+            import saivdr.dictionary.udhaar.*
+            refAnalyzer = UdHaarAnalysis3dSystem();
+            [coefsExpctd,scalesExpctd] = step(refAnalyzer,srcImg,level);
+            
+            % Instantiation of target class
+            import saivdr.dictionary.olaols.*
+            testCase.analyzer = Analysis3dOlsWrapper(...
+                'Analyzer',refAnalyzer,...
+                'SplitFactor',[nVerSplit,nHorSplit,nDepSplit],...
+                'PadSize',[nVerPad,nHorPad,nDepPad],...
+                'UseParallel',useparallel);
+            
+            % Actual values
+            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,level);
+            
+            % Evaluation
+            testCase.verifySize(scalesActual,size(scalesExpctd));
+            testCase.verifyEqual(scalesActual,scalesExpctd);
+            testCase.verifySize(coefsActual,size(coefsExpctd));
+            diff = max(abs(coefsExpctd(:) - coefsActual(:)));
+            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-10,...
+                sprintf('%g',diff));            
+        end
+        
+        % Test
+        function testUdHaarSplitFactorWarning(testCase,width,height,depth,level)
+            
+            % Parameters
+            nVerSplit = 3;
+            nHorSplit = 3;
+            nDepSplit = 3;
+            nVerPad = 2^(level-1);
+            nHorPad = 2^(level-1);
+            nDepPad = 2^(level-1);
+            srcImg = rand(height,width,depth);
+            
+            % Expected values
+            exceptionIdExpctd = 'SaivDr:IllegalSplitFactorException';
+            messageExpctd = 'Split factor must be a divisor of array size.';
+            
+            % Preparation
+            import saivdr.dictionary.udhaar.*
+            refAnalyzer = UdHaarAnalysis3dSystem();
+            
+            % Instantiation of target class
+            import saivdr.dictionary.olaols.*
+            testCase.analyzer = Analysis3dOlsWrapper(...
+                'Analyzer',refAnalyzer,...
+                'SplitFactor',[nVerSplit,nHorSplit,nDepSplit],...
+                'PadSize',[nVerPad,nHorPad,nDepPad],...
+                'UseParallel',false);
+            
+            % Evaluation
+            try
+                step(testCase.analyzer,srcImg,level);
+                if mod(width,nHorSplit) ~=0 || ...
+                    mod(height,nVerSplit) ~= 0 || ...
+                     mod(depth,nDepSplit) ~=0
+                    testCase.verifyFail(sprintf('%s must be thrown.',...
+                        exceptionIdExpctd));
+                end
+            catch me
+                switch me.identifier
+                    case exceptionIdExpctd
+                        messageActual = me.message;
+                        testCase.verifyEqual(messageActual, messageExpctd);
+                    otherwise
+                        testCase.verifyFail(sprintf('%s must be thrown.',...
+                            exceptionIdExpctd));
+                end
+            end
+        end        
     end
 end
