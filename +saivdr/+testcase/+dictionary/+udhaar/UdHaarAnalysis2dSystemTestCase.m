@@ -17,6 +17,7 @@ classdef UdHaarAnalysis2dSystemTestCase < matlab.unittest.TestCase
     %
     % http://msiplab.eng.niigata-u.ac.jp/    
     %
+    
     properties
         analyzer
     end
@@ -754,7 +755,7 @@ classdef UdHaarAnalysis2dSystemTestCase < matlab.unittest.TestCase
             
             % Instantiation of target class
             import saivdr.dictionary.udhaar.*            
-            testCase.analyzer = UdHaarAnalysis2dSystem();
+            testCase.analyzer = UdHaarAnalysis2dSystem()
             
             % Actual values
             coefActual = step(testCase.analyzer,srcImg,nLevels);

@@ -49,6 +49,8 @@ classdef Analysis2dOlsWrapper < saivdr.dictionary.AbstAnalysisSystem
         refScales
         refSubSize
         refAnalyzer
+        analyzers
+        nWorkers
     end
     
     methods
@@ -96,13 +98,29 @@ classdef Analysis2dOlsWrapper < saivdr.dictionary.AbstAnalysisSystem
             obj.refScales = scales;
             obj.refSubSize = size(srcImg)*...
                 diag(1./[obj.VerticalSplitFactor,obj.HorizontalSplitFactor]);
+            %
+            nSplit = obj.VerticalSplitFactor*obj.HorizontalSplitFactor;
+            obj.analyzers = cell(nSplit,1);
+            if obj.UseParallel
+                pool = gcp;
+                obj.nWorkers = pool.NumWorkers;
+                for iSplit=1:nSplit
+                    obj.analyzers{iSplit} = clone(obj.Analyzer);
+                end
+            else
+                obj.nWorkers = 0;
+                for iSplit=1:nSplit
+                    obj.analyzers{iSplit} = obj.Analyzer;
+                end
+            end
+            
             % Evaluate
             % Check if srcImg is divisible by split factors
-            exceptionId = 'SaivDr:IllegalSplitFactorException';            
+            exceptionId = 'SaivDr:IllegalSplitFactorException';
             message = 'Split factor must be a divisor of array size.';
             if sum(mod(obj.refSubSize,1)) ~= 0
-                throw(MException(exceptionId,message))                
-            end            
+                throw(MException(exceptionId,message))
+            end
             % Check identity
             exceptionId = 'SaivDr:ReconstructionFailureException';            
             message = 'Failure occurs in reconstruction. Please check the split and padding size.';
@@ -110,9 +128,11 @@ classdef Analysis2dOlsWrapper < saivdr.dictionary.AbstAnalysisSystem
             diffCoefs = coefs - newcoefs;
             if norm(diffCoefs(:))/numel(diffCoefs) > 1e-6
                 throw(MException(exceptionId,message))
-            end            
+            end
             % Delete reference synthesizer
             obj.refAnalyzer.delete()
+            %
+
         end
         
         function [coefs, scales] = stepImpl(obj,srcImg,nLevels)
@@ -126,22 +146,10 @@ classdef Analysis2dOlsWrapper < saivdr.dictionary.AbstAnalysisSystem
            subCoefs_ = cell(nSplit,1);
            subScales_ = cell(nSplit,1);
            %
-           analyzer_ = cell(nSplit,1);
-           if obj.UseParallel
-               nWorkers = nSplit;
-               for iSplit=1:nSplit
-                   analyzer_{iSplit} = clone(obj.Analyzer);
-               end
-           else
-               nWorkers = 0;
-               for iSplit=1:nSplit
-                   analyzer_{iSplit} = obj.Analyzer;
-               end
-           end
-           %
-           parfor (iSplit=1:nSplit,nWorkers)
+           analyzers_ = obj.analyzers;
+           parfor (iSplit=1:nSplit,obj.nWorkers)
                [subCoefs_{iSplit}, subScales_{iSplit}] = ...
-                   step(analyzer_{iSplit},subImgs{iSplit},nLevels);               
+                   step(analyzers_{iSplit},subImgs{iSplit},nLevels);               
            end
            % 4. Concatinate
            coefs = concatinate_(obj,subCoefs_,subScales_);

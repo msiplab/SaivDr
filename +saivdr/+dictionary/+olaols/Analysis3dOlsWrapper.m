@@ -50,6 +50,8 @@ classdef Analysis3dOlsWrapper < saivdr.dictionary.AbstAnalysisSystem
         refScales
         refSubSize
         refAnalyzer
+        analyzers
+        nWorkers
     end
     
     methods
@@ -101,6 +103,24 @@ classdef Analysis3dOlsWrapper < saivdr.dictionary.AbstAnalysisSystem
                 diag(1./[obj.VerticalSplitFactor,...
                 obj.HorizontalSplitFactor,...
                 obj.DepthSplitFactor]);
+            %
+            nSplit = obj.VerticalSplitFactor*...
+                obj.HorizontalSplitFactor*...
+                obj.DepthSplitFactor;
+            obj.analyzers = cell(nSplit,1);
+            if obj.UseParallel
+                pool = gcp;
+                obj.nWorkers = pool.NumWorkers;
+                for iSplit=1:nSplit
+                    obj.analyzers{iSplit} = clone(obj.Analyzer);
+                end
+            else
+                obj.nWorkers = 0;
+                for iSplit=1:nSplit
+                    obj.analyzers{iSplit} = obj.Analyzer;
+                end
+            end
+                        
             % Evaluate
             % Check if srcImg is divisible by split factors
             exceptionId = 'SaivDr:IllegalSplitFactorException';            
@@ -131,22 +151,10 @@ classdef Analysis3dOlsWrapper < saivdr.dictionary.AbstAnalysisSystem
            subCoefs_ = cell(nSplit,1);
            subScales_ = cell(nSplit,1);
            %
-           analyzer_ = cell(nSplit,1);
-           if obj.UseParallel
-               nWorkers = nSplit;
-               for iSplit=1:nSplit
-                   analyzer_{iSplit} = clone(obj.Analyzer);
-               end
-           else
-               nWorkers = 0;
-               for iSplit=1:nSplit
-                   analyzer_{iSplit} = obj.Analyzer;
-               end
-           end
-           %
-           parfor (iSplit=1:nSplit,nWorkers)
+           analyzers_ = obj.analyzers;
+           parfor (iSplit=1:nSplit,obj.nWorkers)
                [subCoefs_{iSplit}, subScales_{iSplit}] = ...
-                   step(analyzer_{iSplit},subImgs{iSplit},nLevels);               
+                   step(analyzers_{iSplit},subImgs{iSplit},nLevels);               
            end
            % 4. Concatinate
            coefs = concatinate_(obj,subCoefs_,subScales_);

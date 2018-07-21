@@ -17,6 +17,10 @@ classdef UdHaarAnalysis3dSystemTestCase < matlab.unittest.TestCase
     %
     % http://msiplab.eng.niigata-u.ac.jp/    
     %
+
+    properties (TestParameter)
+        useparallel = { true, false };
+    end   
     
     properties
         analyzer
@@ -1032,7 +1036,7 @@ classdef UdHaarAnalysis3dSystemTestCase < matlab.unittest.TestCase
         end
      
         % Test for default construction
-        function testLevel4Size32x32x32(testCase)
+        function testLevel4Size32x32x32(testCase,useparallel)
             
             nLevels = 4;
             height = 32;
@@ -1143,7 +1147,8 @@ classdef UdHaarAnalysis3dSystemTestCase < matlab.unittest.TestCase
             
             % Instantiation of target class
             import saivdr.dictionary.udhaar.*            
-            testCase.analyzer = UdHaarAnalysis3dSystem();
+            testCase.analyzer = UdHaarAnalysis3dSystem(...
+                'UseParallel',useparallel);
             
             % Actual values
             coefActual = step(testCase.analyzer,srcImg,nLevels);

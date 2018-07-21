@@ -17,6 +17,10 @@ classdef UdHaarSynthesis3dSystemTestCase < matlab.unittest.TestCase
     %
     % http://msiplab.eng.niigata-u.ac.jp/
     %
+    
+    properties (TestParameter)
+        useparallel = { true, false };
+    end       
     properties
         synthesizer
         kernels
@@ -1148,7 +1152,7 @@ classdef UdHaarSynthesis3dSystemTestCase < matlab.unittest.TestCase
         end
 
         % Test for default construction
-        function testLevel4ReconstructionSize32x32x32(testCase)
+        function testLevel4ReconstructionSize32x32x32(testCase,useparallel)
             
             nLevels = 4;
             height = 32;
@@ -1263,7 +1267,8 @@ classdef UdHaarSynthesis3dSystemTestCase < matlab.unittest.TestCase
             
             % Instantiation of target class
             import saivdr.dictionary.udhaar.*
-            testCase.synthesizer = UdHaarSynthesis3dSystem();
+            testCase.synthesizer = UdHaarSynthesis3dSystem(...
+                'UseParallel',useparallel);
             
             % Actual values
             imgActual = step(testCase.synthesizer,coefs,scales);

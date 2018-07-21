@@ -50,6 +50,8 @@ classdef Synthesis2dOlaWrapper < saivdr.dictionary.AbstSynthesisSystem
         refSubSize
         refSynthesizer
         subPadSize
+        synthesizers
+        nWorkers
     end
     
     methods
@@ -101,9 +103,29 @@ classdef Synthesis2dOlaWrapper < saivdr.dictionary.AbstSynthesisSystem
             obj.refSize = size(recImg);            
             obj.refSubSize = obj.refSize*...
                 diag(1./[obj.VerticalSplitFactor,obj.HorizontalSplitFactor]);
-            % 
+            %
             scaleRatio = scales*diag(1./obj.refSize);
             obj.subPadSize = scaleRatio*diag(obj.PadSize);
+            %
+            scaleRatio = scales*diag(1./obj.refSize);
+            obj.subPadSize = scaleRatio*diag(obj.PadSize);
+            %
+            nSplit = obj.VerticalSplitFactor*...
+                obj.HorizontalSplitFactor;
+            obj.synthesizers = cell(nSplit,1);
+            if obj.UseParallel
+                pool = gcp;
+                obj.nWorkers = pool.NumWorkers;
+                for iSplit=1:nSplit
+                    obj.synthesizers{iSplit} = clone(obj.Synthesizer);
+                end
+            else
+                obj.nWorkers = 0;
+                for iSplit=1:nSplit
+                    obj.synthesizers{iSplit} = obj.Synthesizer;
+                end
+            end
+
             % Evaluate
             % Check if scales are divisible by split factors
             exceptionId = 'SaivDr:IllegalSplitFactorException';            
@@ -138,21 +160,10 @@ classdef Synthesis2dOlaWrapper < saivdr.dictionary.AbstSynthesisSystem
             nSplit = length(subCoefs);
             subRecImg = cell(nSplit,1);
             %
-            synthesizer_ = cell(nSplit,1);            
-            if obj.UseParallel
-                nWorkers = nSplit;
-                for iSplit=1:nSplit
-                   synthesizer_{iSplit} = clone(obj.Synthesizer);
-                end            
-            else
-                nWorkers = 0;
-                for iSplit=1:nSplit
-                   synthesizer_{iSplit} = obj.Synthesizer;
-                end                            
-            end
-            parfor (iSplit=1:nSplit,nWorkers)
+            synthesizers_ = obj.synthesizers;
+            parfor (iSplit=1:nSplit,obj.nWorkers)
                subCoefs_ = subCoefs{iSplit};
-               subRecImg{iSplit} = step(synthesizer_{iSplit},subCoefs_,subScales);            
+               subRecImg{iSplit} = step(synthesizers_{iSplit},subCoefs_,subScales);            
             end
             % 4. Overlap add (Circular)
             recImg = circular_ola_(obj,subRecImg);
