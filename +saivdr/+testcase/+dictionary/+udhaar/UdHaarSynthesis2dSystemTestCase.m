@@ -929,7 +929,7 @@ classdef UdHaarSynthesis2dSystemTestCase < matlab.unittest.TestCase
             
             % Instantiation of target class
             import saivdr.dictionary.udhaar.*            
-            testCase.synthesizer = UdHaarSynthesis2dSystem()
+            testCase.synthesizer = UdHaarSynthesis2dSystem();
             
             % Actual values
             imgActual = step(testCase.synthesizer,coefs,scales);

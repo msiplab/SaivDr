@@ -82,9 +82,11 @@ classdef UdHaarAnalysis3dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
             s.kernels = obj.kernels;
             s.coefs = obj.coefs;
             s.nPixels = obj.nPixels;
+            s.nWorkers = obj.nWorkers;
         end
         
         function loadObjectImpl(obj, s, wasLocked)
+            obj.nWorkers = s.nWorkers;            
             obj.kernels = s.kernels;
             obj.coefs = s.coefs;
             obj.nPixels = s.nPixels;
@@ -97,8 +99,7 @@ classdef UdHaarAnalysis3dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
             obj.coefs = zeros(1,(7*nLevels+1)*obj.nPixels);
             
             if obj.UseParallel
-                pool = gcp;
-                obj.nWorkers = pool.NumWorkers;
+                obj.nWorkers = Inf;
             else
                 obj.nWorkers = 0;
             end

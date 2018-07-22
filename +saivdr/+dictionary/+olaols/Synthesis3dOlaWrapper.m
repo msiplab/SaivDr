@@ -92,9 +92,11 @@ classdef Synthesis3dOlaWrapper < saivdr.dictionary.AbstSynthesisSystem
         function s = saveObjectImpl(obj)
             s = saveObjectImpl@saivdr.dictionary.AbstSynthesisSystem(obj);
             s.Synthesizer = matlab.System.saveObject(obj.Synthesizer);
+            s.nWorkers = obj.nWorkers;
         end
         
         function loadObjectImpl(obj,s,wasLocked)
+            obj.nWorkers = s.nWorkers;            
             obj.Synthesizer = matlab.System.loadObject(s.Synthesizer);
             loadObjectImpl@saivdr.dictionary.AbstSynthesisSystem(obj,s,wasLocked);
         end
@@ -117,8 +119,7 @@ classdef Synthesis3dOlaWrapper < saivdr.dictionary.AbstSynthesisSystem
                 obj.DepthSplitFactor;
             obj.synthesizers = cell(nSplit,1);
             if obj.UseParallel
-                pool = gcp;
-                obj.nWorkers = pool.NumWorkers;
+                obj.nWorkers = Inf;
                 for iSplit=1:nSplit
                     obj.synthesizers{iSplit} = clone(obj.Synthesizer);
                 end

@@ -85,10 +85,12 @@ classdef Analysis3dOlsWrapper < saivdr.dictionary.AbstAnalysisSystem
         
         function s = saveObjectImpl(obj)
             s = saveObjectImpl@saivdr.dictionary.AbstAnalysisSystem(obj);
-            s.Synthesizer = matlab.System.saveObject(obj.Analyzer);
+            s.Analyzer = matlab.System.saveObject(obj.Analyzer);
+            s.nWorkers = obj.nWorkers;            
         end
         
         function loadObjectImpl(obj,s,wasLocked)
+            obj.nWorkers = s.nWorkers;            
             obj.Analyzer = matlab.System.loadObject(s.Analyzer);
             loadObjectImpl@saivdr.dictionary.AbstAnalysisystem(obj,s,wasLocked);
         end
@@ -109,8 +111,7 @@ classdef Analysis3dOlsWrapper < saivdr.dictionary.AbstAnalysisSystem
                 obj.DepthSplitFactor;
             obj.analyzers = cell(nSplit,1);
             if obj.UseParallel
-                pool = gcp;
-                obj.nWorkers = pool.NumWorkers;
+                obj.nWorkers = Inf;
                 for iSplit=1:nSplit
                     obj.analyzers{iSplit} = clone(obj.Analyzer);
                 end

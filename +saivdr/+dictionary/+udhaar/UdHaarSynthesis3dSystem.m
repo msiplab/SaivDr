@@ -84,6 +84,7 @@ classdef UdHaarSynthesis3dSystem <  saivdr.dictionary.AbstSynthesisSystem  %#cod
         
         function s = saveObjectImpl(obj)
             s = saveObjectImpl@saivdr.dictionary.AbstSynthesisSystem(obj);
+            s.nWorkers = obj.nWorkers;
             s.kernels = obj.kernels;
             s.nPixels = obj.nPixels;
             s.nLevels = obj.nLevels;
@@ -91,6 +92,7 @@ classdef UdHaarSynthesis3dSystem <  saivdr.dictionary.AbstSynthesisSystem  %#cod
         end
         
         function loadObjectImpl(obj, s, wasLocked)
+            obj.nWorkers = s.nWorkers;            
             obj.kernels = s.kernels;
             obj.nPixels = s.nPixels;
             obj.nLevels = s.nLevels;
@@ -104,8 +106,7 @@ classdef UdHaarSynthesis3dSystem <  saivdr.dictionary.AbstSynthesisSystem  %#cod
             obj.nLevels = (size(scales,1)-1)/7;
             %
             if obj.UseParallel
-                pool = gcp;
-                obj.nWorkers = pool.NumWorkers;
+                obj.nWorkers = Inf;
             else
                 obj.nWorkers = 0;
             end
