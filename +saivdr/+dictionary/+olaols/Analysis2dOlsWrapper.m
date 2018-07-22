@@ -163,13 +163,15 @@ classdef Analysis2dOlsWrapper < saivdr.dictionary.AbstAnalysisSystem
         
         function coefs = concatinate_(obj,subCoefs,subScales)
             import saivdr.dictionary.utility.Direction
+            verticalSplitFactor = obj.VerticalSplitFactor;
+            horizontalSplitFactor = obj.HorizontalSplitFactor;
             refSubScales = obj.refScales*...
-                diag(1./[obj.VerticalSplitFactor,obj.HorizontalSplitFactor]);            
+                diag(1./[verticalSplitFactor,horizontalSplitFactor]);            
             %
             scalesSplit = subScales{1}; % Partial scales
             nSplit = length(subCoefs);           
             nChs = size(refSubScales,1);            
-            coefCrop = cell(obj.VerticalSplitFactor,obj.HorizontalSplitFactor);
+            coefCrop = cell(verticalSplitFactor,horizontalSplitFactor);
             coefVec = cell(1,nChs);
             %
             eIdx = 0;                            
@@ -189,8 +191,8 @@ classdef Analysis2dOlsWrapper < saivdr.dictionary.AbstAnalysisSystem
                     sColIdx = offset(Direction.HORIZONTAL) + 1; 
                     eColIdx = sColIdx + stepsize(Direction.HORIZONTAL) - 1;
                     %
-                    iRow = mod((iSplit-1),obj.VerticalSplitFactor)+1;
-                    iCol = floor((iSplit-1)/obj.HorizontalSplitFactor)+1;
+                    iRow = mod((iSplit-1),verticalSplitFactor)+1;
+                    iCol = floor((iSplit-1)/horizontalSplitFactor)+1;
                     coefCrop{iRow,iCol} = ...
                         tmpArray(sRowIdx:eRowIdx,sColIdx:eColIdx);
                 end
@@ -203,17 +205,19 @@ classdef Analysis2dOlsWrapper < saivdr.dictionary.AbstAnalysisSystem
         
         function subImgs = split_ols_(obj,srcImg)
             import saivdr.dictionary.utility.Direction
-            nSplit = obj.VerticalSplitFactor*obj.HorizontalSplitFactor;
+            verticalSplitFactor = obj.VerticalSplitFactor;
+            horizontalSplitFactor = obj.HorizontalSplitFactor;
+            nSplit = verticalSplitFactor*horizontalSplitFactor;
             stepsize = obj.refSubSize;
             overlap = 2*obj.PadSize;
             %
             subImgs = cell(nSplit,1);
             idx = 0;
-            for iHorSplit = 1:obj.HorizontalSplitFactor
+            for iHorSplit = 1:horizontalSplitFactor
                 sColIdx = (iHorSplit-1)*stepsize(Direction.HORIZONTAL) + 1;
                 eColIdx = iHorSplit*stepsize(Direction.HORIZONTAL) + ...
                     overlap(Direction.HORIZONTAL);
-                for iVerSplit = 1:obj.VerticalSplitFactor
+                for iVerSplit = 1:verticalSplitFactor
                     idx = idx + 1;
                     sRowIdx = (iVerSplit-1)*stepsize(Direction.VERTICAL) + 1;
                     eRowIdx = iVerSplit*stepsize(Direction.VERTICAL) + ...

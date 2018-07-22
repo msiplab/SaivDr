@@ -179,23 +179,26 @@ classdef Synthesis3dOlaWrapper < saivdr.dictionary.AbstSynthesisSystem
 
         function recImg = circular_ola_(obj,subRecImg)
             import saivdr.dictionary.utility.Direction
+            verticalSplitFactor = obj.VerticalSplitFactor;
+            horizontalSplitFactor = obj.HorizontalSplitFactor;
+            depthSplitFactor = obj.DepthSplitFactor;
             stepsize = obj.refSubSize;
             overlap = size(subRecImg{1})-stepsize;
             recImg = zeros(obj.refSize+overlap);
             % Overlap add
             iSplit = 0;
             tIdxDep = 0;
-            for iDepSplit = 1:obj.DepthSplitFactor
+            for iDepSplit = 1:depthSplitFactor
                 sIdxDep = tIdxDep + 1;
                 tIdxDep = sIdxDep + stepsize(Direction.DEPTH) - 1;
                 eIdxDep = tIdxDep + overlap(Direction.DEPTH);
                 tIdxHor = 0;
-                for iHorSplit = 1:obj.HorizontalSplitFactor
+                for iHorSplit = 1:horizontalSplitFactor
                     sIdxHor = tIdxHor + 1;
                     tIdxHor = sIdxHor + stepsize(Direction.HORIZONTAL) - 1;
                     eIdxHor = tIdxHor + overlap(Direction.HORIZONTAL);
                     tIdxVer = 0;
-                    for iVerSplit = 1:obj.VerticalSplitFactor
+                    for iVerSplit = 1:verticalSplitFactor
                         iSplit = iSplit + 1;
                         sIdxVer = tIdxVer + 1;
                         tIdxVer = sIdxVer + stepsize(Direction.VERTICAL) - 1;
@@ -256,15 +259,17 @@ classdef Synthesis3dOlaWrapper < saivdr.dictionary.AbstSynthesisSystem
         
         function subCoefArrays = split_(obj,coefs,scales)
             import saivdr.dictionary.utility.Direction
-            nSplit = obj.VerticalSplitFactor*...
-                obj.HorizontalSplitFactor*...
-                obj.DepthSplitFactor;
+            verticalSplitFactor = obj.VerticalSplitFactor;
+            horizontalSplitFactor = obj.HorizontalSplitFactor;
+            nSplit = verticalSplitFactor*...
+                horizontalSplitFactor*...
+                depthSplitFactor;
             % # of channels
             nChs = size(scales,1);
             subScales = scales*diag(...
-                [1/obj.VerticalSplitFactor,...
-                1/obj.HorizontalSplitFactor,...
-                1/obj.DepthSplitFactor]);
+                [1/verticalSplitFactor,...
+                1/horizontalSplitFactor,...
+                1/depthSplitFactor]);
             subCoefArrays = cell(nSplit,nChs);
             %
             eIdx = 0;
@@ -280,13 +285,13 @@ classdef Synthesis3dOlaWrapper < saivdr.dictionary.AbstSynthesisSystem
                 nSubCols = subScales(iCh,Direction.HORIZONTAL);
                 nSubLays = subScales(iCh,Direction.DEPTH);
                 iSplit = 0;
-                for iDepSplit = 1:obj.DepthSplitFactor
+                for iDepSplit = 1:depthSplitFactor
                     sLayIdx = (iDepSplit-1)*nSubLays + 1;
                     eLayIdx = iDepSplit*nSubLays;
-                    for iHorSplit = 1:obj.HorizontalSplitFactor
+                    for iHorSplit = 1:horizontalSplitFactor
                         sColIdx = (iHorSplit-1)*nSubCols + 1;
                         eColIdx = iHorSplit*nSubCols;
-                        for iVerSplit = 1:obj.VerticalSplitFactor
+                        for iVerSplit = 1:verticalSplitFactor
                             iSplit = iSplit + 1;
                             sRowIdx = (iVerSplit-1)*nSubRows + 1;
                             eRowIdx = iVerSplit*nSubRows;

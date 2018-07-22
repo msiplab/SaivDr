@@ -168,17 +168,20 @@ classdef Analysis3dOlsWrapper < saivdr.dictionary.AbstAnalysisSystem
         
         function coefs = concatinate_(obj,subCoefs,subScales)
             import saivdr.dictionary.utility.Direction
+            verticalSplitFactor = obj.VerticalSplitFactor;
+            horizontalSplitFactor = obj.HorizontalSplitFactor;
+            depthSplitFactor = obj.DepthSplitFactor;
             refSubScales = obj.refScales*...
-                diag(1./[obj.VerticalSplitFactor,...
-                obj.HorizontalSplitFactor,...
-                obj.DepthSplitFactor]);            
+                diag(1./[verticalSplitFactor,...
+                horizontalSplitFactor,...
+                depthSplitFactor]);            
             %
             scalesSplit = subScales{1}; % Partial scales
             nSplit = length(subCoefs);           
             nChs = size(refSubScales,1);            
-            coefCrop = cell(obj.VerticalSplitFactor,...
-                obj.HorizontalSplitFactor,...
-                obj.DepthSplitFactor);
+            coefCrop = cell(verticalSplitFactor,...
+                horizontalSplitFactor,...
+                depthSplitFactor);
             coefVec = cell(1,nChs);
             %
             eIdx = 0;                            
@@ -200,9 +203,9 @@ classdef Analysis3dOlsWrapper < saivdr.dictionary.AbstAnalysisSystem
                     sLayIdx = offset(Direction.DEPTH) + 1;
                     eLayIdx = sLayIdx + stepsize(Direction.DEPTH) - 1;
                     %
-                    iRow = mod((iSplit-1),obj.VerticalSplitFactor)+1;
-                    iCol = mod(floor((iSplit-1)/(obj.VerticalSplitFactor)),obj.HorizontalSplitFactor)+1;
-                    iLay = floor((iSplit-1)/(obj.VerticalSplitFactor*obj.HorizontalSplitFactor))+1;
+                    iRow = mod((iSplit-1),verticalSplitFactor)+1;
+                    iCol = mod(floor((iSplit-1)/(verticalSplitFactor)),horizontalSplitFactor)+1;
+                    iLay = floor((iSplit-1)/(verticalSplitFactor*horizontalSplitFactor))+1;
                     coefCrop{iRow,iCol,iLay} = ...
                         tmpArray(sRowIdx:eRowIdx,sColIdx:eColIdx,sLayIdx:eLayIdx);
                 end
@@ -215,23 +218,26 @@ classdef Analysis3dOlsWrapper < saivdr.dictionary.AbstAnalysisSystem
         
         function subImgs = split_ols_(obj,srcImg)
             import saivdr.dictionary.utility.Direction
-            nSplit = obj.VerticalSplitFactor*...
-                obj.HorizontalSplitFactor*...
-                obj.DepthSplitFactor;
+            verticalSplitFactor = obj.VerticalSplitFactor;
+            horizontalSplitFactor = obj.HorizontalSplitFactor;
+            depthSplitFactor = obj.DepthSplitFactor;
+            nSplit = verticalSplitFactor*...
+                horizontalSplitFactor*...
+                depthSplitFactor;
             stepsize = obj.refSubSize;
             overlap = 2*obj.PadSize;
             %
             subImgs = cell(nSplit,1);
             idx = 0;
-            for iLaySplit = 1:obj.DepthSplitFactor
+            for iLaySplit = 1:depthSplitFactor
                 sLayIdx = (iLaySplit-1)*stepsize(Direction.DEPTH) + 1;
                 eLayIdx = iLaySplit*stepsize(Direction.DEPTH) + ...
                     overlap(Direction.DEPTH);
-                for iHorSplit = 1:obj.HorizontalSplitFactor
+                for iHorSplit = 1:horizontalSplitFactor
                     sColIdx = (iHorSplit-1)*stepsize(Direction.HORIZONTAL) + 1;
                     eColIdx = iHorSplit*stepsize(Direction.HORIZONTAL) + ...
                         overlap(Direction.HORIZONTAL);
-                    for iVerSplit = 1:obj.VerticalSplitFactor
+                    for iVerSplit = 1:verticalSplitFactor
                         idx = idx + 1;
                         sRowIdx = (iVerSplit-1)*stepsize(Direction.VERTICAL) + 1;
                         eRowIdx = iVerSplit*stepsize(Direction.VERTICAL) + ...

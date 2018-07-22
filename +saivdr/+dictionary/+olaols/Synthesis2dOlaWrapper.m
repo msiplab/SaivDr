@@ -242,11 +242,13 @@ classdef Synthesis2dOlaWrapper < saivdr.dictionary.AbstSynthesisSystem
         
         function subCoefArrays = split_(obj,coefs,scales)
             import saivdr.dictionary.utility.Direction
-            nSplit = obj.VerticalSplitFactor*obj.HorizontalSplitFactor;
+            verticalSplitFactor = obj.VerticalSplitFactor;
+            horizontalSplitFactor = obj.HorizontalSplitFactor;
+            nSplit = verticalSplitFactor*horizontalSplitFactor;
             % # of channels
             nChs = size(scales,1);
             subScales = scales*diag(...
-                [1/obj.VerticalSplitFactor, 1/obj.HorizontalSplitFactor]);
+                [1/verticalSplitFactor, 1/horizontalSplitFactor]);
             subCoefArrays = cell(nSplit,nChs);
             %
             eIdx = 0;
@@ -260,10 +262,10 @@ classdef Synthesis2dOlaWrapper < saivdr.dictionary.AbstSynthesisSystem
                 nSubRows = subScales(iCh,Direction.VERTICAL);
                 nSubCols = subScales(iCh,Direction.HORIZONTAL);
                 iSplit = 0;
-                for iHorSplit = 1:obj.HorizontalSplitFactor
+                for iHorSplit = 1:horizontalSplitFactor
                     sColIdx = (iHorSplit-1)*nSubCols + 1;
                     eColIdx = iHorSplit*nSubCols;                    
-                    for iVerSplit = 1:obj.VerticalSplitFactor
+                    for iVerSplit = 1:verticalSplitFactor
                         iSplit = iSplit + 1;
                         sRowIdx = (iVerSplit-1)*nSubRows + 1;
                         eRowIdx = iVerSplit*nSubRows;                    
