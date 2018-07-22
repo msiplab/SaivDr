@@ -230,11 +230,12 @@ classdef Synthesis2dOlaWrapper < saivdr.dictionary.AbstSynthesisSystem
         function subCoefArrays = padding_(obj,subCoefArrays)
             nSplit = size(subCoefArrays,1);
             nChs = size(subCoefArrays,2);
+            subPadSize_ = obj.subPadSize;
             for iSplit = 1:nSplit
                 for iCh = 1:nChs
                     subCoefArrays{iSplit,iCh} = ...
                         padarray(subCoefArrays{iSplit,iCh},...
-                        obj.subPadSize(iCh,:),0,'both');
+                        subPadSize_(iCh,:),0,'both');
                 end
             end
         end
