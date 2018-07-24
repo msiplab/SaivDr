@@ -261,6 +261,7 @@ classdef Synthesis3dOlaWrapper < saivdr.dictionary.AbstSynthesisSystem
             import saivdr.dictionary.utility.Direction
             verticalSplitFactor = obj.VerticalSplitFactor;
             horizontalSplitFactor = obj.HorizontalSplitFactor;
+            depthSplitFactor = obj.DepthSplitFactor;
             nSplit = verticalSplitFactor*...
                 horizontalSplitFactor*...
                 depthSplitFactor;
