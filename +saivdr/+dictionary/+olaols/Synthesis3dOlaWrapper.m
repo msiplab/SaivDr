@@ -51,6 +51,7 @@ classdef Synthesis3dOlaWrapper < saivdr.dictionary.AbstSynthesisSystem
         refSubSize
         refSynthesizer
         subPadSize
+        subPadArrays
         synthesizers
         nWorkers
     end
@@ -142,7 +143,17 @@ classdef Synthesis3dOlaWrapper < saivdr.dictionary.AbstSynthesisSystem
             %message = 'Split factor must be a divisor of array size.';            
             if sum(mod(obj.subPadSize,1)) ~= 0
                 throw(MException('SaivDr','Illegal Pad Size.'))                
-            end            
+            end
+            % Allocate memory for zero padding of arrays
+            nChs = size(scales,1);
+            obj.subPadArrays = cell(nChs,1);
+            for iCh = 1:nChs
+                subScale = scales(iCh,:) * ...
+                diag(1./[obj.VerticalSplitFactor,...
+                obj.HorizontalSplitFactor,...
+                obj.DepthSplitFactor]);
+                obj.subPadArrays{iCh} = zeros(subScale+2*obj.subPadSize(iCh,:));
+            end                  
             % Check identity
             exceptionId = 'SaivDr:ReconstructionFailureException';            
             message = 'Failure occurs in reconstruction. Please check the split and padding size.';
@@ -245,14 +256,31 @@ classdef Synthesis3dOlaWrapper < saivdr.dictionary.AbstSynthesisSystem
         end
         
         function subCoefArrays = padding_(obj,subCoefArrays)
+            import saivdr.dictionary.utility.Direction
             nSplit = size(subCoefArrays,1);
             nChs = size(subCoefArrays,2);
             subPadSize_ = obj.subPadSize;
-            for iSplit = 1:nSplit
-                for iCh = 1:nChs
+            subPadArrays_ = obj.subPadArrays;
+            for iCh = 1:nChs
+                sRowIdx = subPadSize_(iCh,Direction.VERTICAL)+1;
+                eRowIdx = sRowIdx + size(subCoefArrays{1,iCh},Direction.VERTICAL)-1;
+                sColIdx = subPadSize_(iCh,Direction.HORIZONTAL)+1;
+                eColIdx = sColIdx + size(subCoefArrays{1,iCh},Direction.HORIZONTAL)-1;                
+                sLayIdx = subPadSize_(iCh,Direction.HORIZONTAL)+1;
+                eLayIdx = sLayIdx + size(subCoefArrays{1,iCh},Direction.DEPTH)-1;                                
+                for iSplit = 1:nSplit
+                    %{
                     subCoefArrays{iSplit,iCh} = ...
                         padarray(subCoefArrays{iSplit,iCh},...
                         subPadSize_(iCh,:),0,'both');
+                    %}
+                    tmpArray = subPadArrays_{iCh};
+                    %assert(norm(size(subCoefArrays{iSplit,iCh})-size(tmpArray))<1e-6)
+                    %%{
+                    tmpArray(sRowIdx:eRowIdx,sColIdx:eColIdx,sLayIdx:eLayIdx) ...
+                        = subCoefArrays{iSplit,iCh};
+                    subCoefArrays{iSplit,iCh} = tmpArray;
+                    %%}                    
                 end
             end
         end
