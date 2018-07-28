@@ -52,6 +52,7 @@ classdef Synthesis2dOlaWrapper < saivdr.dictionary.AbstSynthesisSystem
         subPadSize
         subPadArrays
         synthesizers
+        tmpCoefs
         nWorkers
     end
     
@@ -141,11 +142,15 @@ classdef Synthesis2dOlaWrapper < saivdr.dictionary.AbstSynthesisSystem
             % Allocate memory for zero padding of arrays
             nChs = size(scales,1);
             obj.subPadArrays = cell(nChs,1);
+            nCoefs = 0;
             for iCh = 1:nChs
                 subScale = scales(iCh,:) * ...
                 diag(1./[obj.VerticalSplitFactor,obj.HorizontalSplitFactor]);
-                obj.subPadArrays{iCh} = zeros(subScale+2*obj.subPadSize(iCh,:));
-            end            
+                nDim = subScale+2*obj.subPadSize(iCh,:);
+                obj.subPadArrays{iCh} = zeros(nDim);
+                nCoefs = nCoefs + prod(nDim);
+            end
+            obj.tmpCoefs = zeros(nCoefs,1);
             % Check identity
             exceptionId = 'SaivDr:ReconstructionFailureException';            
             message = 'Failure occurs in reconstruction. Please check the split and padding size.';
@@ -215,21 +220,26 @@ classdef Synthesis2dOlaWrapper < saivdr.dictionary.AbstSynthesisSystem
                 -overlap/2);
         end
         
-        function [subCoefs,subScales] = convert_(~,subCoefArrays)
+        function [subCoefs,subScales] = convert_(obj,subCoefArrays)
             nSplit = size(subCoefArrays,1);
             nChs = size(subCoefArrays,2);
             subScales = zeros(nChs,2);
             subCoefs = cell(nSplit,1);
+            tmpCoefs_ = obj.tmpCoefs;
             for iSplit = 1:nSplit
-                tmpCoefs = [];
+                %tmpCoefs_ = [];
+                eIdx = 0;
                 for iCh = 1:nChs
                     tmpArray = subCoefArrays{iSplit,iCh};
                     if iSplit == 1
                         subScales(iCh,:) = size(tmpArray);
                     end
-                    tmpCoefs = [ tmpCoefs tmpArray(:).' ];
+                    %tmpCoefs_ = [ tmpCoefs_ tmpArray(:).' ];
+                    sIdx = eIdx + 1;
+                    eIdx = sIdx + numel(tmpArray) - 1;
+                    tmpCoefs_(sIdx:eIdx) = tmpArray(:).';
                 end
-                subCoefs{iSplit} = tmpCoefs;
+                subCoefs{iSplit} = tmpCoefs_;
             end
         end
         
