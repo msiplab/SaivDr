@@ -53,7 +53,7 @@ classdef Synthesis3dOlaWrapper < saivdr.dictionary.AbstSynthesisSystem
         subPadSize
         subPadArrays
         synthesizers
-        tmpCoefs
+        %tmpCoefs
         nWorkers
     end
     
@@ -158,7 +158,7 @@ classdef Synthesis3dOlaWrapper < saivdr.dictionary.AbstSynthesisSystem
                 obj.subPadArrays{iCh} = zeros(subScale+2*obj.subPadSize(iCh,:));
                 nCoefs = nCoefs + prod(nDim);
             end                  
-            obj.tmpCoefs = zeros(nCoefs,1);
+            %obj.tmpCoefs = zeros(nCoefs,1);
             % Check identity
             exceptionId = 'SaivDr:ReconstructionFailureException';            
             message = 'Failure occurs in reconstruction. Please check the split and padding size.';
@@ -242,28 +242,23 @@ classdef Synthesis3dOlaWrapper < saivdr.dictionary.AbstSynthesisSystem
                 1:obj.refSize(Direction.DEPTH)),-overlap/2);
         end
         
-        function [subCoefs,subScales] = convert_(obj,subCoefArrays)
+        function [subCoefs,subScales] = convert_(~,subCoefArrays)
             nSplit = size(subCoefArrays,1);
             nChs = size(subCoefArrays,2);
             subScales = zeros(nChs,3);
             subCoefs = cell(nSplit,1);
-            tmpCoefs_ = obj.tmpCoefs;
             for iSplit = 1:nSplit
-                %tmpCoefs_ = [];
-                eIdx = 0;
+                tmpCoefs_ = cell(1,nChs);
                 for iCh = 1:nChs
                     tmpArray = subCoefArrays{iSplit,iCh};
                     if iSplit == 1
                         subScales(iCh,:) = size(tmpArray);
                     end
-                    %tmpCoefs_ = [ tmpCoefs_ tmpArray(:).' ];
-                    sIdx = eIdx + 1;
-                    eIdx = sIdx + numel(tmpArray) - 1;
-                    tmpCoefs_(sIdx:eIdx) = tmpArray(:).';
+                    tmpCoefs_{1,iCh} = tmpArray(:).';
                 end
-                subCoefs{iSplit} = tmpCoefs_;
-            end
-        end
+                subCoefs{iSplit} = cell2mat(tmpCoefs_);
+            end               
+         end
         
         function subCoefArrays = padding_(obj,subCoefArrays)
             import saivdr.dictionary.utility.Direction
