@@ -171,7 +171,8 @@ classdef Synthesis2dOlaWrapper < saivdr.dictionary.AbstSynthesisSystem
             subRecImg = cell(nSplit,1);
             %
             synthesizers_ = obj.synthesizers;
-            parfor (iSplit=1:nSplit,obj.nWorkers)
+            nWorkers_ = obj.nWorkers;
+            parfor (iSplit=1:nSplit,nWorkers_)
                subCoefs_ = subCoefs{iSplit};
                subRecImg{iSplit} = step(synthesizers_{iSplit},subCoefs_,subScales);            
             end
