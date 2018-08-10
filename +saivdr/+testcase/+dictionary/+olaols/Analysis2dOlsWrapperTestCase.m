@@ -105,6 +105,42 @@ classdef Analysis2dOlsWrapperTestCase < matlab.unittest.TestCase
         end
     
         % Test
+        function testUdHaarCellOutput(testCase,height,width,level)
+
+            % Parameters
+            nLevels = level;
+            srcImg = rand(height,width);
+            
+            % Expected values
+            import saivdr.dictionary.udhaar.*
+            refAnalyzer = UdHaarAnalysis2dSystem();
+            [coefs,scales] = step(refAnalyzer,srcImg,nLevels);
+            nSplit = 1;
+            coefsExpctd = cell(nSplit,1);
+            scalesExpctd = cell(nSplit,1);
+            coefsExpctd{1} = coefs;
+            scalesExpctd{1} = scales;
+            
+            % Instantiation of target class
+            import saivdr.dictionary.olaols.*
+            testCase.analyzer = Analysis2dOlsWrapper(...
+                'Analyzer',refAnalyzer,...
+                'OutputType','Cell');
+            
+            % Actual values
+            [coefsActual,scalesActual] = ...
+                step(testCase.analyzer,srcImg,nLevels);
+            
+            % Evaluation
+            testCase.verifySize(scalesActual{1},size(scalesExpctd{1}));
+            testCase.verifyEqual(scalesActual{1},scalesExpctd{1});            
+            testCase.verifySize(coefsActual{1},size(coefsExpctd{1}));
+            diff = max(abs(coefsExpctd{1}(:) - coefsActual{1}(:)));
+            testCase.verifyEqual(coefsActual{1},coefsExpctd{1},...
+                'AbsTol',1e-10, sprintf('%g',diff));
+        end
+        
+        % Test
         function testUdHaarSplitting(testCase,width,height,level,useparallel)
             
             % Parameters
@@ -139,6 +175,52 @@ classdef Analysis2dOlsWrapperTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-10,...
                 sprintf('%g',diff));            
         end
+        
+        % Test
+        %{
+        function testUdHaarSplittingCellOutput(testCase,width,height,level,useparallel)
+            
+            % Parameters
+            nVerSplit = 2;
+            nHorSplit = 2;
+            nVerPad = 2^(level-1);
+            nHorPad = 2^(level-1);
+            srcImg = rand(height,width);
+            
+            % Expected values
+            import saivdr.dictionary.udhaar.*
+            refAnalyzer = UdHaarAnalysis2dSystem();
+            [coefs,scales] = step(refAnalyzer,srcImg,level);
+            nSplit = nVerSplit*nHorSplit;
+            coefsExpctd = cell(nSplit,1);
+            scalesExpctd = cell(nSplit,1);
+
+            for iSplit = 1:nSplit
+                coefsExpctd{iSplit} = coefs;
+                scalesExpctd{iSplit} = scales;            
+            end
+            
+            % Instantiation of target class
+            import saivdr.dictionary.olaols.*
+            testCase.analyzer = Analysis2dOlsWrapper(...
+                'Analyzer',refAnalyzer,...
+                'VerticalSplitFactor',nVerSplit,...
+                'HorizontalSplitFactor',nHorSplit,...
+                'PadSize',[nVerPad,nHorPad],...
+                'UseParallel',useparallel);
+            
+            % Actual values
+            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,level);
+            
+            % Evaluation
+            testCase.verifySize(scalesActual,size(scalesExpctd));
+            testCase.verifyEqual(scalesActual,scalesExpctd);
+            testCase.verifySize(coefsActual,size(coefsExpctd));
+            diff = max(abs(coefsExpctd(:) - coefsActual(:)));
+            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-10,...
+                sprintf('%g',diff));            
+        end        
+        %}
         
         % Test
         function testUdHaarSplittingWarningReconstruction(testCase,width,height)

@@ -25,6 +25,7 @@ classdef Analysis2dOlsWrapper < saivdr.dictionary.AbstAnalysisSystem
         Analyzer
         BoundaryOperation
         PadSize = [0 0]
+        OutputType = 'Vector'
     end
     
     properties (Logical)
@@ -43,6 +44,8 @@ classdef Analysis2dOlsWrapper < saivdr.dictionary.AbstAnalysisSystem
     properties (Hidden, Transient)
         BoundaryOperationSet = ...
             matlab.system.StringSet({'Circular'});
+        OutputTypeSet = ...
+            matlab.system.StringSet({'Vector','Cell'});
     end
     
     properties (Access = private, Nontunable)
@@ -123,17 +126,20 @@ classdef Analysis2dOlsWrapper < saivdr.dictionary.AbstAnalysisSystem
                 throw(MException(exceptionId,message))
             end
             % Check identity
-            exceptionId = 'SaivDr:ReconstructionFailureException';            
+            exceptionId = 'SaivDr:ReconstructionFailureException';
             message = 'Failure occurs in reconstruction. Please check the split and padding size.';
-            newcoefs = stepImpl(obj,srcImg,nLevels);
+            if strcmp(obj.OutputType,'Cell')
+                [subCoefs_,subScales_] = stepImpl(obj,srcImg,nLevels);
+                newcoefs = concatinate_(obj,subCoefs_,subScales_);
+            else
+                newcoefs = stepImpl(obj,srcImg,nLevels);
+            end
             diffCoefs = coefs - newcoefs;
             if norm(diffCoefs(:))/numel(diffCoefs) > 1e-6
                 throw(MException(exceptionId,message))
             end
             % Delete reference synthesizer
             obj.refAnalyzer.delete()
-            %
-
         end
         
         function [coefs, scales] = stepImpl(obj,srcImg,nLevels)
@@ -153,8 +159,13 @@ classdef Analysis2dOlsWrapper < saivdr.dictionary.AbstAnalysisSystem
                    step(analyzers_{iSplit},subImgs{iSplit},nLevels);               
            end
            % 4. Concatinate
-           coefs = concatinate_(obj,subCoefs_,subScales_);
-           scales = obj.refScales;
+           if strcmp(obj.OutputType,'Cell')
+               coefs = subCoefs_;
+               scales = subScales_;
+           else
+               coefs = concatinate_(obj,subCoefs_,subScales_);
+               scales = obj.refScales;
+           end
         end
         
     end
