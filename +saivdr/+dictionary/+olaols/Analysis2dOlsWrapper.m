@@ -154,7 +154,8 @@ classdef Analysis2dOlsWrapper < saivdr.dictionary.AbstAnalysisSystem
             subScales_ = cell(nSplit,1);
             %
             analyzers_ = obj.analyzers;
-            parfor (iSplit=1:nSplit,obj.nWorkers)
+            nWorkers_ = obj.nWorkers;
+            parfor (iSplit=1:nSplit,nWorkers_)
                 [subCoefs_{iSplit}, subScales_{iSplit}] = ...
                     step(analyzers_{iSplit},subImgs{iSplit},nLevels);
             end
