@@ -104,7 +104,7 @@ classdef Analysis2dOlsWrapperTestCase < matlab.unittest.TestCase
                 sprintf('%g',diff));
         end
     
-        % Test
+        %Test
         function testUdHaarCellOutput(testCase,height,width,level)
 
             % Parameters
@@ -117,9 +117,9 @@ classdef Analysis2dOlsWrapperTestCase < matlab.unittest.TestCase
             [coefs,scales] = step(refAnalyzer,srcImg,nLevels);
             nSplit = 1;
             coefsExpctd = cell(nSplit,1);
-            scalesExpctd = cell(nSplit,1);
+            %scalesExpctd = cell(nSplit,1);
             coefsExpctd{1} = coefs;
-            scalesExpctd{1} = scales;
+            scalesExpctd = scales;
             
             % Instantiation of target class
             import saivdr.dictionary.olaols.*
@@ -132,8 +132,8 @@ classdef Analysis2dOlsWrapperTestCase < matlab.unittest.TestCase
                 step(testCase.analyzer,srcImg,nLevels);
             
             % Evaluation
-            testCase.verifySize(scalesActual{1},size(scalesExpctd{1}));
-            testCase.verifyEqual(scalesActual{1},scalesExpctd{1});            
+            testCase.verifySize(scalesActual,size(scalesExpctd));
+            testCase.verifyEqual(scalesActual,scalesExpctd);            
             testCase.verifySize(coefsActual{1},size(coefsExpctd{1}));
             diff = max(abs(coefsExpctd{1}(:) - coefsActual{1}(:)));
             testCase.verifyEqual(coefsActual{1},coefsExpctd{1},...
@@ -177,7 +177,6 @@ classdef Analysis2dOlsWrapperTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        %{
         function testUdHaarSplittingCellOutput(testCase,width,height,level,useparallel)
             
             % Parameters
@@ -190,15 +189,10 @@ classdef Analysis2dOlsWrapperTestCase < matlab.unittest.TestCase
             % Expected values
             import saivdr.dictionary.udhaar.*
             refAnalyzer = UdHaarAnalysis2dSystem();
-            [coefs,scales] = step(refAnalyzer,srcImg,level);
+            [coefs,scales] = step(refAnalyzer,srcImg,level);            
             nSplit = nVerSplit*nHorSplit;
-            coefsExpctd = cell(nSplit,1);
-            scalesExpctd = cell(nSplit,1);
-
-            for iSplit = 1:nSplit
-                coefsExpctd{iSplit} = coefs;
-                scalesExpctd{iSplit} = scales;            
-            end
+            [coefsExpctd, scalesExpctd] = testCase.splitCoefs_(...
+                coefs,scales,[nVerSplit nHorSplit]);
             
             % Instantiation of target class
             import saivdr.dictionary.olaols.*
@@ -207,20 +201,22 @@ classdef Analysis2dOlsWrapperTestCase < matlab.unittest.TestCase
                 'VerticalSplitFactor',nVerSplit,...
                 'HorizontalSplitFactor',nHorSplit,...
                 'PadSize',[nVerPad,nHorPad],...
-                'UseParallel',useparallel);
+                'UseParallel',useparallel,...
+                'OutputType','Cell');
             
             % Actual values
             [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,level);
             
             % Evaluation
             testCase.verifySize(scalesActual,size(scalesExpctd));
-            testCase.verifyEqual(scalesActual,scalesExpctd);
-            testCase.verifySize(coefsActual,size(coefsExpctd));
-            diff = max(abs(coefsExpctd(:) - coefsActual(:)));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-10,...
-                sprintf('%g',diff));            
+            testCase.verifyEqual(scalesActual,scalesExpctd);    
+            for iSplit = 1:nSplit
+                testCase.verifySize(coefsActual{iSplit},size(coefsExpctd{iSplit}));
+                diff = max(abs(coefsExpctd{iSplit}(:) - coefsActual{iSplit}(:)));
+                testCase.verifyEqual(coefsActual{iSplit},coefsExpctd{iSplit},...
+                    'AbsTol',1e-10, sprintf('%g',diff));        
+            end
         end        
-        %}
         
         % Test
         function testUdHaarSplittingWarningReconstruction(testCase,width,height)
@@ -393,5 +389,48 @@ classdef Analysis2dOlsWrapperTestCase < matlab.unittest.TestCase
             end
         end
         
+    end
+    
+    methods (Static, Access = private) 
+        
+        function [coefsCrop, scalesCrop] = splitCoefs_(coefs,scales,splitFactor)
+            import saivdr.dictionary.utility.Direction
+            nChs = size(scales,1);
+            nSplit = prod(splitFactor);
+            nVerSplit = splitFactor(Direction.VERTICAL);
+            nHorSplit = splitFactor(Direction.HORIZONTAL);
+            %
+            coefsCrop = cell(nSplit,1);
+            for iSplit = 1:nSplit
+                coefsCrop{iSplit} = [];
+            end
+            scalesCrop = zeros(nChs,2);
+            %
+            eIdx = 0;
+            for iCh = 1:nChs
+                sIdx = eIdx + 1;
+                eIdx = sIdx + prod(scales(iCh,:)) - 1;                
+                nRows = scales(iCh,Direction.VERTICAL);
+                nCols = scales(iCh,Direction.HORIZONTAL);                
+                coefArrays = reshape(coefs(sIdx:eIdx),[nRows nCols]);                
+                %
+                nSubRows = nRows/nVerSplit;
+                nSubCols = nCols/nHorSplit;
+                iSplit = 0;
+                for iHorSplit = 1:nHorSplit
+                    sColIdx = (iHorSplit-1)*nSubCols + 1;
+                    eColIdx = iHorSplit*nSubCols;
+                    for iVerSplit = 1:nVerSplit
+                        sRowIdx = (iVerSplit-1)*nSubRows + 1;
+                        eRowIdx = iVerSplit*nSubRows;
+                        subCoefArrays = coefArrays(sRowIdx:eRowIdx,sColIdx:eColIdx);
+                        %
+                        iSplit = iSplit + 1;
+                        coefsCrop{iSplit} = [coefsCrop{iSplit} subCoefArrays(:).'];
+                    end
+                end
+                scalesCrop(iCh,:) = [nSubRows nSubCols];
+            end
+        end
     end
 end
