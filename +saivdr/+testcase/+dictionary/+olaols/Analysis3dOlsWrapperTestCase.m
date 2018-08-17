@@ -105,6 +105,42 @@ classdef Analysis3dOlsWrapperTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-10,...
                 sprintf('%g',diff));
         end
+        
+        
+        % Test
+        function testUdHaarCellOutput(testCase,height,width,depth,level)
+
+            % Parameters
+            nLevels = level;
+            srcImg = rand(height,width,depth);
+            nSplit = 1;
+            
+            % Expected values
+            import saivdr.dictionary.udhaar.*
+            refAnalyzer = UdHaarAnalysis3dSystem();
+            [coefs,scales] = step(refAnalyzer,srcImg,nLevels);
+            coefsExpctd = cell(nSplit,1);
+            coefsExpctd{1} = coefs;
+            scalesExpctd = scales;
+            
+            % Instantiation of target class
+            import saivdr.dictionary.olaols.*
+            testCase.analyzer = Analysis3dOlsWrapper(...
+                'Analyzer',refAnalyzer,...
+                'OutputType','Cell');
+            
+            % Actual values
+            [coefsActual, scalesActual] = ...
+                step(testCase.analyzer,srcImg,nLevels);
+            
+            % Evaluation
+            testCase.verifySize(scalesActual,size(scalesExpctd));
+            testCase.verifyEqual(scalesActual,scalesExpctd);
+            testCase.verifySize(coefsActual{1},size(coefsExpctd{1}));
+            diff = max(abs(coefsExpctd{1}(:) - coefsActual{1}(:)));
+            testCase.verifyEqual(coefsActual{1},coefsExpctd{1},...
+                'AbsTol',1e-10,sprintf('%g',diff));
+        end
     
         
         % Test
@@ -146,6 +182,51 @@ classdef Analysis3dOlsWrapperTestCase < matlab.unittest.TestCase
                 sprintf('%g',diff));            
         end
         
+        % Test
+        function testUdHaarSplittingCellOutput(testCase,width,height,depth,level,useparallel)
+            
+            % Parameters
+            nVerSplit = 2;
+            nHorSplit = 2;
+            nDepSplit = 2;
+            nVerPad = 2^(level-1);
+            nHorPad = 2^(level-1);
+            nDepPad = 2^(level-1);
+            srcImg = rand(height,width,depth);
+            
+            % Expected values
+            import saivdr.dictionary.udhaar.*
+            refAnalyzer = UdHaarAnalysis3dSystem();
+            [coefs,scales] = step(refAnalyzer,srcImg,level);
+            nSplit = nVerSplit*nHorSplit*nDepSplit;
+            [coefsExpctd, scalesExpctd] = testCase.splitCoefs_(...
+                coefs,scales,[nVerSplit nHorSplit nDepSplit]);
+
+            
+            % Instantiation of target class
+            import saivdr.dictionary.olaols.*
+            testCase.analyzer = Analysis3dOlsWrapper(...
+                'Analyzer',refAnalyzer,...
+                'VerticalSplitFactor',nVerSplit,...
+                'HorizontalSplitFactor',nHorSplit,...
+                'DepthSplitFactor',nDepSplit,...
+                'PadSize',[nVerPad,nHorPad,nDepPad],...
+                'UseParallel',useparallel,...
+                'OutputType','Cell');
+            
+            % Actual values
+            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,level);
+            
+            % Evaluation
+            testCase.verifySize(scalesActual,size(scalesExpctd));
+            testCase.verifyEqual(scalesActual,scalesExpctd);
+            for iSplit = 1:nSplit
+                testCase.verifySize(coefsActual{iSplit},size(coefsExpctd{iSplit}));
+                diff = max(abs(coefsExpctd{iSplit}(:) - coefsActual{iSplit}(:)));
+                testCase.verifyEqual(coefsActual{iSplit},coefsExpctd{iSplit},...
+                    'AbsTol',1e-10,sprintf('%g',diff));            
+            end
+        end        
         
         % Test
         function testUdHaarSplittingWarningReconstruction(testCase,width,height,depth)
@@ -332,4 +413,56 @@ classdef Analysis3dOlsWrapperTestCase < matlab.unittest.TestCase
             end
         end        
     end
+    
+     methods (Static, Access = private) 
+        
+        function [coefsCrop, scalesCrop] = splitCoefs_(coefs,scales,splitFactor)
+            import saivdr.dictionary.utility.Direction
+            nChs = size(scales,1);
+            nSplit = prod(splitFactor);
+            nVerSplit = splitFactor(Direction.VERTICAL);
+            nHorSplit = splitFactor(Direction.HORIZONTAL);
+            nDepSplit = splitFactor(Direction.DEPTH);
+            %
+            coefsCrop = cell(nSplit,1);
+            for iSplit = 1:nSplit
+                coefsCrop{iSplit} = [];
+            end
+            scalesCrop = zeros(nChs,3);
+            %
+            eIdx = 0;
+            for iCh = 1:nChs
+                sIdx = eIdx + 1;
+                eIdx = sIdx + prod(scales(iCh,:)) - 1;
+                nRows = scales(iCh,Direction.VERTICAL);
+                nCols = scales(iCh,Direction.HORIZONTAL);
+                nLays = scales(iCh,Direction.DEPTH);
+                coefArrays = reshape(coefs(sIdx:eIdx),[nRows nCols nLays]);
+                %
+                nSubRows = nRows/nVerSplit;
+                nSubCols = nCols/nHorSplit;
+                nSubLays = nLays/nDepSplit;
+                iSplit = 0;
+                for iDepSplit = 1:nDepSplit
+                    sLayIdx = (iDepSplit-1)*nSubLays + 1;
+                    eLayIdx = iDepSplit*nSubLays;
+                    for iHorSplit = 1:nHorSplit
+                        sColIdx = (iHorSplit-1)*nSubCols + 1;
+                        eColIdx = iHorSplit*nSubCols;
+                        for iVerSplit = 1:nVerSplit
+                            sRowIdx = (iVerSplit-1)*nSubRows + 1;
+                            eRowIdx = iVerSplit*nSubRows;
+                            subCoefArrays = coefArrays(...
+                                sRowIdx:eRowIdx,sColIdx:eColIdx,sLayIdx:eLayIdx);
+                            %
+                            iSplit = iSplit + 1;
+                            coefsCrop{iSplit} = [coefsCrop{iSplit} subCoefArrays(:).'];
+                        end
+                    end
+                end
+                scalesCrop(iCh,:) = [nSubRows nSubCols nSubLays];
+            end
+        end
+     end
+    
 end

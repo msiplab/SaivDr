@@ -25,6 +25,7 @@ classdef Analysis3dOlsWrapper < saivdr.dictionary.AbstAnalysisSystem
         Analyzer
         BoundaryOperation
         PadSize = [0 0 0]
+        OutputType = 'Vector'
     end
     
     properties (Logical)
@@ -44,6 +45,8 @@ classdef Analysis3dOlsWrapper < saivdr.dictionary.AbstAnalysisSystem
     properties (Hidden, Transient)
         BoundaryOperationSet = ...
             matlab.system.StringSet({'Circular'});
+        OutputTypeSet = ...
+            matlab.system.StringSet({'Vector','Cell'});        
     end
     
     properties (Access = private, Nontunable)
@@ -132,7 +135,12 @@ classdef Analysis3dOlsWrapper < saivdr.dictionary.AbstAnalysisSystem
             % Check identity
             exceptionId = 'SaivDr:ReconstructionFailureException';            
             message = 'Failure occurs in reconstruction. Please check the split and padding size.';
-            newcoefs = stepImpl(obj,srcImg,nLevels);
+            if strcmp(obj.OutputType,'Cell')
+                [coefsCrop,scalesCrop] = stepImpl(obj,srcImg,nLevels);
+                newcoefs = obj.concatenate_(coefsCrop,scalesCrop);
+            else
+                newcoefs = stepImpl(obj,srcImg,nLevels);
+            end
             diffCoefs = coefs - newcoefs;
             if norm(diffCoefs(:))/numel(diffCoefs) > 1e-6
                 throw(MException(exceptionId,message))
@@ -158,15 +166,98 @@ classdef Analysis3dOlsWrapper < saivdr.dictionary.AbstAnalysisSystem
                    step(analyzers_{iSplit},subImgs{iSplit},nLevels);               
            end
            % 4. Concatinate
-           coefs = concatinate_(obj,subCoefs_,subScales_);
-           scales = obj.refScales;
+           if strcmp(obj.OutputType,'Cell')
+               [coefs,scales] = obj.extract_(subCoefs_,subScales_);
+           else
+               [coefsCrop,scalesCrop] = obj.extract_(subCoefs_,subScales_);
+               coefs = obj.concatenate_(coefsCrop,scalesCrop);
+               scales = obj.refScales;
+           end
         end
         
     end
     
     methods (Access = private)
         
-        function coefs = concatinate_(obj,subCoefs,subScales)
+        function [coefsCrop,scalesCrop] = extract_(obj,subCoefs,subScales)
+            import saivdr.dictionary.utility.Direction
+            verticalSplitFactor = obj.VerticalSplitFactor;
+            horizontalSplitFactor = obj.HorizontalSplitFactor;
+            depthSplitFactor = obj.DepthSplitFactor;
+            refSubScales = obj.refScales* diag(...
+                1./[verticalSplitFactor,horizontalSplitFactor,depthSplitFactor]);
+            scalesSplit = subScales{1}; % Partial scales
+            nSplit = length(subCoefs);
+            nChs = size(refSubScales,1);
+            %
+            coefsCrop = cell(nSplit,1);
+            for iSplit = 1:nSplit
+                coefsCrop{iSplit} = [];
+            end
+            %
+            for iSplit = 1:nSplit            
+                coefsSplit = subCoefs{iSplit}; % Partial Coefs.                
+                eIdx = 0;
+                for iCh = 1:nChs
+                    stepsize = refSubScales(iCh,:);
+                    sIdx = eIdx + 1;
+                    eIdx = sIdx + prod(scalesSplit(iCh,:)) - 1;
+                    tmpVec = coefsSplit(sIdx:eIdx);
+                    tmpArray = reshape(tmpVec,scalesSplit(iCh,:));
+                    %
+                    offset = (scalesSplit(iCh,:) - refSubScales(iCh,:))/2;
+                    sRowIdx = offset(Direction.VERTICAL) + 1;
+                    eRowIdx = sRowIdx + stepsize(Direction.VERTICAL) - 1;
+                    sColIdx = offset(Direction.HORIZONTAL) + 1;
+                    eColIdx = sColIdx + stepsize(Direction.HORIZONTAL) - 1;
+                    sLayIdx = offset(Direction.DEPTH) + 1;
+                    eLayIdx = sLayIdx + stepsize(Direction.DEPTH) - 1;
+                    %
+                    tmpArrayCrop = tmpArray(sRowIdx:eRowIdx,sColIdx:eColIdx,sLayIdx:eLayIdx);
+                    tmpVecCrop = tmpArrayCrop(:).';
+                    %
+                    coefsCrop{iSplit} = [coefsCrop{iSplit} tmpVecCrop];
+                end
+            end
+            if nargout > 1
+                scalesCrop = refSubScales;
+            end
+        end
+        
+        function coefs = concatenate_(obj,coefsCrop,scalesCrop)
+            import saivdr.dictionary.utility.Direction
+            verticalSplitFactor = obj.VerticalSplitFactor;
+            horizontalSplitFactor = obj.HorizontalSplitFactor;
+            depthSplitFactor = obj.DepthSplitFactor;
+            %
+            nSplit = length(coefsCrop);
+            nChs = size(scalesCrop,1);
+            tmpSubArrays = cell(verticalSplitFactor,horizontalSplitFactor,depthSplitFactor);
+            coefVec = cell(1,nChs);
+            %
+            eIdx = 0;            
+            for iCh = 1:nChs
+                sIdx = eIdx + 1;
+                eIdx = sIdx + prod(scalesCrop(iCh,:)) - 1;
+                for iSplit = 1:nSplit                
+                    coefsCrop_ = coefsCrop{iSplit};
+                    %
+                    iRow = mod((iSplit-1),verticalSplitFactor)+1;
+                    iCol = mod(floor((iSplit-1)/(verticalSplitFactor)),horizontalSplitFactor)+1;
+                    iLay = floor((iSplit-1)/(verticalSplitFactor*horizontalSplitFactor))+1;                    
+                    %
+                    tmpSubVec = coefsCrop_(sIdx:eIdx);
+                    tmpSubArray = reshape(tmpSubVec,scalesCrop(iCh,:));
+                    tmpSubArrays{iRow,iCol,iLay} = tmpSubArray;
+                end
+                tmpArray = cell2mat(tmpSubArrays);
+                coefVec{iCh} = tmpArray(:).';
+            end
+            %
+            coefs = cell2mat(coefVec);            
+        end
+        
+        function coefs = extract_concatinate_(obj,subCoefs,subScales)
             import saivdr.dictionary.utility.Direction
             verticalSplitFactor = obj.VerticalSplitFactor;
             horizontalSplitFactor = obj.HorizontalSplitFactor;
