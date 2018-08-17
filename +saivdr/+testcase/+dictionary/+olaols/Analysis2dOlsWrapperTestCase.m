@@ -110,14 +110,13 @@ classdef Analysis2dOlsWrapperTestCase < matlab.unittest.TestCase
             % Parameters
             nLevels = level;
             srcImg = rand(height,width);
+            nSplit = 1;
             
             % Expected values
             import saivdr.dictionary.udhaar.*
             refAnalyzer = UdHaarAnalysis2dSystem();
             [coefs,scales] = step(refAnalyzer,srcImg,nLevels);
-            nSplit = 1;
             coefsExpctd = cell(nSplit,1);
-            %scalesExpctd = cell(nSplit,1);
             coefsExpctd{1} = coefs;
             scalesExpctd = scales;
             

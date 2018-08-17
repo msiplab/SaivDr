@@ -246,50 +246,6 @@ classdef Analysis2dOlsWrapper < saivdr.dictionary.AbstAnalysisSystem
             coefs = cell2mat(coefVec);            
         end
         
-        %{
-        function coefs = extract_concatenate_(obj,subCoefs,subScales)
-            import saivdr.dictionary.utility.Direction
-            verticalSplitFactor = obj.VerticalSplitFactor;
-            horizontalSplitFactor = obj.HorizontalSplitFactor;
-            refSubScales = obj.refScales*...
-                diag(1./[verticalSplitFactor,horizontalSplitFactor]);
-            %
-            scalesSplit = subScales{1}; % Partial scales
-            nSplit = length(subCoefs);
-            nChs = size(refSubScales,1);
-            coefCrop = cell(verticalSplitFactor,horizontalSplitFactor);
-            coefVec = cell(1,nChs);
-            %
-            eIdx = 0;
-            for iCh = 1:nChs
-                stepsize = refSubScales(iCh,:);
-                offset = (scalesSplit(iCh,:) - refSubScales(iCh,:))/2;
-                sIdx = eIdx + 1;
-                eIdx = sIdx + prod(scalesSplit(iCh,:)) - 1;
-                for iSplit = 1:nSplit
-                    coefsSplit = subCoefs{iSplit}; % Partial Coefs.
-                    %
-                    tmpVec = coefsSplit(sIdx:eIdx);
-                    tmpArray = reshape(tmpVec,scalesSplit(iCh,:));
-                    %
-                    sRowIdx = offset(Direction.VERTICAL) + 1;
-                    eRowIdx = sRowIdx + stepsize(Direction.VERTICAL) - 1;
-                    sColIdx = offset(Direction.HORIZONTAL) + 1;
-                    eColIdx = sColIdx + stepsize(Direction.HORIZONTAL) - 1;
-                    %
-                    iRow = mod((iSplit-1),verticalSplitFactor)+1;
-                    iCol = floor((iSplit-1)/horizontalSplitFactor)+1;
-                    coefCrop{iRow,iCol} = ...
-                        tmpArray(sRowIdx:eRowIdx,sColIdx:eColIdx);
-                end
-                tmpArrayCrop = cell2mat(coefCrop);
-                coefVec{iCh} = tmpArrayCrop(:).';
-            end
-            %
-            coefs = cell2mat(coefVec);
-        end
-        %}
-        
         function subImgs = split_ols_(obj,srcImg)
             import saivdr.dictionary.utility.Direction
             verticalSplitFactor = obj.VerticalSplitFactor;
