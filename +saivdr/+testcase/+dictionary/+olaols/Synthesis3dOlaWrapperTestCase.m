@@ -19,7 +19,7 @@ classdef Synthesis3dOlaWrapperTestCase < matlab.unittest.TestCase
         useparallel = { true, false };
         width = struct('small', 32, 'medium', 48, 'large', 64);
         height = struct('small', 32, 'medium', 48, 'large', 64);
-        depth = struct('small', 32, 'medium', 48, 'large', 64);        
+        depth = struct('small', 32, 'medium', 48, 'large', 64);
         level = struct('flat',1, 'sharrow',2,'deep', 3);
     end
     
@@ -34,7 +34,7 @@ classdef Synthesis3dOlaWrapperTestCase < matlab.unittest.TestCase
     end
     
     methods (Test)
-
+        
         % Test
         function testDefaultConstruction(testCase)
             
@@ -52,7 +52,7 @@ classdef Synthesis3dOlaWrapperTestCase < matlab.unittest.TestCase
             
             % Evaluation
             testCase.assertEqual(synthesizerActual,synthesizerExpctd);
-            testCase.assertEqual(boundaryOperationActual,boundaryOperationExpctd);                
+            testCase.assertEqual(boundaryOperationActual,boundaryOperationExpctd);
         end
         
         
@@ -73,10 +73,10 @@ classdef Synthesis3dOlaWrapperTestCase < matlab.unittest.TestCase
             
             % Evaluation
             testCase.assertEqual(synthesizerActual, synthesizerExpctd);
-
+            
         end
         
-    
+        
         % Test
         function testUdHaarLevel1(testCase,width,height,depth)
             
@@ -88,7 +88,7 @@ classdef Synthesis3dOlaWrapperTestCase < matlab.unittest.TestCase
             cad  = rand(height,width,depth);
             chd  = rand(height,width,depth);
             cvd  = rand(height,width,depth);
-            cdd  = rand(height,width,depth);            
+            cdd  = rand(height,width,depth);
             subCoefs = [
                 caa(:)
                 cha(:)
@@ -159,8 +159,8 @@ classdef Synthesis3dOlaWrapperTestCase < matlab.unittest.TestCase
                 cvd2(:)
                 cdd2(:) ].';
             scales = repmat([ height width depth],[7*nLevels+1, 1]);
-
-           
+            
+            
             % Expected values
             import saivdr.dictionary.udhaar.*
             refSynthesizer = UdHaarSynthesis3dSystem();
@@ -182,7 +182,7 @@ classdef Synthesis3dOlaWrapperTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testUdHaarLevel3(testCase,width,height,depth,level)
+        function testUdHaar(testCase,width,height,depth,level)
             % Parameters
             nChs = 7*level+1;
             subCoefs = repmat(rand(1,height*width*depth),[1 nChs]);
@@ -208,6 +208,38 @@ classdef Synthesis3dOlaWrapperTestCase < matlab.unittest.TestCase
             diff = max(abs(imgExpctd(:) - imgActual(:)));
             testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-10,sprintf('%g',diff));
         end
+        
+        % Test
+        function testUdHaarCellInput(testCase,width,height,depth,level)
+            % Parameters
+            nChs = 7*level+1;
+            nSplit = 1;
+            subCoefs = cell(nSplit,1);
+            subCoefs{1} = repmat(rand(1,height*width*depth),[1 nChs]);
+            scales = repmat([ height width depth ],[7*level+1, 1]);
+            
+            % Preparation
+            % Expected values
+            import saivdr.dictionary.udhaar.*
+            refSynthesizer = UdHaarSynthesis3dSystem();
+            imgExpctd = step(refSynthesizer,subCoefs{1},scales);
+            
+            % Instantiation of target class
+            import saivdr.dictionary.olaols.*
+            testCase.synthesizer = Synthesis3dOlaWrapper(...
+                'Synthesizer',refSynthesizer,...
+                'InputType','Cell');
+            
+            % Actual values
+            imgActual = step(testCase.synthesizer,subCoefs,scales);
+            
+            % Evaluation
+            testCase.verifySize(imgActual,size(imgExpctd),...
+                'Actual image size is different from the expected one.');
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-10,sprintf('%g',diff));
+        end
+        
         
         % Test
         function testUdHaarSplitting(testCase,width,height,depth,level,useparallel)
@@ -243,7 +275,77 @@ classdef Synthesis3dOlaWrapperTestCase < matlab.unittest.TestCase
             imgActual = step(testCase.synthesizer,subCoefs,scales);
             
             % Evaluation
-            %testCase.assertFail('TODO: Check for split');            
+            %testCase.assertFail('TODO: Check for split');
+            testCase.verifySize(imgActual,size(imgExpctd),...
+                'Actual image size is different from the expected one.');
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-10,sprintf('%g',diff));
+        end
+        
+        % Test
+        function testUdHaarSplittingCellInput(testCase,width,height,depth,level,useparallel)
+            
+            % Parameters
+            nVerSplit = 2;
+            nHorSplit = 2;
+            nDepSplit = 2;
+            nVerPad = 2^(level-1);
+            nHorPad = 2^(level-1);
+            nDepPad = 2^(level-1);
+            nChs = 7*level+1;
+            nSplit = nVerSplit*nHorSplit*nDepSplit;
+            subCoefArrays = cell(nSplit,nChs);
+            subCoefs = cell(nSplit,1);
+            for iSplit = 1:nSplit
+                subCoefs{iSplit} = [];
+                for iCh = 1:nChs
+                    coefVec = rand(1,height*width*depth/nSplit);
+                    subCoefArrays{iSplit,iCh} = reshape(coefVec,...
+                        [height/nVerSplit width/nHorSplit depth/nDepSplit]);
+                    subCoefs{iSplit} = [ subCoefs{iSplit} coefVec ];
+                end
+            end
+            subScales = repmat([ height/nVerSplit width/nHorSplit depth/nDepSplit],...
+                [7*level+1, 1]);
+            
+            % Preparation
+            % Expected values
+            import saivdr.dictionary.udhaar.*
+            refSynthesizer = UdHaarSynthesis3dSystem();
+            refCoefs = [];
+            tmpArrays = cell(nVerSplit,nHorSplit,nDepSplit);
+            for iCh = 1:nChs
+                iSplit = 0;
+                for iLay = 1:nDepSplit
+                    for iCol = 1:nHorSplit
+                        for iRow = 1:nVerSplit
+                            iSplit = iSplit + 1;
+                            tmpArrays{iRow,iCol,iLay} = subCoefArrays{iSplit,iCh};
+                        end
+                    end
+                end
+                tmpArray = cell2mat(tmpArrays);
+                refCoefs = [ refCoefs tmpArray(:).'];
+            end
+            refScales = repmat([ height width depth ],[7*level+1, 1]);
+            imgExpctd = step(refSynthesizer,refCoefs,refScales);
+            
+            % Instantiation of target class
+            import saivdr.dictionary.olaols.*
+            testCase.synthesizer = Synthesis3dOlaWrapper(...
+                'Synthesizer',refSynthesizer,...
+                'VerticalSplitFactor',nVerSplit,...
+                'HorizontalSplitFactor',nHorSplit,...
+                'DepthSplitFactor',nDepSplit,...
+                'PadSize',[nVerPad,nHorPad,nDepPad],...
+                'UseParallel',useparallel,...
+                'InputType','Cell');
+            
+            % Actual values
+            imgActual = step(testCase.synthesizer,subCoefs,subScales);
+            
+            % Evaluation
+            %testCase.assertFail('TODO: Check for split');
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
             diff = max(abs(imgExpctd(:) - imgActual(:)));
@@ -336,8 +438,8 @@ classdef Synthesis3dOlaWrapperTestCase < matlab.unittest.TestCase
             try
                 step(testCase.synthesizer,subCoefs,scales);
                 if mod(width,nHorSplit) ~=0 || ...
-                   mod(height,nVerSplit) ~= 0 || ...
-                   mod(depth,nDepSplit) ~=0   
+                        mod(height,nVerSplit) ~= 0 || ...
+                        mod(depth,nDepSplit) ~=0
                     testCase.verifyFail(sprintf('%s must be thrown.',...
                         exceptionIdExpctd));
                 end
@@ -385,7 +487,7 @@ classdef Synthesis3dOlaWrapperTestCase < matlab.unittest.TestCase
             imgActual = step(testCase.synthesizer,subCoefs,scales);
             
             % Evaluation
-            %testCase.assertFail('TODO: Check for split');            
+            %testCase.assertFail('TODO: Check for split');
             testCase.verifySize(imgActual,size(imgExpctd),...
                 'Actual image size is different from the expected one.');
             diff = max(abs(imgExpctd(:) - imgActual(:)));
@@ -426,8 +528,8 @@ classdef Synthesis3dOlaWrapperTestCase < matlab.unittest.TestCase
             try
                 step(testCase.synthesizer,subCoefs,scales);
                 if mod(width,nHorSplit) ~=0 || ...
-                   mod(height,nVerSplit) ~= 0 || ...
-                   mod(depth,nDepSplit) ~=0   
+                        mod(height,nVerSplit) ~= 0 || ...
+                        mod(depth,nDepSplit) ~=0
                     testCase.verifyFail(sprintf('%s must be thrown.',...
                         exceptionIdExpctd));
                 end

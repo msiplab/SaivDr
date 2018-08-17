@@ -4,7 +4,7 @@ classdef Synthesis3dOlaWrapper < saivdr.dictionary.AbstSynthesisSystem
     % Reference:
     %   Shogo Muramatsu and Hitoshi Kiya,
     %   ''Parallel Processing Techniques for Multidimensional Sampling
-    %   Lattice Alteration Based on Overlap-Add and Overlap-Save Methods,'' 
+    %   Lattice Alteration Based on Overlap-Add and Overlap-Save Methods,''
     %   IEICE Trans. on Fundamentals, Vol.E78-A, No.8, pp.939-943, Aug. 1995
     %
     % Requirements: MATLAB R2018a
@@ -25,6 +25,7 @@ classdef Synthesis3dOlaWrapper < saivdr.dictionary.AbstSynthesisSystem
         Synthesizer
         BoundaryOperation
         PadSize = [0 0 0]
+        InputType = 'Vector'
     end
     
     properties (Logical)
@@ -38,12 +39,14 @@ classdef Synthesis3dOlaWrapper < saivdr.dictionary.AbstSynthesisSystem
     properties (Nontunable, PositiveInteger, Hidden)
         VerticalSplitFactor = 1
         HorizontalSplitFactor = 1
-        DepthSplitFactor = 1        
+        DepthSplitFactor = 1
     end
     
     properties (Hidden, Transient)
         BoundaryOperationSet = ...
             matlab.system.StringSet({'Circular'});
+        InputTypeSet = ...
+            matlab.system.StringSet({'Vector','Cell'});
     end
     
     properties (Access = private, Nontunable)
@@ -53,7 +56,6 @@ classdef Synthesis3dOlaWrapper < saivdr.dictionary.AbstSynthesisSystem
         subPadSize
         subPadArrays
         synthesizers
-        %tmpCoefs
         nWorkers
     end
     
@@ -68,12 +70,12 @@ classdef Synthesis3dOlaWrapper < saivdr.dictionary.AbstSynthesisSystem
             end
             if ~isempty(obj.SplitFactor)
                 obj.VerticalSplitFactor = obj.SplitFactor(Direction.VERTICAL);
-                obj.HorizontalSplitFactor = obj.SplitFactor(Direction.HORIZONTAL);    
+                obj.HorizontalSplitFactor = obj.SplitFactor(Direction.HORIZONTAL);
                 obj.DepthSplitFactor = obj.SplitFactor(Direction.DEPTH);
-            end            
+            end
         end
         %{
-        function setFrameBound(obj,frameBound)
+function setFrameBound(obj,frameBound)
             obj.FrameBound = frameBound;
         end
         %}
@@ -81,7 +83,7 @@ classdef Synthesis3dOlaWrapper < saivdr.dictionary.AbstSynthesisSystem
     
     methods (Access = protected)
         
-         function flag = isInactivePropertyImpl(obj,propertyName)
+        function flag = isInactivePropertyImpl(obj,propertyName)
             if strcmp(propertyName,'VerticalSplitFactor') || ...
                     strcmp(propertyName,'HorizontalSplitFactor') || ...
                     strcmp(propertyName,'DepthSplitFactor')
@@ -89,7 +91,7 @@ classdef Synthesis3dOlaWrapper < saivdr.dictionary.AbstSynthesisSystem
             else
                 flag = false;
             end
-         end       
+        end
         
         function s = saveObjectImpl(obj)
             s = saveObjectImpl@saivdr.dictionary.AbstSynthesisSystem(obj);
@@ -98,27 +100,55 @@ classdef Synthesis3dOlaWrapper < saivdr.dictionary.AbstSynthesisSystem
         end
         
         function loadObjectImpl(obj,s,wasLocked)
-            obj.nWorkers = s.nWorkers;            
+            obj.nWorkers = s.nWorkers;
             obj.Synthesizer = matlab.System.loadObject(s.Synthesizer);
             loadObjectImpl@saivdr.dictionary.AbstSynthesisSystem(obj,s,wasLocked);
         end
-
+        
         function setupImpl(obj,coefs,scales)
             obj.Synthesizer.release();
             obj.refSynthesizer = obj.Synthesizer.clone();
-            recImg = step(obj.refSynthesizer,coefs,scales);
-            obj.refSize = size(recImg);            
+            %
+            verticalSplitFactor = obj.VerticalSplitFactor;
+            horizontalSplitFactor = obj.HorizontalSplitFactor;
+            depthSplitFactor = obj.DepthSplitFactor;
+            nSplit = verticalSplitFactor*horizontalSplitFactor*depthSplitFactor;
+            nChs = size(scales,1);
+            %
+            if strcmp(obj.InputType,'Cell')
+                subCoefArrays = obj.merge_(coefs,scales);
+                tmpArrays = cell(verticalSplitFactor,horizontalSplitFactor,depthSplitFactor);
+                refCoefs = [];
+                for iCh = 1:nChs
+                    iSplit = 0;
+                    for iLay = 1:depthSplitFactor
+                        for iCol = 1:horizontalSplitFactor
+                            for iRow = 1:verticalSplitFactor
+                                iSplit = iSplit + 1;
+                                tmpArrays{iRow,iCol,iLay} = subCoefArrays{iSplit,iCh};
+                            end
+                        end
+                    end
+                    tmpArray = cell2mat(tmpArrays);
+                    tmpVec = tmpArray(:).';
+                    refCoefs = [ refCoefs tmpVec ];
+                end
+                refScales = scales*diag(...
+                    [verticalSplitFactor horizontalSplitFactor depthSplitFactor]);
+            else
+                refCoefs = coefs;
+                refScales = scales;
+            end
+            recImg = step(obj.refSynthesizer,refCoefs,refScales);
+            obj.refSize = size(recImg);
             obj.refSubSize = obj.refSize*...
                 diag(1./[obj.VerticalSplitFactor,...
                 obj.HorizontalSplitFactor,...
                 obj.DepthSplitFactor ]);
             %
-            scaleRatio = scales*diag(1./obj.refSize);
+            scaleRatio = refScales*diag(1./obj.refSize);
             obj.subPadSize = scaleRatio*diag(obj.PadSize);
             %
-            nSplit = obj.VerticalSplitFactor*...
-                obj.HorizontalSplitFactor*...
-                obj.DepthSplitFactor;
             obj.synthesizers = cell(nSplit,1);
             if obj.UseParallel
                 obj.nWorkers = Inf;
@@ -131,38 +161,37 @@ classdef Synthesis3dOlaWrapper < saivdr.dictionary.AbstSynthesisSystem
                     obj.synthesizers{iSplit} = obj.Synthesizer;
                 end
             end
-                        
+            
             % Evaluate
             % Check if scales are divisible by split factors
-            exceptionId = 'SaivDr:IllegalSplitFactorException';            
+            exceptionId = 'SaivDr:IllegalSplitFactorException';
             message = 'Split factor must be a divisor of array size.';
             if sum(mod(obj.refSubSize,1)) ~= 0
-                throw(MException(exceptionId,message))                
+                throw(MException(exceptionId,message))
             end
             % Check if subPadSizes are integer
-            %exceptionId = 'SaivDr:IllegalSplitFactorException';            
-            %message = 'Split factor must be a divisor of array size.';            
+            %exceptionId = 'SaivDr:IllegalSplitFactorException';
+            %message = 'Split factor must be a divisor of array size.';
             if sum(mod(obj.subPadSize,1)) ~= 0
-                throw(MException('SaivDr','Illegal Pad Size.'))                
+                throw(MException('SaivDr','Illegal Pad Size.'))
             end
             % Allocate memory for zero padding of arrays
-            nChs = size(scales,1);
             obj.subPadArrays = cell(nChs,1);
             nCoefs = 0;
             for iCh = 1:nChs
-                subScale = scales(iCh,:) * ...
-                diag(1./[obj.VerticalSplitFactor,...
-                obj.HorizontalSplitFactor,...
-                obj.DepthSplitFactor]);
+                subScale = refScales(iCh,:) * ...
+                    diag(1./[obj.VerticalSplitFactor,...
+                    obj.HorizontalSplitFactor,...
+                    obj.DepthSplitFactor]);
                 nDim = subScale + 2*obj.subPadSize(iCh,:);
                 obj.subPadArrays{iCh} = zeros(subScale+2*obj.subPadSize(iCh,:));
                 nCoefs = nCoefs + prod(nDim);
-            end                  
-            %obj.tmpCoefs = zeros(nCoefs,1);
+            end
             % Check identity
-            exceptionId = 'SaivDr:ReconstructionFailureException';            
+            exceptionId = 'SaivDr:ReconstructionFailureException';
             message = 'Failure occurs in reconstruction. Please check the split and padding size.';
-            diffImg = recImg - stepImpl(obj,coefs,scales);
+            newImg = stepImpl(obj,coefs,scales);
+            diffImg = recImg - newImg;
             if norm(diffImg(:))/numel(diffImg) > 1e-6
                 throw(MException(exceptionId,message))
             end
@@ -172,9 +201,14 @@ classdef Synthesis3dOlaWrapper < saivdr.dictionary.AbstSynthesisSystem
         
         function recImg = stepImpl(obj,coefs,scales)
             % 1. Split
-            subCoefArrays = split_(obj,coefs,scales);
+            if strcmp(obj.InputType,'Cell')
+                subCoefArrays = obj.merge_(coefs,scales);
+            else
+                [subCoefs,subScales] = obj.split_(coefs,scales);
+                subCoefArrays = obj.merge_(subCoefs,subScales);
+            end
             % 2. Zero Padding
-            subCoefArrays = padding_(obj,subCoefArrays); 
+            subCoefArrays = padding_(obj,subCoefArrays);
             [subCoefs,subScales] = convert_(obj,subCoefArrays);
             % 3. Synthesize
             nSplit = length(subCoefs);
@@ -183,8 +217,8 @@ classdef Synthesis3dOlaWrapper < saivdr.dictionary.AbstSynthesisSystem
             synthesizers_ = obj.synthesizers;
             nWorkers_ = obj.nWorkers;
             parfor (iSplit=1:nSplit,nWorkers_)
-               subCoefs_ = subCoefs{iSplit};
-               subRecImg{iSplit} = step(synthesizers_{iSplit},subCoefs_,subScales);            
+                subCoefs_ = subCoefs{iSplit};
+                subRecImg{iSplit} = step(synthesizers_{iSplit},subCoefs_,subScales);
             end
             % 4. Overlap add (Circular)
             recImg = circular_ola_(obj,subRecImg);
@@ -193,7 +227,7 @@ classdef Synthesis3dOlaWrapper < saivdr.dictionary.AbstSynthesisSystem
     end
     
     methods(Access = private)
-
+        
         function recImg = circular_ola_(obj,subRecImg)
             import saivdr.dictionary.utility.Direction
             verticalSplitFactor = obj.VerticalSplitFactor;
@@ -258,8 +292,8 @@ classdef Synthesis3dOlaWrapper < saivdr.dictionary.AbstSynthesisSystem
                     tmpCoefs_{1,iCh} = tmpArray(:).';
                 end
                 subCoefs{iSplit} = cell2mat(tmpCoefs_);
-            end               
-         end
+            end
+        end
         
         function subCoefArrays = padding_(obj,subCoefArrays)
             import saivdr.dictionary.utility.Direction
@@ -271,50 +305,38 @@ classdef Synthesis3dOlaWrapper < saivdr.dictionary.AbstSynthesisSystem
                 sRowIdx = subPadSize_(iCh,Direction.VERTICAL)+1;
                 eRowIdx = sRowIdx + size(subCoefArrays{1,iCh},Direction.VERTICAL)-1;
                 sColIdx = subPadSize_(iCh,Direction.HORIZONTAL)+1;
-                eColIdx = sColIdx + size(subCoefArrays{1,iCh},Direction.HORIZONTAL)-1;                
+                eColIdx = sColIdx + size(subCoefArrays{1,iCh},Direction.HORIZONTAL)-1;
                 sLayIdx = subPadSize_(iCh,Direction.HORIZONTAL)+1;
-                eLayIdx = sLayIdx + size(subCoefArrays{1,iCh},Direction.DEPTH)-1;                                
+                eLayIdx = sLayIdx + size(subCoefArrays{1,iCh},Direction.DEPTH)-1;
                 for iSplit = 1:nSplit
-                    %{
-                    subCoefArrays{iSplit,iCh} = ...
-                        padarray(subCoefArrays{iSplit,iCh},...
-                        subPadSize_(iCh,:),0,'both');
-                    %}
                     tmpArray = subPadArrays_{iCh};
-                    %assert(norm(size(subCoefArrays{iSplit,iCh})-size(tmpArray))<1e-6)
-                    %%{
                     tmpArray(sRowIdx:eRowIdx,sColIdx:eColIdx,sLayIdx:eLayIdx) ...
                         = subCoefArrays{iSplit,iCh};
                     subCoefArrays{iSplit,iCh} = tmpArray;
-                    %%}                    
                 end
             end
         end
         
-        function subCoefArrays = split_(obj,coefs,scales)
+        function [subCoefs,subScales] = split_(obj,coefs,scales)
             import saivdr.dictionary.utility.Direction
             verticalSplitFactor = obj.VerticalSplitFactor;
             horizontalSplitFactor = obj.HorizontalSplitFactor;
             depthSplitFactor = obj.DepthSplitFactor;
-            nSplit = verticalSplitFactor*...
-                horizontalSplitFactor*...
-                depthSplitFactor;
+            nSplit = verticalSplitFactor*horizontalSplitFactor*depthSplitFactor;
             % # of channels
             nChs = size(scales,1);
             subScales = scales*diag(...
-                [1/verticalSplitFactor,...
-                1/horizontalSplitFactor,...
-                1/depthSplitFactor]);
-            subCoefArrays = cell(nSplit,nChs);
+                [1/verticalSplitFactor, 1/horizontalSplitFactor, 1/depthSplitFactor]);
+            subCoefs = cell(nSplit,1);
             %
             eIdx = 0;
             for iCh = 1:nChs
                 sIdx = eIdx + 1;
-                eIdx = sIdx + prod(scales(iCh,:)) - 1;                
+                eIdx = sIdx + prod(scales(iCh,:)) - 1;
                 nRows = scales(iCh,Direction.VERTICAL);
-                nCols = scales(iCh,Direction.HORIZONTAL);                
+                nCols = scales(iCh,Direction.HORIZONTAL);
                 nLays = scales(iCh,Direction.DEPTH);
-                coefArrays = reshape(coefs(sIdx:eIdx),[nRows nCols nLays]);                
+                coefArrays = reshape(coefs(sIdx:eIdx),[nRows nCols nLays]);
                 %
                 nSubRows = subScales(iCh,Direction.VERTICAL);
                 nSubCols = subScales(iCh,Direction.HORIZONTAL);
@@ -330,14 +352,39 @@ classdef Synthesis3dOlaWrapper < saivdr.dictionary.AbstSynthesisSystem
                             iSplit = iSplit + 1;
                             sRowIdx = (iVerSplit-1)*nSubRows + 1;
                             eRowIdx = iVerSplit*nSubRows;
-                            subCoefArrays{iSplit,iCh} = ...
-                                coefArrays(sRowIdx:eRowIdx,...
-                                sColIdx:eColIdx,...
-                                sLayIdx:eLayIdx);
+                            tmpArray = ...
+                                coefArrays(sRowIdx:eRowIdx,sColIdx:eColIdx,sLayIdx:eLayIdx);
+                            %
+                            tmpVec = tmpArray(:).';
+                            subCoefs{iSplit} = [ subCoefs{iSplit} tmpVec ];
                         end
                     end
                 end
             end
         end
+        
+        
+        function subCoefArrays = merge_(obj,subCoefs,subScales)
+            verticalSplitFactor = obj.VerticalSplitFactor;
+            horizontalSplitFactor = obj.HorizontalSplitFactor;
+            depthSplitFactor = obj.DepthSplitFactor;
+            nSplit = verticalSplitFactor*horizontalSplitFactor*depthSplitFactor;
+            % # of channels
+            nChs = size(subScales,1);
+            subCoefArrays = cell(nSplit,nChs);
+            %
+            for iSplit = 1:nSplit
+                coefsSplit = subCoefs{iSplit};
+                eIdx = 0;
+                for iCh = 1:nChs
+                    sIdx = eIdx + 1;
+                    eIdx = sIdx + prod(subScales(iCh,:)) - 1;
+                    tmpSubCoefs = coefsSplit(sIdx:eIdx);
+                    subCoefArrays{iSplit,iCh} = ...
+                        reshape(tmpSubCoefs,subScales(iCh,:));
+                end
+            end
+        end
+        
     end
 end
