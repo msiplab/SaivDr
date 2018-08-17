@@ -147,7 +147,7 @@ classdef Synthesis2dOlaWrapperTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testUdHaarLevel3(testCase,width,height,level)
+        function testUdHaar(testCase,width,height,level)
             % Parameters
             nChs = 3*level+1;
             subCoefs = repmat(rand(1,height*width),[1 nChs]);
@@ -173,6 +173,37 @@ classdef Synthesis2dOlaWrapperTestCase < matlab.unittest.TestCase
             diff = max(abs(imgExpctd(:) - imgActual(:)));
             testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-10,sprintf('%g',diff));
         end
+        
+        % Test
+        function testUdHaarCellInput(testCase,width,height,level)
+            % Parameters
+            nChs = 3*level+1;
+            nSplit = 1;
+            subCoefs = cell(nSplit,1);
+            subCoefs{1} = repmat(rand(1,height*width),[1 nChs]);
+            scales = repmat([ height width ],[3*level+1, 1]);
+            
+            % Preparation
+            % Expected values
+            import saivdr.dictionary.udhaar.*
+            refSynthesizer = UdHaarSynthesis2dSystem();
+            imgExpctd = step(refSynthesizer,subCoefs{1},scales);
+            
+            % Instantiation of target class
+            import saivdr.dictionary.olaols.*
+            testCase.synthesizer = Synthesis2dOlaWrapper(...
+                'Synthesizer',refSynthesizer,...
+                'InputType','Cell');
+            
+            % Actual values
+            imgActual = step(testCase.synthesizer,subCoefs,scales);
+            
+            % Evaluation
+            testCase.verifySize(imgActual,size(imgExpctd),...
+                'Actual image size is different from the expected one.');
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-10,sprintf('%g',diff));
+        end        
         
          % Test
         function testUdHaarSplitting(testCase,width,height,level,useparallel)
@@ -203,6 +234,71 @@ classdef Synthesis2dOlaWrapperTestCase < matlab.unittest.TestCase
             
             % Actual values
             imgActual = step(testCase.synthesizer,subCoefs,scales);
+            
+            % Evaluation
+            %testCase.assertFail('TODO: Check for split');            
+            testCase.verifySize(imgActual,size(imgExpctd),...
+                'Actual image size is different from the expected one.');
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-10,sprintf('%g',diff));
+        end
+        
+        % Test
+        function testUdHaarSplittingCellInput(testCase,width,height,level,useparallel)
+            
+            % Parameters
+            nVerSplit = 2;
+            nHorSplit = 2;
+            nVerPad = 2^(level-1);
+            nHorPad = 2^(level-1);
+            nChs = 3*level+1;
+            nSplit = nVerSplit*nHorSplit;
+            subCoefArrays = cell(nSplit,nChs);
+            subCoefs = cell(nSplit,1);            
+            for iSplit = 1:nSplit
+                subCoefs{iSplit} = []; 
+                for iCh = 1:nChs
+                    coefVec = rand(1,height*width/nSplit);
+                    subCoefArrays{iSplit,iCh} = reshape(coefVec,...
+                        [height/nVerSplit width/nHorSplit]);
+                    subCoefs{iSplit} = [ subCoefs{iSplit} coefVec ];
+                end
+            end
+            subScales = repmat([ height/nVerSplit width/nHorSplit ],...
+                [3*level+1, 1]);
+            
+            % Preparation
+            % Expected values
+            import saivdr.dictionary.udhaar.*
+            refSynthesizer = UdHaarSynthesis2dSystem();
+            refCoefs = [];
+            tmpArrays = cell(nVerSplit,nHorSplit);
+            for iCh = 1:nChs            
+                iSplit = 0;
+                for iCol = 1:nHorSplit
+                    for iRow = 1:nVerSplit
+                        iSplit = iSplit + 1;
+                        tmpArrays{iRow,iCol} = subCoefArrays{iSplit,iCh};
+                    end
+                end
+                tmpArray = cell2mat(tmpArrays);
+                refCoefs = [ refCoefs tmpArray(:).'];
+            end
+            refScales = repmat([ height width ],[3*level+1, 1]);            
+            imgExpctd = step(refSynthesizer,refCoefs,refScales);
+            
+            % Instantiation of target class
+            import saivdr.dictionary.olaols.*
+            testCase.synthesizer = Synthesis2dOlaWrapper(...
+                'Synthesizer',refSynthesizer,...
+                'VerticalSplitFactor',nVerSplit,...
+                'HorizontalSplitFactor',nHorSplit,...
+                'PadSize',[nVerPad,nHorPad],...
+                'UseParallel',useparallel,...
+                'InputType','Cell');
+            
+            % Actual values
+            imgActual = step(testCase.synthesizer,subCoefs,subScales);
             
             % Evaluation
             %testCase.assertFail('TODO: Check for split');            
