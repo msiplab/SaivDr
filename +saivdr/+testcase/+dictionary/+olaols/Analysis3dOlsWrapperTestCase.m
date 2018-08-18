@@ -276,6 +276,43 @@ classdef Analysis3dOlsWrapperTestCase < matlab.unittest.TestCase
             end
         end
         
+         % Test
+        function testUdHaarSplittingIntegrityTestOff(testCase,width,height,depth)
+            
+            % Parameters
+            level_ = 2;
+            nVerSplit = 2;
+            nHorSplit = 2;
+            nDepSplit = 2;
+            nVerPad = 2^(level_-1)-1;
+            nHorPad = 2^(level_-1)-1;
+            nDepPad = 2^(level_-1)-1;
+            srcImg = rand(height,width,depth);
+            
+            % Preparation
+            import saivdr.dictionary.udhaar.*
+            refAnalyzer = UdHaarAnalysis3dSystem();
+            
+            % Instantiation of target class
+            import saivdr.dictionary.olaols.*
+            testCase.analyzer = Analysis3dOlsWrapper(...
+                'Analyzer',refAnalyzer,...
+                'VerticalSplitFactor',nVerSplit,...
+                'HorizontalSplitFactor',nHorSplit,...
+                'DepthSplitFactor',nDepSplit,...
+                'PadSize',[nVerPad,nHorPad,nDepPad],...
+                'UseParallel',false,...
+                'IsIntegrityTest',false);
+            
+            % Evaluation
+            try
+                step(testCase.analyzer,srcImg,level_);
+            catch me
+                testCase.verifyFail(me.message);
+            end  
+        end
+        
+        
         % Test
         function testUdHaarSplittingWarningFactor(testCase,width,height,depth,level)
             

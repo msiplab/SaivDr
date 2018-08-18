@@ -402,6 +402,44 @@ classdef Synthesis3dOlaWrapperTestCase < matlab.unittest.TestCase
             end
         end
         
+         % Test
+        function testUdHaarSplittingIntegrityTestOff(testCase,width,height,depth)
+            
+            % Parameters
+            level_ = 2;
+            nVerSplit = 2;
+            nHorSplit = 2;
+            nDepSplit = 2;
+            nVerPad = 2^(level_-1)-2;
+            nHorPad = 2^(level_-1)-2;
+            nDepPad = 2^(level_-1)-2;
+            nChs = 7*level_+1;
+            subCoefs = repmat(rand(1,height*width*depth),[1 nChs]);
+            scales = repmat([ height width depth ],[7*level_+1, 1]);
+            
+            % Preparation
+            import saivdr.dictionary.udhaar.*
+            refSynthesizer = UdHaarSynthesis3dSystem();
+            
+            % Instantiation of target class
+            import saivdr.dictionary.olaols.*
+            testCase.synthesizer = Synthesis3dOlaWrapper(...
+                'Synthesizer',refSynthesizer,...
+                'VerticalSplitFactor',nVerSplit,...
+                'HorizontalSplitFactor',nHorSplit,...
+                'DepthSplitFactor',nDepSplit,...
+                'PadSize',[nVerPad,nHorPad,nDepPad],...
+                'UseParallel',false,...
+                'IsIntegrityTest',false);
+            
+           % Evaluation
+            try
+                step(testCase.synthesizer,subCoefs,scales);
+            catch me
+                testCase.verifyFail(me.message);
+            end     
+        end
+        
         % Test
         function testUdHaarSplittingWarningFactor(testCase,width,height,depth,level)
             

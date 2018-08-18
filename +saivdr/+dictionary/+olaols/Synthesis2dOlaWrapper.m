@@ -30,6 +30,7 @@ classdef Synthesis2dOlaWrapper < saivdr.dictionary.AbstSynthesisSystem
     
     properties (Logical)
         UseParallel = false
+        IsIntegrityTest = true
     end
     
     properties (Nontunable)
@@ -177,13 +178,15 @@ classdef Synthesis2dOlaWrapper < saivdr.dictionary.AbstSynthesisSystem
                 obj.subPadArrays{iCh} = zeros(nDim);
                 nCoefs = nCoefs + prod(nDim);
             end
-            % Check identity
-            exceptionId = 'SaivDr:ReconstructionFailureException';            
-            message = 'Failure occurs in reconstruction. Please check the split and padding size.';
-            newImg = stepImpl(obj,coefs,scales);
-            diffImg = recImg - newImg;
-            if norm(diffImg(:))/numel(diffImg) > 1e-6
-               throw(MException(exceptionId,message))
+            % Check integrity
+            if obj.IsIntegrityTest
+                exceptionId = 'SaivDr:ReconstructionFailureException';
+                message = 'Failure occurs in reconstruction. Please check the split and padding size.';
+                newImg = stepImpl(obj,coefs,scales);
+                diffImg = recImg - newImg;
+                if norm(diffImg(:))/numel(diffImg) > 1e-6
+                    throw(MException(exceptionId,message))
+                end
             end
             % Delete reference synthesizer
             obj.refSynthesizer.delete()

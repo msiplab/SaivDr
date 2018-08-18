@@ -30,6 +30,7 @@ classdef Analysis2dOlsWrapper < saivdr.dictionary.AbstAnalysisSystem
     
     properties (Logical)
         UseParallel = false
+        IsIntegrityTest = true
     end
     
     properties (Nontunable)
@@ -125,18 +126,20 @@ classdef Analysis2dOlsWrapper < saivdr.dictionary.AbstAnalysisSystem
             if sum(mod(obj.refSubSize,1)) ~= 0
                 throw(MException(exceptionId,message))
             end
-            % Check identity
-            exceptionId = 'SaivDr:ReconstructionFailureException';
-            message = 'Failure occurs in reconstruction. Please check the split and padding size.';
-            if strcmp(obj.OutputType,'Cell')
-                [coefsCrop,scalesCrop] = stepImpl(obj,srcImg,nLevels);
-                newcoefs = obj.concatenate_(coefsCrop,scalesCrop);
-            else
-                newcoefs = stepImpl(obj,srcImg,nLevels);
-            end
-            diffCoefs = coefs - newcoefs;
-            if norm(diffCoefs(:))/numel(diffCoefs) > 1e-6
-                throw(MException(exceptionId,message))
+            % Check integrity
+            if obj.IsIntegrityTest
+                exceptionId = 'SaivDr:ReconstructionFailureException';
+                message = 'Failure occurs in reconstruction. Please check the split and padding size.';
+                if strcmp(obj.OutputType,'Cell')
+                    [coefsCrop,scalesCrop] = stepImpl(obj,srcImg,nLevels);
+                    newcoefs = obj.concatenate_(coefsCrop,scalesCrop);
+                else
+                    newcoefs = stepImpl(obj,srcImg,nLevels);
+                end
+                diffCoefs = coefs - newcoefs;
+                if norm(diffCoefs(:))/numel(diffCoefs) > 1e-6
+                    throw(MException(exceptionId,message))
+                end
             end
             % Delete reference synthesizer
             obj.refAnalyzer.delete()
