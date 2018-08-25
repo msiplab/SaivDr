@@ -72,7 +72,7 @@ classdef Synthesis3dOlaWrapper < saivdr.dictionary.AbstSynthesisSystem
             end
         end
         %{
-function setFrameBound(obj,frameBound)
+        function setFrameBound(obj,frameBound)
             obj.FrameBound = frameBound;
         end
         %}
@@ -305,7 +305,7 @@ function setFrameBound(obj,frameBound)
                 eRowIdx = sRowIdx + size(subCoefArrays{1,iCh},Direction.VERTICAL)-1;
                 sColIdx = subPadSize_(iCh,Direction.HORIZONTAL)+1;
                 eColIdx = sColIdx + size(subCoefArrays{1,iCh},Direction.HORIZONTAL)-1;
-                sLayIdx = subPadSize_(iCh,Direction.HORIZONTAL)+1;
+                sLayIdx = subPadSize_(iCh,Direction.DEPTH)+1;
                 eLayIdx = sLayIdx + size(subCoefArrays{1,iCh},Direction.DEPTH)-1;
                 for iSplit = 1:nSplit
                     tmpArray = subPadArrays_{iCh};
