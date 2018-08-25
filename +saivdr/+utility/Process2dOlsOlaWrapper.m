@@ -89,9 +89,15 @@ classdef Process2dOlsOlaWrapper < matlab.System
             s.Synthesizer = matlab.System.saveObject(obj.Synthesizer);
             s.Analyzer = matlab.System.saveObject(obj.Analyzer);
             s.nWorkers = obj.nWorkers;
+            s.refScales = obj.refScales;
+            s.subPadSize = obj.subPadSize;
+            s.subPadArrays = obj.subPadArrays;
         end
         
         function loadObjectImpl(obj,s,wasLocked)
+            obj.subPadArrays = s.subPadArrays;            
+            obj.subPadSize = s.subPadSize;            
+            obj.refScales = s.refScales;
             obj.nWorkers = s.nWorkers;
             obj.Synthesizer = matlab.System.loadObject(s.Synthesizer);
             obj.Analyzer = matlab.System.loadObject(s.Analyzer);
@@ -137,7 +143,7 @@ classdef Process2dOlsOlaWrapper < matlab.System
                     obj.synthesizers{iSplit} = obj.Synthesizer;
                 end
             end
-            %
+
             % Evaluate
             % Check if srcImg is divisible by split factors
             exceptionId = 'SaivDr:IllegalSplitFactorException';
@@ -174,51 +180,50 @@ classdef Process2dOlsOlaWrapper < matlab.System
                     throw(MException(exceptionId,message))
                 end
             end
-            %
+
             % Delete reference analyzer and synthesizer
             refAnalyzer.delete()
             refSynthesizer.delete()
         end
         
         function recImg = stepImpl(obj,srcImg,nLevels)
-            % TODO: Include all major steps in parfor loop
+            % Parameters
             nWorkers_ = obj.nWorkers;
-            
-            % Analysis
-            % 1. Circular padding
-            srcImg_ = padarray(srcImg,obj.PadSize,'circular');
-            % 2. Overlap save (Split)
-            subImgs = split_ols_(obj,srcImg_);
-            % 3. Analyze
-            nSplit = length(subImgs);
-            subCoefs_ = cell(nSplit,1);
-            subScales_ = cell(nSplit,1);
-            %
             analyzers_ = obj.analyzers;
-            parfor (iSplit=1:nSplit,nWorkers_)
-                [subCoefs_{iSplit}, subScales_{iSplit}] = ...
-                    step(analyzers_{iSplit},subImgs{iSplit},nLevels);
-            end
-            % 4. Extract & Concatinate
-            [coefsin,scales] = obj.extract_(subCoefs_,subScales_);
-            
-            % Process
-            coefsout = coefsin;
-            
-            % Synthesis
-            % 1. Split
-            subCoefArrays = obj.merge_(coefsout,scales);
-            % 2. Zero Padding
-            subCoefArrays = padding_(obj,subCoefArrays); 
-            [subCoefs,subScales] = convert_(obj,subCoefArrays);
-            % 3. Synthesize
-            nSplit = length(subCoefs);
-            subRecImg = cell(nSplit,1);
-            %
             synthesizers_ = obj.synthesizers;
+            
+            % Define support functions 
+            extract_ols = @(c,s) obj.extract_ols_(c,s);
+            padding_ola = @(c) obj.padding_ola_(c);
+            arr2vec = @(a) obj.arr2vec_(a);            
+            
+            % Circular global padding
+            srcImg_ = padarray(srcImg,obj.PadSize,'circular');
+            
+            % Overlap save split
+            subImgs = obj.split_ols_(srcImg_);
+            
+            % Parallel processing
+            nSplit = length(subImgs);
+            subRecImg = cell(nSplit,1);            
             parfor (iSplit=1:nSplit,nWorkers_)
-               subCoefs_ = subCoefs{iSplit};
-               subRecImg{iSplit} = step(synthesizers_{iSplit},subCoefs_,subScales);            
+                % Analyze
+                [subCoefs, subScales] = ...
+                    analyzers_{iSplit}.step(subImgs{iSplit},nLevels);
+                
+                % Extract significant coefs.
+                coefspre = extract_ols(subCoefs,subScales);
+                
+                % Process for coefficients
+                coefspost = coefspre;
+                
+                % Zero padding for convolution
+                subCoefArray = padding_ola(coefspost);
+                
+                % Synthesis
+                [subCoefs,subScales] = arr2vec(subCoefArray);
+                subRecImg{iSplit} = ...
+                    step(synthesizers_{iSplit},subCoefs,subScales);
             end
             % 4. Overlap add (Circular)
             recImg = circular_ola_(obj,subRecImg);
@@ -264,180 +269,57 @@ classdef Process2dOlsOlaWrapper < matlab.System
                 -overlap/2);
         end
         
-        function [subCoefs,subScales] = convert_(~,subCoefArrays)
-            nSplit = size(subCoefArrays,1);
-            nChs = size(subCoefArrays,2);
-            subScales = zeros(nChs,2);
-            subCoefs = cell(nSplit,1);
-            for iSplit = 1:nSplit
-                tmpCoefs_ = cell(1,nChs);
-                for iCh = 1:nChs
-                    tmpArray = subCoefArrays{iSplit,iCh};
-                    if iSplit == 1
-                        subScales(iCh,:) = size(tmpArray);
-                    end
-                    tmpCoefs_{1,iCh} = tmpArray(:).';
-                end
-                subCoefs{iSplit} = cell2mat(tmpCoefs_);
-            end
-        end
-        
-        function subCoefArrays = padding_(obj,subCoefArrays)
+        function subCoefArray = padding_ola_(obj,subCoefArray)
             import saivdr.dictionary.utility.Direction
-            nSplit = size(subCoefArrays,1);
-            nChs = size(subCoefArrays,2);
+            nChs = size(subCoefArray,2);
             subPadSize_ = obj.subPadSize;
             subPadArrays_ = obj.subPadArrays;
             for iCh = 1:nChs
                 sRowIdx = subPadSize_(iCh,Direction.VERTICAL)+1;
-                eRowIdx = sRowIdx + size(subCoefArrays{1,iCh},Direction.VERTICAL)-1;
+                eRowIdx = sRowIdx + size(subCoefArray{iCh},Direction.VERTICAL)-1;
                 sColIdx = subPadSize_(iCh,Direction.HORIZONTAL)+1;
-                eColIdx = sColIdx + size(subCoefArrays{1,iCh},Direction.HORIZONTAL)-1;
-                for iSplit = 1:nSplit
-                    tmpArray = subPadArrays_{iCh};
-                    tmpArray(sRowIdx:eRowIdx,sColIdx:eColIdx) ...
-                        = subCoefArrays{iSplit,iCh};
-                    subCoefArrays{iSplit,iCh} = tmpArray;
-                end
+                eColIdx = sColIdx + size(subCoefArray{iCh},Direction.HORIZONTAL)-1;
+                tmpArray = subPadArrays_{iCh};
+                tmpArray(sRowIdx:eRowIdx,sColIdx:eColIdx) ...
+                    = subCoefArray{iCh};
+                subCoefArray{iCh} = tmpArray;
             end
         end
         
         
-        function [subCoefs,subScales] = split_(obj,coefs,scales)
-            import saivdr.dictionary.utility.Direction
-            verticalSplitFactor = obj.VerticalSplitFactor;
-            horizontalSplitFactor = obj.HorizontalSplitFactor;
-            nSplit = verticalSplitFactor*horizontalSplitFactor;
-            % # of channels
-            nChs = size(scales,1);
-            subScales = scales*diag(...
-                [1/verticalSplitFactor, 1/horizontalSplitFactor]);
-            subCoefs = cell(nSplit,1);
-            %
-            eIdx = 0;
-            for iCh = 1:nChs
-                sIdx = eIdx + 1;
-                eIdx = sIdx + prod(scales(iCh,:)) - 1;
-                nRows = scales(iCh,Direction.VERTICAL);
-                nCols = scales(iCh,Direction.HORIZONTAL);
-                coefArrays = reshape(coefs(sIdx:eIdx),[nRows nCols]);
-                %
-                nSubRows = subScales(iCh,Direction.VERTICAL);
-                nSubCols = subScales(iCh,Direction.HORIZONTAL);
-                iSplit = 0;
-                for iHorSplit = 1:horizontalSplitFactor
-                    sColIdx = (iHorSplit-1)*nSubCols + 1;
-                    eColIdx = iHorSplit*nSubCols;
-                    for iVerSplit = 1:verticalSplitFactor
-                        iSplit = iSplit + 1;
-                        sRowIdx = (iVerSplit-1)*nSubRows + 1;
-                        eRowIdx = iVerSplit*nSubRows;
-                        tmpArray = ...
-                            coefArrays(sRowIdx:eRowIdx,sColIdx:eColIdx);
-                        %
-                        tmpVec = tmpArray(:).';
-                        subCoefs{iSplit} = [ subCoefs{iSplit} tmpVec ];
-                    end
-                end
-            end
-        end
-        
-        
-        function subCoefArrays = merge_(obj,subCoefs,subScales)
-            verticalSplitFactor = obj.VerticalSplitFactor;
-            horizontalSplitFactor = obj.HorizontalSplitFactor;
-            nSplit = verticalSplitFactor*horizontalSplitFactor;
-            % # of channels
-            nChs = size(subScales,1);
-            subCoefArrays = cell(nSplit,nChs);
-            %
-            for iSplit = 1:nSplit
-                coefsSplit = subCoefs{iSplit};
-                eIdx = 0;
-                for iCh = 1:nChs
-                    sIdx = eIdx + 1;
-                    eIdx = sIdx + prod(subScales(iCh,:)) - 1;
-                    tmpSubCoefs = coefsSplit(sIdx:eIdx);
-                    subCoefArrays{iSplit,iCh} = ...
-                        reshape(tmpSubCoefs,subScales(iCh,:));
-                end
-            end
-        end
-        
-        
-        function [coefsCrop,scalesCrop] = extract_(obj,subCoefs,subScales)
+        function [coefsCrop,scalesCrop] = ...
+                extract_ols_(obj,coefsSplit,scalesSplit)
             import saivdr.dictionary.utility.Direction
             verticalSplitFactor = obj.VerticalSplitFactor;
             horizontalSplitFactor = obj.HorizontalSplitFactor;
             refSubScales = obj.refScales*...
                 diag(1./[verticalSplitFactor,horizontalSplitFactor]);
-            scalesSplit = subScales{1}; % Partial scales
-            nSplit = length(subCoefs);
             nChs = size(refSubScales,1);
             %
-            coefsCrop = cell(nSplit,1);
-            for iSplit = 1:nSplit
-                coefsCrop{iSplit} = [];
-            end
-            %
-            for iSplit = 1:nSplit
-                coefsSplit = subCoefs{iSplit}; % Partial Coefs.
-                eIdx = 0;
-                for iCh = 1:nChs
-                    stepsize = refSubScales(iCh,:);
-                    sIdx = eIdx + 1;
-                    eIdx = sIdx + prod(scalesSplit(iCh,:)) - 1;
-                    tmpVec = coefsSplit(sIdx:eIdx);
-                    tmpArray = reshape(tmpVec,scalesSplit(iCh,:));
-                    %
-                    offset = (scalesSplit(iCh,:) - refSubScales(iCh,:))/2;
-                    sRowIdx = offset(Direction.VERTICAL) + 1;
-                    eRowIdx = sRowIdx + stepsize(Direction.VERTICAL) - 1;
-                    sColIdx = offset(Direction.HORIZONTAL) + 1;
-                    eColIdx = sColIdx + stepsize(Direction.HORIZONTAL) - 1;
-                    %
-                    tmpArrayCrop = tmpArray(sRowIdx:eRowIdx,sColIdx:eColIdx);
-                    tmpVecCrop = tmpArrayCrop(:).';
-                    %
-                    coefsCrop{iSplit} = [coefsCrop{iSplit} tmpVecCrop];
-                end
+            coefsCrop = cell(1,nChs);
+            eIdx = 0;
+            for iCh = 1:nChs
+                stepsize = refSubScales(iCh,:);
+                sIdx = eIdx + 1;
+                eIdx = sIdx + prod(scalesSplit(iCh,:)) - 1;
+                tmpVec = coefsSplit(sIdx:eIdx);
+                tmpArray = reshape(tmpVec,scalesSplit(iCh,:));
+                %
+                offset = (scalesSplit(iCh,:) - refSubScales(iCh,:))/2;
+                sRowIdx = offset(Direction.VERTICAL) + 1;
+                eRowIdx = sRowIdx + stepsize(Direction.VERTICAL) - 1;
+                sColIdx = offset(Direction.HORIZONTAL) + 1;
+                eColIdx = sColIdx + stepsize(Direction.HORIZONTAL) - 1;
+                %
+                tmpArrayCrop = tmpArray(sRowIdx:eRowIdx,sColIdx:eColIdx);
+                coefsCrop{iCh} = tmpArrayCrop;
             end
             if nargout > 1
                 scalesCrop = refSubScales;
             end
         end
-        
-        function coefs = concatenate_(obj,coefsCrop,scalesCrop)
-            import saivdr.dictionary.utility.Direction
-            verticalSplitFactor = obj.VerticalSplitFactor;
-            horizontalSplitFactor = obj.HorizontalSplitFactor;
-            %
-            nSplit = length(coefsCrop);
-            nChs = size(scalesCrop,1);
-            tmpSubArrays = cell(verticalSplitFactor,horizontalSplitFactor);
-            coefVec = cell(1,nChs);
-            %
-            eIdx = 0;
-            for iCh = 1:nChs
-                sIdx = eIdx + 1;
-                eIdx = sIdx + prod(scalesCrop(iCh,:)) - 1;
-                for iSplit = 1:nSplit
-                    coefsCrop_ = coefsCrop{iSplit};
-                    %
-                    iRow = mod((iSplit-1),verticalSplitFactor)+1;
-                    iCol = floor((iSplit-1)/horizontalSplitFactor)+1;
-                    %
-                    tmpSubVec = coefsCrop_(sIdx:eIdx);
-                    tmpSubArray = reshape(tmpSubVec,scalesCrop(iCh,:));
-                    tmpSubArrays{iRow,iCol} = tmpSubArray;
-                end
-                tmpArray = cell2mat(tmpSubArrays);
-                coefVec{iCh} = tmpArray(:).';
-            end
-            %
-            coefs = cell2mat(coefVec);
-        end
-        
+                
+
         function subImgs = split_ols_(obj,srcImg)
             import saivdr.dictionary.utility.Direction
             verticalSplitFactor = obj.VerticalSplitFactor;
@@ -461,6 +343,22 @@ classdef Process2dOlsOlaWrapper < matlab.System
                 end
             end
         end
+    end
+    
+    methods (Access = private, Static)
+
+        function [subCoefs,subScales] = arr2vec_(subCoefArray)
+            nChs = size(subCoefArray,2);
+            subScales = zeros(nChs,2);
+            tmpCoefs_ = cell(1,nChs);
+            for iCh = 1:nChs
+                tmpArray = subCoefArray{iCh};
+                subScales(iCh,:) = size(tmpArray);
+                tmpCoefs_{iCh} = tmpArray(:).';
+            end
+            subCoefs = cell2mat(tmpCoefs_);
+        end
+        
     end
 end
 

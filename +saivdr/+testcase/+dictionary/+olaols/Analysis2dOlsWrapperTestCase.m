@@ -376,7 +376,7 @@ classdef Analysis2dOlsWrapperTestCase < matlab.unittest.TestCase
                 sprintf('%g',diff));            
         end
         
-         % Test
+        % Test
         function testUdHaarSplitFactorWarning(testCase,width,height,level)
             
             % Parameters
