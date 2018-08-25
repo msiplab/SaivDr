@@ -19,7 +19,10 @@ classdef Analysis3dOlsWrapperTestCase < matlab.unittest.TestCase
         useparallel = { true, false };
         width = struct('small', 32, 'medium', 48, 'large', 64);
         height = struct('small', 32, 'medium', 48, 'large', 64);
-        depth = struct('small', 32, 'medium', 48, 'large', 64);        
+        depth = struct('small', 32, 'medium', 48, 'large', 64);
+        vsplit = struct('small', 1, 'medium', 2, 'large', 4);
+        hsplit = struct('small', 1, 'medium', 2, 'large', 4);        
+        dsplit = struct('small', 1, 'medium', 2, 'large', 4);                        
         level = struct('flat',1, 'sharrow',2,'deep', 3);
     end
     
@@ -144,12 +147,13 @@ classdef Analysis3dOlsWrapperTestCase < matlab.unittest.TestCase
     
         
         % Test
-        function testUdHaarSplitting(testCase,width,height,depth,level,useparallel)
+        function testUdHaarSplitting(testCase,width,height,depth,...
+                vsplit,hsplit,dsplit,level,useparallel)
             
             % Parameters
-            nVerSplit = 2;
-            nHorSplit = 2;
-            nDepSplit = 2;
+            nVerSplit = vsplit;
+            nHorSplit = hsplit;
+            nDepSplit = dsplit;
             nVerPad = 2^(level-1);
             nHorPad = 2^(level-1);
             nDepPad = 2^(level-1);
@@ -183,12 +187,13 @@ classdef Analysis3dOlsWrapperTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testUdHaarSplittingCellOutput(testCase,width,height,depth,level,useparallel)
+        function testUdHaarSplittingCellOutput(testCase,width,height,depth,...
+                vsplit,hsplit,dsplit,level,useparallel)
             
             % Parameters
-            nVerSplit = 2;
-            nHorSplit = 2;
-            nDepSplit = 2;
+            nVerSplit = vsplit;
+            nHorSplit = hsplit;
+            nDepSplit = dsplit;
             nVerPad = 2^(level-1);
             nHorPad = 2^(level-1);
             nDepPad = 2^(level-1);

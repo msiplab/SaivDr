@@ -19,6 +19,8 @@ classdef Analysis2dOlsWrapperTestCase < matlab.unittest.TestCase
         useparallel = { true, false };
         width = struct('small', 64, 'medium', 96, 'large', 128);
         height = struct('small', 64, 'medium', 96, 'large', 128);
+        vsplit = struct('small', 1, 'medium', 2, 'large', 4);
+        hsplit = struct('small', 1, 'medium', 2, 'large', 4);                
         level = struct('flat',1, 'sharrow',3,'deep', 5);
     end
     
@@ -140,11 +142,12 @@ classdef Analysis2dOlsWrapperTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testUdHaarSplitting(testCase,width,height,level,useparallel)
+        function testUdHaarSplitting(testCase,width,height,...
+                vsplit,hsplit,level,useparallel)
             
             % Parameters
-            nVerSplit = 2;
-            nHorSplit = 2;
+            nVerSplit = vsplit;
+            nHorSplit = hsplit;
             nVerPad = 2^(level-1);
             nHorPad = 2^(level-1);
             srcImg = rand(height,width);
@@ -176,11 +179,12 @@ classdef Analysis2dOlsWrapperTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testUdHaarSplittingCellOutput(testCase,width,height,level,useparallel)
+        function testUdHaarSplittingCellOutput(testCase,width,height,...
+                vsplit,hsplit,level,useparallel)
             
             % Parameters
-            nVerSplit = 2;
-            nHorSplit = 2;
+            nVerSplit = vsplit;
+            nHorSplit = hsplit;
             nVerPad = 2^(level-1);
             nHorPad = 2^(level-1);
             srcImg = rand(height,width);

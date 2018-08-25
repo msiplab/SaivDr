@@ -215,8 +215,7 @@ classdef Process3dOlsOlaWrapper < matlab.System
             % Parallel processing
             nSplit = length(subImgs);
             subRecImg = cell(nSplit,1);
-            %parfor (iSplit=1:nSplit,nWorkers_)
-            for iSplit=1:nSplit 
+            parfor (iSplit=1:nSplit,nWorkers_)
                 % Analyze
                 [subCoefs, subScales] = ...
                     analyzers_{iSplit}.step(subImgs{iSplit},nLevels);

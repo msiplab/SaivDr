@@ -19,6 +19,8 @@ classdef Process2dOlsOlaWrapperTestCase < matlab.unittest.TestCase
         useparallel = { true, false };
         width = struct('small', 64, 'medium', 96, 'large', 128);
         height = struct('small', 64, 'medium', 96, 'large', 128);
+        vsplit = struct('small', 1, 'medium', 2, 'large', 4); 
+        hsplit = struct('small', 1, 'medium', 2, 'large', 4);         
         level = struct('flat',1, 'sharrow',3,'deep', 5);
     end
     
@@ -103,12 +105,12 @@ classdef Process2dOlsOlaWrapperTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testUdHaarSplitting(testCase,width,height,level,useparallel)
+        function testUdHaarSplitting(testCase,width,height,vsplit,hsplit,level,useparallel)
             
             % Parameters
             nLevels = level;
-            nVerSplit = 2;
-            nHorSplit = 2;
+            nVerSplit = vsplit;
+            nHorSplit = hsplit;
             nVerPad = 2^(level-1);
             nHorPad = 2^(level-1);
             srcImg = rand(height,width);
@@ -241,7 +243,6 @@ classdef Process2dOlsOlaWrapperTestCase < matlab.unittest.TestCase
             analyzer = UdHaarAnalysis2dSystem();
             synthesizer = UdHaarSynthesis2dSystem();
 
-
             % Instantiation of target class
             import saivdr.utility.*
             testCase.target = Process2dOlsOlaWrapper(...
@@ -260,5 +261,7 @@ classdef Process2dOlsOlaWrapperTestCase < matlab.unittest.TestCase
             end
         end
         
+        % Test process
+
     end
 end
