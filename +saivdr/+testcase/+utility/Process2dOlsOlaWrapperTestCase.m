@@ -1,5 +1,5 @@
 classdef Process2dOlsOlaWrapperTestCase < matlab.unittest.TestCase
-    %PROCESS2DOLSOLAWRAPPERTESTCASE このクラスの概要をここに記述    
+    %PROCESS2DOLSOLAWRAPPERTESTCASE Test cases for Process2dOlsOlaWrapper  
     %
     % Requirements: MATLAB R2015b
     %
