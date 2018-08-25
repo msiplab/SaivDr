@@ -26,15 +26,12 @@ classdef Synthesis3dOlaWrapper < saivdr.dictionary.AbstSynthesisSystem
         BoundaryOperation
         PadSize = [0 0 0]
         InputType = 'Vector'
+        SplitFactor = []
     end
     
     properties (Logical)
         UseParallel = false
         IsIntegrityTest = true
-    end
-    
-    properties (Nontunable)
-        SplitFactor = []
     end
     
     properties (Nontunable, PositiveInteger, Hidden)
@@ -53,7 +50,6 @@ classdef Synthesis3dOlaWrapper < saivdr.dictionary.AbstSynthesisSystem
     properties (Access = private, Nontunable)
         refSize
         refSubSize
-        refSynthesizer
         subPadSize
         subPadArrays
         synthesizers
@@ -108,7 +104,7 @@ function setFrameBound(obj,frameBound)
         
         function setupImpl(obj,coefs,scales)
             obj.Synthesizer.release();
-            obj.refSynthesizer = obj.Synthesizer.clone();
+            refSynthesizer = obj.Synthesizer.clone();
             %
             verticalSplitFactor = obj.VerticalSplitFactor;
             horizontalSplitFactor = obj.HorizontalSplitFactor;
@@ -140,7 +136,7 @@ function setFrameBound(obj,frameBound)
                 refCoefs = coefs;
                 refScales = scales;
             end
-            recImg = step(obj.refSynthesizer,refCoefs,refScales);
+            recImg = step(refSynthesizer,refCoefs,refScales);
             obj.refSize = size(recImg);
             obj.refSubSize = obj.refSize*...
                 diag(1./[obj.VerticalSplitFactor,...
@@ -199,7 +195,7 @@ function setFrameBound(obj,frameBound)
                 end
             end
             % Delete reference synthesizer
-            obj.refSynthesizer.delete()
+            refSynthesizer.delete()
         end
         
         function recImg = stepImpl(obj,coefs,scales)

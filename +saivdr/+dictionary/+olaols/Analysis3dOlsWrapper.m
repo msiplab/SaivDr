@@ -26,6 +26,7 @@ classdef Analysis3dOlsWrapper < saivdr.dictionary.AbstAnalysisSystem
         BoundaryOperation
         PadSize = [0 0 0]
         OutputType = 'Vector'
+        SplitFactor = []
     end
     
     properties (Logical)
@@ -33,11 +34,7 @@ classdef Analysis3dOlsWrapper < saivdr.dictionary.AbstAnalysisSystem
         IsIntegrityTest = true
     end
     
-    properties (Nontunable)
-        SplitFactor = []
-    end
-    
-    properties (Nontunable, PositiveInteger,Hidden)
+    properties (Nontunable, PositiveInteger, Hidden)
         VerticalSplitFactor = 1
         HorizontalSplitFactor = 1
         DepthSplitFactor = 1
@@ -53,7 +50,6 @@ classdef Analysis3dOlsWrapper < saivdr.dictionary.AbstAnalysisSystem
     properties (Access = private, Nontunable)
         refScales
         refSubSize
-        refAnalyzer
         analyzers
         nWorkers
     end
@@ -102,8 +98,8 @@ classdef Analysis3dOlsWrapper < saivdr.dictionary.AbstAnalysisSystem
         
         function setupImpl(obj,srcImg,nLevels)
             obj.Analyzer.release();
-            obj.refAnalyzer = obj.Analyzer.clone();
-            [coefs,scales] = step(obj.refAnalyzer,srcImg,nLevels);
+            refAnalyzer = obj.Analyzer.clone();
+            [coefs,scales] = step(refAnalyzer,srcImg,nLevels);
             obj.refScales = scales;
             obj.refSubSize = size(srcImg)*...
                 diag(1./[obj.VerticalSplitFactor,...
@@ -149,7 +145,7 @@ classdef Analysis3dOlsWrapper < saivdr.dictionary.AbstAnalysisSystem
                 end
             end
             % Delete reference synthesizer
-            obj.refAnalyzer.delete()
+            refAnalyzer.delete()
         end
         
         function [coefs, scales] = stepImpl(obj,srcImg,nLevels)

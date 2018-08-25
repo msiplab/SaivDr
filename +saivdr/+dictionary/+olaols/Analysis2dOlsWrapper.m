@@ -26,15 +26,12 @@ classdef Analysis2dOlsWrapper < saivdr.dictionary.AbstAnalysisSystem
         BoundaryOperation
         PadSize = [0 0]
         OutputType = 'Vector'
+        SplitFactor = []
     end
     
     properties (Logical)
         UseParallel = false
         IsIntegrityTest = true
-    end
-    
-    properties (Nontunable)
-        SplitFactor = []
     end
     
     properties (Nontunable, PositiveInteger, Hidden)
@@ -52,7 +49,6 @@ classdef Analysis2dOlsWrapper < saivdr.dictionary.AbstAnalysisSystem
     properties (Access = private, Nontunable)
         refScales
         refSubSize
-        refAnalyzer
         analyzers
         nWorkers
     end
@@ -99,13 +95,17 @@ classdef Analysis2dOlsWrapper < saivdr.dictionary.AbstAnalysisSystem
         
         function setupImpl(obj,srcImg,nLevels)
             obj.Analyzer.release();
-            obj.refAnalyzer = obj.Analyzer.clone();
-            [coefs,scales] = step(obj.refAnalyzer,srcImg,nLevels);
+            refAnalyzer = obj.Analyzer.clone();
+            %
+            verticalSplitFactor = obj.VerticalSplitFactor;
+            horizontalSplitFactor = obj.HorizontalSplitFactor;
+            nSplit = verticalSplitFactor*horizontalSplitFactor;            
+            %
+            [coefs,scales] = step(refAnalyzer,srcImg,nLevels);
             obj.refScales = scales;
             obj.refSubSize = size(srcImg)*...
-                diag(1./[obj.VerticalSplitFactor,obj.HorizontalSplitFactor]);
+                diag(1./[verticalSplitFactor,horizontalSplitFactor]);
             %
-            nSplit = obj.VerticalSplitFactor*obj.HorizontalSplitFactor;
             obj.analyzers = cell(nSplit,1);
             if obj.UseParallel
                 obj.nWorkers = Inf;
@@ -142,7 +142,7 @@ classdef Analysis2dOlsWrapper < saivdr.dictionary.AbstAnalysisSystem
                 end
             end
             % Delete reference synthesizer
-            obj.refAnalyzer.delete()
+            refAnalyzer.delete()
         end
         
         function [coefs, scales] = stepImpl(obj,srcImg,nLevels)

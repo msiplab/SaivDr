@@ -26,15 +26,12 @@ classdef Synthesis2dOlaWrapper < saivdr.dictionary.AbstSynthesisSystem
         BoundaryOperation
         PadSize = [0 0]
         InputType = 'Vector'
+        SplitFactor = []
     end
     
     properties (Logical)
         UseParallel = false
         IsIntegrityTest = true
-    end
-    
-    properties (Nontunable)
-        SplitFactor = []
     end
     
     properties (Nontunable, PositiveInteger, Hidden)
@@ -52,7 +49,6 @@ classdef Synthesis2dOlaWrapper < saivdr.dictionary.AbstSynthesisSystem
     properties (Access = private, Nontunable)
         refSize
         refSubSize
-        refSynthesizer
         subPadSize
         subPadArrays
         synthesizers
@@ -105,7 +101,7 @@ classdef Synthesis2dOlaWrapper < saivdr.dictionary.AbstSynthesisSystem
 
         function setupImpl(obj,coefs,scales)
             obj.Synthesizer.release();
-            obj.refSynthesizer = obj.Synthesizer.clone();
+            refSynthesizer = obj.Synthesizer.clone();
             %
             verticalSplitFactor = obj.VerticalSplitFactor;
             horizontalSplitFactor = obj.HorizontalSplitFactor;
@@ -134,10 +130,10 @@ classdef Synthesis2dOlaWrapper < saivdr.dictionary.AbstSynthesisSystem
                 refCoefs = coefs;
                 refScales = scales;
             end
-            recImg = step(obj.refSynthesizer,refCoefs,refScales);
+            recImg = step(refSynthesizer,refCoefs,refScales);
             obj.refSize = size(recImg);            
             obj.refSubSize = obj.refSize*...
-                diag(1./[obj.VerticalSplitFactor,obj.HorizontalSplitFactor]);
+                diag(1./[verticalSplitFactor,horizontalSplitFactor]);
             %
             scaleRatio = refScales*diag(1./obj.refSize);    
             obj.subPadSize = scaleRatio*diag(obj.PadSize);
@@ -173,7 +169,7 @@ classdef Synthesis2dOlaWrapper < saivdr.dictionary.AbstSynthesisSystem
             nCoefs = 0;
             for iCh = 1:nChs
                 subScale = refScales(iCh,:) * ...
-                diag(1./[obj.VerticalSplitFactor,obj.HorizontalSplitFactor]);
+                diag(1./[verticalSplitFactor,horizontalSplitFactor]);
                 nDim = subScale+2*obj.subPadSize(iCh,:);
                 obj.subPadArrays{iCh} = zeros(nDim);
                 nCoefs = nCoefs + prod(nDim);
@@ -189,7 +185,7 @@ classdef Synthesis2dOlaWrapper < saivdr.dictionary.AbstSynthesisSystem
                 end
             end
             % Delete reference synthesizer
-            obj.refSynthesizer.delete()
+            refSynthesizer.delete()
         end
         
         
@@ -224,18 +220,20 @@ classdef Synthesis2dOlaWrapper < saivdr.dictionary.AbstSynthesisSystem
 
         function recImg = circular_ola_(obj,subRecImg)
             import saivdr.dictionary.utility.Direction
+            verticalSplitFactor = obj.VerticalSplitFactor;
+            horizontalSplitFactor = obj.HorizontalSplitFactor;
             stepsize = obj.refSubSize;
             overlap = size(subRecImg{1})-stepsize;
             recImg = zeros(obj.refSize+overlap);
             % Overlap add
             iSplit = 0;
             tIdxHor = 0;
-            for iHorSplit = 1:obj.HorizontalSplitFactor
+            for iHorSplit = 1:horizontalSplitFactor
                 sIdxHor = tIdxHor + 1;
                 tIdxHor= sIdxHor + stepsize(Direction.HORIZONTAL) - 1;
                 eIdxHor = tIdxHor + overlap(Direction.HORIZONTAL);
                 tIdxVer = 0;
-                for iVerSplit = 1:obj.VerticalSplitFactor
+                for iVerSplit = 1:verticalSplitFactor
                     iSplit = iSplit + 1;
                     sIdxVer = tIdxVer + 1;
                     tIdxVer = sIdxVer + stepsize(Direction.VERTICAL) - 1;
