@@ -13,8 +13,8 @@ classdef CoefsManipulator < matlab.System
     end
     
     properties (Logical)
-       IsFeedBack = false 
-       IsStateOutput = false
+        IsFeedBack = false
+        IsStateOutput = false
     end
     
     methods
