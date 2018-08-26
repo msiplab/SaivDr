@@ -99,16 +99,19 @@ classdef Analysis3dOlsWrapper < saivdr.dictionary.AbstAnalysisSystem
         function setupImpl(obj,srcImg,nLevels)
             obj.Analyzer.release();
             refAnalyzer = obj.Analyzer.clone();
+            %
+            verticalSplitFactor = obj.VerticalSplitFactor;
+            horizontalSplitFactor = obj.HorizontalSplitFactor;
+            depthSplitFactor = obj.DepthSplitFactor;            
+            nSplit = verticalSplitFactor*horizontalSplitFactor*depthSplitFactor;            
+            %
             [coefs,scales] = step(refAnalyzer,srcImg,nLevels);
             obj.refScales = scales;
             obj.refSubSize = size(srcImg)*...
-                diag(1./[obj.VerticalSplitFactor,...
-                obj.HorizontalSplitFactor,...
-                obj.DepthSplitFactor]);
+                diag(1./[verticalSplitFactor,...
+                horizontalSplitFactor,...
+                depthSplitFactor]);
             %
-            nSplit = obj.VerticalSplitFactor*...
-                obj.HorizontalSplitFactor*...
-                obj.DepthSplitFactor;
             obj.analyzers = cell(nSplit,1);
             if obj.UseParallel
                 obj.nWorkers = Inf;
@@ -257,56 +260,7 @@ classdef Analysis3dOlsWrapper < saivdr.dictionary.AbstAnalysisSystem
             coefs = cell2mat(coefVec);            
         end
         
-        function coefs = extract_concatinate_(obj,subCoefs,subScales)
-            import saivdr.dictionary.utility.Direction
-            verticalSplitFactor = obj.VerticalSplitFactor;
-            horizontalSplitFactor = obj.HorizontalSplitFactor;
-            depthSplitFactor = obj.DepthSplitFactor;
-            refSubScales = obj.refScales*...
-                diag(1./[verticalSplitFactor,...
-                horizontalSplitFactor,...
-                depthSplitFactor]);            
-            %
-            scalesSplit = subScales{1}; % Partial scales
-            nSplit = length(subCoefs);           
-            nChs = size(refSubScales,1);            
-            coefCrop = cell(verticalSplitFactor,...
-                horizontalSplitFactor,...
-                depthSplitFactor);
-            coefVec = cell(1,nChs);
-            %
-            eIdx = 0;                            
-            for iCh = 1:nChs         
-                stepsize = refSubScales(iCh,:);
-                offset = (scalesSplit(iCh,:) - refSubScales(iCh,:))/2;
-                sIdx = eIdx + 1;
-                eIdx = sIdx + prod(scalesSplit(iCh,:)) - 1;
-                for iSplit = 1:nSplit
-                    coefsSplit = subCoefs{iSplit}; % Partial Coefs. 
-                    %
-                    tmpVec = coefsSplit(sIdx:eIdx);
-                    tmpArray = reshape(tmpVec,scalesSplit(iCh,:));
-                    %
-                    sRowIdx = offset(Direction.VERTICAL) + 1;
-                    eRowIdx = sRowIdx + stepsize(Direction.VERTICAL) - 1;
-                    sColIdx = offset(Direction.HORIZONTAL) + 1; 
-                    eColIdx = sColIdx + stepsize(Direction.HORIZONTAL) - 1;
-                    sLayIdx = offset(Direction.DEPTH) + 1;
-                    eLayIdx = sLayIdx + stepsize(Direction.DEPTH) - 1;
-                    %
-                    iRow = mod((iSplit-1),verticalSplitFactor)+1;
-                    iCol = mod(floor((iSplit-1)/(verticalSplitFactor)),horizontalSplitFactor)+1;
-                    iLay = floor((iSplit-1)/(verticalSplitFactor*horizontalSplitFactor))+1;
-                    coefCrop{iRow,iCol,iLay} = ...
-                        tmpArray(sRowIdx:eRowIdx,sColIdx:eColIdx,sLayIdx:eLayIdx);
-                end
-                tmpArray = cell2mat(coefCrop);
-                coefVec{iCh} = tmpArray(:).';
-            end
-            %
-            coefs = cell2mat(coefVec);
-        end
-        
+
         function subImgs = split_ols_(obj,srcImg)
             import saivdr.dictionary.utility.Direction
             verticalSplitFactor = obj.VerticalSplitFactor;

@@ -147,17 +147,104 @@ classdef Analysis3dOlsWrapperTestCase < matlab.unittest.TestCase
     
         
         % Test
-        function testUdHaarSplitting(testCase,width,height,depth,...
-                vsplit,hsplit,dsplit,level,useparallel)
+        function testUdHaarSplittingSize(testCase,width,height,depth,...
+                useparallel)
             
             % Parameters
+            nLevels = 2;
+            nVerSplit = 2;
+            nHorSplit = 2;
+            nDepSplit = 2;
+            nVerPad = 2^(nLevels-1);
+            nHorPad = 2^(nLevels-1);
+            nDepPad = 2^(nLevels-1);
+            srcImg = rand(height,width,depth);
+            
+            % Expected values
+            import saivdr.dictionary.udhaar.*
+            refAnalyzer = UdHaarAnalysis3dSystem();
+            [coefsExpctd,scalesExpctd] = step(refAnalyzer,srcImg,nLevels);
+            
+            % Instantiation of target class
+            import saivdr.dictionary.olaols.*
+            testCase.analyzer = Analysis3dOlsWrapper(...
+                'Analyzer',refAnalyzer,...
+                'VerticalSplitFactor',nVerSplit,...
+                'HorizontalSplitFactor',nHorSplit,...
+                'DepthSplitFactor',nDepSplit,...
+                'PadSize',[nVerPad,nHorPad,nDepPad],...
+                'UseParallel',useparallel);
+            
+            % Actual values
+            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            
+            % Evaluation
+            testCase.verifySize(scalesActual,size(scalesExpctd));
+            testCase.verifyEqual(scalesActual,scalesExpctd);
+            testCase.verifySize(coefsActual,size(coefsExpctd));
+            diff = max(abs(coefsExpctd(:) - coefsActual(:)));
+            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-10,...
+                sprintf('%g',diff));            
+        end
+        
+        % Test
+        function testUdHaarSplittingSplit(testCase,vsplit,hsplit,dsplit,...
+                useparallel)
+            
+            % Parameters
+            nLevels = 2;
+            height_ = 48;
+            width_ = 48;
+            depth_ = 48;
             nVerSplit = vsplit;
             nHorSplit = hsplit;
             nDepSplit = dsplit;
+            nVerPad = 2^(nLevels-1);
+            nHorPad = 2^(nLevels-1);
+            nDepPad = 2^(nLevels-1);
+            srcImg = rand(height_,width_,depth_);
+            
+            % Expected values
+            import saivdr.dictionary.udhaar.*
+            refAnalyzer = UdHaarAnalysis3dSystem();
+            [coefsExpctd,scalesExpctd] = step(refAnalyzer,srcImg,nLevels);
+            
+            % Instantiation of target class
+            import saivdr.dictionary.olaols.*
+            testCase.analyzer = Analysis3dOlsWrapper(...
+                'Analyzer',refAnalyzer,...
+                'VerticalSplitFactor',nVerSplit,...
+                'HorizontalSplitFactor',nHorSplit,...
+                'DepthSplitFactor',nDepSplit,...
+                'PadSize',[nVerPad,nHorPad,nDepPad],...
+                'UseParallel',useparallel);
+            
+            % Actual values
+            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            
+            % Evaluation
+            testCase.verifySize(scalesActual,size(scalesExpctd));
+            testCase.verifyEqual(scalesActual,scalesExpctd);
+            testCase.verifySize(coefsActual,size(coefsExpctd));
+            diff = max(abs(coefsExpctd(:) - coefsActual(:)));
+            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-10,...
+                sprintf('%g',diff));            
+        end
+        
+        % Test
+        function testUdHaarSplittingLevel(testCase,level,useparallel)
+            
+            % Parameters
+            height_ = 48;
+            width_ = 48;
+            depth_ = 48;
+            nVerSplit = 2;
+            nHorSplit = 2;
+            nDepSplit = 2;
             nVerPad = 2^(level-1);
             nHorPad = 2^(level-1);
             nDepPad = 2^(level-1);
-            srcImg = rand(height,width,depth);
+            srcImg = rand(height_,width_,depth_);
             
             % Expected values
             import saivdr.dictionary.udhaar.*
@@ -184,20 +271,121 @@ classdef Analysis3dOlsWrapperTestCase < matlab.unittest.TestCase
             diff = max(abs(coefsExpctd(:) - coefsActual(:)));
             testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-10,...
                 sprintf('%g',diff));            
-        end
+        end        
         
         % Test
-        function testUdHaarSplittingCellOutput(testCase,width,height,depth,...
-                vsplit,hsplit,dsplit,level,useparallel)
+        function testUdHaarSplittingCellOutputSize(testCase,width,height,depth,...
+                useparallel)
             
             % Parameters
+            nLevels = 2;
+            nVerSplit = 2;
+            nHorSplit = 2;
+            nDepSplit = 2;
+            nVerPad = 2^(nLevels-1);
+            nHorPad = 2^(nLevels-1);
+            nDepPad = 2^(nLevels-1);
+            srcImg = rand(height,width,depth);
+            
+            % Expected values
+            import saivdr.dictionary.udhaar.*
+            refAnalyzer = UdHaarAnalysis3dSystem();
+            [coefs,scales] = step(refAnalyzer,srcImg,nLevels);
+            nSplit = nVerSplit*nHorSplit*nDepSplit;
+            [coefsExpctd, scalesExpctd] = testCase.splitCoefs_(...
+                coefs,scales,[nVerSplit nHorSplit nDepSplit]);
+
+            
+            % Instantiation of target class
+            import saivdr.dictionary.olaols.*
+            testCase.analyzer = Analysis3dOlsWrapper(...
+                'Analyzer',refAnalyzer,...
+                'VerticalSplitFactor',nVerSplit,...
+                'HorizontalSplitFactor',nHorSplit,...
+                'DepthSplitFactor',nDepSplit,...
+                'PadSize',[nVerPad,nHorPad,nDepPad],...
+                'UseParallel',useparallel,...
+                'OutputType','Cell');
+            
+            % Actual values
+            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            
+            % Evaluation
+            testCase.verifySize(scalesActual,size(scalesExpctd));
+            testCase.verifyEqual(scalesActual,scalesExpctd);
+            for iSplit = 1:nSplit
+                testCase.verifySize(coefsActual{iSplit},size(coefsExpctd{iSplit}));
+                diff = max(abs(coefsExpctd{iSplit}(:) - coefsActual{iSplit}(:)));
+                testCase.verifyEqual(coefsActual{iSplit},coefsExpctd{iSplit},...
+                    'AbsTol',1e-10,sprintf('%g',diff));            
+            end
+        end        
+
+        % Test
+        function testUdHaarSplittingCellOutputSplit(testCase,vsplit,hsplit,dsplit,...
+                useparallel)
+            
+            % Parameters
+            nLevels = 2;
+            height_ = 48;
+            width_ = 48;
+            depth_ = 48;
             nVerSplit = vsplit;
             nHorSplit = hsplit;
             nDepSplit = dsplit;
+            nVerPad = 2^(nLevels-1);
+            nHorPad = 2^(nLevels-1);
+            nDepPad = 2^(nLevels-1);
+            srcImg = rand(height_,width_,depth_);
+            
+            % Expected values
+            import saivdr.dictionary.udhaar.*
+            refAnalyzer = UdHaarAnalysis3dSystem();
+            [coefs,scales] = step(refAnalyzer,srcImg,nLevels);
+            nSplit = nVerSplit*nHorSplit*nDepSplit;
+            [coefsExpctd, scalesExpctd] = testCase.splitCoefs_(...
+                coefs,scales,[nVerSplit nHorSplit nDepSplit]);
+
+            
+            % Instantiation of target class
+            import saivdr.dictionary.olaols.*
+            testCase.analyzer = Analysis3dOlsWrapper(...
+                'Analyzer',refAnalyzer,...
+                'VerticalSplitFactor',nVerSplit,...
+                'HorizontalSplitFactor',nHorSplit,...
+                'DepthSplitFactor',nDepSplit,...
+                'PadSize',[nVerPad,nHorPad,nDepPad],...
+                'UseParallel',useparallel,...
+                'OutputType','Cell');
+            
+            % Actual values
+            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            
+            % Evaluation
+            testCase.verifySize(scalesActual,size(scalesExpctd));
+            testCase.verifyEqual(scalesActual,scalesExpctd);
+            for iSplit = 1:nSplit
+                testCase.verifySize(coefsActual{iSplit},size(coefsExpctd{iSplit}));
+                diff = max(abs(coefsExpctd{iSplit}(:) - coefsActual{iSplit}(:)));
+                testCase.verifyEqual(coefsActual{iSplit},coefsExpctd{iSplit},...
+                    'AbsTol',1e-10,sprintf('%g',diff));            
+            end
+        end        
+
+        % Test
+        function testUdHaarSplittingCellOutputLevel(testCase,level,useparallel)
+            
+            % Parameters
+            height_ = 48;
+            width_ = 48;
+            depth_ = 48;
+            nVerSplit = 2;
+            nHorSplit = 2;
+            nDepSplit = 2;
             nVerPad = 2^(level-1);
             nHorPad = 2^(level-1);
             nDepPad = 2^(level-1);
-            srcImg = rand(height,width,depth);
+            srcImg = rand(height_,width_,depth_);
             
             % Expected values
             import saivdr.dictionary.udhaar.*
@@ -232,6 +420,8 @@ classdef Analysis3dOlsWrapperTestCase < matlab.unittest.TestCase
                     'AbsTol',1e-10,sprintf('%g',diff));            
             end
         end        
+        
+        
         
         % Test
         function testUdHaarSplittingWarningReconstruction(testCase,width,height,depth)
