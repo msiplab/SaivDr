@@ -166,7 +166,6 @@ classdef Analysis2dOlsWrapper < saivdr.dictionary.AbstAnalysisSystem
             if strcmp(obj.OutputType,'Cell')
                 [coefs,scales] = obj.extract_(subCoefs_,subScales_);
             else
-                %coefs = obj.extract_concatenate_(subCoefs_,subScales_);
                 [coefsCrop,scalesCrop] = obj.extract_(subCoefs_,subScales_);
                 coefs = obj.concatenate_(coefsCrop,scalesCrop);
                 scales = obj.refScales;
@@ -237,7 +236,7 @@ classdef Analysis2dOlsWrapper < saivdr.dictionary.AbstAnalysisSystem
                     coefsCrop_ = coefsCrop{iSplit};
                     %
                     iRow = mod((iSplit-1),verticalSplitFactor)+1;
-                    iCol = floor((iSplit-1)/horizontalSplitFactor)+1;
+                    iCol = floor((iSplit-1)/verticalSplitFactor)+1;
                     %
                     tmpSubVec = coefsCrop_(sIdx:eIdx);
                     tmpSubArray = reshape(tmpSubVec,scalesCrop(iCh,:));
