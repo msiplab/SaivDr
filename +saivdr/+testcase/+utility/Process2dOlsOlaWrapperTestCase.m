@@ -119,12 +119,12 @@ classdef Process2dOlsOlaWrapperTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testUdHaarSplitting(testCase,width,height,vsplit,hsplit,level,useparallel)
+        function testUdHaarSplittingSize(testCase,width,height,level,useparallel)
             
             % Parameters
             nLevels = level;
-            nVerSplit = vsplit;
-            nHorSplit = hsplit;
+            nVerSplit = 2;
+            nHorSplit = 2;
             nVerPad = 2^(level-1);
             nHorPad = 2^(level-1);
             srcImg = rand(height,width);
@@ -151,7 +151,43 @@ classdef Process2dOlsOlaWrapperTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(recImg,srcImg,'AbsTol',1e-10,...
                 sprintf('%g',diff));
         end  
-                
+
+        % Test
+        function testUdHaarSplittingSplit(testCase,vsplit,hsplit,level,useparallel)
+            
+            % Parameters
+            nLevels = level;
+            height_ = 96;
+            width_ = 96;
+            nVerSplit = vsplit;
+            nHorSplit = hsplit;
+            nVerPad = 2^(level-1);
+            nHorPad = 2^(level-1);
+            srcImg = rand(height_,width_);
+            import saivdr.dictionary.udhaar.*
+            analyzer = UdHaarAnalysis2dSystem();
+            synthesizer = UdHaarSynthesis2dSystem();
+            
+            % Instantiation of target class
+            import saivdr.utility.*
+            testCase.target = Process2dOlsOlaWrapper(...
+                'Analyzer',analyzer,...
+                'Synthesizer',synthesizer,...
+                'VerticalSplitFactor',nVerSplit,...
+                'HorizontalSplitFactor',nHorSplit,...
+                'PadSize',[nVerPad,nHorPad],...
+                'UseParallel',useparallel);
+            
+            % Actual values
+            recImg = step(testCase.target,srcImg,nLevels);
+
+            % Evaluation
+            testCase.verifySize(recImg,size(srcImg));
+            diff = max(abs(srcImg(:) - recImg(:)));
+            testCase.verifyEqual(recImg,srcImg,'AbsTol',1e-10,...
+                sprintf('%g',diff));
+        end  
+        
         % Test
         function testUdHaarSplittingWarningFactor(testCase,width,height,level,useparallel)
             
