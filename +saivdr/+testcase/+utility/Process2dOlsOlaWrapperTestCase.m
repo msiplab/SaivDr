@@ -382,7 +382,6 @@ classdef Process2dOlsOlaWrapperTestCase < matlab.unittest.TestCase
                 sprintf('%g',diff));
         end
         
-        
     end
 
 end

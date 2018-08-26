@@ -110,9 +110,7 @@ classdef Process2dOlsOlaWrapper < matlab.System
             loadObjectImpl@matlab.System(obj,s,wasLocked);
         end
         
-        function setupImpl(obj,varargin)
-            srcImg = varargin{1};
-            nLevels = varargin{2};
+        function setupImpl(obj,srcImg,nLevels)
             % Preperation
             verticalSplitFactor = obj.VerticalSplitFactor;
             horizontalSplitFactor = obj.HorizontalSplitFactor;
