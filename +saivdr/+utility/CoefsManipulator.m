@@ -47,13 +47,20 @@ classdef CoefsManipulator < matlab.System
                 nChs = length(coefspre);
                 coefspst = cell(1,nChs);
                 if isfeedback_
-                    if obj.IsStateOutput
+                    if obj.IsStateOutput && iscell(obj.State)
                         state = cell(1,nChs);
                         for iCh = 1:nChs
                             [coefspst{iCh},state{iCh}] = ...
                                 manipulation_(coefspre{iCh},...
                                 obj.State{iCh});
                         end
+                    elseif obj.IsStateOutput && isscalar(obj.State)
+                        state = cell(1,nChs);
+                        for iCh = 1:nChs
+                            [coefspst{iCh},state{iCh}] = ...
+                                manipulation_(coefspre{iCh},...
+                                obj.State);
+                        end                        
                     else
                         for iCh = 1:nChs
                             coefspst{iCh} = manipulation_(...

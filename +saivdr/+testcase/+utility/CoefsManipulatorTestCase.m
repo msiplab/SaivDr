@@ -484,6 +484,64 @@ classdef CoefsManipulatorTestCase < matlab.unittest.TestCase
             end
         end
         
+        function testPdsHsHcOct3dCellWithValueState(testCase,width,height,depth)
+            
+            % Parameters
+            nIters = 5;
+            nChs = 5;
+            coefs  = cell(nIters+1,1);
+            for iIter = 1:nIters+1
+                subcoefs = cell(1,nChs);
+                for iCh = 1:nChs
+                    if iIter == 1
+                        subcoefs{iCh} = zeros(width,height,depth);
+                    else
+                        subcoefs{iCh} = randn(width,height,depth);                        
+                    end
+                end
+                coefs{iIter} = subcoefs;
+            end
+            
+            % Function
+            lambda = 1e-3;
+            gamma  = 1e-3;
+            f = @(x,xpre) testCase.coefpdshshc(x,xpre,lambda,gamma);
+            
+            % Instantiation
+            import saivdr.utility.*
+            testCase.target = CoefsManipulator(...
+                'Manipulation', f, ...
+                'IsFeedBack',true,...
+                'IsStateOutput',true);
+            
+            % Expected value
+            xpre = coefs{1};
+            v = cell(1,nChs);
+            for iIter = 1:nIters
+                subcoefs = coefs{iIter+1};
+                for iCh = 1:nChs
+                    [v{iCh},xpre{iCh}] = f(subcoefs{iCh},xpre{iCh});
+                end
+            end
+            coefsExpctd = v;
+            
+            % Actual value
+            testCase.target.State = 0;
+            for iIter = 1:nIters
+                v = testCase.target.step(coefs{iIter+1});
+            end
+            coefsActual = v;
+            
+            % Evaluation
+            for iCh = 1:nChs
+                testCase.verifySize(coefsActual{iCh},size(coefsExpctd{iCh}));
+                diff = max(abs(coefsExpctd{iCh}(:) - coefsActual{iCh}(:)));
+                testCase.verifyEqual(coefsActual{iCh},coefsExpctd{iCh},...
+                    'AbsTol',1e-10,sprintf('%g',diff));
+            end
+        end
+        
+        
     end
     
 end
