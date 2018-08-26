@@ -1,5 +1,5 @@
 classdef OlsOlaProcess2d < matlab.System
-    %OlsOlaProcess2d OLS/OLA wrapper for 2-D analysis and synthesis system
+    %OLSOLAPROCESS2D OLS/OLA wrapper for 2-D analysis and synthesis system
     %
     % Reference:
     %   Shogo Muramatsu and Hitoshi Kiya,
@@ -365,24 +365,6 @@ classdef OlsOlaProcess2d < matlab.System
             end
         end
         
-        function splitState = split_coefs_(obj,refState)
-            % Preperation
-            verticalSplitFactor = obj.VerticalSplitFactor;
-            horizontalSplitFactor = obj.HorizontalSplitFactor;
-            nSplit = verticalSplitFactor*horizontalSplitFactor;
-            %
-            splitState = cell(nSplit,1);
-            if isempty(refState)            
-                for iSplit = 1:nSplit
-                    splitState{iSplit} = [];
-                end
-            elseif iscell(refState)
-                nChs = length(refState);                
-                for iCh = 1:nChs
-                    a = refState{iCh};
-                end
-            end
-        end
     end
     
     methods (Access = private, Static)

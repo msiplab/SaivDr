@@ -1,5 +1,5 @@
-classdef Process3dOlsOlaWrapper < matlab.System
-    %PROCESS3DOLSOLAWRAPPER OLS/OLA wrapper for 3-D analysis and synthesis system
+classdef OlsOlaProcess3d < matlab.System
+    %OLSOLAPROCESS3D OLS/OLA wrapper for 3-D analysis and synthesis system
     %
     % Reference:
     %   Shogo Muramatsu and Hitoshi Kiya,
@@ -61,7 +61,7 @@ classdef Process3dOlsOlaWrapper < matlab.System
     methods
         
         % Constractor
-        function obj = Process3dOlsOlaWrapper(varargin)
+        function obj = OlsOlaProcess3d(varargin)
             import saivdr.dictionary.utility.Direction
             import saivdr.dictionary.olaols.*
             setProperties(obj,nargin,varargin{:})

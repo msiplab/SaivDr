@@ -1,5 +1,5 @@
 classdef OlsOlaProcess2dTestCase < matlab.unittest.TestCase
-    %OlsOlaProcess2dTESTCASE Test cases for OlsOlaProcess2d  
+    %OLSOLAPROCESS2DTESTCASE Test cases for OlsOlaProcess2d  
     %
     % Requirements: MATLAB R2015b
     %
