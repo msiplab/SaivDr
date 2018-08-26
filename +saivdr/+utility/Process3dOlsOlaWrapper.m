@@ -27,6 +27,7 @@ classdef Process3dOlsOlaWrapper < matlab.System
         BoundaryOperation
         PadSize = [0 0 0]
         SplitFactor = []
+        CoefsManipulator = []
     end
     
     properties (Logical)
@@ -48,6 +49,7 @@ classdef Process3dOlsOlaWrapper < matlab.System
     properties (Access = private, Nontunable)
         synthesizers
         analyzers
+        coefsmanipulators
         refSize
         refSubSize
         refScales
@@ -71,6 +73,10 @@ classdef Process3dOlsOlaWrapper < matlab.System
                 obj.HorizontalSplitFactor = obj.SplitFactor(Direction.HORIZONTAL);
                 obj.DepthSplitFactor = obj.SplitFactor(Direction.DEPTH);
             end
+            if isempty(obj.CoefsManipulator)
+                import saivdr.utility.CoefsManipulator
+                obj.CoefsManipulator = CoefsManipulator();
+            end            
         end
         
     end
@@ -123,6 +129,11 @@ classdef Process3dOlsOlaWrapper < matlab.System
             obj.Synthesizer.release();
             refSynthesizer = obj.Synthesizer.clone();
             
+            % Manipulators
+            obj.CoefsManipulator.release();
+            refCoefsManipulator = obj.CoefsManipulator.clone();
+            
+            
             % Parameters
             obj.refSize = size(srcImg);
             obj.refSubSize = obj.refSize*diag(1./[...
@@ -141,12 +152,14 @@ classdef Process3dOlsOlaWrapper < matlab.System
                 for iSplit=1:nSplit
                     obj.analyzers{iSplit} = clone(obj.Analyzer);
                     obj.synthesizers{iSplit} = clone(obj.Synthesizer);
+                    obj.coefsmanipulators{iSplit} = clone(obj.CoefsManipulator);                    
                 end
             else
                 obj.nWorkers = 0;
                 for iSplit=1:nSplit
                     obj.analyzers{iSplit} = obj.Analyzer;
                     obj.synthesizers{iSplit} = obj.Synthesizer;
+                    obj.coefsmanipulators{iSplit} = clone(obj.CoefsManipulator);                    
                 end
             end
             
@@ -181,8 +194,9 @@ classdef Process3dOlsOlaWrapper < matlab.System
                 exceptionId = 'SaivDr:ReconstructionFailureException';
                 message = 'Failure occurs in reconstruction. Please check the split and padding size.';
                 %
-                refCoefsOut = refCoefs;
+                refCoefsOut = refCoefsManipulator.step(refCoefs);
                 imgExpctd = refSynthesizer.step(refCoefsOut,refScales_);
+                %
                 imgActual = obj.stepImpl(srcImg,nLevels);
                 diffImg = imgExpctd - imgActual;
                 if norm(diffImg(:))/numel(diffImg) > 1e-6
@@ -193,13 +207,16 @@ classdef Process3dOlsOlaWrapper < matlab.System
             % Delete reference analyzer and synthesizer
             refAnalyzer.delete()
             refSynthesizer.delete()
+            refCoefsManipulator.delete()            
         end
         
         function recImg = stepImpl(obj,srcImg,nLevels)
+            
             % Parameters
             nWorkers_ = obj.nWorkers;
             analyzers_ = obj.analyzers;
             synthesizers_ = obj.synthesizers;
+            coefsmanipulators_ = obj.coefsmanipulators;
             
             % Define support functions
             extract_ols = @(c,s) obj.extract_ols_(c,s);
@@ -224,7 +241,8 @@ classdef Process3dOlsOlaWrapper < matlab.System
                 coefspre = extract_ols(subCoefs,subScales);
                 
                 % Process for coefficients
-                coefspost = coefspre;
+                coefspost = ...
+                    coefsmanipulators_{iSplit}.step(coefspre);
                 
                 % Zero padding for convolution
                 subCoefArray = padding_ola(coefspost);
