@@ -61,12 +61,22 @@ classdef CoefsManipulator < matlab.System
                                 manipulation_(coefspre{iCh},...
                                 obj.State);
                         end                        
-                    else
+                    elseif ~obj.IsStateOutput && iscell(obj.State)
                         for iCh = 1:nChs
                             coefspst{iCh} = manipulation_(...
                                 coefspre{iCh},obj.State{iCh});
                         end
+                        state = coefspst;                        
+                    elseif ~obj.IsStateOutput && isscalar(obj.State) 
+                        for iCh = 1:nChs
+                            coefspst{iCh} = manipulation_(...
+                                coefspre{iCh},obj.State);
+                        end
                         state = coefspst;
+                    else
+                        id = 'SaivDr:IllegalStateInitialization';
+                        message = 'State must be cell or scalar.';
+                        throw(MException(id,message))                        
                     end
                     obj.State = state;
                 else
