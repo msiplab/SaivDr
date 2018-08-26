@@ -155,7 +155,7 @@ classdef Process2dOlsOlaWrapper < matlab.System
                 for iSplit=1:nSplit
                     obj.analyzers{iSplit} = obj.Analyzer;
                     obj.synthesizers{iSplit} = obj.Synthesizer;
-                    obj.coefsmanipulators{iSplit} = obj.CoefsManipulator;                    
+                    obj.coefsmanipulators{iSplit} = clone(obj.CoefsManipulator);
                 end
             end
 
@@ -182,7 +182,8 @@ classdef Process2dOlsOlaWrapper < matlab.System
                 obj.subPadArrays{iCh} = zeros(nDim);
                 nCoefs = nCoefs + prod(nDim);
             end
-            
+    
+
             % Check integrity
             if obj.IsIntegrityTest
                 exceptionId = 'SaivDr:ReconstructionFailureException';
@@ -190,6 +191,7 @@ classdef Process2dOlsOlaWrapper < matlab.System
                 %
                 refCoefsOut = refCoefsManipulator.step(refCoefs);
                 imgExpctd = refSynthesizer.step(refCoefsOut,refScales_);
+                %
                 imgActual = obj.stepImpl(srcImg,nLevels);
                 diffImg = imgExpctd - imgActual;
                 if norm(diffImg(:))/numel(diffImg) > 1e-6
@@ -200,6 +202,7 @@ classdef Process2dOlsOlaWrapper < matlab.System
             % Delete reference analyzer and synthesizer
             refAnalyzer.delete()
             refSynthesizer.delete()
+            refCoefsManipulator.delete()
         end
         
         function recImg = stepImpl(obj,srcImg,nLevels)
@@ -225,7 +228,8 @@ classdef Process2dOlsOlaWrapper < matlab.System
             nSplit = length(subImgs);
             subRecImg = cell(nSplit,1);            
             %
-            parfor (iSplit=1:nSplit,nWorkers_)
+            %parfor (iSplit=1:nSplit,nWorkers_)
+            for iSplit=1:nSplit
                 % Analyze
                 [subCoefs, subScales] = ...
                     analyzers_{iSplit}.step(subImgs{iSplit},nLevels);
@@ -360,6 +364,25 @@ classdef Process2dOlsOlaWrapper < matlab.System
                     eRowIdx = iVerSplit*stepsize(Direction.VERTICAL) + ...
                         overlap(Direction.VERTICAL);
                     subImgs{idx} = srcImg(sRowIdx:eRowIdx,sColIdx:eColIdx);
+                end
+            end
+        end
+        
+        function splitState = split_coefs_(obj,refState)
+            % Preperation
+            verticalSplitFactor = obj.VerticalSplitFactor;
+            horizontalSplitFactor = obj.HorizontalSplitFactor;
+            nSplit = verticalSplitFactor*horizontalSplitFactor;
+            %
+            splitState = cell(nSplit,1);
+            if isempty(refState)            
+                for iSplit = 1:nSplit
+                    splitState{iSplit} = [];
+                end
+            elseif iscell(refState)
+                nChs = length(refState);                
+                for iCh = 1:nChs
+                    a = refState{iCh};
                 end
             end
         end
