@@ -72,6 +72,7 @@ classdef UdHaarAnalysis2dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
         end
         
         function [ coefs, scales ] = stepImpl(obj, u)
+            nPixels_ = obj.nPixels;
             nLevels = obj.NumberOfLevels;
             scales = repmat(size(u),[3*nLevels+1, 1]);
             % NOTE:
@@ -99,11 +100,11 @@ classdef UdHaarAnalysis2dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
                 yv = circshift(imfilter(ya,hv,'corr','circular'),offset);
                 yh = circshift(imfilter(ya,hh,'corr','circular'),offset);
                 ya = circshift(imfilter(ya,ha,'corr','circular'),offset);
-                obj.coefs((iSubband-1)*obj.nPixels+1:iSubband*obj.nPixels) = ...
+                obj.coefs((iSubband-1)*nPixels_+1:iSubband*nPixels_) = ...
                     yd(:).'*weight;
-                obj.coefs((iSubband-2)*obj.nPixels+1:(iSubband-1)*obj.nPixels) = ...
+                obj.coefs((iSubband-2)*nPixels_+1:(iSubband-1)*nPixels_) = ...
                     yv(:).'*weight;
-                obj.coefs((iSubband-3)*obj.nPixels+1:(iSubband-2)*obj.nPixels) = ...
+                obj.coefs((iSubband-3)*nPixels_+1:(iSubband-2)*nPixels_) = ...
                     yh(:).'*weight;
                 iSubband = iSubband - 3;
                 hd = upsample2_(obj,hd);
@@ -111,7 +112,7 @@ classdef UdHaarAnalysis2dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
                 hh = upsample2_(obj,hh);
                 ha = upsample2_(obj,ha);
             end
-            obj.coefs(1:obj.nPixels) = ya(:).'*weight;
+            obj.coefs(1:nPixels_) = ya(:).'*weight;
             coefs = obj.coefs;
         end
 
