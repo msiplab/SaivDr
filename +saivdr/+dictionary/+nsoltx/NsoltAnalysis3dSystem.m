@@ -28,6 +28,7 @@ classdef NsoltAnalysis3dSystem < ...
     properties (Nontunable, PositiveInteger)    
         NumberOfSymmetricChannels     = 4
         NumberOfAntisymmetricChannels = 4
+        NumberOfLevels = 1
     end
     
     properties (Nontunable, Logical)
@@ -130,7 +131,8 @@ classdef NsoltAnalysis3dSystem < ...
             obj.LpPuFb3d = matlab.System.loadObject(s.LpPuFb3d);
         end
         
-        function setupImpl(obj,srcImg,nLevels)
+        function setupImpl(obj,srcImg)
+            nLevels = obj.NumberOfLevels;
             dec = obj.decimationFactor;
             nch = [ obj.NumberOfSymmetricChannels ...
                 obj.NumberOfAntisymmetricChannels ];
@@ -160,7 +162,8 @@ classdef NsoltAnalysis3dSystem < ...
 
         end
         
-        function [ coefs, scales ] = stepImpl(obj, srcImg, nLevels)
+        function [ coefs, scales ] = stepImpl(obj, srcImg)
+            nLevels = obj.NumberOfLevels;
             pmMtx = step(obj.LpPuFb3d,[],[]);
             pmMtxCoefs = get(pmMtx,'Coefficients');
             [ coefs, scales ] = analyze_(obj, srcImg, nLevels, pmMtxCoefs);

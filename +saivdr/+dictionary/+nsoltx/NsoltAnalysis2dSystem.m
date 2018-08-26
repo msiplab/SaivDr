@@ -28,6 +28,7 @@ classdef NsoltAnalysis2dSystem < ...
     properties (Nontunable, PositiveInteger)    
         NumberOfSymmetricChannels     = 2
         NumberOfAntisymmetricChannels = 2
+        NumberOfLevels = 1
     end
     
     properties (Nontunable, Logical)
@@ -125,7 +126,8 @@ classdef NsoltAnalysis2dSystem < ...
             obj.LpPuFb2d = matlab.System.loadObject(s.LpPuFb2d);
         end
         
-        function setupImpl(obj, srcImg, nLevels)
+        function setupImpl(obj, srcImg)
+            nLevels = obj.NumberOfLevels;
             dec = obj.decimationFactor;
             nch = [ obj.NumberOfSymmetricChannels ...
                 obj.NumberOfAntisymmetricChannels ];
@@ -155,7 +157,8 @@ classdef NsoltAnalysis2dSystem < ...
 
         end
         
-        function [ coefs, scales ] = stepImpl(obj, srcImg, nLevels)
+        function [ coefs, scales ] = stepImpl(obj, srcImg)
+            nLevels = obj.NumberOfLevels;
             %if obj.IsDifferentiation
             %else
                 pmMtx = step(obj.LpPuFb2d,[],[]);

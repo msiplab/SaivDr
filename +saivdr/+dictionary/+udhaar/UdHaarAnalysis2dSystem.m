@@ -19,6 +19,10 @@ classdef UdHaarAnalysis2dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
         BoundaryOperation = 'Circular'
     end
     
+    properties (Nontunable, PositiveInteger)
+        NumberOfLevels = 1        
+    end        
+    
     properties (Hidden, Transient)
         BoundaryOperationSet = ...
             matlab.system.StringSet({'Circular'});
@@ -58,7 +62,8 @@ classdef UdHaarAnalysis2dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
             loadObjectImpl@saivdr.dictionary.AbstAnalysisSystem(obj,s,wasLocked); 
         end
         
-        function setupImpl(obj,u,nLevels)
+        function setupImpl(obj,u)
+            nLevels = obj.NumberOfLevels;
             obj.nPixels = numel(u);
             obj.coefs = zeros(1,(3*nLevels+1)*obj.nPixels);
         end
@@ -66,7 +71,8 @@ classdef UdHaarAnalysis2dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
         function resetImpl(~)
         end
         
-        function [ coefs, scales ] = stepImpl(obj, u, nLevels)
+        function [ coefs, scales ] = stepImpl(obj, u)
+            nLevels = obj.NumberOfLevels;
             scales = repmat(size(u),[3*nLevels+1, 1]);
             % NOTE:
             % imfilter of R2017a has a bug for double precision array

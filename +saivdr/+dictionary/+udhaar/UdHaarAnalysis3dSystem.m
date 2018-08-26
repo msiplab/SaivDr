@@ -23,6 +23,10 @@ classdef UdHaarAnalysis3dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
         BoundaryOperation = 'Circular'
     end
     
+    properties (Nontunable, PositiveInteger)
+        NumberOfLevels = 1        
+    end            
+    
     properties (Hidden, Transient)
         BoundaryOperationSet = ...
             matlab.system.StringSet({'Circular'});
@@ -30,10 +34,6 @@ classdef UdHaarAnalysis3dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
     
     properties (Logical)
         UseParallel = false
-    end
-    
-    properties (Nontunable)
-        NumLevels = 1
     end
     
     properties (Nontunable, Access = private)
@@ -93,8 +93,8 @@ classdef UdHaarAnalysis3dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
             loadObjectImpl@saivdr.dictionary.AbstAnalysisSystem(obj,s,wasLocked);
         end
         
-        function setupImpl(obj,u,nLevels)
-            obj.NumLevels = nLevels;
+        function setupImpl(obj,u)
+            nLevels = obj.NumberOfLevels;
             obj.nPixels = numel(u);
             obj.coefs = zeros(1,(7*nLevels+1)*obj.nPixels);
             
@@ -116,10 +116,10 @@ classdef UdHaarAnalysis3dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
         function resetImpl(~)
         end
         
-        function [ coefs_, scales ] = stepImpl(obj, u, ~)
+        function [ coefs_, scales ] = stepImpl(obj, u)
             nPixels_ = obj.nPixels;
             coefs_ = obj.coefs;
-            nLevels = obj.NumLevels;
+            nLevels = obj.NumberOfLevels;
             K = obj.kernels;
             scales = repmat(size(u),[7*nLevels+1, 1]);
             yaa = u;
