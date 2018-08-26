@@ -24,6 +24,10 @@ classdef UdHaarAnalysis2dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
             matlab.system.StringSet({'Circular'});
     end
     
+    properties (Nontunable, PositiveInteger)
+        NumberOfLevels = 1
+    end    
+    
     properties (Access = private)
         kernels
         coefs
@@ -59,6 +63,7 @@ classdef UdHaarAnalysis2dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
         end
         
         function setupImpl(obj,u,nLevels)
+            obj.NumberOfLevels = nLevels;
             obj.nPixels = numel(u);
             obj.coefs = zeros(1,(3*nLevels+1)*obj.nPixels);
         end
@@ -66,7 +71,9 @@ classdef UdHaarAnalysis2dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
         function resetImpl(~)
         end
         
-        function [ coefs, scales ] = stepImpl(obj, u, nLevels)
+        function [ coefs, scales ] = stepImpl(obj, u, ~)
+            nPixels_ = obj.nPixels;
+            nLevels = obj.NumberOfLevels;
             scales = repmat(size(u),[3*nLevels+1, 1]);
             % NOTE:
             % imfilter of R2017a has a bug for double precision array
@@ -93,11 +100,11 @@ classdef UdHaarAnalysis2dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
                 yv = circshift(imfilter(ya,hv,'corr','circular'),offset);
                 yh = circshift(imfilter(ya,hh,'corr','circular'),offset);
                 ya = circshift(imfilter(ya,ha,'corr','circular'),offset);
-                obj.coefs((iSubband-1)*obj.nPixels+1:iSubband*obj.nPixels) = ...
+                obj.coefs((iSubband-1)*nPixels_+1:iSubband*nPixels_) = ...
                     yd(:).'*weight;
-                obj.coefs((iSubband-2)*obj.nPixels+1:(iSubband-1)*obj.nPixels) = ...
+                obj.coefs((iSubband-2)*nPixels_+1:(iSubband-1)*nPixels_) = ...
                     yv(:).'*weight;
-                obj.coefs((iSubband-3)*obj.nPixels+1:(iSubband-2)*obj.nPixels) = ...
+                obj.coefs((iSubband-3)*nPixels_+1:(iSubband-2)*nPixels_) = ...
                     yh(:).'*weight;
                 iSubband = iSubband - 3;
                 hd = upsample2_(obj,hd);
@@ -105,7 +112,7 @@ classdef UdHaarAnalysis2dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
                 hh = upsample2_(obj,hh);
                 ha = upsample2_(obj,ha);
             end
-            obj.coefs(1:obj.nPixels) = ya(:).'*weight;
+            obj.coefs(1:nPixels_) = ya(:).'*weight;
             coefs = obj.coefs;
         end
 

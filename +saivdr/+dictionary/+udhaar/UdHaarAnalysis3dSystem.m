@@ -32,8 +32,8 @@ classdef UdHaarAnalysis3dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
         UseParallel = false
     end
     
-    properties (Nontunable)
-        NumLevels = 1
+    properties (Nontunable, PositiveInteger)
+        NumberOfLevels = 1
     end
     
     properties (Nontunable, Access = private)
@@ -94,7 +94,7 @@ classdef UdHaarAnalysis3dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
         end
         
         function setupImpl(obj,u,nLevels)
-            obj.NumLevels = nLevels;
+            obj.NumberOfLevels = nLevels;
             obj.nPixels = numel(u);
             obj.coefs = zeros(1,(7*nLevels+1)*obj.nPixels);
             
@@ -119,7 +119,7 @@ classdef UdHaarAnalysis3dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
         function [ coefs_, scales ] = stepImpl(obj, u, ~)
             nPixels_ = obj.nPixels;
             coefs_ = obj.coefs;
-            nLevels = obj.NumLevels;
+            nLevels = obj.NumberOfLevels;
             K = obj.kernels;
             scales = repmat(size(u),[7*nLevels+1, 1]);
             yaa = u;
