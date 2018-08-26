@@ -43,44 +43,42 @@ classdef CoefsManipulator < matlab.System
             
             if isempty(manipulation_)
                 coefspst = coefspre;
-            else
-                if iscell(coefspre)
-                    nChs = length(coefspre);
-                    coefspst = cell(1,nChs);
-                    if isfeedback_
-                        if obj.IsStateOutput
-                            state = cell(1,nChs);
-                            for iCh = 1:nChs
-                                [coefspst{iCh},state{iCh}] = ...
-                                    manipulation_(coefspre{iCh},...
-                                    obj.State{iCh});
-                            end
-                        else
-                            for iCh = 1:nChs
-                                coefspst{iCh} = manipulation_(...
-                                    coefspre{iCh},obj.State{iCh});
-                            end
-                            state = coefspst;
+            elseif iscell(coefspre)
+                nChs = length(coefspre);
+                coefspst = cell(1,nChs);
+                if isfeedback_
+                    if obj.IsStateOutput
+                        state = cell(1,nChs);
+                        for iCh = 1:nChs
+                            [coefspst{iCh},state{iCh}] = ...
+                                manipulation_(coefspre{iCh},...
+                                obj.State{iCh});
                         end
-                        obj.State = state;
                     else
                         for iCh = 1:nChs
-                            coefspst{iCh} = manipulation_(coefspre{iCh});
+                            coefspst{iCh} = manipulation_(...
+                                coefspre{iCh},obj.State{iCh});
                         end
+                        state = coefspst;
                     end
+                    obj.State = state;
                 else
-                    if isfeedback_
-                        if obj.IsStateOutput
-                            [coefspst,state] = ...
-                                manipulation_(coefspre,obj.State);
-                        else
-                            coefspst = manipulation_(coefspre,obj.State);
-                            state = coefspst;                            
-                        end
-                        obj.State = state;
-                    else
-                        coefspst = manipulation_(coefspre);        
+                    for iCh = 1:nChs
+                        coefspst{iCh} = manipulation_(coefspre{iCh});
                     end
+                end
+            else
+                if isfeedback_
+                    if obj.IsStateOutput
+                        [coefspst,state] = ...
+                            manipulation_(coefspre,obj.State);
+                    else
+                        coefspst = manipulation_(coefspre,obj.State);
+                        state = coefspst;
+                    end
+                    obj.State = state;
+                else
+                    coefspst = manipulation_(coefspre);
                 end
             end
         end
