@@ -84,6 +84,43 @@ classdef CoefsManipulatorTestCase < matlab.unittest.TestCase
             
         end
         
+        function testSoftThresholding2dCell(testCase,width,height)
+            
+            % Parameters
+            nChs = 5;
+            coefspre = cell(1,nChs);
+            for iCh = 1:nChs
+                coefspre{iCh} = randn(width,height);
+            end
+            
+            % Function
+            lambda = 1e-3;
+            g = @(x) sign(x).*((abs(x)-lambda)+abs(abs(x)-lambda))/2;
+            
+            % Instantiation
+            import saivdr.utility.*
+            testCase.target = CoefsManipulator();
+            
+            % Expected value
+            coefsExpctd = cell(1,nChs);
+            for iCh = 1:nChs
+                coefsExpctd{iCh} = g(coefspre{iCh});
+            end
+            
+            % Actual value
+            testCase.target.Steps = {g};
+            coefsActual = testCase.target.step(coefspre);
+            
+            % Evaluation
+            for iCh = 1:nChs
+                testCase.verifySize(coefsActual{iCh},size(coefsExpctd{iCh}));
+                diff = max(abs(coefsExpctd{iCh}(:) - coefsActual{iCh}(:)));
+                testCase.verifyEqual(coefsActual{iCh},coefsExpctd{iCh},...
+                    'AbsTol',1e-10,sprintf('%g',diff));
+            end
+            
+        end
+        
         
         function testSoftThresholding3d(testCase,width,height,depth)
             
@@ -112,6 +149,43 @@ classdef CoefsManipulatorTestCase < matlab.unittest.TestCase
                 sprintf('%g',diff));
             
         end
+        
+    function testSoftThresholding3dCell(testCase,width,height,depth)
+            
+            % Parameters
+            nChs = 5;
+            coefspre = cell(1,nChs);
+            for iCh = 1:nChs
+                coefspre{iCh} = randn(width,height,depth);
+            end
+            
+            % Function
+            lambda = 1e-3;
+            g = @(x) sign(x).*((abs(x)-lambda)+abs(abs(x)-lambda))/2;
+            
+            % Instantiation
+            import saivdr.utility.*
+            testCase.target = CoefsManipulator();
+            
+            % Expected value
+            coefsExpctd = cell(1,nChs);
+            for iCh = 1:nChs
+                coefsExpctd{iCh} = g(coefspre{iCh});
+            end
+            
+            % Actual value
+            testCase.target.Steps = {g};
+            coefsActual = testCase.target.step(coefspre);
+            
+            % Evaluation
+            for iCh = 1:nChs
+                testCase.verifySize(coefsActual{iCh},size(coefsExpctd{iCh}));
+                diff = max(abs(coefsExpctd{iCh}(:) - coefsActual{iCh}(:)));
+                testCase.verifyEqual(coefsActual{iCh},coefsExpctd{iCh},...
+                    'AbsTol',1e-10,sprintf('%g',diff));
+            end
+            
+        end        
         
         %{
         function testIterativeSoftThresholding2d(testCase,width,height)
