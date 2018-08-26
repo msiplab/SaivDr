@@ -5,10 +5,16 @@ classdef CoefsManipulator < matlab.System
     %
     
     properties (Nontunable)
+        Manipulation
     end
     
     properties
-        Steps
+        State
+    end
+    
+    properties (Logical)
+       IsFeedBack = false 
+       IsStateOutput = false
     end
     
     methods
@@ -30,35 +36,55 @@ classdef CoefsManipulator < matlab.System
             loadObjectImpl@matlab.System(obj,s,wasLocked);
         end
         
-
+        
         function coefspst = stepImpl(obj,coefspre)
-            if isempty(obj.Steps)
+            isfeedback_ = obj.IsFeedBack;
+            manipulation_ = obj.Manipulation;
+            
+            if isempty(manipulation_)
                 coefspst = coefspre;
             else
                 if iscell(coefspre)
                     nChs = length(coefspre);
                     coefspst = cell(1,nChs);
-                    for iCh = 1:nChs
-                        coefspst{iCh} = obj.steps_(coefspre{iCh});
+                    if isfeedback_
+                        if obj.IsStateOutput
+                            state = cell(1,nChs);
+                            for iCh = 1:nChs
+                                [coefspst{iCh},state{iCh}] = ...
+                                    manipulation_(coefspre{iCh},...
+                                    obj.State{iCh});
+                            end
+                        else
+                            for iCh = 1:nChs
+                                coefspst{iCh} = manipulation_(...
+                                    coefspre{iCh},obj.State{iCh});
+                            end
+                            state = coefspst;
+                        end
+                        obj.State = state;
+                    else
+                        for iCh = 1:nChs
+                            coefspst{iCh} = manipulation_(coefspre{iCh});
+                        end
                     end
                 else
-                    coefspst = obj.steps_(coefspre);
+                    if isfeedback_
+                        if obj.IsStateOutput
+                            [coefspst,state] = ...
+                                manipulation_(coefspre,obj.State);
+                        else
+                            coefspst = manipulation_(coefspre,obj.State);
+                            state = coefspst;                            
+                        end
+                        obj.State = state;
+                    else
+                        coefspst = manipulation_(coefspre);        
+                    end
                 end
             end
         end
     end
-    
-    methods(Access = private)
-        function coefspst = steps_(obj,coefspre)
-            nSteps = length(obj.Steps);
-            x = coefspre;
-            for iStep = 1:nSteps
-                step = obj.Steps{iStep};
-                x = step(x);
 
-            end
-                    coefspst = x;            
-        end
-    end
 end
 

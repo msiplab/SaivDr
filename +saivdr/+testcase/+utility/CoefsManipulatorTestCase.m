@@ -31,6 +31,21 @@ classdef CoefsManipulatorTestCase < matlab.unittest.TestCase
         end
     end
     
+    methods (Static)
+        function y = softthresh(x,xpre,lambda,gamma)
+            u = xpre-gamma*x;
+            v = abs(u)-lambda;
+            y = sign(u).*(v+abs(v))/2;
+        end
+        
+        function [v,x] = coefpdshshc(t,xpre,lambda,gamma)
+            u = xpre-gamma*t;
+            w = abs(u)-lambda;
+            x = sign(u).*(w+abs(w))/2;
+            v = 2*x - xpre;
+        end
+    end
+    
     methods (Test)
         
         function testDefaultStep(testCase,width,height)
@@ -73,7 +88,7 @@ classdef CoefsManipulatorTestCase < matlab.unittest.TestCase
             coefsExpctd = g(coefspre);
             
             % Actual value
-            testCase.target.Steps = {g};
+            testCase.target.Manipulation = g;
             coefsActual = testCase.target.step(coefspre);
             
             % Evaluation
@@ -108,7 +123,7 @@ classdef CoefsManipulatorTestCase < matlab.unittest.TestCase
             end
             
             % Actual value
-            testCase.target.Steps = {g};
+            testCase.target.Manipulation = g;
             coefsActual = testCase.target.step(coefspre);
             
             % Evaluation
@@ -139,7 +154,7 @@ classdef CoefsManipulatorTestCase < matlab.unittest.TestCase
             coefsExpctd = g(coefspre);
             
             % Actual value
-            testCase.target.Steps = {g};
+            testCase.target.Manipulation = g;
             coefsActual = testCase.target.step(coefspre);
             
             % Evaluation
@@ -150,7 +165,7 @@ classdef CoefsManipulatorTestCase < matlab.unittest.TestCase
             
         end
         
-    function testSoftThresholding3dCell(testCase,width,height,depth)
+        function testSoftThresholding3dCell(testCase,width,height,depth)
             
             % Parameters
             nChs = 5;
@@ -174,7 +189,7 @@ classdef CoefsManipulatorTestCase < matlab.unittest.TestCase
             end
             
             % Actual value
-            testCase.target.Steps = {g};
+            testCase.target.Manipulation = g;
             coefsActual = testCase.target.step(coefspre);
             
             % Evaluation
@@ -185,9 +200,8 @@ classdef CoefsManipulatorTestCase < matlab.unittest.TestCase
                     'AbsTol',1e-10,sprintf('%g',diff));
             end
             
-        end        
+        end
         
-        %{
         function testIterativeSoftThresholding2d(testCase,width,height)
             
             % Parameters
@@ -200,27 +214,25 @@ classdef CoefsManipulatorTestCase < matlab.unittest.TestCase
             % Function
             lambda = 1e-3;
             gamma  = 1e-3;
-            f = @(x,xpre) xpre-gamma*x;
-            g = @(x) sign(x).*((abs(x)-lambda)+abs(abs(x)-lambda))/2;
+            f = @(x,xpre) testCase.softthresh(x,xpre,lambda,gamma);
             
             % Instantiation
             import saivdr.utility.*
-            testCase.target = CoefsManipulator();
+            testCase.target = CoefsManipulator(...
+                'Manipulation', f, ...
+                'IsFeedBack',true);
             
             % Expected value
             xpre = coefs{1};
             for iIter = 1:nIters
-                v = f(coefs{iIter+1},xpre);
-                xpre = g(v);
+                xpre = f(coefs{iIter+1},xpre);
             end
             coefsExpctd = xpre;
             
             % Actual value
-            xpre = coefs{1};
+            testCase.target.State = coefs{1};
             for iIter = 1:nIters
-                testCase.target.Steps = { @(x) g(f(x,xpre)) };
                 x = testCase.target.step(coefs{iIter+1});
-                xpre = x;
             end
             coefsActual = x;
             
@@ -244,27 +256,25 @@ classdef CoefsManipulatorTestCase < matlab.unittest.TestCase
             % Function
             lambda = 1e-3;
             gamma  = 1e-3;
-            f = @(x,xpre) xpre-gamma*x;
-            g = @(x) sign(x).*((abs(x)-lambda)+abs(abs(x)-lambda))/2;
+            f = @(x,xpre) testCase.softthresh(x,xpre,lambda,gamma);
             
             % Instantiation
             import saivdr.utility.*
-            testCase.target = CoefsManipulator();
+            testCase.target = CoefsManipulator(...
+                'Manipulation', f, ...
+                'IsFeedBack',true);
             
             % Expected value
             xpre = coefs{1};
             for iIter = 1:nIters
-                v = f(coefs{iIter+1},xpre);
-                xpre = g(v);
+                xpre = f(coefs{iIter+1},xpre);
             end
             coefsExpctd = xpre;
             
             % Actual value
-            xpre = coefs{1};
+            testCase.target.State = coefs{1};
             for iIter = 1:nIters
-                testCase.target.Steps = { @(x) g(f(x,xpre)) };
                 x = testCase.target.step(coefs{iIter+1});
-                xpre = x;
             end
             coefsActual = x;
             
@@ -274,6 +284,108 @@ classdef CoefsManipulatorTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-10,...
                 sprintf('%g',diff));
             
+        end
+        
+        function testIterativeSoftThresholding2dCell(testCase,width,height)
+            
+            % Parameters
+            nIters = 5;
+            nChs = 5;
+            coefs  = cell(nIters+1,1);
+            for iIter = 1:nIters+1
+                subcoefs = cell(1,nChs);
+                for iCh = 1:nChs
+                    subcoefs{iCh} = randn(width,height);
+                end
+                coefs{iIter} = subcoefs;
+            end
+            
+            % Function
+            lambda = 1e-3;
+            gamma  = 1e-3;
+            f = @(x,xpre) testCase.softthresh(x,xpre,lambda,gamma);
+            
+            % Instantiation
+            import saivdr.utility.*
+            testCase.target = CoefsManipulator(...
+                'Manipulation', f, ...
+                'IsFeedBack',true);
+            
+            % Expected value
+            xpre = coefs{1};
+            for iIter = 1:nIters
+                subcoefs = coefs{iIter+1};
+                for iCh = 1:nChs
+                    xpre{iCh} = f(subcoefs{iCh},xpre{iCh});
+                end
+            end
+            coefsExpctd = xpre;
+            
+            % Actual value
+            testCase.target.State = coefs{1};
+            for iIter = 1:nIters
+                x = testCase.target.step(coefs{iIter+1});
+            end
+            coefsActual = x;
+            
+            % Evaluation
+            for iCh = 1:nChs
+                testCase.verifySize(coefsActual{iCh},size(coefsExpctd{iCh}));
+                diff = max(abs(coefsExpctd{iCh}(:) - coefsActual{iCh}(:)));
+                testCase.verifyEqual(coefsActual{iCh},coefsExpctd{iCh},...
+                    'AbsTol',1e-10,sprintf('%g',diff));
+            end
+        end
+        
+        function testIterativeSoftThresholding3dCell(testCase,width,height,depth)
+            
+            % Parameters
+            nIters = 5;
+            nChs = 5;
+            coefs  = cell(nIters+1,1);
+            for iIter = 1:nIters+1
+                subcoefs = cell(1,nChs);
+                for iCh = 1:nChs
+                    subcoefs{iCh} = randn(width,height,depth);
+                end
+                coefs{iIter} = subcoefs;
+            end
+            
+            % Function
+            lambda = 1e-3;
+            gamma  = 1e-3;
+            f = @(x,xpre) testCase.softthresh(x,xpre,lambda,gamma);
+            
+            % Instantiation
+            import saivdr.utility.*
+            testCase.target = CoefsManipulator(...
+                'Manipulation', f, ...
+                'IsFeedBack',true);
+            
+            % Expected value
+            xpre = coefs{1};
+            for iIter = 1:nIters
+                subcoefs = coefs{iIter+1};
+                for iCh = 1:nChs
+                    xpre{iCh} = f(subcoefs{iCh},xpre{iCh});
+                end
+            end
+            coefsExpctd = xpre;
+            
+            % Actual value
+            testCase.target.State = coefs{1};
+            for iIter = 1:nIters
+                x = testCase.target.step(coefs{iIter+1});
+            end
+            coefsActual = x;
+            
+            % Evaluation
+            for iCh = 1:nChs
+                testCase.verifySize(coefsActual{iCh},size(coefsExpctd{iCh}));
+                diff = max(abs(coefsExpctd{iCh}(:) - coefsActual{iCh}(:)));
+                testCase.verifyEqual(coefsActual{iCh},coefsExpctd{iCh},...
+                    'AbsTol',1e-10,sprintf('%g',diff));
+            end
         end
         
         function testPdsHsHcOct3d(testCase,width,height,depth)
@@ -288,33 +400,26 @@ classdef CoefsManipulatorTestCase < matlab.unittest.TestCase
             % Function
             lambda = 1e-3;
             gamma  = 1e-3;
-            f = @(x,xpre) xpre-gamma*x;
-            g = @(x) sign(x).*((abs(x)-lambda)+abs(abs(x)-lambda))/2;
-            h = @(x,xpre) 2*x - xpre;
+            f = @(x,xpre) testCase.coefpdshshc(x,xpre,lambda,gamma);
             
             % Instantiation
             import saivdr.utility.*
-            testCase.target = CoefsManipulator();
+            testCase.target = CoefsManipulator(...
+                'Manipulation', f, ...
+                'IsFeedBack',true,...
+                'IsStateOutput',true);
             
             % Expected value
             xpre = coefs{1};
             for iIter = 1:nIters
-                d = f(coefs{iIter+1},xpre);
-                x = g(d);
-                v = h(x,xpre);
-                xpre = x;
+                [v,xpre] = f(coefs{iIter+1},xpre);
             end
             coefsExpctd = v;
             
             % Actual value
-            xpre = coefs{1};
+            testCase.target.State = coefs{1};
             for iIter = 1:nIters
-                testCase.target.Steps = { ...
-                    @(x) f(x,xpre),...
-                    @(x) g(x),...                    
-                    @(x) h(x,xpre) };
                 v = testCase.target.step(coefs{iIter+1});
-                xpre = testCase.target.IntermediateData{2}; % g ‚Ìo—Í
             end
             coefsActual = v;
             
@@ -325,7 +430,60 @@ classdef CoefsManipulatorTestCase < matlab.unittest.TestCase
                 sprintf('%g',diff));
             
         end
-        %}
+        
+        function testPdsHsHcOct3dCell(testCase,width,height,depth)
+            
+            % Parameters
+            nIters = 5;
+            nChs = 5;
+            coefs  = cell(nIters+1,1);
+            for iIter = 1:nIters+1
+                subcoefs = cell(1,nChs);
+                for iCh = 1:nChs
+                    subcoefs{iCh} = randn(width,height,depth);
+                end
+                coefs{iIter} = subcoefs;
+            end
+            
+            % Function
+            lambda = 1e-3;
+            gamma  = 1e-3;
+            f = @(x,xpre) testCase.coefpdshshc(x,xpre,lambda,gamma);
+            
+            % Instantiation
+            import saivdr.utility.*
+            testCase.target = CoefsManipulator(...
+                'Manipulation', f, ...
+                'IsFeedBack',true,...
+                'IsStateOutput',true);
+            
+            % Expected value
+            xpre = coefs{1};
+            v = cell(1,nChs);
+            for iIter = 1:nIters
+                subcoefs = coefs{iIter+1};
+                for iCh = 1:nChs
+                    [v{iCh},xpre{iCh}] = f(subcoefs{iCh},xpre{iCh});
+                end
+            end
+            coefsExpctd = v;
+            
+            % Actual value
+            testCase.target.State = coefs{1};
+            for iIter = 1:nIters
+                v = testCase.target.step(coefs{iIter+1});
+            end
+            coefsActual = v;
+            
+            % Evaluation
+            for iCh = 1:nChs
+                testCase.verifySize(coefsActual{iCh},size(coefsExpctd{iCh}));
+                diff = max(abs(coefsExpctd{iCh}(:) - coefsActual{iCh}(:)));
+                testCase.verifyEqual(coefsActual{iCh},coefsExpctd{iCh},...
+                    'AbsTol',1e-10,sprintf('%g',diff));
+            end
+        end
+        
     end
     
 end
