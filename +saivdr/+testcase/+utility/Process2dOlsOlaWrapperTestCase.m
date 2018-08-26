@@ -322,10 +322,9 @@ classdef Process2dOlsOlaWrapperTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testIterativeSoftThresholding(testCase,width,height) %,useparallel)
+        function testIterativeSoftThresholding(testCase,width,height,useparallel)
             
             % Parameters
-            useparallel_ = false;
             nIters = 5;
             nLevels = 3;
             nVerSplit = 2;
@@ -365,7 +364,7 @@ classdef Process2dOlsOlaWrapperTestCase < matlab.unittest.TestCase
                 'VerticalSplitFactor',nVerSplit,...
                 'HorizontalSplitFactor',nHorSplit,...
                 'PadSize',[nVerPad,nHorPad],...
-                'UseParallel',useparallel_);
+                'UseParallel',useparallel);
             
             % Actual values
             h = srcImg;
