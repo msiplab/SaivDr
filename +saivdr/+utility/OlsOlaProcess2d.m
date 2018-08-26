@@ -1,5 +1,5 @@
-classdef Process2dOlsOlaWrapper < matlab.System
-    %PROCESS2DOLSOLAWRAPPER OLS/OLA wrapper for 2-D analysis and synthesis system
+classdef OlsOlaProcess2d < matlab.System
+    %OlsOlaProcess2d OLS/OLA wrapper for 2-D analysis and synthesis system
     %
     % Reference:
     %   Shogo Muramatsu and Hitoshi Kiya,
@@ -60,7 +60,7 @@ classdef Process2dOlsOlaWrapper < matlab.System
     methods
         
         % Constractor
-        function obj = Process2dOlsOlaWrapper(varargin)
+        function obj = OlsOlaProcess2d(varargin)
             import saivdr.dictionary.utility.Direction
             import saivdr.dictionary.olaols.*
             setProperties(obj,nargin,varargin{:})
