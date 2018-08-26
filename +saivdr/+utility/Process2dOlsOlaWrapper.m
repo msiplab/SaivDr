@@ -27,6 +27,7 @@ classdef Process2dOlsOlaWrapper < matlab.System
         BoundaryOperation
         PadSize = [0 0]
         SplitFactor = []
+        CoefsManipulator = []
     end
     
     properties (Logical)
@@ -47,6 +48,7 @@ classdef Process2dOlsOlaWrapper < matlab.System
     properties (Access = private, Nontunable)
         synthesizers
         analyzers
+        coefsmanipulators
         refSize
         refSubSize
         refScales
@@ -68,6 +70,10 @@ classdef Process2dOlsOlaWrapper < matlab.System
             if ~isempty(obj.SplitFactor)
                 obj.VerticalSplitFactor = obj.SplitFactor(Direction.VERTICAL);
                 obj.HorizontalSplitFactor = obj.SplitFactor(Direction.HORIZONTAL);
+            end
+            if isempty(obj.CoefsManipulator)
+                import saivdr.utility.CoefsManipulator
+                obj.CoefsManipulator = CoefsManipulator();
             end
         end
         
@@ -104,7 +110,9 @@ classdef Process2dOlsOlaWrapper < matlab.System
             loadObjectImpl@matlab.System(obj,s,wasLocked);
         end
         
-        function setupImpl(obj,srcImg,nLevels)
+        function setupImpl(obj,varargin)
+            srcImg = varargin{1};
+            nLevels = varargin{2};
             % Preperation
             verticalSplitFactor = obj.VerticalSplitFactor;
             horizontalSplitFactor = obj.HorizontalSplitFactor;
@@ -118,6 +126,10 @@ classdef Process2dOlsOlaWrapper < matlab.System
             % Synthesizers
             obj.Synthesizer.release();
             refSynthesizer = obj.Synthesizer.clone();
+            
+            % Manipulators
+            obj.CoefsManipulator.release();
+            refCoefsManipulator = obj.CoefsManipulator.clone();
     
             % Parameters
             obj.refSize = size(srcImg);
@@ -130,17 +142,20 @@ classdef Process2dOlsOlaWrapper < matlab.System
             % Clone
             obj.synthesizers = cell(nSplit,1);
             obj.analyzers = cell(nSplit,1);
+            obj.coefsmanipulators = cell(nSplit,1);
             if obj.UseParallel
                 obj.nWorkers = Inf;
                 for iSplit=1:nSplit
                     obj.analyzers{iSplit} = clone(obj.Analyzer);
                     obj.synthesizers{iSplit} = clone(obj.Synthesizer);
+                    obj.coefsmanipulators{iSplit} = clone(obj.CoefsManipulator);
                 end
             else
                 obj.nWorkers = 0;
                 for iSplit=1:nSplit
                     obj.analyzers{iSplit} = obj.Analyzer;
                     obj.synthesizers{iSplit} = obj.Synthesizer;
+                    obj.coefsmanipulators{iSplit} = obj.CoefsManipulator;                    
                 end
             end
 
@@ -166,13 +181,14 @@ classdef Process2dOlsOlaWrapper < matlab.System
                 nDim = subScale+2*obj.subPadSize(iCh,:);
                 obj.subPadArrays{iCh} = zeros(nDim);
                 nCoefs = nCoefs + prod(nDim);
-            end            
+            end
+            
             % Check integrity
             if obj.IsIntegrityTest
                 exceptionId = 'SaivDr:ReconstructionFailureException';
                 message = 'Failure occurs in reconstruction. Please check the split and padding size.';
                 %
-                refCoefsOut = refCoefs;
+                refCoefsOut = refCoefsManipulator.step(refCoefs);
                 imgExpctd = refSynthesizer.step(refCoefsOut,refScales_);
                 imgActual = obj.stepImpl(srcImg,nLevels);
                 diffImg = imgExpctd - imgActual;
@@ -187,10 +203,12 @@ classdef Process2dOlsOlaWrapper < matlab.System
         end
         
         function recImg = stepImpl(obj,srcImg,nLevels)
+
             % Parameters
             nWorkers_ = obj.nWorkers;
             analyzers_ = obj.analyzers;
             synthesizers_ = obj.synthesizers;
+            coefsmanipulators_ = obj.coefsmanipulators;
             
             % Define support functions 
             extract_ols = @(c,s) obj.extract_ols_(c,s);
@@ -206,6 +224,7 @@ classdef Process2dOlsOlaWrapper < matlab.System
             % Parallel processing
             nSplit = length(subImgs);
             subRecImg = cell(nSplit,1);            
+            %
             parfor (iSplit=1:nSplit,nWorkers_)
                 % Analyze
                 [subCoefs, subScales] = ...
@@ -215,17 +234,18 @@ classdef Process2dOlsOlaWrapper < matlab.System
                 coefspre = extract_ols(subCoefs,subScales);
                 
                 % Process for coefficients
-                coefspost = coefspre;
+                coefspst = ...
+                    coefsmanipulators_{iSplit}.step(coefspre);
                 
                 % Zero padding for convolution
-                subCoefArray = padding_ola(coefspost);
+                subCoefArray = padding_ola(coefspst);
                 
                 % Synthesis
                 [subCoefs,subScales] = arr2vec(subCoefArray);
                 subRecImg{iSplit} = ...
                     step(synthesizers_{iSplit},subCoefs,subScales);
             end
-            % 4. Overlap add (Circular)
+            % Overlap add (Circular)
             recImg = circular_ola_(obj,subRecImg);
         end
     end

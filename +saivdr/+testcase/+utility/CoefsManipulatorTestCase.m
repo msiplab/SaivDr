@@ -113,6 +113,7 @@ classdef CoefsManipulatorTestCase < matlab.unittest.TestCase
             
         end
         
+        %{
         function testIterativeSoftThresholding2d(testCase,width,height)
             
             % Parameters
@@ -250,7 +251,7 @@ classdef CoefsManipulatorTestCase < matlab.unittest.TestCase
                 sprintf('%g',diff));
             
         end
-        
+        %}
     end
     
 end
