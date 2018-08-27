@@ -93,7 +93,7 @@ classdef Analysis2dOlsWrapper < saivdr.dictionary.AbstAnalysisSystem
         end
         
         
-        function setupImpl(obj,srcImg,nLevels)
+        function setupImpl(obj,srcImg)
             obj.Analyzer.release();
             refAnalyzer = obj.Analyzer.clone();
             %
@@ -101,7 +101,7 @@ classdef Analysis2dOlsWrapper < saivdr.dictionary.AbstAnalysisSystem
             horizontalSplitFactor = obj.HorizontalSplitFactor;
             nSplit = verticalSplitFactor*horizontalSplitFactor;            
             %
-            [coefs,scales] = step(refAnalyzer,srcImg,nLevels);
+            [coefs,scales] = step(refAnalyzer,srcImg);
             obj.refScales = scales;
             obj.refSubSize = size(srcImg)*...
                 diag(1./[verticalSplitFactor,horizontalSplitFactor]);
@@ -131,10 +131,10 @@ classdef Analysis2dOlsWrapper < saivdr.dictionary.AbstAnalysisSystem
                 exceptionId = 'SaivDr:ReconstructionFailureException';
                 message = 'Failure occurs in reconstruction. Please check the split and padding size.';
                 if strcmp(obj.OutputType,'Cell')
-                    [coefsCrop,scalesCrop] = stepImpl(obj,srcImg,nLevels);
+                    [coefsCrop,scalesCrop] = stepImpl(obj,srcImg);
                     newcoefs = obj.concatenate_(coefsCrop,scalesCrop);
                 else
-                    newcoefs = stepImpl(obj,srcImg,nLevels);
+                    newcoefs = stepImpl(obj,srcImg);
                 end
                 diffCoefs = coefs - newcoefs;
                 if norm(diffCoefs(:))/numel(diffCoefs) > 1e-6
@@ -145,7 +145,7 @@ classdef Analysis2dOlsWrapper < saivdr.dictionary.AbstAnalysisSystem
             refAnalyzer.delete()
         end
         
-        function [coefs, scales] = stepImpl(obj,srcImg,nLevels)
+        function [coefs, scales] = stepImpl(obj,srcImg)
             
             % 1. Circular padding
             srcImg_ = padarray(srcImg,obj.PadSize,'circular');
@@ -160,7 +160,7 @@ classdef Analysis2dOlsWrapper < saivdr.dictionary.AbstAnalysisSystem
             nWorkers_ = obj.nWorkers;
             parfor (iSplit=1:nSplit,nWorkers_)
                 [subCoefs_{iSplit}, subScales_{iSplit}] = ...
-                    step(analyzers_{iSplit},subImgs{iSplit},nLevels);
+                    step(analyzers_{iSplit},subImgs{iSplit});
             end
             % 4. Extract & Concatinate
             if strcmp(obj.OutputType,'Cell')

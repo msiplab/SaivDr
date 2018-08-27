@@ -102,6 +102,7 @@ classdef OlsOlaProcess3dTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.udhaar.*
             analyzer = UdHaarAnalysis3dSystem();
             synthesizer = UdHaarSynthesis3dSystem();
+            analyzer.NumberOfLevels = nLevels;
             
             % Instantiation of target class
             import saivdr.utility.*
@@ -110,7 +111,7 @@ classdef OlsOlaProcess3dTestCase < matlab.unittest.TestCase
                 'Synthesizer',synthesizer);
             
             % Actual values
-            recImg = step(testCase.target,srcImg,nLevels);
+            recImg = step(testCase.target,srcImg);
             
             % Evaluation
             testCase.verifySize(recImg,size(srcImg));
@@ -135,6 +136,7 @@ classdef OlsOlaProcess3dTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.udhaar.*
             analyzer = UdHaarAnalysis3dSystem();
             synthesizer = UdHaarSynthesis3dSystem();
+            analyzer.NumberOfLevels = nLevels;
             
             % Instantiation of target class
             import saivdr.utility.*
@@ -148,7 +150,7 @@ classdef OlsOlaProcess3dTestCase < matlab.unittest.TestCase
                 'UseParallel',useparallel);
             
             % Actual values
-            recImg = step(testCase.target,srcImg,nLevels);
+            recImg = step(testCase.target,srcImg);
             
             % Evaluation
             testCase.verifySize(recImg,size(srcImg));
@@ -173,6 +175,7 @@ classdef OlsOlaProcess3dTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.udhaar.*
             analyzer = UdHaarAnalysis3dSystem();
             synthesizer = UdHaarSynthesis3dSystem();
+            analyzer.NumberOfLevels = nLevels;
             
             % Instantiation of target class
             import saivdr.utility.*
@@ -186,7 +189,7 @@ classdef OlsOlaProcess3dTestCase < matlab.unittest.TestCase
                 'UseParallel',useparallel);
             
             % Actual values
-            recImg = step(testCase.target,srcImg,nLevels);
+            recImg = step(testCase.target,srcImg);
             
             % Evaluation
             testCase.verifySize(recImg,size(srcImg));
@@ -213,6 +216,7 @@ classdef OlsOlaProcess3dTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.udhaar.*
             analyzer = UdHaarAnalysis3dSystem();
             synthesizer = UdHaarSynthesis3dSystem();
+            analyzer.NumberOfLevels = nLevels;
             
             % Instantiation of target class
             import saivdr.utility.*
@@ -226,7 +230,7 @@ classdef OlsOlaProcess3dTestCase < matlab.unittest.TestCase
                 'UseParallel',useparallel);
             
             % Actual values
-            recImg = step(testCase.target,srcImg,nLevels);
+            recImg = step(testCase.target,srcImg);
             
             % Evaluation
             testCase.verifySize(recImg,size(srcImg));
@@ -250,6 +254,7 @@ classdef OlsOlaProcess3dTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.udhaar.*
             analyzer = UdHaarAnalysis3dSystem();
             synthesizer = UdHaarSynthesis3dSystem();
+            analyzer.NumberOfLevels = nLevels;
             
             % Expected values
             exceptionIdExpctd = 'SaivDr:IllegalSplitFactorException';
@@ -268,7 +273,7 @@ classdef OlsOlaProcess3dTestCase < matlab.unittest.TestCase
             
             % Evaluation
             try
-                step(testCase.target,srcImg,nLevels);
+                step(testCase.target,srcImg);
                 if mod(width,nHorSplit) ~=0 || ...
                         mod(height,nVerSplit) ~= 0 || ...
                         mod(depth,nDepSplit) ~= 0
@@ -291,17 +296,18 @@ classdef OlsOlaProcess3dTestCase < matlab.unittest.TestCase
         function testUdHaarSplittingWarningReconstruction(testCase,width,height,depth)
             
             % Parameters
-            level_ = 2;
+            nLevels = 2;
             nVerSplit = 2;
             nHorSplit = 2;
             nDepSplit = 2;
-            nVerPad = 2^(level_-1)-1;
-            nHorPad = 2^(level_-1)-1;
-            nDepPad = 2^(level_-1)-1;
+            nVerPad = 2^(nLevels-1)-1;
+            nHorPad = 2^(nLevels-1)-1;
+            nDepPad = 2^(nLevels-1)-1;
             srcImg = rand(height,width,depth);
             import saivdr.dictionary.udhaar.*
             analyzer = UdHaarAnalysis3dSystem();
             synthesizer = UdHaarSynthesis3dSystem();
+            analyzer.NumberOfLevels = nLevels;
             
             % Expected values
             exceptionIdExpctd = 'SaivDr:ReconstructionFailureException';
@@ -319,7 +325,7 @@ classdef OlsOlaProcess3dTestCase < matlab.unittest.TestCase
             
             % Evaluation
             try
-                step(testCase.target,srcImg,level_);
+                step(testCase.target,srcImg);
                 testCase.verifyFail(sprintf('%s must be thrown.',...
                     exceptionIdExpctd));
             catch me
@@ -338,18 +344,18 @@ classdef OlsOlaProcess3dTestCase < matlab.unittest.TestCase
         function testUdHaarIntegrityTestOff(testCase,width,height,depth)
             
             % Parameters
-            level_ = 2;
+            nLevels = 2;
             nVerSplit = 2;
             nHorSplit = 2;
             nDepSplit = 2;
-            nVerPad = 2^(level_-1)-1;
-            nHorPad = 2^(level_-1)-1;
-            nDepPad = 2^(level_-1)-1;
+            nVerPad = 2^(nLevels-1)-1;
+            nHorPad = 2^(nLevels-1)-1;
+            nDepPad = 2^(nLevels-1)-1;
             srcImg = rand(height,width,depth);
             import saivdr.dictionary.udhaar.*
             analyzer = UdHaarAnalysis3dSystem();
             synthesizer = UdHaarSynthesis3dSystem();
-            
+            analyzer.NumberOfLevels = nLevels;
             
             % Instantiation of target class
             import saivdr.utility.*
@@ -364,7 +370,7 @@ classdef OlsOlaProcess3dTestCase < matlab.unittest.TestCase
             
             % Evaluation
             try
-                step(testCase.target,srcImg,level_);
+                step(testCase.target,srcImg);
             catch me
                 testCase.verifyFail(me.message);
             end
@@ -385,13 +391,14 @@ classdef OlsOlaProcess3dTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.udhaar.*
             analyzer = UdHaarAnalysis3dSystem();
             synthesizer = UdHaarSynthesis3dSystem();
+            analyzer.NumberOfLevels = nLevels;
             
             % Functions
             lambda = 1e-3;
             g = @(x) sign(x).*((abs(x)-lambda)+abs(abs(x)-lambda))/2;
             
             % Expected values
-            [coefspre,scales] = analyzer.step(srcImg,nLevels);
+            [coefspre,scales] = analyzer.step(srcImg);
             coefspst = g(coefspre);
             imgExpctd = synthesizer.step(coefspst,scales);
             
@@ -410,7 +417,7 @@ classdef OlsOlaProcess3dTestCase < matlab.unittest.TestCase
                 'UseParallel',useparallel);
             
             % Actual values
-            imgActual = testCase.target.step(srcImg,nLevels);
+            imgActual = testCase.target.step(srcImg);
             
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd));
@@ -435,6 +442,7 @@ classdef OlsOlaProcess3dTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.udhaar.*
             analyzer = UdHaarAnalysis3dSystem();
             synthesizer = UdHaarSynthesis3dSystem();
+            analyzer.NumberOfLevels = nLevels;
             
             % Functions
             lambda = 1e-3;
@@ -445,7 +453,7 @@ classdef OlsOlaProcess3dTestCase < matlab.unittest.TestCase
             h = srcImg;
             y = 0;
             for iIter = 1:nIters
-                [v,scales] = analyzer.step(h,nLevels);
+                [v,scales] = analyzer.step(h);
                 y = f(v,y);
                 hu = synthesizer.step(y,scales);
                 h = hu - srcImg;
@@ -471,7 +479,7 @@ classdef OlsOlaProcess3dTestCase < matlab.unittest.TestCase
             h = srcImg;
             coefsmanipulator.State = 0;
             for iIter = 1:nIters
-                hu = testCase.target.step(h,nLevels);
+                hu = testCase.target.step(h);
                 h = hu - srcImg;
             end
             imgActual = hu;

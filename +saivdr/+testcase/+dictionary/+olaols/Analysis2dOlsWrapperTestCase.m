@@ -86,8 +86,8 @@ classdef Analysis2dOlsWrapperTestCase < matlab.unittest.TestCase
             
             % Expected values
             import saivdr.dictionary.udhaar.*
-            refAnalyzer = UdHaarAnalysis2dSystem();
-            [coefsExpctd,scalesExpctd] = step(refAnalyzer,srcImg,nLevels);
+            refAnalyzer = UdHaarAnalysis2dSystem('NumberOfLevels',nLevels);
+            [coefsExpctd,scalesExpctd] = step(refAnalyzer,srcImg);
             
             % Instantiation of target class
             import saivdr.dictionary.olaols.*
@@ -95,7 +95,7 @@ classdef Analysis2dOlsWrapperTestCase < matlab.unittest.TestCase
                 'Analyzer',refAnalyzer);
             
             % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifySize(scalesActual,size(scalesExpctd));
@@ -116,8 +116,8 @@ classdef Analysis2dOlsWrapperTestCase < matlab.unittest.TestCase
             
             % Expected values
             import saivdr.dictionary.udhaar.*
-            refAnalyzer = UdHaarAnalysis2dSystem();
-            [coefs,scales] = step(refAnalyzer,srcImg,nLevels);
+            refAnalyzer = UdHaarAnalysis2dSystem('NumberOfLevels',nLevels);
+            [coefs,scales] = step(refAnalyzer,srcImg);
             coefsExpctd = cell(nSplit,1);
             coefsExpctd{1} = coefs;
             scalesExpctd = scales;
@@ -130,7 +130,7 @@ classdef Analysis2dOlsWrapperTestCase < matlab.unittest.TestCase
             
             % Actual values
             [coefsActual,scalesActual] = ...
-                step(testCase.analyzer,srcImg,nLevels);
+                step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifySize(scalesActual,size(scalesExpctd));
@@ -154,8 +154,8 @@ classdef Analysis2dOlsWrapperTestCase < matlab.unittest.TestCase
             
             % Expected values
             import saivdr.dictionary.udhaar.*
-            refAnalyzer = UdHaarAnalysis2dSystem();
-            [coefsExpctd,scalesExpctd] = step(refAnalyzer,srcImg,nLevels);
+            refAnalyzer = UdHaarAnalysis2dSystem('NumberOfLevels',nLevels);
+            [coefsExpctd,scalesExpctd] = step(refAnalyzer,srcImg);
             
             % Instantiation of target class
             import saivdr.dictionary.olaols.*
@@ -167,7 +167,7 @@ classdef Analysis2dOlsWrapperTestCase < matlab.unittest.TestCase
                 'UseParallel',useparallel);
             
             % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifySize(scalesActual,size(scalesExpctd));
@@ -192,8 +192,8 @@ classdef Analysis2dOlsWrapperTestCase < matlab.unittest.TestCase
             
             % Expected values
             import saivdr.dictionary.udhaar.*
-            refAnalyzer = UdHaarAnalysis2dSystem();
-            [coefsExpctd,scalesExpctd] = step(refAnalyzer,srcImg,nLevels);
+            refAnalyzer = UdHaarAnalysis2dSystem('NumberOfLevels',nLevels);
+            [coefsExpctd,scalesExpctd] = step(refAnalyzer,srcImg);
             
             % Instantiation of target class
             import saivdr.dictionary.olaols.*
@@ -205,7 +205,7 @@ classdef Analysis2dOlsWrapperTestCase < matlab.unittest.TestCase
                 'UseParallel',useparallel);
             
             % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifySize(scalesActual,size(scalesExpctd));
@@ -230,8 +230,8 @@ classdef Analysis2dOlsWrapperTestCase < matlab.unittest.TestCase
             
             % Expected values
             import saivdr.dictionary.udhaar.*
-            refAnalyzer = UdHaarAnalysis2dSystem();
-            [coefsExpctd,scalesExpctd] = step(refAnalyzer,srcImg,level);
+            refAnalyzer = UdHaarAnalysis2dSystem('NumberOfLevels',level);
+            [coefsExpctd,scalesExpctd] = step(refAnalyzer,srcImg);
             
             % Instantiation of target class
             import saivdr.dictionary.olaols.*
@@ -243,7 +243,7 @@ classdef Analysis2dOlsWrapperTestCase < matlab.unittest.TestCase
                 'UseParallel',useparallel);
             
             % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,level);
+            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifySize(scalesActual,size(scalesExpctd));
@@ -268,8 +268,8 @@ classdef Analysis2dOlsWrapperTestCase < matlab.unittest.TestCase
             
             % Expected values
             import saivdr.dictionary.udhaar.*
-            refAnalyzer = UdHaarAnalysis2dSystem();
-            [coefs,scales] = step(refAnalyzer,srcImg,nLevels);
+            refAnalyzer = UdHaarAnalysis2dSystem('NumberOfLevels',nLevels);
+            [coefs,scales] = step(refAnalyzer,srcImg);
             nSplit = nVerSplit*nHorSplit;
             [coefsExpctd, scalesExpctd] = testCase.splitCoefs_(...
                 coefs,scales,[nVerSplit nHorSplit]);
@@ -285,7 +285,7 @@ classdef Analysis2dOlsWrapperTestCase < matlab.unittest.TestCase
                 'OutputType','Cell');
             
             % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifySize(scalesActual,size(scalesExpctd));
@@ -314,8 +314,8 @@ classdef Analysis2dOlsWrapperTestCase < matlab.unittest.TestCase
             
             % Expected values
             import saivdr.dictionary.udhaar.*
-            refAnalyzer = UdHaarAnalysis2dSystem();
-            [coefs,scales] = step(refAnalyzer,srcImg,nLevels);
+            refAnalyzer = UdHaarAnalysis2dSystem('NumberOfLevels',nLevels);
+            [coefs,scales] = step(refAnalyzer,srcImg);
             nSplit = nVerSplit*nHorSplit;
             [coefsExpctd, scalesExpctd] = testCase.splitCoefs_(...
                 coefs,scales,[nVerSplit nHorSplit]);
@@ -332,7 +332,7 @@ classdef Analysis2dOlsWrapperTestCase < matlab.unittest.TestCase
                 'OutputType','Cell');
             
             % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifySize(scalesActual,size(scalesExpctd));
@@ -359,8 +359,8 @@ classdef Analysis2dOlsWrapperTestCase < matlab.unittest.TestCase
             
             % Expected values
             import saivdr.dictionary.udhaar.*
-            refAnalyzer = UdHaarAnalysis2dSystem();
-            [coefs,scales] = step(refAnalyzer,srcImg,level);
+            refAnalyzer = UdHaarAnalysis2dSystem('NumberOfLevels',level);
+            [coefs,scales] = step(refAnalyzer,srcImg);
             nSplit = nVerSplit*nHorSplit;
             [coefsExpctd, scalesExpctd] = testCase.splitCoefs_(...
                 coefs,scales,[nVerSplit nHorSplit]);
@@ -376,7 +376,7 @@ classdef Analysis2dOlsWrapperTestCase < matlab.unittest.TestCase
                 'OutputType','Cell');
             
             % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,level);
+            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifySize(scalesActual,size(scalesExpctd));
@@ -394,11 +394,11 @@ classdef Analysis2dOlsWrapperTestCase < matlab.unittest.TestCase
         function testUdHaarSplittingWarningReconstruction(testCase,width,height)
             
             % Parameters
-            level_ = 2;
+            nLevels = 2;
             nVerSplit = 2;
             nHorSplit = 2;
-            nVerPad = 2^(level_-1)-1;
-            nHorPad = 2^(level_-1)-1;
+            nVerPad = 2^(nLevels-1)-1;
+            nHorPad = 2^(nLevels-1)-1;
             srcImg = rand(height,width);
             
             % Expected values
@@ -407,7 +407,7 @@ classdef Analysis2dOlsWrapperTestCase < matlab.unittest.TestCase
             
             % Preparation
             import saivdr.dictionary.udhaar.*
-            refAnalyzer = UdHaarAnalysis2dSystem();
+            refAnalyzer = UdHaarAnalysis2dSystem('NumberOfLevels',nLevels);
             
             % Instantiation of target class
             import saivdr.dictionary.olaols.*
@@ -420,7 +420,7 @@ classdef Analysis2dOlsWrapperTestCase < matlab.unittest.TestCase
             
             % Evaluation
             try
-                step(testCase.analyzer,srcImg,level_);
+                step(testCase.analyzer,srcImg);
                 testCase.verifyFail(sprintf('%s must be thrown.',...
                     exceptionIdExpctd));
             catch me
@@ -439,16 +439,16 @@ classdef Analysis2dOlsWrapperTestCase < matlab.unittest.TestCase
         function testUdHaarSplittingIntegrityTestOff(testCase,width,height)
             
             % Parameters
-            level_ = 2;
+            nLevels = 2;
             nVerSplit = 2;
             nHorSplit = 2;
-            nVerPad = 2^(level_-1)-1;
-            nHorPad = 2^(level_-1)-1;
+            nVerPad = 2^(nLevels-1)-1;
+            nHorPad = 2^(nLevels-1)-1;
             srcImg = rand(height,width);
             
             % Preparation
             import saivdr.dictionary.udhaar.*
-            refAnalyzer = UdHaarAnalysis2dSystem();
+            refAnalyzer = UdHaarAnalysis2dSystem('NumberOfLevels',nLevels);
             
             % Instantiation of target class
             import saivdr.dictionary.olaols.*
@@ -462,7 +462,7 @@ classdef Analysis2dOlsWrapperTestCase < matlab.unittest.TestCase
             
             % Evaluation
             try
-                step(testCase.analyzer,srcImg,level_);
+                step(testCase.analyzer,srcImg);
             catch me
                 testCase.verifyFail(me.message);
             end
@@ -484,7 +484,7 @@ classdef Analysis2dOlsWrapperTestCase < matlab.unittest.TestCase
             
             % Preparation
             import saivdr.dictionary.udhaar.*
-            refAnalyzer = UdHaarAnalysis2dSystem();
+            refAnalyzer = UdHaarAnalysis2dSystem('NumberOfLevels',level);
             
             % Instantiation of target class
             import saivdr.dictionary.olaols.*
@@ -497,7 +497,7 @@ classdef Analysis2dOlsWrapperTestCase < matlab.unittest.TestCase
             
             % Evaluation
             try
-                step(testCase.analyzer,srcImg,level);
+                step(testCase.analyzer,srcImg);
                 if mod(width,nHorSplit) ~=0 || mod(height,nVerSplit) ~= 0
                     testCase.verifyFail(sprintf('%s must be thrown.',...
                         exceptionIdExpctd));
@@ -526,8 +526,8 @@ classdef Analysis2dOlsWrapperTestCase < matlab.unittest.TestCase
             
             % Expected values
             import saivdr.dictionary.udhaar.*
-            refAnalyzer = UdHaarAnalysis2dSystem();
-            [coefsExpctd,scalesExpctd] = step(refAnalyzer,srcImg,level);
+            refAnalyzer = UdHaarAnalysis2dSystem('NumberOfLevels',level);
+            [coefsExpctd,scalesExpctd] = step(refAnalyzer,srcImg);
             
             % Instantiation of target class
             import saivdr.dictionary.olaols.*
@@ -538,7 +538,7 @@ classdef Analysis2dOlsWrapperTestCase < matlab.unittest.TestCase
                 'UseParallel',useparallel);
             
             % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,level);
+            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifySize(scalesActual,size(scalesExpctd));
@@ -565,7 +565,7 @@ classdef Analysis2dOlsWrapperTestCase < matlab.unittest.TestCase
             
             % Preparation
             import saivdr.dictionary.udhaar.*
-            refAnalyzer = UdHaarAnalysis2dSystem();
+            refAnalyzer = UdHaarAnalysis2dSystem('NumberOfLevels',level);
             
             % Instantiation of target class
             import saivdr.dictionary.olaols.*
@@ -577,7 +577,7 @@ classdef Analysis2dOlsWrapperTestCase < matlab.unittest.TestCase
             
             % Evaluation
             try
-                step(testCase.analyzer,srcImg,level);
+                step(testCase.analyzer,srcImg);
                 if mod(width,nHorSplit) ~=0 || mod(height,nVerSplit) ~= 0
                     testCase.verifyFail(sprintf('%s must be thrown.',...
                         exceptionIdExpctd));

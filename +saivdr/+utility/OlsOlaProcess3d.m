@@ -113,7 +113,7 @@ classdef OlsOlaProcess3d < matlab.System
             loadObjectImpl@matlab.System(obj,s,wasLocked);
         end
         
-        function setupImpl(obj,srcImg,nLevels)
+        function setupImpl(obj,srcImg)
             % Preperation
             verticalSplitFactor = obj.VerticalSplitFactor;
             horizontalSplitFactor = obj.HorizontalSplitFactor;
@@ -123,7 +123,7 @@ classdef OlsOlaProcess3d < matlab.System
             % Analyzers
             obj.Analyzer.release();
             refAnalyzer = obj.Analyzer.clone();
-            [refCoefs,refScales_] = refAnalyzer.step(srcImg,nLevels);
+            [refCoefs,refScales_] = refAnalyzer.step(srcImg);
             
             % Synthesizers
             obj.Synthesizer.release();
@@ -197,7 +197,7 @@ classdef OlsOlaProcess3d < matlab.System
                 refCoefsOut = refCoefsManipulator.step(refCoefs);
                 imgExpctd = refSynthesizer.step(refCoefsOut,refScales_);
                 %
-                imgActual = obj.stepImpl(srcImg,nLevels);
+                imgActual = obj.stepImpl(srcImg);
                 diffImg = imgExpctd - imgActual;
                 if norm(diffImg(:))/numel(diffImg) > 1e-6
                     throw(MException(exceptionId,message))
@@ -210,7 +210,7 @@ classdef OlsOlaProcess3d < matlab.System
             refCoefsManipulator.delete()            
         end
         
-        function recImg = stepImpl(obj,srcImg,nLevels)
+        function recImg = stepImpl(obj,srcImg)
             
             % Parameters
             nWorkers_ = obj.nWorkers;
@@ -235,7 +235,7 @@ classdef OlsOlaProcess3d < matlab.System
             parfor (iSplit=1:nSplit,nWorkers_)
                 % Analyze
                 [subCoefs, subScales] = ...
-                    analyzers_{iSplit}.step(subImgs{iSplit},nLevels);
+                    analyzers_{iSplit}.step(subImgs{iSplit});
                 
                 % Extract significant coefs.
                 coefspre = extract_ols(subCoefs,subScales);

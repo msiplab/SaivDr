@@ -22,7 +22,6 @@ classdef AbstSparseApproximation < matlab.System %#codegen
     properties (Nontunable)
         Synthesizer
         AdjOfSynthesizer
-        NumberOfLevels = 1
     end
     
     properties
