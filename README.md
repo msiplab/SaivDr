@@ -9,7 +9,7 @@ SaivDr is an abbreviation of Sparsity-Aware Image and Volumetric Data Restoratio
 * Development and
 * Implementation
 
-of sparsity-aware image and volume data restoraition algorithms simple.
+of sparsity-aware image and volumetric data restoraition algorithms simple.
 
 Information about SaivDr Package is given in Contents.m. The HELP command can be used to see the contents as follows:
 
