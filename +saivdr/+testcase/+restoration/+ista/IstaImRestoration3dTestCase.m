@@ -1,5 +1,5 @@
 classdef IstaImRestoration3dTestCase < matlab.unittest.TestCase
-    %IstaImRestoration3dTESTCASE Test Case for IstaImRestoration3d
+    %ISTAIMRESTORATION3DTESTCASE Test Case for IstaImRestoration3d
     %
     % Requirements: MATLAB R2015b
     %
@@ -38,6 +38,7 @@ classdef IstaImRestoration3dTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.nsoltx.*
             synthesizer = NsoltFactory.createSynthesis3dSystem();
             analyzer = NsoltFactory.createAnalysis3dSystem();
+            analyzer.NumberOfLevels = 3;            
             import saivdr.degradation.*
             import saivdr.degradation.linearprocess.*
             import saivdr.degradation.noiseprocess.*
@@ -59,7 +60,6 @@ classdef IstaImRestoration3dTestCase < matlab.unittest.TestCase
                 'Synthesizer',synthesizer,...
                 'AdjOfSynthesizer',analyzer,...
                 'LinearProcess',linearProcess,...
-                'NumberOfTreeLevels',3,...
                 'Lambda',1e-2);
             
             % MSE after processing
@@ -85,6 +85,7 @@ classdef IstaImRestoration3dTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.nsoltx.*
             synthesizer = NsoltFactory.createSynthesis3dSystem();
             analyzer = NsoltFactory.createAnalysis3dSystem();
+            analyzer.NumberOfLevels = 3;            
             import saivdr.degradation.*
             import saivdr.degradation.linearprocess.*
             import saivdr.degradation.noiseprocess.*
@@ -107,7 +108,6 @@ classdef IstaImRestoration3dTestCase < matlab.unittest.TestCase
                 'Synthesizer',synthesizer,...
                 'AdjOfSynthesizer',analyzer,...
                 'LinearProcess',linearProcess,...
-                'NumberOfTreeLevels',3,...
                 'Lambda',1e-2);
             
             % MSE after processing
@@ -133,6 +133,7 @@ classdef IstaImRestoration3dTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.nsoltx.*
             synthesizer = NsoltFactory.createSynthesis3dSystem();
             analyzer = NsoltFactory.createAnalysis3dSystem();
+            analyzer.NumberOfLevels = 3;            
             import saivdr.degradation.*
             import saivdr.degradation.linearprocess.*
             import saivdr.degradation.noiseprocess.*
@@ -154,7 +155,6 @@ classdef IstaImRestoration3dTestCase < matlab.unittest.TestCase
                 'Synthesizer',synthesizer,...
                 'AdjOfSynthesizer',analyzer,...
                 'LinearProcess',linearProcess,...
-                'NumberOfTreeLevels',3,...
                 'Lambda',1e-2);
             
             % MSE after processing
@@ -180,6 +180,7 @@ classdef IstaImRestoration3dTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.nsoltx.*
             synthesizer = NsoltFactory.createSynthesis3dSystem();
             analyzer = NsoltFactory.createAnalysis3dSystem();
+            analyzer.NumberOfLevels = 3;            
             import saivdr.degradation.*
             import saivdr.degradation.linearprocess.*
             import saivdr.degradation.noiseprocess.*
@@ -210,7 +211,6 @@ classdef IstaImRestoration3dTestCase < matlab.unittest.TestCase
                 'Synthesizer',synthesizer,...
                 'AdjOfSynthesizer',analyzer,...
                 'LinearProcess',linearProcess,...
-                'NumberOfTreeLevels',3,...
                 'Lambda',1e-2);
             
             % MSE after processing
@@ -237,6 +237,7 @@ classdef IstaImRestoration3dTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.nsoltx.*
             synthesizer = NsoltFactory.createSynthesis3dSystem();
             analyzer = NsoltFactory.createAnalysis3dSystem();
+            analyzer.NumberOfLevels = 3;            
             import saivdr.degradation.*
             import saivdr.degradation.linearprocess.*
             import saivdr.degradation.noiseprocess.*
@@ -262,7 +263,6 @@ classdef IstaImRestoration3dTestCase < matlab.unittest.TestCase
                 'Synthesizer',synthesizer,...
                 'AdjOfSynthesizer',analyzer,...
                 'LinearProcess',linearProcess,...
-                'NumberOfTreeLevels',3,...
                 'Lambda',1e-2,...
                 'StepMonitor',stepMonitor);
             
@@ -288,6 +288,7 @@ classdef IstaImRestoration3dTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.udhaar.*
             synthesizer = UdHaarSynthesis3dSystem();
             analyzer = UdHaarAnalysis3dSystem();
+            analyzer.NumberOfLevels = 3;            
             import saivdr.degradation.*
             import saivdr.degradation.linearprocess.*
             import saivdr.degradation.noiseprocess.*
@@ -309,7 +310,6 @@ classdef IstaImRestoration3dTestCase < matlab.unittest.TestCase
                 'Synthesizer',synthesizer,...
                 'AdjOfSynthesizer',analyzer,...
                 'LinearProcess',linearProcess,...
-                'NumberOfTreeLevels',3,...
                 'Lambda',1e-2);
             
             % MSE after processing
@@ -443,6 +443,7 @@ classdef IstaImRestoration3dTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.udhaar.*
             synthesizer = UdHaarSynthesis3dSystem();
             analyzer = UdHaarAnalysis3dSystem();
+            analyzer.NumberOfLevels = 3;            
             import saivdr.degradation.*
             import saivdr.degradation.linearprocess.*
             import saivdr.degradation.noiseprocess.*
@@ -463,7 +464,6 @@ classdef IstaImRestoration3dTestCase < matlab.unittest.TestCase
                 'Synthesizer',synthesizer,...
                 'AdjOfSynthesizer',analyzer,...
                 'LinearProcess',linearProcess,...
-                'NumberOfTreeLevels',3,...
                 'Lambda',1e-2);
             
             % MSE by original object
@@ -490,6 +490,7 @@ classdef IstaImRestoration3dTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.nsoltx.*
             synthesizer = NsoltFactory.createSynthesis3dSystem();
             analyzer = NsoltFactory.createAnalysis3dSystem();
+            analyzer.NumberOfLevels = 3;            
             import saivdr.degradation.*
             import saivdr.degradation.linearprocess.*
             import saivdr.degradation.noiseprocess.*
@@ -510,7 +511,6 @@ classdef IstaImRestoration3dTestCase < matlab.unittest.TestCase
                 'Synthesizer',synthesizer,...
                 'AdjOfSynthesizer',analyzer,...
                 'LinearProcess',linearProcess,...
-                'NumberOfTreeLevels',3,...
                 'Lambda',1e-2);
             
             % MSE by original object
@@ -536,6 +536,7 @@ classdef IstaImRestoration3dTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.nsoltx.*
             synthesizer = NsoltFactory.createSynthesis3dSystem();
             analyzer = NsoltFactory.createAnalysis3dSystem();
+            analyzer.NumberOfLevels = 3;            
             import saivdr.degradation.*
             import saivdr.degradation.linearprocess.*
             import saivdr.degradation.noiseprocess.*
@@ -548,7 +549,6 @@ classdef IstaImRestoration3dTestCase < matlab.unittest.TestCase
                 'Synthesizer',synthesizer,...
                 'AdjOfSynthesizer',analyzer,...
                 'LinearProcess',linearProcess,...
-                'NumberOfTreeLevels',3,...
                 'Lambda',1e-2);
             
             % Instantiation of target class
@@ -582,6 +582,7 @@ classdef IstaImRestoration3dTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.udhaar.*
             synthesizer = UdHaarSynthesis3dSystem();
             analyzer = UdHaarAnalysis3dSystem();
+            analyzer.NumberOfLevels = 3;
             import saivdr.degradation.*
             import saivdr.degradation.linearprocess.*
             import saivdr.degradation.noiseprocess.*
@@ -594,7 +595,6 @@ classdef IstaImRestoration3dTestCase < matlab.unittest.TestCase
                 'Synthesizer',synthesizer,...
                 'AdjOfSynthesizer',analyzer,...
                 'LinearProcess',linearProcess,...
-                'NumberOfTreeLevels',3,...
                 'Lambda',1e-2);
             
             % Instantiation of target class

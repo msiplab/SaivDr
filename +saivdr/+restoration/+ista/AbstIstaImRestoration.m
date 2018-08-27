@@ -19,7 +19,6 @@ classdef AbstIstaImRestoration < matlab.System %~#codegen
         Synthesizer
         AdjOfSynthesizer
         LinearProcess
-        NumberOfTreeLevels = 1
     end
     
 

@@ -57,7 +57,7 @@ classdef IstaImRestoration3d < saivdr.restoration.ista.AbstIstaImRestoration %~#
             %  y = D.'P.'r =  D.'P.'x = D.'^u
             [ obj.y(:,1), obj.scales ] = ...
                 step(obj.AdjOfSynthesizer,...
-                obj.hu,obj.NumberOfTreeLevels);
+                obj.hu);
             %  ^x = P^u = PP.'r = PP.'x
             obj.hx = step(obj.LinearProcess,obj.hu);
             % r = ^x - x;
@@ -97,7 +97,6 @@ classdef IstaImRestoration3d < saivdr.restoration.ista.AbstIstaImRestoration %~#
         function procPerIter_(obj)
             adjSyn_  = obj.AdjOfSynthesizer;
             syn_     = obj.Synthesizer;
-            nLevels_ = obj.NumberOfTreeLevels;
             reciprocalL_  = 1/obj.valueL;
             scales_  = obj.scales;
             threshold_ = obj.threshold;
@@ -110,7 +109,7 @@ classdef IstaImRestoration3d < saivdr.restoration.ista.AbstIstaImRestoration %~#
             import saivdr.restoration.ista.AbstIstaImRestoration
             
             % ^v = D.'h = D.'P.'r = D.'P.'(^x-x)
-            v_ = step(adjSyn_,h_,nLevels_);
+            v_ = step(adjSyn_,h_);
             % y = softshrink(y -(1/L)*D.'P.'(^x-x))
             obj.y = AbstIstaImRestoration.softshrink_(...
                 obj.y(:)-(reciprocalL_)*v_(:),threshold_);
