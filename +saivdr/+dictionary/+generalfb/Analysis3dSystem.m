@@ -31,6 +31,10 @@ classdef Analysis3dSystem < saivdr.dictionary.AbstAnalysisSystem
         FilterDomain = 'Spatial'
     end
     
+    properties (Nontunable, PositiveInteger)
+        NumberOfLevels
+    end
+    
     properties (Hidden, Transient)
         BoundaryOperationSet = ...
             matlab.system.StringSet({'Circular'});
@@ -87,7 +91,8 @@ classdef Analysis3dSystem < saivdr.dictionary.AbstAnalysisSystem
             loadObjectImpl@matlab.System(obj,s,wasLocked);
         end
         
-        function validateInputsImpl(obj,srcImg,nLevels)
+        function validateInputsImpl(obj,srcImg)
+            nLevels = obj.NumberOfLevels;
             if nLevels < 1
                 error('SaivDr: #Levels should be positive.');
             end
@@ -106,7 +111,8 @@ classdef Analysis3dSystem < saivdr.dictionary.AbstAnalysisSystem
             
         end
         
-        function setupImpl(obj,srcImg,nLevels)
+        function setupImpl(obj,srcImg)
+            nLevels = obj.NumberOfLevels;
             nChs_ = obj.nChs;
             nDec_ = prod(obj.DecimationFactor);
             if nDec_ == 1
@@ -178,16 +184,16 @@ classdef Analysis3dSystem < saivdr.dictionary.AbstAnalysisSystem
             
         end
         
-        function [coefs,scales] = stepImpl(obj,srcImg,nLevels)
+        function [coefs,scales] = stepImpl(obj,srcImg)
             if strcmp(obj.FilterDomain,'Spatial')
-                [coefs,scales] = analyzeSpatial_(obj,srcImg,nLevels);
+                [coefs,scales] = analyzeSpatial_(obj,srcImg);
             elseif obj.UseGpu
                  srcImg = gpuArray(srcImg);
-                [coefs,scales] = analyzeFrequency_(obj,srcImg,nLevels);
+                [coefs,scales] = analyzeFrequency_(obj,srcImg);
                 coefs  = gather(coefs);
                 scales = gather(scales);
             else
-                [coefs,scales] = analyzeFrequencyOrg_(obj,srcImg,nLevels);
+                [coefs,scales] = analyzeFrequencyOrg_(obj,srcImg);
             end
             
         end
@@ -196,7 +202,9 @@ classdef Analysis3dSystem < saivdr.dictionary.AbstAnalysisSystem
     
     methods (Access = private)
         
-        function [coefs,scales] = analyzeFrequencyOrg_(obj,srcImg,nLevels)
+        function [coefs,scales] = analyzeFrequencyOrg_(obj,srcImg)
+            nLevels = obj.NumberOfLevels;
+            
             % Frequency domain analysis
             
             import saivdr.dictionary.utility.Direction
@@ -277,7 +285,9 @@ classdef Analysis3dSystem < saivdr.dictionary.AbstAnalysisSystem
             coefs  = obj.allCoefs;
         end
         
-        function [coefs,scales] = analyzeFrequency_(obj,srcImg,nLevels)
+        function [coefs,scales] = analyzeFrequency_(obj,srcImg)
+            nLevels = obj.NumberOfLevels;
+            
             % Frequency domain analysis
             
             import saivdr.dictionary.utility.Direction
@@ -352,7 +362,9 @@ classdef Analysis3dSystem < saivdr.dictionary.AbstAnalysisSystem
             coefs  = obj.allCoefs;
         end
         
-        function [coefs,scales] = analyzeSpatial_(obj,srcImg,nLevels)
+        function [coefs,scales] = analyzeSpatial_(obj,srcImg)
+            nLevels = obj.NumberOfLevels;
+            
             % Spatial domain analysis
             
             import saivdr.dictionary.utility.Direction

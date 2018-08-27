@@ -67,23 +67,20 @@ classdef MixtureOfUnitaryAnalysisSystem < saivdr.dictionary.AbstAnalysisSystem %
             end
         end
         
-        function [coefs,scales] = stepImpl(obj,srcImg,nLevelSet)
+        function [coefs,scales] = stepImpl(obj,srcImg)
             subCoefs  = cell(1,obj.nAnalyzers);
             subScales = cell(obj.nAnalyzers,1);
-            if isscalar(nLevelSet)
-                nLevelSet = nLevelSet * ones(1,obj.nAnalyzers);
-            end
             for idx = 1:obj.nAnalyzers-1
                 subAnalyzer = obj.UnitaryAnalyzerSet{idx};
                 [subCoefs{idx}, tmpScales ] = ...
-                    step(subAnalyzer,srcImg,nLevelSet(idx));
+                    step(subAnalyzer,srcImg);
                 subScales{idx} = ...
                     [ tmpScales ; -1 -1 ];
             end
             idx = obj.nAnalyzers;
             subAnalyzer = obj.UnitaryAnalyzerSet{idx};
             [subCoefs{idx}, tmpScales ] = ...
-                step(subAnalyzer,srcImg,nLevelSet(idx));
+                step(subAnalyzer,srcImg);
             subScales{idx} = tmpScales;
             coefs  = obj.normalizationFactor * cell2mat(subCoefs);
             scales = cell2mat(subScales);
