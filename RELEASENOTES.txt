@@ -1,4 +1,10 @@
-* Release notes on Sparsity-Aware Image and Volume Data Restoration Package
+* Release notes on Sparsity-Aware Image and Volumetric Data Restoration Package
+
+- SaivDr20180827
+-- (Major) Added wrapper classes for parallel processing
+--- saivdr.dictionary.olaols.*
+--- saivdr.utility.OlsOlaProcess2d
+--- saivdr.utility.OlsOlaProcess3d
 
 - SaivDr20170504
 -- (Major) Excluded the automatic MEX code generation functions
