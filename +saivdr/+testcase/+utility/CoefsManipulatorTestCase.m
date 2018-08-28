@@ -71,6 +71,67 @@ classdef CoefsManipulatorTestCase < matlab.unittest.TestCase
             
         end
         
+        function testClone(testCase,width,height)
+            
+            % Parameters
+            stateExpctd = randn(width,height);
+            
+            % Instantiation of target class
+            import saivdr.utility.*
+            testCase.target = CoefsManipulator('State',stateExpctd);
+            
+            % Clone
+            cloneCoefsManipulator = clone(testCase.target);
+            stateActual = cloneCoefsManipulator.State;
+            
+            % Evaluation
+            testCase.verifyEqual(stateActual,stateExpctd);
+            
+            % Check independency
+            stateNotExpctd = randn(width,height);
+            testCase.target.State = stateNotExpctd;
+            stateActual = cloneCoefsManipulator.State;
+            
+            % Evaluation
+            testCase.verifyNotEqual(stateActual,stateNotExpctd);
+            
+        end
+        
+        function testCloneCellState(testCase,width,height)
+            
+            % Parameters
+            nCells = 2;
+            stateExpctd = cell(nCells,1);
+            for idx = 1:nCells
+                stateExpctd{idx} = randn(width,height);
+            end
+            
+            % Instantiation of target class
+            import saivdr.utility.*
+            testCase.target = CoefsManipulator('State',stateExpctd);
+            
+            % Clone
+            cloneCoefsManipulator = clone(testCase.target);
+            stateActual = cloneCoefsManipulator.State;
+            
+            % Evaluation
+            for idx = 1:nCells
+                testCase.verifyEqual(stateActual{idx},stateExpctd{idx});
+            end
+            
+            % Check independency
+            stateNotExpctd = cell(nCells,1);
+            for idx = 1:nCells
+                stateNotExpctd{idx} = randn(width,height);
+            end
+            testCase.target.State = stateNotExpctd;
+            stateActual = cloneCoefsManipulator.State;
+            
+            % Evaluation
+            testCase.verifyNotEqual(stateActual,stateNotExpctd);
+            
+        end
+        
         function testSoftThresholding2d(testCase,width,height)
             
             % Parameters

@@ -36,7 +36,6 @@ classdef CoefsManipulator < matlab.System
             loadObjectImpl@matlab.System(obj,s,wasLocked);
         end
         
-        
         function coefspst = stepImpl(obj,coefspre)
             isfeedback_ = obj.IsFeedBack;
             manipulation_ = obj.Manipulation;
@@ -60,14 +59,14 @@ classdef CoefsManipulator < matlab.System
                             [coefspst{iCh},state{iCh}] = ...
                                 manipulation_(coefspre{iCh},...
                                 obj.State);
-                        end                        
+                        end
                     elseif ~obj.IsStateOutput && iscell(obj.State)
                         for iCh = 1:nChs
                             coefspst{iCh} = manipulation_(...
                                 coefspre{iCh},obj.State{iCh});
                         end
-                        state = coefspst;                        
-                    elseif ~obj.IsStateOutput && isscalar(obj.State) 
+                        state = coefspst;
+                    elseif ~obj.IsStateOutput && isscalar(obj.State)
                         for iCh = 1:nChs
                             coefspst{iCh} = manipulation_(...
                                 coefspre{iCh},obj.State);
@@ -76,7 +75,7 @@ classdef CoefsManipulator < matlab.System
                     else
                         id = 'SaivDr:IllegalStateInitialization';
                         message = 'State must be cell or scalar.';
-                        throw(MException(id,message))                        
+                        throw(MException(id,message))
                     end
                     obj.State = state;
                 else
@@ -100,6 +99,6 @@ classdef CoefsManipulator < matlab.System
             end
         end
     end
-
+    
 end
 
