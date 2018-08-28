@@ -30,7 +30,7 @@ classdef OlsOlaProcess2d < matlab.System
         CoefsManipulator = []
     end
     
-    properties (Logical)
+    properties (Logical, Nontunable)
         UseParallel = false
         IsIntegrityTest = true
     end
@@ -120,7 +120,13 @@ classdef OlsOlaProcess2d < matlab.System
         end
         
         function initialize(obj,states)
-            obj.initialstates = states;
+            if obj.isLocked() 
+                exceptionId = 'SaivDr:IllegalInitialization';
+                message = 'Object is locked. Call release before initialization.';
+                throw(MException(exceptionId,message))
+            else
+                obj.initialstates = states;
+            end
         end
     end
     
