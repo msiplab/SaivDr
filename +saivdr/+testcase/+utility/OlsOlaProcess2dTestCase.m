@@ -412,7 +412,7 @@ classdef OlsOlaProcess2dTestCase < matlab.unittest.TestCase
             
             % Actual values
             h = srcImg;
-            coefsmanipulator.State = 0;
+            coefsmanipulator.InitialState = 0;
             for iIter = 1:nIters
                 hu = testCase.target.step(h);
                 h = hu - srcImg;

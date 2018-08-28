@@ -6,10 +6,11 @@ classdef CoefsManipulator < matlab.System
     
     properties (Nontunable)
         Manipulation
+        InitialState
     end
     
-    properties
-        State
+    properties (DiscreteState)
+        state
     end
     
     properties (Logical)
@@ -28,11 +29,21 @@ classdef CoefsManipulator < matlab.System
     
     methods(Access = protected)
         
+        function resetImpl(obj)
+            obj.state = obj.InitialState;
+        end
+        
         function s = saveObjectImpl(obj)
             s = saveObjectImpl@matlab.System(obj);
+            if isLocked(obj)
+                s.state = obj.state;
+            end
         end
         
         function loadObjectImpl(obj,s,wasLocked)
+            if wasLocked
+                obj.state = s.state;
+            end
             loadObjectImpl@matlab.System(obj,s,wasLocked);
         end
         
@@ -46,38 +57,38 @@ classdef CoefsManipulator < matlab.System
                 nChs = length(coefspre);
                 coefspst = cell(1,nChs);
                 if isfeedback_
-                    if obj.IsStateOutput && iscell(obj.State)
-                        state = cell(1,nChs);
+                    if obj.IsStateOutput && iscell(obj.state)
+                        state_ = cell(1,nChs);
                         for iCh = 1:nChs
-                            [coefspst{iCh},state{iCh}] = ...
+                            [coefspst{iCh},state_{iCh}] = ...
                                 manipulation_(coefspre{iCh},...
-                                obj.State{iCh});
+                                obj.state{iCh});
                         end
-                    elseif obj.IsStateOutput && isscalar(obj.State)
-                        state = cell(1,nChs);
+                    elseif obj.IsStateOutput && isscalar(obj.state)
+                        state_ = cell(1,nChs);
                         for iCh = 1:nChs
-                            [coefspst{iCh},state{iCh}] = ...
+                            [coefspst{iCh},state_{iCh}] = ...
                                 manipulation_(coefspre{iCh},...
-                                obj.State);
+                                obj.state);
                         end
-                    elseif ~obj.IsStateOutput && iscell(obj.State)
+                    elseif ~obj.IsStateOutput && iscell(obj.state)
                         for iCh = 1:nChs
                             coefspst{iCh} = manipulation_(...
-                                coefspre{iCh},obj.State{iCh});
+                                coefspre{iCh},obj.state{iCh});
                         end
-                        state = coefspst;
-                    elseif ~obj.IsStateOutput && isscalar(obj.State)
+                        state_ = coefspst;
+                    elseif ~obj.IsStateOutput && isscalar(obj.state)
                         for iCh = 1:nChs
                             coefspst{iCh} = manipulation_(...
-                                coefspre{iCh},obj.State);
+                                coefspre{iCh},obj.state);
                         end
-                        state = coefspst;
+                        state_ = coefspst;
                     else
                         id = 'SaivDr:IllegalStateInitialization';
                         message = 'State must be cell or scalar.';
                         throw(MException(id,message))
                     end
-                    obj.State = state;
+                    obj.state = state_;
                 else
                     for iCh = 1:nChs
                         coefspst{iCh} = manipulation_(coefspre{iCh});
@@ -86,13 +97,13 @@ classdef CoefsManipulator < matlab.System
             else
                 if isfeedback_
                     if obj.IsStateOutput
-                        [coefspst,state] = ...
-                            manipulation_(coefspre,obj.State);
+                        [coefspst,state_] = ...
+                            manipulation_(coefspre,obj.state);
                     else
-                        coefspst = manipulation_(coefspre,obj.State);
-                        state = coefspst;
+                        coefspst = manipulation_(coefspre,obj.state);
+                        state_ = coefspst;
                     end
-                    obj.State = state;
+                    obj.state = state_;
                 else
                     coefspst = manipulation_(coefspre);
                 end

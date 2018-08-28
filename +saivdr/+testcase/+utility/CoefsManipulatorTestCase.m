@@ -78,19 +78,19 @@ classdef CoefsManipulatorTestCase < matlab.unittest.TestCase
             
             % Instantiation of target class
             import saivdr.utility.*
-            testCase.target = CoefsManipulator('State',stateExpctd);
+            testCase.target = CoefsManipulator('InitialState',stateExpctd);
             
             % Clone
             cloneCoefsManipulator = clone(testCase.target);
-            stateActual = cloneCoefsManipulator.State;
+            stateActual = cloneCoefsManipulator.InitialState;
             
             % Evaluation
             testCase.verifyEqual(stateActual,stateExpctd);
             
             % Check independency
             stateNotExpctd = randn(width,height);
-            testCase.target.State = stateNotExpctd;
-            stateActual = cloneCoefsManipulator.State;
+            testCase.target.InitialState = stateNotExpctd;
+            stateActual = cloneCoefsManipulator.InitialState;
             
             % Evaluation
             testCase.verifyNotEqual(stateActual,stateNotExpctd);
@@ -108,11 +108,11 @@ classdef CoefsManipulatorTestCase < matlab.unittest.TestCase
             
             % Instantiation of target class
             import saivdr.utility.*
-            testCase.target = CoefsManipulator('State',stateExpctd);
+            testCase.target = CoefsManipulator('InitialState',stateExpctd);
             
             % Clone
             cloneCoefsManipulator = clone(testCase.target);
-            stateActual = cloneCoefsManipulator.State;
+            stateActual = cloneCoefsManipulator.InitialState;
             
             % Evaluation
             for idx = 1:nCells
@@ -124,8 +124,8 @@ classdef CoefsManipulatorTestCase < matlab.unittest.TestCase
             for idx = 1:nCells
                 stateNotExpctd{idx} = randn(width,height);
             end
-            testCase.target.State = stateNotExpctd;
-            stateActual = cloneCoefsManipulator.State;
+            testCase.target.InitialState = stateNotExpctd;
+            stateActual = cloneCoefsManipulator.InitialState;
             
             % Evaluation
             testCase.verifyNotEqual(stateActual,stateNotExpctd);
@@ -291,7 +291,7 @@ classdef CoefsManipulatorTestCase < matlab.unittest.TestCase
             coefsExpctd = xpre;
             
             % Actual value
-            testCase.target.State = coefs{1};
+            testCase.target.InitialState = coefs{1};
             for iIter = 1:nIters
                 x = testCase.target.step(coefs{iIter+1});
             end
@@ -333,7 +333,7 @@ classdef CoefsManipulatorTestCase < matlab.unittest.TestCase
             coefsExpctd = xpre;
             
             % Actual value
-            testCase.target.State = coefs{1};
+            testCase.target.InitialState = coefs{1};
             for iIter = 1:nIters
                 x = testCase.target.step(coefs{iIter+1});
             end
@@ -383,7 +383,7 @@ classdef CoefsManipulatorTestCase < matlab.unittest.TestCase
             coefsExpctd = xpre;
             
             % Actual value
-            testCase.target.State = coefs{1};
+            testCase.target.InitialState = coefs{1};
             for iIter = 1:nIters
                 x = testCase.target.step(coefs{iIter+1});
             end
@@ -434,7 +434,7 @@ classdef CoefsManipulatorTestCase < matlab.unittest.TestCase
             coefsExpctd = xpre;
             
             % Actual value
-            testCase.target.State = coefs{1};
+            testCase.target.InitialState = coefs{1};
             for iIter = 1:nIters
                 x = testCase.target.step(coefs{iIter+1});
             end
@@ -478,7 +478,7 @@ classdef CoefsManipulatorTestCase < matlab.unittest.TestCase
             coefsExpctd = v;
             
             % Actual value
-            testCase.target.State = coefs{1};
+            testCase.target.InitialState = coefs{1};
             for iIter = 1:nIters
                 v = testCase.target.step(coefs{iIter+1});
             end
@@ -530,7 +530,7 @@ classdef CoefsManipulatorTestCase < matlab.unittest.TestCase
             coefsExpctd = v;
             
             % Actual value
-            testCase.target.State = coefs{1};
+            testCase.target.InitialState = coefs{1};
             for iIter = 1:nIters
                 v = testCase.target.step(coefs{iIter+1});
             end
@@ -587,7 +587,7 @@ classdef CoefsManipulatorTestCase < matlab.unittest.TestCase
             coefsExpctd = v;
             
             % Actual value
-            testCase.target.State = 0;
+            testCase.target.InitialState = 0;
             for iIter = 1:nIters
                 v = testCase.target.step(coefs{iIter+1});
             end

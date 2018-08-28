@@ -36,7 +36,7 @@ classdef OlsOlaProcess2d < matlab.System
     end
     
     properties (DiscreteState)
-        Iteration
+        iteration
     end
     
     properties (Nontunable, PositiveInteger, Hidden)
@@ -142,11 +142,61 @@ classdef OlsOlaProcess2d < matlab.System
             s.subPadSize = obj.subPadSize;
             s.subPadArrays = obj.subPadArrays;
             s.initialstates = obj.initialstates;
-            s.coefsmanipulators = obj.coefsmanipulators;
+            if ~isempty(obj.coefsmanipulators)
+                nSplit = length(obj.coefsmanipulators);
+                for iSplit = 1:nSplit
+                    s.coefsmanipulators{iSplit} = ...
+                        matlab.System.saveObject(obj.coefsmanipulators{iSplit});
+                end
+            end
+            %{
+            if iscell(obj.synthesizers)
+                nSplit = length(obj.synthesizers);
+                for iSplit = 1:nSplit
+                    s.synthesizers{iSplit} = ...
+                        matlab.System.saveObject(obj.synthesizers{iSplit});
+                end
+            end            
+            if iscell(obj.analyzers)
+                nSplit = length(obj.analyzers);
+                for iSplit = 1:nSplit
+                    s.analyzers{iSplit} = ...
+                        matlab.System.saveObject(obj.analyzers{iSplit});
+                end
+            end       
+            %}
+            if isLocked(obj)
+                s.iteration = obj.iteration;
+            end            
         end
         
         function loadObjectImpl(obj,s,wasLocked)
-            obj.coefsmanipulators = s.coefsmanipulators;            
+            if wasLocked
+                obj.iteration = s.iteration;
+            end            
+            %{
+            if iscell(s.synthesizers)     
+                nSplit = length(s.synthesizers);
+                for iSplit = 1:nSplit
+                    obj.synthesizers{iSplit} = ...
+                        matlab.System.loadObject(s.synthesizers{iSplit});
+                end
+            end        
+            if iscell(s.analyzers)     
+                nSplit = length(s.analyzers);
+                for iSplit = 1:nSplit
+                    obj.analyzers{iSplit} = ...
+                        matlab.System.loadObject(s.analyzers{iSplit});
+                end
+            end
+            %}
+            if isempty(s.coefsmanipulators)     
+                nSplit = length(s.coefsmanipulators);
+                for iSplit = 1:nSplit
+                    obj.coefsmanipulators{iSplit} = ...
+                        matlab.System.loadObject(s.coefsmanipulators{iSplit});
+                end
+            end                    
             obj.initialstates = s.initialstates;            
             obj.subPadArrays = s.subPadArrays;            
             obj.subPadSize = s.subPadSize;            
@@ -200,8 +250,7 @@ classdef OlsOlaProcess2d < matlab.System
             end
             obj.coefsmanipulators = cell(nSplit,1);
             for iSplit=1:nSplit
-                obj.coefsmanipulators{iSplit} = clone(obj.CoefsManipulator);
-                obj.coefsmanipulators{iSplit}.State = 0;
+                obj.coefsmanipulators{iSplit} = obj.CoefsManipulator.clone();
             end
 
             % Evaluate
@@ -233,10 +282,17 @@ classdef OlsOlaProcess2d < matlab.System
                 exceptionId = 'SaivDr:ReconstructionFailureException';
                 message = 'Failure occurs in reconstruction. Please check the split and padding size.';
                 %
-                refCoefsManipulator.State = 0;
+                refCoefsManipulator.release();
+                refCoefsManipulator.InitialState = 0;
                 refCoefsOut = refCoefsManipulator.step(refCoefs);
                 imgExpctd = refSynthesizer.step(refCoefsOut,refScales_);
                 %
+                if ~isempty(obj.initialstates)
+                    for iSplit = 1:nSplit
+                        obj.coefsmanipulators{iSplit}.release();
+                        obj.coefsmanipulators{iSplit}.InitialState = 0;
+                    end
+                end
                 imgActual = obj.stepImpl(srcImg);
                 diffImg = imgExpctd - imgActual;
                 if norm(diffImg(:))/numel(diffImg) > 1e-6
@@ -251,14 +307,15 @@ classdef OlsOlaProcess2d < matlab.System
             % Initialize
             if ~isempty(obj.initialstates)
                 for iSplit = 1:nSplit
-                    obj.coefsmanipulators{iSplit}.State = ...
+                    obj.coefsmanipulators{iSplit}.release();
+                    obj.coefsmanipulators{iSplit}.InitialState = ...
                         obj.initialstates{iSplit};
                 end
             end            
         end
         
         function recImg = stepImpl(obj,srcImg)
-            obj.Iteration = obj.Iteration + 1;
+            obj.iteration = obj.iteration + 1;
             
             % Parameters
             nWorkers_ = obj.nWorkers;
@@ -308,7 +365,15 @@ classdef OlsOlaProcess2d < matlab.System
         end
         
         function resetImpl(obj)
-            obj.Iteration = 0;
+            obj.iteration = 0;
+            if ~isempty(obj.initialstates)
+                nSplit = obj.VerticalSplitFactor*obj.HorizontalSplitFactor;            
+                for iSplit = 1:nSplit
+                    obj.coefsmanipulators{iSplit}.release();
+                    obj.coefsmanipulators{iSplit}.InitialState = ...
+                        obj.initialstates{iSplit};
+                end
+            end
         end
     end
     
