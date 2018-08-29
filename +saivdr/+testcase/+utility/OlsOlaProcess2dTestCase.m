@@ -36,16 +36,18 @@ classdef OlsOlaProcess2dTestCase < matlab.unittest.TestCase
     end
     
     methods (Static)
-        function y = softthresh(x,xpre,lambda,gamma)
-            u = xpre-gamma*x;
+        function [y,spst] = softthresh(x,spre,lambda,gamma)
+            u = spre-gamma*x;
             v = abs(u)-lambda;
-            y = sign(u).*(v+abs(v))/2;
+            spst = sign(u).*(v+abs(v))/2;
+            y = spst;
         end
-        function [v,x] = coefpdshshc(t,xpre,lambda,gamma)
-            u = xpre-gamma*t;
-            w = abs(u)-lambda;
-            x = sign(u).*(w+abs(w))/2;
-            v = 2*x - xpre;
+        
+        function [y,spst] = coefpdshshc(x,spre,lambda,gamma)
+            u = spre-gamma*x;
+            v = abs(u)-lambda;
+            spst = sign(u).*(v+abs(v))/2;
+            y = 2*spst - spre;
         end
     end
     
@@ -93,6 +95,7 @@ classdef OlsOlaProcess2dTestCase < matlab.unittest.TestCase
             
         end
         
+        
         function testUdHaar(testCase,height,width,level)
             
             % Parameters
@@ -119,7 +122,7 @@ classdef OlsOlaProcess2dTestCase < matlab.unittest.TestCase
                 sprintf('%g',diff));
             
         end
-        
+
         % Test
         function testUdHaarSplittingSize(testCase,width,height,level,useparallel)
             
@@ -335,17 +338,17 @@ classdef OlsOlaProcess2dTestCase < matlab.unittest.TestCase
             
             % Functions
             lambda = 1e-3;
-            g = @(x) sign(x).*((abs(x)-lambda)+abs(abs(x)-lambda))/2;
+            gamma = 1e-3;
+            g = @(x,s) testCase.softthresh(x,s,lambda,gamma);
             
             % Expected values
             [coefspre,scales] = analyzer.step(srcImg);
-            coefspst = g(coefspre);
+            coefspst = g(coefspre,0);
             imgExpctd = synthesizer.step(coefspst,scales);
             
             % Instantiation of target class
             import saivdr.utility.*
-            coefsmanipulator = CoefsManipulator(...
-                'Manipulation',g);
+            coefsmanipulator = CoefsManipulator('Manipulation',g);
             testCase.target = OlsOlaProcess2d(...
                 'Analyzer',analyzer,...
                 'Synthesizer',synthesizer,...
@@ -399,9 +402,7 @@ classdef OlsOlaProcess2dTestCase < matlab.unittest.TestCase
             
             % Instantiation of target class
             import saivdr.utility.*
-            coefsmanipulator = CoefsManipulator(...
-                'Manipulation',f,...
-                'IsFeedBack',true);
+            coefsmanipulator = CoefsManipulator('Manipulation',f);
             testCase.target = OlsOlaProcess2d(...
                 'Analyzer',analyzer,...
                 'Synthesizer',synthesizer,...
@@ -413,7 +414,7 @@ classdef OlsOlaProcess2dTestCase < matlab.unittest.TestCase
             
             % Actual values
             h = srcImg;
-            coefsmanipulator.InitialState = 0;
+            testCase.target.InitialStates = 0;
             for iIter = 1:nIters
                 hu = testCase.target.step(h);
                 h = hu - srcImg;
@@ -426,7 +427,7 @@ classdef OlsOlaProcess2dTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-10,...
                 sprintf('%g',diff));
         end
-           
+        
         % Test
         function testIterativeSoftThresholdingInitialize(testCase,...
                 width,height,useparallel)
@@ -462,9 +463,7 @@ classdef OlsOlaProcess2dTestCase < matlab.unittest.TestCase
             
             % Instantiation of target class
             import saivdr.utility.*
-            coefsmanipulator = CoefsManipulator(...
-                'Manipulation',f,...
-                'IsFeedBack',true);
+            coefsmanipulator = CoefsManipulator('Manipulation',f);
             testCase.target = OlsOlaProcess2d(...
                 'Analyzer',analyzer,...
                 'Synthesizer',synthesizer,...
@@ -477,7 +476,7 @@ classdef OlsOlaProcess2dTestCase < matlab.unittest.TestCase
             % Actual values
             h = srcImg;
             y = testCase.target.analyze(h);
-            testCase.target.initialize(y);
+            testCase.target.InitialStates = y;
             for iIter = 1:nIters
                 hu = testCase.target.step(h);
                 h = hu - srcImg;
@@ -525,9 +524,7 @@ classdef OlsOlaProcess2dTestCase < matlab.unittest.TestCase
             
             % Instantiation of target class
             import saivdr.utility.*
-            coefsmanipulator = CoefsManipulator(...
-                'Manipulation',f,...
-                'IsFeedBack',true);
+            coefsmanipulator = CoefsManipulator('Manipulation',f);
             testCase.target = OlsOlaProcess2d(...
                 'Analyzer',analyzer,...
                 'Synthesizer',synthesizer,...
@@ -559,8 +556,8 @@ classdef OlsOlaProcess2dTestCase < matlab.unittest.TestCase
                 end
             end
             % Initalization with the same states
-            testCase.target.initialize(yp); % Parallel
-            serialProcess2d.initialize(yp); % Serial
+            testCase.target.InitialStates = yp; % Parallel
+            serialProcess2d.InitialStates = yp; % Serial
             for iIter = 1:nIters
                 hup = testCase.target.step(h); % Parallel step
                 hus = serialProcess2d.step(h); % Serial step
