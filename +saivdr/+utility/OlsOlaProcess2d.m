@@ -28,7 +28,7 @@ classdef OlsOlaProcess2d < matlab.System
         PadSize = [0 0]
         SplitFactor = []
         CoefsManipulator = []
-        InitialStates
+        InitialState
     end
     
     properties (Logical, Nontunable)
@@ -308,18 +308,19 @@ classdef OlsOlaProcess2d < matlab.System
             refSynthesizer.delete()
             refCoefsManipulator.delete()
             
-            if isempty(obj.InitialStates)
+            % Initialization of state for CoefsManipulator                       
+            if isempty(obj.InitialState)
                 obj.states = cell(nSplit,1);
                 for iSplit = 1:nSplit
                     obj.states{iSplit} = 0;
                 end
-            elseif isscalar(obj.InitialStates)
+            elseif isscalar(obj.InitialState)
                 obj.states = cell(nSplit,1);
                 for iSplit = 1:nSplit
-                    obj.states{iSplit} = obj.InitialStates;
+                    obj.states{iSplit} = obj.InitialState;
                 end
             else
-                obj.states = obj.InitialStates;
+                obj.states = obj.InitialState;
             end
         end
         
@@ -370,6 +371,8 @@ classdef OlsOlaProcess2d < matlab.System
                 subRecImg{iSplit} = ...
                     step(synthesizers_{iSplit},subCoefs,subScales);
             end
+            
+            % Update
             obj.states = states_;
             
             % Overlap add (Circular)
