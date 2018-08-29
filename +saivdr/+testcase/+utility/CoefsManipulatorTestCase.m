@@ -97,7 +97,8 @@ classdef CoefsManipulatorTestCase < matlab.unittest.TestCase
             
         end
         
-        function testCloneCellState(testCase,width,height)
+        
+        function testCloneCellInitialState(testCase,width,height)
             
             % Parameters
             nCells = 2;
@@ -132,6 +133,8 @@ classdef CoefsManipulatorTestCase < matlab.unittest.TestCase
             
         end
         
+                
+
         function testSoftThresholding2d(testCase,width,height)
             
             % Parameters
@@ -602,6 +605,59 @@ classdef CoefsManipulatorTestCase < matlab.unittest.TestCase
             end
         end
         
+        
+        function testIteretiveStepsCloneCell(testCase,width,height)
+            
+            % Parameters
+            nIters = 5;
+            nChs = 5;
+            coefs  = cell(nIters+1,1);
+            for iIter = 1:nIters+1
+                subcoefs = cell(1,nChs);
+                for iCh = 1:nChs
+                    subcoefs{iCh} = randn(width,height);
+                end
+                coefs{iIter} = subcoefs;
+            end
+            
+            % Function
+            lambda = 1e-3;
+            gamma  = 1e-3;
+            f = @(x,xpre) testCase.softthresh(x,xpre,lambda,gamma);
+            
+            % Instantiation
+            import saivdr.utility.*
+            testCase.target = CoefsManipulator(...
+                'Manipulation', f, ...
+                'IsFeedBack',true);
+            
+            % Expected value
+            xpre = coefs{1};
+            for iIter = 1:nIters
+                subcoefs = coefs{iIter+1};
+                for iCh = 1:nChs
+                    xpre{iCh} = f(subcoefs{iCh},xpre{iCh});
+                end
+            end
+            coefsExpctd = xpre;
+            
+            % Actual value
+            targetClone = testCase.target.clone();
+            targetClone.release();
+            targetClone.InitialState = coefs{1};
+            for iIter = 1:nIters
+                x = targetClone.step(coefs{iIter+1});
+            end
+            coefsActual = x;
+            
+            % Evaluation
+            for iCh = 1:nChs
+                testCase.verifySize(coefsActual{iCh},size(coefsExpctd{iCh}));
+                diff = max(abs(coefsExpctd{iCh}(:) - coefsActual{iCh}(:)));
+                testCase.verifyEqual(coefsActual{iCh},coefsExpctd{iCh},...
+                    'AbsTol',1e-10,sprintf('%g',diff));
+            end
+        end
         
     end
     

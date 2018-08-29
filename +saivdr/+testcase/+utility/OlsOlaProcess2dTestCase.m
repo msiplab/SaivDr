@@ -17,6 +17,7 @@ classdef OlsOlaProcess2dTestCase < matlab.unittest.TestCase
     
     properties (TestParameter)
         useparallel = struct('true', true, 'false', false );
+        isintegrity = struct('true', true, 'false', false );
         width = struct('small', 64, 'medium', 96, 'large', 128);
         height = struct('small', 64, 'medium', 96, 'large', 128);
         vsplit = struct('small', 1, 'medium', 2, 'large', 4);
@@ -425,9 +426,10 @@ classdef OlsOlaProcess2dTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-10,...
                 sprintf('%g',diff));
         end
-        
+           
         % Test
-        function testIterativeSoftThresholdingInitializeSerial(testCase,width,height)
+        function testIterativeSoftThresholdingInitialize(testCase,...
+                width,height,useparallel)
             
             % Parameters
             nIters = 5;
@@ -470,7 +472,7 @@ classdef OlsOlaProcess2dTestCase < matlab.unittest.TestCase
                 'VerticalSplitFactor',nVerSplit,...
                 'HorizontalSplitFactor',nHorSplit,...
                 'PadSize',[nVerPad,nHorPad],...
-                'UseParallel',false);
+                'UseParallel',useparallel);
             
             % Actual values
             h = srcImg;
@@ -487,10 +489,10 @@ classdef OlsOlaProcess2dTestCase < matlab.unittest.TestCase
             diff = max(abs(imgExpctd(:) - imgActual(:)));
             testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-10,...
                 sprintf('%g',diff));
-        end
+        end        
         
         % Test
-        function testIterativeSoftThresholdingInitialize(testCase,width,height)
+        function testIterativeSoftThresholdingInitializeCompare(testCase,width,height,isintegrity)
             
             % Parameters
             nIters = 5;
@@ -533,7 +535,7 @@ classdef OlsOlaProcess2dTestCase < matlab.unittest.TestCase
                 'VerticalSplitFactor',nVerSplit,...
                 'HorizontalSplitFactor',nHorSplit,...
                 'PadSize',[nVerPad,nHorPad],...
-                'IsIntegrityTest',true,...
+                'IsIntegrityTest',isintegrity,...
                 'UseParallel',true);
             serialProcess2d = OlsOlaProcess2d(...
                 'Analyzer',analyzer,...
@@ -542,13 +544,13 @@ classdef OlsOlaProcess2dTestCase < matlab.unittest.TestCase
                 'VerticalSplitFactor',nVerSplit,...
                 'HorizontalSplitFactor',nHorSplit,...
                 'PadSize',[nVerPad,nHorPad],...
-                'IsIntegrityTest',true,...                
+                'IsIntegrityTest',isintegrity,...                
                 'UseParallel',false);
             
             % Actual values
             h = srcImg;
-            yp = testCase.target.analyze(h);
-            ys = serialProcess2d.analyze(h);
+            yp = testCase.target.analyze(h); % Parallel 
+            ys = serialProcess2d.analyze(h); % Serial
             for iSplit = 1:length(yp)
                 qp = yp{iSplit};
                 qs = ys{iSplit};
@@ -556,11 +558,12 @@ classdef OlsOlaProcess2dTestCase < matlab.unittest.TestCase
                     testCase.verifyEqual(qp{iCh},qs{iCh},'AbsTol',1e-10);
                 end
             end
-            testCase.target.initialize(yp);
-            serialProcess2d.initialize(yp);
+            % Initalization with the same states
+            testCase.target.initialize(yp); % Parallel
+            serialProcess2d.initialize(yp); % Serial
             for iIter = 1:nIters
-                hup = testCase.target.step(h);
-                hus = serialProcess2d.step(h);
+                hup = testCase.target.step(h); % Parallel step
+                hus = serialProcess2d.step(h); % Serial step
                 testCase.verifyEqual(hup,hus,'AbsTol',1e-10);
                 h = hup - srcImg;
             end
