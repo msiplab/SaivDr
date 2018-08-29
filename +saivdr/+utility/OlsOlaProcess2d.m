@@ -28,11 +28,20 @@ classdef OlsOlaProcess2d < matlab.System
         PadSize = [0 0]
         SplitFactor = []
         CoefsManipulator = []
+        InitialState
     end
     
-    properties (Logical)
+    properties (Logical, Nontunable)
         UseParallel = false
         IsIntegrityTest = true
+    end
+    
+    properties (DiscreteState)
+        iteration
+    end
+    
+    properties (Access = private)
+        states
     end
     
     properties (Nontunable, PositiveInteger, Hidden)
@@ -62,7 +71,6 @@ classdef OlsOlaProcess2d < matlab.System
         % Constractor
         function obj = OlsOlaProcess2d(varargin)
             import saivdr.dictionary.utility.Direction
-            import saivdr.dictionary.olaols.*
             setProperties(obj,nargin,varargin{:})
             if ~isempty(obj.Analyzer)
                 obj.BoundaryOperation = obj.Analyzer.BoundaryOperation;
@@ -70,10 +78,50 @@ classdef OlsOlaProcess2d < matlab.System
             if ~isempty(obj.SplitFactor)
                 obj.VerticalSplitFactor = obj.SplitFactor(Direction.VERTICAL);
                 obj.HorizontalSplitFactor = obj.SplitFactor(Direction.HORIZONTAL);
+            else
+                obj.SplitFactor(Direction.VERTICAL) = obj.VerticalSplitFactor;
+                obj.SplitFactor(Direction.HORIZONTAL) = obj.HorizontalSplitFactor;
             end
             if isempty(obj.CoefsManipulator)
                 import saivdr.utility.CoefsManipulator
                 obj.CoefsManipulator = CoefsManipulator();
+            end
+        end
+        
+        function coefsSet = analyze(obj,srcImg)
+            % Preperation
+            verticalSplitFactor = obj.VerticalSplitFactor;
+            horizontalSplitFactor = obj.HorizontalSplitFactor;
+            nSplit = prod(obj.SplitFactor);
+            obj.Analyzer.release();
+            refAnalyzer = obj.Analyzer.clone();
+            [~,refScales_] = refAnalyzer.step(srcImg);            
+            
+            % Parameters
+            obj.refSize = size(srcImg);
+            obj.refSubSize = obj.refSize*...
+                diag(1./[verticalSplitFactor,horizontalSplitFactor]);
+            scaleRatio = refScales_*diag(1./obj.refSize);
+            obj.subPadSize = scaleRatio*diag(obj.PadSize);
+            obj.refScales = refScales_;
+            
+            % Analyzer
+            analyzer_ = obj.Analyzer;
+            
+            % Define support functions 
+            extract_ols = @(c,s) obj.extract_ols_(c,s);
+            
+            % Circular global padding
+            srcImg_ = padarray(srcImg,obj.PadSize,'circular');
+            
+            % Overlap save split
+            subImgs = obj.split_ols_(srcImg_);
+            
+            % Analyze
+            coefsSet = cell(nSplit,1);
+            for iSplit=1:nSplit
+                [subCoefs, subScales] = analyzer_.step(subImgs{iSplit});
+                coefsSet{iSplit} = extract_ols(subCoefs,subScales);
             end
         end
         
@@ -92,21 +140,75 @@ classdef OlsOlaProcess2d < matlab.System
         
         function s = saveObjectImpl(obj)
             s = saveObjectImpl@matlab.System(obj);
-            s.Synthesizer = matlab.System.saveObject(obj.Synthesizer);
-            s.Analyzer = matlab.System.saveObject(obj.Analyzer);
             s.nWorkers = obj.nWorkers;
+            s.refSize = obj.refSize;
             s.refScales = obj.refScales;
             s.subPadSize = obj.subPadSize;
+            s.refSubSize = obj.refSubSize;
             s.subPadArrays = obj.subPadArrays;
+            s.states = obj.states;
+            if ~isempty(obj.coefsmanipulators)
+                nSplit = length(obj.coefsmanipulators);
+                for iSplit = 1:nSplit
+                    s.coefsmanipulators{iSplit} = ...
+                        matlab.System.saveObject(obj.coefsmanipulators{iSplit});
+                end
+            else
+                s.coefsmanipulators = [];
+            end
+            if iscell(obj.synthesizers)
+                nSplit = length(obj.synthesizers);
+                for iSplit = 1:nSplit
+                    s.synthesizers{iSplit} = ...
+                        matlab.System.saveObject(obj.synthesizers{iSplit});
+                end
+            end            
+            if iscell(obj.analyzers)
+                nSplit = length(obj.analyzers);
+                for iSplit = 1:nSplit
+                    s.analyzers{iSplit} = ...
+                        matlab.System.saveObject(obj.analyzers{iSplit});
+                end
+            end       
+            if isLocked(obj)
+                s.iteration = obj.iteration;
+            end            
         end
         
         function loadObjectImpl(obj,s,wasLocked)
+            if wasLocked
+                obj.iteration = s.iteration;
+            end            
+            if iscell(s.synthesizers)     
+                nSplit = length(s.synthesizers);
+                for iSplit = 1:nSplit
+                    obj.synthesizers{iSplit} = ...
+                        matlab.System.loadObject(s.synthesizers{iSplit});
+                end
+            end        
+            if iscell(s.analyzers)     
+                nSplit = length(s.analyzers);
+                for iSplit = 1:nSplit
+                    obj.analyzers{iSplit} = ...
+                        matlab.System.loadObject(s.analyzers{iSplit});
+                end
+            end
+            if ~isempty(s.coefsmanipulators)     
+                nSplit = length(s.coefsmanipulators);
+                for iSplit = 1:nSplit
+                    obj.coefsmanipulators{iSplit} = ...
+                        matlab.System.loadObject(s.coefsmanipulators{iSplit});
+                end
+            else
+                obj.coefsmanipulators = [];
+            end                    
+            obj.states = s.states;
             obj.subPadArrays = s.subPadArrays;            
+            obj.refSubSize = s.refSubSize;            
             obj.subPadSize = s.subPadSize;            
             obj.refScales = s.refScales;
+            obj.refSize = s.refSize;            
             obj.nWorkers = s.nWorkers;
-            obj.Synthesizer = matlab.System.loadObject(s.Synthesizer);
-            obj.Analyzer = matlab.System.loadObject(s.Analyzer);
             loadObjectImpl@matlab.System(obj,s,wasLocked);
         end
         
@@ -140,21 +242,22 @@ classdef OlsOlaProcess2d < matlab.System
             % Clone
             obj.synthesizers = cell(nSplit,1);
             obj.analyzers = cell(nSplit,1);
-            obj.coefsmanipulators = cell(nSplit,1);
             if obj.UseParallel
                 obj.nWorkers = Inf;
                 for iSplit=1:nSplit
-                    obj.analyzers{iSplit} = clone(obj.Analyzer);
-                    obj.synthesizers{iSplit} = clone(obj.Synthesizer);
-                    obj.coefsmanipulators{iSplit} = clone(obj.CoefsManipulator);
+                    obj.analyzers{iSplit} = obj.Analyzer.clone();
+                    obj.synthesizers{iSplit} = obj.Synthesizer.clone();
                 end
             else
                 obj.nWorkers = 0;
                 for iSplit=1:nSplit
                     obj.analyzers{iSplit} = obj.Analyzer;
                     obj.synthesizers{iSplit} = obj.Synthesizer;
-                    obj.coefsmanipulators{iSplit} = clone(obj.CoefsManipulator);
                 end
+            end
+            obj.coefsmanipulators = cell(1,nSplit);
+            for iSplit=1:nSplit
+                obj.coefsmanipulators{iSplit} = obj.CoefsManipulator.clone();
             end
 
             % Evaluate
@@ -181,30 +284,49 @@ classdef OlsOlaProcess2d < matlab.System
                 nCoefs = nCoefs + prod(nDim);
             end
     
-
             % Check integrity
             if obj.IsIntegrityTest
                 exceptionId = 'SaivDr:ReconstructionFailureException';
                 message = 'Failure occurs in reconstruction. Please check the split and padding size.';
                 %
-                refCoefsOut = refCoefsManipulator.step(refCoefs);
+                refCoefsOut = refCoefsManipulator.step(refCoefs,0);
                 imgExpctd = refSynthesizer.step(refCoefsOut,refScales_);
                 %
+                obj.states = cell(nSplit,1);
+                for iSplit = 1:nSplit
+                    obj.states{iSplit} = 0;
+                end
                 imgActual = obj.stepImpl(srcImg);
                 diffImg = imgExpctd - imgActual;
                 if norm(diffImg(:))/numel(diffImg) > 1e-6
                     throw(MException(exceptionId,message))
                 end
             end
-
             % Delete reference analyzer and synthesizer
             refAnalyzer.delete()
             refSynthesizer.delete()
             refCoefsManipulator.delete()
+            
+            % Initialization of state for CoefsManipulator                       
+            if isempty(obj.InitialState)
+                obj.states = cell(nSplit,1);
+                for iSplit = 1:nSplit
+                    obj.states{iSplit} = 0;
+                end
+            elseif isscalar(obj.InitialState)
+                obj.states = cell(nSplit,1);
+                for iSplit = 1:nSplit
+                    obj.states{iSplit} = obj.InitialState;
+                end
+            else
+                obj.states = obj.InitialState;
+            end
         end
         
         function recImg = stepImpl(obj,srcImg)
-
+            obj.iteration = obj.iteration + 1;
+            states_ = obj.states;
+            
             % Parameters
             nWorkers_ = obj.nWorkers;
             analyzers_ = obj.analyzers;
@@ -221,11 +343,12 @@ classdef OlsOlaProcess2d < matlab.System
             
             % Overlap save split
             subImgs = obj.split_ols_(srcImg_);
+
+            % Initialize
+            nSplit = length(subImgs);
+            subRecImg = cell(nSplit,1);
             
             % Parallel processing
-            nSplit = length(subImgs);
-            subRecImg = cell(nSplit,1);            
-            %
             parfor (iSplit=1:nSplit,nWorkers_)
                 % Analyze
                 [subCoefs, subScales] = ...
@@ -235,8 +358,9 @@ classdef OlsOlaProcess2d < matlab.System
                 coefspre = extract_ols(subCoefs,subScales);
                 
                 % Process for coefficients
-                coefspst = ...
-                    coefsmanipulators_{iSplit}.step(coefspre);
+                [coefspst,states_{iSplit}] = ...
+                    coefsmanipulators_{iSplit}.step(...
+                    coefspre,states_{iSplit});
                 
                 % Zero padding for convolution
                 subCoefArray = padding_ola(coefspst);
@@ -246,8 +370,17 @@ classdef OlsOlaProcess2d < matlab.System
                 subRecImg{iSplit} = ...
                     step(synthesizers_{iSplit},subCoefs,subScales);
             end
+            
+            % Update
+            obj.states = states_;
+            
             % Overlap add (Circular)
             recImg = circular_ola_(obj,subRecImg);
+        end
+        
+        
+        function resetImpl(obj)
+            obj.iteration = 0;
         end
     end
     
@@ -345,7 +478,7 @@ classdef OlsOlaProcess2d < matlab.System
             import saivdr.dictionary.utility.Direction
             verticalSplitFactor = obj.VerticalSplitFactor;
             horizontalSplitFactor = obj.HorizontalSplitFactor;
-            nSplit = verticalSplitFactor*horizontalSplitFactor;
+            nSplit = prod(obj.SplitFactor);
             stepsize = obj.refSubSize;
             overlap = 2*obj.PadSize;
             %

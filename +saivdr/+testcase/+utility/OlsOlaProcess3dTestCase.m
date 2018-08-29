@@ -16,13 +16,14 @@ classdef OlsOlaProcess3dTestCase < matlab.unittest.TestCase
     %
     
     properties (TestParameter)
-        useparallel = { true, false };
-        width = struct('small', 32, 'medium', 48, 'large', 64);
-        height = struct('small', 32, 'medium', 48, 'large', 64);
-        depth = struct('small', 32, 'medium', 48, 'large', 64);
-        vsplit = struct('small', 1, 'medium', 2, 'large', 4);
-        hsplit = struct('small', 1, 'medium', 2, 'large', 4);
-        dsplit = struct('small', 1, 'medium', 2, 'large', 4);
+        useparallel = struct('true', true, 'false', false );
+        isintegrity = struct('true', true, 'false', false );
+        width = struct('small', 32, 'large', 64);
+        height = struct('small', 32, 'large', 64);
+        depth = struct('small', 32,  'large', 64);
+        vsplit = struct('small', 1, 'large', 4);
+        hsplit = struct('small', 1,  'large', 4);
+        dsplit = struct('small', 1, 'large', 4);
         level = struct('flat',1, 'sharrow',2,'deep', 3);
     end
     
@@ -36,17 +37,20 @@ classdef OlsOlaProcess3dTestCase < matlab.unittest.TestCase
         end
     end
     
+     
     methods (Static)
-        function y = softthresh(x,xpre,lambda,gamma)
-            u = xpre-gamma*x;
+        function [y,spst] = softthresh(x,spre,lambda,gamma)
+            u = spre-gamma*x;
             v = abs(u)-lambda;
-            y = sign(u).*(v+abs(v))/2;
+            spst = sign(u).*(v+abs(v))/2;
+            y = spst;
         end
-        function [v,x] = coefpdshshc(t,xpre,lambda,gamma)
-            u = xpre-gamma*t;
-            w = abs(u)-lambda;
-            x = sign(u).*(w+abs(w))/2;
-            v = 2*x - xpre;
+        
+        function [y,spst] = coefpdshshc(x,spre,lambda,gamma)
+            u = spre-gamma*x;
+            v = abs(u)-lambda;
+            spst = sign(u).*(v+abs(v))/2;
+            y = 2*spst - spre;
         end
     end
     
@@ -94,6 +98,7 @@ classdef OlsOlaProcess3dTestCase < matlab.unittest.TestCase
             
         end
         
+        
         function testUdHaar(testCase,height,width,depth,level)
             
             % Parameters
@@ -120,18 +125,19 @@ classdef OlsOlaProcess3dTestCase < matlab.unittest.TestCase
                 sprintf('%g',diff));
             
         end
-        
+
         % Test
-        function testUdHaarSplittingSize(testCase,width,height,depth,useparallel)
+        function testUdHaarSplittingSize(testCase,width,height,depth,...
+                level,useparallel)
             
             % Parameters
-            nLevels = 3;
+            nLevels = level;
             nVerSplit = 2;
             nHorSplit = 2;
-            nDepSplit = 2;
-            nVerPad = 2^(nLevels-1);
-            nHorPad = 2^(nLevels-1);
-            nDepPad = 2^(nLevels-1);
+            nDepSPlit = 2;
+            nVerPad = 2^(level-1);
+            nHorPad = 2^(level-1);
+            nDepPad = 2^(level-1);
             srcImg = rand(height,width,depth);
             import saivdr.dictionary.udhaar.*
             analyzer = UdHaarAnalysis3dSystem();
@@ -143,9 +149,7 @@ classdef OlsOlaProcess3dTestCase < matlab.unittest.TestCase
             testCase.target = OlsOlaProcess3d(...
                 'Analyzer',analyzer,...
                 'Synthesizer',synthesizer,...
-                'VerticalSplitFactor',nVerSplit,...
-                'HorizontalSplitFactor',nHorSplit,...
-                'DepthSplitFactor',nDepSplit,...
+                'SplitFactor',[nVerSplit,nHorSplit,nHorSplit],...                
                 'PadSize',[nVerPad,nHorPad,nDepPad],...
                 'UseParallel',useparallel);
             
@@ -159,59 +163,21 @@ classdef OlsOlaProcess3dTestCase < matlab.unittest.TestCase
                 sprintf('%g',diff));
         end
         
-        function testUdHaarSplittingSplit(testCase,vsplit,hsplit,dsplit,useparallel)
+        % Test
+        function testUdHaarSplittingSplit(testCase,vsplit,hsplit,dsplit,...
+                level,useparallel)
+            
             % Parameters
-            nLevels = 3;
+            nLevels = level;
             height_ = 48;
             width_ = 48;
             depth_ = 48;
             nVerSplit = vsplit;
             nHorSplit = hsplit;
             nDepSplit = dsplit;
-            nVerPad = 2^(nLevels-1);
-            nHorPad = 2^(nLevels-1);
-            nDepPad = 2^(nLevels-1);
-            srcImg = rand(height_,width_,depth_);
-            import saivdr.dictionary.udhaar.*
-            analyzer = UdHaarAnalysis3dSystem();
-            synthesizer = UdHaarSynthesis3dSystem();
-            analyzer.NumberOfLevels = nLevels;
-            
-            % Instantiation of target class
-            import saivdr.utility.*
-            testCase.target = OlsOlaProcess3d(...
-                'Analyzer',analyzer,...
-                'Synthesizer',synthesizer,...
-                'VerticalSplitFactor',nVerSplit,...
-                'HorizontalSplitFactor',nHorSplit,...
-                'DepthSplitFactor',nDepSplit,...
-                'PadSize',[nVerPad,nHorPad,nDepPad],...
-                'UseParallel',useparallel);
-            
-            % Actual values
-            recImg = step(testCase.target,srcImg);
-            
-            % Evaluation
-            testCase.verifySize(recImg,size(srcImg));
-            diff = max(abs(srcImg(:) - recImg(:)));
-            testCase.verifyEqual(recImg,srcImg,'AbsTol',1e-10,...
-                sprintf('%g',diff));
-        end
-        
-        % Test
-        function testUdHaarSplittingLevel(testCase,level,useparallel)
-            
-            % Parameters
-            nLevels = level;
-            nVerSplit = 2;
-            nHorSplit = 2;
-            nDepSplit = 2;
             nVerPad = 2^(level-1);
             nHorPad = 2^(level-1);
             nDepPad = 2^(level-1);
-            height_ = 48;
-            width_ = 48;
-            depth_ = 48;
             srcImg = rand(height_,width_,depth_);
             import saivdr.dictionary.udhaar.*
             analyzer = UdHaarAnalysis3dSystem();
@@ -223,9 +189,7 @@ classdef OlsOlaProcess3dTestCase < matlab.unittest.TestCase
             testCase.target = OlsOlaProcess3d(...
                 'Analyzer',analyzer,...
                 'Synthesizer',synthesizer,...
-                'VerticalSplitFactor',nVerSplit,...
-                'HorizontalSplitFactor',nHorSplit,...
-                'DepthSplitFactor',nDepSplit,...
+                'SplitFactor',[nVerSplit,nHorSplit,nHorSplit],...
                 'PadSize',[nVerPad,nHorPad,nDepPad],...
                 'UseParallel',useparallel);
             
@@ -240,7 +204,8 @@ classdef OlsOlaProcess3dTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testUdHaarSplittingWarningFactor(testCase,width,height,depth,level,useparallel)
+        function testUdHaarSplittingWarningFactor(testCase,...
+                width,height,depth,level,useparallel)
             
             % Parameters
             nLevels = level;
@@ -265,9 +230,7 @@ classdef OlsOlaProcess3dTestCase < matlab.unittest.TestCase
             testCase.target = OlsOlaProcess3d(...
                 'Analyzer',analyzer,...
                 'Synthesizer',synthesizer,...
-                'VerticalSplitFactor',nVerSplit,...
-                'HorizontalSplitFactor',nHorSplit,...
-                'DepthSplitFactor',nDepSplit,...
+                'SplitFactor',[nVerSplit,nHorSplit,nHorSplit],...              
                 'PadSize',[nVerPad,nHorPad,nDepPad],...
                 'UseParallel',useparallel);
             
@@ -293,7 +256,8 @@ classdef OlsOlaProcess3dTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testUdHaarSplittingWarningReconstruction(testCase,width,height,depth)
+        function testUdHaarSplittingWarningReconstruction(testCase,...
+                width,height,depth)
             
             % Parameters
             nLevels = 2;
@@ -318,9 +282,7 @@ classdef OlsOlaProcess3dTestCase < matlab.unittest.TestCase
             testCase.target = OlsOlaProcess3d(...
                 'Analyzer',analyzer,...
                 'Synthesizer',synthesizer,...
-                'VerticalSplitFactor',nVerSplit,...
-                'HorizontalSplitFactor',nHorSplit,...
-                'DepthSplitFactor',nDepSplit,...
+                'SplitFactor',[nVerSplit,nHorSplit,nHorSplit],...             
                 'PadSize',[nVerPad,nHorPad,nDepPad]);
             
             % Evaluation
@@ -362,9 +324,7 @@ classdef OlsOlaProcess3dTestCase < matlab.unittest.TestCase
             testCase.target = OlsOlaProcess3d(...
                 'Analyzer',analyzer,...
                 'Synthesizer',synthesizer,...
-                'VerticalSplitFactor',nVerSplit,...
-                'HorizontalSplitFactor',nHorSplit,...
-                'DepthSplitFactor',nDepSplit,...
+                'SplitFactor',[nVerSplit,nHorSplit,nHorSplit],...             
                 'PadSize',[nVerPad,nHorPad,nDepPad],...
                 'IsIntegrityTest',false);
             
@@ -377,7 +337,8 @@ classdef OlsOlaProcess3dTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testSoftThresholding(testCase,width,height,depth,useparallel)
+        function testSoftThresholding(testCase,width,height,depth,...
+                useparallel)
             
             % Parameters
             nLevels = 3;
@@ -395,24 +356,22 @@ classdef OlsOlaProcess3dTestCase < matlab.unittest.TestCase
             
             % Functions
             lambda = 1e-3;
-            g = @(x) sign(x).*((abs(x)-lambda)+abs(abs(x)-lambda))/2;
+            gamma = 1e-3;
+            g = @(x,s) testCase.softthresh(x,s,lambda,gamma);
             
             % Expected values
             [coefspre,scales] = analyzer.step(srcImg);
-            coefspst = g(coefspre);
+            coefspst = g(coefspre,0);
             imgExpctd = synthesizer.step(coefspst,scales);
             
             % Instantiation of target class
             import saivdr.utility.*
-            coefsmanipulator = CoefsManipulator(...
-                'Manipulation',g);
+            coefsmanipulator = CoefsManipulator('Manipulation',g);
             testCase.target = OlsOlaProcess3d(...
                 'Analyzer',analyzer,...
                 'Synthesizer',synthesizer,...
                 'CoefsManipulator',coefsmanipulator,...
-                'VerticalSplitFactor',nVerSplit,...
-                'HorizontalSplitFactor',nHorSplit,...
-                'DepthSplitFactor',nDepSplit,...
+                'SplitFactor',[nVerSplit,nHorSplit,nHorSplit],...             
                 'PadSize',[nVerPad,nHorPad,nDepPad],...
                 'UseParallel',useparallel);
             
@@ -427,14 +386,15 @@ classdef OlsOlaProcess3dTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testIterativeSoftThresholding(testCase,width,height,depth,useparallel)
+        function testIterativeSoftThresholding(testCase,...
+                width,height,depth,useparallel)
             
             % Parameters
             nIters = 5;
             nLevels = 3;
             nVerSplit = 2;
             nHorSplit = 2;
-            nDepSplit = 2;
+            nDepSplit = 2;            
             nVerPad = 2^(nLevels-1);
             nHorPad = 2^(nLevels-1);
             nDepPad = 2^(nLevels-1);
@@ -462,22 +422,18 @@ classdef OlsOlaProcess3dTestCase < matlab.unittest.TestCase
             
             % Instantiation of target class
             import saivdr.utility.*
-            coefsmanipulator = CoefsManipulator(...
-                'Manipulation',f,...
-                'IsFeedBack',true);
+            coefsmanipulator = CoefsManipulator('Manipulation',f);
             testCase.target = OlsOlaProcess3d(...
                 'Analyzer',analyzer,...
                 'Synthesizer',synthesizer,...
                 'CoefsManipulator',coefsmanipulator,...
-                'VerticalSplitFactor',nVerSplit,...
-                'HorizontalSplitFactor',nHorSplit,...
-                'DepthSplitFactor',nDepSplit,...
+                'SplitFactor',[nVerSplit,nHorSplit,nHorSplit],...             
                 'PadSize',[nVerPad,nHorPad,nDepPad],...
                 'UseParallel',useparallel);
             
             % Actual values
             h = srcImg;
-            coefsmanipulator.State = 0;
+            testCase.target.InitialState = 0;
             for iIter = 1:nIters
                 hu = testCase.target.step(h);
                 h = hu - srcImg;
@@ -491,5 +447,153 @@ classdef OlsOlaProcess3dTestCase < matlab.unittest.TestCase
                 sprintf('%g',diff));
         end
         
+        % Test
+        function testIterativeSoftThresholdingInitialize(testCase,...
+                width,height,depth,useparallel)
+            
+            % Parameters
+            nIters = 5;
+            nLevels = 3;
+            nVerSplit = 2;
+            nHorSplit = 2;
+            nDepSplit = 2;
+            nVerPad = 2^(nLevels-1);
+            nHorPad = 2^(nLevels-1);
+            nDepPad = 2^(nLevels-1);
+            srcImg = rand(height,width,depth);
+            import saivdr.dictionary.udhaar.*
+            analyzer = UdHaarAnalysis3dSystem();
+            synthesizer = UdHaarSynthesis3dSystem();
+            analyzer.NumberOfLevels = nLevels;
+            
+            % Functions
+            lambda = 1e-3;
+            gamma  = 1e-3;
+            f = @(x,xpre) testCase.softthresh(x,xpre,lambda,gamma);
+            
+            % Expected values
+            h = srcImg;
+            y = analyzer.step(h);
+            for iIter = 1:nIters
+                [v,scales] = analyzer.step(h);
+                y = f(v,y);
+                hu = synthesizer.step(y,scales);
+                h = hu - srcImg;
+            end
+            imgExpctd = hu;
+            
+            % Instantiation of target class
+            import saivdr.utility.*
+            coefsmanipulator = CoefsManipulator('Manipulation',f);
+            testCase.target = OlsOlaProcess3d(...
+                'Analyzer',analyzer,...
+                'Synthesizer',synthesizer,...
+                'CoefsManipulator',coefsmanipulator,...
+                'SplitFactor',[nVerSplit,nHorSplit,nHorSplit],...             
+                'PadSize',[nVerPad,nHorPad,nDepPad],...
+                'UseParallel',useparallel);
+            
+            % Actual values
+            h = srcImg;
+            y = testCase.target.analyze(h);
+            testCase.target.InitialState = y;
+            for iIter = 1:nIters
+                hu = testCase.target.step(h);
+                h = hu - srcImg;
+            end
+            imgActual = hu;
+            
+            % Evaluation
+            testCase.verifySize(imgActual,size(imgExpctd));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-10,...
+                sprintf('%g',diff));
+        end        
+        
+        % Test
+        function testIterativeSoftThresholdingInitializeCompare(testCase,...
+                width,height,depth,isintegrity)
+            
+            % Parameters
+            nIters = 5;
+            nLevels = 3;
+            nVerSplit = 2;
+            nHorSplit = 2;
+            nDepSplit = 2;
+            nVerPad = 2^(nLevels-1);
+            nHorPad = 2^(nLevels-1);
+            nDepPad = 2^(nLevels-1);
+            srcImg = rand(height,width,depth);
+            import saivdr.dictionary.udhaar.*
+            analyzer = UdHaarAnalysis3dSystem();
+            synthesizer = UdHaarSynthesis3dSystem();
+            analyzer.NumberOfLevels = nLevels;
+            
+            % Functions
+            lambda = 1e-3;
+            gamma  = 1e-3;
+            f = @(x,xpre) testCase.softthresh(x,xpre,lambda,gamma);
+            
+            % Expected values
+            h = srcImg;
+            y = analyzer.step(h);
+            for iIter = 1:nIters
+                [v,scales] = analyzer.step(h);
+                y = f(v,y);
+                hu = synthesizer.step(y,scales);
+                h = hu - srcImg;
+            end
+            imgExpctd = hu;
+            
+            % Instantiation of target class
+            import saivdr.utility.*
+            coefsmanipulator = CoefsManipulator('Manipulation',f);
+            testCase.target = OlsOlaProcess3d(...
+                'Analyzer',analyzer,...
+                'Synthesizer',synthesizer,...
+                'CoefsManipulator',coefsmanipulator,...
+                'SplitFactor',[nVerSplit,nHorSplit,nHorSplit],...
+                'PadSize',[nVerPad,nHorPad,nDepPad],...
+                'IsIntegrityTest',isintegrity,...
+                'UseParallel',true);
+            serialProcess3d = OlsOlaProcess3d(...
+                'Analyzer',analyzer,...
+                'Synthesizer',synthesizer,...
+                'CoefsManipulator',coefsmanipulator,...
+                'SplitFactor',[nVerSplit,nHorSplit,nHorSplit],...              
+                'PadSize',[nVerPad,nHorPad,nDepPad],...
+                'IsIntegrityTest',isintegrity,...                
+                'UseParallel',false);
+            
+            % Actual values
+            h = srcImg;
+            yp = testCase.target.analyze(h); % Parallel 
+            ys = serialProcess3d.analyze(h); % Serial
+            for iSplit = 1:length(yp)
+                qp = yp{iSplit};
+                qs = ys{iSplit};
+                for iCh = 1:length(qp)
+                    testCase.verifyEqual(qp{iCh},qs{iCh},'AbsTol',1e-10);
+                end
+            end
+            % Initalization with the same states
+            testCase.target.InitialState = yp; % Parallel
+            serialProcess3d.InitialState = yp; % Serial
+            for iIter = 1:nIters
+                hup = testCase.target.step(h); % Parallel step
+                hus = serialProcess3d.step(h); % Serial step
+                testCase.verifyEqual(hup,hus,'AbsTol',1e-10);
+                h = hup - srcImg;
+            end
+            imgActual = hup;
+            
+            % Evaluation
+            testCase.verifySize(imgActual,size(imgExpctd));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-10,...
+                sprintf('%g',diff));
+        end
+        
     end
+    
 end

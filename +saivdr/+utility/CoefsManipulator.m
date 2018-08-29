@@ -8,15 +8,6 @@ classdef CoefsManipulator < matlab.System
         Manipulation
     end
     
-    properties
-        State
-    end
-    
-    properties (Logical)
-        IsFeedBack = false
-        IsStateOutput = false
-    end
-    
     methods
         
         % Constractor
@@ -36,70 +27,36 @@ classdef CoefsManipulator < matlab.System
             loadObjectImpl@matlab.System(obj,s,wasLocked);
         end
         
-        
-        function coefspst = stepImpl(obj,coefspre)
-            isfeedback_ = obj.IsFeedBack;
+        function [coefspst,statepst] = stepImpl(obj,coefspre,statepre)
             manipulation_ = obj.Manipulation;
             
             if isempty(manipulation_)
                 coefspst = coefspre;
+                statepst = [];
             elseif iscell(coefspre)
                 nChs = length(coefspre);
                 coefspst = cell(1,nChs);
-                if isfeedback_
-                    if obj.IsStateOutput && iscell(obj.State)
-                        state = cell(1,nChs);
-                        for iCh = 1:nChs
-                            [coefspst{iCh},state{iCh}] = ...
-                                manipulation_(coefspre{iCh},...
-                                obj.State{iCh});
-                        end
-                    elseif obj.IsStateOutput && isscalar(obj.State)
-                        state = cell(1,nChs);
-                        for iCh = 1:nChs
-                            [coefspst{iCh},state{iCh}] = ...
-                                manipulation_(coefspre{iCh},...
-                                obj.State);
-                        end                        
-                    elseif ~obj.IsStateOutput && iscell(obj.State)
-                        for iCh = 1:nChs
-                            coefspst{iCh} = manipulation_(...
-                                coefspre{iCh},obj.State{iCh});
-                        end
-                        state = coefspst;                        
-                    elseif ~obj.IsStateOutput && isscalar(obj.State) 
-                        for iCh = 1:nChs
-                            coefspst{iCh} = manipulation_(...
-                                coefspre{iCh},obj.State);
-                        end
-                        state = coefspst;
-                    else
-                        id = 'SaivDr:IllegalStateInitialization';
-                        message = 'State must be cell or scalar.';
-                        throw(MException(id,message))                        
-                    end
-                    obj.State = state;
-                else
+                if iscell(statepre)
+                    statepst = cell(1,nChs);
                     for iCh = 1:nChs
-                        coefspst{iCh} = manipulation_(coefspre{iCh});
+                        [coefspst{iCh},statepst{iCh}] = ...
+                            manipulation_(coefspre{iCh},statepre{iCh});
                     end
+                elseif isscalar(statepre)
+                    statepst = cell(1,nChs);
+                    for iCh = 1:nChs
+                        [coefspst{iCh},statepst{iCh}] = ...
+                            manipulation_(coefspre{iCh},statepre);
+                    end
+                else
+                    id = 'SaivDr:IllegalStateInitialization';
+                    message = 'State must be cell or scalar.';
+                    throw(MException(id,message))
                 end
             else
-                if isfeedback_
-                    if obj.IsStateOutput
-                        [coefspst,state] = ...
-                            manipulation_(coefspre,obj.State);
-                    else
-                        coefspst = manipulation_(coefspre,obj.State);
-                        state = coefspst;
-                    end
-                    obj.State = state;
-                else
-                    coefspst = manipulation_(coefspre);
-                end
+                [coefspst,statepst] = manipulation_(coefspre,statepre);
             end
         end
+        
     end
-
 end
-
