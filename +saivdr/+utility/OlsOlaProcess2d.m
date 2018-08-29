@@ -71,7 +71,6 @@ classdef OlsOlaProcess2d < matlab.System
         % Constractor
         function obj = OlsOlaProcess2d(varargin)
             import saivdr.dictionary.utility.Direction
-            import saivdr.dictionary.olaols.*
             setProperties(obj,nargin,varargin{:})
             if ~isempty(obj.Analyzer)
                 obj.BoundaryOperation = obj.Analyzer.BoundaryOperation;
