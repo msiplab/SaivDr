@@ -125,7 +125,9 @@ classdef OlsOlaProcess2d < matlab.System
                 message = 'Object is locked. Call release before initialization.';
                 throw(MException(exceptionId,message))
             else
-                obj.initialstates = states;
+                % Set of InitialState properties for CoefsManipulator
+                % objects.
+                obj.initialstates = states; 
             end
         end
     end
@@ -196,7 +198,7 @@ classdef OlsOlaProcess2d < matlab.System
                 end
             end
             %}
-            if isempty(s.coefsmanipulators)     
+            if ~isempty(s.coefsmanipulators)     
                 nSplit = length(s.coefsmanipulators);
                 for iSplit = 1:nSplit
                     obj.coefsmanipulators{iSplit} = ...
