@@ -65,13 +65,16 @@ classdef UdHaarAnalysis2dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
         function setupImpl(obj,u)
             nLevels = obj.NumberOfLevels;
             obj.nPixels = numel(u);
-            obj.coefs = zeros(1,(3*nLevels+1)*obj.nPixels);
+            obj.coefs = zeros(1,(3*nLevels+1)*obj.nPixels,'like',u);
         end
         
         function resetImpl(~)
         end
         
         function [ coefs, scales ] = stepImpl(obj, u)
+            if obj.UseGpu && gpuDeviceCount > 0
+                u = gpuArray(u);
+            end            
             nPixels_ = obj.nPixels;
             nLevels = obj.NumberOfLevels;
             scales = repmat(size(u),[3*nLevels+1, 1]);
