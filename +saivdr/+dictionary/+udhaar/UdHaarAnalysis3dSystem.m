@@ -1,9 +1,6 @@
 classdef UdHaarAnalysis3dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
     %UDHAARANALYSIS3DSYSTEM Analysis system for undecimated Haar transform
     %
-    % SVN identifier:
-    % $Id: DicUdHaarDec3.m 683 2015-05-29 08:22:13Z sho $
-    %
     % Requirements: MATLAB R2015b
     %
     % Copyright (c) 2018, Shogo MURAMATSU
@@ -117,9 +114,6 @@ classdef UdHaarAnalysis3dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
         end
         
         function [ coefs_, scales ] = stepImpl(obj, u)
-            if obj.UseGpu && gpuDeviceCount > 0
-                u = gpuArray(u);
-            end
             nPixels_ = obj.nPixels;
             coefs_ = obj.coefs;
             nLevels = obj.NumberOfLevels;

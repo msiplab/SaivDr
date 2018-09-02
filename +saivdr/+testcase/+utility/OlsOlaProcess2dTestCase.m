@@ -17,6 +17,7 @@ classdef OlsOlaProcess2dTestCase < matlab.unittest.TestCase
     
     properties (TestParameter)
         useparallel = struct('true', true, 'false', false );
+        usegpu = struct('true', true, 'false', false);
         isintegrity = struct('true', true, 'false', false );
         width = struct('small', 64, 'medium', 96, 'large', 128);
         height = struct('small', 64, 'medium', 96, 'large', 128);
@@ -563,6 +564,74 @@ classdef OlsOlaProcess2dTestCase < matlab.unittest.TestCase
                 sprintf('%g',diff));
         end
         
+        % Test
+        function testIterativeSoftThresholdingGpu(testCase,...
+               useparallel,usegpu)
+           
+           if usegpu && gpuDeviceCount == 0
+               warning('No GPU device was found.');
+               return;
+           end
+            
+            % Parameters
+            nIters = 5;
+            nLevels = 3;
+            height_ = 32;
+            width_ = 32;
+            nVerSplit = 2;
+            nHorSplit = 2;
+            nVerPad = 2^(nLevels-1);
+            nHorPad = 2^(nLevels-1);
+            srcImg = rand(height_,width_);
+            import saivdr.dictionary.udhaar.*
+            analyzer = UdHaarAnalysis2dSystem();
+            synthesizer = UdHaarSynthesis2dSystem();
+            analyzer.NumberOfLevels = nLevels;
+            
+            % Functions
+            lambda = 1e-3;
+            gamma  = 1e-3;
+            f = @(x,xpre) testCase.softthresh(x,xpre,lambda,gamma);
+            
+            % Expected values
+            h = srcImg;
+            y = analyzer.step(h);
+            for iIter = 1:nIters
+                [v,scales] = analyzer.step(h);
+                y = f(v,y);
+                hu = synthesizer.step(y,scales);
+                h = hu - srcImg;
+            end
+            imgExpctd = hu;
+            
+            % Instantiation of target class
+            import saivdr.utility.*
+            coefsmanipulator = CoefsManipulator('Manipulation',f);
+            testCase.target = OlsOlaProcess2d(...
+                'Analyzer',analyzer,...
+                'Synthesizer',synthesizer,...
+                'CoefsManipulator',coefsmanipulator,...
+                'SplitFactor',[nVerSplit,nHorSplit],...
+                'PadSize',[nVerPad,nHorPad],...
+                'UseParallel',useparallel,...
+                'UseGpu',usegpu);
+            
+            % Actual values
+            h = srcImg;
+            y = testCase.target.analyze(h);
+            testCase.target.InitialState = y;
+            for iIter = 1:nIters
+                hu = testCase.target.step(h);
+                h = hu - srcImg;
+            end
+            imgActual = hu;
+            
+            % Evaluation
+            testCase.verifySize(imgActual,size(imgExpctd));
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-10,...
+                sprintf('%g',diff));
+        end        
     end
     
 end

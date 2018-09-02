@@ -19,6 +19,8 @@ classdef CoefsManipulatorTestCase < matlab.unittest.TestCase
         width = struct('small', 64, 'medium', 96, 'large', 128);
         height = struct('small', 64, 'medium', 96, 'large', 128);
         depth = struct('small', 64, 'medium', 96, 'large', 128);
+        usegpu = struct('true', true, 'false', false);
+        dtype = { 'double', 'single' };
     end
     
     properties
@@ -43,7 +45,7 @@ classdef CoefsManipulatorTestCase < matlab.unittest.TestCase
             u = spre-gamma*x;
             v = abs(u)-lambda;
             spst = sign(u).*(v+abs(v))/2;
-            y = 2*spst - spre;
+            y = 2*spst-spre;
         end
     end
     
@@ -546,7 +548,11 @@ classdef CoefsManipulatorTestCase < matlab.unittest.TestCase
             coefsExpctd = v;
             
             % Actual value
-            s = 0;
+            if verLessThan('matlab','9.4')
+                s = num2cell(zeros(1,nChs));
+            else
+                s = 0;
+            end
             for iIter = 1:nIters
                 [v,s] = testCase.target.step(coefs{iIter+1},s);
             end
@@ -613,6 +619,88 @@ classdef CoefsManipulatorTestCase < matlab.unittest.TestCase
                     'AbsTol',1e-10,sprintf('%g',diff));
             end
         end
+        
+        function testPdsHsHcOct3dCellWithValueStateDataType(testCase,...
+                dtype,usegpu)
+            
+            if usegpu && gpuDeviceCount == 0
+                warning('No GPU device was detected.')
+                return;
+            end
+            
+            % Parameters
+            height_ = 32;
+            width_ = 32;
+            depth_ = 32;
+            nIters = 5;
+            nChs = 5;
+            coefs  = cell(nIters+1,1);
+            for iIter = 1:nIters+1
+                subcoefs = cell(1,nChs);
+                for iCh = 1:nChs
+                    if iIter == 1
+                        subcoefs{iCh} = zeros(width_,height_,depth_,dtype);
+                    else
+                        subcoefs{iCh} = randn(width_,height_,depth_,dtype);                        
+                    end
+                    if usegpu
+                        subcoefs{iCh} = gpuArray(subcoefs{iCh});
+                    end
+                end
+                coefs{iIter} = subcoefs;
+            end
+            
+            % Function
+            lambda = 1e-3;
+            gamma  = 1e-3;
+            g = @(x,s) testCase.coefpdshshc(x,s,lambda,gamma);
+            
+            % Instantiation
+            import saivdr.utility.*
+            testCase.target = CoefsManipulator('Manipulation', g);
+            
+            % Expected value
+            s = coefs{1};
+            v = cell(1,nChs);
+            for iIter = 1:nIters
+                subcoefs = coefs{iIter+1};
+                for iCh = 1:nChs
+                    [v{iCh},s{iCh}] = g(subcoefs{iCh},s{iCh});
+                end
+            end
+            coefsExpctd = v;
+            
+            % Actual value
+            if verLessThan('matlab','9.4')
+                s = num2cell(zeros(1,nChs));
+            else
+                s = 0;
+            end
+            for iIter = 1:nIters
+                [v,s] = testCase.target.step(coefs{iIter+1},s);
+            end
+            coefsActual = v;
+            
+            % Evaluation
+            if strcmp(dtype,'double')
+                tol = 1e-10;
+            else
+                tol = single(1e-8);
+            end
+            for iCh = 1:nChs
+                if usegpu
+                    testCase.verifyClass(coefsActual{iCh},'gpuArray');
+                    coefsActual{iCh} = gather(coefsActual{iCh});
+                    coefsExpctd{iCh} = gather(coefsExpctd{iCh});
+                end
+                testCase.verifyClass(coefsActual{iCh},dtype);
+                testCase.verifySize(coefsActual{iCh},size(coefsExpctd{iCh}));
+                diff = max(abs(coefsExpctd{iCh}(:) - coefsActual{iCh}(:)));
+                testCase.verifyEqual(coefsActual{iCh},coefsExpctd{iCh},...
+                    'AbsTol',tol,sprintf('%g',diff));
+            end
+        end
+                
 
     end
     
