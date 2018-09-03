@@ -1,12 +1,9 @@
 classdef UdHaarSynthesis2dSystem < saivdr.dictionary.AbstSynthesisSystem %#codegen
-    %UdHaarSynthesis2dSystem Synthesis system for undecimated Haar transform
-    %
-    % SVN identifier:
-    % $Id: UdHaarSynthesis2dSystem.m 683 2015-05-29 08:22:13Z sho $
+    %UDHAARSYNTHESIS2DSYSTEM Synthesis system for undecimated Haar transform
     %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2014-2015, Shogo MURAMATSU
+    % Copyright (c) 2014-2018, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -17,6 +14,15 @@ classdef UdHaarSynthesis2dSystem < saivdr.dictionary.AbstSynthesisSystem %#codeg
     %
     % http://msiplab.eng.niigata-u.ac.jp/    
     %
+    
+    properties (Nontunable)
+        BoundaryOperation = 'Circular'
+    end
+    
+    properties (Hidden, Transient)
+        BoundaryOperationSet = ...
+            matlab.system.StringSet({'Circular'});
+    end
     
     properties (Access = private)
         kernels
@@ -53,7 +59,9 @@ classdef UdHaarSynthesis2dSystem < saivdr.dictionary.AbstSynthesisSystem %#codeg
         end
    
         function s = saveObjectImpl(obj)
-            s = saveObjectImpl@matlab.System(obj);
+            % Call the base class method
+            s = saveObjectImpl@saivdr.dictionary.AbstSynthesisSystem(obj);
+            % Save the child System objects            
             s.kernels = obj.kernels;
             s.nPixels = obj.nPixels;
             s.nLevels = obj.nLevels;
@@ -65,7 +73,8 @@ classdef UdHaarSynthesis2dSystem < saivdr.dictionary.AbstSynthesisSystem %#codeg
             obj.nPixels = s.nPixels;
             obj.nLevels = s.nLevels;
             obj.dim = s.dim;
-            loadObjectImpl@matlab.System(obj,s,wasLocked); 
+            % Call base class method to load public properties
+            loadObjectImpl@saivdr.dictionary.AbstSynthesisSystem(obj,s,wasLocked);
         end
                
         function setupImpl(obj, ~, scales)

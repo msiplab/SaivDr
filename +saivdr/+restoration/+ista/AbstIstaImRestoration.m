@@ -19,7 +19,6 @@ classdef AbstIstaImRestoration < matlab.System %~#codegen
         Synthesizer
         AdjOfSynthesizer
         LinearProcess
-        NumberOfTreeLevels = 1
     end
     
 
@@ -40,10 +39,6 @@ classdef AbstIstaImRestoration < matlab.System %~#codegen
     
     properties (Access = protected,Nontunable)
         AdjLinProcess
-    end
-    
-    properties (Nontunable)
-        IsFista = false;
     end
     
     properties (Access = protected)
@@ -74,9 +69,11 @@ classdef AbstIstaImRestoration < matlab.System %~#codegen
                 matlab.System.saveObject(obj.AdjLinProcess);
             s.valueL = obj.valueL;
             s.scales = obj.scales;
+            s.x      = obj.x;
         end
         
         function loadObjectImpl(obj, s, wasLocked)
+            obj.x      = s.x;
             obj.valueL = s.valueL;
             obj.scales = s.scales;
             %

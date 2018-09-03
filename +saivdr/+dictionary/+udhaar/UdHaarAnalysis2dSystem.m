@@ -1,12 +1,9 @@
 classdef UdHaarAnalysis2dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
     %UDHAARANALYZSISSYSTEM Analysis system for undecimated Haar transform
     %
-    % SVN identifier:
-    % $Id: UdHaarAnalysis2dSystem.m 683 2015-05-29 08:22:13Z sho $
-    %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2014-2015, Shogo MURAMATSU
+    % Copyright (c) 2014-2018, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -18,6 +15,19 @@ classdef UdHaarAnalysis2dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
     % http://msiplab.eng.niigata-u.ac.jp/    
     %
    
+    properties (Nontunable)
+        BoundaryOperation = 'Circular'
+    end
+    
+    properties (Nontunable, PositiveInteger)
+        NumberOfLevels = 1        
+    end        
+    
+    properties (Hidden, Transient)
+        BoundaryOperationSet = ...
+            matlab.system.StringSet({'Circular'});
+    end
+    
     properties (Access = private)
         kernels
         coefs
@@ -39,7 +49,7 @@ classdef UdHaarAnalysis2dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
     methods (Access=protected)
         
         function s = saveObjectImpl(obj)
-            s = saveObjectImpl@matlab.System(obj);
+            s = saveObjectImpl@saivdr.dictionary.AbstAnalysisSystem(obj);
             s.kernels = obj.kernels;
             s.coefs = obj.coefs;
             s.nPixels = obj.nPixels;
@@ -49,18 +59,21 @@ classdef UdHaarAnalysis2dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
             obj.kernels = s.kernels;
             obj.coefs = s.coefs;
             obj.nPixels = s.nPixels;
-            loadObjectImpl@matlab.System(obj,s,wasLocked); 
+            loadObjectImpl@saivdr.dictionary.AbstAnalysisSystem(obj,s,wasLocked); 
         end
         
-        function setupImpl(obj,u,nLevels)
+        function setupImpl(obj,u)
+            nLevels = obj.NumberOfLevels;
             obj.nPixels = numel(u);
-            obj.coefs = zeros(1,(3*nLevels+1)*obj.nPixels);
+            obj.coefs = zeros(1,(3*nLevels+1)*obj.nPixels,'like',u);
         end
         
         function resetImpl(~)
         end
         
-        function [ coefs, scales ] = stepImpl(obj, u, nLevels)
+        function [ coefs, scales ] = stepImpl(obj, u)
+            nPixels_ = obj.nPixels;
+            nLevels = obj.NumberOfLevels;
             scales = repmat(size(u),[3*nLevels+1, 1]);
             % NOTE:
             % imfilter of R2017a has a bug for double precision array
@@ -87,11 +100,11 @@ classdef UdHaarAnalysis2dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
                 yv = circshift(imfilter(ya,hv,'corr','circular'),offset);
                 yh = circshift(imfilter(ya,hh,'corr','circular'),offset);
                 ya = circshift(imfilter(ya,ha,'corr','circular'),offset);
-                obj.coefs((iSubband-1)*obj.nPixels+1:iSubband*obj.nPixels) = ...
+                obj.coefs((iSubband-1)*nPixels_+1:iSubband*nPixels_) = ...
                     yd(:).'*weight;
-                obj.coefs((iSubband-2)*obj.nPixels+1:(iSubband-1)*obj.nPixels) = ...
+                obj.coefs((iSubband-2)*nPixels_+1:(iSubband-1)*nPixels_) = ...
                     yv(:).'*weight;
-                obj.coefs((iSubband-3)*obj.nPixels+1:(iSubband-2)*obj.nPixels) = ...
+                obj.coefs((iSubband-3)*nPixels_+1:(iSubband-2)*nPixels_) = ...
                     yh(:).'*weight;
                 iSubband = iSubband - 3;
                 hd = upsample2_(obj,hd);
@@ -99,7 +112,7 @@ classdef UdHaarAnalysis2dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
                 hh = upsample2_(obj,hh);
                 ha = upsample2_(obj,ha);
             end
-            obj.coefs(1:obj.nPixels) = ya(:).'*weight;
+            obj.coefs(1:nPixels_) = ya(:).'*weight;
             coefs = obj.coefs;
         end
 

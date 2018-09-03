@@ -47,8 +47,7 @@ classdef GradientPursuit < ...
             % Iteration
             for iCoef = 1:nCoefs
                 % g = Phi.'*r
-                [gradvec,scales] = step(obj.AdjOfSynthesizer,...
-                    residual,obj.NumberOfTreeLevels);
+                [gradvec,scales] = step(obj.AdjOfSynthesizer,residual);
                 if iCoef == 1
                     dirvec = zeros(size(gradvec));
                 end

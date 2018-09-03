@@ -64,7 +64,7 @@ classdef FistaImRestoration2d < saivdr.restoration.ista.AbstIstaImRestoration %~
             for iCmp = 1:obj.NumberOfComponents
                 [ obj.wpre(:,iCmp), obj.scales(:,:,iCmp) ] = ...
                     step(obj.AdjOfSynthesizer,...
-                    obj.hu(:,:,iCmp),obj.NumberOfTreeLevels);
+                    obj.hu(:,:,iCmp));
             end
             obj.y = obj.wpre;
             obj.w = zeros(size(obj.wpre),'like',obj.wpre);
@@ -108,7 +108,6 @@ classdef FistaImRestoration2d < saivdr.restoration.ista.AbstIstaImRestoration %~
         function procPerIter_(obj)
             adjSyn_      = obj.AdjOfSynthesizer;
             syn_         = obj.Synthesizer;
-            nLevels_     = obj.NumberOfTreeLevels;
             reciprocalL_ = 1/obj.valueL;
             scales_      = obj.scales;
             threshold_   = obj.threshold;
@@ -133,7 +132,7 @@ classdef FistaImRestoration2d < saivdr.restoration.ista.AbstIstaImRestoration %~
                 end
                 parfor iCmp = 1:nComps_
                     % ^v = D.'h = D.'P.'r = D.'P.'(^x-x)
-                    v_ = step(adjSyn_,h_(:,:,iCmp),nLevels_);
+                    v_ = step(adjSyn_,h_(:,:,iCmp));
                     % y = softshrink(y -(1/L)*D.'P.'(^x-x))
                     w_{iCmp} = AbstIstaImRestoration.softshrink_(...
                         y_{iCmp}-(reciprocalL_)*v_(:),threshold_);
@@ -152,7 +151,7 @@ classdef FistaImRestoration2d < saivdr.restoration.ista.AbstIstaImRestoration %~
             else
                 for iCmp = 1:nComps_
                     % ^v = D.'h = D.'P.'r = D.'P.'(^x-x)
-                    v_ = step(adjSyn_,h_(:,:,iCmp),nLevels_);
+                    v_ = step(adjSyn_,h_(:,:,iCmp));
                     % y = softshrink(y -(1/L)*D.'P.'(^x-x))
                     obj.w(:,iCmp) = AbstIstaImRestoration.softshrink_(...
                         obj.y(:,iCmp)-(reciprocalL_)*v_(:),threshold_);

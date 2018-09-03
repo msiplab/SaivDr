@@ -20,7 +20,7 @@ classdef AprxErrorWithSparseRep < matlab.System %#~codegen
     %
     properties  (Nontunable)
         SourceImages
-        NumberOfTreeLevels = 1
+        NumberOfLevels = 1
         IsFixedCoefs = true
         GradObj      = 'off'
         BoundaryOperation = 'Termination'
@@ -217,6 +217,7 @@ classdef AprxErrorWithSparseRep < matlab.System %#~codegen
                 obj.analyzer = NsoltFactory.createAnalysis2dSystem(...
                     obj.sharedLpPuFb,...
                     'BoundaryOperation',obj.BoundaryOperation,...
+                    'NumberOfLevels',obj.NumberOfLevels,...                    
                     'IsCloneLpPuFb2d',false);
                 obj.synthesizer = NsoltFactory.createSynthesis2dSystem(...
                     obj.sharedLpPuFb,...
@@ -226,6 +227,7 @@ classdef AprxErrorWithSparseRep < matlab.System %#~codegen
                 obj.analyzer = NsoltFactory.createAnalysis3dSystem(...
                     obj.sharedLpPuFb,...
                     'BoundaryOperation',obj.BoundaryOperation,...
+                    'NumberOfLevels',obj.NumberOfLevels,...                                        
                     'IsCloneLpPuFb3d',false);
                 obj.synthesizer = NsoltFactory.createSynthesis3dSystem(...
                     obj.sharedLpPuFb,...
@@ -237,7 +239,6 @@ classdef AprxErrorWithSparseRep < matlab.System %#~codegen
         end
         
         function cost = stepSimCo_(obj,lppufb_,srcImg_,coefs_,scales_)
-            nLevels_     = obj.NumberOfTreeLevels;
             analyzer_    = obj.analyzer;
             synthesizer_ = obj.synthesizer;
             %
@@ -247,7 +248,7 @@ classdef AprxErrorWithSparseRep < matlab.System %#~codegen
             set(obj.sharedLpPuFb,'Mus',mus_);
             %
             masks_ = (coefs_ ~= 0);
-            coefs_ = step(analyzer_,srcImg_,nLevels_);
+            coefs_ = step(analyzer_,srcImg_);
             coefs_ = masks_.*coefs_;
             aprxImg_ = step(synthesizer_,coefs_,scales_);
             %

@@ -53,10 +53,11 @@ classdef OLpPuFbAnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.synthesizer = OLpPrFbFactory.createSynthesis1dSystem(...
                 lppufb,'BoundaryOperation','Termination');
             testCase.analyzer    = OLpPrFbFactory.createAnalysis1dSystem(...
-                lppufb,'BoundaryOperation','Termination');
+                lppufb,'BoundaryOperation','Termination',...
+                'NumberOfLevels',nLevels);
 
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcSeq,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcSeq);
             recSeq = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -91,10 +92,11 @@ classdef OLpPuFbAnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.synthesizer = saivdr.dictionary.olpprfb.OLpPrFbFactory.createSynthesis1dSystem(...
                 lppufb,'BoundaryOperation','Termination');
             testCase.analyzer    = saivdr.dictionary.olpprfb.OLpPrFbFactory.createAnalysis1dSystem(...
-                lppufb,'BoundaryOperation','Termination');
+                lppufb,'BoundaryOperation','Termination',...
+                'NumberOfLevels',nLevels);
             
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcSeq,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcSeq);
             recSeq = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -129,10 +131,11 @@ classdef OLpPuFbAnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.synthesizer = saivdr.dictionary.olpprfb.OLpPrFbFactory.createSynthesis1dSystem(...
                 lppufb,'BoundaryOperation','Termination');
             testCase.analyzer    = saivdr.dictionary.olpprfb.OLpPrFbFactory.createAnalysis1dSystem(...
-                lppufb,'BoundaryOperation','Termination');
+                lppufb,'BoundaryOperation','Termination',...
+                'NumberOfLevels',nLevels);
             
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcSeq,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcSeq);
             recSeq = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -167,10 +170,11 @@ classdef OLpPuFbAnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.synthesizer = saivdr.dictionary.olpprfb.OLpPrFbFactory.createSynthesis1dSystem(...
                 lppufb,'BoundaryOperation','Termination');
             testCase.analyzer    = saivdr.dictionary.olpprfb.OLpPrFbFactory.createAnalysis1dSystem(...
-                lppufb,'BoundaryOperation','Termination');
+                lppufb,'BoundaryOperation','Termination',...
+                'NumberOfLevels',nLevels);
             
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcSeq,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcSeq);
             recSeq = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -205,10 +209,11 @@ classdef OLpPuFbAnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.synthesizer = OLpPrFbFactory.createSynthesis1dSystem(...
                 lppufb,'BoundaryOperation','Termination');
             testCase.analyzer    = OLpPrFbFactory.createAnalysis1dSystem(...
-                lppufb,'BoundaryOperation','Termination');
+                lppufb,'BoundaryOperation','Termination',...
+                'NumberOfLevels',nLevels);
             
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcSeq,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcSeq);
             recSeq = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -243,10 +248,11 @@ classdef OLpPuFbAnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.synthesizer = saivdr.dictionary.olpprfb.OLpPrFbFactory.createSynthesis1dSystem(...
                 lppufb,'BoundaryOperation','Termination');
             testCase.analyzer    = saivdr.dictionary.olpprfb.OLpPrFbFactory.createAnalysis1dSystem(...
-                lppufb,'BoundaryOperation','Termination');
+                lppufb,'BoundaryOperation','Termination',...
+                'NumberOfLevels',nLevels);
             
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcSeq,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcSeq);
             recSeq = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -281,10 +287,11 @@ classdef OLpPuFbAnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.synthesizer = saivdr.dictionary.olpprfb.OLpPrFbFactory.createSynthesis1dSystem(...
                 lppufb,'BoundaryOperation','Termination');
             testCase.analyzer    = saivdr.dictionary.olpprfb.OLpPrFbFactory.createAnalysis1dSystem(...
-                lppufb,'BoundaryOperation','Termination');
+                lppufb,'BoundaryOperation','Termination',...
+                'NumberOfLevels',nLevels);
             
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcSeq,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcSeq);
             recSeq = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -319,10 +326,11 @@ classdef OLpPuFbAnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.synthesizer = saivdr.dictionary.olpprfb.OLpPrFbFactory.createSynthesis1dSystem(...
                 lppufb,'BoundaryOperation','Termination');
             testCase.analyzer    = saivdr.dictionary.olpprfb.OLpPrFbFactory.createAnalysis1dSystem(...
-                lppufb,'BoundaryOperation','Termination');
+                lppufb,'BoundaryOperation','Termination',...
+                'NumberOfLevels',nLevels);
             
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcSeq,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcSeq);
             recSeq = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -357,10 +365,11 @@ classdef OLpPuFbAnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.synthesizer = OLpPrFbFactory.createSynthesis1dSystem(...
                 lppufb,'BoundaryOperation','Termination');
             testCase.analyzer    = OLpPrFbFactory.createAnalysis1dSystem(...
-                lppufb,'BoundaryOperation','Termination');
+                lppufb,'BoundaryOperation','Termination',...
+                'NumberOfLevels',nLevels);            
             
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcSeq,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcSeq);
             recSeq = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -395,10 +404,11 @@ classdef OLpPuFbAnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.synthesizer = saivdr.dictionary.olpprfb.OLpPrFbFactory.createSynthesis1dSystem(...
                 lppufb,'BoundaryOperation','Termination');
             testCase.analyzer    = saivdr.dictionary.olpprfb.OLpPrFbFactory.createAnalysis1dSystem(...
-                lppufb,'BoundaryOperation','Termination');
+                lppufb,'BoundaryOperation','Termination',...
+                'NumberOfLevels',nLevels);
             
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcSeq,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcSeq);
             recSeq = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -433,10 +443,11 @@ classdef OLpPuFbAnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.synthesizer = saivdr.dictionary.olpprfb.OLpPrFbFactory.createSynthesis1dSystem(...
                 lppufb,'BoundaryOperation','Termination');
             testCase.analyzer    = saivdr.dictionary.olpprfb.OLpPrFbFactory.createAnalysis1dSystem(...
-                lppufb,'BoundaryOperation','Termination');
+                lppufb,'BoundaryOperation','Termination',...
+                'NumberOfLevels',nLevels);
             
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcSeq,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcSeq);
             recSeq = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -471,10 +482,11 @@ classdef OLpPuFbAnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.synthesizer = saivdr.dictionary.olpprfb.OLpPrFbFactory.createSynthesis1dSystem(...
                 lppufb,'BoundaryOperation','Termination');
             testCase.analyzer    = saivdr.dictionary.olpprfb.OLpPrFbFactory.createAnalysis1dSystem(...
-                lppufb,'BoundaryOperation','Termination');
+                lppufb,'BoundaryOperation','Termination',...
+                'NumberOfLevels',nLevels);
             
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcSeq,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcSeq);
             recSeq = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation

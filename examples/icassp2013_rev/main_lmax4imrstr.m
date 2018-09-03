@@ -3,12 +3,9 @@
 % This script calculaes and saves the maximum eigen value of 
 % the gram matrix of pixel-loss system as a linear process.
 %
-% SVN identifier:
-% $Id: disp_sweepresults.m 101 2014-01-15 08:47:09Z sho $
-%
 % Requirements: MATLAB R2015b
 %
-% Copyright (c) 2014-2015, Shogo MURAMATSU
+% Copyright (c) 2014-2017, Shogo MURAMATSU
 %
 % All rights reserved.
 %

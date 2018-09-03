@@ -26,6 +26,7 @@ classdef OLpPuFbAnalysis1dSystem < ...
     end
 
     properties (Nontunable, PositiveInteger)    
+        NumberOfLevels = 1
         NumberOfSymmetricChannels     = 2
         NumberOfAntisymmetricChannels = 2
     end
@@ -124,7 +125,8 @@ classdef OLpPuFbAnalysis1dSystem < ...
             obj.LpPuFb1d = matlab.System.loadObject(s.LpPuFb1d);
         end
         
-        function setupImpl(obj, srcSeq, nLevels)
+        function setupImpl(obj, srcSeq)
+            nLevels = obj.NumberOfLevels;
             dec = obj.decimationFactor;
             nch = [ obj.NumberOfSymmetricChannels ...
                 obj.NumberOfAntisymmetricChannels ];
@@ -154,7 +156,8 @@ classdef OLpPuFbAnalysis1dSystem < ...
             
         end
         
-        function [ coefs, scales ] = stepImpl(obj, srcSeq, nLevels)
+        function [ coefs, scales ] = stepImpl(obj, srcSeq)
+            nLevels = obj.NumberOfLevels;
             %if obj.IsDifferentiation
             %else
                 pmMtx = step(obj.LpPuFb1d,[],[]);

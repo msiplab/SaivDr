@@ -50,8 +50,7 @@ classdef IterativeHardThresholding < ...
             
             % Initalization
             iIter    = 0;                
-            [coefvec,scales] = step(obj.AdjOfSynthesizer,...
-                    source,obj.NumberOfTreeLevels);
+            [coefvec,scales] = step(obj.AdjOfSynthesizer,source);
             if ~isempty(obj.StepMonitor)
                 reset(obj.StepMonitor)
             end
@@ -68,8 +67,7 @@ classdef IterativeHardThresholding < ...
                 % Residual
                 residual = source - reconst;
                 % g = Phi.'*r
-                [gradvec,~] = step(obj.AdjOfSynthesizer,...
-                    residual,obj.NumberOfTreeLevels);
+                [gradvec,~] = step(obj.AdjOfSynthesizer,residual);
                 coefvec = precoefvec + obj.Mu*gradvec;
                 % Hard thresholding
                 [~, idxsort ] = sort(abs(coefvec(:)),1,'descend');

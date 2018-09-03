@@ -1,4 +1,4 @@
-% Sparsity-Aware Image and Volume Data Restoration Package
+% Sparsity-Aware Image and Volumetric Data Restoration Package
 %
 % Files
 %   mytest     - Script of unit testing for SaivDr Package
@@ -18,6 +18,8 @@
 %             |            |               +- nsgenlot  -+- design
 %             |            |               |
 %             |            |               +- nsgenlotx -+- design
+%             |            |               |
+%             |            |               +- olaols
 %             |            |               |
 %             |            |               +- olpprfb
 %             |            |               |
@@ -52,6 +54,8 @@
 %             |               +- nsgenlot  -+- design
 %             |               |         
 %             |               +- nsgenlotx -+- design
+%             |               |         
+%             |               +- olaols
 %             |               |         
 %             |               +- olpprfb
 %             |               |         
@@ -119,9 +123,9 @@
 % 
 % - Shogo Muramatsu, Kosuke Furuya and Naotaka Yuki, "Multidimensional 
 %   Nonseparable Oversampled Lapped Transforms: Theory and Design," 
-%   IEEE Trans. on Signal Process.Vol.65, No.5, pp.1251?1264,
+%   IEEE Trans. on Signal Process.Vol.65, No.5, pp.1251-1264,
 %   DOI:10.1109/TSP.2016.2633240, March 2017.
-%
+%   
 % - Kota Horiuchi and Shogo Muramatsu, "Fast convolution technique for 
 %   Non-separable Oversampled Lapped transforms," Proc. of Asia Pacific 
 %   Signal and Information Proc. Assoc. Annual Summit and Conf. 

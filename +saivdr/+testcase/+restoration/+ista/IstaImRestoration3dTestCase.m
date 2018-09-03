@@ -1,5 +1,5 @@
 classdef IstaImRestoration3dTestCase < matlab.unittest.TestCase
-    %IstaImRestoration3dTestCase Test Case for IstaImRestoration3d
+    %ISTAIMRESTORATION3DTESTCASE Test Case for IstaImRestoration3d
     %
     % Requirements: MATLAB R2015b
     %
@@ -38,6 +38,7 @@ classdef IstaImRestoration3dTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.nsoltx.*
             synthesizer = NsoltFactory.createSynthesis3dSystem();
             analyzer = NsoltFactory.createAnalysis3dSystem();
+            analyzer.NumberOfLevels = 3;            
             import saivdr.degradation.*
             import saivdr.degradation.linearprocess.*
             import saivdr.degradation.noiseprocess.*
@@ -56,11 +57,9 @@ classdef IstaImRestoration3dTestCase < matlab.unittest.TestCase
             % Instantiation of target class
             import saivdr.restoration.ista.*
             testCase.istaimrstr = IstaImRestoration3d(...
-                'IsFista',false,...
                 'Synthesizer',synthesizer,...
                 'AdjOfSynthesizer',analyzer,...
                 'LinearProcess',linearProcess,...
-                'NumberOfTreeLevels',3,...
                 'Lambda',1e-2);
             
             % MSE after processing
@@ -86,6 +85,7 @@ classdef IstaImRestoration3dTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.nsoltx.*
             synthesizer = NsoltFactory.createSynthesis3dSystem();
             analyzer = NsoltFactory.createAnalysis3dSystem();
+            analyzer.NumberOfLevels = 3;            
             import saivdr.degradation.*
             import saivdr.degradation.linearprocess.*
             import saivdr.degradation.noiseprocess.*
@@ -105,11 +105,9 @@ classdef IstaImRestoration3dTestCase < matlab.unittest.TestCase
             % Instantiation of target class
             import saivdr.restoration.ista.*
             testCase.istaimrstr = IstaImRestoration3d(...
-                'IsFista',false,...
                 'Synthesizer',synthesizer,...
                 'AdjOfSynthesizer',analyzer,...
                 'LinearProcess',linearProcess,...
-                'NumberOfTreeLevels',3,...
                 'Lambda',1e-2);
             
             % MSE after processing
@@ -135,6 +133,7 @@ classdef IstaImRestoration3dTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.nsoltx.*
             synthesizer = NsoltFactory.createSynthesis3dSystem();
             analyzer = NsoltFactory.createAnalysis3dSystem();
+            analyzer.NumberOfLevels = 3;            
             import saivdr.degradation.*
             import saivdr.degradation.linearprocess.*
             import saivdr.degradation.noiseprocess.*
@@ -153,11 +152,9 @@ classdef IstaImRestoration3dTestCase < matlab.unittest.TestCase
             % Instantiation of target class
             import saivdr.restoration.ista.*
             testCase.istaimrstr = IstaImRestoration3d(...
-                'IsFista',false,...
                 'Synthesizer',synthesizer,...
                 'AdjOfSynthesizer',analyzer,...
                 'LinearProcess',linearProcess,...
-                'NumberOfTreeLevels',3,...
                 'Lambda',1e-2);
             
             % MSE after processing
@@ -183,6 +180,7 @@ classdef IstaImRestoration3dTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.nsoltx.*
             synthesizer = NsoltFactory.createSynthesis3dSystem();
             analyzer = NsoltFactory.createAnalysis3dSystem();
+            analyzer.NumberOfLevels = 3;            
             import saivdr.degradation.*
             import saivdr.degradation.linearprocess.*
             import saivdr.degradation.noiseprocess.*
@@ -210,11 +208,9 @@ classdef IstaImRestoration3dTestCase < matlab.unittest.TestCase
             % Instantiation of target class
             import saivdr.restoration.ista.*
             testCase.istaimrstr = IstaImRestoration3d(...
-                'IsFista',false,...
                 'Synthesizer',synthesizer,...
                 'AdjOfSynthesizer',analyzer,...
                 'LinearProcess',linearProcess,...
-                'NumberOfTreeLevels',3,...
                 'Lambda',1e-2);
             
             % MSE after processing
@@ -232,215 +228,6 @@ classdef IstaImRestoration3dTestCase < matlab.unittest.TestCase
             %                figure(3), imshow(resImg)
             
         end
-        
-%
-        % Test denoising
-        function testFistaNsoltDeNoise(testCase)
-            
-            % Preperation
-            height = 32;
-            width  = 32;
-            depth  = 16;
-            srcImg = rand(height,width,depth);
-            
-            import saivdr.dictionary.nsoltx.*
-            synthesizer = NsoltFactory.createSynthesis3dSystem();
-            analyzer = NsoltFactory.createAnalysis3dSystem();
-            import saivdr.degradation.*
-            import saivdr.degradation.linearprocess.*
-            import saivdr.degradation.noiseprocess.*
-            linearProcess = BlurSystem(...
-                'DataType','Volumetric Data');
-            noiseProcess  = AdditiveWhiteGaussianNoiseSystem();
-            degradation  = DegradationSystem(...
-                'LinearProcess',linearProcess,...
-                'NoiseProcess',noiseProcess);
-            obsImg = step(degradation,srcImg);
-            
-            % MSE before processing
-            mse = @(x,y) sum((x(:)-y(:)).^2)/numel(x);
-            msePre = mse(obsImg,srcImg);
-            
-            % Instantiation of target class
-            import saivdr.restoration.ista.*
-            testCase.istaimrstr = IstaImRestoration3d(...
-                'IsFista',true,...
-                'Synthesizer',synthesizer,...
-                'AdjOfSynthesizer',analyzer,...
-                'LinearProcess',linearProcess,...
-                'NumberOfTreeLevels',3,...
-                'Lambda',1e-2);
-            
-            % MSE after processing
-            resImg = step(testCase.istaimrstr,obsImg);
-            
-            % Evaluation
-            msePst = mse(resImg,srcImg);
-            
-            import matlab.unittest.constraints.IsLessThan
-            testCase.assertThat(msePst,IsLessThan(msePre));
-            
-            %             figure(1), imshow(srcImg)
-            %             figure(2), imshow(obsImg)
-            %             figure(3), imshow(resImg)
-            
-        end
-     
-        % Test denoising
-        function testFistaNsoltDeBlur(testCase)
-            
-            % Preperation
-            srcImg = rand(32,32,16);
-            import saivdr.dictionary.nsoltx.*
-            synthesizer = NsoltFactory.createSynthesis3dSystem();
-            analyzer = NsoltFactory.createAnalysis3dSystem();
-            import saivdr.degradation.*
-            import saivdr.degradation.linearprocess.*
-            import saivdr.degradation.noiseprocess.*
-            linearProcess = BlurSystem(...
-                'DataType','Volumetric Data',...
-                'BlurType','Gaussian');
-            noiseProcess  = AdditiveWhiteGaussianNoiseSystem();
-            degradation  = DegradationSystem(...
-                'LinearProcess',linearProcess,...
-                'NoiseProcess',noiseProcess);
-            obsImg = step(degradation,srcImg);
-            
-            % MSE before processing
-            mse = @(x,y) sum((x(:)-y(:)).^2)/numel(x);
-            msePre = mse(obsImg,srcImg);
-            
-            % Instantiation of target class
-            import saivdr.restoration.ista.*
-            testCase.istaimrstr = IstaImRestoration3d(...
-                'IsFista',true,...
-                'Synthesizer',synthesizer,...
-                'AdjOfSynthesizer',analyzer,...
-                'LinearProcess',linearProcess,...
-                'NumberOfTreeLevels',3,...
-                'Lambda',1e-2);
-            
-            % MSE after processing
-            resImg = step(testCase.istaimrstr,obsImg);
-            
-            % Evaluation
-            msePst = mse(resImg,srcImg);
-            
-            import matlab.unittest.constraints.IsLessThan
-            testCase.assertThat(msePst,IsLessThan(msePre));
-            
-            %              figure(1), imshow(srcImg)
-            %              figure(2), imshow(obsImg)
-            %              figure(3), imshow(resImg)
-            
-        end
-        
-        % Test inpainting
-        function testFistaNsoltInPainting(testCase)
-            
-            % Preperation
-            srcImg = rand(32,32,16);
-            import saivdr.dictionary.nsoltx.*
-            synthesizer = NsoltFactory.createSynthesis3dSystem();
-            analyzer = NsoltFactory.createAnalysis3dSystem();
-            import saivdr.degradation.*
-            import saivdr.degradation.linearprocess.*
-            import saivdr.degradation.noiseprocess.*
-            linearProcess = PixelLossSystem(...
-                'DataType','Volumetric Data');
-            noiseProcess = NoiselessSystem();
-            degradation  = DegradationSystem(...
-                'LinearProcess',linearProcess,...
-                'NoiseProcess',noiseProcess);
-            obsImg = step(degradation,srcImg);
-            
-            % MSE before processing
-            mse = @(x,y) sum((x(:)-y(:)).^2)/numel(x);
-            msePre = mse(obsImg,srcImg);
-            
-            % Instantiation of target class
-            import saivdr.restoration.ista.*
-            testCase.istaimrstr = IstaImRestoration3d(...
-                'IsFista',true,...
-                'Synthesizer',synthesizer,...
-                'AdjOfSynthesizer',analyzer,...
-                'LinearProcess',linearProcess,...
-                'NumberOfTreeLevels',3,...
-                'Lambda',1e-2);
-            
-            % MSE after processing
-            resImg = step(testCase.istaimrstr,obsImg);
-            
-            % Evaluation
-            msePst = mse(resImg,srcImg);
-            
-            import matlab.unittest.constraints.IsLessThan
-            testCase.assertThat(msePst,IsLessThan(msePre));
-            
-            %               figure(1), imshow(srcImg)
-            %               figure(2), imshow(obsImg)
-            %               figure(3), imshow(resImg)
-            
-        end
-        
-        % Test super resolution
-        function testFistaNsoltSuperResolution(testCase)
-            
-            % Preperation
-            srcImg = rand(32,32,16);
-            import saivdr.dictionary.nsoltx.*
-            synthesizer = NsoltFactory.createSynthesis3dSystem();
-            analyzer = NsoltFactory.createAnalysis3dSystem();
-            import saivdr.degradation.*
-            import saivdr.degradation.linearprocess.*
-            import saivdr.degradation.noiseprocess.*
-            linearProcess = DecimationSystem(...
-                'DataType','Volumetric Data');
-            noiseProcess = AdditiveWhiteGaussianNoiseSystem();
-            degradation  = DegradationSystem(...
-                'LinearProcess',linearProcess,...
-                'NoiseProcess',noiseProcess);
-            obsImg = step(degradation,srcImg);
-            
-            % MSE before processing
-            mse = @(x,y) sum((x(:)-y(:)).^2)/numel(x);
-            resImg = ...
-                shiftdim(upsample(...
-                shiftdim(upsample(...
-                shiftdim(upsample(obsImg,...
-                2),1),...
-                2),1),...
-                2),1);
-            kernel = ones([2 2 2])/8;
-            resImg = imfilter(resImg,kernel);
-            msePre = mse(resImg,srcImg);
-            
-            % Instantiation of target class
-            import saivdr.restoration.ista.*
-            testCase.istaimrstr = IstaImRestoration3d(...
-                'IsFista',true,...
-                'Synthesizer',synthesizer,...
-                'AdjOfSynthesizer',analyzer,...
-                'LinearProcess',linearProcess,...
-                'NumberOfTreeLevels',3,...
-                'Lambda',1e-2);
-            
-            % MSE after processing
-            resImg = step(testCase.istaimrstr,obsImg);
-            
-            % Evaluation
-            msePst = mse(resImg,srcImg);
-            
-            
-            import matlab.unittest.constraints.IsLessThan
-            testCase.assertThat(msePst,IsLessThan(msePre));
-            
-            %                figure(1), imshow(srcImg)
-            %                figure(2), imshow(obsImg)
-            %                figure(3), imshow(resImg)
-            
-        end
-%
         
         % Test step monitoring
         function testStepMonitoring(testCase)
@@ -450,6 +237,7 @@ classdef IstaImRestoration3dTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.nsoltx.*
             synthesizer = NsoltFactory.createSynthesis3dSystem();
             analyzer = NsoltFactory.createAnalysis3dSystem();
+            analyzer.NumberOfLevels = 3;            
             import saivdr.degradation.*
             import saivdr.degradation.linearprocess.*
             import saivdr.degradation.noiseprocess.*
@@ -475,7 +263,6 @@ classdef IstaImRestoration3dTestCase < matlab.unittest.TestCase
                 'Synthesizer',synthesizer,...
                 'AdjOfSynthesizer',analyzer,...
                 'LinearProcess',linearProcess,...
-                'NumberOfTreeLevels',3,...
                 'Lambda',1e-2,...
                 'StepMonitor',stepMonitor);
             
@@ -501,6 +288,7 @@ classdef IstaImRestoration3dTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.udhaar.*
             synthesizer = UdHaarSynthesis3dSystem();
             analyzer = UdHaarAnalysis3dSystem();
+            analyzer.NumberOfLevels = 3;            
             import saivdr.degradation.*
             import saivdr.degradation.linearprocess.*
             import saivdr.degradation.noiseprocess.*
@@ -522,7 +310,6 @@ classdef IstaImRestoration3dTestCase < matlab.unittest.TestCase
                 'Synthesizer',synthesizer,...
                 'AdjOfSynthesizer',analyzer,...
                 'LinearProcess',linearProcess,...
-                'NumberOfTreeLevels',3,...
                 'Lambda',1e-2);
             
             % MSE after processing
@@ -656,6 +443,7 @@ classdef IstaImRestoration3dTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.udhaar.*
             synthesizer = UdHaarSynthesis3dSystem();
             analyzer = UdHaarAnalysis3dSystem();
+            analyzer.NumberOfLevels = 3;            
             import saivdr.degradation.*
             import saivdr.degradation.linearprocess.*
             import saivdr.degradation.noiseprocess.*
@@ -676,7 +464,6 @@ classdef IstaImRestoration3dTestCase < matlab.unittest.TestCase
                 'Synthesizer',synthesizer,...
                 'AdjOfSynthesizer',analyzer,...
                 'LinearProcess',linearProcess,...
-                'NumberOfTreeLevels',3,...
                 'Lambda',1e-2);
             
             % MSE by original object
@@ -703,6 +490,7 @@ classdef IstaImRestoration3dTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.nsoltx.*
             synthesizer = NsoltFactory.createSynthesis3dSystem();
             analyzer = NsoltFactory.createAnalysis3dSystem();
+            analyzer.NumberOfLevels = 3;            
             import saivdr.degradation.*
             import saivdr.degradation.linearprocess.*
             import saivdr.degradation.noiseprocess.*
@@ -723,7 +511,6 @@ classdef IstaImRestoration3dTestCase < matlab.unittest.TestCase
                 'Synthesizer',synthesizer,...
                 'AdjOfSynthesizer',analyzer,...
                 'LinearProcess',linearProcess,...
-                'NumberOfTreeLevels',3,...
                 'Lambda',1e-2);
             
             % MSE by original object
@@ -749,6 +536,7 @@ classdef IstaImRestoration3dTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.nsoltx.*
             synthesizer = NsoltFactory.createSynthesis3dSystem();
             analyzer = NsoltFactory.createAnalysis3dSystem();
+            analyzer.NumberOfLevels = 3;            
             import saivdr.degradation.*
             import saivdr.degradation.linearprocess.*
             import saivdr.degradation.noiseprocess.*
@@ -761,7 +549,6 @@ classdef IstaImRestoration3dTestCase < matlab.unittest.TestCase
                 'Synthesizer',synthesizer,...
                 'AdjOfSynthesizer',analyzer,...
                 'LinearProcess',linearProcess,...
-                'NumberOfTreeLevels',3,...
                 'Lambda',1e-2);
             
             % Instantiation of target class
@@ -795,6 +582,7 @@ classdef IstaImRestoration3dTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.udhaar.*
             synthesizer = UdHaarSynthesis3dSystem();
             analyzer = UdHaarAnalysis3dSystem();
+            analyzer.NumberOfLevels = 3;
             import saivdr.degradation.*
             import saivdr.degradation.linearprocess.*
             import saivdr.degradation.noiseprocess.*
@@ -807,7 +595,6 @@ classdef IstaImRestoration3dTestCase < matlab.unittest.TestCase
                 'Synthesizer',synthesizer,...
                 'AdjOfSynthesizer',analyzer,...
                 'LinearProcess',linearProcess,...
-                'NumberOfTreeLevels',3,...
                 'Lambda',1e-2);
             
             % Instantiation of target class

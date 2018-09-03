@@ -1,12 +1,9 @@
 classdef UdHaarAnalysis3dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
-    %UDHAARANALYZSISSYSTEM Analysis system for undecimated Haar transform
-    %
-    % SVN identifier:
-    % $Id: UdHaarAnalysis3dSystem.m 683 2015-05-29 08:22:13Z sho $
+    %UDHAARANALYSIS3DSYSTEM Analysis system for undecimated Haar transform
     %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2014-2015, Shogo MURAMATSU
+    % Copyright (c) 2018, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -15,139 +12,158 @@ classdef UdHaarAnalysis3dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
     %                8050 2-no-cho Ikarashi, Nishi-ku,
     %                Niigata, 950-2181, JAPAN
     %
-    % http://msiplab.eng.niigata-u.ac.jp/    
+    % http://msiplab.eng.niigata-u.ac.jp/
     %
+    
    
-    properties (Access = private)
+    properties (Nontunable)
+        BoundaryOperation = 'Circular'
+    end
+    
+    properties (Nontunable, PositiveInteger)
+        NumberOfLevels = 1        
+    end            
+    
+    properties (Hidden, Transient)
+        BoundaryOperationSet = ...
+            matlab.system.StringSet({'Circular'});
+    end
+    
+    properties (Logical)
+        UseParallel = false
+    end
+    
+    properties (Nontunable, Access = private)
         kernels
         coefs
         nPixels
+        nWorkers
     end
-
+    
     methods
+        
         function obj = UdHaarAnalysis3dSystem(varargin)
             % Support name-value pair arguments
             setProperties(obj,nargin,varargin{:});
-            % 
-            obj.kernels.AA(:,:,1) = [ 1 1 ; 1 1 ];   % AA
-            obj.kernels.AA(:,:,2) = [ 1 1 ; 1 1 ];   
-            obj.kernels.HA(:,:,1) = [ 1 -1 ; 1 -1 ]; % HA
-            obj.kernels.HA(:,:,2) = [ 1 -1 ; 1 -1 ]; 
-            obj.kernels.VA(:,:,1) = [ 1 1 ; -1 -1 ]; % VA
-            obj.kernels.VA(:,:,2) = [ 1 1 ; -1 -1 ]; 
-            obj.kernels.DA(:,:,1) = [ 1 -1 ; -1 1 ]; % DA
-            obj.kernels.DA(:,:,2) = [ 1 -1 ; -1 1 ]; 
             %
-            obj.kernels.AD(:,:,1) = [ 1 1 ; 1 1 ];   % AD
-            obj.kernels.AD(:,:,2) = -[ 1 1 ; 1 1 ];   
-            obj.kernels.HD(:,:,1) = [ 1 -1 ; 1 -1 ]; % HD
-            obj.kernels.HD(:,:,2) = -[ 1 -1 ; 1 -1 ]; 
-            obj.kernels.VD(:,:,1) = [ 1 1 ; -1 -1 ]; % VD
-            obj.kernels.VD(:,:,2) = -[ 1 1 ; -1 -1 ]; 
-            obj.kernels.DD(:,:,1) = [ 1 -1 ; -1 1 ]; % DD
-            obj.kernels.DD(:,:,2) = -[ 1 -1 ; -1 1 ]; 
+            K = cell(8,1);
+            for idx = 1:8
+                K{idx} = double(zeros([2 2 2]));
+            end
+            K{1}(:,:,1) = double([ 1 -1 ; -1 1 ]); % DD
+            K{1}(:,:,2) = double(-[ 1 -1 ; -1 1 ]);
+            K{2}(:,:,1) = double([ 1 1 ; -1 -1 ]); % VD
+            K{2}(:,:,2) = double(-[ 1 1 ; -1 -1 ]);
+            K{3}(:,:,1) = double([ 1 -1 ; 1 -1 ]); % HD
+            K{3}(:,:,2) = double(-[ 1 -1 ; 1 -1 ]);
+            K{4}(:,:,1) = double([ 1 1 ; 1 1 ]);   % AD
+            K{4}(:,:,2) = double(-[ 1 1 ; 1 1 ]);
             %
+            K{5}(:,:,1) = double([ 1 -1 ; -1 1 ]); % DA
+            K{5}(:,:,2) = double([ 1 -1 ; -1 1 ]);
+            K{6}(:,:,1) = double([ 1 1 ; -1 -1 ]); % VA
+            K{6}(:,:,2) = double([ 1 1 ; -1 -1 ]);
+            K{7}(:,:,1) = double([ 1 -1 ; 1 -1 ]); % HA
+            K{7}(:,:,2) = double([ 1 -1 ; 1 -1 ]);
+            K{8}(:,:,1) = double([ 1 1 ; 1 1 ]);   % AA
+            K{8}(:,:,2) = double([ 1 1 ; 1 1 ]);
+            %
+            obj.kernels = K;
         end
     end
     
     methods (Access=protected)
         
         function s = saveObjectImpl(obj)
-            s = saveObjectImpl@matlab.System(obj);
+            s = saveObjectImpl@saivdr.dictionary.AbstAnalysisSystem(obj);
             s.kernels = obj.kernels;
             s.coefs = obj.coefs;
             s.nPixels = obj.nPixels;
+            s.nWorkers = obj.nWorkers;
         end
         
         function loadObjectImpl(obj, s, wasLocked)
+            obj.nWorkers = s.nWorkers;            
             obj.kernels = s.kernels;
             obj.coefs = s.coefs;
             obj.nPixels = s.nPixels;
-            loadObjectImpl@matlab.System(obj,s,wasLocked); 
+            loadObjectImpl@saivdr.dictionary.AbstAnalysisSystem(obj,s,wasLocked);
         end
         
-        function setupImpl(obj,u,nLevels)
+        function setupImpl(obj,u)
+            nLevels = obj.NumberOfLevels;
             obj.nPixels = numel(u);
-            obj.coefs = zeros(1,(7*nLevels+1)*obj.nPixels);
-        end
-        
-        function resetImpl(~)
-        end
-        
-        function [ coefs, scales ] = stepImpl(obj, u, nLevels)
-            scales = repmat(size(u),[7*nLevels+1, 1]);
+            obj.coefs = zeros(1,(7*nLevels+1)*obj.nPixels,'like',u);
+            
+            if obj.UseParallel
+                obj.nWorkers = Inf;
+            else
+                obj.nWorkers = 0;
+            end
+            
             % NOTE:
             % imfilter of R2017a has a bug for double precision array
             if strcmp(version('-release'),'2017a') && ...
                     isa(u,'double')
                 warning(['IMFILTER of R2017a with CIRCULAR option has a bug for double precison array.' ...
                     ' Please visit https://jp.mathworks.com/support/bugreports/ and search #BugID: 1554862.' ])
-            end               
-            yaa = u;          
-            hdd = obj.kernels.DD;
-            hvd = obj.kernels.VD;
-            hhd = obj.kernels.HD;
-            had = obj.kernels.AD;
-            hda = obj.kernels.DA;
-            hva = obj.kernels.VA;            
-            hha = obj.kernels.HA;
-            haa = obj.kernels.AA;
-            iSubband = 7*nLevels+1;
+            end
+        end
+        
+        function resetImpl(~)
+        end
+        
+        function [ coefs_, scales ] = stepImpl(obj, u)
+            nPixels_ = obj.nPixels;
+            coefs_ = obj.coefs;
+            nLevels = obj.NumberOfLevels;
+            K = obj.kernels;
+            scales = repmat(size(u),[7*nLevels+1, 1]);
+            yaa = u;
+            
+            Y = cell(8,1);
+            %
+            ufactor = uint32(1);
+            iSubband = uint32(7*nLevels+1);
+            weight = double(0);
             for iLevel = 1:nLevels
                 kernelSize = 2^iLevel;
                 weight = 1/(kernelSize^3);
-                if iLevel < 2 
+                if iLevel < 2
                     offset = [0 0 0]; % 1
                 else
                     offset = -[1 1 1]*(2^(iLevel-2)-1);
                 end
-                ydd = circshift(imfilter(yaa,hdd,'corr','circular'),offset);
-                yvd = circshift(imfilter(yaa,hvd,'corr','circular'),offset);
-                yhd = circshift(imfilter(yaa,hhd,'corr','circular'),offset);                
-                yad = circshift(imfilter(yaa,had,'corr','circular'),offset);
-                yda = circshift(imfilter(yaa,hda,'corr','circular'),offset);
-                yva = circshift(imfilter(yaa,hva,'corr','circular'),offset);
-                yha = circshift(imfilter(yaa,hha,'corr','circular'),offset);                
-                yaa = circshift(imfilter(yaa,haa,'corr','circular'),offset);
-                obj.coefs((iSubband-1)*obj.nPixels+1:iSubband*obj.nPixels) = ...
-                    ydd(:).'*weight;
-                obj.coefs((iSubband-2)*obj.nPixels+1:(iSubband-1)*obj.nPixels) = ...
-                    yvd(:).'*weight;
-                obj.coefs((iSubband-3)*obj.nPixels+1:(iSubband-2)*obj.nPixels) = ...
-                    yhd(:).'*weight;
-                obj.coefs((iSubband-4)*obj.nPixels+1:(iSubband-3)*obj.nPixels) = ...
-                    yad(:).'*weight;
-                obj.coefs((iSubband-5)*obj.nPixels+1:(iSubband-4)*obj.nPixels) = ...
-                    yda(:).'*weight;
-                obj.coefs((iSubband-6)*obj.nPixels+1:(iSubband-5)*obj.nPixels) = ...
-                    yva(:).'*weight;
-                obj.coefs((iSubband-7)*obj.nPixels+1:(iSubband-6)*obj.nPixels) = ...
-                    yha(:).'*weight;
+                %
+                parfor (idx = 1:8, obj.nWorkers)
+                    Y{idx} = circshift(upsmplfilter3_(obj,yaa,K{idx},ufactor),offset);
+                end
+                for idx = 1:7
+                    ytmp = Y{idx};
+                    coefs_((iSubband-idx)*nPixels_+1:(iSubband-idx+1)*nPixels_) = ...
+                        ytmp(:).'*weight;
+                end
                 iSubband = iSubband - 7;
-                hdd = upsample3_(obj,hdd);
-                hvd = upsample3_(obj,hvd);
-                hhd = upsample3_(obj,hhd);
-                had = upsample3_(obj,had);
-                hda = upsample3_(obj,hda);
-                hva = upsample3_(obj,hva);
-                hha = upsample3_(obj,hha);
-                haa = upsample3_(obj,haa);
+                ufactor = ufactor*2;
+                yaa = Y{8};
             end
-            obj.coefs(1:obj.nPixels) = yaa(:).'*weight;
-            coefs = obj.coefs;
+            coefs_(1:nPixels_) = yaa(:).'*weight;
+            obj.coefs = coefs_;
         end
     end
-    
+
     methods (Access = private)
         
-        function value = upsample3_(~,x)
-            ufactor = 2;
-            value = shiftdim(upsample(...
-                    shiftdim(upsample(...
-                    shiftdim(upsample(x,...
-                    ufactor),1),...
-                    ufactor),1),...
-                    ufactor),1);
+        function value = upsmplfilter3_(~,u,x,ufactor)
+            value = imfilter(u,...
+                shiftdim(upsample(...
+                shiftdim(upsample(...
+                shiftdim(upsample(x,...
+                ufactor),1),...
+                ufactor),1),...
+                ufactor),1),...
+                'corr','circular');
         end
+        
     end
 end

@@ -1,15 +1,15 @@
 # SaivDr Package for MATLAB/Simulink
-System object definitions for sparsity-aware image and volume data restoration
+System object definitions for sparsity-aware image and volumetric data restoration
 
 ## Summary
 
-SaivDr is an abbreviation of Sparsity-Aware Image and Volume Data Restoration. This package is developed in order for making
+SaivDr is an abbreviation of Sparsity-Aware Image and Volumetric Data Restoration. This package is developed in order for making
 
 * Experiments,
 * Development and
 * Implementation
 
-of sparsity-aware image and volume data restoraition algorithms simple.
+of sparsity-aware image and volumetric data restoraition algorithms simple.
 
 Information about SaivDr Package is given in Contents.m. The HELP command can be used to see the contents as follows:
 
@@ -35,6 +35,8 @@ Information about SaivDr Package is given in Contents.m. The HELP command can be
                          |            |               +- nsgenlot  -+- design
                          |            |               |
                          |            |               +- nsgenlotx -+- design
+                         |            |               |
+                         |            |               +- olaols
                          |            |               |
                          |            |               +- olpprfb
                          |            |               |
@@ -69,6 +71,8 @@ Information about SaivDr Package is given in Contents.m. The HELP command can be
                          |               +- nsgenlot  -+- design
                          |               |         
                          |               +- nsgenlotx -+- design
+                         |               |         
+                         |               +- olaols
                          |               |         
                          |               +- olpprfb
                          |               |         
@@ -136,7 +140,7 @@ Information about SaivDr Package is given in Contents.m. The HELP command can be
 * Shogo Muramatsu, Kosuke Furuya and Naotaka Yuki, "Multidimensional
    Nonseparable Oversampled Lapped Transforms: Theory and Design,"
    IEEE Trans. on Signal Process., Vol.65, No.5, pp.1251-1264, 
-   DOI:10.1109/TSP.2016.2633240, March 2017.
+   DOI:10.1109/TSP.2016.2633240, March 2017. [SigPort](https://sigport.org/documents/multidimensional-nonseparable-oversampled-lapped-transforms-theory-and-design)
 
 * Kota Horiuchi and Shogo Muramatsu, "Fast convolution technique for
    Non-separable Oversampled Lapped Transforms," Proc. of Asia 
@@ -191,3 +195,4 @@ This project was supported by JSPS KAKENHI (JP23560443,JP26420347).
 * Genki FUJII,       2017-
 * Naoki YAMAZAKI,    2017-
 * Yuhei KANEKO,      2017-
+

@@ -17,6 +17,7 @@ classdef UdHaarSynthesis2dSystemTestCase < matlab.unittest.TestCase
     %
     % http://msiplab.eng.niigata-u.ac.jp/    
     %
+   
     properties
         synthesizer
     end

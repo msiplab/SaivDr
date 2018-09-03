@@ -44,22 +44,22 @@ classdef MixtureOfUnitaryAnalysisSystemTestCase < matlab.unittest.TestCase
             fb_ = NsGenLotFactory.createLpPuFb2dSystem(...
                 'NumberOfVanishingMoments',2,...
                 'OutputMode','ParameterMatrixSet');
-            subAnalyzers{1} = NsoltFactory.createAnalysis2dSystem(fb_);
+            subAnalyzers{1} = NsoltFactory.createAnalysis2dSystem(fb_,...
+                'NumberOfLevels',nLevelSet(1));
             %
             fb_ = NsGenLotFactory.createLpPuFb2dSystem(...
                 'NumberOfVanishingMoments',2,...
                 'TvmAngleInDegree',30,...
                 'OutputMode','ParameterMatrixSet');
-            subAnalyzers{2} = NsoltFactory.createAnalysis2dSystem(fb_);
+            subAnalyzers{2} = NsoltFactory.createAnalysis2dSystem(fb_,...
+                'NumberOfLevels',nLevelSet(2));
             
             normFactor = 1/sqrt(length(subAnalyzers));
             
             % Expected value
             subScales = cell(2,1);
-            [subCoefs{1}, subScales{1}] = step(subAnalyzers{1},...
-                srcImg,nLevelSet(1));
-            [subCoefs{2}, subScales{2}] = step(subAnalyzers{2},...
-                srcImg,nLevelSet(2));
+            [subCoefs{1}, subScales{1}] = step(subAnalyzers{1},srcImg);
+            [subCoefs{2}, subScales{2}] = step(subAnalyzers{2},srcImg);
             coefsExpctd  = normFactor * cell2mat(subCoefs); 
             subScales{1} = [ subScales{1} ; -1 -1 ];
             subScales{2} = [ subScales{2} ]; 
@@ -71,8 +71,7 @@ classdef MixtureOfUnitaryAnalysisSystemTestCase < matlab.unittest.TestCase
                 'UnitaryAnalyzerSet',subAnalyzers);
             
             % Actual value
-            [coefsActual, scalesActual] = step(testCase.analyzer,...
-                srcImg,nLevelSet);
+            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifyEqual(scalesActual,scalesExpctd);
@@ -99,30 +98,30 @@ classdef MixtureOfUnitaryAnalysisSystemTestCase < matlab.unittest.TestCase
             fb_ = NsGenLotFactory.createLpPuFb2dSystem(...
                 'NumberOfVanishingMoments',2,...
                 'OutputMode','ParameterMatrixSet');
-            subAnalyzers{1} = NsoltFactory.createAnalysis2dSystem(fb_);
+            subAnalyzers{1} = NsoltFactory.createAnalysis2dSystem(fb_,...
+                'NumberOfLevels',nLevelSet(1));
             %
             fb_ = NsGenLotFactory.createLpPuFb2dSystem(...
                 'NumberOfVanishingMoments',2,...
                 'TvmAngleInDegree',30,...
                 'OutputMode','ParameterMatrixSet');
-            subAnalyzers{2} = NsoltFactory.createAnalysis2dSystem(fb_);
+            subAnalyzers{2} = NsoltFactory.createAnalysis2dSystem(fb_,...
+                'NumberOfLevels',nLevelSet(2));
             %
             fb_ = NsGenLotFactory.createLpPuFb2dSystem(...
                 'NumberOfVanishingMoments',2,...
                 'TvmAngleInDegree',60,...
                 'OutputMode','ParameterMatrixSet');
-            subAnalyzers{3} = NsoltFactory.createAnalysis2dSystem(fb_);            
+            subAnalyzers{3} = NsoltFactory.createAnalysis2dSystem(fb_,...
+                'NumberOfLevels',nLevelSet(3));
             
             normFactor = 1/sqrt(length(subAnalyzers));
             
             % Expected value
             subScales = cell(3,1);
-            [subCoefs{1}, subScales{1}] = step(subAnalyzers{1},...
-                srcImg,nLevelSet(1));
-            [subCoefs{2}, subScales{2}] = step(subAnalyzers{2},...
-                srcImg,nLevelSet(2));
-            [subCoefs{3}, subScales{3}] = step(subAnalyzers{3},...
-                srcImg,nLevelSet(3));            
+            [subCoefs{1}, subScales{1}] = step(subAnalyzers{1},srcImg);
+            [subCoefs{2}, subScales{2}] = step(subAnalyzers{2},srcImg);
+            [subCoefs{3}, subScales{3}] = step(subAnalyzers{3},srcImg);
             coefsExpctd  = normFactor * cell2mat(subCoefs); 
             subScales{1} = [ subScales{1} ; -1 -1 ];
             subScales{2} = [ subScales{2} ; -1 -1 ];
@@ -135,8 +134,7 @@ classdef MixtureOfUnitaryAnalysisSystemTestCase < matlab.unittest.TestCase
                 'UnitaryAnalyzerSet',subAnalyzers);
             
             % Actual value
-            [coefsActual, scalesActual] = step(testCase.analyzer,...
-                srcImg,nLevelSet);
+            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifyEqual(scalesActual,scalesExpctd);
@@ -173,7 +171,8 @@ classdef MixtureOfUnitaryAnalysisSystemTestCase < matlab.unittest.TestCase
                     'NumberOfVanishingMoments',2,...
                     'TvmAngleInDegree',phi(iDic-1),...
                     'OutputMode','ParameterMatrixSet');
-                subAnalyzers{iDic} = NsoltFactory.createAnalysis2dSystem(fb_);
+                subAnalyzers{iDic} = NsoltFactory.createAnalysis2dSystem(fb_,...
+                    'NumberOfLevels',nLevelSet(iDic));
             end
             
             normFactor = 1/sqrt(length(subAnalyzers));
@@ -183,13 +182,13 @@ classdef MixtureOfUnitaryAnalysisSystemTestCase < matlab.unittest.TestCase
             subScales = cell(nDics,1);
             for iDic = 1:nDics-1
                 [subCoefs{iDic}, tmpScales] = ...
-                    step(subAnalyzers{iDic},srcImg,nLevelSet(iDic));
+                    step(subAnalyzers{iDic},srcImg);
                 subScales{iDic} = ...
                     [ tmpScales ; -1 -1 ];
             end
             iDic = nDics;
             [subCoefs{iDic}, tmpScales] = ...
-                step(subAnalyzers{iDic},srcImg,nLevelSet(iDic));
+                step(subAnalyzers{iDic},srcImg);
             subScales{iDic} = tmpScales;
             coefsExpctd  = normFactor * cell2mat(subCoefs); 
             scalesExpctd = cell2mat(subScales);
@@ -200,8 +199,7 @@ classdef MixtureOfUnitaryAnalysisSystemTestCase < matlab.unittest.TestCase
                 'UnitaryAnalyzerSet',subAnalyzers);
             
             % Actual value
-            [coefsActual, scalesActual] = step(testCase.analyzer,...
-                srcImg,nLevelSet);
+            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifyEqual(scalesActual,scalesExpctd);
@@ -231,14 +229,16 @@ classdef MixtureOfUnitaryAnalysisSystemTestCase < matlab.unittest.TestCase
             fb_ = NsGenLotFactory.createLpPuFb2dSystem(...
                 'NumberOfVanishingMoments',2,...
                 'OutputMode','ParameterMatrixSet');
-            subAnalyzers{1} = NsoltFactory.createAnalysis2dSystem(fb_);
+            subAnalyzers{1} = NsoltFactory.createAnalysis2dSystem(fb_,...
+                'NumberOfLevels',nLevelSet(1));
             phi = [ -30 30 60 120 ];
             for iDic = 2:nDics
                 fb_ = NsGenLotFactory.createLpPuFb2dSystem(...
                     'NumberOfVanishingMoments',2,...
                     'TvmAngleInDegree',phi(iDic-1),...
                     'OutputMode','ParameterMatrixSet');
-                subAnalyzers{iDic} = NsoltFactory.createAnalysis2dSystem(fb_);
+                subAnalyzers{iDic} = NsoltFactory.createAnalysis2dSystem(fb_,...
+                    'NumberOfLevels',nLevelSet(iDic));
             end
 
             % Instantiation
@@ -259,8 +259,8 @@ classdef MixtureOfUnitaryAnalysisSystemTestCase < matlab.unittest.TestCase
                 testCase.verifyFalse(prpCln{iDic} == prpOrg{iDic});
             end
             %
-            [coefExpctd,scaleExpctd] = step(testCase.analyzer,srcImg,nLevelSet);
-            [coefActual,scaleActual] = step(cloneAnalyzer,srcImg,nLevelSet);
+            [coefExpctd,scaleExpctd] = step(testCase.analyzer,srcImg);
+            [coefActual,scaleActual] = step(cloneAnalyzer,srcImg);
             testCase.assertEqual(coefActual,coefExpctd);
             testCase.assertEqual(scaleActual,scaleExpctd);
             
