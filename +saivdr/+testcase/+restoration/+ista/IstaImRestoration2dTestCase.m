@@ -1,9 +1,6 @@
 classdef IstaImRestoration2dTestCase < matlab.unittest.TestCase
     %IstaImRestoration2dTESTCASE Test Case for IstaImRestoration2d
     %
-    % SVN identifier:
-    % $Id: IstaImRestoration2dTestCase.m 683 2015-05-29 08:22:13Z sho $
-    %
     % Requirements: MATLAB R2015b
     %
     % Copyright (c) 2014-2015, Shogo MURAMATSU

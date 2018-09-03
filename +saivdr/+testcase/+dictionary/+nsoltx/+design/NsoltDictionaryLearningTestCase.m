@@ -1,9 +1,6 @@
 classdef NsoltDictionaryLearningTestCase < matlab.unittest.TestCase
     %NSOLTDICTIONARYLEARNINGTESTCASE Test case for NsoltDictionaryLearning
     %
-    % SVN identifier:
-    % $Id: NsoltDictionaryLearningTestCase.m 866 2015-11-24 04:29:42Z sho $
-    %
     % Requirements: MATLAB R2015b
     %
     % Copyright (c) 2014-2015, Shogo MURAMATSU
