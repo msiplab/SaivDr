@@ -38,7 +38,7 @@ classdef AbstOvsdLpPuFb3dSystem < matlab.System %#codegen
         ColorMapAtmImShow      = 'cool'
         SliceIntervalAtmImShow = 1/2;
         IsColorBarAtmImShow    = false;
-        ObjAlphaScale = 0.2;
+        AlphaScale = 0.2;
     end
     
     properties (Nontunable, Logical, Hidden)
