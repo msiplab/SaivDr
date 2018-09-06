@@ -45,7 +45,9 @@ classdef VolumetricDataVisualizer < matlab.System
     
     % Pre-computed constants
     properties(Access = private)
-        
+        hSurfX
+        hSurfY
+        hSurfZ
     end
     
     methods
@@ -85,8 +87,8 @@ classdef VolumetricDataVisualizer < matlab.System
             else % Unsigned case
                 cdata = obj.Scale*cdata; % scaled;
             end
-            cdata(cdata<0)=0; % Clipping
-            cdata(cdata>1)=1;
+            %cdata(cdata<0)=0; % Clipping
+            %cdata(cdata>1)=1;
             
             % ImageObject
             if isempty(obj.ImageObject)
@@ -182,11 +184,13 @@ classdef VolumetricDataVisualizer < matlab.System
                     diff = obj.ZData(2)-obj.ZData(1);
                     delta = diff/size(cdata,3);
                     %
-                    for n = 1:size(cdata,3)
+                    nLays = size(cdata,3);
+                    obj.hSurfZ = cell(nLays,1);
+                    for n = 1:nLays
                         cslice = squeeze(cdata(:,:,n,:));
                         aslice = double(squeeze(alpha(:,:,n)));
-                        surface(x,y,z,cslice,'alphadata',aslice,...
-                            'tag',sprintf('z%05d',n),...
+                        obj.hSurfZ{n} = surface(x,y,z,cslice,'alphadata',aslice,...
+                            ...'tag',sprintf('z%05d',n),...
                             obj.Opts{:});
                         z = z + delta;
                     end
@@ -198,11 +202,13 @@ classdef VolumetricDataVisualizer < matlab.System
                     diff = obj.XData(2)-obj.XData(1);
                     delta = diff/size(cdata,2);
                     %
-                    for n = 1:size(cdata,2)
+                    nCols = size(cdata,2);
+                    obj.hSurfX = cell(nCols,1);
+                    for n = 1:nCols
                         cslice = squeeze(cdata(:,n,:,:));
                         aslice = double(squeeze(alpha(:,n,:)));
-                        surface(x,y,z,cslice,'alphadata',aslice,...
-                            'tag',sprintf('x%05d',n),...
+                        obj.hSurfX{n} = surface(x,y,z,cslice,'alphadata',aslice,...
+                            ...'tag',sprintf('x%05d',n),...
                             obj.Opts{:});
                         x = x + delta;
                     end
@@ -214,11 +220,13 @@ classdef VolumetricDataVisualizer < matlab.System
                     diff = obj.YData(2)-obj.YData(1);
                     delta = diff/size(cdata,1);
                     %
-                    for n = 1:size(cdata,1)
+                    nRows = size(cdata,1);
+                    obj.hSurfY = cell(nRows,1);
+                    for n = 1:nRows
                         cslice = squeeze(cdata(n,:,:,:));
                         aslice = double(squeeze(alpha(n,:,:)));
-                        surface(x,y,z,cslice,'alphadata',aslice,...
-                            'tag',sprintf('y%05d',n),...
+                        obj.hSurfY{n} = surface(x,y,z,cslice,'alphadata',aslice,...
+                            ...'tag',sprintf('y%05d',n),...
                             obj.Opts{:});
                         y = y + delta;
                     end
@@ -284,8 +292,8 @@ classdef VolumetricDataVisualizer < matlab.System
             else % Unsigned case
                 cdata = obj.Scale*cdata; % scaled;
             end
-            cdata(cdata<0)=0; % Clipping
-            cdata(cdata>1)=1;
+            %cdata(cdata<0)=0; % Clipping
+            %cdata(cdata>1)=1;
             
             if strcmp(obj.Texture,'2D')
                 
@@ -315,39 +323,31 @@ classdef VolumetricDataVisualizer < matlab.System
                     alpha = obj.Alpha;
                 end
                 
-                %{
-                % Delete children
-                nChildren = length(hVol.Children);
-                for iChild = 1:nChildren
-                    hVol.Children(iChild).delete()
-                end
-                %}
-                
                 % Update z-slice
-                for n = 1:size(cdata,3)
+                nLays = size(cdata,3);
+                for n = 1:nLays
                     cslice = squeeze(cdata(:,:,n,:));
                     aslice = double(squeeze(alpha(:,:,n)));
-                    hSurf = findobj(hVol,'tag',sprintf('z%05d',n));
-                    hSurf.CData     = cslice;
-                    hSurf.AlphaData = aslice;
+                    obj.hSurfZ{n}.CData     = cslice;
+                    obj.hSurfZ{n}.AlphaData = aslice;
                 end
                 
                 % Update x-slice
-                for n = 1:size(cdata,2)
+                nCols = size(cdata,2);
+                for n = 1:nCols
                     cslice = squeeze(cdata(:,n,:,:));
                     aslice = double(squeeze(alpha(:,n,:)));
-                    hSurf = findobj(hVol,'tag',sprintf('x%05d',n));
-                    hSurf.CData     = cslice;
-                    hSurf.AlphaData = aslice;
+                    obj.hSurfX{n}.CData     = cslice;
+                    obj.hSurfX{n}.AlphaData = aslice;
                 end
                 
                 % Update y-slice
-                for n = 1:size(cdata,1)
+                nRows = size(cdata,1);                
+                for n = 1:nRows
                     cslice = squeeze(cdata(n,:,:,:));
                     aslice = double(squeeze(alpha(n,:,:)));
-                    hSurf = findobj(hVol,'tag',sprintf('y%05d',n));
-                    hSurf.CData     = cslice;
-                    hSurf.AlphaData = aslice;
+                    obj.hSurfY{n}.CData     = cslice;
+                    obj.hSurfY{n}.AlphaData = aslice;
                 end
                 
                 % Update CData

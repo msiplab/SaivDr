@@ -86,8 +86,8 @@ classdef VolumetricDataVisualizerTestCase < matlab.unittest.TestCase
             else
                 expctdCData = scale_*expctdCData;
             end
-            expctdCData(expctdCData<0) = 0;
-            expctdCData(expctdCData>1) = 1;            
+            %expctdCData(expctdCData<0) = 0;
+            %expctdCData(expctdCData>1) = 1;            
             
             % Instantiation
             import saivdr.utility.*            
@@ -139,8 +139,8 @@ classdef VolumetricDataVisualizerTestCase < matlab.unittest.TestCase
             else
                 expctdCData = scale_*expctdCData;
             end
-            expctdCData(expctdCData<0) = 0;
-            expctdCData(expctdCData>1) = 1;
+            %expctdCData(expctdCData<0) = 0;
+            %expctdCData(expctdCData>1) = 1;
             
             % Instantiation
             import saivdr.utility.*            
@@ -190,8 +190,8 @@ classdef VolumetricDataVisualizerTestCase < matlab.unittest.TestCase
             else
                 expctdCData = scale*expctdCData;
             end
-            expctdCData(expctdCData<0) = 0;
-            expctdCData(expctdCData>1) = 1;
+            %expctdCData(expctdCData<0) = 0;
+            %expctdCData(expctdCData>1) = 1;
             
             % Instantiation
             import saivdr.utility.*            
@@ -244,8 +244,8 @@ classdef VolumetricDataVisualizerTestCase < matlab.unittest.TestCase
             %    expctdCData = squeeze(uSrc(:,round(width/2),:));
             %end
             expctdCData = (uSrc-vmin)/(vmax-vmin);
-            expctdCData(expctdCData<0) = 0;
-            expctdCData(expctdCData>1) = 1;
+            %expctdCData(expctdCData<0) = 0;
+            %expctdCData(expctdCData>1) = 1;
             %%}
             
             % Instantiation
