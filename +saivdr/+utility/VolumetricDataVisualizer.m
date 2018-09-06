@@ -29,6 +29,7 @@ classdef VolumetricDataVisualizer < matlab.System
         BgColor
         DAspect
         View
+        AlphaScale  = 0.1
     end
     
     properties (Hidden, Transient)
@@ -65,7 +66,8 @@ classdef VolumetricDataVisualizer < matlab.System
                     strcmp(propertyName,'Alpha') || ...
                     strcmp(propertyName,'BgColor') || ...
                     strcmp(propertyName,'DAspect') || ...
-                    strcmp(propertyName,'View')
+                    strcmp(propertyName,'View') || ...
+                    strcmp(propertyName,'AlphaScale')
                 flag = ~strcmp(obj.Texture,'3D');
             else
                 flag = false;
@@ -77,11 +79,14 @@ classdef VolumetricDataVisualizer < matlab.System
             
             vmin = obj.VRange(1);
             vmax = obj.VRange(2);
-            if vmin < 0
-                u = obj.Scale*((u-vmin)/(vmax-vmin)-0.5)+0.5;
-            else
-                u = obj.Scale*(u-vmin)/(vmax-vmin);
+            cdata = (u-vmin)/(vmax-vmin); % in [0,1]
+            if vmin < 0 % Signed case
+                cdata = obj.Scale*(cdata-0.5)+0.5; % Scaled
+            else % Unsigned case
+                cdata = obj.Scale*cdata; % scaled;
             end
+            cdata(cdata<0)=0; % Clipping
+            cdata(cdata>1)=1;
             
             % ImageObject
             if isempty(obj.ImageObject)
@@ -89,9 +94,9 @@ classdef VolumetricDataVisualizer < matlab.System
                 if strcmp(obj.Texture,'2D')
                     
                     if strcmp(obj.SlicePlane,'XY')
-                        y = u(:,:,round(size(u,3)/2));
+                        y = cdata(:,:,round(size(cdata,3)/2));
                     else
-                        y = squeeze(u(:,round(size(u,2)/2),:));
+                        y = squeeze(cdata(:,round(size(cdata,2)/2),:));
                     end
                     obj.ImageObject = imshow(y);                    
                     
@@ -99,8 +104,7 @@ classdef VolumetricDataVisualizer < matlab.System
                     
                     % Graphic group object
                     hVol = hggroup;
-                    cdata = u;
-                    
+                                        
                     % Volume size
                     [height,width,depth] = size(cdata);
                     if isempty(obj.XData)
@@ -137,7 +141,7 @@ classdef VolumetricDataVisualizer < matlab.System
                         'edgealpha',0,...
                         'facealpha','texturemap'};
                     
-                    if ndims(cdata) > 3
+                    if ndims(u) > 3
                         obj.Opts{4} = 'direct';
                     else
                         cdata = double(cdata);
@@ -145,14 +149,19 @@ classdef VolumetricDataVisualizer < matlab.System
                     end
                     
                     if isempty(obj.Alpha)
-                        alpha = cdata;
-                        if ndims(cdata) > 3
+                        if vmin < 0
+                            alpha = 2*abs(cdata-0.5);
+                        else
+                            alpha = cdata;
+                        end
+                        if ndims(u) > 3
                             alpha = sqrt(sum(double(alpha).^2, 4));
                             alpha = alpha - min(alpha(:));
                             alpha = 1 - alpha / max(alpha(:));
                         end
                         obj.Opts{6} = 'scaled';
                     else
+                        siz = size(cdata);
                         if ~isequal(siz(1:3), size(obj.Alpha))
                             error('Incorrect size of alphamatte');
                         end
@@ -165,9 +174,6 @@ classdef VolumetricDataVisualizer < matlab.System
                     for iChild = 1:nChildren
                         hVol.Children(iChild).delete()
                     end
-                    
-                    % CData
-                    cdata = u;
                     
                     % Create z-slice
                     x = [obj.XData(1), obj.XData(2); obj.XData(1), obj.XData(2)];
@@ -217,14 +223,14 @@ classdef VolumetricDataVisualizer < matlab.System
                         y = y + delta;
                     end
                     
-                    %
+                    % Update CData
                     setappdata(hVol,'CData',cdata);
                     %
                     ax = hVol.Parent;
-                    if obj.VRange(1) < 0 % Real
-                        alphamap(ax,[0 linspace(0.1, 0, 127) 0 linspace(0, 0.1, 127)]);
-                    else % Non-negative
-                        alphamap(ax,[0 linspace(0.1, 0, 255)]);
+                    if vmin < 0 % Signed
+                        alphamap(ax,[linspace(obj.AlphaScale, 0, 127) 0 linspace(0, obj.AlphaScale, 127)]);
+                    else % Unsigned
+                        alphamap(ax,[linspace(obj.AlphaScale, 0, 255) 0]);
                     end
                     %axis(ax,'off)
                     xlabel(ax,'X')
@@ -272,36 +278,50 @@ classdef VolumetricDataVisualizer < matlab.System
             
             vmin = obj.VRange(1);
             vmax = obj.VRange(2);
-            if vmin < 0
-                u = obj.Scale*((u-vmin)/(vmax-vmin)-0.5)+0.5;
-            else
-                u = obj.Scale*(u-vmin)/(vmax-vmin);
+            cdata = (u-vmin)/(vmax-vmin); % in [0,1]
+            if vmin < 0 % Signed case
+                cdata = obj.Scale*(cdata-0.5)+0.5; % Scaled
+            else % Unsigned case
+                cdata = obj.Scale*cdata; % scaled;
             end
+            cdata(cdata<0)=0; % Clipping
+            cdata(cdata>1)=1;
             
             if strcmp(obj.Texture,'2D')
                 
                 if strcmp(obj.SlicePlane,'XY')
-                    y = u(:,:,round(size(u,3)/2));
+                    y = cdata(:,:,round(size(cdata,3)/2));
                 else
-                    y = squeeze(u(:,round(size(u,2)/2),:));
+                    y = squeeze(cdata(:,round(size(cdata,2)/2),:));
                 end
                 obj.ImageObject.CData = y;
                 
             else % obj.Texture = '3D'
                 
                 hVol = obj.ImageObject;
-                cdata = u;
                 
                 if isempty(obj.Alpha)
-                    alpha = cdata;
-                    if ndims(cdata) > 3
+                    if vmin < 0
+                        alpha = 2*abs(cdata-0.5);
+                    else
+                        alpha = cdata;
+                    end
+                    if ndims(u) > 3
                         alpha = sqrt(sum(double(alpha).^2, 4));
                         alpha = alpha - min(alpha(:));
                         alpha = 1 - alpha / max(alpha(:));
                     end
-                else                    
+                else
                     alpha = obj.Alpha;
                 end
+                
+                %{
+                % Delete children
+                nChildren = length(hVol.Children);
+                for iChild = 1:nChildren
+                    hVol.Children(iChild).delete()
+                end
+                %}
                 
                 % Update z-slice
                 for n = 1:size(cdata,3)

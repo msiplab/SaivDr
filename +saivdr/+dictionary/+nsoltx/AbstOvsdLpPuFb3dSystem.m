@@ -38,6 +38,7 @@ classdef AbstOvsdLpPuFb3dSystem < matlab.System %#codegen
         ColorMapAtmImShow      = 'cool'
         SliceIntervalAtmImShow = 1/2;
         IsColorBarAtmImShow    = false;
+        ObjAlphaScale = 0.2;
     end
     
     properties (Nontunable, Logical, Hidden)
@@ -145,7 +146,8 @@ classdef AbstOvsdLpPuFb3dSystem < matlab.System %#codegen
                         obj.volVisSet{ib} = VolumetricDataVisualizer(...
                             'Texture','3D',...
                             'VRange',[cmn cmx],...
-                            'Scale',1);
+                            'Scale',1,...
+                            'AlphaScale', obj.AlphaScale);
                     end
                 end
                 for ib=1:nChs
