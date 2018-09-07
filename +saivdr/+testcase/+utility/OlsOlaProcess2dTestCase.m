@@ -631,7 +631,8 @@ classdef OlsOlaProcess2dTestCase < matlab.unittest.TestCase
             diff = max(abs(imgExpctd(:) - imgActual(:)));
             testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-10,...
                 sprintf('%g',diff));
-        end        
+        end   
+        
     end
     
 end
