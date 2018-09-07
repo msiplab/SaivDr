@@ -64,6 +64,10 @@ classdef OlsOlaProcess2d < matlab.System
         nWorkers
     end
     
+    properties (Access = private, Logical)
+        isSpmd = false;
+    end
+    
     methods
         
         % Constractor
@@ -145,6 +149,7 @@ classdef OlsOlaProcess2d < matlab.System
             s.refSubSize = obj.refSubSize;
             s.subPadArrays = obj.subPadArrays;
             s.states = obj.states;
+            s.isSpmd = obj.isSpmd;
             if isLocked(obj)
                 s.iteration = obj.iteration;
             end            
@@ -154,6 +159,7 @@ classdef OlsOlaProcess2d < matlab.System
             if wasLocked
                 obj.iteration = s.iteration;
             end                     
+            obj.isSpmd = s.isSpmd;            
             obj.states = s.states;
             obj.subPadArrays = s.subPadArrays;            
             obj.refSubSize = s.refSubSize;            
@@ -200,12 +206,24 @@ classdef OlsOlaProcess2d < matlab.System
             obj.refScales = refScales_;
             
             % Workers
-            if obj.UseParallel
-                obj.nWorkers = Inf;
+            if obj.UseParallel 
+                pool = gcp('nocreate');
+                if isempty(pool)
+                    parpool();
+                    pool = gcp();
+                end
+                if pool.NumWorkers >= nSplit
+                    obj.nWorkers = pool.NumWorkers;
+                    obj.isSpmd = true;
+                else
+                    obj.nWorkers = Inf;
+                    obj.isSpmd = false;                    
+                end
             else
                 obj.nWorkers = 0;
-            end
-
+                obj.isSpmd = false;
+            end            
+            
             % Evaluate
             % Check if srcImg is divisible by split factors
             exceptionId = 'SaivDr:IllegalSplitFactorException';
@@ -257,7 +275,6 @@ classdef OlsOlaProcess2d < matlab.System
             refCoefsManipulator.delete()
             
             % Initialization of state for CoefsManipulator                       
-            obj.states = cell(nSplit,1);
             if isempty(obj.InitialState)
                 for iSplit = 1:nSplit
                     state = num2cell(zeros(1,nChs,'like',srcImg));
@@ -278,9 +295,94 @@ classdef OlsOlaProcess2d < matlab.System
                     obj.states{iSplit} = state;
                 end
             end
+            
         end
         
         function recImg = stepImpl(obj,srcImg)
+            
+            if obj.isSpmd
+                recImg = obj.stepImpl_spmd(srcImg);     % SPMD        
+            else
+                recImg = obj.stepImpl_parfor(srcImg);   % PARFOR
+            end
+            
+        end
+        
+        function recImg = stepImpl_spmd(obj,srcImg)
+            obj.iteration = obj.iteration + 1;
+            
+            % Support function handles
+            analyze     = @(x)   obj.Analyzer.step(x);
+            manipulate  = @(x,s) obj.CoefsManipulator.step(x,s);                        
+            synthesize  = @(x,s) obj.Synthesizer.step(x,s);
+            extract_ols = @(c,s) obj.extract_ols_(c,s);
+            padding_ola = @(c)   obj.padding_ola_(c);
+            arr2vec     = @(a)   obj.arr2vec_(a);
+            
+            % Circular global padding
+            srcImg_ = padarray(srcImg,obj.PadSize,'circular');
+            
+            % Overlap save split
+            subImgs = obj.split_ols_(srcImg_);
+            
+            % Initialize
+            nSplit = length(subImgs);
+            subImgCmp = Composite(nSplit);
+            statesCmp = Composite(nSplit);
+            for iSplit=1:nSplit 
+                subImgCmp{iSplit} = subImgs{iSplit};
+                statesCmp{iSplit} = obj.states{iSplit};
+            end
+
+            % Parallel processing
+            usegpu_ = obj.UseGpu;
+            spmd(nSplit)
+                %iSplit = labindex;
+                if usegpu_
+                    subImgCmp = gpuArray(subImgCmp);
+                end
+                
+                % Analyze
+                [subCoefs, subScales] = analyze(subImgCmp);
+                
+                % Extract significant coefs.
+                coefs = extract_ols(subCoefs,subScales);
+                
+                % Process for coefficients
+                if usegpu_ && iscell(statesCmp)
+                    stateGpu = cellfun(@gpuArray,statesCmp,...
+                        'UniformOutput',false);
+                    [coefs,stateGpu] = manipulate(coefs,stateGpu);                
+                    statesCmp = cellfun(@gather,stateGpu,...
+                        'UniformOutput',false);
+                else
+                    [coefs,statesCmp] = manipulate(coefs,statesCmp);                
+                end
+                
+                % Zero padding for convolution
+                subCoefArray = padding_ola(coefs);
+                
+                % Synthesis
+                [subCoefs,subScales] = arr2vec(subCoefArray);
+                subRecImgCmp = synthesize(subCoefs,subScales);
+                
+                if usegpu_
+                    subRecImgCmp = gather(subRecImgCmp);
+                end
+            end
+            
+            % Update
+            obj.states = statesCmp;            
+            
+            % Overlap add (Circular)
+            subRecImgs = cell(nSplit,1);
+            for iSplit = 1:nSplit
+                subRecImgs{iSplit} = subRecImgCmp{iSplit};
+            end
+            recImg = obj.circular_ola_(subRecImgs);
+        end
+                
+        function recImg = stepImpl_parfor(obj,srcImg)
             obj.iteration = obj.iteration + 1;
             states_ = obj.states;
             nWorkers_ = obj.nWorkers;

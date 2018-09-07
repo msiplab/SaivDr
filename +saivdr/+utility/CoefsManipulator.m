@@ -50,7 +50,7 @@ classdef CoefsManipulator < matlab.System
                     end
                 else
                     id = 'SaivDr:IllegalStateInitialization';
-                    message = 'State must be cell or scalar.';
+                    message = ['State must be cell or scalar. ' class(statepre)];
                     throw(MException(id,message))
                 end
             else
