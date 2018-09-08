@@ -34,18 +34,17 @@ classdef CoefsManipulatorTestCase < matlab.unittest.TestCase
     end
     
     methods (Static)
-        function [y,spst] = softthresh(x,spre,lambda,gamma)
-            u = spre-gamma*x;
+        function cpst = softthresh(ctmp,cpre,lambda,gamma)
+            u = cpre-gamma*ctmp;
             v = abs(u)-lambda;
-            spst = sign(u).*(v+abs(v))/2;
-            y = spst;
+            cpst = sign(u).*(v+abs(v))/2;
         end
         
-        function [y,spst] = coefpdshshc(x,spre,lambda,gamma)
-            u = spre-gamma*x;
+        function cpst = coefpdshshc(ctmp,cpre,lambda,gamma)
+            u = cpre-gamma*ctmp;
             v = abs(u)-lambda;
             spst = sign(u).*(v+abs(v))/2;
-            y = 2*spst-spre;
+            cpst = 2*spst-cpre;
         end
     end
     
@@ -54,22 +53,20 @@ classdef CoefsManipulatorTestCase < matlab.unittest.TestCase
         function testDefaultStep(testCase,width,height)
             
             % Parameters
-            coefspre = randn(width,height);
-            statepre = [];
+            coefstmp = randn(width,height);
+            coefspre = [];
             
             % Instantiation
             import saivdr.utility.*
             testCase.target = CoefsManipulator();
             
             % Expected value
-            coefsExpctd = coefspre;
-            stateExpctd = statepre;
+            coefsExpctd = coefstmp;
             
             % Actual value
-            [coefsActual,stateActual] = testCase.target.step(coefspre,statepre);
+            coefsActual = testCase.target.step(coefstmp,coefspre);
             
             % Evaluation
-            testCase.verifySize(stateActual,size(stateExpctd));
             testCase.verifySize(coefsActual,size(coefsExpctd));
             diff = max(abs(coefsExpctd(:) - coefsActual(:)));
             testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-10,...
@@ -94,16 +91,12 @@ classdef CoefsManipulatorTestCase < matlab.unittest.TestCase
             
             % Expected value
             statepre = 0;
-            [coefsExpctd,stateExpctd] = g(coefspre,statepre);
+            coefsExpctd = g(coefspre,statepre);
             
             % Actual value
-            [coefsActual,stateActual] = testCase.target.step(coefspre,statepre);
+            coefsActual = testCase.target.step(coefspre,statepre);
             
             % Evaluation
-            testCase.verifySize(stateActual,size(stateExpctd));            
-            diff = max(abs(stateExpctd(:) - stateActual(:)));
-            testCase.verifyEqual(stateActual,stateExpctd,'AbsTol',1e-10,...
-                sprintf('%g',diff));            
             testCase.verifySize(coefsActual,size(coefsExpctd));
             diff = max(abs(coefsExpctd(:) - coefsActual(:)));
             testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-10,...
@@ -134,22 +127,15 @@ classdef CoefsManipulatorTestCase < matlab.unittest.TestCase
             % Expected value
             statepre = 0;            
             coefsExpctd = cell(1,nChs);
-            stateExpctd = cell(1,nChs);
             for iCh = 1:nChs
-                [coefsExpctd{iCh},stateExpctd{iCh}] = ...
-                    g(coefspre{iCh},statepre);
+                coefsExpctd{iCh} = g(coefspre{iCh},statepre);
             end
             
             % Actual value
-            [coefsActual,stateActual] = ...
-                testCase.target.step(coefspre,statepre);
+            coefsActual = testCase.target.step(coefspre,statepre);
             
             % Evaluation
             for iCh = 1:nChs
-                testCase.verifySize(stateActual{iCh},size(stateExpctd{iCh}));
-                diff = max(abs(stateExpctd{iCh}(:) - stateActual{iCh}(:)));
-                testCase.verifyEqual(stateActual{iCh},stateExpctd{iCh},...
-                    'AbsTol',1e-10,sprintf('%g',diff));                
                 testCase.verifySize(coefsActual{iCh},size(coefsExpctd{iCh}));
                 diff = max(abs(coefsExpctd{iCh}(:) - coefsActual{iCh}(:)));
                 testCase.verifyEqual(coefsActual{iCh},coefsExpctd{iCh},...
@@ -161,7 +147,7 @@ classdef CoefsManipulatorTestCase < matlab.unittest.TestCase
         function testSoftThresholding3d(testCase,width,height,depth)
             
             % Parameters
-            coefspre = randn(width,height,depth);
+            coefstmp = randn(width,height,depth);
             
             % Function
             lambda = 1e-3;
@@ -173,18 +159,14 @@ classdef CoefsManipulatorTestCase < matlab.unittest.TestCase
             testCase.target = CoefsManipulator('Manipulation',g);
             
             % Expected value
-            statepre = 0;
-            [coefsExpctd,stateExpctd] = g(coefspre,statepre);
+            coefspre = 0;
+            coefsExpctd = g(coefstmp,coefspre);
             
             % Actual value
-            [coefsActual,stateActual] = ...
-                testCase.target.step(coefspre,statepre);
+            coefsActual = ...
+                testCase.target.step(coefstmp,coefspre);
             
             % Evaluation
-            testCase.verifySize(stateActual,size(stateExpctd));
-            diff = max(abs(stateExpctd(:) - stateActual(:)));
-            testCase.verifyEqual(stateActual,stateExpctd,'AbsTol',1e-10,...
-                sprintf('%g',diff))            
             testCase.verifySize(coefsActual,size(coefsExpctd));
             diff = max(abs(coefsExpctd(:) - coefsActual(:)));
             testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-10,...
@@ -196,9 +178,9 @@ classdef CoefsManipulatorTestCase < matlab.unittest.TestCase
             
             % Parameters
             nChs = 5;
-            coefspre = cell(1,nChs);
+            coefstmp = cell(1,nChs);
             for iCh = 1:nChs
-                coefspre{iCh} = randn(width,height,depth);
+                coefstmp{iCh} = randn(width,height,depth);
             end
             
             % Function
@@ -211,24 +193,18 @@ classdef CoefsManipulatorTestCase < matlab.unittest.TestCase
             testCase.target = CoefsManipulator('Manipulation',g);
             
             % Expected value
-            statepre = 0;
-            stateExpctd = cell(1,nChs);
+            coefspre = 0;
             coefsExpctd = cell(1,nChs);
             for iCh = 1:nChs
-                [coefsExpctd{iCh},stateExpctd{iCh}] = ...
-                    g(coefspre{iCh},statepre);
+                coefsExpctd{iCh} = g(coefstmp{iCh},coefspre);
             end
             
             % Actual value
-            [coefsActual,stateActual] = ...
-                testCase.target.step(coefspre,statepre);
+            coefsActual = ...
+                testCase.target.step(coefstmp,coefspre);
             
             % Evaluation
             for iCh = 1:nChs
-                testCase.verifySize(stateActual{iCh},size(stateExpctd{iCh}));
-                diff = max(abs(stateExpctd{iCh}(:) - stateActual{iCh}(:)));
-                testCase.verifyEqual(stateActual{iCh},stateExpctd{iCh},...
-                    'AbsTol',1e-10,sprintf('%g',diff));                
                 testCase.verifySize(coefsActual{iCh},size(coefsExpctd{iCh}));
                 diff = max(abs(coefsExpctd{iCh}(:) - coefsActual{iCh}(:)));
                 testCase.verifyEqual(coefsActual{iCh},coefsExpctd{iCh},...
@@ -256,16 +232,16 @@ classdef CoefsManipulatorTestCase < matlab.unittest.TestCase
             testCase.target = CoefsManipulator('Manipulation', g);
             
             % Expected value
-            s = coefs{1};
+            x = coefs{1};
             for iIter = 1:nIters
-                [x,s] = g(coefs{iIter+1},s);
+                x = g(coefs{iIter+1},x);
             end
             coefsExpctd = x;
             
             % Actual value
-            s = coefs{1};
+            x = coefs{1};
             for iIter = 1:nIters
-                [x,s] = testCase.target.step(coefs{iIter+1},s);
+                x = testCase.target.step(coefs{iIter+1},x);
             end
             coefsActual = x;
             
@@ -298,14 +274,14 @@ classdef CoefsManipulatorTestCase < matlab.unittest.TestCase
             % Expected value
             s = coefs{1};
             for iIter = 1:nIters
-                [x,s] = g(coefs{iIter+1},s);
+                x = g(coefs{iIter+1},s);
             end
             coefsExpctd = x;
             
             % Actual value
             s = coefs{1};
             for iIter = 1:nIters
-                [x,s] = testCase.target.step(coefs{iIter+1},s);
+                x = testCase.target.step(coefs{iIter+1},s);
             end
             coefsActual = x;
             
@@ -342,20 +318,19 @@ classdef CoefsManipulatorTestCase < matlab.unittest.TestCase
             testCase.target = CoefsManipulator('Manipulation', g);
             
             % Expected value
-            s = coefs{1};
-            x = cell(1,nChs);
+            x = coefs{1};
             for iIter = 1:nIters
                 subcoefs = coefs{iIter+1};
                 for iCh = 1:nChs
-                    [x{iCh},s{iCh}] = g(subcoefs{iCh},s{iCh});
+                    x{iCh} = g(subcoefs{iCh},x{iCh});
                 end
             end
             coefsExpctd = x;
             
             % Actual value
-            s = coefs{1};
+            x = coefs{1};
             for iIter = 1:nIters
-                [x,s] = testCase.target.step(coefs{iIter+1},s);
+                x = testCase.target.step(coefs{iIter+1},x);
             end
             coefsActual = x;
             
@@ -392,20 +367,19 @@ classdef CoefsManipulatorTestCase < matlab.unittest.TestCase
             testCase.target = CoefsManipulator('Manipulation', g);
             
             % Expected value
-            s = coefs{1};
-            x = cell(1,nChs);
+            x = coefs{1};
             for iIter = 1:nIters
                 subcoefs = coefs{iIter+1};
                 for iCh = 1:nChs
-                    [x{iCh},s{iCh}] = g(subcoefs{iCh},s{iCh});
+                    x{iCh} = g(subcoefs{iCh},x{iCh});
                 end
             end
             coefsExpctd = x;
             
             % Actual value
-            s = coefs{1};
+            x = coefs{1};
             for iIter = 1:nIters
-                [x,s] = testCase.target.step(coefs{iIter+1},s);
+                x = testCase.target.step(coefs{iIter+1},x);
             end
             coefsActual = x;
             
@@ -438,18 +412,18 @@ classdef CoefsManipulatorTestCase < matlab.unittest.TestCase
             testCase.target = CoefsManipulator('Manipulation', g);
             
             % Expected value
-            s = coefs{1};
+            x = coefs{1};
             for iIter = 1:nIters
-                [v,s] = g(coefs{iIter+1},s);
+                x = g(coefs{iIter+1},x);
             end
-            coefsExpctd = v;
+            coefsExpctd = x;
             
             % Actual value
-            s = coefs{1};
+            x = coefs{1};
             for iIter = 1:nIters
-                [v,s] = testCase.target.step(coefs{iIter+1},s);
+                x = testCase.target.step(coefs{iIter+1},x);
             end
-            coefsActual = v;
+            coefsActual = x;
             
             % Evaluation
             testCase.verifySize(coefsActual,size(coefsExpctd));
@@ -483,22 +457,21 @@ classdef CoefsManipulatorTestCase < matlab.unittest.TestCase
             testCase.target = CoefsManipulator('Manipulation', g);
             
             % Expected value
-            s= coefs{1};
-            v = cell(1,nChs);
+            x = coefs{1};
             for iIter = 1:nIters
                 subcoefs = coefs{iIter+1};
                 for iCh = 1:nChs
-                    [v{iCh},s{iCh}] = g(subcoefs{iCh},s{iCh});
+                    x{iCh} = g(subcoefs{iCh},x{iCh});
                 end
             end
-            coefsExpctd = v;
+            coefsExpctd = x;
             
             % Actual value
-            s = coefs{1};
+            x = coefs{1};
             for iIter = 1:nIters
-                [v,s] = testCase.target.step(coefs{iIter+1},s);
+                x = testCase.target.step(coefs{iIter+1},x);
             end
-            coefsActual = v;
+            coefsActual = x;
             
             % Evaluation
             for iCh = 1:nChs
@@ -537,26 +510,25 @@ classdef CoefsManipulatorTestCase < matlab.unittest.TestCase
             testCase.target = CoefsManipulator('Manipulation', g);
             
             % Expected value
-            s = coefs{1};
-            v = cell(1,nChs);
+            x = coefs{1};
             for iIter = 1:nIters
                 subcoefs = coefs{iIter+1};
                 for iCh = 1:nChs
-                    [v{iCh},s{iCh}] = g(subcoefs{iCh},s{iCh});
+                    x{iCh} = g(subcoefs{iCh},x{iCh});
                 end
             end
-            coefsExpctd = v;
+            coefsExpctd = x;
             
             % Actual value
             if verLessThan('matlab','9.4')
-                s = num2cell(zeros(1,nChs));
+                x = num2cell(zeros(1,nChs));
             else
-                s = 0;
+                x = 0;
             end
             for iIter = 1:nIters
-                [v,s] = testCase.target.step(coefs{iIter+1},s);
+                x = testCase.target.step(coefs{iIter+1},x);
             end
-            coefsActual = v;
+            coefsActual = x;
             
             % Evaluation
             for iCh = 1:nChs
@@ -592,12 +564,11 @@ classdef CoefsManipulatorTestCase < matlab.unittest.TestCase
             testCase.target = CoefsManipulator('Manipulation', g);
             
             % Expected value
-            s = coefs{1};
-            x = cell(1,nChs);
+            x = coefs{1};
             for iIter = 1:nIters
                 subcoefs = coefs{iIter+1};
                 for iCh = 1:nChs
-                    [x{iCh},s{iCh}] = g(subcoefs{iCh},s{iCh});
+                    x{iCh} = g(subcoefs{iCh},x{iCh});
                 end
             end
             coefsExpctd = x;
@@ -605,9 +576,9 @@ classdef CoefsManipulatorTestCase < matlab.unittest.TestCase
             % Actual value
             targetClone = testCase.target.clone();
             targetClone.release();
-            s = coefs{1};
+            x = coefs{1};
             for iIter = 1:nIters
-                [x,s] = targetClone.step(coefs{iIter+1},s);
+                x = targetClone.step(coefs{iIter+1},x);
             end
             coefsActual = x;
             
@@ -660,26 +631,25 @@ classdef CoefsManipulatorTestCase < matlab.unittest.TestCase
             testCase.target = CoefsManipulator('Manipulation', g);
             
             % Expected value
-            s = coefs{1};
-            v = cell(1,nChs);
+            x = coefs{1};
             for iIter = 1:nIters
                 subcoefs = coefs{iIter+1};
                 for iCh = 1:nChs
-                    [v{iCh},s{iCh}] = g(subcoefs{iCh},s{iCh});
+                    x{iCh} = g(subcoefs{iCh},x{iCh});
                 end
             end
-            coefsExpctd = v;
+            coefsExpctd = x;
             
             % Actual value
             if verLessThan('matlab','9.4')
-                s = num2cell(zeros(1,nChs));
+                x = num2cell(zeros(1,nChs));
             else
-                s = 0;
+                x = 0;
             end
             for iIter = 1:nIters
-                [v,s] = testCase.target.step(coefs{iIter+1},s);
+                x = testCase.target.step(coefs{iIter+1},x);
             end
-            coefsActual = v;
+            coefsActual = x;
             
             % Evaluation
             if strcmp(dtype,'double')

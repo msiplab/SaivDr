@@ -1,9 +1,19 @@
 classdef CoefsManipulator < matlab.System
     %COEFSMANIPULATOR Coefficient manipulator for OLS/OLA wrapper classes
     %
+    % Requirements: MATLAB R2018a
+    %
+    % Copyright (c) 2018, Shogo MURAMATSU
+    %
+    % All rights reserved.
+    %
+    % Contact address: Shogo MURAMATSU,
+    %                Faculty of Engineering, Niigata University,
+    %                8050 2-no-cho Ikarashi, Nishi-ku,
+    %                Niigata, 950-2181, JAPAN
+    %
     % http://msiplab.eng.niigata-u.ac.jp/
     %
-    
     properties (Nontunable)
         Manipulation
     end
@@ -27,34 +37,27 @@ classdef CoefsManipulator < matlab.System
             loadObjectImpl@matlab.System(obj,s,wasLocked);
         end
         
-        function [coefspst,statepst] = stepImpl(obj,coefspre,statepre)
+        function coefspst = stepImpl(obj,coefstmp,coefspre)
             manipulation_ = obj.Manipulation;
             
             if isempty(manipulation_)
-                coefspst = coefspre;
-                statepst = [];
-            elseif iscell(coefspre)
-                nChs = length(coefspre);
-                coefspst = cell(1,nChs);
-                if iscell(statepre)
-                    statepst = cell(1,nChs);
-                    for iCh = 1:nChs
-                        [coefspst{iCh},statepst{iCh}] = ...
-                            manipulation_(coefspre{iCh},statepre{iCh});
-                    end
-                elseif isscalar(statepre)
-                    statepst = cell(1,nChs);
-                    for iCh = 1:nChs
-                        [coefspst{iCh},statepst{iCh}] = ...
-                            manipulation_(coefspre{iCh},statepre);
-                    end
+                coefspst = coefstmp;
+            elseif iscell(coefstmp)
+                if iscell(coefspre)
+                    coefspst = cellfun(...
+                        @(x,y) manipulation_(x,y),coefstmp,coefspre,...
+                        'UniformOutput',false);
+                elseif isscalar(coefspre)
+                    coefspst = cellfun(...
+                        @(x) manipulation_(x,coefspre),coefstmp,...
+                        'UniformOutput',false);
                 else
                     id = 'SaivDr:IllegalStateInitialization';
-                    message = ['State must be cell or scalar. ' class(statepre)];
+                    message = ['State must be cell or scalar. ' class(coefspre)];
                     throw(MException(id,message))
                 end
             else
-                [coefspst,statepst] = manipulation_(coefspre,statepre);
+                coefspst = manipulation_(coefstmp,coefspre);
             end
         end
         

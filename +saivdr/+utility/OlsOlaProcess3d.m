@@ -217,4 +217,3 @@ classdef OlsOlaProcess3d < saivdr.utility.AbstOlsOlaProcess
     end
     
 end
-
