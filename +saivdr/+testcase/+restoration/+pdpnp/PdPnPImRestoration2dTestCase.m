@@ -1,5 +1,5 @@
-classdef PdsImRestoration2dTestCase < matlab.unittest.TestCase
-    %PdsImRestoration2dTestCase Test Case for PdsImRestoration2d
+classdef PdPnPImRestoration2dTestCase < matlab.unittest.TestCase
+    %PDPNPIMRESTORATION2DTESTCASE Test Case for PdPnPImRestoration2d
     %
     % Requirements: MATLAB R2015b
     %
@@ -14,6 +14,8 @@ classdef PdsImRestoration2dTestCase < matlab.unittest.TestCase
     %
     % http://msiplab.eng.niigata-u.ac.jp/    
     %
+    
+    %{
     properties
         pdsimrstr
     end
@@ -72,7 +74,6 @@ classdef PdsImRestoration2dTestCase < matlab.unittest.TestCase
             
         end
         
-        %{
         % Test denoising
         function testPdsNsoltDeBlur(testCase)
             
@@ -844,8 +845,8 @@ classdef PdsImRestoration2dTestCase < matlab.unittest.TestCase
             testCase.verifyFalse(prpCln == prpOrg);
             
         end
-        %}
+
     end
-    
+        %}    
 end
 

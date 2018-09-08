@@ -1,9 +1,9 @@
-classdef PdsImRestoration3dTestCase < matlab.unittest.TestCase
-    %PdsImRestoration3dTestCase Test Case for PdsImRestoration3d
+classdef PdPnPImRestoration3dTestCase < matlab.unittest.TestCase
+    %PDPNPIMRESTORATION3DTESTCASE Test Case for PdPnPImRestoration3d
     %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2017, Shogo MURAMATSU
+    % Copyright (c) 2018, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -14,18 +14,100 @@ classdef PdsImRestoration3dTestCase < matlab.unittest.TestCase
     %
     % http://msiplab.eng.niigata-u.ac.jp/    
     %
+    % Problem setting:
+    %
+    %   x* = argmin_x F(x) + \lambda R(x) s.t. Dx \in C
+    %
+    % - Cost function (Fidelity)
+    %   
+    %   F(x) = 1/2 ||v-PDx||^2
+    %
+    % - Regularizer
+    %
+    %   R(x): Determine explisitly or implisitly. 
+    %
+    % - Hard constraint
+    %
+    %   C: Convex set
+    %
+    % - Measuremnt process
+    %
+    %   v = Py
+    %
+    % - Dictionary
+    %
+    %   y = Dx 
+    %
+    % =================================================================
+    % Algorithm: Primal-dual Plug-and-Play Image Restoration
+    % =================================================================    
+    % Input:  x(0), y1(0),y2(0)
+    % Output: x(n)
+    % 1: while A stopping criterin is not satisfied do
+    % 2:    x(n+1) = GR( x(n)-\gamma1(D'(P'y1(n)+y2(n))) ,sqrt(\gamma1))
+    % 3:    y1(n) <- y1(n) + \gamma2 PD(2x(n+1)-x(n))
+    % 4:    y2(n) <- y2(n) + \gamma2 D(2x(n+1)-x(n))
+    % 5:    y1(n+1) = y1(n) - \gamma2 prox_{1/\gamma2}F(1/gamma2 y1(n)) 
+    % 6:    y2(n+1) = y2(n) - \gamma2 P_C(1/gamma2 y2(n))     
+    % 7:    n <- n+1
+    % 8: end while
+    %    ||
+    % Analysis-synthesis expression
+    %    ||
+    % =================================================================
+    % Algorithm: Primal-dual Plug-and-Play Image Restoration
+    % =================================================================    
+    % Input:  x(0), y1(0),y2(0)
+    % Output: x(n)
+    % 1: while A stopping criterin is not satisfied do
+    % 2:    v <- D'(P'y1(n)+y2(n)) % <-- Analyze
+    % 3:    x(n+1) = G_R( x(n)-\gamma1 v ,sqrt(\gamma1))
+    % 4:    w <- D(2x(n+1)-x(n))   % <-- Synthesize
+    % 5:    y1(n) <- y1(n) + \gamma2 Pw
+    % 6:    y2(n) <- y2(n) + \gamma2 w
+    % 7:    y1(n+1) = y1(n) - \gamma2 prox_{1/\gamma2}F(1/gamma2 y1(n)) 
+    % 8:    y2(n+1) = y2(n) - \gamma2 P_C(1/gamma2 y2(n))     
+    % 9:    n <- n+1
+    %10: end while
+    %    
+    
     properties
-        pdsimrstr
+        pdpnpimrstr
     end
     
     methods (TestMethodTeardown)
         function deleteObject(testCase)
-            delete(testCase.pdsimrstr);
+            delete(testCase.pdpnpimrstr);
         end
     end
     
     methods (Test)
         
+        function testConstruction(testCase)
+        
+            % Parameters
+            lambda = 0.01;
+            gamma1 = 0.01;
+            
+            % Expectation
+            lambdaExpctd = lambda; % Regularization parameter
+            gamma1Expctd = gamma1; % Step size
+            
+            % Instantiation 
+            import saivdr.restoration.pdpnp.PdPnPImRestoration3d;
+            testCase.pdpnpimrstr = PdPnPImRestoration3d();
+            
+            % Actual
+            lambdaActual = testCase.pdpnpimrstr.Lambda; 
+            gamma1Actual = testCase.pdpnpimrstr.Gamma1;  
+            
+            % Evaluation
+            testCase.verifyEqual(lambdaActual,lambdaExpctd);            
+            testCase.verifyEqual(gamma1Actual,gamma1Expctd);
+            
+        end        
+        
+        %{
         % Test denoising
         function testPdsNsoltDeNoise(testCase)
             
@@ -77,7 +159,6 @@ classdef PdsImRestoration3dTestCase < matlab.unittest.TestCase
             
         end
      
-        %{
         % Test denoising
         function testPdsNsoltDeBlur(testCase)
             
