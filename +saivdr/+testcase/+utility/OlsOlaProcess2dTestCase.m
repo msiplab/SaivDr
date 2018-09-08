@@ -37,18 +37,10 @@ classdef OlsOlaProcess2dTestCase < matlab.unittest.TestCase
     end
     
     methods (Static)
-        function [y,spst] = softthresh(x,spre,lambda,gamma)
-            u = spre-gamma*x;
+        function cpst = softthresh(x,cpre,lambda,gamma)
+            u = cpre-gamma*x;
             v = abs(u)-lambda;
-            spst = sign(u).*(v+abs(v))/2;
-            y = spst;
-        end
-        
-        function [y,spst] = coefpdshshc(x,spre,lambda,gamma)
-            u = spre-gamma*x;
-            v = abs(u)-lambda;
-            spst = sign(u).*(v+abs(v))/2;
-            y = 2*spst - spre;
+            cpst = sign(u).*(v+abs(v))/2;
         end
     end
     

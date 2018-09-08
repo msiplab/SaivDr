@@ -346,22 +346,18 @@ classdef (Abstract) AbstOlsOlaProcess < matlab.System
                 coefs = extract_ols(subCoefs,subScales);
                 
                 % Process for coefficients
-                if usegpu_ && iscell(stateCmp)
-                    state = cellfun(@gpuArray,stateCmp,...
-                        'UniformOutput',false);
-                else
-                    state = stateCmp;
+                state = stateCmp;
+                if usegpu_ && iscell(state)
+                    state = cellfun(@gpuArray,state,'UniformOutput',false);
                 end
-                [coefs,state] = manipulate(coefs,state);
-                if  usegpu_ && iscell(stateCmp)
-                    stateCmp = cellfun(@gather,state,...
-                        'UniformOutput',false);
-                else
-                    stateCmp = state;
-                end
+                coefs = manipulate(coefs,state);
                 
                 % Zero padding for convolution
                 subCoefArray = padding_ola(coefs);
+                if  usegpu_ 
+                    coefs = cellfun(@gather,coefs,'UniformOutput',false);
+                end
+                stateCmp = coefs;
                 
                 % Synthesis
                 [subCoefs,subScales] = arr2vec(subCoefArray);
@@ -389,8 +385,6 @@ classdef (Abstract) AbstOlsOlaProcess < matlab.System
         
         function recImg = stepImpl_parfor(obj,srcImg)
             obj.iteration = obj.iteration + 1;
-            states_ = obj.states;
-            nWorkers_ = obj.nWorkers;
             
             % Support function handles
             analyze     = @(x)   obj.Analyzer.step(x);
@@ -408,9 +402,11 @@ classdef (Abstract) AbstOlsOlaProcess < matlab.System
             
             % Initialize
             nSplit = length(subImgs);
-            subRecImgs = cell(nSplit,1);
+            states_ = obj.states;
             
             % Parallel processing
+            nWorkers_ = obj.nWorkers;
+            subRecImgs = cell(nSplit,1);            
             usegpu_ = obj.UseGpu;
             parfor (iSplit=1:nSplit,nWorkers_)
                 if usegpu_
@@ -430,14 +426,14 @@ classdef (Abstract) AbstOlsOlaProcess < matlab.System
                 if usegpu_ && iscell(state)
                     state = cellfun(@gpuArray,state,'UniformOutput',false);
                 end
-                [coefs,state] = manipulate(coefs,state);
-                if usegpu_ && iscell(state)
-                    state = cellfun(@gather,state,'UniformOutput',false);
-                end
-                states_{iSplit} = state;
+                coefs = manipulate(coefs,state);
                 
                 % Zero padding for convolution
                 subCoefArray = padding_ola(coefs);
+                if usegpu_ 
+                    coefs = cellfun(@gather,coefs,'UniformOutput',false);
+                end
+                states_{iSplit} = coefs;
                 
                 % Synthesis
                 [subCoefs,subScales] = arr2vec(subCoefArray);
