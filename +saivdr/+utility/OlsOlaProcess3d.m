@@ -1,4 +1,4 @@
-classdef OlsOlaProcess3d < matlab.System
+classdef OlsOlaProcess3d < saivdr.utility.AbstOlsOlaProcess
     %OLSOLAPROCESS3D OLS/OLA wrapper for 3-D analysis and synthesis system
     %
     % Reference:
@@ -21,28 +21,8 @@ classdef OlsOlaProcess3d < matlab.System
     % http://msiplab.eng.niigata-u.ac.jp/
     %
     
-    properties (Nontunable)
-        Analyzer
-        Synthesizer
-        BoundaryOperation
-        PadSize = [0 0 0]
-        SplitFactor = []
-        CoefsManipulator = []
-        InitialState
-    end
-    
-    properties (Logical)
-        UseGpu = false
-        UseParallel = false
-        IsIntegrityTest = true
-    end
-    
-    properties (DiscreteState)
-        iteration
-    end
-    
-    properties (Access = private)
-        states
+    properties (Access = protected, Constant = true)
+        DATA_DIMENSION = 3
     end
     
     properties (Nontunable, PositiveInteger, Hidden)
@@ -51,33 +31,14 @@ classdef OlsOlaProcess3d < matlab.System
         DepthSplitFactor = 1
     end
     
-    properties (Hidden, Transient)
-        BoundaryOperationSet = ...
-            matlab.system.StringSet({'Circular'});
-    end
-    
-    properties (Access = private, Nontunable)
-        refSize
-        refSubSize
-        refScales
-        subPadSize
-        subPadArrays
-        nWorkers
-    end
-    
-    properties (Access = private, Logical)
-        isSpmd = false;
-    end    
-    
     methods
         
         % Constractor
         function obj = OlsOlaProcess3d(varargin)
             import saivdr.dictionary.utility.Direction
+            obj = obj@saivdr.utility.AbstOlsOlaProcess(...
+                varargin{:});
             setProperties(obj,nargin,varargin{:})
-            if ~isempty(obj.Analyzer)
-                obj.BoundaryOperation = obj.Analyzer.BoundaryOperation;
-            end
             if ~isempty(obj.SplitFactor)
                 obj.VerticalSplitFactor = obj.SplitFactor(Direction.VERTICAL);
                 obj.HorizontalSplitFactor = obj.SplitFactor(Direction.HORIZONTAL);
@@ -86,51 +47,6 @@ classdef OlsOlaProcess3d < matlab.System
                 obj.SplitFactor(Direction.VERTICAL) = obj.VerticalSplitFactor;
                 obj.SplitFactor(Direction.HORIZONTAL) = obj.HorizontalSplitFactor;
                 obj.SplitFactor(Direction.DEPTH) = obj.DepthSplitFactor;
-            end
-            if isempty(obj.CoefsManipulator)
-                import saivdr.utility.CoefsManipulator
-                obj.CoefsManipulator = CoefsManipulator();
-            end
-        end
-        
-        
-        function coefsSet = analyze(obj,srcImg)
-            % Preperation
-            verticalSplitFactor = obj.VerticalSplitFactor;
-            horizontalSplitFactor = obj.HorizontalSplitFactor;
-            depthSplitFactor = obj.DepthSplitFactor;
-            nSplit = prod(obj.SplitFactor);
-            obj.Analyzer.release();
-            refAnalyzer = obj.Analyzer.clone();
-            [~,refScales_] = refAnalyzer.step(srcImg);
-            
-            % Parameters
-            obj.refSize = size(srcImg);
-            obj.refSubSize = obj.refSize*...
-                diag(1./[verticalSplitFactor,...
-                horizontalSplitFactor,...
-                depthSplitFactor]);
-            scaleRatio = refScales_*diag(1./obj.refSize);
-            obj.subPadSize = scaleRatio*diag(obj.PadSize);
-            obj.refScales = refScales_;
-            
-            % Analyzer
-            analyzer_ = obj.Analyzer;
-            
-            % Define support functions
-            extract_ols = @(c,s) obj.extract_ols_(c,s);
-            
-            % Circular global padding
-            srcImg_ = padarray(srcImg,obj.PadSize,'circular');
-            
-            % Overlap save split
-            subImgs = obj.split_ols_(srcImg_);
-            
-            % Analyze
-            coefsSet = cell(nSplit,1);
-            for iSplit=1:nSplit
-                [subCoefs, subScales] = analyzer_.step(subImgs{iSplit});
-                coefsSet{iSplit} = extract_ols(subCoefs,subScales);
             end
         end
         
@@ -147,329 +63,14 @@ classdef OlsOlaProcess3d < matlab.System
                 flag = false;
             end
         end
-
+        
         function s = saveObjectImpl(obj)
-            s = saveObjectImpl@matlab.System(obj);
-            s.nWorkers = obj.nWorkers;
-            s.refSize = obj.refSize;
-            s.refScales = obj.refScales;
-            s.subPadSize = obj.subPadSize;
-            s.refSubSize = obj.refSubSize;
-            s.subPadArrays = obj.subPadArrays;
-            s.states = obj.states;
-            if isLocked(obj)
-                s.iteration = obj.iteration;
-            end
+            s = saveObjectImpl@saivdr.utility.AbstOlsOlaProcess(obj);
         end
         
         function loadObjectImpl(obj,s,wasLocked)
-            if wasLocked
-                obj.iteration = s.iteration;
-            end
-            obj.states = s.states;
-            obj.subPadArrays = s.subPadArrays;
-            obj.refSubSize = s.refSubSize;
-            obj.subPadSize = s.subPadSize;
-            obj.refScales = s.refScales;
-            obj.refSize = s.refSize;
-            obj.nWorkers = s.nWorkers;
-            loadObjectImpl@matlab.System(obj,s,wasLocked);
+            loadObjectImpl@saivdr.utility.AbstOlsOlaProcess(obj,s,wasLocked);
         end
-        
-        function setupImpl(obj,srcImg)
-            if isa(srcImg,'gpuArray')
-                obj.UseGpu = true;
-            end
-            
-            % Preperation
-            verticalSplitFactor = obj.VerticalSplitFactor;
-            horizontalSplitFactor = obj.HorizontalSplitFactor;
-            depthSplitFactor = obj.DepthSplitFactor;
-            nSplit = verticalSplitFactor*horizontalSplitFactor*depthSplitFactor;
-            
-            % Analyzers
-            obj.Analyzer.release();
-            refAnalyzer = obj.Analyzer.clone();
-            if obj.IsIntegrityTest
-                [refCoefs,refScales_] = refAnalyzer.step(srcImg);
-            else
-                [~,refScales_] = refAnalyzer.step(srcImg);
-            end
-            
-            % Synthesizers
-            obj.Synthesizer.release();
-            refSynthesizer = obj.Synthesizer.clone();
-            
-            % Manipulators
-            obj.CoefsManipulator.release();
-            refCoefsManipulator = obj.CoefsManipulator.clone();
-            
-            % Parameters
-            obj.refSize = size(srcImg);
-            obj.refSubSize = obj.refSize*diag(1./[...
-                verticalSplitFactor,...
-                horizontalSplitFactor,...
-                depthSplitFactor]);
-            scaleRatio = refScales_*diag(1./obj.refSize);
-            obj.subPadSize = scaleRatio*diag(obj.PadSize);
-            obj.refScales = refScales_;
-            
-            % Workers
-            if obj.UseParallel 
-                pool = gcp('nocreate');
-                if isempty(pool)
-                    parpool();
-                    pool = gcp();
-                end
-                if pool.NumWorkers >= nSplit
-                    obj.nWorkers = pool.NumWorkers;
-                    obj.isSpmd = true;
-                else
-                    obj.nWorkers = Inf;
-                    obj.isSpmd = false;                    
-                end
-            else
-                obj.nWorkers = 0;
-                obj.isSpmd = false;
-            end        
-            
-            %Evaluate
-            % Check if srcImg is divisible by split factors
-            exceptionId = 'SaivDr:IllegalSplitFactorException';
-            message = 'Split factor must be a divisor of array size.';
-            if sum(mod(obj.refSubSize,1)) ~= 0
-                throw(MException(exceptionId,message))
-            end
-            % Check if scales are divisible by split factors
-            if sum(mod(obj.subPadSize,1)) ~= 0
-                throw(MException('SaivDr','Illegal Pad Size.'))
-            end
-            
-            % Allocate memory for zero padding of arrays
-            nChs = size(refScales_,1);
-            obj.subPadArrays = cell(nChs,1);
-            nCoefs = 0;
-            for iCh = 1:nChs
-                subScale = refScales_(iCh,:)*diag(1./[...
-                    verticalSplitFactor,...
-                    horizontalSplitFactor,...
-                    depthSplitFactor]);
-                nDim = subScale+2*obj.subPadSize(iCh,:);
-                obj.subPadArrays{iCh} = zeros(nDim,'like',srcImg);
-                nCoefs = nCoefs + prod(nDim);
-            end
-            
-            % Check integrity
-            if obj.IsIntegrityTest
-                exceptionId = 'SaivDr:ReconstructionFailureException';
-                message = 'Failure occurs in reconstruction. Please check the split and padding size.';
-                %
-                refCoefsOut = refCoefsManipulator.step(refCoefs,0);
-                imgExpctd = refSynthesizer.step(refCoefsOut,refScales_);
-                %
-                obj.states = num2cell(zeros(nSplit,1,'like',srcImg));
-                imgActual = obj.stepImpl(srcImg);
-                %
-                diffImg = imgExpctd - imgActual;
-                if norm(diffImg(:))/numel(diffImg) > 1e-6
-                    throw(MException(exceptionId,message))
-                end
-                %
-                if verLessThan('matlab','9.4')
-                    obj.CoefsManipulator.release();
-                end
-            end
-            
-            % Delete reference analyzer and synthesizer
-            refAnalyzer.delete()
-            refSynthesizer.delete()
-            refCoefsManipulator.delete()
-            
-            % Initialization of state for CoefsManipulator
-            obj.states = cell(nSplit,1);
-            if isempty(obj.InitialState)
-                for iSplit = 1:nSplit
-                    state = num2cell(zeros(1,nChs,'like',srcImg));
-                    obj.states{iSplit} = state;
-                end
-            elseif isscalar(obj.InitialState)
-                for iSplit = 1:nSplit
-                    state = num2cell(...
-                        cast(obj.InitialState,'like',srcImg)*...
-                        ones(1,nChs,'like',srcImg));
-                    obj.states{iSplit} = state;
-                end
-            else
-                for iSplit = 1:nSplit
-                    initState = obj.InitialState{iSplit};
-                    state = cellfun(@(x) cast(x,'like',srcImg),...
-                        initState,'UniformOutput',false);
-                    obj.states{iSplit} = state;
-                end
-            end
-        end
-        
-        
-        function recImg = stepImpl(obj,srcImg)
-
-            if obj.isSpmd
-                recImg = obj.stepImpl_spmd(srcImg);     % SPMD        
-            else
-                recImg = obj.stepImpl_parfor(srcImg);   % PARFOR
-            end
-            
-        end
-        
-     function recImg = stepImpl_spmd(obj,srcImg)
-            obj.iteration = obj.iteration + 1;
-            
-            % Support function handles
-            analyze     = @(x)   obj.Analyzer.step(x);
-            manipulate  = @(x,s) obj.CoefsManipulator.step(x,s);                        
-            synthesize  = @(x,s) obj.Synthesizer.step(x,s);
-            extract_ols = @(c,s) obj.extract_ols_(c,s);
-            padding_ola = @(c)   obj.padding_ola_(c);
-            arr2vec     = @(a)   obj.arr2vec_(a);
-            
-            % Circular global padding
-            srcImg_ = padarray(srcImg,obj.PadSize,'circular');
-            
-            % Overlap save split
-            subImgs = obj.split_ols_(srcImg_);
-            
-            % Initialize
-            nSplit = length(subImgs);
-            subImgCmp = Composite(nSplit);
-            statesCmp = Composite(nSplit);
-            for iSplit=1:nSplit 
-                subImgCmp{iSplit} = subImgs{iSplit};
-                statesCmp{iSplit} = obj.states{iSplit};
-            end
-            
-            % Parallel processing
-            usegpu_ = obj.UseGpu;
-            spmd(nSplit)
-                %iSplit = labindex;
-                if usegpu_
-                    subImgCmp = gpuArray(subImgCmp);
-                end
-                
-                % Analyze
-                [subCoefs, subScales] = analyze(subImgCmp);
-                
-                % Extract significant coefs.
-                coefs = extract_ols(subCoefs,subScales);
-                
-                % Process for coefficients
-                if usegpu_ && iscell(statesCmp)
-                    stateGpu = cellfun(@gpuArray,statesCmp,...
-                        'UniformOutput',false);
-                    [coefs,stateGpu] = manipulate(coefs,stateGpu);                
-                    statesCmp = cellfun(@gather,stateGpu,...
-                        'UniformOutput',false);
-                else
-                    [coefs,statesCmp] = manipulate(coefs,statesCmp);                
-                end
-                
-                % Zero padding for convolution
-                subCoefArray = padding_ola(coefs);
-                
-                % Synthesis
-                [subCoefs,subScales] = arr2vec(subCoefArray);
-                subRecImgCmp = synthesize(subCoefs,subScales);
-                
-                if usegpu_
-                    subRecImgCmp = gather(subRecImgCmp);
-                end
-            end
-            
-            % Update
-            obj.states = statesCmp;
-            
-            % Overlap add (Circular)
-            subRecImgs = cell(nSplit,1);
-            for iSplit = 1:nSplit
-                subRecImgs{iSplit} = subRecImgCmp{iSplit};
-            end
-            recImg = obj.circular_ola_(subRecImgs);
-        end        
-        
-        function recImg = stepImpl_parfor(obj,srcImg)
-            obj.iteration = obj.iteration + 1;
-            states_ = obj.states;
-            nWorkers_ = obj.nWorkers;
-            
-            % Support function handles
-            analyze     = @(x)   obj.Analyzer.step(x);
-            manipulate  = @(x,s) obj.CoefsManipulator.step(x,s);                        
-            synthesize  = @(x,s) obj.Synthesizer.step(x,s);
-            extract_ols = @(c,s) obj.extract_ols_(c,s);
-            padding_ola = @(c)   obj.padding_ola_(c);
-            arr2vec     = @(a)   obj.arr2vec_(a);
-            
-            % Circular global padding
-            srcImg_ = padarray(srcImg,obj.PadSize,'circular');
-            
-            % Overlap save split
-            subImgs = obj.split_ols_(srcImg_);
-            
-            % Initialize
-            nSplit = length(subImgs);
-            subRecImgs = cell(nSplit,1);
-            
-            % Parallel processing
-            usegpu_ = obj.UseGpu;
-            parfor (iSplit=1:nSplit,nWorkers_)
-                if usegpu_
-                    subImg = gpuArray(subImgs{iSplit});
-                else
-                    subImg = subImgs{iSplit};
-                end
-                
-                % Analyze
-                [subCoefs, subScales] = analyze(subImg);
-                
-                % Extract significant coefs.
-                coefs = extract_ols(subCoefs,subScales);
-                
-                % Process for coefficients
-                state = states_{iSplit};
-                if usegpu_ && iscell(state)
-                    state = cellfun(@gpuArray,state,'UniformOutput',false);
-                end
-                [coefs,state] = manipulate(coefs,state);
-                if usegpu_ && iscell(state)
-                    state = cellfun(@gather,state,'UniformOutput',false);
-                end
-                states_{iSplit} = state;
-                
-                % Zero padding for convolution
-                subCoefArray = padding_ola(coefs);
-                
-                % Synthesis
-                [subCoefs,subScales] = arr2vec(subCoefArray);
-                subRecImg = synthesize(subCoefs,subScales);
-                
-                if usegpu_
-                    subRecImgs{iSplit} = gather(subRecImg);
-                else
-                    subRecImgs{iSplit} = subRecImg;
-                end
-            end
-            
-            % Update
-            obj.states = states_;
-            
-            % Overlap add (Circular)
-            recImg = obj.circular_ola_(subRecImgs);
-        end
-        
-        function resetImpl(obj)
-            obj.iteration = 0;
-        end
-    end
-    
-    methods (Access = private)
         
         function recImg = circular_ola_(obj,subRecImg)
             import saivdr.dictionary.utility.Direction
@@ -521,7 +122,7 @@ classdef OlsOlaProcess3d < matlab.System
                 1:obj.refSize(Direction.DEPTH)),-overlap/2);
         end
         
-         function subCoefArrayOut = padding_ola_(obj,subCoefArrayIn)
+        function subCoefArrayOut = padding_ola_(obj,subCoefArrayIn)
             import saivdr.dictionary.utility.Direction
             nChs = size(subCoefArrayIn,2);
             subPadSize_ = obj.subPadSize;
@@ -542,8 +143,7 @@ classdef OlsOlaProcess3d < matlab.System
                 subCoefArrayOut{iCh}(sRowIdx:eRowIdx,sColIdx:eColIdx,sLayIdx:eLayIdx) ...
                     = subCoefArrayIn{iCh};
             end
-         end
-        
+        end
         
         function [coefsCrop,scalesCrop] = ...
                 extract_ols_(obj,coefsSplit,scalesSplit)
@@ -580,7 +180,6 @@ classdef OlsOlaProcess3d < matlab.System
             end
         end
         
-        
         function subImgs = split_ols_(obj,srcImg)
             import saivdr.dictionary.utility.Direction
             verticalSplitFactor = obj.VerticalSplitFactor;
@@ -612,25 +211,6 @@ classdef OlsOlaProcess3d < matlab.System
                             sLayIdx:eLayIdx);
                     end
                 end
-            end
-        end
-    end
-    
-    methods (Access = private, Static)
-        function [subCoefs,subScales] = arr2vec_(subCoefArray)
-            nChs = size(subCoefArray,2);
-            subScales = zeros(nChs,3);
-            tmpCoefs_ = cell(1,nChs);
-            for iCh = 1:nChs
-                tmpArray = subCoefArray{iCh};
-                subScales(iCh,:) = size(tmpArray);
-                tmpCoefs_{iCh} = tmpArray(:).';
-            end
-            if isa(tmpCoefs_{1},'gpuArray')
-                tmpCoefs_ = cellfun(@gather,tmpCoefs_,'UniformOutput',false);
-                subCoefs = gpuArray(cell2mat(tmpCoefs_));
-            else
-                subCoefs = cell2mat(tmpCoefs_);
             end
         end
         
