@@ -121,14 +121,13 @@ classdef IstaSystem < saivdr.restoration.AbstIterativeMethodSystem
                 [obj.X,obj.Scales] = adjDic.step(obj.Result);
             else
                 import saivdr.restoration.*
+                import saivdr.restoration.denoiser.*
                 gamma  = obj.Gamma;
                 lambda = obj.Lambda;
-                threshold = gamma*lambda;    
-                % TODO: Replace to GaussianDenoiserSfth                             
-                softthresh = @(x) sign(x).*max(abs(x)-threshold,0);
+                gdnsfth = GaussianDenoiserSfth('Sigma',sqrt(gamma*lambda));
                 cm = CoefsManipulator(...
                     'Manipulation',...
-                    @(t,cpre) softthresh(cpre-gamma*t));
+                    @(t,cpre) gdnsfth.step(cpre-gamma*t));
                 if strcmp(obj.DataType,'Volumetric Data')
                     obj.ParallelProcess = OlsOlaProcess3d();
                 else
@@ -164,6 +163,7 @@ classdef IstaSystem < saivdr.restoration.AbstIterativeMethodSystem
             % Main steps
             g = adjProc.step(msrProc.step(resPre)-vObs);
             if isempty(obj.SplitFactor) % Normal process
+                import saivdr.restoration.denoiser.*
                 % Dictionaries
                 fwdDic = obj.Dictionary{obj.FORWARD};
                 adjDic = obj.Dictionary{obj.ADJOINT};
@@ -171,12 +171,10 @@ classdef IstaSystem < saivdr.restoration.AbstIterativeMethodSystem
                 %
                 gamma  = obj.Gamma;
                 lambda = obj.Lambda;
-                threshold = gamma*lambda;
-                % TODO: Replace to GaussianDenoiserSfth                             
-                softthresh = @(x) sign(x).*max(abs(x)-threshold,0);
+                gdnsfth = GaussianDenoiserSfth('Sigma',sqrt(gamma*lambda));                
                 %
                 t = adjDic.step(g);
-                x = softthresh(xPre-gamma*t);
+                x = gdnsfth.step(xPre-gamma*t);
                 result = fwdDic(x,scales);
                 % Update
                 obj.X = x;

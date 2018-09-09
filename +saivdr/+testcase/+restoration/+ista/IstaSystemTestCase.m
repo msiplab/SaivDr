@@ -247,6 +247,10 @@ classdef IstaSystemTestCase < matlab.unittest.TestCase
                 'AbsTol',eps,sprintf('%g',diff));
             
         end
+        
+        function testIsSizeCompensation(testCase,...
+                depth,width,nlevels)
+        end
 
     end
 
