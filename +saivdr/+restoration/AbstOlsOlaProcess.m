@@ -88,7 +88,7 @@ classdef (Abstract) AbstOlsOlaProcess < matlab.System
                 obj.BoundaryOperation = obj.Analyzer.BoundaryOperation;
             end
             if isempty(obj.CoefsManipulator)
-                import saivdr.utility.CoefsManipulator
+                import saivdr.restoration.CoefsManipulator
                 obj.CoefsManipulator = CoefsManipulator();
             end
             if isempty(obj.PadSize)
@@ -461,7 +461,7 @@ classdef (Abstract) AbstOlsOlaProcess < matlab.System
     methods (Access = protected, Static)
         
         function [subCoefs,subScales] = arr2vec_(subCoefArray,ndim)
-            import saivdr.utility.AbstOlsOlaProcess
+            import saivdr.restoration.AbstOlsOlaProcess
             nChs = size(subCoefArray,2);
             subScales = zeros(nChs,ndim);
             tmpCoefs_ = cell(1,nChs);
