@@ -39,15 +39,6 @@ classdef OlsOlaProcess3d < saivdr.restoration.AbstOlsOlaProcess
             obj = obj@saivdr.restoration.AbstOlsOlaProcess(...
                 varargin{:});
             setProperties(obj,nargin,varargin{:})
-            if ~isempty(obj.SplitFactor)
-                obj.VerticalSplitFactor = obj.SplitFactor(Direction.VERTICAL);
-                obj.HorizontalSplitFactor = obj.SplitFactor(Direction.HORIZONTAL);
-                obj.DepthSplitFactor = obj.SplitFactor(Direction.DEPTH);
-            else
-                obj.SplitFactor(Direction.VERTICAL) = obj.VerticalSplitFactor;
-                obj.SplitFactor(Direction.HORIZONTAL) = obj.HorizontalSplitFactor;
-                obj.SplitFactor(Direction.DEPTH) = obj.DepthSplitFactor;
-            end
         end
         
     end
@@ -70,6 +61,24 @@ classdef OlsOlaProcess3d < saivdr.restoration.AbstOlsOlaProcess
         
         function loadObjectImpl(obj,s,wasLocked)
             loadObjectImpl@saivdr.restoration.AbstOlsOlaProcess(obj,s,wasLocked);
+        end
+        
+        function setupImpl(obj,srcImg)
+            obj.setupSplitFactor()
+            setupImpl@saivdr.restoration.AbstOlsOlaProcess(obj,srcImg);
+        end
+        
+        function setupSplitFactor(obj)
+            import saivdr.dictionary.utility.Direction            
+            if ~isempty(obj.SplitFactor)
+                obj.VerticalSplitFactor = obj.SplitFactor(Direction.VERTICAL);
+                obj.HorizontalSplitFactor = obj.SplitFactor(Direction.HORIZONTAL);
+                obj.DepthSplitFactor = obj.SplitFactor(Direction.DEPTH);
+            else
+                obj.SplitFactor(Direction.VERTICAL) = obj.VerticalSplitFactor;
+                obj.SplitFactor(Direction.HORIZONTAL) = obj.HorizontalSplitFactor;
+                obj.SplitFactor(Direction.DEPTH) = obj.DepthSplitFactor;
+            end
         end
         
         function recImg = circular_ola_(obj,subRecImg)

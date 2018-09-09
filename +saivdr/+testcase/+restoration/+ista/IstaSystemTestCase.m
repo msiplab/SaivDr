@@ -17,7 +17,8 @@ classdef IstaSystemTestCase < matlab.unittest.TestCase
     
     properties (TestParameter)
         useparallel = struct('true', true, 'false', false );
-        niter   = struct('small',1, 'medium', 2, 'large', 4 );
+        usegpu = struct('true', true, 'false', false );        
+        niter = struct('small',1, 'medium', 2, 'large', 4 );
         depth = struct('small',8, 'large', 32);
         hight = struct('small',8, 'large', 32);
         width = struct('small',8, 'large', 32);
@@ -125,6 +126,7 @@ classdef IstaSystemTestCase < matlab.unittest.TestCase
             import saivdr.restoration.ista.*
             testCase.target = IstaSystem(...
                 'Observation',    vObs,...
+                'DataType', 'Volumetric Data',...
                 'Lambda',         lambda,...
                 'MeasureProcess', msrProc,...
                 'Dictionary', { fwdDic, adjDic } );
@@ -175,64 +177,77 @@ classdef IstaSystemTestCase < matlab.unittest.TestCase
 
         end
         
-        %{
-        function testStepSplit(testCase,...
-                depth,width,dsplit,nlevels,phimode,niter,useparallel)
+        function testStepSplit(testCase)...
+                %depth,width,dsplit,nlevels,niter,useparallel)
             
-            % パラメータ
-            splitfactor = [2*ones(1,2) dsplit];
-            padsize = 2^(nlevels-1)*ones(1,3);
-            phtm = phantom('Modified Shepp-Logan',depth);
+            % Parameters
+            useparallel_ = false;
+            usegpu_ = false;
+            dsplit_ = 2;
+            nlevels_ = 1;
+            depth_ = 32;
+            width_ = 32;
+            niter_ = 1;
+            %
+            lambda = 1e-3;            
+            splitfactor = [2*ones(1,2) dsplit_];
+            padsize = 2^(nlevels_-1)*ones(1,3);
+            phtm = phantom('Modified Shepp-Logan',depth_);
             sliceYZ = permute(phtm,[1 3 2]);
-            uSrc = 0.5*repmat(sliceYZ,[1 width 1]) + 1;
+            uSrc = 0.5*repmat(sliceYZ,[1 width_ 1]) + 1;
             
-            % 観測データ生成
-            wSigma = 4e-2; % ノイズ分散
-            pScale = 8.00; % 光強度
-            pSigma = 8.00; % 広がり
-            pFreq  = 0.25; % 周波数
-            coh3 = Coherence3(...
-                'Scale',pScale,...
-                'Sigma',pSigma,...
-                'Frequency',pFreq);
-            phi  = RefractIdx2Reflect();
-            vObs = coh3.step(phi.step(uSrc),'Forward') ...
+            % Instantiation of observation
+            import saivdr.degradation.linearprocess.*
+            pSigma = 2.00; % Extent of PSF
+            wSigma = 1e-3; % Standard deviation of noise
+            msrProc = BlurSystem(...
+                'BlurType','Gaussian',...
+                'SigmaOfGaussianKernel',pSigma,...
+                'ProcessingMode','Forward');
+            vObs = msrProc.step(uSrc) ...
                 + wSigma*randn(size(uSrc));
             
-            % インスタンス生成
-            fwdDic  = DicUdHaarRec3();
-            adjDic  = DicUdHaarDec3('NumLevels',nlevels);
+            % Instantiation of dictionary
+            import saivdr.dictionary.udhaar.*
+            fwdDic  = UdHaarSynthesis3dSystem();
+            adjDic  = UdHaarAnalysis3dSystem('NumberOfLevels',nlevels_);
             
-            reference = IstaOct3(...
+            % Instantiation of reference
+            import saivdr.restoration.ista.*
+            reference = IstaSystem(...
                 'Observation',    vObs,...
-                'PhiMode',        phimode,...
-                'MeasureProcess', coh3,...
-                'Dictionary', { fwdDic, adjDic } );
+                'DataType', 'Volumetric Data',...
+                'Lambda',         lambda,...
+                'MeasureProcess', msrProc,...
+                'Dictionary', { fwdDic, adjDic } );            
             
-            target = IstaOct3(...
+            testCase.target = IstaSystem(...
                 'Observation',    vObs,...
-                'PhiMode',        phimode,...
-                'MeasureProcess', coh3,...
+                'DataType', 'Volumetric Data',...                
+                'Lambda',         lambda,... 
+                'MeasureProcess', msrProc,...
                 'Dictionary', { fwdDic, adjDic } ,...
-                'SplitFactor',splitfactor,...
-                'PadSize',padsize,...
-                'UseParallel',useparallel);
+                'SplitFactor', splitfactor,...
+                'PadSize', padsize,...
+                'UseParallel', useparallel_,...
+                'UseGpu', usegpu_);
             
-            % 復元処理
-            for iter = 1:niter
+            % Restoration
+            for iter = 1:niter_
                 resExpctd = reference.step();
-                resActual = target.step();
+                resActual = testCase.target.step();
             end
             
-            % 評価
+            % Evaluation
+            eps = 1e-10;            
             %import matlab.unittest.constraints.IsLessThan
             testCase.verifySize(resActual,size(resExpctd));
             diff = max(abs(resExpctd(:) - resActual(:)));
             testCase.verifyEqual(resActual,resExpctd,...
-                'AbsTol',1e-4,sprintf('%g',diff));
+                'AbsTol',eps,sprintf('%g',diff));
             
         end
-        %}
+
     end
 
 end

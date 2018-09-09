@@ -34,6 +34,7 @@ classdef (Abstract) AbstOlsOlaProcess < matlab.System
         subCoefArrayOut = padding_ola_(obj,subCoefArrayIn)
         [coefsCrop,scalesCrop] = extract_ols_(obj,coefsSplit,scalesSplit)
         subImgs =  split_ols_(obj,srcImg)
+        setupSplitFactor(obj)
     end
     
     properties (Nontunable)
@@ -84,9 +85,6 @@ classdef (Abstract) AbstOlsOlaProcess < matlab.System
         function obj = AbstOlsOlaProcess(varargin)
             import saivdr.dictionary.utility.Direction
             setProperties(obj,nargin,varargin{:})
-            if ~isempty(obj.Analyzer)
-                obj.BoundaryOperation = obj.Analyzer.BoundaryOperation;
-            end
             if isempty(obj.CoefsManipulator)
                 import saivdr.restoration.CoefsManipulator
                 obj.CoefsManipulator = CoefsManipulator();
@@ -98,6 +96,7 @@ classdef (Abstract) AbstOlsOlaProcess < matlab.System
         
         function coefsSet = analyze(obj,srcImg)
             % Preperation
+            obj.setupSplitFactor();
             splitFactor = obj.SplitFactor;
             nSplit = prod(obj.SplitFactor);
             obj.Analyzer.release();
@@ -173,6 +172,7 @@ classdef (Abstract) AbstOlsOlaProcess < matlab.System
             nSplit = prod(splitFactor);
             
             % Analyzers
+            obj.BoundaryOperation = obj.Analyzer.BoundaryOperation;
             obj.Analyzer.release();
             refAnalyzer = obj.Analyzer.clone();
             if obj.IsIntegrityTest

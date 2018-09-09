@@ -52,7 +52,13 @@ classdef IstaSystem < saivdr.restoration.AbstIterativeMethodSystem
     %
     % http://msiplab.eng.niigata-u.ac.jp/
     %
-    
+
+
+    properties(Access = private)
+        X
+        Scales
+    end
+
     methods
         function obj = IstaSystem(varargin)
             import saivdr.restoration.AbstIterativeMethodSystem
@@ -62,16 +68,6 @@ classdef IstaSystem < saivdr.restoration.AbstIterativeMethodSystem
         end
     end
     
-    properties(Nontunable, Access = private)
-        AdjointProcess
-        %parProc
-    end
-
-    properties(Access = private)
-        X
-        Scales
-    end
-
     methods(Access = protected)
         
         function s = saveObjectImpl(obj)
@@ -103,8 +99,8 @@ classdef IstaSystem < saivdr.restoration.AbstIterativeMethodSystem
             % Observation
             vObs = obj.Observation;
             % Dictionarie
-            fwdDic  = obj.Dictionary{obj.FORWARD};
-            adjDic  = obj.Dictionary{obj.ADJOINT};
+            fwdDic = obj.Dictionary{obj.FORWARD};
+            adjDic = obj.Dictionary{obj.ADJOINT};
             % Measurement process
             msrProc = obj.MeasureProcess;
             
@@ -120,35 +116,73 @@ classdef IstaSystem < saivdr.restoration.AbstIterativeMethodSystem
             obj.AdjointProcess = adjProc;
             
             % Initialization
-            [obj.X,obj.Scales] = adjDic.step(zeros(size(vObs),'like',vObs));
-            obj.Result = fwdDic.step(obj.X,obj.Scales);
+            obj.Result = zeros(size(vObs),'like',vObs);
+            if isempty(obj.SplitFactor)
+                [obj.X,obj.Scales] = adjDic.step(obj.Result);
+            else
+                import saivdr.restoration.*
+                gamma  = obj.Gamma;
+                lambda = obj.Lambda;
+                threshold = gamma*lambda;    
+                % TODO: Replace to GaussianDenoiserSfth                             
+                softthresh = @(x) sign(x).*max(abs(x)-threshold,0);
+                cm = CoefsManipulator(...
+                    'Manipulation',...
+                    @(t,cpre) softthresh(cpre-gamma*t));
+                if strcmp(obj.DataType,'Volumetric Data')
+                    obj.ParallelProcess = OlsOlaProcess3d();
+                else
+                    obj.ParallelProcess = OlsOlaProcess2d();                    
+                end
+                obj.ParallelProcess.Synthesizer = fwdDic;
+                obj.ParallelProcess.Analyzer    = adjDic;
+                obj.ParallelProcess.CoefsManipulator = cm;
+                obj.ParallelProcess.SplitFactor = obj.SplitFactor;
+                obj.ParallelProcess.PadSize     = obj.PadSize;
+                obj.ParallelProcess.UseParallel = obj.UseParallel;
+                obj.ParallelProcess.UseGpu      = obj.UseGpu;
+                obj.ParallelProcess.IsIntegrityTest = obj.IsIntegrityTest;
+                obj.ParallelProcess.Debug       = obj.Debug;
+                %
+                obj.X = obj.ParallelProcess.analyze(obj.Result);
+                obj.ParallelProcess.InitialState = obj.X;
+            end
         end
         
         function varargout = stepImpl(obj)
             stepImpl@saivdr.restoration.AbstIterativeMethodSystem(obj)
             % Observation
             vObs = obj.Observation;
-            % Dictionaries
-            fwdDic  = obj.Dictionary{obj.FORWARD};
-            adjDic  = obj.Dictionary{obj.ADJOINT};            
             % Measurement process
             msrProc = obj.MeasureProcess;
             adjProc = obj.AdjointProcess;
-            %
-            scales = obj.Scales;
-            gamma  = obj.Gamma;
-            lambda = obj.Lambda;
-            threshold = gamma*lambda;
-            softthresh = @(x) sign(x).*max(abs(x)-threshold,0);
             
             % Previous state
             resPre = obj.Result;
             xPre   = obj.X;
             
-            % Main steps 
-            t = adjDic.step(adjProc.step(msrProc.step(resPre)-vObs));
-            x = softthresh(xPre-gamma*t);
-            result = fwdDic(x,scales);
+            % Main steps
+            g = adjProc.step(msrProc.step(resPre)-vObs);
+            if isempty(obj.SplitFactor) % Normal process
+                % Dictionaries
+                fwdDic = obj.Dictionary{obj.FORWARD};
+                adjDic = obj.Dictionary{obj.ADJOINT};
+                scales = obj.Scales;
+                %
+                gamma  = obj.Gamma;
+                lambda = obj.Lambda;
+                threshold = gamma*lambda;
+                % TODO: Replace to GaussianDenoiserSfth                             
+                softthresh = @(x) sign(x).*max(abs(x)-threshold,0);
+                %
+                t = adjDic.step(g);
+                x = softthresh(xPre-gamma*t);
+                result = fwdDic(x,scales);
+                % Update
+                obj.X = x;
+            else % OLS/OLA process
+                result = obj.ParallelProcess(g);
+            end
             
             % Output
             if nargout > 0
@@ -160,7 +194,6 @@ classdef IstaSystem < saivdr.restoration.AbstIterativeMethodSystem
             end
             
             % Update
-            obj.X = x;
             obj.Result = result;
         end        
         
@@ -180,78 +213,6 @@ classdef IstaSystem < saivdr.restoration.AbstIterativeMethodSystem
             lambda_ = obj.LambdaCompensated;
             gamma = 1/lpst; % fの勾配のリプシッツ乗数の逆数
             gdn = PlgGdnSfth('Sigma',sqrt(gamma*lambda_));
-            
-            % 初期化
-            obj.Result = zeros(1,'like',obj.Observation);
-            grd0  = zeros(size(vObs)); % 反射率分布の勾配
-            if isempty(obj.SplitFactor) % Normal process
-                obj.Gamma = gamma;
-                obj.GaussianDenoiser = gdn;
-                obj.parProc = [];
-                %
-                fwdDic.release();
-                obj.Dictionary{1} = fwdDic.clone();
-                adjDic.release();
-                obj.Dictionary{2} = adjDic.clone();
-                %
-                [obj.xpre,obj.scls] = adjDic(grd0); % 変換係数の初期値
-            else % OLS/OLA process
-                cm = CoefsManipulator(...
-                    'Manipulation',...
-                    @(t,cpre)  gdn.step(cpre-gamma*t));
-                obj.parProc = OlsOlaProcess3d(...
-                    'Synthesizer',fwdDic,...
-                    'Analyzer',adjDic,...
-                    'CoefsManipulator',cm,...
-                    'SplitFactor',obj.SplitFactor,...
-                    'PadSize',obj.PadSize,...
-                    'UseParallel',obj.UseParallel,...
-                    'UseGpu',obj.UseGpu,...
-                    'IsIntegrityTest',obj.IsIntegrityTest,...
-                    'Debug',obj.Debug);
-                obj.xpre = obj.parProc.analyze(grd0); % 変換係数の初期値
-                obj.parProc.InitialState = obj.xpre;
-            end
-        end
-    
-        function varargout = stepImpl(obj)
-            % Implement algorithm. Calculate y as a function of input u and
-            % discrete states.
-            vObs = obj.Observation;
-            grdFcn_ = obj.grdFcn;
-            %
-            rpre = obj.Result;
-            grd_ = grdFcn_.step(rpre,vObs); % 反射率分布の勾配
-            if isempty(obj.SplitFactor) % Normal process
-                fwdDic  = obj.Dictionary{1};
-                adjDic  = obj.Dictionary{2};
-                gdnFcn  = obj.GaussianDenoiser;
-                %
-                scls_ = obj.scls;
-                xpre_ = obj.xpre;
-                gamma_ = obj.Gamma;
-                %
-                t = adjDic.step(grd_); % 分析処理
-                x = gdnFcn.step(xpre_-gamma_*t);% 係数操作
-                r = fwdDic.step(x,scls_); % 合成処理
-                %
-                obj.xpre    = x;
-            else % OLS/OLA 分析合成処理
-                r = obj.parProc(grd_);
-            end
-            
-            % 出力
-            if nargout > 0
-                varargout{1} = r;
-            end
-            if nargout > 1
-                rmse = norm(r(:)-rpre(:),2)/norm(r(:),2);
-                varargout{2} = rmse;
-            end
-            
-            % 状態更新
-            obj.Result  = r; % 復元画像
-        end
-        
+    end
     %}
 end

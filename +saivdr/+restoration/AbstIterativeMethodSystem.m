@@ -30,31 +30,38 @@ classdef (Abstract) AbstIterativeMethodSystem < matlab.System
         Observation      % Observation y
         %
         Gamma  = 0       % Stepsize parameter(s)
+        %
+        DataType = 'Image'
+        SplitFactor = []
+        PadSize     = []
     end
     
-    %{
-    % Public, tunable properties
-    properties (Nontunable)
-        SplitFactor = []
-        PadSize     = [ 0 0 0 ]
-    end
-    %}
+    properties (Hidden, Transient)
+        DataTypeSet = ...
+            matlab.system.StringSet({'Image' 'Volumetric Data'});
+    end    
+
     properties (GetAccess = public, SetAccess = protected)
         Result
         %LambdaCompensated
     end
-    %{
+    
+    properties(Nontunable, Access = protected)
+        AdjointProcess
+        ParallelProcess
+    end    
+
     properties(Nontunable, Logical)
         IsIntegrityTest = true
-        IsSizeCompensation = false
+        %IsSizeCompensation = false
         UseParallel = false
         UseGpu = false
     end
-    
+
     properties(Nontunable,Logical, Hidden)
         Debug = false
     end
-    %}
+
     properties(DiscreteState)
         Iteration
     end
@@ -62,6 +69,13 @@ classdef (Abstract) AbstIterativeMethodSystem < matlab.System
     methods
         function obj = AbstIterativeMethodSystem(varargin)
             setProperties(obj,nargin,varargin{:})
+            if isempty(obj.PadSize)
+                if strcmp(obj.DataType,'Volumetric Data')
+                    obj.PadSize = zeros(1,3);
+                else
+                    obj.PadSize = zeros(1,2);
+                end
+            end
         end
     end
     
@@ -71,6 +85,8 @@ classdef (Abstract) AbstIterativeMethodSystem < matlab.System
             s = saveObjectImpl@matlab.System(obj);
             %s.Var = obj.Var;
             %s.Obj = matlab.System.saveObject(obj.Obj);
+            s.AdjointProcess = matlab.System.saveObject(obj.AdjointProcess);
+            s.ParallelProcess = matlab.System.saveObject(obj.ParallelProcess);            
             if isLocked(obj)
                 s.Iteration = obj.Iteration;
             end
@@ -80,13 +96,14 @@ classdef (Abstract) AbstIterativeMethodSystem < matlab.System
             if wasLocked
                 obj.Iteration = s.Iteration;
             end
+            obj.AdjointProcess = matlab.System.loadObject(s.AdjointProcess);            
+            obj.ParallelProcess = matlab.System.loadObject(s.ParallelProcess);              
             %obj.Obj = matlab.System.loadObject(s.Obj);
             %obj.Var = s.Var;
             loadObjectImpl@matlab.System(obj,s,wasLocked);
         end
         
         function setupImpl(obj)
-         
         end
         
         function stepImpl(obj)
