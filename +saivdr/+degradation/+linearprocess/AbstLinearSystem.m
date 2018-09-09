@@ -1,9 +1,9 @@
-classdef AbstLinearSystem < matlab.System %#codegen
+classdef (Abstract) AbstLinearSystem < matlab.System %#codegen
     %ABSTLINEARSYSTEM Abstract class of linear system
     %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2014-2017, Shogo MURAMATSU
+    % Copyright (c) 2014-2018, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -30,7 +30,7 @@ classdef AbstLinearSystem < matlab.System %#codegen
     
     properties (Hidden, Transient)
         ProcessingModeSet = ...
-            matlab.system.StringSet({'Normal','Adjoint'})
+            matlab.system.StringSet({'Normal','Forward','Adjoint'})
         DataTypeSet = ...
             matlab.system.StringSet({'Image','Volumetric Data'})
     end
@@ -45,9 +45,11 @@ classdef AbstLinearSystem < matlab.System %#codegen
         scurr
     end
     
+    %{
     properties(DiscreteState)
         State
     end
+    %}
     
     methods (Access = protected, Abstract = true)
         output = normalStepImpl(obj,input)
