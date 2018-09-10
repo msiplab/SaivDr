@@ -104,10 +104,14 @@ classdef (Abstract) AbstIterativeMethodSystem < matlab.System
         end
         
         function setupImpl(obj)
-            obj.LambdaOriginal = obj.Lambda; 
             if obj.IsLambdaCompensation
-                sizeM = numel(obj.Observation); % Data size of measurement 
-                src   = msrProc.step(vObs,'Adjoint');
+                vObs = obj.Observation;
+                adjProc = obj.MeasureProcess.clone();
+                adjProc.ProcessingMode = 'Adjoint';     
+                adjDic = obj.Dictionary{obj.ADJOINT};
+                obj.LambdaOriginal = obj.Lambda; 
+                sizeM = numel(vObs); % Data size of measurement 
+                src   = adjProc.step(vObs);
                 coefs = adjDic.step(src); % Data size of coefficients
                 sizeL = numel(coefs);
                 obj.Lambda = obj.LambdaOriginal*(sizeM^2/sizeL);

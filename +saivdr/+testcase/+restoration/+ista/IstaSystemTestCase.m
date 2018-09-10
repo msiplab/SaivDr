@@ -18,10 +18,10 @@ classdef IstaSystemTestCase < matlab.unittest.TestCase
     properties (TestParameter)
         useparallel = struct('true', true, 'false', false );
         usegpu = struct('true', true, 'false', false );        
-        niter = struct('small',1, 'medium', 2, 'large', 4 );
-        depth = struct('small',8, 'large', 32);
-        hight = struct('small',8, 'large', 32);
-        width = struct('small',8, 'large', 32);
+        niter = struct('small',1, 'large', 4 );
+        depth = struct('small',8, 'large', 16);
+        hight = struct('small',8, 'large', 16);
+        width = struct('small',8, 'large', 16);
         dsplit = struct('small',1, 'large', 2);
         vsplit = struct('small',1, 'large', 2);        
         hsplit = struct('small',1, 'large', 2);                
@@ -241,13 +241,14 @@ classdef IstaSystemTestCase < matlab.unittest.TestCase
         end
         
 
-        function testIsSizeCompensation(testCase,depth,width,nlevels,...
-                useparallel, usegpu)
+        function testIsLambdaCompensation(testCase,depth,width,nlevels,...
+                useparallel)
             
             % Parameters
             lambda = 1e-3;            
             islambdacomp = true;
             %
+            usegpu_ = false;
             dsplit_ = 2;
             splitfactor = [2*ones(1,2) dsplit_];
             padsize = 2^(nlevels-1)*ones(1,3);
@@ -283,7 +284,7 @@ classdef IstaSystemTestCase < matlab.unittest.TestCase
                 'SplitFactor', splitfactor,...
                 'PadSize', padsize,...
                 'UseParallel', useparallel,...
-                'UseGpu', usegpu,...
+                'UseGpu', usegpu_,...
                 'IsLambdaCompensation',islambdacomp);
             
             % Expected value
