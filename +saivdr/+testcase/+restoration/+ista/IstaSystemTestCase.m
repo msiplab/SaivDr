@@ -177,24 +177,16 @@ classdef IstaSystemTestCase < matlab.unittest.TestCase
 
         end
         
-        function testStepSplit(testCase)...
-                %depth,width,dsplit,nlevels,niter,useparallel)
+        function testStepSplit(testCase,...
+                depth,width,dsplit,nlevels,niter,useparallel,usegpu)
             
             % Parameters
-            useparallel_ = false;
-            usegpu_ = false;
-            dsplit_ = 2;
-            nlevels_ = 1;
-            depth_ = 32;
-            width_ = 32;
-            niter_ = 1;
-            %
             lambda = 1e-3;            
-            splitfactor = [2*ones(1,2) dsplit_];
-            padsize = 2^(nlevels_-1)*ones(1,3);
-            phtm = phantom('Modified Shepp-Logan',depth_);
+            splitfactor = [2*ones(1,2) dsplit];
+            padsize = 2^(nlevels-1)*ones(1,3);
+            phtm = phantom('Modified Shepp-Logan',depth);
             sliceYZ = permute(phtm,[1 3 2]);
-            uSrc = 0.5*repmat(sliceYZ,[1 width_ 1]) + 1;
+            uSrc = 0.5*repmat(sliceYZ,[1 width 1]) + 1;
             
             % Instantiation of observation
             import saivdr.degradation.linearprocess.*
@@ -210,7 +202,7 @@ classdef IstaSystemTestCase < matlab.unittest.TestCase
             % Instantiation of dictionary
             import saivdr.dictionary.udhaar.*
             fwdDic  = UdHaarSynthesis3dSystem();
-            adjDic  = UdHaarAnalysis3dSystem('NumberOfLevels',nlevels_);
+            adjDic  = UdHaarAnalysis3dSystem('NumberOfLevels',nlevels);
             
             % Instantiation of reference
             import saivdr.restoration.ista.*
@@ -229,11 +221,11 @@ classdef IstaSystemTestCase < matlab.unittest.TestCase
                 'Dictionary', { fwdDic, adjDic } ,...
                 'SplitFactor', splitfactor,...
                 'PadSize', padsize,...
-                'UseParallel', useparallel_,...
-                'UseGpu', usegpu_);
+                'UseParallel', useparallel,...
+                'UseGpu', usegpu);
             
             % Restoration
-            for iter = 1:niter_
+            for iter = 1:niter
                 resExpctd = reference.step();
                 resActual = testCase.target.step();
             end
@@ -248,10 +240,67 @@ classdef IstaSystemTestCase < matlab.unittest.TestCase
             
         end
         
-        function testIsSizeCompensation(testCase,...
-                depth,width,nlevels)
+
+        function testIsSizeCompensation(testCase,depth,width,nlevels,...
+                useparallel, usegpu)
+            
+            % Parameters
+            lambda = 1e-3;            
+            islambdacomp = true;
+            %
+            dsplit_ = 2;
+            splitfactor = [2*ones(1,2) dsplit_];
+            padsize = 2^(nlevels-1)*ones(1,3);
+            phtm = phantom('Modified Shepp-Logan',depth);
+            sliceYZ = permute(phtm,[1 3 2]);
+            uSrc = 0.5*repmat(sliceYZ,[1 width 1]) + 1;
+            
+            % Instantiation of observation
+            import saivdr.degradation.linearprocess.*
+            pSigma = 2.00; % Extent of PSF
+            wSigma = 1e-3; % Standard deviation of noise
+            msrProc = BlurSystem(...
+                'BlurType','Gaussian',...
+                'SigmaOfGaussianKernel',pSigma,...
+                'ProcessingMode','Forward');
+            vObs = msrProc.step(uSrc) ...
+                + wSigma*randn(size(uSrc));
+            
+            % Instantiation of dictionary
+            import saivdr.dictionary.udhaar.*
+            fwdDic  = UdHaarSynthesis3dSystem();
+            adjDic  = UdHaarAnalysis3dSystem('NumberOfLevels',nlevels);
+            coefs = adjDic.step(vObs);
+            
+            % Instantiation of reference
+            import saivdr.restoration.ista.*
+            testCase.target = IstaSystem(...
+                'Observation',    vObs,...
+                'DataType', 'Volumetric Data',...
+                'Lambda',         lambda,...
+                'MeasureProcess', msrProc,...
+                'Dictionary', { fwdDic, adjDic } ,...
+                'SplitFactor', splitfactor,...
+                'PadSize', padsize,...
+                'UseParallel', useparallel,...
+                'UseGpu', usegpu,...
+                'IsLambdaCompensation',islambdacomp);
+            
+            % Expected value
+            lambdaExpctd = lambda * numel(vObs)^2/numel(coefs);
+            
+            % Actual value
+            testCase.target.step();
+            lambdaActual = testCase.target.Lambda;
+            
+            % Evaluation
+            eps = 1e-10;
+            %import matlab.unittest.constraints.IsLessThan
+            diff = max(abs(lambdaExpctd - lambdaActual));
+            testCase.verifyEqual(lambdaActual,lambdaExpctd,...
+                'AbsTol',eps,sprintf('%g',diff));
         end
 
     end
-
+    
 end

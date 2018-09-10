@@ -204,20 +204,4 @@ classdef IstaSystem < saivdr.restoration.AbstIterativeMethodSystem
         
     end
            
-    %{
-        function setupImpl(obj)
-            if obj.IsSizeCompensation
-                sizeM = numel(vObs); % 観測データサイズ
-                src   = msrProc.step(vObs,'Adjoint');
-                coefs = adjDic.step(src); % 変換係数サイズ
-                sizeL = numel(coefs);
-                obj.LambdaCompensated = obj.Lambda*(sizeM^2/sizeL);
-            else
-                obj.LambdaCompensated = obj.Lambda;
-            end
-            lambda_ = obj.LambdaCompensated;
-            gamma = 1/lpst; % fの勾配のリプシッツ乗数の逆数
-            gdn = PlgGdnSfth('Sigma',sqrt(gamma*lambda_));
-    end
-    %}
 end

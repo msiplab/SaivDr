@@ -43,7 +43,7 @@ classdef (Abstract) AbstIterativeMethodSystem < matlab.System
 
     properties (GetAccess = public, SetAccess = protected)
         Result
-        %LambdaCompensated
+        LambdaOriginal
     end
     
     properties(Nontunable, Access = protected)
@@ -53,7 +53,7 @@ classdef (Abstract) AbstIterativeMethodSystem < matlab.System
 
     properties(Nontunable, Logical)
         IsIntegrityTest = true
-        %IsSizeCompensation = false
+        IsLambdaCompensation = false
         UseParallel = false
         UseGpu = false
     end
@@ -104,6 +104,14 @@ classdef (Abstract) AbstIterativeMethodSystem < matlab.System
         end
         
         function setupImpl(obj)
+            obj.LambdaOriginal = obj.Lambda; 
+            if obj.IsLambdaCompensation
+                sizeM = numel(obj.Observation); % Data size of measurement 
+                src   = msrProc.step(vObs,'Adjoint');
+                coefs = adjDic.step(src); % Data size of coefficients
+                sizeL = numel(coefs);
+                obj.Lambda = obj.LambdaOriginal*(sizeM^2/sizeL);
+            end
         end
         
         function stepImpl(obj)
