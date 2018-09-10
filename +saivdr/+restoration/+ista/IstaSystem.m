@@ -98,7 +98,7 @@ classdef IstaSystem < saivdr.restoration.AbstIterativeMethodSystem
             setupImpl@saivdr.restoration.AbstIterativeMethodSystem(obj);
             % Observation
             vObs = obj.Observation;
-            % Dictionarie
+            % Dictionary
             fwdDic = obj.Dictionary{obj.FORWARD};
             adjDic = obj.Dictionary{obj.ADJOINT};
             % Measurement process
@@ -106,7 +106,7 @@ classdef IstaSystem < saivdr.restoration.AbstIterativeMethodSystem
             
             % Calculation of step size parameter
             framebound = fwdDic.FrameBound;
-            step(msrProc,vObs);
+            msrProc.step(vObs);
             obj.Gamma = 1/(framebound*msrProc.LambdaMax);               
 
             % Adjoint of measuremnt process
@@ -118,6 +118,13 @@ classdef IstaSystem < saivdr.restoration.AbstIterativeMethodSystem
             % Initialization
             obj.Result = zeros(size(vObs),'like',vObs);
             if isempty(obj.SplitFactor)
+                obj.ParallelProcess = [];
+                %
+                fwdDic.release();
+                obj.Dictionary{obj.FORWARD} = fwdDic.clone();
+                adjDic.release();
+                obj.Dictionary{obj.ADJOINT} = adjDic.clone();
+                %
                 [obj.X,obj.Scales] = adjDic.step(obj.Result);
             else
                 import saivdr.restoration.*
