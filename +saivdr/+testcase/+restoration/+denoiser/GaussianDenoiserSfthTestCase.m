@@ -45,7 +45,7 @@ classdef GaussianDenoiserSfthTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(sigmaActual,sigmaExpctd);
             
         end
-%{               
+
         function testStepScalar(testCase,inputSize,sigma)
             
             x = randn(inputSize,1);
@@ -53,9 +53,10 @@ classdef GaussianDenoiserSfthTestCase < matlab.unittest.TestCase
             v = max(abs(x)-sigma^2,0);
             yExpctd = sign(x).*v;
             
-            target = PlgGdnSfth('Sigma',sigma);
+            import saivdr.restoration.denoiser.*            
+            testCase.target = GaussianDenoiserSfth('Sigma',sigma);
             
-            yActual = target.step(x);
+            yActual = testCase.target.step(x);
             
             testCase.verifyEqual(yActual,yExpctd);
             
@@ -68,10 +69,11 @@ classdef GaussianDenoiserSfthTestCase < matlab.unittest.TestCase
             v = max(abs(x)-sigma^2,0);
             yExpctd = sign(x).*v;
             
-            target = PlgGdnSfth();
-            target.Sigma = sigma;
+            import saivdr.restoration.denoiser.*        
+            testCase.target = GaussianDenoiserSfth();
+            testCase.target.Sigma = sigma;
             
-            yActual = target.step(x);
+            yActual = testCase.target.step(x);
             
             testCase.verifyEqual(yActual,yExpctd);
             
@@ -85,15 +87,16 @@ classdef GaussianDenoiserSfthTestCase < matlab.unittest.TestCase
             v = abs(x)-svec.^2;
             v(v<0) = 0;
             yExpctd = sign(x).*v;
+        
+            import saivdr.restoration.denoiser.*            
+            testCase.target = GaussianDenoiserSfth('Sigma',svec);
             
-            target = PlgGdnSfth('Sigma',svec);
-            
-            yActual = target.step(x);
+            yActual = testCase.target.step(x);
             
             testCase.verifyEqual(yActual,yExpctd);
             
         end
-       %} 
+       
     end
 
 end
