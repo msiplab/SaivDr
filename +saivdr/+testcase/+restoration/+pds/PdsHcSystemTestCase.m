@@ -349,6 +349,141 @@ classdef PdsHcSystemTestCase < matlab.unittest.TestCase
                 'AbsTol',eps,sprintf('%g',diff));
         end
 
+        
+        
+        function testStepVolumetricDataNormBallConst(testCase,...
+                niter,depth,width,nlevels)
+            
+            % Parameters
+            lambda = 1e-3;
+            phtm = phantom('Modified Shepp-Logan',depth);
+            sliceYZ = permute(phtm,[1 3 2]);
+            uSrc = repmat(sliceYZ,[1 width 1]);
+            epsy   = 1e-1;
+            center = 0.5*ones(size(uSrc));
+            
+            % Instantiation of observation
+            import saivdr.degradation.linearprocess.*
+            pSigma = 2.00; % Extent of PSF
+            wSigma = 1e-3; % Standard deviation of noise
+            msrProc = BlurSystem(...
+                'BlurType','Gaussian',...
+                'SigmaOfGaussianKernel',pSigma,...
+                'ProcessingMode','Forward');
+            import saivdr.restoration.metricproj.*
+            mtrProj = ProxNormBallConstraint(...
+                'Eps', epsy,...
+                'Center', center);
+            vObs = msrProc.step(uSrc) ...
+                + wSigma*randn(size(uSrc));
+            
+            % Instantiation of dictionary
+            import saivdr.dictionary.udhaar.*
+            fwdDic  = UdHaarSynthesis3dSystem();
+            adjDic  = UdHaarAnalysis3dSystem('NumberOfLevels',nlevels);
+            
+            % Calculation of step size parameter
+            framebound = fwdDic.FrameBound;
+            step(msrProc,vObs);
+
+            % Expected values
+            % gamma1*gamma2*(sigma_MAX(L))^2 < 1
+            gammaExpctd{1} = 1/(framebound*msrProc.LambdaMax);
+            gammaExpctd{2} = 1/(1.05*gammaExpctd{1}*framebound);            
+            lambdaExpctd = lambda;
+            thr = lambdaExpctd*gammaExpctd{1};
+            softthresh = @(x) sign(x).*max(abs(x)-thr,0);
+            [x0,scale] = adjDic.step(zeros(size(vObs),'like',vObs));
+            adjProc = msrProc.clone();
+            adjProc.release();
+            adjProc.ProcessingMode = 'Adjoint';
+            resExpctd = cell(niter,1);
+            xPre = x0;
+            yPre = zeros(size(vObs));
+            % Steps
+            resPre = fwdDic(x0,scale);
+            for iter = 1:niter
+                t = adjDic.step(adjProc.step(msrProc.step(resPre)-vObs+yPre));
+                x = softthresh(xPre-gammaExpctd{1}*t);
+                u = 2*fwdDic.step(x,scale) - resPre;
+                y = yPre + gammaExpctd{2}*u;
+                pcy = y/gammaExpctd{2};
+                if norm(pcy(:)-center(:),2)>epsy
+                    pcy = center + ...
+                        (epsy/norm(pcy(:)-center(:),2))*(pcy-center);
+                end
+                y = y - gammaExpctd{2}*pcy;
+                resExpctd{iter} = (u+resPre)/2;
+                resPre = resExpctd{iter};
+                xPre = x;
+                yPre = y;
+            end
+            
+            % Instantiation of test target
+            import saivdr.restoration.pds.*
+            testCase.target = PdsHcSystem(...
+                'Observation',    vObs,...
+                'DataType', 'Volumetric Data',...
+                'Lambda',         lambda,...
+                'MeasureProcess', msrProc,...
+                'MetricProjection', mtrProj,...
+                'Dictionary', { fwdDic, adjDic } );
+            
+            % Evaluation of 1st step
+            eps = 1e-10;
+            iterExpctd = 1;
+            [resActual,rmseActual] = testCase.target.step();
+            iterActual  = testCase.target.Iteration;
+            gammaActual = testCase.target.Gamma;
+            lambdaActual = testCase.target.Lambda;
+            %
+            testCase.verifyEqual(iterActual,iterExpctd)
+            testCase.verifyEqual(gammaActual,gammaExpctd)
+            testCase.verifyEqual(lambdaActual,lambdaExpctd)
+            %
+            testCase.verifySize(resActual,size(uSrc));
+            %
+            diff = max(abs(resExpctd{iterExpctd}(:)-resActual(:)));
+            testCase.verifyEqual(resActual,resExpctd{iterExpctd},...
+                'AbsTol',eps,num2str(diff));
+            %
+            % Evaluation of iterative step
+            import matlab.unittest.constraints.IsLessThanOrEqualTo
+            import matlab.unittest.constraints.IsGreaterThanOrEqualTo            
+            rmse = @(x,y) norm(x(:)-y(:),2)/sqrt(numel(x));
+            rmsePre = rmseActual;
+            resPre  = resActual;
+            for iter = 2:niter
+                iterExpctd = iterExpctd + 1;
+                %
+                [resActual,rmseActual] = testCase.target.step();
+                iterActual = testCase.target.Iteration;
+                %
+                testCase.verifyEqual(iterActual,iterExpctd)
+                diff = max(abs(resExpctd{iterExpctd}(:)-resActual(:)));
+                testCase.verifyEqual(resActual,resExpctd{iterExpctd},...
+                    'AbsTol',eps,num2str(diff));
+                %
+                rmseExpctd = rmse(resActual,resPre);
+                diff = max(abs(rmseExpctd-rmseActual));
+                testCase.verifyEqual(rmseActual,rmseExpctd,...
+                    'AbsTol',eps,num2str(diff));
+                %
+                testCase.verifyThat(rmseActual,IsLessThanOrEqualTo(rmsePre))
+                %
+                resPre  = resActual;
+            end
+
+            if niter > 1
+                eps = 1e-2;
+                vminActual = min(resActual(:));
+                vmaxActual = max(resActual(:));
+                testCase.verifyThat(vminActual+eps,IsGreaterThanOrEqualTo(vmin));
+                testCase.verifyThat(vmaxActual-eps,IsLessThanOrEqualTo(vmax));
+            end
+            
+        end
+        
     end
     
 end

@@ -103,8 +103,15 @@ classdef ProxNormBallConstraintTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(resActual,resExpctd,...
                 'AbsTol',epsEv,num2str(diff));
             
-            %{
-            testCase.target.Center = center + randn(height,width,depth);
+            % Change center
+            center = center + randn(height,width,depth);
+            testCase.target.Center = center;
+            if norm(src(:)-center(:),2)<=eps
+                resExpctd = src;
+            else
+                resExpctd = center + ...
+                    (eps/norm(src(:)-center(:),2))*(src-center);
+            end            
             
             % Actual values
             resActual = testCase.target.step(src);
@@ -114,44 +121,9 @@ classdef ProxNormBallConstraintTestCase < matlab.unittest.TestCase
             diff = max(abs(resExpctd(:)-resActual(:)));
             testCase.verifyEqual(resActual,resExpctd,...
                 'AbsTol',epsEv,num2str(diff));            
-            %}
+
         end            
         
-        %{
-
-        function testSetSigma(testCase,inputSize,sigma)
-            
-            x = randn(inputSize,1);
-            
-            v = max(abs(x)-sigma^2,0);
-            yExpctd = sign(x).*v;
-            
-            target = PlgGdnSfth();
-            target.Sigma = sigma;
-            
-            yActual = target.step(x);
-            
-            testCase.verifyEqual(yActual,yExpctd);
-            
-        end
-        
-        function testStepVector(testCase,inputSize,sigma)
-            
-            x    = sigma*randn(inputSize,1);
-            svec = sigma*rand(inputSize,1);
-            
-            v = abs(x)-svec.^2;
-            v(v<0) = 0;
-            yExpctd = sign(x).*v;
-            
-            target = PlgGdnSfth('Sigma',svec);
-            
-            yActual = target.step(x);
-            
-            testCase.verifyEqual(yActual,yExpctd);
-            
-        end
-       %} 
     end
     
 end
