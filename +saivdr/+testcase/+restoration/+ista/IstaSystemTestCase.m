@@ -79,7 +79,7 @@ classdef IstaSystemTestCase < matlab.unittest.TestCase
             lambda = 1e-3;
             phtm = phantom('Modified Shepp-Logan',depth);
             sliceYZ = permute(phtm,[1 3 2]);
-            uSrc = 0.5*repmat(sliceYZ,[1 width 1]) + 1;
+            uSrc = repmat(sliceYZ,[1 width 1]);
             
             % Instantiation of observation
             import saivdr.degradation.linearprocess.*
@@ -186,7 +186,7 @@ classdef IstaSystemTestCase < matlab.unittest.TestCase
             padsize = 2^(nlevels-1)*ones(1,3);
             phtm = phantom('Modified Shepp-Logan',depth);
             sliceYZ = permute(phtm,[1 3 2]);
-            uSrc = 0.5*repmat(sliceYZ,[1 width 1]) + 1;
+            uSrc = repmat(sliceYZ,[1 width 1]);
             
             % Instantiation of observation
             import saivdr.degradation.linearprocess.*
@@ -254,7 +254,7 @@ classdef IstaSystemTestCase < matlab.unittest.TestCase
             padsize = 2^(nlevels-1)*ones(1,3);
             phtm = phantom('Modified Shepp-Logan',depth);
             sliceYZ = permute(phtm,[1 3 2]);
-            uSrc = 0.5*repmat(sliceYZ,[1 width 1]) + 1;
+            uSrc = repmat(sliceYZ,[1 width 1]);
             
             % Instantiation of observation
             import saivdr.degradation.linearprocess.*
