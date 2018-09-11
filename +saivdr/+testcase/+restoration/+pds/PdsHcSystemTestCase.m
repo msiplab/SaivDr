@@ -132,8 +132,10 @@ classdef PdsHcSystemTestCase < matlab.unittest.TestCase
                 u = 2*fwdDic.step(x,scale) - resPre;
                 y = yPre + gammaExpctd{2}*u;
                 pcy = y/gammaExpctd{2};
+                % 
                 pcy(pcy<=vmin) = vmin;
                 pcy(pcy>=vmax) = vmax;
+                %
                 y = y - gammaExpctd{2}*pcy;
                 resExpctd{iter} = (u+resPre)/2;
                 resPre = resExpctd{iter};
@@ -196,12 +198,13 @@ classdef PdsHcSystemTestCase < matlab.unittest.TestCase
                 resPre  = resActual;
             end
 
+            % Evaluate hard constraint
             if niter > 1
-                eps = 1e-2;
+                tol = 1e-2;
                 vminActual = min(resActual(:));
                 vmaxActual = max(resActual(:));
-                testCase.verifyThat(vminActual+eps,IsGreaterThanOrEqualTo(vmin));
-                testCase.verifyThat(vmaxActual-eps,IsLessThanOrEqualTo(vmax));
+                testCase.verifyThat(vminActual+tol,IsGreaterThanOrEqualTo(vmin));
+                testCase.verifyThat(vmaxActual-tol,IsLessThanOrEqualTo(vmax));
             end
             
         end
@@ -359,7 +362,7 @@ classdef PdsHcSystemTestCase < matlab.unittest.TestCase
             phtm = phantom('Modified Shepp-Logan',depth);
             sliceYZ = permute(phtm,[1 3 2]);
             uSrc = repmat(sliceYZ,[1 width 1]);
-            epsy   = 1e-1;
+            epsy   = 0.5*sqrt(numel(uSrc));
             center = 0.5*ones(size(uSrc));
             
             % Instantiation of observation
@@ -408,10 +411,12 @@ classdef PdsHcSystemTestCase < matlab.unittest.TestCase
                 u = 2*fwdDic.step(x,scale) - resPre;
                 y = yPre + gammaExpctd{2}*u;
                 pcy = y/gammaExpctd{2};
-                if norm(pcy(:)-center(:),2)>epsy
-                    pcy = center + ...
-                        (epsy/norm(pcy(:)-center(:),2))*(pcy-center);
+                %
+                d = norm(pcy(:)-center(:),2);
+                if d>epsy
+                    pcy = center + (epsy/d)*(pcy-center);
                 end
+                %
                 y = y - gammaExpctd{2}*pcy;
                 resExpctd{iter} = (u+resPre)/2;
                 resPre = resExpctd{iter};
@@ -474,12 +479,11 @@ classdef PdsHcSystemTestCase < matlab.unittest.TestCase
                 resPre  = resActual;
             end
 
+            % Evaluate hard constraint
             if niter > 1
-                eps = 1e-2;
-                vminActual = min(resActual(:));
-                vmaxActual = max(resActual(:));
-                testCase.verifyThat(vminActual+eps,IsGreaterThanOrEqualTo(vmin));
-                testCase.verifyThat(vmaxActual-eps,IsLessThanOrEqualTo(vmax));
+                tol = 1e-2;
+                distActual = norm(resActual(:)-center(:),2);
+                testCase.verifyThat(distActual-tol,IsLessThanOrEqualTo(epsy));
             end
             
         end
