@@ -32,6 +32,12 @@
 %             |            |               +- utility
 %             |            |
 %             |            +- restoration -+- ista
+%             |            |               |
+%             |            |               +- pds
+%             |            |               |
+%             |            |               +- metricproj
+%             |            |               |
+%             |            |               +- denoiser
 %             |            |
 %             |            +- degradation -+- linearprocess
 %             |            |               |
@@ -68,6 +74,12 @@
 %             |               +- utility
 %             |
 %             +- restoration -+- ista  
+%             |               |
+%             |               +- pds
+%             |               |
+%             |               +- metricproj
+%             |               |
+%             |               +- denoiser
 %             |
 %             +- degradation -+- linearprocess
 %             |               |
@@ -77,7 +89,7 @@
 %
 % * Requirements
 % 
-% - MATLAB R2013b or later. R2015b is recommended.
+% - MATLAB R2015b or later.
 % -- Signal Processing Toolbox
 % -- Image Processing Toolbox
 % -- Optimization Toolbox

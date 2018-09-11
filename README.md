@@ -49,6 +49,12 @@ Information about SaivDr Package is given in Contents.m. The HELP command can be
                          |            |               +- utility
                          |            |
                          |            +- restoration -+- ista
+                         |            |               |
+                         |            |               +- pds
+                         |            |               |
+                         |            |               +- metricproj
+                         |            |               |
+                         |            |               +- denoiser
                          |            |
                          |            +- degradation -+- linearprocess
                          |            |               |
@@ -85,6 +91,12 @@ Information about SaivDr Package is given in Contents.m. The HELP command can be
                          |               +- utility
                          |
                          +- restoration -+- ista  
+                         |               |
+                         |               +- pds
+                         |               |
+                         |               +- metricproj
+                         |               |
+                         |               +- denoiser
                          |
                          +- degradation -+- linearprocess
                          |               |
