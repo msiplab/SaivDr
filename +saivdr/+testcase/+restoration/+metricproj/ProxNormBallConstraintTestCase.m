@@ -15,6 +15,13 @@ classdef ProxNormBallConstraintTestCase < matlab.unittest.TestCase
     % http://msiplab.eng.niigata-u.ac.jp/
     %
     
+    properties (TestParameter)
+        eps = struct('small',1e-2,'medium',1e-1, 'large',1e0')
+        width = struct('small',1,'medium',8,'large',16)
+        height = struct('small',1,'medium',8,'large',16)
+        depth = struct('small',1,'medium',8,'large',16)
+    end    
+    
     properties
         target
     end
@@ -43,35 +50,75 @@ classdef ProxNormBallConstraintTestCase < matlab.unittest.TestCase
             
         end
     
+        function testEps(testCase,...
+                height,width,depth,eps)
+            
+            % Expected valuses
+            epsExpctd = eps;
+            centerExpctd = randn(height,width,depth);
+            
+            % Instantiation
+            import saivdr.restoration.metricproj.*
+            testCase.target = ProxNormBallConstraint(...
+                'Eps',eps);
+            testCase.target.Center = centerExpctd;
+            
+            % Actual values
+            epsActual = testCase.target.Eps;
+            centerActual = testCase.target.Center;
+            
+            % Evaluation
+            testCase.verifyEqual(epsActual,epsExpctd);
+            testCase.verifyEqual(centerActual,centerExpctd);            
+            
+        end
+           
+        function testStep(testCase,...
+                height,width,depth,eps)
+            
+            % Parameters
+            src    = randn(height,width,depth);
+            center = randn(height,width,depth);
+            
+            % Expected valuses
+            if norm(src(:)-center(:),2)<=eps
+                resExpctd = src;
+            else
+                resExpctd = center + ...
+                    (eps/norm(src(:)-center(:),2))*(src-center);
+            end
+            
+            % Instantiation
+            import saivdr.restoration.metricproj.*
+            testCase.target = ProxNormBallConstraint(...
+                'Eps',eps);
+            testCase.target.Center = center;
+            
+            % Actual values
+            resActual = testCase.target.step(src);
+            
+            % Evaluation
+            epsEv = 1e-10;
+            diff = max(abs(resExpctd(:)-resActual(:)));
+            testCase.verifyEqual(resActual,resExpctd,...
+                'AbsTol',epsEv,num2str(diff));
+            
+            %{
+            testCase.target.Center = center + randn(height,width,depth);
+            
+            % Actual values
+            resActual = testCase.target.step(src);
+            
+            % Evaluation
+            epsEv = 1e-10;
+            diff = max(abs(resExpctd(:)-resActual(:)));
+            testCase.verifyEqual(resActual,resExpctd,...
+                'AbsTol',epsEv,num2str(diff));            
+            %}
+        end            
+        
         %{
-        
-        function testConstruction(testCase,sigma)
-            
-            sigmaExpctd = sigma;
-            
-            target = PlgGdnSfth('Sigma',sigmaExpctd);
-            
-            sigmaActual = target.Sigma;
-            
-            testCase.verifyEqual(sigmaActual,sigmaExpctd);
-            
-        end
-               
-        function testStepScalar(testCase,inputSize,sigma)
-            
-            x = randn(inputSize,1);
-            
-            v = max(abs(x)-sigma^2,0);
-            yExpctd = sign(x).*v;
-            
-            target = PlgGdnSfth('Sigma',sigma);
-            
-            yActual = target.step(x);
-            
-            testCase.verifyEqual(yActual,yExpctd);
-            
-        end
-        
+
         function testSetSigma(testCase,inputSize,sigma)
             
             x = randn(inputSize,1);

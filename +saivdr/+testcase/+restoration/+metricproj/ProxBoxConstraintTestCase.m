@@ -108,6 +108,7 @@ classdef ProxBoxConstraintTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(resActual,resExpctd,...
                 'AbsTol',eps,num2str(diff));
         end
+        
         %{
         function testStepVector(testCase,inputSize,sigma)
             

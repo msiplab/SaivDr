@@ -15,15 +15,31 @@ classdef ProxNormBallConstraint < matlab.System
     % http://msiplab.eng.niigata-u.ac.jp/
     %
     properties (Nontunable)
-       Eps = Inf
+        Eps = Inf
     end
     
-    properties 
-       Center = 0
-    end    
+    properties
+        Center = 0
+    end
     
     methods
+        function obj = ProxNormBallConstraint(varargin)
+            setProperties(obj,nargin,varargin{:})
+        end
     end
- 
+    
+    methods (Access = protected)
+        function y = stepImpl(obj,x)
+            center = obj.Center;
+            eps    = obj.Eps;
+            d = norm(x(:)-center(:),2);
+            if d <= eps
+                y = x;
+            else
+                y = center + (eps/d)*(x-center);
+            end            
+        end
+    end
+    
 end
 
