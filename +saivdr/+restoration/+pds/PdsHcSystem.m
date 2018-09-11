@@ -12,7 +12,7 @@ classdef PdsHcSystem < saivdr.restoration.AbstIterativeMethodSystem
     %    v : Observation
     %    P : Measurment process
     %    D : Synthesis dictionary
-    %    C : Constraint s.t. the metric projection is available
+    %    C : Constraint s.t. the prox is available
     %
     % Output:
     %
@@ -54,6 +54,10 @@ classdef PdsHcSystem < saivdr.restoration.AbstIterativeMethodSystem
     % http://msiplab.eng.niigata-u.ac.jp/
     %
     
+    properties(Nontunable, Hidden)
+        GaussianDenoiser
+    end    
+    
     properties(Nontunable)
         MetricProjection
     end
@@ -75,12 +79,18 @@ classdef PdsHcSystem < saivdr.restoration.AbstIterativeMethodSystem
     
     methods(Access = protected)
         
+        function validatePropertiesImpl(obj)
+            if isempty(obj.MetricProjection)
+                error('MetricProjection must be set.')
+            end
+        end        
+        
         function s = saveObjectImpl(obj)
             s = saveObjectImpl@saivdr.restoration.AbstIterativeMethodSystem(...
                 obj);
             s.Scales = obj.Scales;
             s.X      = obj.X;
-            s.Y     = obj.Y;
+            s.Y      = obj.Y;
             %s.Var = obj.Var;
             %s.Obj = matlab.System.saveObject(obj.Obj);
             %if isLocked(obj)
@@ -114,8 +124,10 @@ classdef PdsHcSystem < saivdr.restoration.AbstIterativeMethodSystem
             % Calculation of step size parameter
             framebound = fwdDic.FrameBound;
             %msrProc.step(vObs);
-            obj.Gamma = cell(1,2);
-            obj.Gamma{1} = 1/(framebound*msrProc.LambdaMax);
+            if isempty(obj.Gamma)
+                obj.Gamma = cell(1,2);
+                obj.Gamma{1} = 1/(framebound*msrProc.LambdaMax);
+            end
             obj.Gamma{2} = 1/(1.05*obj.Gamma{1}*framebound);            
             
             % Adjoint of measuremnt process
@@ -123,6 +135,15 @@ classdef PdsHcSystem < saivdr.restoration.AbstIterativeMethodSystem
             adjProc.release();
             adjProc.ProcessingMode = 'Adjoint';
             obj.AdjointProcess = adjProc;
+            
+            % Gaussian denoiser
+            if isempty(obj.GaussianDenoiser)
+                import saivdr.restoration.denoiser.*
+                obj.GaussianDenoiser = GaussianDenoiserSfth();
+            end
+            gamma  = obj.Gamma{1};
+            lambda = obj.Lambda;
+            obj.GaussianDenoiser.Sigma = sqrt(gamma*lambda);            
             
             % Initialization
             obj.Result = zeros(size(vObs),'like',vObs);
@@ -138,12 +159,11 @@ classdef PdsHcSystem < saivdr.restoration.AbstIterativeMethodSystem
             else
                 import saivdr.restoration.*
                 import saivdr.restoration.denoiser.*
-                gamma  = obj.Gamma;
-                lambda = obj.Lambda;
-                gdnsfth = GaussianDenoiserSfth('Sigma',sqrt(gamma*lambda));
+                gamma1  = obj.Gamma{1};
+                gdn = obj.GaussianDenoiser;
                 cm = CoefsManipulator(...
                     'Manipulation',...
-                    @(t,cpre) gdnsfth.step(cpre-gamma*t));
+                    @(t,cpre) gdn.step(cpre-gamma1*t));
                 if strcmp(obj.DataType,'Volumetric Data')
                     obj.ParallelProcess = OlsOlaProcess3d();
                 else
@@ -188,11 +208,10 @@ classdef PdsHcSystem < saivdr.restoration.AbstIterativeMethodSystem
                 scales = obj.Scales;
                 %
                 gamma1  = obj.Gamma{1};
-                lambda = obj.Lambda;
-                gdnsfth = GaussianDenoiserSfth('Sigma',sqrt(gamma1*lambda));
+                gdn = obj.GaussianDenoiser;
                 %
                 t = adjDic.step(g);
-                x = gdnsfth.step(xPre-gamma1*t);
+                x = gdn.step(xPre-gamma1*t);
                 z = fwdDic(x,scales);
                 % Update
                 obj.X = x;

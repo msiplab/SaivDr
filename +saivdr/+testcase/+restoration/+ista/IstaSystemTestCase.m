@@ -44,7 +44,7 @@ classdef IstaSystemTestCase < matlab.unittest.TestCase
             
             % Parameters
             lambdaExpctd  = 0; % Regularization parameter
-            gammaExpctd   = 0; % Step size parameter
+            gammaExpctd   = []; % Step size parameter
             msrExpctd = [];
             dicExpctd = [];
             gdnExpctd = [];

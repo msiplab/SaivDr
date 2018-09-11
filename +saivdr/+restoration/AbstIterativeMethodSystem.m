@@ -14,6 +14,10 @@ classdef (Abstract) AbstIterativeMethodSystem < matlab.System
     %
     % http://msiplab.eng.niigata-u.ac.jp/
     %
+
+    properties (Nontunable, Abstract)
+        GaussianDenoiser % Set of Gaussian denoisers {G_R(),...}
+    end
     
     properties (Constant)
         FORWARD = 1
@@ -25,11 +29,10 @@ classdef (Abstract) AbstIterativeMethodSystem < matlab.System
         %
         MeasureProcess   % Measurment process P
         Dictionary       % Set of synthesis and analysis dictionary {D, D'}
-        GaussianDenoiser % Set of Gaussian denoisers {G_R(),...}
         %
         Observation      % Observation y
         %
-        Gamma  = 0       % Stepsize parameter(s)
+        Gamma            % Stepsize parameter(s)
         %
         DataType = 'Image'
         SplitFactor = []

@@ -59,6 +59,10 @@ classdef IstaSystem < saivdr.restoration.AbstIterativeMethodSystem
         Scales
     end
 
+    properties(Nontunable, Hidden)
+        GaussianDenoiser
+    end
+    
     methods
         function obj = IstaSystem(varargin)
             import saivdr.restoration.AbstIterativeMethodSystem
@@ -107,13 +111,24 @@ classdef IstaSystem < saivdr.restoration.AbstIterativeMethodSystem
             % Calculation of step size parameter
             framebound = fwdDic.FrameBound;
             msrProc.step(vObs);
-            obj.Gamma = 1/(framebound*msrProc.LambdaMax);               
+            if isempty(obj.Gamma)
+                obj.Gamma = 1/(framebound*msrProc.LambdaMax);               
+            end
 
             % Adjoint of measuremnt process
             adjProc = msrProc.clone();
             adjProc.release();
             adjProc.ProcessingMode = 'Adjoint';            
             obj.AdjointProcess = adjProc;
+
+            % Gaussian denoiser
+            if isempty(obj.GaussianDenoiser)
+                import saivdr.restoration.denoiser.*
+                obj.GaussianDenoiser = GaussianDenoiserSfth();
+            end
+            gamma  = obj.Gamma;
+            lambda = obj.Lambda;
+            obj.GaussianDenoiser.Sigma = sqrt(gamma*lambda);
             
             % Initialization
             obj.Result = zeros(size(vObs),'like',vObs);
@@ -128,13 +143,10 @@ classdef IstaSystem < saivdr.restoration.AbstIterativeMethodSystem
                 [obj.X,obj.Scales] = adjDic.step(obj.Result);
             else
                 import saivdr.restoration.*
-                import saivdr.restoration.denoiser.*
-                gamma  = obj.Gamma;
-                lambda = obj.Lambda;
-                gdnsfth = GaussianDenoiserSfth('Sigma',sqrt(gamma*lambda));
+                gdn = obj.GaussianDenoiser;
                 cm = CoefsManipulator(...
                     'Manipulation',...
-                    @(t,cpre) gdnsfth.step(cpre-gamma*t));
+                    @(t,cpre) gdn.step(cpre-gamma*t));
                 if strcmp(obj.DataType,'Volumetric Data')
                     obj.ParallelProcess = OlsOlaProcess3d();
                 else
@@ -177,11 +189,10 @@ classdef IstaSystem < saivdr.restoration.AbstIterativeMethodSystem
                 scales = obj.Scales;
                 %
                 gamma  = obj.Gamma;
-                lambda = obj.Lambda;
-                gdnsfth = GaussianDenoiserSfth('Sigma',sqrt(gamma*lambda));                
+                gdn = obj.GaussianDenoiser;
                 %
                 t = adjDic.step(g);
-                x = gdnsfth.step(xPre-gamma*t);
+                x = gdn.step(xPre-gamma*t);
                 result = fwdDic(x,scales);
                 % Update
                 obj.X = x;

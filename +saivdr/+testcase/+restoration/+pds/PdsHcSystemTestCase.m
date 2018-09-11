@@ -46,7 +46,7 @@ classdef PdsHcSystemTestCase < matlab.unittest.TestCase
             
             % Parameters
             lambdaExpctd  = 0; % Regularization parameter
-            gammaExpctd   = 0; % Step size parameter
+            gammaExpctd   = []; % Step size parameter
             msrExpctd = [];
             mpjExpctd = [];
             dicExpctd = [];
@@ -205,17 +205,23 @@ classdef PdsHcSystemTestCase < matlab.unittest.TestCase
             end
             
         end
-        %{
+        
+
         function testStepSplit(testCase,...
-                depth,width,dsplit,nlevels,niter,useparallel,usegpu)
+                depth,dsplit,useparallel,usegpu)
             
             % Parameters
-            lambda = 1e-3;
+            vmin_ = -1;
+            vmax_ = 1;
+            niter_ = 4;
+            nlevels_ = 3;
             splitfactor = [2*ones(1,2) dsplit];
-            padsize = 2^(nlevels-1)*ones(1,3);
+            padsize = 2^(nlevels_-1)*ones(1,3);            
+            lambda = 1e-3;
+            width_ = 8;
             phtm = phantom('Modified Shepp-Logan',depth);
             sliceYZ = permute(phtm,[1 3 2]);
-            uSrc = 0.5*repmat(sliceYZ,[1 width 1]) + 1;
+            uSrc = repmat(sliceYZ,[1 width_ 1]);
             
             % Instantiation of observation
             import saivdr.degradation.linearprocess.*
@@ -225,13 +231,17 @@ classdef PdsHcSystemTestCase < matlab.unittest.TestCase
                 'BlurType','Gaussian',...
                 'SigmaOfGaussianKernel',pSigma,...
                 'ProcessingMode','Forward');
+            import saivdr.restoration.metricproj.*
+            mtrProj = ProxBoxConstraint(...
+                'Vmin', vmin_,...
+                'Vmax', vmax_);
             vObs = msrProc.step(uSrc) ...
                 + wSigma*randn(size(uSrc));
             
             % Instantiation of dictionary
             import saivdr.dictionary.udhaar.*
             fwdDic  = UdHaarSynthesis3dSystem();
-            adjDic  = UdHaarAnalysis3dSystem('NumberOfLevels',nlevels);
+            adjDic  = UdHaarAnalysis3dSystem('NumberOfLevels',nlevels_);
             
             % Instantiation of reference
             import saivdr.restoration.pds.*
@@ -240,6 +250,7 @@ classdef PdsHcSystemTestCase < matlab.unittest.TestCase
                 'DataType', 'Volumetric Data',...
                 'Lambda',         lambda,...
                 'MeasureProcess', msrProc,...
+                'MetricProjection', mtrProj,...
                 'Dictionary', { fwdDic, adjDic } );
             
             testCase.target = PdsHcSystem(...
@@ -247,14 +258,15 @@ classdef PdsHcSystemTestCase < matlab.unittest.TestCase
                 'DataType', 'Volumetric Data',...
                 'Lambda',         lambda,...
                 'MeasureProcess', msrProc,...
-                'Dictionary', { fwdDic, adjDic } ,...
+                'MetricProjection', mtrProj,...
+                'Dictionary', { fwdDic, adjDic },...
                 'SplitFactor', splitfactor,...
                 'PadSize', padsize,...
                 'UseParallel', useparallel,...
                 'UseGpu', usegpu);
             
             % Restoration
-            for iter = 1:niter
+            for iter = 1:niter_
                 resExpctd = reference.step();
                 resActual = testCase.target.step();
             end
@@ -269,14 +281,15 @@ classdef PdsHcSystemTestCase < matlab.unittest.TestCase
             
         end
         
-        
-        function testIsLambdaCompensation(testCase,depth,width,nlevels,...
-                useparallel)
+        function testIsLambdaCompensation(testCase,...
+            depth,width,nlevels,useparallel)
             
             % Parameters
             lambda = 1e-3;
             islambdacomp = true;
             %
+            vmin_ = 0;
+            vmax_ = 1;
             usegpu_ = false;
             dsplit_ = 2;
             splitfactor = [2*ones(1,2) dsplit_];
@@ -287,12 +300,16 @@ classdef PdsHcSystemTestCase < matlab.unittest.TestCase
             
             % Instantiation of observation
             import saivdr.degradation.linearprocess.*
+            import saivdr.restoration.metricproj.*
             pSigma = 2.00; % Extent of PSF
             wSigma = 1e-3; % Standard deviation of noise
             msrProc = BlurSystem(...
                 'BlurType','Gaussian',...
                 'SigmaOfGaussianKernel',pSigma,...
                 'ProcessingMode','Forward');
+            mtrProj = ProxBoxConstraint(...
+                'Vmin', vmin_,...
+                'Vmax', vmax_);            
             vObs = msrProc.step(uSrc) ...
                 + wSigma*randn(size(uSrc));
             
@@ -309,6 +326,7 @@ classdef PdsHcSystemTestCase < matlab.unittest.TestCase
                 'DataType', 'Volumetric Data',...
                 'Lambda',         lambda,...
                 'MeasureProcess', msrProc,...
+                'MetricProjection', mtrProj,...                
                 'Dictionary', { fwdDic, adjDic } ,...
                 'SplitFactor', splitfactor,...
                 'PadSize', padsize,...
@@ -330,7 +348,7 @@ classdef PdsHcSystemTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(lambdaActual,lambdaExpctd,...
                 'AbsTol',eps,sprintf('%g',diff));
         end
-        %}
+
     end
     
 end
