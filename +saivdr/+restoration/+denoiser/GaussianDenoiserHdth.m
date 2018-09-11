@@ -1,5 +1,5 @@
-classdef GaussianDenoiserSfth < saivdr.restoration.denoiser.AbstGaussianDenoiseSystem % codegen
-    % GAUSSIANDENOIZERSFTH Gaussian denoizer with soft thresholding
+classdef GaussianDenoiserHdth < saivdr.restoration.denoiser.AbstGaussianDenoiseSystem % codegen
+    % GAUSSIANDENOIZERHDTH Gaussian denoizer with hard thresholding
     %
     % Requirements: MATLAB R2015b
     %
@@ -30,7 +30,7 @@ classdef GaussianDenoiserSfth < saivdr.restoration.denoiser.AbstGaussianDenoiseS
 
     
     methods
-        function obj = GaussianDenoiserSfth(varargin)
+        function obj = GaussianDenoiserHdth(varargin)
             obj = obj@saivdr.restoration.denoiser.AbstGaussianDenoiseSystem(varargin{:});
             setProperties(obj,nargin,varargin{:});
         end
@@ -61,9 +61,8 @@ classdef GaussianDenoiserSfth < saivdr.restoration.denoiser.AbstGaussianDenoiseS
         function y = stepImpl(obj,u)
             % Implement algorithm. Calculate y as a function of input u and
             % discrete states.
-            nc = abs(u)-obj.threshold;
-            nc = (nc+abs(nc))/2;
-            y = sign(u).*nc;
+            y = u;
+            y((abs(u)-obj.threshold)<=0) = 0;
         end
 
         function resetImpl(obj)
