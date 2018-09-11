@@ -4,11 +4,11 @@ classdef IstaSystem < saivdr.restoration.AbstIterativeMethodSystem
     % Problem setting:
     %
     %    r^ = Dx^
-    %    x^ = argmin_x (1/2)||y - PDx||_2^2 + lambda ||x||_1
+    %    x^ = argmin_x (1/2)||v - PDx||_2^2 + lambda ||x||_1
     %
     % Input:
     %
-    %    y : Observation
+    %    v : Observation
     %    P : Measurment process
     %    D : Synthesis dictionary
     %
@@ -24,7 +24,7 @@ classdef IstaSystem < saivdr.restoration.AbstIterativeMethodSystem
     %  1: n = 0
     %  2: r(0) = Dx(0)
     %  3: while A stopping criterion is not satisfied do
-    %  4:     t <- D'P'(Pr(n) - y)
+    %  4:     t <- D'P'(Pr(n) - v)
     %  5:     x(n+1) = G_R( x(n) - gamma*t, sqrt(lambda*gamma) )
     %  6:     r(n+1) = Dx(n+1)
     %  7:     n <- n+1
