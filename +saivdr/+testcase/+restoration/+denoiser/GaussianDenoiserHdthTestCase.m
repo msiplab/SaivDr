@@ -17,6 +17,7 @@ classdef GaussianDenoiserHdthTestCase < matlab.unittest.TestCase
     
     properties (TestParameter)
         type = {'single','double'};
+        mode = {'Regularization','Hard Constraint'};
         inputSize = struct('small',8, 'medium', 16, 'large', 32);
         sigma     = struct('small',0.1,'large',2);
     end
@@ -74,7 +75,11 @@ classdef GaussianDenoiserHdthTestCase < matlab.unittest.TestCase
             testCase.target.Sigma = sigma;
             
             yActual = testCase.target.step(x);
+            testCase.verifyEqual(yActual,yExpctd,'AbsTol',1e-10);
             
+            yExpctd(abs(x)<=(2*sigma)^2) = 0;
+            testCase.target.Sigma = 2*sigma;
+            yActual = testCase.target.step(x);
             testCase.verifyEqual(yActual,yExpctd,'AbsTol',1e-10);
             
         end
@@ -95,8 +100,6 @@ classdef GaussianDenoiserHdthTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(yActual,yExpctd,'AbsTol',1e-10);
             
         end
-       
     end
-
 end
-
+        
