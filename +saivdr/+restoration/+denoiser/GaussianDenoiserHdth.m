@@ -15,19 +15,13 @@ classdef GaussianDenoiserHdth < saivdr.restoration.denoiser.AbstGaussianDenoiseS
     % http://msiplab.eng.niigata-u.ac.jp/
     %
 
-    properties (Nontunable,Access = private)
+    properties (Access = private)
         threshold
     end
     
     properties(DiscreteState)
 
     end
-
-    % Pre-computed constants
-    properties(Access = private)
-
-    end
-
     
     methods
         function obj = GaussianDenoiserHdth(varargin)
@@ -55,12 +49,12 @@ classdef GaussianDenoiserHdth < saivdr.restoration.denoiser.AbstGaussianDenoiseS
         
         function setupImpl(obj)
             % Perform one-time calculations, such as computing constants
-            obj.threshold = obj.Sigma.^2;
         end
 
         function y = stepImpl(obj,u)
             % Implement algorithm. Calculate y as a function of input u and
             % discrete states.
+            obj.threshold = obj.Sigma.^2;
             y = u;
             y((abs(u)-obj.threshold)<=0) = 0;
         end

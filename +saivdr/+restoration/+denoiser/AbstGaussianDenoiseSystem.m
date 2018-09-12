@@ -15,7 +15,7 @@ classdef (Abstract) AbstGaussianDenoiseSystem < matlab.System %#codegen
     % http://msiplab.eng.niigata-u.ac.jp/
     %
     
-    properties (Nontunable)
+    properties
         Sigma
     end    
     
