@@ -25,6 +25,10 @@ classdef (Abstract) AbstOlsOlaProcess < matlab.System
         DATA_DIMENSION
     end
     
+    methods (Abstract)
+        [coefs,scales] = getCoefficients(obj)
+    end
+    
     properties (Nontunable, Logical, Hidden)
         Debug = false
     end
