@@ -537,6 +537,8 @@ classdef OlsOlaProcess3dTestCase < matlab.unittest.TestCase
                 h = hu - srcImg;
             end
             imgExpctd = hu;
+            coefsExpctd = y;
+            scalesExpctd = scales;
             
             % Instantiation of target class
             import saivdr.restoration.*
@@ -579,12 +581,23 @@ classdef OlsOlaProcess3dTestCase < matlab.unittest.TestCase
                 h = hup - srcImg;
             end
             imgActual = hup;
+            [coefsActual,scalesActual] = testCase.target.getCoefficients();
             
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd));
             diff = max(abs(imgExpctd(:) - imgActual(:)));
             testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-10,...
                 sprintf('%g',diff));
+            %
+            testCase.verifySize(scalesActual,size(scalesExpctd));
+            diff = max(abs(scalesExpctd(:) - scalesActual(:)));
+            testCase.verifyEqual(scalesActual,scalesExpctd,'AbsTol',1e-10,...
+                sprintf('%g',diff));            
+            %
+            testCase.verifySize(coefsActual,size(coefsExpctd));
+            diff = max(abs(coefsExpctd(:) - coefsActual(:)));
+            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-10,...
+                sprintf('%g',diff));            
         end
         
          % Test
