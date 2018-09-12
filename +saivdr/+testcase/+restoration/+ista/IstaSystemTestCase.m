@@ -121,6 +121,8 @@ classdef IstaSystemTestCase < matlab.unittest.TestCase
                 resPre = resExpctd{iter};
                 xPre = x;
             end
+            coefsExpctd = x;
+            scalesExpctd = scale;
             
             % Instantiation of test target
             import saivdr.restoration.ista.*
@@ -174,6 +176,20 @@ classdef IstaSystemTestCase < matlab.unittest.TestCase
                 %
                 resPre  = resActual;
             end
+            
+            % Actual values of coefficients
+            [coefsActual,scalesActual] = testCase.target.getCoefficients();
+            
+            % Evaluation of coefficients
+            testCase.verifySize(scalesActual,size(scalesExpctd));
+            diff = max(abs(scalesExpctd(:) - scalesActual(:)));
+            testCase.verifyEqual(scalesActual,scalesExpctd,'AbsTol',1e-10,...
+                sprintf('%g',diff));            
+            %
+            testCase.verifySize(coefsActual,size(coefsExpctd));
+            diff = max(abs(coefsExpctd(:) - coefsActual(:)));
+            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-10,...
+                sprintf('%g',diff));                        
 
         end
         
@@ -230,13 +246,27 @@ classdef IstaSystemTestCase < matlab.unittest.TestCase
                 resActual = testCase.target.step();
             end
             
-            % Evaluation
+            % Evaluation of result
             eps = 1e-10;            
             %import matlab.unittest.constraints.IsLessThan
             testCase.verifySize(resActual,size(resExpctd));
             diff = max(abs(resExpctd(:) - resActual(:)));
             testCase.verifyEqual(resActual,resExpctd,...
                 'AbsTol',eps,sprintf('%g',diff));
+            
+            % Evaluation of coefficients
+            [coefsExpctd,scalesExpctd] = reference.getCoefficients();
+            [coefsActual,scalesActual] = testCase.target.getCoefficients();
+            %
+            testCase.verifySize(scalesActual,size(scalesExpctd));
+            diff = max(abs(scalesExpctd(:) - scalesActual(:)));
+            testCase.verifyEqual(scalesActual,scalesExpctd,'AbsTol',1e-10,...
+                sprintf('%g',diff));            
+            %
+            testCase.verifySize(coefsActual,size(coefsExpctd));
+            diff = max(abs(coefsExpctd(:) - coefsActual(:)));
+            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-10,...
+                sprintf('%g',diff));            
             
         end
         

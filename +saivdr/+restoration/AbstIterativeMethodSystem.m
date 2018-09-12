@@ -15,6 +15,10 @@ classdef (Abstract) AbstIterativeMethodSystem < matlab.System
     % http://msiplab.eng.niigata-u.ac.jp/
     %
 
+    methods (Abstract)
+        [coefs,scales] = getCoefficients(obj)
+    end
+    
     properties (Nontunable, Abstract)
         GaussianDenoiser % Set of Gaussian denoisers {G_R(),...}
     end
