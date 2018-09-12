@@ -40,6 +40,25 @@ classdef OlsOlaProcess2d < saivdr.restoration.AbstOlsOlaProcess
             setProperties(obj,nargin,varargin{:})
         end
         
+        function [coefs,scales] = getCoefficients(obj)
+            nChs = size(obj.refScales,1);
+            nRows = obj.VerticalSplitFactor;
+            nCols = obj.HorizontalSplitFactor;
+            coefsCell = cell(nRows,nCols);
+            coefs = [];
+            for iCh = 1:nChs
+                for iCol = 1:nCols
+                    for iRow = 1:nRows
+                        tmp = obj.states{(iCol-1)*nRows+iRow};
+                        coefsCell{iRow,iCol} = tmp{iCh};
+                    end
+                end
+                subCoefs = cell2mat(coefsCell);
+                coefs = [ coefs subCoefs(:).'];
+            end
+            scales = obj.refScales;
+        end
+        
     end
     
     methods(Access = protected)
