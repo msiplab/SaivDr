@@ -1,12 +1,9 @@
 classdef GradientPursuitTestCase < matlab.unittest.TestCase
     %GradientPursuitTESTCASE Test case for sis2dSystem
     %
-    % SVN identifier:
-    % $Id: GradientPursuitTestCase.m 866 2015-11-24 04:29:42Z sho $
-    %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2014-2015, Shogo MURAMATSU
+    % Copyright (c) 2014-2018, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -67,23 +64,23 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
             
             % Actual values
             testCase.gp.NumberOfSparseCoefficients = nCoefsExpctd;
-            [residActual, coefsActual, scalesActual] = ...
+            [resActual, coefsActual, scalesActual] = ...
                 testCase.gp.step(srcImg);
             nCoefsActual = nnz(coefsActual);
             
             % Evaluation
             import matlab.unittest.constraints.IsTrue;
-            testCase.verifySize(residActual, size(srcImg));
+            testCase.verifySize(resActual, size(srcImg));
             testCase.verifySize(coefsActual, sizeOfCoefExpctd);
-            testCase.verifyThat(norm(residActual(:)) < norm(srcImg(:)), ...
+            testCase.verifyThat(norm(resActual(:)) < norm(srcImg(:)), ...
                 IsTrue, ...
                 sprintf('||r||^2 = %g must be less than ||x||^2 = %g.',...
-                norm(residActual(:)),norm(srcImg(:)))); 
+                norm(resActual(:)),norm(srcImg(:)))); 
             testCase.verifyThat(nCoefsActual<=nCoefsExpctd,IsTrue);
             
-            resImg = step(synthesizer,coefsActual,scalesActual);
-            testCase.verifyEqual(resImg(:)+residActual(:), srcImg(:),...
-                'RelTol',1e-9);
+            resExpctd = step(synthesizer,coefsActual,scalesActual);
+            testCase.verifyEqual(resActual,resExpctd,...
+                'AbsTol',1e-9);
             
             %{
             mse = @(x,y) ((x(:)-y(:)).^2)/numel(x);
@@ -136,23 +133,23 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
             
             % Actual values
             testCase.gp.NumberOfSparseCoefficients = nCoefsExpctd;
-            [residActual, coefsActual, scalesActual] = ...
+            [resActual, coefsActual, scalesActual] = ...
                 testCase.gp.step(srcImg);
             nCoefsActual =  nnz(coefsActual);
             
             % Evaluation
             import matlab.unittest.constraints.IsTrue;
-            testCase.verifySize(residActual, size(srcImg));
+            testCase.verifySize(resActual, size(srcImg));
             testCase.verifySize(coefsActual, sizeOfCoefsExpctd);
-            testCase.verifyThat(norm(residActual(:)) < norm(srcImg(:)), ...
+            testCase.verifyThat(norm(resActual(:)) < norm(srcImg(:)), ...
                 IsTrue, ...
                 sprintf('||r||^2 = %g must be less than ||x||^2 = %g.',...
-                norm(residActual(:)),norm(srcImg(:)))); 
+                norm(resActual(:)),norm(srcImg(:)))); 
             testCase.verifyThat(nCoefsActual<=nCoefsExpctd,IsTrue);
             
-            resImg = step(synthesizer,coefsActual,scalesActual);
-            testCase.verifyEqual(resImg(:)+residActual(:), srcImg(:),...
-                'RelTol',1e-9);
+            resExpctd = step(synthesizer,coefsActual,scalesActual);
+            testCase.verifyEqual(resActual,resExpctd,...
+                'AbsTol',1e-9);
             
             %{
             mse = @(x,y) ((x(:)-y(:)).^2)/numel(x);
@@ -206,23 +203,23 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
             
             % Actual values
             testCase.gp.NumberOfSparseCoefficients = nCoefsExpctd;
-            [residActual, coefsActual, scalesActual] = ...
+            [resActual, coefsActual, scalesActual] = ...
                 testCase.gp.step(srcImg);
             nCoefsActual = nnz(coefsActual);
             
             % Evaluation
             import matlab.unittest.constraints.IsTrue;
-            testCase.verifySize(residActual, size(srcImg));
+            testCase.verifySize(resActual, size(srcImg));
             testCase.verifySize(coefsActual, sizeOfCoefsExpctd);
-            testCase.verifyThat(norm(residActual(:)) < norm(srcImg(:)), ...
+            testCase.verifyThat(norm(resActual(:)) < norm(srcImg(:)), ...
                 IsTrue, ...
                 sprintf('||r||^2 = %g must be less than ||x||^2 = %g.',...
-                norm(residActual(:)),norm(srcImg(:)))); 
+                norm(resActual(:)),norm(srcImg(:)))); 
             testCase.verifyThat(nCoefsActual<=nCoefsExpctd,IsTrue);
             
-            resImg = step(synthesizer,coefsActual,scalesActual);
-            testCase.verifyEqual(resImg(:)+residActual(:), srcImg(:),...
-                'RelTol',1e-9);
+            resExpctd = step(synthesizer,coefsActual,scalesActual);
+            testCase.verifyEqual(resActual,resExpctd,...
+                'AbsTol',1e-9);
             %{
             mse = @(x,y) ((x(:)-y(:)).^2)/numel(x);
             psnr = @(x,y) -10*log10(mse(x,y));
@@ -268,23 +265,23 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
             
             % Actual values
             testCase.gp.NumberOfSparseCoefficients = nCoefsExpctd;
-            [residActual, coefsActual, scalesActual] = ...
+            [resActual, coefsActual, scalesActual] = ...
                 testCase.gp.step(srcImg);
             nCoefsActual = nnz(coefsActual);
             
             % Evaluation
             import matlab.unittest.constraints.IsTrue;
-            testCase.verifySize(residActual, size(srcImg));
+            testCase.verifySize(resActual, size(srcImg));
             testCase.verifySize(coefsActual, sizeOfCoefsExpctd);
-            testCase.verifyThat(norm(residActual(:)) < norm(srcImg(:)), ...
+            testCase.verifyThat(norm(resActual(:)) < norm(srcImg(:)), ...
                 IsTrue, ...
                 sprintf('||r||^2 = %g must be less than ||x||^2 = %g.',...
-                norm(residActual(:)),norm(srcImg(:)))); 
+                norm(resActual(:)),norm(srcImg(:)))); 
             testCase.verifyThat(nCoefsActual<=nCoefsExpctd,IsTrue);
             
-            resImg = step(synthesizer,coefsActual,scalesActual);
-            testCase.verifyEqual(resImg(:)+residActual(:), srcImg(:),...
-                'RelTol',1e-9);
+            resExpctd = step(synthesizer,coefsActual,scalesActual);
+            testCase.verifyEqual(resActual,resExpctd,...
+                'AbsTol',1e-9);
             
             %{
             mse = @(x,y) ((x(:)-y(:)).^2)/numel(x);
@@ -337,23 +334,23 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
             
             % Actual values
             testCase.gp.NumberOfSparseCoefficients = nCoefsExpctd;
-            [residActual, coefsActual, scalesActual] = ...
+            [resActual, coefsActual, scalesActual] = ...
                 testCase.gp.step(srcImg);
             nCoefsActual = nnz(coefsActual);
             
             % Evaluation
             import matlab.unittest.constraints.IsTrue;
-            testCase.verifySize(residActual, size(srcImg));
+            testCase.verifySize(resActual, size(srcImg));
             testCase.verifySize(coefsActual, sizeOfCoefsExpctd);
-            testCase.verifyThat(norm(residActual(:)) < norm(srcImg(:)), ...
+            testCase.verifyThat(norm(resActual(:)) < norm(srcImg(:)), ...
                 IsTrue, ...
                 sprintf('||r||^2 = %g must be less than ||x||^2 = %g.',...
-                norm(residActual(:)),norm(srcImg(:)))); 
+                norm(resActual(:)),norm(srcImg(:)))); 
             testCase.verifyThat(nCoefsActual<=nCoefsExpctd,IsTrue);
             
-            resImg = step(synthesizer,coefsActual,scalesActual);
-            testCase.verifyEqual(resImg(:)+residActual(:), srcImg(:),...
-                'RelTol',1e-9);
+            resExpctd = step(synthesizer,coefsActual,scalesActual);
+            testCase.verifyEqual(resActual,resExpctd,...
+                'AbsTol',1e-9);
             
             %{
             mse = @(x,y) ((x(:)-y(:)).^2)/numel(x);
@@ -405,23 +402,23 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
                 
             % Actual values
             testCase.gp.NumberOfSparseCoefficients = nCoefsExpctd;
-            [residActual, coefsActual, scalesActual] = ...
+            [resActual, coefsActual, scalesActual] = ...
                 testCase.gp.step(srcImg);
             nCoefsActual = nnz(coefsActual);
             
             % Evaluation
             import matlab.unittest.constraints.IsTrue;
-            testCase.verifySize(residActual, size(srcImg));
+            testCase.verifySize(resActual, size(srcImg));
             testCase.verifySize(coefsActual, sizeOfCoefsExpctd);
-            testCase.verifyThat(norm(residActual(:)) < norm(srcImg(:)), ...
+            testCase.verifyThat(norm(resActual(:)) < norm(srcImg(:)), ...
                 IsTrue, ...
                 sprintf('||r||^2 = %g must be less than ||x||^2 = %g.',...
-                norm(residActual(:)),norm(srcImg(:)))); 
+                norm(resActual(:)),norm(srcImg(:)))); 
             testCase.verifyThat(nCoefsActual<=nCoefsExpctd,IsTrue);
             
-            resImg = step(synthesizer,coefsActual,scalesActual);
-            testCase.verifyEqual(resImg(:)+residActual(:), srcImg(:),...
-                'RelTol',1e-9);
+            resExpctd = step(synthesizer,coefsActual,scalesActual);
+            testCase.verifyEqual(resActual,resExpctd,...
+                'AbsTol',1e-9);
             
             %{
             mse = @(x,y) ((x(:)-y(:)).^2)/numel(x);
@@ -466,15 +463,15 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
             % Evaluation
             import matlab.unittest.constraints.IsTrue;
             testCase.gp.NumberOfSparseCoefficients = 1;
-            resid0 = testCase.gp.step(srcImg);
+            res0 = testCase.gp.step(srcImg);
             for nCoefs = 2:32
                 testCase.gp.NumberOfSparseCoefficients = nCoefs;
-                resid1 = testCase.gp.step(srcImg);
-                testCase.verifyThat(norm(resid1(:)) < norm(resid0(:)), ...
+                res1 = testCase.gp.step(srcImg);
+                testCase.verifyThat(norm(res1(:),2) < norm(res0(:),2), ...
                     IsTrue, ...
-                    sprintf('||r0||^2 = %g must be less than ||r1||^2 = %g.',...
-                    norm(resid0(:)),norm(resid1(:))));
-                resid0 = resid1;
+                    sprintf('||r0|| = %g must be less than ||r1|| = %g.',...
+                    norm(res0(:),2),norm(res1(:),2)));
+                res0 = res1;
             end
         end        
              
@@ -500,23 +497,23 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
             
             % Actual values
             testCase.gp.NumberOfSparseCoefficients = nCoefsExpctd;
-            [residActual, coefsActual] = ...
+            [resActual, coefsActual] = ...
                 testCase.gp.step(srcImg);
             nCoefsActual = nnz(coefsActual);
             
             % Evaluation
             import matlab.unittest.constraints.IsTrue;
-            testCase.verifySize(residActual, size(srcImg));
+            testCase.verifySize(resActual, size(srcImg));
             testCase.verifySize(coefsActual, [ 1 (3*nLevels+1)*height*width]);
-            testCase.verifyThat(norm(residActual(:)) < norm(srcImg(:)), ...
+            testCase.verifyThat(norm(resActual(:)) < norm(srcImg(:)), ...
                 IsTrue, ...
                 sprintf('||r||^2 = %g must be less than ||x||^2 = %g.',...
-                norm(residActual(:)),norm(srcImg(:)))); 
+                norm(resActual(:)),norm(srcImg(:)))); 
             testCase.verifyThat(nCoefsActual<=nCoefsExpctd,IsTrue);
             
-            resImg = step(synthesizer,coefsActual,repmat(size(srcImg),[4 1]));
-            testCase.verifyEqual(resImg(:)+residActual(:), srcImg(:),...
-                'RelTol',1e-10);
+            resExpctd = step(synthesizer,coefsActual,repmat(size(srcImg),[4 1]));
+            testCase.verifyEqual(resActual,resExpctd,...
+                'AbsTol',1e-10);
             
             %{
             mse = @(x,y) ((x(:)-y(:)).^2)/numel(x);
@@ -547,23 +544,23 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
             
             % Actual values
             testCase.gp.NumberOfSparseCoefficients = nCoefsExpctd;
-            [residActual, coefsActual] = ...
+            [resActual, coefsActual] = ...
                 testCase.gp.step(srcImg);
             nCoefsActual = nnz(coefsActual);
             
             % Evaluation
             import matlab.unittest.constraints.IsTrue;
-            testCase.verifySize(residActual, size(srcImg));
+            testCase.verifySize(resActual, size(srcImg));
             testCase.verifySize(coefsActual, [ 1 (3*nLevels+1)*height*width]);
-            testCase.verifyThat(norm(residActual(:)) < norm(srcImg(:)), ...
+            testCase.verifyThat(norm(resActual(:)) < norm(srcImg(:)), ...
                 IsTrue, ...
                 sprintf('||r||^2 = %g must be less than ||x||^2 = %g.',...
-                norm(residActual(:)),norm(srcImg(:)))); 
+                norm(resActual(:)),norm(srcImg(:)))); 
             testCase.verifyThat(nCoefsActual<=nCoefsExpctd,IsTrue);
             
-            resImg = step(synthesizer,coefsActual,repmat(size(srcImg),[7 1]));
-            testCase.verifyEqual(resImg(:)+residActual(:), srcImg(:),...
-                'RelTol',1e-10);
+            resExpctd = step(synthesizer,coefsActual,repmat(size(srcImg),[7 1]));
+            testCase.verifyEqual(resActual,resExpctd,...
+                'AbsTol',1e-10);
             
             %{
             mse = @(x,y) ((x(:)-y(:)).^2)/numel(x);
@@ -605,8 +602,7 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
             % MSE after processing
             testCase.gp.NumberOfSparseCoefficients = nCoefs;
             resImg = testCase.gp.step(srcImg);
-            recImg = srcImg - resImg;
-            mseExpctd = mse(uint8(255*recImg),uint8(255*srcImg));
+            mseExpctd = mse(uint8(255*resImg),uint8(255*srcImg));
             
             % Actual value
             mses = get(stepMonitor,'MSEs');
@@ -615,7 +611,7 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
             
             % Evaluation
             diff = max(abs(mseExpctd(:)-mseActual(:))./abs(mseExpctd(:)));
-            testCase.assertEqual(mseActual,mseExpctd,'RelTol',1e-10,...
+            testCase.assertEqual(mseActual,mseExpctd,'AbsTol',1e-10,...
                 sprintf('diff = %f\n',diff))
             
         end
@@ -646,8 +642,7 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
             % MSE by original object
             testCase.gp.NumberOfSparseCoefficients = nCoefs;
             resImg = testCase.gp.step(srcImg);
-            recImg = srcImg - resImg;
-            mseOrg = mse(int16(255*recImg),int16(255*srcImg));            
+            mseOrg = mse(int16(255*resImg),int16(255*srcImg));            
             
             % Instantiation of target class
             cloneGp = clone(testCase.gp);
@@ -655,8 +650,7 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
             % MSE by clone object
             cloneGp.NumberOfSparseCoefficients = nCoefs;
             resImg = cloneGp.step(srcImg);
-            recImg = srcImg - resImg;
-            mseCln = mse(int16(255*recImg),int16(255*srcImg));                        
+            mseCln = mse(int16(255*resImg),int16(255*srcImg));                        
             
             % Evaluation
             testCase.verifyEqual(mseCln,mseOrg);
@@ -734,23 +728,23 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
             
             % Actual values
             testCase.gp.NumberOfSparseCoefficients = nCoefsExpctd;
-            [residActual, coefsActual, scalesActual] = ...
+            [resActual, coefsActual, scalesActual] = ...
                 testCase.gp.step(srcImg);
             nCoefsActual = nnz(coefsActual);
             
             % Evaluation
             import matlab.unittest.constraints.IsTrue;
-            testCase.verifySize(residActual, size(srcImg));
+            testCase.verifySize(resActual, size(srcImg));
             testCase.verifySize(coefsActual, sizeOfCoefsExpctd);
-            testCase.verifyThat(norm(residActual(:)) < norm(srcImg(:)), ...
+            testCase.verifyThat(norm(resActual(:),2) < norm(srcImg(:),2), ...
                 IsTrue, ...
-                sprintf('||r||^2 = %g must be less than ||x||^2 = %g.',...
-                norm(residActual(:)),norm(srcImg(:)))); 
+                sprintf('||r|| = %g must be less than ||x|| = %g.',...
+                norm(resActual(:),2),norm(srcImg(:),2))); 
             testCase.verifyThat(nCoefsActual<=nCoefsExpctd,IsTrue);
             
-            resImg = step(synthesizer,coefsActual,scalesActual);
-            testCase.verifyEqual(resImg(:)+residActual(:), srcImg(:),...
-                'RelTol',1e-10);
+            resExpctd = step(synthesizer,coefsActual,scalesActual);
+            testCase.verifyEqual(resActual,resExpctd,...
+                'AbsTol',1e-10);
             
             %{
             mse = @(x,y) ((x(:)-y(:)).^2)/numel(x);
@@ -803,23 +797,23 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
             
             % Actual values
             testCase.gp.NumberOfSparseCoefficients = nCoefsExpctd;
-            [residActual, coefsActual, scalesActual] = ...
+            [resActual, coefsActual, scalesActual] = ...
                 testCase.gp.step(srcImg);
             nCoefsActual = nnz(coefsActual);
             
             % Evaluation
             import matlab.unittest.constraints.IsTrue;
-            testCase.verifySize(residActual, size(srcImg));
+            testCase.verifySize(resActual, size(srcImg));
             testCase.verifySize(coefsActual, sizeOfCoefsExpctd);
-            testCase.verifyThat(norm(residActual(:)) < norm(srcImg(:)), ...
+            testCase.verifyThat(norm(resActual(:)) < norm(srcImg(:)), ...
                 IsTrue, ...
                 sprintf('||r||^2 = %g must be less than ||x||^2 = %g.',...
-                norm(residActual(:)),norm(srcImg(:)))); 
+                norm(resActual(:)),norm(srcImg(:)))); 
             testCase.verifyThat(nCoefsActual<=nCoefsExpctd,IsTrue);
             
-            resImg = step(synthesizer,coefsActual,scalesActual);
-            testCase.verifyEqual(resImg(:)+residActual(:), srcImg(:),...
-                'RelTol',1e-10);
+            resExpctd = step(synthesizer,coefsActual,scalesActual);
+            testCase.verifyEqual(resActual,resExpctd,...
+                'AbsTol',1e-10);
             
             %{
             mse = @(x,y) ((x(:)-y(:)).^2)/numel(x);
@@ -873,23 +867,23 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
             
             % Actual values
             testCase.gp.NumberOfSparseCoefficients = nCoefsExpctd;
-            [residActual, coefsActual, scalesActual] = ...
+            [resActual, coefsActual, scalesActual] = ...
                 testCase.gp.step(srcImg);
             nCoefsActual = nnz(coefsActual);
             
             % Evaluation
             import matlab.unittest.constraints.IsTrue;
-            testCase.verifySize(residActual, size(srcImg));
+            testCase.verifySize(resActual, size(srcImg));
             testCase.verifySize(coefsActual, sizeOfCoefsExpctd);
-            testCase.verifyThat(norm(residActual(:)) < norm(srcImg(:)), ...
+            testCase.verifyThat(norm(resActual(:)) < norm(srcImg(:)), ...
                 IsTrue, ...
                 sprintf('||r||^2 = %g must be less than ||x||^2 = %g.',...
-                norm(residActual(:)),norm(srcImg(:)))); 
+                norm(resActual(:)),norm(srcImg(:)))); 
             testCase.verifyThat(nCoefsActual<=nCoefsExpctd,IsTrue);
             
-            resImg = step(synthesizer,coefsActual,scalesActual);
-            testCase.verifyEqual(resImg(:)+residActual(:), srcImg(:),...
-                'RelTol',1e-10);
+            resExpctd = step(synthesizer,coefsActual,scalesActual);
+            testCase.verifyEqual(resActual,resExpctd,...
+                'AbsTol',1e-10);
             
             %{
             mse = @(x,y) ((x(:)-y(:)).^2)/numel(x);
@@ -943,23 +937,23 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
             
             % Actual values
             testCase.gp.NumberOfSparseCoefficients = nCoefsExpctd;
-            [residActual, coefsActual, scalesActual] = ...
+            [resActual, coefsActual, scalesActual] = ...
                 testCase.gp.step(srcImg);
             nCoefsActual = nnz(coefsActual);
             
             % Evaluation
             import matlab.unittest.constraints.IsTrue;
-            testCase.verifySize(residActual, size(srcImg));
+            testCase.verifySize(resActual, size(srcImg));
             testCase.verifySize(coefsActual, sizeOfCoefsExpctd);
-            testCase.verifyThat(norm(residActual(:)) < norm(srcImg(:)), ...
+            testCase.verifyThat(norm(resActual(:)) < norm(srcImg(:)), ...
                 IsTrue, ...
                 sprintf('||r||^2 = %g must be less than ||x||^2 = %g.',...
-                norm(residActual(:)),norm(srcImg(:)))); 
+                norm(resActual(:)),norm(srcImg(:)))); 
             testCase.verifyThat(nCoefsActual<=nCoefsExpctd,IsTrue);
             
-            resImg = step(synthesizer,coefsActual,scalesActual);
-            testCase.verifyEqual(resImg(:)+residActual(:), srcImg(:),...
-                'RelTol',1e-10);
+            resExpctd = step(synthesizer,coefsActual,scalesActual);
+            testCase.verifyEqual(resActual,resExpctd,...
+                'AbsTol',1e-10);
             
             %{
             mse = @(x,y) ((x(:)-y(:)).^2)/numel(x);
@@ -1013,23 +1007,23 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
             
             % Actual values
             testCase.gp.NumberOfSparseCoefficients = nCoefsExpctd;
-            [residActual, coefsActual, scalesActual] = ...
+            [resActual, coefsActual, scalesActual] = ...
                 testCase.gp.step(srcImg);
             nCoefsActual = nnz(coefsActual);
             
             % Evaluation
             import matlab.unittest.constraints.IsTrue;
-            testCase.verifySize(residActual, size(srcImg));
+            testCase.verifySize(resActual, size(srcImg));
             testCase.verifySize(coefsActual, sizeOfCoefsExpctd);
-            testCase.verifyThat(norm(residActual(:)) < norm(srcImg(:)), ...
+            testCase.verifyThat(norm(resActual(:),2) < norm(srcImg(:),2), ...
                 IsTrue, ...
-                sprintf('||r||^2 = %g must be less than ||x||^2 = %g.',...
-                norm(residActual(:)),norm(srcImg(:)))); 
+                sprintf('||r|| = %g must be less than ||x|| = %g.',...
+                norm(resActual(:),2),norm(srcImg(:),2))); 
             testCase.verifyThat(nCoefsActual<=nCoefsExpctd,IsTrue);
             
-            resImg = step(synthesizer,coefsActual,scalesActual);
-            testCase.verifyEqual(resImg(:)+residActual(:), srcImg(:),...
-                'RelTol',1e-10);
+            resExpctd = step(synthesizer,coefsActual,scalesActual);
+            testCase.verifyEqual(resActual,resExpctd,...
+                'AbsTol',1e-10);
             
             %{
             mse = @(x,y) ((x(:)-y(:)).^2)/numel(x);

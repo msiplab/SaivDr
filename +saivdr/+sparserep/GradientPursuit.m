@@ -55,7 +55,7 @@ classdef GradientPursuit < ...
                 matlab.System.loadObject(s.AdjOfSynthesizer);
         end        
         
-        function [ residual, coefvec, scales ] = stepImpl(obj, srcImg)
+        function [ result, coefvec, scales ] = stepImpl(obj, srcImg)
             nCoefs = obj.NumberOfSparseCoefficients;
             source = im2double(srcImg);
             residual = source;
@@ -89,9 +89,9 @@ classdef GradientPursuit < ...
                 %
                 residual = residual - a*c;
                 %
+                result = source - residual;
                 if ~isempty(obj.StepMonitor)
-                    reconst = source - residual;
-                    step(obj.StepMonitor,reconst);
+                    step(obj.StepMonitor,result);
                 end
                 %
             end
