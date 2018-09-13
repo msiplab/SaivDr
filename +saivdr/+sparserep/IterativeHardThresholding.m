@@ -37,7 +37,7 @@ classdef IterativeHardThresholding < ...
        
     properties (PositiveInteger)
         MaxIter = 1000
-        NumberOfCoefficients = 1
+        NumberOfSparseCoefficients = 1
     end    
     
     methods
@@ -78,7 +78,7 @@ classdef IterativeHardThresholding < ...
         
         function [ residual, coefvec, scales ] = ...
                 stepImpl(obj, srcImg)
-            nCoefs = obj.NumberOfCoefficients;
+            nCoefs = obj.NumberOfSparseCoefficients;
             source = im2double(srcImg);
             
             % Initalization

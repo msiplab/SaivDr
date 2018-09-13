@@ -65,7 +65,7 @@ classdef IterativeHardThresholdingTestCase < ...
                 'AdjOfSynthesizer',analyzer);
             
             % Actual values
-            testCase.iht.NumberOfCoefficients = nCoefsExpctd;
+            testCase.iht.NumberOfSparseCoefficients = nCoefsExpctd;
             [residActual, coefsActual, scalesActual] = ...
                 testCase.iht.step(srcImg);
             nCoefsActual = nnz(coefsActual);
@@ -132,7 +132,7 @@ classdef IterativeHardThresholdingTestCase < ...
             sizeOfCoefsExpctd = [ 1 nCoefs ];
             
             % Actual values
-            testCase.iht.NumberOfCoefficients = nCoefsExpctd;
+            testCase.iht.NumberOfSparseCoefficients = nCoefsExpctd;
             [residActual, coefsActual, scalesActual] = ...
                 testCase.iht.step(srcImg);
             nCoefsActual =  nnz(coefsActual);
@@ -200,7 +200,7 @@ classdef IterativeHardThresholdingTestCase < ...
             sizeOfCoefsExpctd = [ 1 nCoefs ];
             
             % Actual values
-            testCase.iht.NumberOfCoefficients = nCoefsExpctd;
+            testCase.iht.NumberOfSparseCoefficients = nCoefsExpctd;
             [residActual, coefsActual, scalesActual] = ...
                 testCase.iht.step(srcImg);
             nCoefsActual = nnz(coefsActual);
@@ -260,7 +260,7 @@ classdef IterativeHardThresholdingTestCase < ...
                 'AdjOfSynthesizer',analyzer);
             
             % Actual values
-            testCase.iht.NumberOfCoefficients = nCoefsExpctd;
+            testCase.iht.NumberOfSparseCoefficients = nCoefsExpctd;
             [residActual, coefsActual, scalesActual] = ...
                 testCase.iht.step(srcImg);
             nCoefsActual = nnz(coefsActual);
@@ -327,7 +327,7 @@ classdef IterativeHardThresholdingTestCase < ...
             sizeOfCoefsExpctd = [ 1 nCoefs ];
             
             % Actual values
-            testCase.iht.NumberOfCoefficients = nCoefsExpctd;
+            testCase.iht.NumberOfSparseCoefficients = nCoefsExpctd;
             [residActual, coefsActual, scalesActual] = ...
                 testCase.iht.step(srcImg);
             nCoefsActual = nnz(coefsActual);
@@ -393,7 +393,7 @@ classdef IterativeHardThresholdingTestCase < ...
             sizeOfCoefsExpctd = [ 1 nCoefs ];
                 
             % Actual values
-            testCase.iht.NumberOfCoefficients = nCoefsExpctd;
+            testCase.iht.NumberOfSparseCoefficients = nCoefsExpctd;
             [residActual, coefsActual, scalesActual] = ...
                 testCase.iht.step(srcImg);
             nCoefsActual = nnz(coefsActual);
@@ -452,10 +452,10 @@ classdef IterativeHardThresholdingTestCase < ...
             
             % Evaluation
             import matlab.unittest.constraints.IsTrue;
-            testCase.iht.NumberOfCoefficients = 1;
+            testCase.iht.NumberOfSparseCoefficients = 1;
             resid0 = testCase.iht.step(srcImg);
             for nCoefs = 2:32
-                testCase.iht.NumberOfCoefficients = nCoefs;
+                testCase.iht.NumberOfSparseCoefficients = nCoefs;
                 resid1 = testCase.iht.step(srcImg);
                 testCase.verifyThat(norm(resid1(:)) < norm(resid0(:)), ...
                     IsTrue, ...
@@ -486,7 +486,7 @@ classdef IterativeHardThresholdingTestCase < ...
                 
             
             % Actual values
-            testCase.iht.NumberOfCoefficients = nCoefsExpctd;
+            testCase.iht.NumberOfSparseCoefficients = nCoefsExpctd;
             [residActual, coefsActual] = testCase.iht.step(srcImg);
             nCoefsActual = nnz(coefsActual);
             
@@ -532,7 +532,7 @@ classdef IterativeHardThresholdingTestCase < ...
                 'AdjOfSynthesizer',analyzer);
             
             % Actual values
-            testCase.iht.NumberOfCoefficients = nCoefsExpctd;
+            testCase.iht.NumberOfSparseCoefficients = nCoefsExpctd;
             [residActual, coefsActual] = testCase.iht.step(srcImg);
             nCoefsActual = nnz(coefsActual);
             
@@ -588,7 +588,7 @@ classdef IterativeHardThresholdingTestCase < ...
             mse = @(x,y) sum((double(x(:))-double(y(:))).^2)/numel(x);
             
             % MSE after processing
-            testCase.iht.NumberOfCoefficients = nCoefs;
+            testCase.iht.NumberOfSparseCoefficients = nCoefs;
             resImg = testCase.iht.step(srcImg);
             recImg = srcImg - resImg;
             mseExpctd = mse(uint8(255*recImg),uint8(255*srcImg));
@@ -628,7 +628,7 @@ classdef IterativeHardThresholdingTestCase < ...
                 'AdjOfSynthesizer',analyzer);
             
             % MSE by original object
-            testCase.iht.NumberOfCoefficients = nCoefs;
+            testCase.iht.NumberOfSparseCoefficients = nCoefs;
             resImg = testCase.iht.step(srcImg);
             recImg = srcImg - resImg;
             mseOrg = mse(int16(255*recImg),int16(255*srcImg));            
@@ -637,7 +637,7 @@ classdef IterativeHardThresholdingTestCase < ...
             cloneIht = clone(testCase.iht);
             
             % MSE by clone object
-            cloneIht.NumberOfCoefficients = nCoefs;
+            cloneIht.NumberOfSparseCoefficients = nCoefs;
             resImg = cloneIht.step(srcImg);
             recImg = srcImg - resImg;
             mseCln = mse(int16(255*recImg),int16(255*srcImg));                        
@@ -717,7 +717,7 @@ classdef IterativeHardThresholdingTestCase < ...
                 'AdjOfSynthesizer',analyzer);
             
             % Actual values
-            testCase.iht.NumberOfCoefficients = nCoefsExpctd;
+            testCase.iht.NumberOfSparseCoefficients = nCoefsExpctd;
             [residActual, coefsActual, scalesActual] = ...
                 testCase.iht.step(srcImg);
             nCoefsActual = nnz(coefsActual);
@@ -786,7 +786,7 @@ classdef IterativeHardThresholdingTestCase < ...
             sizeOfCoefsExpctd = [ 1 nCoefs ];
             
             % Actual values
-            testCase.iht.NumberOfCoefficients = nCoefsExpctd;
+            testCase.iht.NumberOfSparseCoefficients = nCoefsExpctd;
             [residActual, coefsActual, scalesActual] = ...
                 testCase.iht.step(srcImg);
             nCoefsActual = nnz(coefsActual);
@@ -856,7 +856,7 @@ classdef IterativeHardThresholdingTestCase < ...
             sizeOfCoefsExpctd = [ 1 nCoefs ];
             
             % Actual values
-            testCase.iht.NumberOfCoefficients = nCoefsExpctd;
+            testCase.iht.NumberOfSparseCoefficients = nCoefsExpctd;
             [residActual, coefsActual, scalesActual] = ...
                 testCase.iht.step(srcImg);
             nCoefsActual = nnz(coefsActual);
@@ -926,7 +926,7 @@ classdef IterativeHardThresholdingTestCase < ...
             sizeOfCoefsExpctd = [ 1 nCoefs ];
             
             % Actual values
-            testCase.iht.NumberOfCoefficients = nCoefsExpctd;
+            testCase.iht.NumberOfSparseCoefficients = nCoefsExpctd;
             [residActual, coefsActual, scalesActual] = ...
                 testCase.iht.step(srcImg);
             nCoefsActual = nnz(coefsActual);
@@ -996,7 +996,7 @@ classdef IterativeHardThresholdingTestCase < ...
             sizeOfCoefsExpctd = [ 1 nCoefs ];
             
             % Actual values
-            testCase.iht.NumberOfCoefficients = nCoefsExpctd;
+            testCase.iht.NumberOfSparseCoefficients = nCoefsExpctd;
             [residActual, coefsActual, scalesActual] = ...
                 testCase.iht.step(srcImg);
             nCoefsActual = nnz(coefsActual);
