@@ -14,7 +14,7 @@ classdef IterativeHardThresholding < ...
     %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2014-2016, Shogo MURAMATSU
+    % Copyright (c) 2014-2018, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -31,7 +31,7 @@ classdef IterativeHardThresholding < ...
     end
     
     properties
-        TolRes  = 1e-7
+        TolRmse  = 1e-7
         Mu = (1-1e-3)
     end
        
@@ -76,29 +76,20 @@ classdef IterativeHardThresholding < ...
             end
         end
         
-        function [ residual, coefvec, scales ] = ...
-                stepImpl(obj, srcImg)
+        function [ result, coefvec, scales ] = stepImpl(obj, srcImg)
             nCoefs = obj.NumberOfSparseCoefficients;
             source = im2double(srcImg);
             
             % Initalization
             iIter    = 0;
-            [coefvec,scales] = step(obj.AdjOfSynthesizer,source);
-            if ~isempty(obj.StepMonitor)
-                reset(obj.StepMonitor)
-            end
-            
+            result = 0*source;            
+            [coefvec,scales] = step(obj.AdjOfSynthesizer,result);
             % Iteration
             while true
                 iIter = iIter + 1;
                 precoefvec = coefvec;
-                % Reconstruction
-                reconst = step(obj.Synthesizer,precoefvec,scales);
-                if ~isempty(obj.StepMonitor) && iIter > 1
-                    step(obj.StepMonitor,reconst);
-                end
                 % Residual
-                residual = source - reconst;
+                residual = source - result;
                 % g = Phi.'*r
                 [gradvec,~] = step(obj.AdjOfSynthesizer,residual);
                 coefvec = precoefvec + obj.Mu*gradvec;
@@ -108,19 +99,18 @@ classdef IterativeHardThresholding < ...
                 mask = 0*coefvec;
                 mask(indexSet) = 1;
                 coefvec = mask.*coefvec;
+                % Reconstruction
+                result= step(obj.Synthesizer,coefvec,scales);
+                if ~isempty(obj.StepMonitor) && iIter > 1
+                    step(obj.StepMonitor,result);
+                end            
                 % Evaluation of convergence
-                diff = (norm(coefvec(:)-precoefvec(:))/norm(coefvec(:)))^2;
-                if (diff < obj.TolRes || iIter >= obj.MaxIter)
+                rmse = (norm(coefvec(:)-precoefvec(:),2))/numel(coefvec);
+                if (rmse < obj.TolRmse || iIter >= obj.MaxIter)
                     break
                 end
+                
             end
-            % Reconstruction
-            reconst = step(obj.Synthesizer,coefvec,scales);
-            if ~isempty(obj.StepMonitor)
-                step(obj.StepMonitor,reconst);
-            end
-            % Residual
-            residual = source - reconst;
         end
         
     end
