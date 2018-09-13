@@ -66,8 +66,9 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
                 'AdjOfSynthesizer', analyzer);
             
             % Actual values
+            testCase.gp.NumberOfSparseCoefficients = nCoefsExpctd;
             [residActual, coefsActual, scalesActual] = ...
-                step(testCase.gp,srcImg,nCoefsExpctd);
+                testCase.gp.step(srcImg);
             nCoefsActual = nnz(coefsActual);
             
             % Evaluation
@@ -134,8 +135,9 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
             sizeOfCoefsExpctd = [ 1 nCoefs ];
             
             % Actual values
+            testCase.gp.NumberOfSparseCoefficients = nCoefsExpctd;
             [residActual, coefsActual, scalesActual] = ...
-                step(testCase.gp,srcImg,nCoefsExpctd);
+                testCase.gp.step(srcImg);
             nCoefsActual =  nnz(coefsActual);
             
             % Evaluation
@@ -203,8 +205,9 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
             sizeOfCoefsExpctd = [ 1 nCoefs ];
             
             % Actual values
-            [residActual, coefsActual, scalesActual] = step(testCase.gp,...
-                srcImg,nCoefsExpctd);
+            testCase.gp.NumberOfSparseCoefficients = nCoefsExpctd;
+            [residActual, coefsActual, scalesActual] = ...
+                testCase.gp.step(srcImg);
             nCoefsActual = nnz(coefsActual);
             
             % Evaluation
@@ -264,8 +267,9 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
                 'AdjOfSynthesizer',analyzer);
             
             % Actual values
+            testCase.gp.NumberOfSparseCoefficients = nCoefsExpctd;
             [residActual, coefsActual, scalesActual] = ...
-                step(testCase.gp,srcImg,nCoefsExpctd);
+                testCase.gp.step(srcImg);
             nCoefsActual = nnz(coefsActual);
             
             % Evaluation
@@ -332,8 +336,9 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
             sizeOfCoefsExpctd = [ 1 nCoefs ];
             
             % Actual values
+            testCase.gp.NumberOfSparseCoefficients = nCoefsExpctd;
             [residActual, coefsActual, scalesActual] = ...
-                step(testCase.gp,srcImg,nCoefsExpctd);
+                testCase.gp.step(srcImg);
             nCoefsActual = nnz(coefsActual);
             
             % Evaluation
@@ -399,9 +404,9 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
             sizeOfCoefsExpctd = [ 1 nCoefs ];
                 
             % Actual values
+            testCase.gp.NumberOfSparseCoefficients = nCoefsExpctd;
             [residActual, coefsActual, scalesActual] = ...
-                step(testCase.gp,...
-                srcImg,nCoefsExpctd);
+                testCase.gp.step(srcImg);
             nCoefsActual = nnz(coefsActual);
             
             % Evaluation
@@ -460,9 +465,11 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
             
             % Evaluation
             import matlab.unittest.constraints.IsTrue;
-            resid0 = step(testCase.gp,srcImg,1);
+            testCase.gp.NumberOfSparseCoefficients = 1;
+            resid0 = testCase.gp.step(srcImg);
             for nCoefs = 2:32
-                resid1 = step(testCase.gp,srcImg,nCoefs);
+                testCase.gp.NumberOfSparseCoefficients = nCoefs;
+                resid1 = testCase.gp.step(srcImg);
                 testCase.verifyThat(norm(resid1(:)) < norm(resid0(:)), ...
                     IsTrue, ...
                     sprintf('||r0||^2 = %g must be less than ||r1||^2 = %g.',...
@@ -492,8 +499,9 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
                 'AdjOfSynthesizer',analyzer);
             
             % Actual values
+            testCase.gp.NumberOfSparseCoefficients = nCoefsExpctd;
             [residActual, coefsActual] = ...
-                step(testCase.gp,srcImg,nCoefsExpctd);
+                testCase.gp.step(srcImg);
             nCoefsActual = nnz(coefsActual);
             
             % Evaluation
@@ -538,8 +546,9 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
                 'AdjOfSynthesizer',analyzer);
             
             % Actual values
+            testCase.gp.NumberOfSparseCoefficients = nCoefsExpctd;
             [residActual, coefsActual] = ...
-                step(testCase.gp,srcImg,nCoefsExpctd);
+                testCase.gp.step(srcImg);
             nCoefsActual = nnz(coefsActual);
             
             % Evaluation
@@ -594,7 +603,8 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
             mse = @(x,y) sum((double(x(:))-double(y(:))).^2)/numel(x);
             
             % MSE after processing
-            resImg = step(testCase.gp,srcImg,nCoefs);
+            testCase.gp.NumberOfSparseCoefficients = nCoefs;
+            resImg = testCase.gp.step(srcImg);
             recImg = srcImg - resImg;
             mseExpctd = mse(uint8(255*recImg),uint8(255*srcImg));
             
@@ -634,7 +644,8 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
                 'AdjOfSynthesizer',analyzer);
             
             % MSE by original object
-            resImg = step(testCase.gp,srcImg,nCoefs);
+            testCase.gp.NumberOfSparseCoefficients = nCoefs;
+            resImg = testCase.gp.step(srcImg);
             recImg = srcImg - resImg;
             mseOrg = mse(int16(255*recImg),int16(255*srcImg));            
             
@@ -642,7 +653,8 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
             cloneGp = clone(testCase.gp);
             
             % MSE by clone object
-            resImg = step(cloneGp,srcImg,nCoefs);
+            cloneGp.NumberOfSparseCoefficients = nCoefs;
+            resImg = cloneGp.step(srcImg);
             recImg = srcImg - resImg;
             mseCln = mse(int16(255*recImg),int16(255*srcImg));                        
             
@@ -721,8 +733,9 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
                 'AdjOfSynthesizer',analyzer);
             
             % Actual values
+            testCase.gp.NumberOfSparseCoefficients = nCoefsExpctd;
             [residActual, coefsActual, scalesActual] = ...
-                step(testCase.gp,srcImg,nCoefsExpctd);
+                testCase.gp.step(srcImg);
             nCoefsActual = nnz(coefsActual);
             
             % Evaluation
@@ -789,8 +802,9 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
             sizeOfCoefsExpctd = [ 1 nCoefs ];
             
             % Actual values
+            testCase.gp.NumberOfSparseCoefficients = nCoefsExpctd;
             [residActual, coefsActual, scalesActual] = ...
-                step(testCase.gp,srcImg,nCoefsExpctd);
+                testCase.gp.step(srcImg);
             nCoefsActual = nnz(coefsActual);
             
             % Evaluation
@@ -858,9 +872,9 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
             sizeOfCoefsExpctd = [ 1 nCoefs ];
             
             % Actual values
+            testCase.gp.NumberOfSparseCoefficients = nCoefsExpctd;
             [residActual, coefsActual, scalesActual] = ...
-                step(testCase.gp,...
-                srcImg,nCoefsExpctd);
+                testCase.gp.step(srcImg);
             nCoefsActual = nnz(coefsActual);
             
             % Evaluation
@@ -928,9 +942,9 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
             sizeOfCoefsExpctd = [ 1 nCoefs ];
             
             % Actual values
+            testCase.gp.NumberOfSparseCoefficients = nCoefsExpctd;
             [residActual, coefsActual, scalesActual] = ...
-                step(testCase.gp,...
-                srcImg,nCoefsExpctd);
+                testCase.gp.step(srcImg);
             nCoefsActual = nnz(coefsActual);
             
             % Evaluation
@@ -998,9 +1012,9 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
             sizeOfCoefsExpctd = [ 1 nCoefs ];
             
             % Actual values
+            testCase.gp.NumberOfSparseCoefficients = nCoefsExpctd;
             [residActual, coefsActual, scalesActual] = ...
-                step(testCase.gp,...
-                srcImg,nCoefsExpctd);
+                testCase.gp.step(srcImg);
             nCoefsActual = nnz(coefsActual);
             
             % Evaluation

@@ -23,6 +23,14 @@ classdef GradientPursuit < ...
     %
     % http://msiplab.eng.niigata-u.ac.jp/    
     %
+     properties (Nontunable)
+        Synthesizer
+        AdjOfSynthesizer
+     end
+    
+     properties (PositiveInteger)
+        NumberOfSparseCoefficients = 1
+     end
     
     methods
         function obj = GradientPursuit(varargin)
@@ -33,7 +41,22 @@ classdef GradientPursuit < ...
     
     methods (Access = protected)
         
-        function [ residual, coefvec, scales ] = stepImpl(obj, srcImg, nCoefs)
+        function s = saveObjectImpl(obj)
+            s = saveObjectImpl@saivdr.sparserep.AbstSparseApproximation(obj);
+            s.Synthesizer = matlab.System.saveObject(obj.Synthesizer);
+            s.AdjOfSynthesizer = ...
+                matlab.System.saveObject(obj.AdjOfSynthesizer);
+        end
+        
+        function loadObjectImpl(obj,s,wasLocked)
+            loadObjectImpl@saivdr.sparserep.AbstSparseApproximation(obj,s,wasLocked);
+            obj.Synthesizer = matlab.System.loadObject(s.Synthesizer);
+            obj.AdjOfSynthesizer = ...
+                matlab.System.loadObject(s.AdjOfSynthesizer);
+        end        
+        
+        function [ residual, coefvec, scales ] = stepImpl(obj, srcImg)
+            nCoefs = obj.NumberOfSparseCoefficients;
             source = im2double(srcImg);
             residual = source;
 
