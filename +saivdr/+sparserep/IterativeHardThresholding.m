@@ -25,6 +25,10 @@ classdef IterativeHardThresholding < ...
     %
     % http://msiplab.eng.niigata-u.ac.jp/
     %
+    properties (Nontunable)
+        Synthesizer
+        AdjOfSynthesizer
+    end
     
     properties
         TolRes  = 1e-7
@@ -33,6 +37,7 @@ classdef IterativeHardThresholding < ...
        
     properties (PositiveInteger)
         MaxIter = 1000
+        NumberOfCoefficients = 1
     end    
     
     methods
@@ -44,26 +49,54 @@ classdef IterativeHardThresholding < ...
     
     methods (Access=protected)
         
+        function s = saveObjectImpl(obj)
+            s = saveObjectImpl@saivdr.sparserep.AbstSparseApproximation(obj);
+            s.Synthesizer = matlab.System.saveObject(obj.Synthesizer);
+            s.AdjOfSynthesizer = ...
+                matlab.System.saveObject(obj.AdjOfSynthesizer);
+        end
+        
+        function loadObjectImpl(obj,s,wasLocked)
+            loadObjectImpl@saivdr.sparserep.AbstSparseApproximation(obj,s,wasLocked);
+            obj.Synthesizer = matlab.System.loadObject(s.Synthesizer);
+            obj.AdjOfSynthesizer = ...
+                matlab.System.loadObject(s.AdjOfSynthesizer);
+        end
+        
+        function validatePropertiesImpl(obj)
+            if isempty(obj.Synthesizer)
+                me = MException('SaivDr:InstantiationException',...
+                    'Synthesizer must be given.');
+                throw(me)
+            end
+            if isempty(obj.AdjOfSynthesizer)
+                me = MException('SaivDr:InstantiationException',...
+                    'AdjOfSynthesizer must be given.');
+                throw(me)
+            end
+        end
+        
         function [ residual, coefvec, scales ] = ...
-                stepImpl(obj, srcImg, nCoefs)
+                stepImpl(obj, srcImg)
+            nCoefs = obj.NumberOfCoefficients;
             source = im2double(srcImg);
             
             % Initalization
-            iIter    = 0;                
+            iIter    = 0;
             [coefvec,scales] = step(obj.AdjOfSynthesizer,source);
             if ~isempty(obj.StepMonitor)
                 reset(obj.StepMonitor)
             end
-             
+            
             % Iteration
             while true
-                iIter = iIter + 1;                
+                iIter = iIter + 1;
                 precoefvec = coefvec;
                 % Reconstruction
                 reconst = step(obj.Synthesizer,precoefvec,scales);
                 if ~isempty(obj.StepMonitor) && iIter > 1
                     step(obj.StepMonitor,reconst);
-                end                  
+                end
                 % Residual
                 residual = source - reconst;
                 % g = Phi.'*r
@@ -82,8 +115,8 @@ classdef IterativeHardThresholding < ...
                 end
             end
             % Reconstruction
-            reconst = step(obj.Synthesizer,coefvec,scales); 
-            if ~isempty(obj.StepMonitor) 
+            reconst = step(obj.Synthesizer,coefvec,scales);
+            if ~isempty(obj.StepMonitor)
                 step(obj.StepMonitor,reconst);
             end
             % Residual
