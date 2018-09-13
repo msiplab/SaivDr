@@ -75,6 +75,15 @@ classdef PdsHcSystem < saivdr.restoration.AbstIterativeMethodSystem
                 varargin{:});
             setProperties(obj,nargin,varargin{:})
         end
+        
+        function [coefs,scales] = getCoefficients(obj)
+            if isempty(obj.ParallelProcess)
+               coefs = obj.X;
+               scales = obj.Scales;
+            else
+                [coefs,scales] = obj.ParallelProcess.getCoefficients();           
+            end
+        end
     end
     
     methods(Access = protected)
