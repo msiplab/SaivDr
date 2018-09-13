@@ -249,11 +249,11 @@ classdef NsoltDictionaryLearning < matlab.System
             % Sparse Coding
             sprsCoefs   = cell(obj.nImgs,1);
             setOfScales = cell(obj.nImgs,1);
+            obj.sparseCoder.NumberOfSparseCoefficients = obj.NumberOfSparseCoefficients;
             for iImg = 1:obj.nImgs
                 set(obj.StepMonitor,'SourceImage',obj.SourceImages{iImg});
                 [~, sprsCoefs{iImg}, setOfScales{iImg}] = ...
-                    step(obj.sparseCoder,...
-                    obj.SourceImages{iImg},obj.NumberOfSparseCoefficients);
+                    obj.sparseCoder.step(obj.SourceImages{iImg});
             end
             
             % Dictionary Update
