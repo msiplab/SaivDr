@@ -3298,7 +3298,7 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             testCase.verifyThat(diff,IsGreaterThan(0));
         end
         
-        function testIsCloneLpPuFb2dFalse(testCase)
+        function testIsCloneLpPuFbFalse(testCase)
             
             dec = 2;
             ch = [ 4 4 ];
@@ -3334,7 +3334,7 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             % Instantiation of target class
             testCase.evaluator = NsoltSynthesis2dSystem(...
                 'LpPuFb2d',lppufb,...
-                'IsCloneLpPuFb2d',true);
+                'IsCloneLpPuFb',true);
             
             % Pre
             imgPre = step(testCase.evaluator,coefs,scales);
@@ -3355,7 +3355,7 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             % ReInstantiation of target class
             testCase.evaluator = NsoltSynthesis2dSystem(...
                 'LpPuFb2d',lppufb,...
-                'IsCloneLpPuFb2d',false);
+                'IsCloneLpPuFb',false);
             
             % Pre
             imgPre = step(testCase.evaluator,coefs,scales);
@@ -3659,7 +3659,7 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             % Preparation
             import saivdr.dictionary.nsoltx.*
             synCur = NsoltFactory.createSynthesis2dSystem(lppufb,...
-                'IsCloneLpPuFb2d',true);
+                'IsCloneLpPuFb',true);
             if isPext
                 set(synCur,'BoundaryOperation','Circular');
             end            
@@ -3670,7 +3670,7 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             % Numerical gradient
             clonefb = clone(lppufb);
             synDlt = NsoltFactory.createSynthesis2dSystem(clonefb,...
-                'IsCloneLpPuFb2d',false);
+                'IsCloneLpPuFb',false);
             if isPext
                 set(synDlt,'BoundaryOperation','Circular');
             end
