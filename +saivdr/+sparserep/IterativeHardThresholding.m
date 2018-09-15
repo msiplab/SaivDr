@@ -83,7 +83,7 @@ classdef IterativeHardThresholding < ...
             % Initalization
             iIter    = 0;
             result = 0*source;            
-            [coefvec,scales] = step(obj.AdjOfSynthesizer,result);
+            [coefvec,scales] = obj.AdjOfSynthesizer.step(result);
             % Iteration
             while true
                 iIter = iIter + 1;
@@ -91,7 +91,7 @@ classdef IterativeHardThresholding < ...
                 % Residual
                 residual = source - result;
                 % g = Phi.'*r
-                [gradvec,~] = step(obj.AdjOfSynthesizer,residual);
+                [gradvec,~] = obj.AdjOfSynthesizer.step(residual);
                 coefvec = precoefvec + obj.Mu*gradvec;
                 % Hard thresholding
                 [~, idxsort ] = sort(abs(coefvec(:)),1,'descend');
@@ -100,9 +100,9 @@ classdef IterativeHardThresholding < ...
                 mask(indexSet) = 1;
                 coefvec = mask.*coefvec;
                 % Reconstruction
-                result= step(obj.Synthesizer,coefvec,scales);
+                result= obj.Synthesizer.step(coefvec,scales);
                 if ~isempty(obj.StepMonitor) && iIter > 1
-                    step(obj.StepMonitor,result);
+                    obj.StepMonitor.step(result);
                 end            
                 % Evaluation of convergence
                 rmse = (norm(coefvec(:)-precoefvec(:),2))/numel(coefvec);
