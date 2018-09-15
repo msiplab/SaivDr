@@ -461,16 +461,16 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
                 'AdjOfSynthesizer',analyzer);
             
             % Evaluation
-            import matlab.unittest.constraints.IsTrue;
+            import matlab.unittest.constraints.IsLessThan
             testCase.gp.NumberOfSparseCoefficients = 1;
             res0 = testCase.gp.step(srcImg);
             for nCoefs = 2:32
                 testCase.gp.NumberOfSparseCoefficients = nCoefs;
                 res1 = testCase.gp.step(srcImg);
-                testCase.verifyThat(norm(res1(:),2) < norm(res0(:),2), ...
-                    IsTrue, ...
-                    sprintf('||r0|| = %g must be less than ||r1|| = %g.',...
-                    norm(res0(:),2),norm(res1(:),2)));
+                testCase.verifyThat(norm(res1(:)-srcImg(:),2),...
+                    IsLessThan(norm(res0(:)-srcImg(:),2)),...
+                    sprintf('||r1|| = %g must be less than ||r0|| = %g.',...
+                    norm(res1(:),2),norm(res0(:),2)));
                 res0 = res1;
             end
         end        
