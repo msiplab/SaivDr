@@ -15,7 +15,7 @@ classdef NsoltDictionaryLearning < matlab.System
     % http://msiplab.eng.niigata-u.ac.jp/    
     %
     properties (Nontunable)
-        SourceImages
+        TrainingImages
         DecimationFactor = []
         NumbersOfPolyphaseOrder = [ 4 4 ]
         OptimizationFunction = @fminunc            
@@ -110,7 +110,7 @@ classdef NsoltDictionaryLearning < matlab.System
                     'NumberOfVanishingMoments',obj.OrderOfVanishingMoment,...
                     'OutputMode','ParameterMatrixSet');
             end
-            obj.nImgs = length(obj.SourceImages);
+            obj.nImgs = length(obj.TrainingImages);
         end
     end
     
@@ -133,9 +133,9 @@ classdef NsoltDictionaryLearning < matlab.System
         end
         
         function validatePropertiesImpl(obj)
-            if isempty(obj.SourceImages)
+            if isempty(obj.TrainingImages)
                 error('Source images should be provided');
-            elseif ~iscell(obj.SourceImages)
+            elseif ~iscell(obj.TrainingImages)
                 error('Source images should be provided as cell data');
             end
         end
@@ -150,18 +150,18 @@ classdef NsoltDictionaryLearning < matlab.System
             if strcmp(obj.NumberOfDimensions,'Three')
                 synthesizer = NsoltFactory.createSynthesis3dSystem(...
                     obj.OvsdLpPuFb,...
-                    'IsCloneLpPuFb3d',false);    
+                    'IsCloneLpPuFb',false);    
                 analyzer = NsoltFactory.createAnalysis3dSystem(...
                     obj.OvsdLpPuFb,...
-                    'IsCloneLpPuFb3d',false);    
+                    'IsCloneLpPuFb',false);    
                 analyzer.NumberOfLevels = obj.NumberOfLevels;
             else
                 synthesizer = NsoltFactory.createSynthesis2dSystem(...
                     obj.OvsdLpPuFb,...
-                    'IsCloneLpPuFb2d',false);                    
+                    'IsCloneLpPuFb',false);                    
                 analyzer = NsoltFactory.createAnalysis2dSystem(...
                     obj.OvsdLpPuFb,...
-                    'IsCloneLpPuFb2d',false);
+                    'IsCloneLpPuFb',false);
                 analyzer.NumberOfLevels = obj.NumberOfLevels;                
             end
             
@@ -184,7 +184,7 @@ classdef NsoltDictionaryLearning < matlab.System
             if strcmp(obj.DictionaryUpdater,'NsoltDictionaryUpdateSgd')
                 import saivdr.dictionary.nsoltx.design.NsoltDictionaryUpdateSgd
                 obj.dicUpdate = NsoltDictionaryUpdateSgd(...
-                    'SourceImages', obj.SourceImages,...
+                    'TrainingImages', obj.TrainingImages,...
                     'NumberOfLevels',obj.NumberOfLevels,...
                     'GenerationFactorForMus',obj.GenerationFactorForMus,...
                     'IsFixedCoefs',obj.IsFixedCoefs,...                    
@@ -197,7 +197,7 @@ classdef NsoltDictionaryLearning < matlab.System
             else
                 import saivdr.dictionary.nsoltx.design.NsoltDictionaryUpdateGaFmin
                 obj.dicUpdate = NsoltDictionaryUpdateGaFmin(...
-                    'SourceImages', obj.SourceImages,...
+                    'TrainingImages', obj.TrainingImages,...
                     'NumberOfLevels',obj.NumberOfLevels,...
                     'OptimizationFunction',obj.OptimizationFunction,...
                     'MaxIterOfHybridFmin',obj.MaxIterOfHybridFmin,...
@@ -243,14 +243,14 @@ classdef NsoltDictionaryLearning < matlab.System
                 isOptMus = false;
             end
                         
-            % Sparse Coding
+            % Sparse Approximation
             sprsCoefs   = cell(obj.nImgs,1);
             setOfScales = cell(obj.nImgs,1);
             obj.sparseAprx.NumberOfSparseCoefficients = obj.NumberOfSparseCoefficients;
             for iImg = 1:obj.nImgs
-                set(obj.StepMonitor,'SourceImage',obj.SourceImages{iImg});
+                set(obj.StepMonitor,'SourceImage',obj.TrainingImages{iImg});
                 [~, sprsCoefs{iImg}, setOfScales{iImg}] = ...
-                    obj.sparseAprx.step(obj.SourceImages{iImg});
+                    obj.sparseAprx.step(obj.TrainingImages{iImg});
             end
             
             % Dictionary Update

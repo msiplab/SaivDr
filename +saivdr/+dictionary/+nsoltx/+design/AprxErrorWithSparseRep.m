@@ -2,12 +2,9 @@ classdef AprxErrorWithSparseRep < matlab.System %#~codegen
     %APPROXIMATIONERRORWITHSPARSEREP Approximation error with sparse
     %representation
     %
-    % SVN identifier:
-    % $Id: AprxErrorWithSparseRep.m 866 2015-11-24 04:29:42Z sho $
-    %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2014-2015, Shogo MURAMATSU
+    % Copyright (c) 2014-2018, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -19,7 +16,7 @@ classdef AprxErrorWithSparseRep < matlab.System %#~codegen
     % http://msiplab.eng.niigata-u.ac.jp/    
     %
     properties  (Nontunable)
-        SourceImages
+        TrainingImages
         NumberOfLevels = 1
         IsFixedCoefs = true
         GradObj      = 'off'
@@ -54,7 +51,7 @@ classdef AprxErrorWithSparseRep < matlab.System %#~codegen
     methods
         function obj = AprxErrorWithSparseRep(varargin)
             setProperties(obj,nargin,varargin{:});
-            obj.nImgs = length(obj.SourceImages);
+            obj.nImgs = length(obj.TrainingImages);
         end
     end
     
@@ -131,7 +128,7 @@ classdef AprxErrorWithSparseRep < matlab.System %#~codegen
             cost = 0;
             grad = 0;
             for iImg = imgSet
-                srcImg_ = obj.SourceImages{iImg};
+                srcImg_ = obj.TrainingImages{iImg};
                 coefs_  = sprsCoefs{iImg};
                 scales_ = setOfScales{iImg};
                 if ~obj.IsFixedCoefs
@@ -180,13 +177,13 @@ classdef AprxErrorWithSparseRep < matlab.System %#~codegen
                 obj.synthesizer = NsoltFactory.createSynthesis2dSystem(...
                     obj.sharedLpPuFb,...
                     'BoundaryOperation',obj.BoundaryOperation,...
-                    'IsCloneLpPuFb2d',false);
+                    'IsCloneLpPuFb',false);
             elseif isa(lppufb_,'saivdr.dictionary.nsoltx.AbstOvsdLpPuFb3dSystem')
                 obj.analyzer = [];                
                 obj.synthesizer = NsoltFactory.createSynthesis3dSystem(...
                     obj.sharedLpPuFb,...
                     'BoundaryOperation',obj.BoundaryOperation,...
-                    'IsCloneLpPuFb3d',false);
+                    'IsCloneLpPuFb',false);
             else 
                error('Invalid OvsdLpPuFb was supplied.'); 
             end
@@ -218,21 +215,21 @@ classdef AprxErrorWithSparseRep < matlab.System %#~codegen
                     obj.sharedLpPuFb,...
                     'BoundaryOperation',obj.BoundaryOperation,...
                     'NumberOfLevels',obj.NumberOfLevels,...                    
-                    'IsCloneLpPuFb2d',false);
+                    'IsCloneLpPuFb',false);
                 obj.synthesizer = NsoltFactory.createSynthesis2dSystem(...
                     obj.sharedLpPuFb,...
                     'BoundaryOperation',obj.BoundaryOperation,...
-                    'IsCloneLpPuFb2d',false);
+                    'IsCloneLpPuFb',false);
             elseif isa(lppufb_,'saivdr.dictionary.nsoltx.AbstOvsdLpPuFb3dSystem')
                 obj.analyzer = NsoltFactory.createAnalysis3dSystem(...
                     obj.sharedLpPuFb,...
                     'BoundaryOperation',obj.BoundaryOperation,...
                     'NumberOfLevels',obj.NumberOfLevels,...                                        
-                    'IsCloneLpPuFb3d',false);
+                    'IsCloneLpPuFb',false);
                 obj.synthesizer = NsoltFactory.createSynthesis3dSystem(...
                     obj.sharedLpPuFb,...
                     'BoundaryOperation',obj.BoundaryOperation,...
-                    'IsCloneLpPuFb3d',false);
+                    'IsCloneLpPuFb',false);
             else
                 error('Invalid OvsdLpPuFb was supplied.');
             end

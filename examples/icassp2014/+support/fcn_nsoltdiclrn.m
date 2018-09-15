@@ -21,7 +21,7 @@ function [mses, lppufbs] = fcn_nsoltdiclrn(params)
 %   params.stallGenLimit = 10;              % Stall generation limit
 %   params.maxIterOfHybridFmin = 10;        % Max. Iter. of Hybrid Func.
 %   params.generationFactorForMus = 2;      % Geration factor for MUS
-%   params.sparseCoding = 'IterativeHardThresholding';
+%   params.sparseAprx = 'IterativeHardThresholding';
 %   params.optfcn = @ga;                    % Options for optimization
 %   params.isOptMus = true;                 % Flag for optimization of MUS
 %   params.isFixedCoefs = true;             % Flag if fix Coefs. support
@@ -67,7 +67,7 @@ if nargin < 1
     stallGenLimit = 10;
     maxIterOfHybridFmin    = 10;
     generationFactorForMus = 2;
-    sparseCoding = 'IterativeHardThresholding';
+    sparseAprx = 'IterativeHardThresholding';
     %
     optfcn = @ga;
     useParallel = 'never';
@@ -93,7 +93,7 @@ else
     stallGenLimit = params.stallGenLimit;
     maxIterOfHybridFmin    = params.maxIterOfHybridFmin;
     generationFactorForMus = params.generationFactorForMus;
-    sparseCoding = params.sparseCoding;
+    sparseAprx = params.sparseAprx;
     %
     optfcn = params.optfcn;
     useParallel = params.useParallel;
@@ -109,7 +109,7 @@ end
 %% Instantiation of target class
 import saivdr.dictionary.nsoltx.design.NsoltDictionaryLearning
 designer = NsoltDictionaryLearning(...
-    'SourceImages',srcImgs,...
+    'TrainingImages',srcImgs,...
     'NumberOfSparseCoefficients',nCoefs,...
     'NumberOfLevels',nLevels,...
     'NumberOfSymmetricChannel',chs(1),...
@@ -119,7 +119,7 @@ designer = NsoltDictionaryLearning(...
     'OrderOfVanishingMoment',nVm,...
     'MaxIterOfHybridFmin',maxIterOfHybridFmin,...
     'GenerationFactorForMus',generationFactorForMus,...
-    'SparseCoding',sparseCoding,...
+    'SparseApproximation',sparseAprx,...
     'IsFixedCoefs',isFixedCoefs,...
     'IsRandomInit',isRandomInit);
 %
