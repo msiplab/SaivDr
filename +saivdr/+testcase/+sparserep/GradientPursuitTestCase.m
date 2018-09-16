@@ -59,8 +59,7 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
                 lppufb,...
                 'BoundaryOperation','Termination');                        
             testCase.gp = GradientPursuit(...
-                'Synthesizer', synthesizer,...
-                'AdjOfSynthesizer', analyzer);
+                'Dictionary', { synthesizer, analyzer });
             
             % Actual values
             testCase.gp.NumberOfSparseCoefficients = nCoefsExpctd;
@@ -123,8 +122,7 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
                 'NumberOfLevels',nLevels);
             import saivdr.sparserep.*
             testCase.gp = GradientPursuit(...
-                'Synthesizer',synthesizer,...
-                'AdjOfSynthesizer',analyzer);
+                'Dictionary', { synthesizer, analyzer });
             
             % Expected values
             nCoefs = numel(srcImg)*((sum(nChs)-1)/prod(nDecs) ...
@@ -192,8 +190,7 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
                 'NumberOfLevels',nLevels);                                    
             import saivdr.sparserep.*
             testCase.gp = GradientPursuit(...
-                'Synthesizer', synthesizer,...
-                'AdjOfSynthesizer', analyzer);
+                'Dictionary', { synthesizer, analyzer });
             
             % Expected values
             nCoefs = numel(srcImg)*((sum(nChs)-1)/prod(nDecs) ...
@@ -260,8 +257,7 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
                 'BoundaryOperation','Termination');
             import saivdr.sparserep.*
             testCase.gp = GradientPursuit(...
-                'Synthesizer',synthesizer,...
-                'AdjOfSynthesizer',analyzer);
+                'Dictionary', { synthesizer, analyzer });
             
             % Actual values
             testCase.gp.NumberOfSparseCoefficients = nCoefsExpctd;
@@ -324,8 +320,7 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
                 'NumberOfLevels',nLevels);            
             import saivdr.sparserep.*
             testCase.gp = GradientPursuit(...
-                'Synthesizer',synthesizer,...
-                'AdjOfSynthesizer',analyzer);
+                'Dictionary', { synthesizer, analyzer });
             
             % Expected values
             nCoefs = numel(srcImg)*(...
@@ -393,8 +388,7 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
                 'NumberOfLevels',nLevels);                        
             import saivdr.sparserep.*
             testCase.gp = GradientPursuit(...
-                'Synthesizer',synthesizer,...
-                'AdjOfSynthesizer',analyzer);
+                'Dictionary', { synthesizer, analyzer });
             
             % Expected values
             nCoefs = numel(srcImg)*sum(nChs)/prod(nDecs);
@@ -457,8 +451,7 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
             % Instantiation of target class
             import saivdr.sparserep.*
             testCase.gp = GradientPursuit(...
-                'Synthesizer',synthesizer,...
-                'AdjOfSynthesizer',analyzer);
+                'Dictionary', { synthesizer, analyzer });
             
             % Evaluation
             import matlab.unittest.constraints.IsLessThan
@@ -492,8 +485,7 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
             analyzer    = UdHaarAnalysis2dSystem();
             analyzer.NumberOfLevels = nLevels;
             testCase.gp = GradientPursuit(...
-                'Synthesizer',synthesizer,...
-                'AdjOfSynthesizer',analyzer);
+                'Dictionary', { synthesizer, analyzer });
             
             % Actual values
             testCase.gp.NumberOfSparseCoefficients = nCoefsExpctd;
@@ -539,8 +531,7 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
             analyzer    = UdHaarAnalysis2dSystem();
             analyzer.NumberOfLevels = nLevels;
             testCase.gp = GradientPursuit(...
-                'Synthesizer',synthesizer,...
-                'AdjOfSynthesizer',analyzer);
+                'Dictionary', { synthesizer, analyzer });
             
             % Actual values
             testCase.gp.NumberOfSparseCoefficients = nCoefsExpctd;
@@ -592,8 +583,7 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
             % Instantiation of target class
             import saivdr.sparserep.*
             testCase.gp = GradientPursuit(...
-                'Synthesizer',synthesizer,...
-                'AdjOfSynthesizer',analyzer,...
+                'Dictionary', { synthesizer, analyzer },...
                 'StepMonitor',stepMonitor);
             
             % Definition of MSE
@@ -636,8 +626,7 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
             % Instantiation of target class
             import saivdr.sparserep.*
             testCase.gp = IterativeHardThresholding(...
-                'Synthesizer',synthesizer,...
-                'AdjOfSynthesizer',analyzer);
+                'Dictionary', { synthesizer, analyzer });
             
             % MSE by original object
             testCase.gp.NumberOfSparseCoefficients = nCoefs;
@@ -669,8 +658,7 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
             % Instantiation of target class
             import saivdr.sparserep.*
             testCase.gp = IterativeHardThresholding(...
-                'Synthesizer',synthesizer,...
-                'AdjOfSynthesizer',analyzer);
+                'Dictionary', { synthesizer, analyzer });
             
             % Instantiation of target class
             cloneGp = clone(testCase.gp);
@@ -679,13 +667,13 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(cloneGp,testCase.gp);
             testCase.verifyFalse(cloneGp == testCase.gp);
             %
-            prpOrg = get(testCase.gp,'Synthesizer');
-            prpCln = get(cloneGp,'Synthesizer');
+            prpOrg = testCase.gp.Dictionary{1};
+            prpCln = cloneGp.Dictionary{1};
             testCase.verifyEqual(prpCln,prpOrg);
             testCase.verifyFalse(prpCln == prpOrg);
             %
-            prpOrg = get(testCase.gp,'AdjOfSynthesizer');
-            prpCln = get(cloneGp,'AdjOfSynthesizer');
+            prpOrg = testCase.gp.Dictionary{2};
+            prpCln = cloneGp.Dictionary{2};
             testCase.verifyEqual(prpCln,prpOrg);
             testCase.verifyFalse(prpCln == prpOrg);
             
@@ -723,8 +711,7 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
                 lppufb,'BoundaryOperation','Termination');            
             testCase.gp = IterativeHardThresholding(...
-                'Synthesizer',synthesizer,...
-                'AdjOfSynthesizer',analyzer);
+                'Dictionary',{ synthesizer, analyzer});
             
             % Actual values
             testCase.gp.NumberOfSparseCoefficients = nCoefsExpctd;
@@ -786,8 +773,7 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
                 lppufb,'BoundaryOperation','Termination',...
                 'NumberOfLevels',2);            
             testCase.gp = IterativeHardThresholding(...
-                'Synthesizer',synthesizer,...
-                'AdjOfSynthesizer',analyzer);
+                'Dictionary',{ synthesizer, analyzer});
             
             % Expected values
             P = sum(nChs);
@@ -855,8 +841,7 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
                 lppufb,'BoundaryOperation','Termination',...
                 'NumberOfLevels',nLevels);                        
             testCase.gp = IterativeHardThresholding(...
-                'Synthesizer',synthesizer,...
-                'AdjOfSynthesizer',analyzer);
+                'Dictionary',{ synthesizer, analyzer});
             
             % Expected values
             P = sum(nChs);
@@ -925,8 +910,7 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
                 lppufb,'BoundaryOperation','Termination',...
                 'NumberOfLevels',nLevels);                        
             testCase.gp = IterativeHardThresholding(...
-                'Synthesizer',synthesizer,...
-                'AdjOfSynthesizer',analyzer);
+                'Dictionary',{ synthesizer, analyzer});
             
             % Expected values
             P = sum(nChs);
@@ -995,8 +979,7 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
                 lppufb,'BoundaryOperation','Termination',...
                 'NumberOfLevels',nLevels);                        
             testCase.gp = IterativeHardThresholding(...
-                'Synthesizer',synthesizer,...
-                'AdjOfSynthesizer',analyzer);
+                'Dictionary',{ synthesizer, analyzer});
             
             % Expected values
             P = sum(nChs);

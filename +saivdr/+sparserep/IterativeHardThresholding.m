@@ -1,5 +1,5 @@
 classdef IterativeHardThresholding < ...
-        saivdr.sparserep.AbstSparseApproximation %#codegen
+        saivdr.sparserep.AbstSparseApproximationSystem %#codegen
     %ITERATIVEHARDTHRESHOLDING Iterative hard thresholding
     %
     % References
@@ -25,10 +25,11 @@ classdef IterativeHardThresholding < ...
     %
     % http://msiplab.eng.niigata-u.ac.jp/
     %
-    properties (Nontunable)
-        Synthesizer
-        AdjOfSynthesizer
-    end
+    
+    %properties (Nontunable)
+    %    Synthesizer
+    %    AdjOfSynthesizer
+    %end
     
     properties
         TolRmse  = 1e-7
@@ -43,33 +44,31 @@ classdef IterativeHardThresholding < ...
     methods
         function obj = IterativeHardThresholding(varargin)
             obj = ...
-                obj@saivdr.sparserep.AbstSparseApproximation(varargin{:});        
+                obj@saivdr.sparserep.AbstSparseApproximationSystem(varargin{:});        
         end
     end
     
     methods (Access=protected)
         
         function s = saveObjectImpl(obj)
-            s = saveObjectImpl@saivdr.sparserep.AbstSparseApproximation(obj);
-            s.Synthesizer = matlab.System.saveObject(obj.Synthesizer);
-            s.AdjOfSynthesizer = ...
-                matlab.System.saveObject(obj.AdjOfSynthesizer);
+            s = saveObjectImpl@saivdr.sparserep.AbstSparseApproximationSystem(obj);
+            %s.Synthesizer = matlab.System.saveObject(obj.Synthesizer);
+            %s.AdjOfSynthesizer = matlab.System.saveObject(obj.AdjOfSynthesizer);
         end
         
         function loadObjectImpl(obj,s,wasLocked)
-            loadObjectImpl@saivdr.sparserep.AbstSparseApproximation(obj,s,wasLocked);
-            obj.Synthesizer = matlab.System.loadObject(s.Synthesizer);
-            obj.AdjOfSynthesizer = ...
-                matlab.System.loadObject(s.AdjOfSynthesizer);
+            loadObjectImpl@saivdr.sparserep.AbstSparseApproximationSystem(obj,s,wasLocked);
+            %obj.Synthesizer = matlab.System.loadObject(s.Synthesizer);
+            %obj.AdjOfSynthesizer = matlab.System.loadObject(s.AdjOfSynthesizer);
         end
         
         function validatePropertiesImpl(obj)
-            if isempty(obj.Synthesizer)
+            if isempty(obj.Dictionary{obj.FORWARD})
                 me = MException('SaivDr:InstantiationException',...
                     'Synthesizer must be given.');
                 throw(me)
             end
-            if isempty(obj.AdjOfSynthesizer)
+            if isempty(obj.Dictionary{obj.ADJOINT})
                 me = MException('SaivDr:InstantiationException',...
                     'AdjOfSynthesizer must be given.');
                 throw(me)
@@ -77,13 +76,15 @@ classdef IterativeHardThresholding < ...
         end
         
         function [ result, coefvec, scales ] = stepImpl(obj, srcImg)
+            fwdDic = obj.Dictionary{obj.FORWARD};
+            adjDic = obj.Dictionary{obj.ADJOINT};
             nCoefs = obj.NumberOfSparseCoefficients;
             source = im2double(srcImg);
             
             % Initalization
             iIter    = 0;
             result = 0*source;            
-            [coefvec,scales] = obj.AdjOfSynthesizer.step(result);
+            [coefvec,scales] = adjDic.step(result);
             % Iteration
             while true
                 iIter = iIter + 1;
@@ -91,7 +92,7 @@ classdef IterativeHardThresholding < ...
                 % Residual
                 residual = source - result;
                 % g = Phi.'*r
-                [gradvec,~] = obj.AdjOfSynthesizer.step(residual);
+                [gradvec,~] = adjDic.step(residual);
                 coefvec = precoefvec + obj.Mu*gradvec;
                 % Hard thresholding
                 [~, idxsort ] = sort(abs(coefvec(:)),1,'descend');
@@ -100,7 +101,7 @@ classdef IterativeHardThresholding < ...
                 mask(indexSet) = 1;
                 coefvec = mask.*coefvec;
                 % Reconstruction
-                result= obj.Synthesizer.step(coefvec,scales);
+                result= fwdDic.step(coefvec,scales);
                 if ~isempty(obj.StepMonitor) && iIter > 1
                     obj.StepMonitor.step(result);
                 end            

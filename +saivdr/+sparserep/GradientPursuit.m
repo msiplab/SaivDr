@@ -1,14 +1,11 @@
 classdef GradientPursuit < ...
-        saivdr.sparserep.AbstSparseApproximation %#codegen
+        saivdr.sparserep.AbstSparseApproximationSystem %#codegen
     %GRADIENTPURSUIT Gradient pursuit
     %
     % Reference
     %  - Thomas Blumensath and Mike E. Davies, "Gradient pursuits,"
     %    IEEE Trans. Signal Process., vol. 56, no. 6, pp. 2370-2382,
     %    July 2008.
-    %    
-    % SVN identifier:
-    % $Id: GradientPursuit.m 683 2015-05-29 08:22:13Z sho $
     %
     % Requirements: MATLAB R2015b
     %
@@ -23,10 +20,11 @@ classdef GradientPursuit < ...
     %
     % http://msiplab.eng.niigata-u.ac.jp/    
     %
-     properties (Nontunable)
-        Synthesizer
-        AdjOfSynthesizer
-     end
+    
+    %properties (Nontunable)
+    %    Synthesizer
+    %    AdjOfSynthesizer
+    %end
     
      properties (PositiveInteger)
         NumberOfSparseCoefficients = 1
@@ -35,27 +33,27 @@ classdef GradientPursuit < ...
     methods
         function obj = GradientPursuit(varargin)
             obj = ...
-                obj@saivdr.sparserep.AbstSparseApproximation(varargin{:});        
+                obj@saivdr.sparserep.AbstSparseApproximationSystem(varargin{:});        
         end
     end
     
     methods (Access = protected)
         
         function s = saveObjectImpl(obj)
-            s = saveObjectImpl@saivdr.sparserep.AbstSparseApproximation(obj);
-            s.Synthesizer = matlab.System.saveObject(obj.Synthesizer);
-            s.AdjOfSynthesizer = ...
-                matlab.System.saveObject(obj.AdjOfSynthesizer);
+            s = saveObjectImpl@saivdr.sparserep.AbstSparseApproximationSystem(obj);
+            %s.Synthesizer = matlab.System.saveObject(obj.Synthesizer);
+            %s.AdjOfSynthesizer = matlab.System.saveObject(obj.AdjOfSynthesizer);
         end
         
         function loadObjectImpl(obj,s,wasLocked)
-            loadObjectImpl@saivdr.sparserep.AbstSparseApproximation(obj,s,wasLocked);
-            obj.Synthesizer = matlab.System.loadObject(s.Synthesizer);
-            obj.AdjOfSynthesizer = ...
-                matlab.System.loadObject(s.AdjOfSynthesizer);
+            loadObjectImpl@saivdr.sparserep.AbstSparseApproximationSystem(obj,s,wasLocked);
+            %obj.Synthesizer = matlab.System.loadObject(s.Synthesizer);
+            %obj.AdjOfSynthesizer = matlab.System.loadObject(s.AdjOfSynthesizer);
         end        
         
         function [ result, coefvec, scales ] = stepImpl(obj, srcImg)
+            fwdDic = obj.Dictionary{obj.FORWARD};
+            adjDic = obj.Dictionary{obj.ADJOINT};
             nCoefs = obj.NumberOfSparseCoefficients;
             source = im2double(srcImg);
             residual = source;
@@ -70,7 +68,7 @@ classdef GradientPursuit < ...
             % Iteration
             for iCoef = 1:nCoefs
                 % g = Phi.'*r
-                [gradvec,scales] = step(obj.AdjOfSynthesizer,residual);
+                [gradvec,scales] = adjDic.step(residual);
                 if iCoef == 1
                     dirvec = zeros(size(gradvec));
                 end
@@ -81,7 +79,7 @@ classdef GradientPursuit < ...
                 % Calculate update direction
                 dirvec(indexSet) = gradvec(indexSet);
                 %
-                c = step(obj.Synthesizer,dirvec,scales);
+                c = fwdDic.step(dirvec,scales);
                 %
                 a = (residual(:).'*c(:))/(norm(c(:))^2);
                 %

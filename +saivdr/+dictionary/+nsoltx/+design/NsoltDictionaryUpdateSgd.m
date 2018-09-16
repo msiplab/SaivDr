@@ -17,7 +17,6 @@ classdef NsoltDictionaryUpdateSgd < ...
     %
     
     properties (Nontunable)
-        TrainingImages
         Step = 'Reciprocal'
     end
     
@@ -43,11 +42,6 @@ classdef NsoltDictionaryUpdateSgd < ...
         GaAngInit = 'off'
     end
 
-    properties
-        SparseCoefficients
-        SetOfScales
-    end
-    
     properties (Logical)
         IsVerbose = false
     end

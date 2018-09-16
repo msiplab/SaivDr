@@ -19,12 +19,6 @@ classdef NsoltDictionaryUpdateGaFmin < ...
     properties (Nontunable)
         NumberOfLevels = 1;
         IsFixedCoefs       = true
-        TrainingImages
-    end
-    
-    properties
-        SparseCoefficients
-        SetOfScales
     end
     
     properties (Logical)
