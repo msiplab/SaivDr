@@ -35,15 +35,32 @@ classdef AbstSparseApproximationSystem < matlab.System %#codegen
         
         function s = saveObjectImpl(obj)
             s = saveObjectImpl@matlab.System(obj);
-            s.Dictionary{1} = matlab.System.saveObject(obj.Dictionary{1});
-            s.Dictionary{2} = matlab.System.saveObject(obj.Dictionary{2});
+            s.Dictionary{obj.FORWARD} = ...
+                matlab.System.saveObject(obj.Dictionary{obj.FORWARD});
+            s.Dictionary{obj.ADJOINT} = ...
+                matlab.System.saveObject(obj.Dictionary{obj.ADJOINT});
         end
         
         function loadObjectImpl(obj,s,wasLocked)
             loadObjectImpl@matlab.System(obj,s,wasLocked);
-            obj.Dictionary{1} = matlab.System.loadObject(s.Dictionary{1});
-            obj.Dictionary{2} = matlab.System.loadObject(s.Dictionary{2});
+            obj.Dictionary{obj.FORWARD} = ...
+                matlab.System.loadObject(s.Dictionary{obj.FORWARD});
+            obj.Dictionary{obj.ADJOINT} = ...
+                matlab.System.loadObject(s.Dictionary{obj.ADJOINT});
         end         
+        
+        function validatePropertiesImpl(obj)
+            if isempty(obj.Dictionary{obj.FORWARD})
+                me = MException('SaivDr:InstantiationException',...
+                    'Synthesizer(Dictionary{1}) must be given.');
+                throw(me)
+            end
+            if isempty(obj.Dictionary{obj.ADJOINT})
+                me = MException('SaivDr:InstantiationException',...
+                    'AdjOfSynthesizer(Dictionary{2}) must be given.');
+                throw(me)
+            end
+        end        
         
     end
     

@@ -62,19 +62,6 @@ classdef IterativeHardThresholding < ...
             %obj.AdjOfSynthesizer = matlab.System.loadObject(s.AdjOfSynthesizer);
         end
         
-        function validatePropertiesImpl(obj)
-            if isempty(obj.Dictionary{obj.FORWARD})
-                me = MException('SaivDr:InstantiationException',...
-                    'Synthesizer must be given.');
-                throw(me)
-            end
-            if isempty(obj.Dictionary{obj.ADJOINT})
-                me = MException('SaivDr:InstantiationException',...
-                    'AdjOfSynthesizer must be given.');
-                throw(me)
-            end
-        end
-        
         function [ result, coefvec, scales ] = stepImpl(obj, srcImg)
             fwdDic = obj.Dictionary{obj.FORWARD};
             adjDic = obj.Dictionary{obj.ADJOINT};
