@@ -43,9 +43,10 @@ classdef IstaSystemTestCase < matlab.unittest.TestCase
         function testConstruction(testCase)
             
             % Parameters
+            import saivdr.degradation.linearprocess.IdenticalMappingSystem            
             lambdaExpctd  = 0; % Regularization parameter
             gammaExpctd   = []; % Step size parameter
-            msrExpctd = [];
+            msrExpctd = IdenticalMappingSystem;
             dicExpctd = [];
             gdnExpctd = [];
             obsExpctd = [];

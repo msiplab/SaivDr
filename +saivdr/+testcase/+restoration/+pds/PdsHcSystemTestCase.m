@@ -45,9 +45,10 @@ classdef PdsHcSystemTestCase < matlab.unittest.TestCase
         function testConstruction(testCase)
             
             % Parameters
+            import saivdr.degradation.linearprocess.IdenticalMappingSystem
             lambdaExpctd  = 0; % Regularization parameter
             gammaExpctd   = []; % Step size parameter
-            msrExpctd = [];
+            msrExpctd = IdenticalMappingSystem;
             mpjExpctd = [];
             dicExpctd = [];
             gdnExpctd = [];

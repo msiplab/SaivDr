@@ -28,12 +28,16 @@ classdef IdenticalMappingSystem < ...
     
     methods (Access = protected)
         
+        function flag = isInactiveSubPropertyImpl(~,~)
+            flag = false;
+        end        
+        
         function output = normalStepImpl(~,input)
             output = input;
         end
         
         function output = adjointStepImpl(~,input)
-            output =input;
+            output = input;
         end
 
         function originalDim = getOriginalDimension(~,ovservedDim)

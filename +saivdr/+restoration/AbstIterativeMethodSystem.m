@@ -27,14 +27,16 @@ classdef (Abstract) AbstIterativeMethodSystem < matlab.System
         FORWARD = 1
         ADJOINT = 2
     end
+
+    properties
+        Dictionary       % Set of synthesis and analysis dictionary {D, D'}
+        Observation      % Observation y
+    end
     
     properties (Nontunable)
         Lambda = 0       % Regulalization Parameter
         %
         MeasureProcess   % Measurment process P
-        Dictionary       % Set of synthesis and analysis dictionary {D, D'}
-        %
-        Observation      % Observation y
         %
         Gamma            % Stepsize parameter(s)
         %
@@ -76,6 +78,10 @@ classdef (Abstract) AbstIterativeMethodSystem < matlab.System
     methods
         function obj = AbstIterativeMethodSystem(varargin)
             setProperties(obj,nargin,varargin{:})
+            if isempty(obj.MeasureProcess)
+                import saivdr.degradation.linearprocess.IdenticalMappingSystem
+                obj.MeasureProcess = IdenticalMappingSystem();
+            end
             if isempty(obj.PadSize)
                 if strcmp(obj.DataType,'Volumetric Data')
                     obj.PadSize = zeros(1,3);
@@ -108,6 +114,41 @@ classdef (Abstract) AbstIterativeMethodSystem < matlab.System
             %obj.Obj = matlab.System.loadObject(s.Obj);
             %obj.Var = s.Var;
             loadObjectImpl@matlab.System(obj,s,wasLocked);
+        end
+        
+        %{
+        function validateInputsImpl(~,x)
+            if ~isnumeric(x)
+                error('Input must be numeric');
+            end
+        end
+        %}
+        
+        function validatePropertiesImpl(obj)
+            if isempty(obj.Observation)
+                me = MException('SaivDr:InstantiationException',...
+                    'Observation must be given.');
+                throw(me)
+            end
+        end
+        
+        function processTunedPropertiesImpl(obj)
+            propChange = isChangedProperty(obj,'Dictionary');
+            if propChange
+                fwdDic = obj.Dictionary{obj.FORWARD};
+                framebound = fwdDic.FrameBound;
+                obj.Gamma = 1/(framebound*msrProc.LambdaMax);
+                lambda = obj.Lambda;
+                obj.GaussianDenoiser.Sigma = sqrt(gamma*lambda);
+                if isempty(obj.SplitFactor)
+                    import saivdr.restoration.*
+                    gdn = obj.GaussianDenoiser;
+                    cm = CoefsManipulator(...
+                        'Manipulation',...
+                        @(t,cpre) gdn.step(cpre-gamma*t));
+                    obj.ParallelProcess.CoefsManipulator = cm;                    
+                end
+            end
         end
         
         function setupImpl(obj)
