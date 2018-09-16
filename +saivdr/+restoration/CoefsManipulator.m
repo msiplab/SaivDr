@@ -14,7 +14,7 @@ classdef CoefsManipulator < matlab.System
     %
     % http://msiplab.eng.niigata-u.ac.jp/
     %
-    properties (Nontunable)
+    properties
         Manipulation
     end
     
