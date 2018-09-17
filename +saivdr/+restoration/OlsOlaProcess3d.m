@@ -52,7 +52,7 @@ classdef OlsOlaProcess3d < saivdr.restoration.AbstOlsOlaProcess
                 for iLay = 1:nLays
                     for iCol = 1:nCols
                         for iRow = 1:nRows
-                            tmp = obj.states{...
+                            tmp = obj.States{...
                                 (iLay-1)*nRows*nCols+(iCol-1)*nRows+iRow};
                             coefsCell{iRow,iCol,iLay} = tmp{iCh};
                         end

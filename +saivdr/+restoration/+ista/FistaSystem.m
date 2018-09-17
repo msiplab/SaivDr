@@ -1,5 +1,5 @@
-classdef IstaSystem < saivdr.restoration.AbstIterativeMethodSystem
-    % ISTASYSTEM Signal restoration via iterative soft thresholding algorithm
+classdef FistaSystem < saivdr.restoration.AbstIterativeMethodSystem
+    % FISTASYSTEM Signal restoration via fast iterative soft thresholding algorithm
     %
     % Problem setting:
     %
@@ -17,18 +17,24 @@ classdef IstaSystem < saivdr.restoration.AbstIterativeMethodSystem
     %    r^: Restoration
     %
     % ===================================================================
-    %  Iterative soft thresholding algorithm (ISTA)
+    %  Fast iterative soft thresholding algorithm (FISTA)
     % -------------------------------------------------------------------
     % Input:  x(0)
     % Output: r(n)
     %  1: n = 0
-    %  2: r(0) = Dx(0)
-    %  3: while A stopping criterion is not satisfied do
-    %  4:     t <- D'P'(Pr(n) - v)
-    %  5:     x(n+1) = G_R( x(n) - gamma*t, sqrt(lambda*gamma) )
-    %  6:     r(n+1) = Dx(n+1)
-    %  7:     n <- n+1
-    %  8: end while
+    %  2: t(0) = 1
+    %  3: y(0) = x(0)
+    %  4: z(0) = Dy(0)
+    %  5: while A stopping criterion is not satisfied do
+    %  6:     u <- D'P'(Pz(n) - v)
+    %  7:     x(n+1) = G_R( y(n) - gamma*u, sqrt(lambda*gamma) )
+    %  8:     r(n+1) = Dx(n+1)
+    %  9:     t(n+1) = (1+sqrt(1+4*t(n)^2))/2
+    % 10:     a = (t(n)-1)/t(n+1)
+    % 11:     y(n+1) = x(n+1)+a*(x(n+1)-x(n))    
+    % 12:     z(n+1) = r(n+1)+a*(r(n+1)-r(n))      
+    % 13:     n <- n+1
+    % 14: end while
     % ===================================================================
     %  G_R(x,sigma) = sign(x).*max(|x|-sigma^2,0) for R=||.||_1, and
     %  gamma = 1/L, where L is the Lipcitz constant of the gradient of the
@@ -53,9 +59,11 @@ classdef IstaSystem < saivdr.restoration.AbstIterativeMethodSystem
     % http://msiplab.eng.niigata-u.ac.jp/
     %
 
-
     properties(Access = private)
         X
+        Y
+        Z
+        T
         Scales
     end
 
@@ -64,7 +72,7 @@ classdef IstaSystem < saivdr.restoration.AbstIterativeMethodSystem
     end
     
     methods
-        function obj = IstaSystem(varargin)
+        function obj = FistaSystem(varargin)
             import saivdr.restoration.AbstIterativeMethodSystem
             obj = obj@saivdr.restoration.AbstIterativeMethodSystem(...
                 varargin{:});
@@ -88,6 +96,9 @@ classdef IstaSystem < saivdr.restoration.AbstIterativeMethodSystem
                 obj);
             s.Scales = obj.Scales;
             s.X      = obj.X;
+            s.Y      = obj.Y;            
+            s.Z      = obj.Z;
+            s.T      = obj.T;                        
             %s.Var = obj.Var;
             %s.Obj = matlab.System.saveObject(obj.Obj);
             %if isLocked(obj)
@@ -102,6 +113,9 @@ classdef IstaSystem < saivdr.restoration.AbstIterativeMethodSystem
             %obj.Obj = matlab.System.loadObject(s.Obj);
             %obj.Var = s.Var;
             obj.X      = s.X;            
+            obj.Y      = s.Y;            
+            obj.Z      = s.Z;
+            obj.T      = s.T;                        
             obj.Scales = s.Scales;            
             loadObjectImpl@saivdr.restoration.AbstIterativeMethodSystem(...
                 obj,s,wasLocked);
@@ -150,6 +164,8 @@ classdef IstaSystem < saivdr.restoration.AbstIterativeMethodSystem
                 obj.Dictionary{obj.ADJOINT} = adjDic.clone();
                 %
                 [obj.X,obj.Scales] = adjDic.step(obj.Result);
+                obj.Y = obj.X;
+                obj.Z = obj.Result; 
             else
                 import saivdr.restoration.*
                 gdn = obj.GaussianDenoiser;
@@ -172,8 +188,11 @@ classdef IstaSystem < saivdr.restoration.AbstIterativeMethodSystem
                 obj.ParallelProcess.Debug       = obj.Debug;
                 %
                 obj.X = obj.ParallelProcess.analyze(obj.Result);
-                obj.ParallelProcess.InitialState = obj.X;
+                obj.Y = obj.X;
+                obj.Z = obj.Result;                 
+                obj.ParallelProcess.InitialState = obj.Y;
             end
+            obj.T = 1;
         end
         
         function varargout = stepImpl(obj)
@@ -187,9 +206,14 @@ classdef IstaSystem < saivdr.restoration.AbstIterativeMethodSystem
             % Previous state
             resPre = obj.Result;
             xPre   = obj.X;
+            yPre   = obj.Y;
+            zPre   = obj.Z;
+            tPre   = obj.T;
             
             % Main steps
-            g = adjProc.step(msrProc.step(resPre)-vObs);
+            g = adjProc.step(msrProc.step(zPre)-vObs);
+            t = (1+sqrt(1+4*tPre^2))/2;
+            a = (tPre-1)/t;
             if isempty(obj.SplitFactor) % Normal process
                 import saivdr.restoration.denoiser.*
                 % Dictionaries
@@ -200,14 +224,27 @@ classdef IstaSystem < saivdr.restoration.AbstIterativeMethodSystem
                 gamma  = obj.Gamma;
                 gdn = obj.GaussianDenoiser;
                 %
-                t = adjDic.step(g);
-                x = gdn.step(xPre-gamma*t);
+                u = adjDic.step(g);
+                x = gdn.step(yPre-gamma*u);
                 result = fwdDic(x,scales);
+                %
                 % Update
                 obj.X = x;
+                obj.Y = x + a*(x-xPre);                
             else % OLS/OLA process
+                obj.ParallelProcess.States = yPre;
                 result = obj.ParallelProcess.step(g);
+                obj.X = obj.ParallelProcess.States;
+                %
+                nSplit = length(xPre);
+                for iSplit = 1:nSplit
+                    obj.Y{iSplit} = cellfun(@(u,v) u + a*(u-v),...
+                        obj.X{iSplit},xPre{iSplit},...
+                        'UniformOutput',false);
+                end
             end
+            obj.Z = result + a*(result-resPre);
+            obj.T = t;
             
             % Output
             if nargout > 0

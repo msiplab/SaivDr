@@ -61,8 +61,8 @@ classdef (Abstract) AbstOlsOlaProcess < matlab.System
         iteration
     end
     
-    properties (Access = protected)
-        states
+    properties (Hidden)
+        States
     end
     
     properties (Hidden, Transient)
@@ -146,7 +146,7 @@ classdef (Abstract) AbstOlsOlaProcess < matlab.System
             s.subPadSize = obj.subPadSize;
             s.refSubSize = obj.refSubSize;
             s.subPadArrays = obj.subPadArrays;
-            s.states = obj.states;
+            %s.States = obj.States;
             if isLocked(obj)
                 s.iteration = obj.iteration;
             end
@@ -156,7 +156,7 @@ classdef (Abstract) AbstOlsOlaProcess < matlab.System
             if wasLocked
                 obj.iteration = s.iteration;
             end
-            obj.states = s.states;
+            %obj.States = s.States;
             obj.subPadArrays = s.subPadArrays;
             obj.refSubSize = s.refSubSize;
             obj.subPadSize = s.subPadSize;
@@ -254,7 +254,7 @@ classdef (Abstract) AbstOlsOlaProcess < matlab.System
                 refCoefsOut = refCoefsManipulator.step(refCoefs,0);
                 imgExpctd = refSynthesizer.step(refCoefsOut,refScales_);
                 %
-                obj.states = num2cell(zeros(nSplit,1,'like',srcImg));
+                obj.States = num2cell(zeros(nSplit,1,'like',srcImg));
                 imgActual = obj.stepImpl(srcImg);
                 %
                 diffImg = imgExpctd - imgActual;
@@ -273,25 +273,25 @@ classdef (Abstract) AbstOlsOlaProcess < matlab.System
             refCoefsManipulator.delete()
             
             % Initialization of state for CoefsManipulator
-            obj.states = cell(nSplit,1);
+            obj.States = cell(nSplit,1);
             if isempty(obj.InitialState)
                 for iSplit = 1:nSplit
                     state = num2cell(zeros(1,nChs,'like',srcImg));
-                    obj.states{iSplit} = state;
+                    obj.States{iSplit} = state;
                 end
             elseif isscalar(obj.InitialState) && ~iscell(obj.InitialState)
                 for iSplit = 1:nSplit
                     state = num2cell(...
                         cast(obj.InitialState,'like',srcImg)*...
                         ones(1,nChs,'like',srcImg));
-                    obj.states{iSplit} = state;
+                    obj.States{iSplit} = state;
                 end
             else
                 for iSplit = 1:nSplit
                     initState = obj.InitialState{iSplit};
                     state = cellfun(@(x) cast(x,'like',srcImg),...
                         initState,'UniformOutput',false);
-                    obj.states{iSplit} = state;
+                    obj.States{iSplit} = state;
                 end
             end
         end
@@ -330,7 +330,7 @@ classdef (Abstract) AbstOlsOlaProcess < matlab.System
             stateCmp = Composite(nSplit);
             for iSplit=1:nSplit
                 subImgCmp{iSplit} = subImgs{iSplit};
-                stateCmp{iSplit} = obj.states{iSplit};
+                stateCmp{iSplit} = obj.States{iSplit};
             end
             
             % Parallel processing
@@ -376,7 +376,7 @@ classdef (Abstract) AbstOlsOlaProcess < matlab.System
             
             % Update
             for iSplit=1:nSplit
-                obj.states{iSplit} = stateCmp{iSplit};
+                obj.States{iSplit} = stateCmp{iSplit};
             end
             
             % Overlap add (Circular)
@@ -406,7 +406,7 @@ classdef (Abstract) AbstOlsOlaProcess < matlab.System
             
             % Initialize
             nSplit = length(subImgs);
-            states_ = obj.states;
+            states_ = obj.States;
             
             % Parallel processing
             nWorkers_ = obj.nWorkers;
@@ -451,7 +451,7 @@ classdef (Abstract) AbstOlsOlaProcess < matlab.System
             end
             
             % Update
-            obj.states = states_;
+            obj.States = states_;
             
             % Overlap add (Circular)
             recImg = obj.circular_ola_(subRecImgs);
