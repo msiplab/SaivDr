@@ -30,7 +30,7 @@ classdef FistaSystem < saivdr.restoration.AbstIterativeMethodSystem
     %  7:     x(n+1) = G_R( y(n) - gamma*u, sqrt(lambda*gamma) )
     %  8:     r(n+1) = Dx(n+1)
     %  9:     t(n+1) = (1+sqrt(1+4*t(n)^2))/2
-    % 10:     a = (t(n)-1)/t(n+1)
+    % 10:     a <- (t(n)-1)/t(n+1)
     % 11:     y(n+1) = x(n+1)+a*(x(n+1)-x(n))    
     % 12:     z(n+1) = r(n+1)+a*(r(n+1)-r(n))      
     % 13:     n <- n+1
