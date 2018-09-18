@@ -12,7 +12,7 @@ classdef NsoltDictionaryLearningPnP < matlab.System
     %                8050 2-no-cho Ikarashi, Nishi-ku,
     %                Niigata, 950-2181, JAPAN
     %
-    % http://msiplab.eng.niigata-u.ac.jp/    
+    % http://msiplab.eng.niigata-u.ac.jp/
     %
     properties
         TrainingImages
@@ -20,7 +20,7 @@ classdef NsoltDictionaryLearningPnP < matlab.System
         DictionaryUpdater
     end
     
-    properties (Nontunable)        
+    properties (Nontunable)
         DecimationFactor = [2 2]
         NumberOfChannels = [2 2]
         PolyPhaseOrder   = [0 0]
@@ -35,29 +35,19 @@ classdef NsoltDictionaryLearningPnP < matlab.System
             matlab.system.StringSet({'Image','Volumetric Data'});
     end
     
-    properties (Nontunable,PositiveInteger)
-        %{
-        GenerationFactorForMus = 10
-        %}
+    properties (Nontunable, Logical)
+        IsRandomInit = false
     end
     
-    properties (Nontunable, Logical)   
-        %{
-        IsRandomInit = false
-        %}
-    end
-   
     properties (Hidden)
-        %{
         StdOfAngRandomInit    = 1e-2;
-        PrbOfFlipMuRandomInit = 0      
-        %}
+        PrbOfFlipMuRandomInit = 0
     end
     
     properties(DiscreteState)
         Count
     end
-
+    
     
     properties(GetAccess=public,SetAccess=private)
         OvsdLpPuFb
@@ -66,7 +56,7 @@ classdef NsoltDictionaryLearningPnP < matlab.System
     properties (Access = protected, Nontunable)
         nImgs
     end
-
+    
     methods
         function obj = NsoltDictionaryLearningPnP(varargin)
             setProperties(obj,nargin,varargin{:});
@@ -89,18 +79,14 @@ classdef NsoltDictionaryLearningPnP < matlab.System
     end
     
     methods (Access=protected)
-    
-        %{
+        
         function flag = isInactivePropertyImpl(obj,propertyName)
             flag = false;
-            %{
             if strcmp(propertyName,'StdOfAngRandomInit') || ...
                     strcmp(propertyName,'PrbOfFlipMuRandomInit')
                 flag = ~obj.IsRandomInit;
             end
-            %}
         end
-        %}
         
         function validatePropertiesImpl(obj)
             if isempty(obj.SparseApproximater)
@@ -112,15 +98,14 @@ classdef NsoltDictionaryLearningPnP < matlab.System
                 me = MException('SaivDr:InstantiationException',...
                     'DictionaryUpdater must be given.');
                 throw(me)
-            end        
+            end
         end
         
         function setupImpl(obj, varargin)
-
-            %{
+            
             % Random initialization
             if obj.IsRandomInit
-                %                
+                %
                 sdv = obj.StdOfAngRandomInit;
                 angles_ = obj.OvsdLpPuFb.Angles;
                 sizeAngles = size(angles_);
@@ -134,12 +119,11 @@ classdef NsoltDictionaryLearningPnP < matlab.System
                 obj.OvsdLpPuFb.Mus = mus_;
                 %
             end
-            %}
-
+            
         end
         
         function varargout = stepImpl(obj,varargin)
-            obj.Count = obj.Count + 1;            
+            obj.Count = obj.Count + 1;
             if nargin > 0
                 obj.TrainingImages = varargin{1};
             end
@@ -158,11 +142,12 @@ classdef NsoltDictionaryLearningPnP < matlab.System
             obj.SparseApproximater.Dictionary = { synthesizer, analyzer};
             sprsCoefs   = cell(obj.nImgs,1);
             setOfScales = cell(obj.nImgs,1);
+            
             for iImg = 1:obj.nImgs
                 if ~isempty(obj.SparseApproximater.StepMonitor)
-                   obj.SparseApproximater.StepMonitor.reset();                    
-                   obj.SparseApproximater.StepMonitor.SourceImage... 
-                       = obj.TrainingImages{iImg};   
+                    obj.SparseApproximater.StepMonitor.reset();
+                    obj.SparseApproximater.StepMonitor.SourceImage...
+                        = obj.TrainingImages{iImg};
                 end
                 [~, sprsCoefs{iImg}, setOfScales{iImg}] = ...
                     obj.SparseApproximater.step(obj.TrainingImages{iImg});
@@ -173,12 +158,12 @@ classdef NsoltDictionaryLearningPnP < matlab.System
             obj.DictionaryUpdater.SparseCoefficients = sprsCoefs;
             obj.DictionaryUpdater.SetOfScales = setOfScales;
             [ lppufb, fval, exitflag ] = ...
-                    obj.DictionaryUpdater.step(obj.OvsdLpPuFb,options);
-
+                obj.DictionaryUpdater.step(obj.OvsdLpPuFb,options);
+            
             % Update
             obj.OvsdLpPuFb.Angles = lppufb.Angles;
             obj.OvsdLpPuFb.Mus    = lppufb.Mus;
-
+            
             % Output
             if nargout > 0
                 varargout{1} = obj.OvsdLpPuFb;
@@ -193,9 +178,9 @@ classdef NsoltDictionaryLearningPnP < matlab.System
         end
         
         function resetImpl(obj)
-            obj.Count = 0;            
+            obj.Count = 0;
         end
-     
+        
     end
-
+    
 end
