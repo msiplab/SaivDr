@@ -4,7 +4,7 @@ classdef AbstOvsdLpPuFb2dTypeISystem < ...
     %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2014-2017, Shogo MURAMATSU
+    % Copyright (c) 2014-2018, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -53,13 +53,10 @@ classdef AbstOvsdLpPuFb2dTypeISystem < ...
             obj.matrixE0 = s.matrixE0;
             loadObjectImpl@saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2dSystem(obj,s,wasLocked);
             %
-            if ~isempty(s.mexFcn)
-                if exist(func2str(s.mexFcn),'file') == 3
-                    obj.mexFcn  = s.mexFcn;
-                else
-                    import saivdr.dictionary.nsoltx.mexsrcs.fcn_Order1BuildingBlockTypeI
-                    obj.mexFcn = @fcn_Order1BuildingBlockTypeI;
-                end
+            if ~isempty(s.mexFcn) && exist(func2str(s.mexFcn),'file') == 3
+                obj.mexFcn  = s.mexFcn;
+            else
+                obj.setupImpl();
             end
         end
         

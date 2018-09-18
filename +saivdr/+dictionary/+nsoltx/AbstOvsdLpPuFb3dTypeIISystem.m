@@ -53,13 +53,10 @@ classdef AbstOvsdLpPuFb3dTypeIISystem < ...
             obj.matrixE0 = s.matrixE0;
             loadObjectImpl@saivdr.dictionary.nsoltx.AbstOvsdLpPuFb3dSystem(obj,s,wasLocked);
             %
-            if ~isempty(s.mexFcn)
-                if exist(func2str(s.mexFcn),'file') == 3
-                    obj.mexFcn  = s.mexFcn;
-                else
-                    import saivdr.dictionary.nsoltx.mexsrcs.fcn_Order2BuildingBlockTypeII
-                    obj.mexFcn = @fcn_Order2BuildingBlockTypeII;
-                end
+            if ~isempty(s.mexFcn) && exist(func2str(s.mexFcn),'file') == 3
+                obj.mexFcn  = s.mexFcn;
+            else
+                obj.setupImpl();
             end
         end
         
