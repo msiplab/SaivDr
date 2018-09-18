@@ -37,6 +37,7 @@ classdef NsoltDictionaryLearningPnP < matlab.System
     
     properties (Nontunable, Logical)
         IsRandomInit = false
+        UseParallel  = false
     end
     
     properties (Hidden)
@@ -142,15 +143,32 @@ classdef NsoltDictionaryLearningPnP < matlab.System
             obj.SparseApproximater.Dictionary = { synthesizer, analyzer};
             sprsCoefs   = cell(obj.nImgs,1);
             setOfScales = cell(obj.nImgs,1);
-            
-            for iImg = 1:obj.nImgs
-                if ~isempty(obj.SparseApproximater.StepMonitor)
-                    obj.SparseApproximater.StepMonitor.reset();
-                    obj.SparseApproximater.StepMonitor.SourceImage...
-                        = obj.TrainingImages{iImg};
+            if ~isempty(obj.SparseApproximater.StepMonitor)
+                obj.SparseApproximater.StepMonitor.reset();
+                obj.SparseApproximater.StepMonitor.IsVisible = false;
+            end            
+            if obj.UseParallel
+                sprsAprx = cell(obj.nImgs,1);
+                img = cell(obj.nImgs,1);
+                for iImg = 1:obj.nImgs
+                    img{iImg} = obj.TrainingImages{iImg};
+                    sprsAprx{iImg} = obj.SparseApproximater.clone();
+                    sprsAprx{iImg}.StepMonitor.SourceImage = img{iImg}; 
                 end
-                [~, sprsCoefs{iImg}, setOfScales{iImg}] = ...
-                    obj.SparseApproximater.step(obj.TrainingImages{iImg});
+                parfor iImg = 1:obj.nImgs
+                    [~, sprsCoefs{iImg}, setOfScales{iImg}] = ...
+                        sprsAprx{iImg}.step(img{iImg});
+                end
+            else
+                for iImg = 1:obj.nImgs
+                    if ~isempty(obj.SparseApproximater.StepMonitor)
+                        obj.SparseApproximater.StepMonitor.reset();
+                        obj.SparseApproximater.StepMonitor.SourceImage...
+                            = obj.TrainingImages{iImg};
+                    end
+                    [~, sprsCoefs{iImg}, setOfScales{iImg}] = ...
+                        obj.SparseApproximater.step(obj.TrainingImages{iImg});
+                end
             end
             
             % Dictionary Update
