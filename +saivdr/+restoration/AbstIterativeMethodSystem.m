@@ -32,13 +32,15 @@ classdef (Abstract) AbstIterativeMethodSystem < matlab.System
         Dictionary       % Set of synthesis and analysis dictionary {D, D'}
         Observation      % Observation y
     end
+
+    properties (Hidden)
+        Gamma            % Stepsize parameter(s)
+    end
     
     properties (Nontunable)
         Lambda = 0       % Regulalization Parameter
         %
         MeasureProcess   % Measurment process P
-        %
-        Gamma            % Stepsize parameter(s)
         %
         DataType = 'Image'
         SplitFactor = []
@@ -134,13 +136,15 @@ classdef (Abstract) AbstIterativeMethodSystem < matlab.System
         
         function processTunedPropertiesImpl(obj)
             propChange = isChangedProperty(obj,'Dictionary');
-            if propChange
+            if propChange && isLocked(obj)
+                msrProc = obj.MeasureProcess;
                 fwdDic = obj.Dictionary{obj.FORWARD};
                 framebound = fwdDic.FrameBound;
                 obj.Gamma = 1/(framebound*msrProc.LambdaMax);
+                gamma  = obj.Gamma;
                 lambda = obj.Lambda;
                 obj.GaussianDenoiser.Sigma = sqrt(gamma*lambda);
-                if isempty(obj.SplitFactor)
+                if isa(obj.ParallelProcess,'saivdr.restoration.AbstOlsOlaProcess')
                     import saivdr.restoration.*
                     gdn = obj.GaussianDenoiser;
                     cm = CoefsManipulator(...

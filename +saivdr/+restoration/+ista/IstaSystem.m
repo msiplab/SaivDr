@@ -72,11 +72,12 @@ classdef IstaSystem < saivdr.restoration.AbstIterativeMethodSystem
         end
         
         function [coefs,scales] = getCoefficients(obj)
-            if isempty(obj.ParallelProcess)
+            import saivdr.restoration.AbstOlsOlaProcess
+            if isa(obj.ParallelProcess,'saivdr.restoration.AbstOlsOlaProcess')
+                [coefs,scales] = obj.ParallelProcess.getCoefficients();           
+            else
                coefs = obj.X;
                scales = obj.Scales;
-            else
-                [coefs,scales] = obj.ParallelProcess.getCoefficients();           
             end
         end
     end

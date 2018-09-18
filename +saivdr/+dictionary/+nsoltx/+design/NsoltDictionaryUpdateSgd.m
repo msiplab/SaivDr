@@ -149,7 +149,6 @@ classdef NsoltDictionaryUpdateSgd < ...
         
         function [ lppufb, fval, exitflag ] = stepImpl(obj,lppufb_,options)
 
-            
             lppufb = clone(lppufb_);
             
             % Optimization of Mus

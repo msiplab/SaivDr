@@ -47,6 +47,7 @@ classdef StepMonitoringSystem < matlab.System %#codegen
         IsMSE  = false
         IsPSNR = false
         IsSSIM = false
+        IsRMSE = false
         IsVisible = false
         IsVerbose = false
         IsPlotPSNR = false
@@ -62,6 +63,7 @@ classdef StepMonitoringSystem < matlab.System %#codegen
         MSEs
         PSNRs
         SSIMs
+        RMSEs
     end
     
     properties (Access = private)
@@ -289,6 +291,9 @@ classdef StepMonitoringSystem < matlab.System %#codegen
             end
             if obj.IsSSIM
                 obj.SSIMs = zeros(1,obj.MaxIter);
+            end
+            if obj.IsRMSE
+                obj.RMSEs = zeros(1,obj.MaxIter);
             end            
         end
                     
@@ -338,6 +343,15 @@ classdef StepMonitoringSystem < matlab.System %#codegen
                     fprintf(' SSIM = %6.3f ',obj.SSIMs(obj.nItr))
                 end                                
             end
+            % RMSE
+            if obj.IsRMSE
+                iOut = iOut + 1;
+                obj.RMSEs(obj.nItr)   = rmse_(obj,resImg);
+                varargout{iOut} = obj.RMSEs;
+                if obj.IsVerbose
+                    fprintf(' RMSE = %6.4g ',obj.RMSEs(obj.nItr))
+                end
+            end            
             %
             if obj.IsVerbose
                 fprintf('\n')
@@ -423,6 +437,11 @@ classdef StepMonitoringSystem < matlab.System %#codegen
             srcImg = obj.SourceImage;
             value = sum((double(srcImg(:))-double(resImg(:))).^2)...
                 /numel(srcImg);
+        end
+
+        function value = rmse_(obj,resImg)
+            srcImg = obj.SourceImage;
+            value = norm(srcImg(:)-resImg(:),2)/sqrt(numel(srcImg));
         end
         
         function value = psnr_(obj,resImg)

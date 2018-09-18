@@ -69,27 +69,28 @@ classdef NsoltDictionaryLearningPnP < matlab.System
 
     methods
         function obj = NsoltDictionaryLearningPnP(varargin)
-            setProperties(obj,nargin,varargin{:}); 
+            setProperties(obj,nargin,varargin{:});
             %
-            import saivdr.dictionary.nsoltx.NsoltFactory 
+            import saivdr.dictionary.nsoltx.NsoltFactory
             args = { ...
-                    'DecimationFactor', obj.DecimationFactor,...
-                    'NumberOfChannels', obj.NumberOfChannels,...
-                    'PolyPhaseOrder', obj.PolyPhaseOrder,...
-                    'NumberOfVanishingMoments',obj.NumberOfVanishingMoments,...
-                    'OutputMode','ParameterMatrixSet'};
+                'DecimationFactor', obj.DecimationFactor,...
+                'NumberOfChannels', obj.NumberOfChannels,...
+                'PolyPhaseOrder', obj.PolyPhaseOrder,...
+                'NumberOfVanishingMoments',obj.NumberOfVanishingMoments,...
+                'OutputMode','ParameterMatrixSet'};
             if strcmp(obj.DataType,'Image')
                 obj.OvsdLpPuFb = ...
                     NsoltFactory.createOvsdLpPuFb2dSystem(args{:});
             else
                 obj.OvsdLpPuFb = ...
-                NsoltFactory.createOvsdLpPuFb3dSystem(args{:});
+                    NsoltFactory.createOvsdLpPuFb3dSystem(args{:});
             end
         end
     end
     
     methods (Access=protected)
     
+        %{
         function flag = isInactivePropertyImpl(obj,propertyName)
             flag = false;
             %{
@@ -99,6 +100,7 @@ classdef NsoltDictionaryLearningPnP < matlab.System
             end
             %}
         end
+        %}
         
         function validatePropertiesImpl(obj)
             if isempty(obj.SparseApproximater)
@@ -148,13 +150,20 @@ classdef NsoltDictionaryLearningPnP < matlab.System
             
             % Sparse Approximation
             import saivdr.dictionary.nsoltx.*
-            synthesizer = NsoltFactory.createSynthesisSystem(obj.OvsdLpPuFb);
-            analyzer = NsoltFactory.createAnalysisSystem(obj.OvsdLpPuFb);
+            synthesizer = NsoltFactory.createSynthesisSystem(...
+                obj.OvsdLpPuFb,'IsCloneLpPuFb',false);
+            analyzer = NsoltFactory.createAnalysisSystem(...
+                obj.OvsdLpPuFb,'IsCloneLpPuFb',false);
             analyzer.NumberOfLevels = obj.NumberOfLevels;
             obj.SparseApproximater.Dictionary = { synthesizer, analyzer};
             sprsCoefs   = cell(obj.nImgs,1);
             setOfScales = cell(obj.nImgs,1);
             for iImg = 1:obj.nImgs
+                if ~isempty(obj.SparseApproximater.StepMonitor)
+                   obj.SparseApproximater.StepMonitor.reset();                    
+                   obj.SparseApproximater.StepMonitor.SourceImage... 
+                       = obj.TrainingImages{iImg};   
+                end
                 [~, sprsCoefs{iImg}, setOfScales{iImg}] = ...
                     obj.SparseApproximater.step(obj.TrainingImages{iImg});
             end
@@ -165,10 +174,14 @@ classdef NsoltDictionaryLearningPnP < matlab.System
             obj.DictionaryUpdater.SetOfScales = setOfScales;
             [ lppufb, fval, exitflag ] = ...
                     obj.DictionaryUpdater.step(obj.OvsdLpPuFb,options);
-            
-            % Increment Count
+
+            % Update
+            obj.OvsdLpPuFb.Angles = lppufb.Angles;
+            obj.OvsdLpPuFb.Mus    = lppufb.Mus;
+
+            % Output
             if nargout > 0
-                varargout{1} = lppufb;
+                varargout{1} = obj.OvsdLpPuFb;
             end
             if nargout > 1
                 varargout{2} = fval;
@@ -177,17 +190,11 @@ classdef NsoltDictionaryLearningPnP < matlab.System
                 varargout{3} = exitflag;
             end
             
-            % Update
-            obj.OvsdLpPuFb.Angles = lppufb.Angles;
-            obj.OvsdLpPuFb.Mus    = lppufb.Mus;
-
         end
         
         function resetImpl(obj)
             obj.Count = 0;            
         end
-        
-        
      
     end
 
