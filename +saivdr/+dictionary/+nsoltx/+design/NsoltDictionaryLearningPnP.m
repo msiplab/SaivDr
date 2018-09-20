@@ -37,6 +37,7 @@ classdef NsoltDictionaryLearningPnP < matlab.System
     
     properties (Nontunable, Logical)
         IsRandomInit = false
+        UseParallel = false
     end
     
     properties (Hidden)
@@ -139,19 +140,28 @@ classdef NsoltDictionaryLearningPnP < matlab.System
             analyzer = NsoltFactory.createAnalysisSystem(...
                 obj.OvsdLpPuFb,'IsCloneLpPuFb',false);
             analyzer.NumberOfLevels = obj.NumberOfLevels;
-            obj.SparseApproximater.Dictionary = { synthesizer, analyzer};
+            obj.SparseApproximater.Dictionary = { synthesizer, analyzer };
             sprsCoefs   = cell(obj.nImgs,1);
             setOfScales = cell(obj.nImgs,1);
+            sprsAprx = cell(obj.nImgs,1);
+            trnImgs = obj.TrainingImages;
+            if obj.UseParallel
+                nWorkers_ = Inf;
+            else
+                nWorkers_ = 0;
+            end
             for iImg = 1:obj.nImgs
                 if ~isempty(obj.SparseApproximater.StepMonitor)
-                    obj.SparseApproximater.StepMonitor.reset();
-                    obj.SparseApproximater.StepMonitor.SourceImage...
-                        = obj.TrainingImages{iImg};
+                    sprsAprx{iImg} = obj.SparseApproximater.clone();
+                    sprsAprx{iImg}.StepMonitor.reset();
+                    sprsAprx{iImg}.StepMonitor.SourceImage = trnImgs{iImg};
                 end
-                [~, sprsCoefs{iImg}, setOfScales{iImg}] = ...
-                    obj.SparseApproximater.step(obj.TrainingImages{iImg});
             end
-            
+            parfor (iImg = 1:obj.nImgs, nWorkers_)                
+                [~, sprsCoefs{iImg}, setOfScales{iImg}] = ...
+                    sprsAprx{iImg}.step(trnImgs{iImg});
+            end
+
             % Dictionary Update
             obj.DictionaryUpdater.TrainingImages = obj.TrainingImages;
             obj.DictionaryUpdater.SparseCoefficients = sprsCoefs;

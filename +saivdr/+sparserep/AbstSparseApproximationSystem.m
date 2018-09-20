@@ -39,6 +39,8 @@ classdef AbstSparseApproximationSystem < matlab.System %#codegen
                 matlab.System.saveObject(obj.Dictionary{obj.FORWARD});
             s.Dictionary{obj.ADJOINT} = ...
                 matlab.System.saveObject(obj.Dictionary{obj.ADJOINT});
+            s.StepMonitor = ...
+                matlab.System.saveObject(obj.StepMonitor);
         end
         
         function loadObjectImpl(obj,s,wasLocked)
@@ -47,6 +49,8 @@ classdef AbstSparseApproximationSystem < matlab.System %#codegen
                 matlab.System.loadObject(s.Dictionary{obj.FORWARD});
             obj.Dictionary{obj.ADJOINT} = ...
                 matlab.System.loadObject(s.Dictionary{obj.ADJOINT});
+            obj.StepMonitor = ...
+                matlab.System.loadObject(s.StepMonitor);
         end         
         
         function validatePropertiesImpl(obj)

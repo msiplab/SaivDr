@@ -59,12 +59,16 @@ classdef StepMonitoringSystem < matlab.System %#codegen
     end
     
     properties (SetAccess = private, GetAccess = public)
-        nItr
         MSEs
         PSNRs
         SSIMs
         RMSEs
     end
+
+    properties (DiscreteState)
+        nItr
+    end
+
     
     properties (Access = private)
         hSrcImg
@@ -85,15 +89,23 @@ classdef StepMonitoringSystem < matlab.System %#codegen
         
         function s = saveObjectImpl(obj)
             s = saveObjectImpl@matlab.System(obj);
-            s.nItr  = obj.nItr;
+            if obj.isLocked()
+                s.nItr  = obj.nItr;
+            end
             s.hResImg = obj.hResImg;
             s.hPlotPsnr = obj.hPlotPsnr;
+            s.hSrcImg = obj.hSrcImg;
+            s.hObsImg = obj.hObsImg;
         end
         
         function loadObjectImpl(obj, s, wasLocked)
-            obj.nItr  = s.nItr;
+            if wasLocked
+                obj.nItr  = s.nItr;
+            end
             obj.hResImg = s.hResImg;
             obj.hPlotPsnr = s.hPlotPsnr;
+            obj.hSrcImg = s.hSrcImg;
+            obj.hObsImg = s.hObsImg;            
             loadObjectImpl@matlab.System(obj,s,wasLocked);
         end
         
