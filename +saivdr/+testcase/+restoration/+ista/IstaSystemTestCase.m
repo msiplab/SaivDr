@@ -194,6 +194,130 @@ classdef IstaSystemTestCase < matlab.unittest.TestCase
 
         end
         
+        function testStepVolumetricDataIhta(testCase,...
+            niter,depth,width,nlevels)
+            
+            % Parameters
+            lambda = 1e-3;
+            phtm = phantom('Modified Shepp-Logan',depth);
+            sliceYZ = permute(phtm,[1 3 2]);
+            uSrc = repmat(sliceYZ,[1 width 1]);
+            
+            % Instantiation of observation
+            import saivdr.degradation.linearprocess.*
+            pSigma = 2.00; % Extent of PSF
+            wSigma = 1e-3; % Standard deviation of noise
+            msrProc = BlurSystem(...
+                'BlurType','Gaussian',...
+                'SigmaOfGaussianKernel',pSigma,...
+                'ProcessingMode','Forward');
+            vObs = msrProc.step(uSrc) ...
+                + wSigma*randn(size(uSrc));
+            
+            % Instantiation of dictionary
+            import saivdr.dictionary.udhaar.*
+            fwdDic  = UdHaarSynthesis3dSystem();
+            adjDic  = UdHaarAnalysis3dSystem('NumberOfLevels',nlevels);
+            
+            % Calculation of step size parameter
+            framebound = fwdDic.FrameBound;
+            step(msrProc,vObs);
+            gammaExpctd = 1/(framebound*msrProc.LambdaMax);
+            
+            % Expected values
+            lambdaExpctd = lambda;
+            thr = lambdaExpctd*gammaExpctd;
+            hardthresh = @(x) (abs(x)>thr).*x;
+            %
+            [x0,scale] = adjDic.step(zeros(size(vObs),'like',vObs));
+            resPre = fwdDic.step(x0,scale);
+            adjProc = msrProc.clone();
+            adjProc.release();
+            adjProc.ProcessingMode = 'Adjoint';
+            resExpctd = cell(niter,1);
+            xPre = x0;
+            for iter = 1:niter
+                t = adjDic.step(adjProc.step(msrProc.step(resPre)-vObs));
+                x = hardthresh(xPre-gammaExpctd*t);
+                resExpctd{iter} = fwdDic(x,scale);
+                resPre = resExpctd{iter};
+                xPre = x;
+            end
+            coefsExpctd = x;
+            scalesExpctd = scale;
+            
+            % Instantiation of test target
+            import saivdr.restoration.denoiser.*            
+            gdn = GaussianDenoiserHdth();
+            import saivdr.restoration.ista.*
+            testCase.target = IstaSystem(...
+                'Observation',    vObs,...
+                'DataType', 'Volumetric Data',...
+                'Lambda',         lambda,...
+                'MeasureProcess', msrProc,...
+                'GaussianDenoiser',gdn,...
+                'Dictionary', { fwdDic, adjDic } );
+            
+            % Evaluation of 1st step
+            eps = 1e-10;
+            iterExpctd = 1;
+            [resActual,rmseActual] = testCase.target.step();
+            iterActual  = testCase.target.Iteration;            
+            gammaActual = testCase.target.Gamma;
+            lambdaActual = testCase.target.Lambda;
+            %
+            testCase.verifyEqual(iterActual,iterExpctd)
+            testCase.verifyEqual(gammaActual,gammaExpctd)
+            testCase.verifyEqual(lambdaActual,lambdaExpctd)            
+            %
+            testCase.verifySize(resActual,size(uSrc));
+            %
+            diff = max(abs(resExpctd{iterExpctd}(:)-resActual(:)));
+            testCase.verifyEqual(resActual,resExpctd{iterExpctd},...
+                'AbsTol',eps,num2str(diff));
+            %
+            % Evaluation of iterative step     
+            import matlab.unittest.constraints.IsLessThan
+            rmse = @(x,y) norm(x(:)-y(:),2)/sqrt(numel(x));
+            rmsePre = rmseActual;
+            resPre  = resActual;
+            for iter = 2:niter
+                iterExpctd = iterExpctd + 1;
+                %
+                [resActual,rmseActual] = testCase.target.step();
+                iterActual = testCase.target.Iteration;
+                %
+                testCase.verifyEqual(iterActual,iterExpctd)
+                diff = max(abs(resExpctd{iterExpctd}(:)-resActual(:)));
+                testCase.verifyEqual(resActual,resExpctd{iterExpctd},...
+                'AbsTol',eps,num2str(diff));                
+                %
+                rmseExpctd = rmse(resActual,resPre);
+                diff = max(abs(rmseExpctd-rmseActual));
+                testCase.verifyEqual(rmseActual,rmseExpctd,...
+                    'AbsTol',eps,num2str(diff));
+                %
+                testCase.verifyThat(rmseActual,IsLessThan(rmsePre))                
+                %
+                resPre  = resActual;
+            end
+            
+            % Actual values of coefficients
+            [coefsActual,scalesActual] = testCase.target.getCoefficients();
+            
+            % Evaluation of coefficients
+            testCase.verifySize(scalesActual,size(scalesExpctd));
+            diff = max(abs(scalesExpctd(:) - scalesActual(:)));
+            testCase.verifyEqual(scalesActual,scalesExpctd,'AbsTol',1e-10,...
+                sprintf('%g',diff));            
+            %
+            testCase.verifySize(coefsActual,size(coefsExpctd));
+            diff = max(abs(coefsExpctd(:) - coefsActual(:)));
+            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-10,...
+                sprintf('%g',diff));                        
+
+        end
+        
         function testStepSplit(testCase,...
                 depth,width,dsplit,nlevels,niter,useparallel,usegpu)
             
