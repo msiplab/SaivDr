@@ -128,7 +128,7 @@ classdef IstHcSystemTestCase < matlab.unittest.TestCase
             % Steps
             resPre = fwdDic(x0,scale);
             for iter = 1:niter
-                t = adjDic.step(adjProc.step(msrProc.step(resPre)-vObs+yPre));
+                t = adjDic.step(adjProc.step(msrProc.step(resPre)-vObs)+yPre);
                 x = softthresh(xPre-gammaExpctd{1}*t);
                 u = 2*fwdDic.step(x,scale) - resPre;
                 y = yPre + gammaExpctd{2}*u;
@@ -437,7 +437,7 @@ classdef IstHcSystemTestCase < matlab.unittest.TestCase
             % Steps
             resPre = fwdDic(x0,scale);
             for iter = 1:niter
-                t = adjDic.step(adjProc.step(msrProc.step(resPre)-vObs+yPre));
+                t = adjDic.step(adjProc.step(msrProc.step(resPre)-vObs)+yPre);
                 x = softthresh(xPre-gammaExpctd{1}*t);
                 u = 2*fwdDic.step(x,scale) - resPre;
                 y = yPre + gammaExpctd{2}*u;
