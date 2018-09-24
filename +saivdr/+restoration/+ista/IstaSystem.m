@@ -141,7 +141,7 @@ classdef IstaSystem < saivdr.restoration.AbstIterativeMethodSystem
             obj.GaussianDenoiser.Sigma = sqrt(gamma*lambda);
             
             % Initialization
-            obj.Result = zeros(size(vObs),'like',vObs);
+            obj.Result = adjProc.step(zeros(size(vObs),'like',vObs));
             if isempty(obj.SplitFactor)
                 obj.ParallelProcess = [];
                 %

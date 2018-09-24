@@ -26,7 +26,7 @@ classdef IstHcSystem < saivdr.restoration.AbstIterativeMethodSystem
     %  1: n = 0
     %  2: r(0) = Dx(0)
     %  3: while A stopping criterion is not satisfied do
-    %  4:     t <- D'P'((Pr(n) - v) + y(n))
+    %  4:     t <- D'(P'(Pr(n) - v) + y(n))
     %  5:     x(n+1) = G_R( x(n) - gamma1*t, sqrt(lambda*gamma1) )
     %  6:     u(n) <-  2Dx(n+1) - r(n)
     %  7:     y(n) <-  y(n) + gamma2*u(n)
@@ -155,7 +155,7 @@ classdef IstHcSystem < saivdr.restoration.AbstIterativeMethodSystem
             obj.GaussianDenoiser.Sigma = sqrt(gamma*lambda);            
             
             % Initialization
-            obj.Result = zeros(size(vObs),'like',vObs);
+            obj.Result = adjProc.step(zeros(size(vObs),'like',vObs));
             if isempty(obj.SplitFactor)
                 obj.ParallelProcess = [];
                 %
@@ -208,7 +208,7 @@ classdef IstHcSystem < saivdr.restoration.AbstIterativeMethodSystem
             xPre   = obj.X;
             yPre   = obj.Y;
             % Main steps
-            g = adjProc.step(msrProc.step(resPre)-vObs+yPre);
+            g = adjProc.step(msrProc.step(resPre)-vObs)+yPre;
             if isempty(obj.SplitFactor) % Normal process
                 import saivdr.restoration.denoiser.*
                 % Dictionaries
