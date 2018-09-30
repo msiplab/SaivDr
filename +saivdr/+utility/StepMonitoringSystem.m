@@ -12,7 +12,7 @@ classdef StepMonitoringSystem < matlab.System %#codegen
     %                8050 2-no-cho Ikarashi, Nishi-ku,
     %                Niigata, 950-2181, JAPAN
     %
-    % http://msiplab.eng.niigata-u.ac.jp/    
+    % http://msiplab.eng.niigata-u.ac.jp/
     %
     
     properties (Nontunable)
@@ -25,7 +25,7 @@ classdef StepMonitoringSystem < matlab.System %#codegen
         %
         ImShowFcn
     end
-
+    
     properties
         SourceImage
         ObservedImage
@@ -47,21 +47,23 @@ classdef StepMonitoringSystem < matlab.System %#codegen
         IsMSE  = false
         IsPSNR = false
         IsSSIM = false
+        IsRMSE = false
         IsVisible = false
         IsVerbose = false
         IsPlotPSNR = false
         IsConversionToEvaluationType = true
     end
-
+    
     properties(Hidden)
         PeakValue
     end
-
+    
     properties (SetAccess = private, GetAccess = public)
         nItr
         MSEs
         PSNRs
         SSIMs
+        RMSEs
     end
     
     properties (Access = private)
@@ -72,9 +74,9 @@ classdef StepMonitoringSystem < matlab.System %#codegen
     end
     
     methods
-       
+        
         function obj = StepMonitoringSystem(varargin)
-            setProperties(obj,nargin,varargin{:})      
+            setProperties(obj,nargin,varargin{:})
         end
         
     end
@@ -96,7 +98,7 @@ classdef StepMonitoringSystem < matlab.System %#codegen
         end
         
         function flag = isInactiveSubPropertyImpl(obj,propertyName)
-            if strcmp(propertyName,'ImageFigureHandle') 
+            if strcmp(propertyName,'ImageFigureHandle')
                 flag = ~obj.IsVisible;
             elseif strcmp(propertyName,'IsPlotPSNR')
                 flag = ~obj.IsPSNR;
@@ -106,7 +108,7 @@ classdef StepMonitoringSystem < matlab.System %#codegen
                 flag = obj.IsConversionToEvaluationType;
             elseif strcmp(propertyName,'SliceNumber')
                 flag = ~strcmp(obj.DataType,'Volumetric Data') || ...
-                       ~obj.IsVisible;
+                    ~obj.IsVisible;
             else
                 flag = false;
             end
@@ -116,23 +118,23 @@ classdef StepMonitoringSystem < matlab.System %#codegen
             resImg = varargin{1};
             if obj.IsSSIM && strcmp(obj.DataType,'Image') && ...
                     size(resImg,3) > 1
-                  id  = 'SaivDr:IndexOutOfBoundsException';
-                  msg = 'SSIM is available only for grayscale image.';
-                  me  = MException(id, msg);
-                  throw(me);
+                id  = 'SaivDr:IndexOutOfBoundsException';
+                msg = 'SSIM is available only for grayscale image.';
+                me  = MException(id, msg);
+                throw(me);
             end
             %
             if strcmp(obj.DataType,'Image') && ~isempty(resImg) && ...
-                        (size(resImg,3) ~= 1 && size(resImg,3) ~= 3)
-                  id  = 'SaivDr:InvalidDataFormatException';
-                  msg = 'The third dimension must be 1 or 3.';
-                  me  = MException(id, msg);
-                  throw(me);
-            end                
+                    (size(resImg,3) ~= 1 && size(resImg,3) ~= 3)
+                id  = 'SaivDr:InvalidDataFormatException';
+                msg = 'The third dimension must be 1 or 3.';
+                me  = MException(id, msg);
+                throw(me);
+            end
         end
         
         function processTunedPropertiesImpl(obj)
-            if obj.IsConversionToEvaluationType            
+            if obj.IsConversionToEvaluationType
                 if ~isempty(obj.SourceImage)
                     obj.SourceImage = convEvalType_(obj,obj.SourceImage);
                 end
@@ -146,36 +148,36 @@ classdef StepMonitoringSystem < matlab.System %#codegen
         function validatePropertiesImpl(obj)
             srcImg = obj.SourceImage;
             if strcmp(obj.DataType,'Image') && ~isempty(srcImg) && ...
-                        (size(srcImg,3) ~= 1 && size(srcImg,3) ~= 3)
-                  id  = 'SaivDr:InvalidDataFormatException';
-                  msg = 'The third dimension must be 1 or 3.';
-                  me  = MException(id, msg);
-                  throw(me);
-            end                  
+                    (size(srcImg,3) ~= 1 && size(srcImg,3) ~= 3)
+                id  = 'SaivDr:InvalidDataFormatException';
+                msg = 'The third dimension must be 1 or 3.';
+                me  = MException(id, msg);
+                throw(me);
+            end
             %
             obsImg = obj.ObservedImage;
             if strcmp(obj.DataType,'Image') && ~isempty(obsImg) && ...
-                        (size(obsImg,3) ~= 1 && size(obsImg,3) ~= 3)
-                  id  = 'SaivDr:InvalidDataFormatException';
-                  msg = 'The third dimension must be 1 or 3.';
-                  me  = MException(id, msg);
-                  throw(me);
-            end                              
+                    (size(obsImg,3) ~= 1 && size(obsImg,3) ~= 3)
+                id  = 'SaivDr:InvalidDataFormatException';
+                msg = 'The third dimension must be 1 or 3.';
+                me  = MException(id, msg);
+                throw(me);
+            end
         end
         
         function setupImpl(obj,varargin)
-
+            
             if obj.IsConversionToEvaluationType
                 % Peak value
                 if strcmp(obj.EvaluationType,'uint8') || ...
                         strcmp(obj.EvaluationType,'uint16') || ...
-                            strcmp(obj.EvaluationType,'int16')
+                        strcmp(obj.EvaluationType,'int16')
                 elseif  strcmp(obj.EvaluationType,'single') || ...
                         strcmp(obj.EvaluationType,'double')
                     obj.PeakValue = 1;
                 else
                     error('SaivDr: Invalid data type was given.')
-                end 
+                end
                 % Data type conversion
                 if ~isempty(obj.SourceImage)
                     obj.SourceImage   = convEvalType_(obj,obj.SourceImage);
@@ -233,7 +235,7 @@ classdef StepMonitoringSystem < matlab.System %#codegen
                     obj.hSrcImg = imshow(srcImg);
                     set(obj.hSrcImg,'UserData','Source');
                     title('Source')
-                    iPic = iPic + 1; 
+                    iPic = iPic + 1;
                 end
                 % Figure handle for observed image
                 if ~isempty(obj.ObservedImage)
@@ -245,7 +247,7 @@ classdef StepMonitoringSystem < matlab.System %#codegen
                     end
                     if isa(obj.ImShowFcn,'function_handle')
                         obsImg = obj.ImShowFcn(obsImg);
-                    end                    
+                    end
                     obj.hObsImg = imshow(obsImg);
                     set(obj.hObsImg,'UserData','Observed');
                     title('Observed')
@@ -263,10 +265,10 @@ classdef StepMonitoringSystem < matlab.System %#codegen
                 end
                 if isa(obj.ImShowFcn,'function_handle')
                     resImg = obj.ImShowFcn(resImg);
-                end                                    
+                end
                 obj.hResImg = imshow(resImg);
                 set(obj.hResImg,'UserData','Result');
-                title('Result (nItr =    0)');                                
+                title('Result (nItr =    0)');
             end
             if obj.IsPlotPSNR
                 if isempty(obj.PlotFigureHandle)
@@ -289,14 +291,17 @@ classdef StepMonitoringSystem < matlab.System %#codegen
             end
             if obj.IsSSIM
                 obj.SSIMs = zeros(1,obj.MaxIter);
-            end            
+            end
+            if obj.IsRMSE
+                obj.RMSEs = zeros(1,obj.MaxIter);
+            end
         end
-                    
+        
         function varargout = stepImpl(obj,varargin)
             obj.nItr = obj.nItr + 1;
             iOut = 0;
             %
-            if obj.IsConversionToEvaluationType            
+            if obj.IsConversionToEvaluationType
                 resImg = convEvalType_(obj,varargin{1});
             else
                 resImg = varargin{1};
@@ -321,22 +326,31 @@ classdef StepMonitoringSystem < matlab.System %#codegen
                 varargout{iOut} = obj.PSNRs;
                 if obj.IsVerbose
                     fprintf(' PSNR = %6.2f [dB] ',obj.PSNRs(obj.nItr))
-                end                
+                end
                 if obj.IsPlotPSNR
                     set(obj.hPlotPsnr,...
                         'XData',1:obj.nItr,...
                         'YData',obj.PSNRs(1:obj.nItr));
                     drawnow
                 end
-            end            
+            end
             % SSIM
             if obj.IsSSIM
                 iOut = iOut + 1;
                 obj.SSIMs(obj.nItr)  = ssim_(obj,resImg);
-                varargout{iOut} = obj.SSIMs;                
+                varargout{iOut} = obj.SSIMs;
                 if obj.IsVerbose
                     fprintf(' SSIM = %6.3f ',obj.SSIMs(obj.nItr))
-                end                                
+                end
+            end
+            % RMSE
+            if obj.IsRMSE
+                iOut = iOut + 1;
+                obj.RMSEs(obj.nItr)   = rmse_(obj,resImg);
+                varargout{iOut} = obj.RMSEs;
+                if obj.IsVerbose
+                    fprintf(' RMSE = %6.4g ',obj.RMSEs(obj.nItr))
+                end
             end
             %
             if obj.IsVerbose
@@ -352,11 +366,11 @@ classdef StepMonitoringSystem < matlab.System %#codegen
                     end
                     if isa(obj.ImShowFcn,'function_handle')
                         srcImg = obj.ImShowFcn(srcImg);
-                    end                                                        
+                    end
                     set(obj.hSrcImg,'CData',srcImg);
                 end
                 %
-                if ~isempty(obj.ObservedImage)                
+                if ~isempty(obj.ObservedImage)
                     if strcmp(obj.DataType,'Image')
                         obsImg = obj.ObservedImage;
                     else % Volumetric Data
@@ -364,7 +378,7 @@ classdef StepMonitoringSystem < matlab.System %#codegen
                     end
                     if isa(obj.ImShowFcn,'function_handle')
                         obsImg = obj.ImShowFcn(obsImg);
-                    end                                                                            
+                    end
                     set(obj.hObsImg,'CData',obsImg);
                 end
                 %
@@ -373,7 +387,7 @@ classdef StepMonitoringSystem < matlab.System %#codegen
                 end
                 if isa(obj.ImShowFcn,'function_handle')
                     resImg = obj.ImShowFcn(resImg);
-                end                                                                                            
+                end
                 set(obj.hResImg,'CData',resImg);
                 title(get(obj.hResImg,'Parent'),...
                     sprintf('Result (nItr = % 4d)',obj.nItr))
@@ -393,16 +407,16 @@ classdef StepMonitoringSystem < matlab.System %#codegen
             end
             if obj.IsPSNR
                 N = N + 1;
-            end    
+            end
             if obj.IsSSIM
                 N = N + 1;
-            end              
+            end
         end
         
     end
     
     methods (Access = private)
-    
+        
         function outimg = convEvalType_(obj,inimg)
             if strcmp(obj.EvaluationType,'uint8')
                 outimg = im2uint8(inimg);
@@ -425,10 +439,15 @@ classdef StepMonitoringSystem < matlab.System %#codegen
                 /numel(srcImg);
         end
         
+        function value = rmse_(obj,resImg)
+            srcImg = obj.SourceImage;
+            value = norm(srcImg(:)-resImg(:),2)/sqrt(numel(srcImg));
+        end
+        
         function value = psnr_(obj,resImg)
             srcImg = obj.SourceImage;
             if verLessThan('images','9.0') || ...
-                    ~obj.IsConversionToEvaluationType 
+                    ~obj.IsConversionToEvaluationType
                 value = 10*log10(obj.PeakValue^2/mse_(obj,resImg));
             else
                 value = psnr(srcImg,resImg);

@@ -2,12 +2,9 @@ classdef IterativeHardThresholdingTestCase < ...
         matlab.unittest.TestCase
     %ITERATIVEHARDTHRESHOLDINGTESTCASE Test case for IterativeHardThresholding
     %
-    % SVN identifier:
-    % $Id: IterativeHardThresholdingTestCase.m 683 2015-05-29 08:22:13Z sho $
-    %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2014-2015, Shogo MURAMATSU
+    % Copyright (c) 2014-2018, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -61,27 +58,27 @@ classdef IterativeHardThresholdingTestCase < ...
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
                 lppufb,'BoundaryOperation','Termination');
             testCase.iht = IterativeHardThresholding(...
-                'Synthesizer',synthesizer,...
-                'AdjOfSynthesizer',analyzer);
+                'Dictionary', { synthesizer, analyzer });
             
             % Actual values
-            [residActual, coefsActual, scalesActual] = ...
-                step(testCase.iht,srcImg,nCoefsExpctd);
+            testCase.iht.NumberOfSparseCoefficients = nCoefsExpctd;
+            [resActual, coefsActual, scalesActual] = ...
+                testCase.iht.step(srcImg);
             nCoefsActual = nnz(coefsActual);
             
             % Evaluation
             import matlab.unittest.constraints.IsTrue;
-            testCase.verifySize(residActual, size(srcImg));
+            testCase.verifySize(resActual, size(srcImg));
             testCase.verifySize(coefsActual, sizeOfCoefExpctd);
-            testCase.verifyThat(norm(residActual(:)) < norm(srcImg(:)), ...
+            testCase.verifyThat(norm(resActual(:),2) < norm(srcImg(:),2), ...
                 IsTrue, ...
-                sprintf('||r||^2 = %g must be less than ||x||^2 = %g.',...
-                norm(residActual(:)),norm(srcImg(:)))); 
+                sprintf('||r|| = %g must be less than ||x|| = %g.',...
+                norm(resActual(:),2),norm(srcImg(:),2))); 
             testCase.verifyThat(nCoefsActual<=nCoefsExpctd,IsTrue);
             
-            resImg = step(synthesizer,coefsActual,scalesActual);
-            testCase.verifyEqual(resImg(:)+residActual(:), srcImg(:),...
-                'RelTol',1e-10);
+            resExpctd = step(synthesizer,coefsActual,scalesActual);
+            testCase.verifyEqual(resActual, resExpctd,...
+                'AbsTol',1e-10);
             
             %{
             mse = @(x,y) ((x(:)-y(:)).^2)/numel(x);
@@ -122,8 +119,7 @@ classdef IterativeHardThresholdingTestCase < ...
                 lppufb,'BoundaryOperation','Termination',...
                 'NumberOfLevels',nLevels);                                                            
             testCase.iht = IterativeHardThresholding(...
-                'Synthesizer',synthesizer,...
-                'AdjOfSynthesizer',analyzer);
+                'Dictionary', { synthesizer, analyzer });
             
             % Expected values
             nCoefs = numel(srcImg)*((sum(nChs)-1)/prod(nDecs) ...
@@ -131,23 +127,24 @@ classdef IterativeHardThresholdingTestCase < ...
             sizeOfCoefsExpctd = [ 1 nCoefs ];
             
             % Actual values
-            [residActual, coefsActual, scalesActual] = ...
-                step(testCase.iht,srcImg,nCoefsExpctd);
+            testCase.iht.NumberOfSparseCoefficients = nCoefsExpctd;
+            [resActual, coefsActual, scalesActual] = ...
+                testCase.iht.step(srcImg);
             nCoefsActual =  nnz(coefsActual);
             
             % Evaluation
             import matlab.unittest.constraints.IsTrue;
-            testCase.verifySize(residActual, size(srcImg));
+            testCase.verifySize(resActual, size(srcImg));
             testCase.verifySize(coefsActual, sizeOfCoefsExpctd);
-            testCase.verifyThat(norm(residActual(:)) < norm(srcImg(:)), ...
+            testCase.verifyThat(norm(resActual(:),2) < norm(srcImg(:),2), ...
                 IsTrue, ...
-                sprintf('||r||^2 = %g must be less than ||x||^2 = %g.',...
-                norm(residActual(:)),norm(srcImg(:)))); 
+                sprintf('||r|| = %g must be less than ||x|| = %g.',...
+                norm(resActual(:),2),norm(srcImg(:),2))); 
             testCase.verifyThat(nCoefsActual<=nCoefsExpctd,IsTrue);
             
-            resImg = step(synthesizer,coefsActual,scalesActual);
-            testCase.verifyEqual(resImg(:)+residActual(:), srcImg(:),...
-                'RelTol',1e-10);
+            resExpctd = step(synthesizer,coefsActual,scalesActual);
+            testCase.verifyEqual(resActual,resExpctd,...
+                'AbsTol',1e-10);
             
             %{
             mse = @(x,y) ((x(:)-y(:)).^2)/numel(x);
@@ -188,8 +185,7 @@ classdef IterativeHardThresholdingTestCase < ...
                 lppufb,'BoundaryOperation','Termination',...
                 'NumberOfLevels',nLevels);                                                            
             testCase.iht = IterativeHardThresholding(...
-                'Synthesizer',synthesizer,....
-                'AdjOfSynthesizer',analyzer);
+                'Dictionary', { synthesizer, analyzer });
             
             % Expected values
             nCoefs = numel(srcImg)*((sum(nChs)-1)/prod(nDecs) ...
@@ -198,23 +194,24 @@ classdef IterativeHardThresholdingTestCase < ...
             sizeOfCoefsExpctd = [ 1 nCoefs ];
             
             % Actual values
-            [residActual, coefsActual, scalesActual] = step(testCase.iht,...
-                srcImg,nCoefsExpctd);
+            testCase.iht.NumberOfSparseCoefficients = nCoefsExpctd;
+            [resActual, coefsActual, scalesActual] = ...
+                testCase.iht.step(srcImg);
             nCoefsActual = nnz(coefsActual);
             
             % Evaluation
             import matlab.unittest.constraints.IsTrue;
-            testCase.verifySize(residActual, size(srcImg));
+            testCase.verifySize(resActual, size(srcImg));
             testCase.verifySize(coefsActual, sizeOfCoefsExpctd);
-            testCase.verifyThat(norm(residActual(:)) < norm(srcImg(:)), ...
+            testCase.verifyThat(norm(resActual(:),2) < norm(srcImg(:),2), ...
                 IsTrue, ...
-                sprintf('||r||^2 = %g must be less than ||x||^2 = %g.',...
-                norm(residActual(:)),norm(srcImg(:)))); 
+                sprintf('||r|| = %g must be less than ||x|| = %g.',...
+                norm(resActual(:),2),norm(srcImg(:),2))); 
             testCase.verifyThat(nCoefsActual<=nCoefsExpctd,IsTrue);
             
-            resImg = step(synthesizer,coefsActual,scalesActual);
-            testCase.verifyEqual(resImg(:)+residActual(:), srcImg(:),...
-                'RelTol',1e-10);
+            resExpctd = step(synthesizer,coefsActual,scalesActual);
+            testCase.verifyEqual(resActual,resExpctd,...
+                'AbsTol',1e-10);
             %{
             mse = @(x,y) ((x(:)-y(:)).^2)/numel(x);
             psnr = @(x,y) -10*log10(mse(x,y));
@@ -253,27 +250,27 @@ classdef IterativeHardThresholdingTestCase < ...
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
                 lppufb,'BoundaryOperation','Termination');
             testCase.iht = IterativeHardThresholding(...
-                'Synthesizer',synthesizer,...
-                'AdjOfSynthesizer',analyzer);
+                'Dictionary', { synthesizer, analyzer });
             
             % Actual values
-            [residActual, coefsActual, scalesActual] = ...
-                step(testCase.iht,srcImg,nCoefsExpctd);
+            testCase.iht.NumberOfSparseCoefficients = nCoefsExpctd;
+            [resActual, coefsActual, scalesActual] = ...
+                testCase.iht.step(srcImg);
             nCoefsActual = nnz(coefsActual);
             
             % Evaluation
             import matlab.unittest.constraints.IsTrue;
-            testCase.verifySize(residActual, size(srcImg));
+            testCase.verifySize(resActual, size(srcImg));
             testCase.verifySize(coefsActual, sizeOfCoefsExpctd);
-            testCase.verifyThat(norm(residActual(:)) < norm(srcImg(:)), ...
+            testCase.verifyThat(norm(resActual(:),2) < norm(srcImg(:),2), ...
                 IsTrue, ...
-                sprintf('||r||^2 = %g must be less than ||x||^2 = %g.',...
-                norm(residActual(:)),norm(srcImg(:)))); 
+                sprintf('||r|| = %g must be less than ||x|| = %g.',...
+                norm(resActual(:),2),norm(srcImg(:),2))); 
             testCase.verifyThat(nCoefsActual<=nCoefsExpctd,IsTrue);
             
-            resImg = step(synthesizer,coefsActual,scalesActual);
-            testCase.verifyEqual(resImg(:)+residActual(:), srcImg(:),...
-                'RelTol',1e-10);
+            resExpctd = step(synthesizer,coefsActual,scalesActual);
+            testCase.verifyEqual(resActual,resExpctd,...
+                'AbsTol',1e-10);
             
             %{
             mse = @(x,y) ((x(:)-y(:)).^2)/numel(x);
@@ -314,8 +311,7 @@ classdef IterativeHardThresholdingTestCase < ...
                 lppufb,'BoundaryOperation','Termination',...
                 'NumberOfLevels',nLevels);                                    
             testCase.iht = IterativeHardThresholding(...
-                'Synthesizer',synthesizer,...
-                'AdjOfSynthesizer',analyzer);
+                'Dictionary', { synthesizer, analyzer });
             
             % Expected values
             nCoefs = numel(srcImg)*(...
@@ -323,23 +319,24 @@ classdef IterativeHardThresholdingTestCase < ...
             sizeOfCoefsExpctd = [ 1 nCoefs ];
             
             % Actual values
-            [residActual, coefsActual, scalesActual] = ...
-                step(testCase.iht,srcImg,nCoefsExpctd);
+            testCase.iht.NumberOfSparseCoefficients = nCoefsExpctd;
+            [resActual, coefsActual, scalesActual] = ...
+                testCase.iht.step(srcImg);
             nCoefsActual = nnz(coefsActual);
             
             % Evaluation
             import matlab.unittest.constraints.IsTrue;
-            testCase.verifySize(residActual, size(srcImg));
+            testCase.verifySize(resActual, size(srcImg));
             testCase.verifySize(coefsActual, sizeOfCoefsExpctd);
-            testCase.verifyThat(norm(residActual(:)) < norm(srcImg(:)), ...
+            testCase.verifyThat(norm(resActual(:),2) < norm(srcImg(:),2), ...
                 IsTrue, ...
-                sprintf('||r||^2 = %g must be less than ||x||^2 = %g.',...
-                norm(residActual(:)),norm(srcImg(:)))); 
+                sprintf('||r|| = %g must be less than ||x|| = %g.',...
+                norm(resActual(:),2),norm(srcImg(:),2))); 
             testCase.verifyThat(nCoefsActual<=nCoefsExpctd,IsTrue);
             
-            resImg = step(synthesizer,coefsActual,scalesActual);
-            testCase.verifyEqual(resImg(:)+residActual(:), srcImg(:),...
-                'RelTol',1e-10);
+            resExpctd = step(synthesizer,coefsActual,scalesActual);
+            testCase.verifyEqual(resActual,resExpctd,...
+                'AbsTol',1e-10);
             
             %{
             mse = @(x,y) ((x(:)-y(:)).^2)/numel(x);
@@ -380,32 +377,31 @@ classdef IterativeHardThresholdingTestCase < ...
                 lppufb,'BoundaryOperation','Termination',...
                 'NumberOfLevels',nLevels);                                                
             testCase.iht = IterativeHardThresholding(...
-                'Synthesizer',synthesizer,...
-                'AdjOfSynthesizer',analyzer);
+                'Dictionary', { synthesizer, analyzer });
             
             % Expected values
             nCoefs = numel(srcImg)*sum(nChs)/prod(nDecs);
             sizeOfCoefsExpctd = [ 1 nCoefs ];
                 
             % Actual values
-            [residActual, coefsActual, scalesActual] = ...
-                step(testCase.iht,...
-                srcImg,nCoefsExpctd);
+            testCase.iht.NumberOfSparseCoefficients = nCoefsExpctd;
+            [resActual, coefsActual, scalesActual] = ...
+                testCase.iht.step(srcImg);
             nCoefsActual = nnz(coefsActual);
             
             % Evaluation
             import matlab.unittest.constraints.IsTrue;
-            testCase.verifySize(residActual, size(srcImg));
+            testCase.verifySize(resActual, size(srcImg));
             testCase.verifySize(coefsActual, sizeOfCoefsExpctd);
-            testCase.verifyThat(norm(residActual(:)) < norm(srcImg(:)), ...
+            testCase.verifyThat(norm(resActual(:),2) < norm(srcImg(:),2), ...
                 IsTrue, ...
-                sprintf('||r||^2 = %g must be less than ||x||^2 = %g.',...
-                norm(residActual(:)),norm(srcImg(:)))); 
+                sprintf('||r|| = %g must be less than ||x|| = %g.',...
+                norm(resActual(:),2),norm(srcImg(:),2))); 
             testCase.verifyThat(nCoefsActual<=nCoefsExpctd,IsTrue);
             
-            resImg = step(synthesizer,coefsActual,scalesActual);
-            testCase.verifyEqual(resImg(:)+residActual(:), srcImg(:),...
-                'RelTol',1e-10);
+            resExpctd = step(synthesizer,coefsActual,scalesActual);
+            testCase.verifyEqual(resActual,resExpctd,...
+                'AbsTol',1e-10);
             
             %{
             mse = @(x,y) ((x(:)-y(:)).^2)/numel(x);
@@ -442,19 +438,20 @@ classdef IterativeHardThresholdingTestCase < ...
             % Instantiation of target class
             import saivdr.sparserep.*           
             testCase.iht = IterativeHardThresholding(...
-                'Synthesizer',synthesizer,...
-                'AdjOfSynthesizer',analyzer);
+                'Dictionary', { synthesizer, analyzer });
             
             % Evaluation
             import matlab.unittest.constraints.IsTrue;
-            resid0 = step(testCase.iht,srcImg,1);
+            testCase.iht.NumberOfSparseCoefficients = 1;
+            res0 = testCase.iht.step(srcImg);
             for nCoefs = 2:32
-                resid1 = step(testCase.iht,srcImg,nCoefs);
-                testCase.verifyThat(norm(resid1(:)) < norm(resid0(:)), ...
+                testCase.iht.NumberOfSparseCoefficients = nCoefs;
+                res1 = testCase.iht.step(srcImg);
+                testCase.verifyThat(norm(res1(:)-srcImg(:),2) < norm(res0(:)-srcImg(:),2), ...
                     IsTrue, ...
-                    sprintf('||r0||^2 = %g must be less than ||r1||^2 = %g.',...
-                    norm(resid0(:)),norm(resid1(:))));
-                resid0 = resid1;
+                    sprintf('||r0|| = %g must be less than ||r1|| = %g.',...
+                    norm(res0(:),2),norm(res1(:),2)));
+                res0 = res1;
             end
         end        
 
@@ -474,28 +471,27 @@ classdef IterativeHardThresholdingTestCase < ...
             analyzer    = UdHaarAnalysis2dSystem('NumberOfLevels',nLevels);
             import saivdr.sparserep.*
             testCase.iht = IterativeHardThresholding(...
-                'Synthesizer',synthesizer,...
-                'AdjOfSynthesizer',analyzer);
+                'Dictionary', { synthesizer, analyzer });
                 
             
             % Actual values
-            [residActual, coefsActual] = ...
-                step(testCase.iht,srcImg,nCoefsExpctd);
+            testCase.iht.NumberOfSparseCoefficients = nCoefsExpctd;
+            [resActual, coefsActual] = testCase.iht.step(srcImg);
             nCoefsActual = nnz(coefsActual);
             
             % Evaluation
             import matlab.unittest.constraints.IsTrue;
-            testCase.verifySize(residActual, size(srcImg));
+            testCase.verifySize(resActual, size(srcImg));
             testCase.verifySize(coefsActual, [ 1 (3*nLevels+1)*height*width]);
-            testCase.verifyThat(norm(residActual(:)) < norm(srcImg(:)), ...
+            testCase.verifyThat(norm(resActual(:),2) < norm(srcImg(:),2), ...
                 IsTrue, ...
-                sprintf('||r||^2 = %g must be less than ||x||^2 = %g.',...
-                norm(residActual(:)),norm(srcImg(:)))); 
+                sprintf('||r|| = %g must be less than ||x|| = %g.',...
+                norm(resActual(:),2),norm(srcImg(:),2))); 
             testCase.verifyThat(nCoefsActual<=nCoefsExpctd,IsTrue);
             
-            resImg = step(synthesizer,coefsActual,repmat(size(srcImg),[4 1]));
-            testCase.verifyEqual(resImg(:)+residActual(:), srcImg(:),...
-                'RelTol',1e-10);
+            resExpctd = step(synthesizer,coefsActual,repmat(size(srcImg),[4 1]));
+            testCase.verifyEqual(resActual,resExpctd,...
+                'AbsTol',1e-10);
             
             %{
             mse = @(x,y) ((x(:)-y(:)).^2)/numel(x);
@@ -521,27 +517,26 @@ classdef IterativeHardThresholdingTestCase < ...
             analyzer    = UdHaarAnalysis2dSystem(...
                 'NumberOfLevels',nLevels);
             testCase.iht = IterativeHardThresholding(...
-                'Synthesizer',synthesizer,...
-                'AdjOfSynthesizer',analyzer);
+                'Dictionary', { synthesizer, analyzer });
             
             % Actual values
-            [residActual, coefsActual] = ...
-                step(testCase.iht,srcImg,nCoefsExpctd);
+            testCase.iht.NumberOfSparseCoefficients = nCoefsExpctd;
+            [resActual, coefsActual] = testCase.iht.step(srcImg);
             nCoefsActual = nnz(coefsActual);
             
             % Evaluation
             import matlab.unittest.constraints.IsTrue;
-            testCase.verifySize(residActual, size(srcImg));
+            testCase.verifySize(resActual, size(srcImg));
             testCase.verifySize(coefsActual, [ 1 (3*nLevels+1)*height*width]);
-            testCase.verifyThat(norm(residActual(:)) < norm(srcImg(:)), ...
+            testCase.verifyThat(norm(resActual(:),2) < norm(srcImg(:),2), ...
                 IsTrue, ...
-                sprintf('||r||^2 = %g must be less than ||x||^2 = %g.',...
-                norm(residActual(:)),norm(srcImg(:)))); 
+                sprintf('||r|| = %g must be less than ||x|| = %g.',...
+                norm(resActual(:),2),norm(srcImg(:),2))); 
             testCase.verifyThat(nCoefsActual<=nCoefsExpctd,IsTrue);
             
-            resImg = step(synthesizer,coefsActual,repmat(size(srcImg),[7 1]));
-            testCase.verifyEqual(resImg(:)+residActual(:), srcImg(:),...
-                'RelTol',1e-10);
+            resExpctd = step(synthesizer,coefsActual,repmat(size(srcImg),[7 1]));
+            testCase.verifyEqual(resActual,resExpctd,...
+                'AbsTol',1e-10);
             
             %{
             mse = @(x,y) ((x(:)-y(:)).^2)/numel(x);
@@ -573,17 +568,16 @@ classdef IterativeHardThresholdingTestCase < ...
             % Instantiation of target class
             import saivdr.sparserep.*
             testCase.iht = IterativeHardThresholding(...
-                'Synthesizer',synthesizer,...
-                'AdjOfSynthesizer',analyzer,...
+                'Dictionary', { synthesizer, analyzer },...
                 'StepMonitor',stepMonitor);
             
             % Definition of MSE
             mse = @(x,y) sum((double(x(:))-double(y(:))).^2)/numel(x);
             
             % MSE after processing
-            resImg = step(testCase.iht,srcImg,nCoefs);
-            recImg = srcImg - resImg;
-            mseExpctd = mse(uint8(255*recImg),uint8(255*srcImg));
+            testCase.iht.NumberOfSparseCoefficients = nCoefs;
+            resImg = testCase.iht.step(srcImg);
+            mseExpctd = mse(uint8(255*resImg),uint8(255*srcImg));
             
             % Actual value
             mses = get(stepMonitor,'MSEs');
@@ -592,7 +586,7 @@ classdef IterativeHardThresholdingTestCase < ...
             
             % Evaluation
             diff = max(abs(mseExpctd(:)-mseActual(:))./abs(mseExpctd(:)));
-            testCase.assertEqual(mseActual,mseExpctd,'RelTol',1e-10,...
+            testCase.assertEqual(mseActual,mseExpctd,'AbsTol',1e-10,...
                 sprintf('diff = %f\n',diff))
             
         end
@@ -608,7 +602,7 @@ classdef IterativeHardThresholdingTestCase < ...
             import saivdr.dictionary.nsoltx.*
             synthesizer = NsoltFactory.createSynthesis2dSystem();
             analyzer    = NsoltFactory.createAnalysis2dSystem();
-            analyze.NumberOfLevels = 3;
+            analyzer.NumberOfLevels = 3;
             
             % MSE before processing
             mse = @(x,y) sum((x(:)-y(:)).^2)/numel(x);
@@ -616,21 +610,20 @@ classdef IterativeHardThresholdingTestCase < ...
             % Instantiation of target class
             import saivdr.sparserep.*
             testCase.iht = IterativeHardThresholding(...
-                'Synthesizer',synthesizer,...
-                'AdjOfSynthesizer',analyzer);
+                'Dictionary', { synthesizer, analyzer });
             
             % MSE by original object
-            resImg = step(testCase.iht,srcImg,nCoefs);
-            recImg = srcImg - resImg;
-            mseOrg = mse(int16(255*recImg),int16(255*srcImg));            
+            testCase.iht.NumberOfSparseCoefficients = nCoefs;
+            resImg = testCase.iht.step(srcImg);
+            mseOrg = mse(int16(255*resImg),int16(255*srcImg));            
             
             % Instantiation of target class
             cloneIht = clone(testCase.iht);
             
             % MSE by clone object
-            resImg = step(cloneIht,srcImg,nCoefs);
-            recImg = srcImg - resImg;
-            mseCln = mse(int16(255*recImg),int16(255*srcImg));                        
+            cloneIht.NumberOfSparseCoefficients = nCoefs;
+            resImg = cloneIht.step(srcImg);
+            mseCln = mse(int16(255*resImg),int16(255*srcImg));                        
             
             % Evaluation
             testCase.verifyEqual(mseCln,mseOrg);
@@ -649,8 +642,7 @@ classdef IterativeHardThresholdingTestCase < ...
             % Instantiation of target class
             import saivdr.sparserep.*
             testCase.iht = IterativeHardThresholding(...
-                'Synthesizer',synthesizer,...
-                'AdjOfSynthesizer',analyzer);
+                'Dictionary', { synthesizer, analyzer });
             
             % Instantiation of target class
             cloneIht = clone(testCase.iht);
@@ -659,13 +651,13 @@ classdef IterativeHardThresholdingTestCase < ...
             testCase.verifyEqual(cloneIht,testCase.iht);
             testCase.verifyFalse(cloneIht == testCase.iht);
             %
-            prpOrg = get(testCase.iht,'Synthesizer');
-            prpCln = get(cloneIht,'Synthesizer');
+            prpOrg = testCase.iht.Dictionary{1};
+            prpCln = cloneIht.Dictionary{1};
             testCase.verifyEqual(prpCln,prpOrg);
             testCase.verifyFalse(prpCln == prpOrg);
             %
-            prpOrg = get(testCase.iht,'AdjOfSynthesizer');
-            prpCln = get(cloneIht,'AdjOfSynthesizer');
+            prpOrg = testCase.iht.Dictionary{2};
+            prpCln = cloneIht.Dictionary{2};
             testCase.verifyEqual(prpCln,prpOrg);
             testCase.verifyFalse(prpCln == prpOrg);
             
@@ -703,27 +695,27 @@ classdef IterativeHardThresholdingTestCase < ...
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
                 lppufb,'BoundaryOperation','Termination');            
             testCase.iht = IterativeHardThresholding(...
-                'Synthesizer',synthesizer,...
-                'AdjOfSynthesizer',analyzer);
+                'Dictionary', { synthesizer, analyzer });
             
             % Actual values
-            [residActual, coefsActual, scalesActual] = ...
-                step(testCase.iht,srcImg,nCoefsExpctd);
+            testCase.iht.NumberOfSparseCoefficients = nCoefsExpctd;
+            [resActual, coefsActual, scalesActual] = ...
+                testCase.iht.step(srcImg);
             nCoefsActual = nnz(coefsActual);
             
             % Evaluation
             import matlab.unittest.constraints.IsTrue;
-            testCase.verifySize(residActual, size(srcImg));
+            testCase.verifySize(resActual, size(srcImg));
             testCase.verifySize(coefsActual, sizeOfCoefsExpctd);
-            testCase.verifyThat(norm(residActual(:)) < norm(srcImg(:)), ...
+            testCase.verifyThat(norm(resActual(:),2) < norm(srcImg(:),2), ...
                 IsTrue, ...
-                sprintf('||r||^2 = %g must be less than ||x||^2 = %g.',...
-                norm(residActual(:)),norm(srcImg(:)))); 
+                sprintf('||r|| = %g must be less than ||x|| = %g.',...
+                norm(resActual(:),2),norm(srcImg(:),2))); 
             testCase.verifyThat(nCoefsActual<=nCoefsExpctd,IsTrue);
             
-            resImg = step(synthesizer,coefsActual,scalesActual);
-            testCase.verifyEqual(resImg(:)+residActual(:), srcImg(:),...
-                'RelTol',1e-10);
+            resExpctd = step(synthesizer,coefsActual,scalesActual);
+            testCase.verifyEqual(resActual,resExpctd,...
+                'AbsTol',1e-10);
             
             %{
             mse = @(x,y) ((x(:)-y(:)).^2)/numel(x);
@@ -765,8 +757,7 @@ classdef IterativeHardThresholdingTestCase < ...
                 lppufb,'BoundaryOperation','Termination',...
                 'NumberOfLevels',nLevels);
             testCase.iht = IterativeHardThresholding(...
-                'Synthesizer',synthesizer,...
-                'AdjOfSynthesizer',analyzer);
+                'Dictionary', { synthesizer, analyzer });
             
             % Expected values
             P = sum(nChs);
@@ -775,23 +766,24 @@ classdef IterativeHardThresholdingTestCase < ...
             sizeOfCoefsExpctd = [ 1 nCoefs ];
             
             % Actual values
-            [residActual, coefsActual, scalesActual] = ...
-                step(testCase.iht,srcImg,nCoefsExpctd);
+            testCase.iht.NumberOfSparseCoefficients = nCoefsExpctd;
+            [resActual, coefsActual, scalesActual] = ...
+                testCase.iht.step(srcImg);
             nCoefsActual = nnz(coefsActual);
             
             % Evaluation
             import matlab.unittest.constraints.IsTrue;
-            testCase.verifySize(residActual, size(srcImg));
+            testCase.verifySize(resActual, size(srcImg));
             testCase.verifySize(coefsActual, sizeOfCoefsExpctd);
-            testCase.verifyThat(norm(residActual(:)) < norm(srcImg(:)), ...
+            testCase.verifyThat(norm(resActual(:),2) < norm(srcImg(:),2), ...
                 IsTrue, ...
-                sprintf('||r||^2 = %g must be less than ||x||^2 = %g.',...
-                norm(residActual(:)),norm(srcImg(:)))); 
+                sprintf('||r|| = %g must be less than ||x|| = %g.',...
+                norm(resActual(:),2),norm(srcImg(:),2))); 
             testCase.verifyThat(nCoefsActual<=nCoefsExpctd,IsTrue);
             
-            resImg = step(synthesizer,coefsActual,scalesActual);
-            testCase.verifyEqual(resImg(:)+residActual(:), srcImg(:),...
-                'RelTol',1e-10);
+            resExpctd = step(synthesizer,coefsActual,scalesActual);
+            testCase.verifyEqual(resActual,resExpctd,...
+                'AbsTol',1e-10);
             
             %{
             mse = @(x,y) ((x(:)-y(:)).^2)/numel(x);
@@ -833,8 +825,7 @@ classdef IterativeHardThresholdingTestCase < ...
                 lppufb,'BoundaryOperation','Termination',...
                 'NumberOfLevels',nLevels);
             testCase.iht = IterativeHardThresholding(...
-                'Synthesizer',synthesizer,...
-                'AdjOfSynthesizer',analyzer);
+                'Dictionary', { synthesizer, analyzer });
             
             % Expected values
             P = sum(nChs);
@@ -844,24 +835,24 @@ classdef IterativeHardThresholdingTestCase < ...
             sizeOfCoefsExpctd = [ 1 nCoefs ];
             
             % Actual values
-            [residActual, coefsActual, scalesActual] = ...
-                step(testCase.iht,...
-                srcImg,nCoefsExpctd);
+            testCase.iht.NumberOfSparseCoefficients = nCoefsExpctd;
+            [resActual, coefsActual, scalesActual] = ...
+                testCase.iht.step(srcImg);
             nCoefsActual = nnz(coefsActual);
             
             % Evaluation
             import matlab.unittest.constraints.IsTrue;
-            testCase.verifySize(residActual, size(srcImg));
+            testCase.verifySize(resActual, size(srcImg));
             testCase.verifySize(coefsActual, sizeOfCoefsExpctd);
-            testCase.verifyThat(norm(residActual(:)) < norm(srcImg(:)), ...
+            testCase.verifyThat(norm(resActual(:),2) < norm(srcImg(:),2), ...
                 IsTrue, ...
-                sprintf('||r||^2 = %g must be less than ||x||^2 = %g.',...
-                norm(residActual(:)),norm(srcImg(:)))); 
+                sprintf('||r|| = %g must be less than ||x|| = %g.',...
+                norm(resActual(:),2),norm(srcImg(:),2))); 
             testCase.verifyThat(nCoefsActual<=nCoefsExpctd,IsTrue);
             
-            resImg = step(synthesizer,coefsActual,scalesActual);
-            testCase.verifyEqual(resImg(:)+residActual(:), srcImg(:),...
-                'RelTol',1e-10);
+            resExpctd = step(synthesizer,coefsActual,scalesActual);
+            testCase.verifyEqual(resActual,resExpctd,...
+                'AbsTol',1e-10);
             
             %{
             mse = @(x,y) ((x(:)-y(:)).^2)/numel(x);
@@ -903,8 +894,7 @@ classdef IterativeHardThresholdingTestCase < ...
                 lppufb,'BoundaryOperation','Termination',...
                 'NumberOfLevels',nLevels);
             testCase.iht = IterativeHardThresholding(...
-                'Synthesizer',synthesizer,...
-                'AdjOfSynthesizer',analyzer);
+                'Dictionary', { synthesizer, analyzer });
             
             % Expected values
             P = sum(nChs);
@@ -914,24 +904,23 @@ classdef IterativeHardThresholdingTestCase < ...
             sizeOfCoefsExpctd = [ 1 nCoefs ];
             
             % Actual values
-            [residActual, coefsActual, scalesActual] = ...
-                step(testCase.iht,...
-                srcImg,nCoefsExpctd);
+            testCase.iht.NumberOfSparseCoefficients = nCoefsExpctd;
+            [resActual, coefsActual, scalesActual] = ...
+                testCase.iht.step(srcImg);
             nCoefsActual = nnz(coefsActual);
             
             % Evaluation
             import matlab.unittest.constraints.IsTrue;
-            testCase.verifySize(residActual, size(srcImg));
+            testCase.verifySize(resActual, size(srcImg));
             testCase.verifySize(coefsActual, sizeOfCoefsExpctd);
-            testCase.verifyThat(norm(residActual(:)) < norm(srcImg(:)), ...
+            testCase.verifyThat(norm(resActual(:),2) < norm(srcImg(:),2), ...
                 IsTrue, ...
-                sprintf('||r||^2 = %g must be less than ||x||^2 = %g.',...
-                norm(residActual(:)),norm(srcImg(:)))); 
+                sprintf('||r|| = %g must be less than ||x|| = %g.',...
+                norm(resActual(:),2),norm(srcImg(:),2))); 
             testCase.verifyThat(nCoefsActual<=nCoefsExpctd,IsTrue);
             
-            resImg = step(synthesizer,coefsActual,scalesActual);
-            testCase.verifyEqual(resImg(:)+residActual(:), srcImg(:),...
-                'RelTol',1e-10);
+            resExpctd = step(synthesizer,coefsActual,scalesActual);
+            testCase.verifyEqual(resActual,resExpctd,'AbsTol',1e-10);
             
             %{
             mse = @(x,y) ((x(:)-y(:)).^2)/numel(x);
@@ -973,8 +962,7 @@ classdef IterativeHardThresholdingTestCase < ...
                 lppufb,'BoundaryOperation','Termination',...
                 'NumberOfLevels',nLevels);
             testCase.iht = IterativeHardThresholding(...
-                'Synthesizer',synthesizer,...
-                'AdjOfSynthesizer',analyzer);
+                'Dictionary', { synthesizer, analyzer });
             
             % Expected values
             P = sum(nChs);
@@ -984,24 +972,24 @@ classdef IterativeHardThresholdingTestCase < ...
             sizeOfCoefsExpctd = [ 1 nCoefs ];
             
             % Actual values
-            [residActual, coefsActual, scalesActual] = ...
-                step(testCase.iht,...
-                srcImg,nCoefsExpctd);
+            testCase.iht.NumberOfSparseCoefficients = nCoefsExpctd;
+            [resActual, coefsActual, scalesActual] = ...
+                testCase.iht.step(srcImg);
             nCoefsActual = nnz(coefsActual);
             
             % Evaluation
             import matlab.unittest.constraints.IsTrue;
-            testCase.verifySize(residActual, size(srcImg));
+            testCase.verifySize(resActual, size(srcImg));
             testCase.verifySize(coefsActual, sizeOfCoefsExpctd);
-            testCase.verifyThat(norm(residActual(:)) < norm(srcImg(:)), ...
+            testCase.verifyThat(norm(resActual(:),2) < norm(srcImg(:),2), ...
                 IsTrue, ...
-                sprintf('||r||^2 = %g must be less than ||x||^2 = %g.',...
-                norm(residActual(:)),norm(srcImg(:)))); 
+                sprintf('||r|| = %g must be less than ||x|| = %g.',...
+                norm(resActual(:),2),norm(srcImg(:),2))); 
             testCase.verifyThat(nCoefsActual<=nCoefsExpctd,IsTrue);
             
-            resImg = step(synthesizer,coefsActual,scalesActual);
-            testCase.verifyEqual(resImg(:)+residActual(:), srcImg(:),...
-                'RelTol',1e-10);
+            resExpctd = step(synthesizer,coefsActual,scalesActual);
+            testCase.verifyEqual(resActual,resExpctd,...
+                'AbsTol',1e-10);
             
             %{
             mse = @(x,y) ((x(:)-y(:)).^2)/numel(x);

@@ -17,6 +17,33 @@ classdef NsoltFactory
     
     methods (Static = true)
         
+
+        function value = createAnalysisSystem(varargin)
+            import saivdr.dictionary.nsoltx.NsoltFactory
+            if isa(varargin{1},...
+                    'saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2dSystem')
+                value = NsoltFactory.createAnalysis2dSystem(varargin{:});
+            elseif isa(varargin{1},...
+                    'saivdr.dictionary.nsoltx.AbstOvsdLpPuFb3dSystem')
+                value = NsoltFactory.createAnalysis3dSystem(varargin{:});
+            else
+                error('SaivDr: Invalid argumetns');
+            end
+        end
+        
+        function value = createSynthesisSystem(varargin)
+            import saivdr.dictionary.nsoltx.NsoltFactory            
+            if isa(varargin{1},...
+                    'saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2dSystem')
+                value = NsoltFactory.createSynthesis2dSystem(varargin{:});
+            elseif isa(varargin{1},...
+                    'saivdr.dictionary.nsoltx.AbstOvsdLpPuFb3dSystem')
+                value = NsoltFactory.createSynthesis3dSystem(varargin{:});
+            else
+                error('SaivDr: Invalid argumetns');
+            end
+        end        
+                
         function value = createOvsdLpPuFb2dSystem(varargin)
             import saivdr.dictionary.nsoltx.*
             if nargin < 1
@@ -128,6 +155,7 @@ classdef NsoltFactory
                 end
             end
         end        
+        
             
         function value = createAnalysis2dSystem(varargin)
             import saivdr.dictionary.nsoltx.NsoltAnalysis2dSystem

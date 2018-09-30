@@ -57,7 +57,7 @@ classdef CoefsManipulatorTestCase < matlab.unittest.TestCase
             coefspre = [];
             
             % Instantiation
-            import saivdr.utility.*
+            import saivdr.restoration.*
             testCase.target = CoefsManipulator();
             
             % Expected value
@@ -86,7 +86,7 @@ classdef CoefsManipulatorTestCase < matlab.unittest.TestCase
             g = @(x,s) testCase.softthresh(x,s,lambda,gamma);
             
             % Instantiation
-            import saivdr.utility.*
+            import saivdr.restoration.*
             testCase.target = CoefsManipulator('Manipulation',g);
             
             % Expected value
@@ -121,7 +121,7 @@ classdef CoefsManipulatorTestCase < matlab.unittest.TestCase
             g = @(x,s) testCase.softthresh(x,s,lambda,gamma);
             
             % Instantiation
-            import saivdr.utility.*
+            import saivdr.restoration.*
             testCase.target = CoefsManipulator('Manipulation',g);
             
             % Expected value
@@ -155,7 +155,7 @@ classdef CoefsManipulatorTestCase < matlab.unittest.TestCase
             g = @(x,s) testCase.softthresh(x,s,lambda,gamma);
             
             % Instantiation
-            import saivdr.utility.*
+            import saivdr.restoration.*
             testCase.target = CoefsManipulator('Manipulation',g);
             
             % Expected value
@@ -189,7 +189,7 @@ classdef CoefsManipulatorTestCase < matlab.unittest.TestCase
             g = @(x,s) testCase.softthresh(x,s,lambda,gamma);
             
             % Instantiation
-            import saivdr.utility.*
+            import saivdr.restoration.*
             testCase.target = CoefsManipulator('Manipulation',g);
             
             % Expected value
@@ -228,7 +228,7 @@ classdef CoefsManipulatorTestCase < matlab.unittest.TestCase
             g = @(x,s) testCase.softthresh(x,s,lambda,gamma);
             
             % Instantiation
-            import saivdr.utility.*
+            import saivdr.restoration.*
             testCase.target = CoefsManipulator('Manipulation', g);
             
             % Expected value
@@ -268,7 +268,7 @@ classdef CoefsManipulatorTestCase < matlab.unittest.TestCase
             g = @(x,s) testCase.softthresh(x,s,lambda,gamma);
             
             % Instantiation
-            import saivdr.utility.*
+            import saivdr.restoration.*
             testCase.target = CoefsManipulator('Manipulation', g);
             
             % Expected value
@@ -314,7 +314,7 @@ classdef CoefsManipulatorTestCase < matlab.unittest.TestCase
             g = @(x,s) testCase.softthresh(x,s,lambda,gamma);
             
             % Instantiation
-            import saivdr.utility.*
+            import saivdr.restoration.*
             testCase.target = CoefsManipulator('Manipulation', g);
             
             % Expected value
@@ -363,7 +363,7 @@ classdef CoefsManipulatorTestCase < matlab.unittest.TestCase
             g = @(x,s) testCase.softthresh(x,s,lambda,gamma);
             
             % Instantiation
-            import saivdr.utility.*
+            import saivdr.restoration.*
             testCase.target = CoefsManipulator('Manipulation', g);
             
             % Expected value
@@ -408,7 +408,7 @@ classdef CoefsManipulatorTestCase < matlab.unittest.TestCase
             g = @(x,s) testCase.coefpdshshc(x,s,lambda,gamma);
             
             % Instantiation
-            import saivdr.utility.*
+            import saivdr.restoration.*
             testCase.target = CoefsManipulator('Manipulation', g);
             
             % Expected value
@@ -453,7 +453,7 @@ classdef CoefsManipulatorTestCase < matlab.unittest.TestCase
             g = @(x,s) testCase.coefpdshshc(x,s,lambda,gamma);
             
             % Instantiation
-            import saivdr.utility.*
+            import saivdr.restoration.*
             testCase.target = CoefsManipulator('Manipulation', g);
             
             % Expected value
@@ -506,7 +506,7 @@ classdef CoefsManipulatorTestCase < matlab.unittest.TestCase
             g = @(x,s) testCase.coefpdshshc(x,s,lambda,gamma);
             
             % Instantiation
-            import saivdr.utility.*
+            import saivdr.restoration.*
             testCase.target = CoefsManipulator('Manipulation', g);
             
             % Expected value
@@ -560,7 +560,7 @@ classdef CoefsManipulatorTestCase < matlab.unittest.TestCase
             g = @(x,s) testCase.softthresh(x,s,lambda,gamma);
             
             % Instantiation
-            import saivdr.utility.*
+            import saivdr.restoration.*
             testCase.target = CoefsManipulator('Manipulation', g);
             
             % Expected value
@@ -627,7 +627,7 @@ classdef CoefsManipulatorTestCase < matlab.unittest.TestCase
             g = @(x,s) testCase.coefpdshshc(x,s,lambda,gamma);
             
             % Instantiation
-            import saivdr.utility.*
+            import saivdr.restoration.*
             testCase.target = CoefsManipulator('Manipulation', g);
             
             % Expected value

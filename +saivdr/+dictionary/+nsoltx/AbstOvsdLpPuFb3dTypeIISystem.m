@@ -59,12 +59,13 @@ classdef AbstOvsdLpPuFb3dTypeIISystem < ...
                 else
                     import saivdr.dictionary.nsoltx.mexsrcs.fcn_Order2BuildingBlockTypeII
                     obj.mexFcn = @fcn_Order2BuildingBlockTypeII;
+                    obj.mexFlag = false;
                 end
             end
         end
         
         function resetImpl(obj)
-            resetImpl@saivdr.dictionary.nsoltx.AbstOvsdLpPuFb3dSystem(obj);            
+            resetImpl@saivdr.dictionary.nsoltx.AbstOvsdLpPuFb3dSystem(obj);
         end
         
         function setupImpl(obj,varargin)

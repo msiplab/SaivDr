@@ -1,5 +1,5 @@
 classdef Analysis3dSystem < saivdr.dictionary.AbstAnalysisSystem
-    %ANALYSIS3DSYSTEM Abstract class of 3-D analysis system
+    %ANALYSIS3DSYSTEM 3-D analysis system
     %
     % Reference:
     %   Shogo Muramatsu and Hitoshi Kiya,

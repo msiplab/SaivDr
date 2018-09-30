@@ -4,7 +4,7 @@ classdef NsoltDictionaryUpdateSgd < ...
     %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2015-2017, Shogo MURAMATSU and Genki FUJII
+    % Copyright (c) 2015-2018, Shogo MURAMATSU and Genki FUJII
     %
     % All rights reserved.
     %
@@ -17,7 +17,6 @@ classdef NsoltDictionaryUpdateSgd < ...
     %
     
     properties (Nontunable)
-        SourceImages
         Step = 'Reciprocal'
     end
     
@@ -43,11 +42,6 @@ classdef NsoltDictionaryUpdateSgd < ...
         GaAngInit = 'off'
     end
 
-    properties
-        SparseCoefficients
-        SetOfScales
-    end
-    
     properties (Logical)
         IsVerbose = false
     end
@@ -68,7 +62,7 @@ classdef NsoltDictionaryUpdateSgd < ...
             clnaprxer = clone(obj.aprxError);
             angles = reshape(angles,obj.sizeAngles);
             set(clnlppufb,'Angles',angles);
-            nsamples_ = length(obj.SourceImages);
+            nsamples_ = length(obj.TrainingImages);
             iImg = randi(nsamples_);
             % Gradient is evaluated for a randomly selected image 
             [~,stcgrad] = step(clnaprxer,clnlppufb,...
@@ -102,10 +96,10 @@ classdef NsoltDictionaryUpdateSgd < ...
     methods (Access=protected)
         
         function validatePropertiesImpl(obj)
-            if isempty(obj.SourceImages)
-                error('Source images should be provided');
-            elseif ~iscell(obj.SourceImages)
-                error('Source images should be provided as cell data');
+            if isempty(obj.TrainingImages)
+                error('Training images should be provided');
+            elseif ~iscell(obj.TrainingImages)
+                error('Training images should be provided as cell data');
             end
             %
             if obj.NumberOfLevels ~= 1
@@ -142,7 +136,7 @@ classdef NsoltDictionaryUpdateSgd < ...
                 obj,lppufb_,options);
             import saivdr.dictionary.nsoltx.design.AprxErrorWithSparseRep
             obj.aprxError = AprxErrorWithSparseRep(...
-                'SourceImages', obj.SourceImages,...
+                'TrainingImages', obj.TrainingImages,...
                 'NumberOfLevels',obj.NumberOfLevels,...
                 'GradObj',obj.GradObj,...
                 'IsFixedCoefs',obj.IsFixedCoefs,...
@@ -155,7 +149,6 @@ classdef NsoltDictionaryUpdateSgd < ...
         
         function [ lppufb, fval, exitflag ] = stepImpl(obj,lppufb_,options)
 
-            
             lppufb = clone(lppufb_);
             
             % Optimization of Mus

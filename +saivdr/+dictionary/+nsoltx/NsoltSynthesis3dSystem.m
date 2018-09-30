@@ -31,7 +31,7 @@ classdef NsoltSynthesis3dSystem  < ...
     end
     
     properties (Nontunable, Logical)
-        IsCloneLpPuFb3d = true;
+        IsCloneLpPuFb = true;
         IsDifferentiation = false
     end
 
@@ -79,7 +79,7 @@ classdef NsoltSynthesis3dSystem  < ...
                     'OutputMode','ParameterMatrixSet');
             end            
             %
-            if obj.IsCloneLpPuFb3d
+            if obj.IsCloneLpPuFb
                 obj.LpPuFb3d = clone(obj.LpPuFb3d); 
             end
             %       

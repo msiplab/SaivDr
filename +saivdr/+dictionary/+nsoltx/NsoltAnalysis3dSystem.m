@@ -32,7 +32,7 @@ classdef NsoltAnalysis3dSystem < ...
     end
     
     properties (Nontunable, Logical)
-        IsCloneLpPuFb3d = true;
+        IsCloneLpPuFb = true;
     end
     
     properties (Hidden, Transient)
@@ -79,7 +79,7 @@ classdef NsoltAnalysis3dSystem < ...
                     'OutputMode','ParameterMatrixSet');
             end
             %
-            if obj.IsCloneLpPuFb3d
+            if obj.IsCloneLpPuFb
                 obj.LpPuFb3d = clone(obj.LpPuFb3d); 
             end
             %

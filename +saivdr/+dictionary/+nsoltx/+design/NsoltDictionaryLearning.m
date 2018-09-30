@@ -1,12 +1,9 @@
 classdef NsoltDictionaryLearning < matlab.System
     %NSOLTDICTIONARYLERNING NSOLT dictionary learning
     %
-    % SVN identifier:
-    % $Id: NsoltDictionaryLearning.m 868 2015-11-25 02:33:11Z sho $
-    %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2014-2015, Shogo MURAMATSU
+    % Copyright (c) 2014-2018, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -18,11 +15,11 @@ classdef NsoltDictionaryLearning < matlab.System
     % http://msiplab.eng.niigata-u.ac.jp/    
     %
     properties (Nontunable)
-        SourceImages
+        TrainingImages
         DecimationFactor = []
         NumbersOfPolyphaseOrder = [ 4 4 ]
         OptimizationFunction = @fminunc            
-        SparseCoding = 'IterativeHardThresholding'
+        SparseApproximation = 'IterativeHardThresholding'
         DictionaryUpdater = 'NsoltDictionaryUpdateGaFmin'
         OrderOfVanishingMoment = 1
         StepMonitor
@@ -34,7 +31,7 @@ classdef NsoltDictionaryLearning < matlab.System
     properties (Hidden, Transient)
         GradObjSet = ...
             matlab.system.StringSet({'on','off'});    
-        SparseCodingSet = ...
+        SparseApproximationSet = ...
             matlab.system.StringSet({'IterativeHardThresholding','GradientPursuit'});
         DictionaryUpdaterSet = ...
             matlab.system.StringSet({'NsoltDictionaryUpdateGaFmin','NsoltDictionaryUpdateSgd'});
@@ -81,7 +78,7 @@ classdef NsoltDictionaryLearning < matlab.System
     
     properties (Access = protected, Nontunable)
         %nDecs 
-        sparseCoder
+        sparseAprx
         dicUpdate
         nImgs
     end
@@ -113,7 +110,7 @@ classdef NsoltDictionaryLearning < matlab.System
                     'NumberOfVanishingMoments',obj.OrderOfVanishingMoment,...
                     'OutputMode','ParameterMatrixSet');
             end
-            obj.nImgs = length(obj.SourceImages);
+            obj.nImgs = length(obj.TrainingImages);
         end
     end
     
@@ -136,9 +133,9 @@ classdef NsoltDictionaryLearning < matlab.System
         end
         
         function validatePropertiesImpl(obj)
-            if isempty(obj.SourceImages)
+            if isempty(obj.TrainingImages)
                 error('Source images should be provided');
-            elseif ~iscell(obj.SourceImages)
+            elseif ~iscell(obj.TrainingImages)
                 error('Source images should be provided as cell data');
             end
         end
@@ -153,33 +150,31 @@ classdef NsoltDictionaryLearning < matlab.System
             if strcmp(obj.NumberOfDimensions,'Three')
                 synthesizer = NsoltFactory.createSynthesis3dSystem(...
                     obj.OvsdLpPuFb,...
-                    'IsCloneLpPuFb3d',false);    
+                    'IsCloneLpPuFb',false);    
                 analyzer = NsoltFactory.createAnalysis3dSystem(...
                     obj.OvsdLpPuFb,...
-                    'IsCloneLpPuFb3d',false);    
+                    'IsCloneLpPuFb',false);    
                 analyzer.NumberOfLevels = obj.NumberOfLevels;
             else
                 synthesizer = NsoltFactory.createSynthesis2dSystem(...
                     obj.OvsdLpPuFb,...
-                    'IsCloneLpPuFb2d',false);                    
+                    'IsCloneLpPuFb',false);                    
                 analyzer = NsoltFactory.createAnalysis2dSystem(...
                     obj.OvsdLpPuFb,...
-                    'IsCloneLpPuFb2d',false);
+                    'IsCloneLpPuFb',false);
                 analyzer.NumberOfLevels = obj.NumberOfLevels;                
             end
             
-            % Instantiation of Sparse Coder
-            if strcmp(obj.SparseCoding,'GradientPursuit')
+            % Instantiation of sparse approximation
+            if strcmp(obj.SparseApproximation,'GradientPursuit')
                 import saivdr.sparserep.GradientPursuit
-                obj.sparseCoder = GradientPursuit(...
-                    'Synthesizer',synthesizer,...
-                    'AdjOfSynthesizer',analyzer,...
+                obj.sparseAprx = GradientPursuit(...
+                    'Dictionary', { synthesizer, analyzer },...
                     'StepMonitor',obj.StepMonitor);
             else
                 import saivdr.sparserep.IterativeHardThresholding
-                obj.sparseCoder = IterativeHardThresholding(...
-                    'Synthesizer',synthesizer,...
-                    'AdjOfSynthesizer',analyzer,...                    
+                obj.sparseAprx = IterativeHardThresholding(...
+                    'Dictionary', { synthesizer, analyzer },...                    
                     'StepMonitor',obj.StepMonitor);
             end
             
@@ -187,7 +182,7 @@ classdef NsoltDictionaryLearning < matlab.System
             if strcmp(obj.DictionaryUpdater,'NsoltDictionaryUpdateSgd')
                 import saivdr.dictionary.nsoltx.design.NsoltDictionaryUpdateSgd
                 obj.dicUpdate = NsoltDictionaryUpdateSgd(...
-                    'SourceImages', obj.SourceImages,...
+                    'TrainingImages', obj.TrainingImages,...
                     'NumberOfLevels',obj.NumberOfLevels,...
                     'GenerationFactorForMus',obj.GenerationFactorForMus,...
                     'IsFixedCoefs',obj.IsFixedCoefs,...                    
@@ -200,7 +195,7 @@ classdef NsoltDictionaryLearning < matlab.System
             else
                 import saivdr.dictionary.nsoltx.design.NsoltDictionaryUpdateGaFmin
                 obj.dicUpdate = NsoltDictionaryUpdateGaFmin(...
-                    'SourceImages', obj.SourceImages,...
+                    'TrainingImages', obj.TrainingImages,...
                     'NumberOfLevels',obj.NumberOfLevels,...
                     'OptimizationFunction',obj.OptimizationFunction,...
                     'MaxIterOfHybridFmin',obj.MaxIterOfHybridFmin,...
@@ -246,14 +241,14 @@ classdef NsoltDictionaryLearning < matlab.System
                 isOptMus = false;
             end
                         
-            % Sparse Coding
+            % Sparse Approximation
             sprsCoefs   = cell(obj.nImgs,1);
             setOfScales = cell(obj.nImgs,1);
+            obj.sparseAprx.NumberOfSparseCoefficients = obj.NumberOfSparseCoefficients;
             for iImg = 1:obj.nImgs
-                set(obj.StepMonitor,'SourceImage',obj.SourceImages{iImg});
+                set(obj.StepMonitor,'SourceImage',obj.TrainingImages{iImg});
                 [~, sprsCoefs{iImg}, setOfScales{iImg}] = ...
-                    step(obj.sparseCoder,...
-                    obj.SourceImages{iImg},obj.NumberOfSparseCoefficients);
+                    obj.sparseAprx.step(obj.TrainingImages{iImg});
             end
             
             % Dictionary Update

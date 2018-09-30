@@ -2,12 +2,9 @@ classdef NsoltDictionaryUpdateGaFmin < ...
         saivdr.dictionary.nsoltx.design.AbstNsoltDesignerGaFmin %#~codegen
     %NSOLTDICTIONARYUPDATEGAFMIN Update step of NSOLT dictionary learning 
     %
-    % SVN identifier:
-    % $Id: NsoltDictionaryUpdateGaFmin.m 866 2015-11-24 04:29:42Z sho $
-    %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2014-2015, Shogo MURAMATSU
+    % Copyright (c) 2014-2018, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -22,12 +19,6 @@ classdef NsoltDictionaryUpdateGaFmin < ...
     properties (Nontunable)
         NumberOfLevels = 1;
         IsFixedCoefs       = true
-        SourceImages
-    end
-    
-    properties
-        SparseCoefficients
-        SetOfScales
     end
     
     properties (Logical)
@@ -89,17 +80,17 @@ classdef NsoltDictionaryUpdateGaFmin < ...
             setupImpl@saivdr.dictionary.nsoltx.design.AbstNsoltDesignerGaFmin(obj,lppufb_,options);
             import saivdr.dictionary.nsoltx.design.AprxErrorWithSparseRep
             obj.aprxError = AprxErrorWithSparseRep(...
-                'SourceImages', obj.SourceImages,...
+                'TrainingImages', obj.TrainingImages,...
                 'NumberOfLevels',obj.NumberOfLevels,...
                 'GradObj',obj.GradObj,...
                 'IsFixedCoefs',obj.IsFixedCoefs);
         end
         
         function validatePropertiesImpl(obj)
-            if isempty(obj.SourceImages)
-                error('Source images should be provided');
-            elseif ~iscell(obj.SourceImages)
-                error('Source images should be provided as cell data');
+            if isempty(obj.TrainingImages)
+                error('Training images should be provided');
+            elseif ~iscell(obj.TrainingImages)
+                error('Training images should be provided as cell data');
             end
         end
         

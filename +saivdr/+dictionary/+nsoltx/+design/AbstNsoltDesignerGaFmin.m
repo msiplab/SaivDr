@@ -4,7 +4,7 @@ classdef AbstNsoltDesignerGaFmin < ...
     %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2014-2017, Shogo MURAMATSU
+    % Copyright (c) 2014-2018, Shogo MURAMATSU
     %
     % All rights reserved.
     %

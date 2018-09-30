@@ -65,7 +65,7 @@ nTrials   =  1; % # of trials
 params.nCoefs         = (picSize)^2/8; % # of Coefs.
 params.Display        = 'iter';
 params.plotFcn        = @optimplotfval;
-params.sparseCoding   = 'IterativeHardThresholding';
+params.sparseAprx   = 'IterativeHardThresholding';
 params.filterDomain   = 'frequency'; % or 'lattice_termination'
 %
 params.optfcn         = 'fminsgd'; % Stocastic gradient descent

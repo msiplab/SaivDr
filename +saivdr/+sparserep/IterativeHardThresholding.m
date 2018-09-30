@@ -1,5 +1,5 @@
 classdef IterativeHardThresholding < ...
-        saivdr.sparserep.AbstSparseApproximation %#codegen
+        saivdr.sparserep.AbstSparseApproximationSystem %#codegen
     %ITERATIVEHARDTHRESHOLDING Iterative hard thresholding
     %
     % References
@@ -14,7 +14,7 @@ classdef IterativeHardThresholding < ...
     %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2014-2016, Shogo MURAMATSU
+    % Copyright (c) 2014-2018, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -26,48 +26,60 @@ classdef IterativeHardThresholding < ...
     % http://msiplab.eng.niigata-u.ac.jp/
     %
     
+    %properties (Nontunable)
+    %    Synthesizer
+    %    AdjOfSynthesizer
+    %end
+    
     properties
-        TolRes  = 1e-7
+        TolRmse  = 1e-7
         Mu = (1-1e-3)
     end
        
     properties (PositiveInteger)
         MaxIter = 1000
+        NumberOfSparseCoefficients = 1
     end    
     
     methods
         function obj = IterativeHardThresholding(varargin)
             obj = ...
-                obj@saivdr.sparserep.AbstSparseApproximation(varargin{:});        
+                obj@saivdr.sparserep.AbstSparseApproximationSystem(varargin{:});        
         end
     end
     
     methods (Access=protected)
         
-        function [ residual, coefvec, scales ] = ...
-                stepImpl(obj, srcImg, nCoefs)
+        function s = saveObjectImpl(obj)
+            s = saveObjectImpl@saivdr.sparserep.AbstSparseApproximationSystem(obj);
+            %s.Synthesizer = matlab.System.saveObject(obj.Synthesizer);
+            %s.AdjOfSynthesizer = matlab.System.saveObject(obj.AdjOfSynthesizer);
+        end
+        
+        function loadObjectImpl(obj,s,wasLocked)
+            loadObjectImpl@saivdr.sparserep.AbstSparseApproximationSystem(obj,s,wasLocked);
+            %obj.Synthesizer = matlab.System.loadObject(s.Synthesizer);
+            %obj.AdjOfSynthesizer = matlab.System.loadObject(s.AdjOfSynthesizer);
+        end
+        
+        function [ result, coefvec, scales ] = stepImpl(obj, srcImg)
+            fwdDic = obj.Dictionary{obj.FORWARD};
+            adjDic = obj.Dictionary{obj.ADJOINT};
+            nCoefs = obj.NumberOfSparseCoefficients;
             source = im2double(srcImg);
             
             % Initalization
-            iIter    = 0;                
-            [coefvec,scales] = step(obj.AdjOfSynthesizer,source);
-            if ~isempty(obj.StepMonitor)
-                reset(obj.StepMonitor)
-            end
-             
+            iIter    = 0;
+            result = 0*source;            
+            [coefvec,scales] = adjDic.step(result);
             % Iteration
             while true
-                iIter = iIter + 1;                
+                iIter = iIter + 1;
                 precoefvec = coefvec;
-                % Reconstruction
-                reconst = step(obj.Synthesizer,precoefvec,scales);
-                if ~isempty(obj.StepMonitor) && iIter > 1
-                    step(obj.StepMonitor,reconst);
-                end                  
                 % Residual
-                residual = source - reconst;
+                residual = source - result;
                 % g = Phi.'*r
-                [gradvec,~] = step(obj.AdjOfSynthesizer,residual);
+                [gradvec,~] = adjDic.step(residual);
                 coefvec = precoefvec + obj.Mu*gradvec;
                 % Hard thresholding
                 [~, idxsort ] = sort(abs(coefvec(:)),1,'descend');
@@ -75,19 +87,18 @@ classdef IterativeHardThresholding < ...
                 mask = 0*coefvec;
                 mask(indexSet) = 1;
                 coefvec = mask.*coefvec;
+                % Reconstruction
+                result= fwdDic.step(coefvec,scales);
+                if ~isempty(obj.StepMonitor) && iIter > 1
+                    obj.StepMonitor.step(result);
+                end            
                 % Evaluation of convergence
-                diff = (norm(coefvec(:)-precoefvec(:))/norm(coefvec(:)))^2;
-                if (diff < obj.TolRes || iIter >= obj.MaxIter)
+                rmse = (norm(coefvec(:)-precoefvec(:),2))/numel(coefvec);
+                if (rmse < obj.TolRmse || iIter >= obj.MaxIter)
                     break
                 end
+                
             end
-            % Reconstruction
-            reconst = step(obj.Synthesizer,coefvec,scales); 
-            if ~isempty(obj.StepMonitor) 
-                step(obj.StepMonitor,reconst);
-            end
-            % Residual
-            residual = source - reconst;
         end
         
     end

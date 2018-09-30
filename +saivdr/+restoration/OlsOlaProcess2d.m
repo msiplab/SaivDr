@@ -1,4 +1,4 @@
-classdef OlsOlaProcess2d < saivdr.utility.AbstOlsOlaProcess
+classdef OlsOlaProcess2d < saivdr.restoration.AbstOlsOlaProcess
     %OLSOLAPROCESS2D OLS/OLA wrapper for 2-D analysis and synthesis system
     %
     % Reference:
@@ -35,16 +35,28 @@ classdef OlsOlaProcess2d < saivdr.utility.AbstOlsOlaProcess
         % Constractor
         function obj = OlsOlaProcess2d(varargin)
             import saivdr.dictionary.utility.Direction
-            obj = obj@saivdr.utility.AbstOlsOlaProcess(...
+            obj = obj@saivdr.restoration.AbstOlsOlaProcess(...
                 varargin{:});
             setProperties(obj,nargin,varargin{:})
-            if ~isempty(obj.SplitFactor)
-                obj.VerticalSplitFactor = obj.SplitFactor(Direction.VERTICAL);
-                obj.HorizontalSplitFactor = obj.SplitFactor(Direction.HORIZONTAL);
-            else
-                obj.SplitFactor(Direction.VERTICAL) = obj.VerticalSplitFactor;
-                obj.SplitFactor(Direction.HORIZONTAL) = obj.HorizontalSplitFactor;
+        end
+        
+        function [coefs,scales] = getCoefficients(obj)
+            nChs = size(obj.refScales,1);
+            nRows = obj.VerticalSplitFactor;
+            nCols = obj.HorizontalSplitFactor;
+            coefsCell = cell(nRows,nCols);
+            coefs = [];
+            for iCh = 1:nChs
+                for iCol = 1:nCols
+                    for iRow = 1:nRows
+                        tmp = obj.States{(iCol-1)*nRows+iRow};
+                        coefsCell{iRow,iCol} = tmp{iCh};
+                    end
+                end
+                subCoefs = cell2mat(coefsCell);
+                coefs = [ coefs subCoefs(:).'];
             end
+            scales = obj.refScales;
         end
         
     end
@@ -61,12 +73,28 @@ classdef OlsOlaProcess2d < saivdr.utility.AbstOlsOlaProcess
         end
         
         function s = saveObjectImpl(obj)
-            s = saveObjectImpl@saivdr.utility.AbstOlsOlaProcess(obj);
+            s = saveObjectImpl@saivdr.restoration.AbstOlsOlaProcess(obj);
         end
         
         function loadObjectImpl(obj,s,wasLocked)
-            loadObjectImpl@saivdr.utility.AbstOlsOlaProcess(obj,s,wasLocked);
+            loadObjectImpl@saivdr.restoration.AbstOlsOlaProcess(obj,s,wasLocked);
         end
+        
+        function setupImpl(obj,srcImg)
+            obj.setupSplitFactor()
+            setupImpl@saivdr.restoration.AbstOlsOlaProcess(obj,srcImg);
+        end        
+        
+        function setupSplitFactor(obj)
+            import saivdr.dictionary.utility.Direction                        
+            if ~isempty(obj.SplitFactor)
+                obj.VerticalSplitFactor = obj.SplitFactor(Direction.VERTICAL);
+                obj.HorizontalSplitFactor = obj.SplitFactor(Direction.HORIZONTAL);
+            else
+                obj.SplitFactor(Direction.VERTICAL) = obj.VerticalSplitFactor;
+                obj.SplitFactor(Direction.HORIZONTAL) = obj.HorizontalSplitFactor;
+            end
+        end        
         
         function recImg = circular_ola_(obj,subRecImg)
             import saivdr.dictionary.utility.Direction
