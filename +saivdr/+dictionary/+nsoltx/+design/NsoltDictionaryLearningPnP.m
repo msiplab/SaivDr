@@ -151,7 +151,7 @@ classdef NsoltDictionaryLearningPnP < matlab.System
                 [~, sprsCoefs{iImg}, setOfScales{iImg}] = ...
                     obj.SparseApproximater.step(obj.TrainingImages{iImg});
             end
-            
+
             % Dictionary Update
             obj.DictionaryUpdater.TrainingImages = obj.TrainingImages;
             obj.DictionaryUpdater.SparseCoefficients = sprsCoefs;

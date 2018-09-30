@@ -28,10 +28,10 @@ classdef IstHcSystem < saivdr.restoration.AbstIterativeMethodSystem
     %  3: while A stopping criterion is not satisfied do
     %  4:     t <- D'(P'(Pr(n) - v) + y(n))
     %  5:     x(n+1) = G_R( x(n) - gamma1*t, sqrt(lambda*gamma1) )
-    %  6:     u(n) <-  2Dx(n+1) - r(n)
-    %  7:     y(n) <-  y(n) + gamma2*u(n)
-    %  8:     y(n+1) = y(n) - gamma2*Pc(y(n)/gamma2)
-    %  9:     r(n+1) = (1/2)(u(n)+r(n))
+    %  6:     r(n+1) = 2Dx(n+1)
+    %  7:     u(n) <-  2r(n+1) - r(n)
+    %  8:     y(n) <-  y(n) + gamma2*u(n)
+    %  9:     y(n+1) = y(n) - gamma2*Pc(y(n)/gamma2)
     % 10:     n <- n+1
     % 11: end while
     % ===================================================================
@@ -221,18 +221,17 @@ classdef IstHcSystem < saivdr.restoration.AbstIterativeMethodSystem
                 %
                 t = adjDic.step(g);
                 x = gdn.step(xPre-gamma1*t);
-                z = fwdDic(x,scales);
+                result = fwdDic(x,scales);
                 % Update
                 obj.X = x;
             else % OLS/OLA process
-                z = obj.ParallelProcess.step(g);
+                result = obj.ParallelProcess.step(g);
             end
-            u = 2*z - resPre;
+            u = 2*result - resPre;
             gamma2 = obj.Gamma{2};
             y = yPre + gamma2*u;
             y = y - gamma2*mtrProj.step(y/gamma2);
-            result = (u+resPre)/2;
-            
+
             % Output
             if nargout > 0
                 varargout{1} = result;
