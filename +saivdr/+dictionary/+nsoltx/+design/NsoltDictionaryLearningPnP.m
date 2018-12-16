@@ -79,7 +79,23 @@ classdef NsoltDictionaryLearningPnP < matlab.System
     end
     
     methods (Access=protected)
+        function s = saveObjectImpl(obj)
+            % Call the base class method
+            s = saveObjectImpl@matlab.System(obj);
+            % Save the child System objects
+            s.OvsdLpPuFb = matlab.System.saveObject(obj.OvsdLpPuFb);
+            % Save the protected & private properties
+            s.nImgs = obj.nImgs;
+        end
         
+        function loadObjectImpl(obj,s,wasLocked)
+            % Load protected and private properties
+            obj.nImgs = s.nImgs;
+            % Load the child System objects
+            obj.OvsdLpPuFb = matlab.System.loadObject(s.OvsdLpPuFb);
+            % Call base class method to load public properties
+            loadObjectImpl@matlab.System(obj,s,wasLocked);             
+        end
         function flag = isInactivePropertyImpl(obj,propertyName)
             flag = false;
             if strcmp(propertyName,'StdOfAngRandomInit') || ...
