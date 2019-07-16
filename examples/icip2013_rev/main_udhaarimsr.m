@@ -5,7 +5,7 @@
 %
 % Requirements: MATLAB R2015b
 %
-% Copyright (c) 2014-2015, Shogo MURAMATSU
+% Copyright (c) 2014-2019, Shogo MURAMATSU
 %
 % All rights reserved.
 %
@@ -66,7 +66,8 @@ obsImg = support.fcn_observation(...
 %% Create a dictionary
 import saivdr.dictionary.udhaar.*
 synthesizer = UdHaarSynthesis2dSystem();
-analyzer    = UdHaarAnalysis2dSystem();
+analyzer    = UdHaarAnalysis2dSystem(...
+    'NumberOfLevels',nlevels);
 
 %% Create a step monitor
 import saivdr.utility.StepMonitoringSystem
@@ -91,7 +92,7 @@ rstr = IstaImRestoration2d(...
     'Synthesizer',synthesizer,...
     'AdjOfSynthesizer',analyzer,...
     'LinearProcess',linproc,...
-    'NumberOfTreeLevels',nlevels,...
+    ...'NumberOfTreeLevels',nlevels,...
     'Lambda',lambda);
 set(rstr,'MaxIter',maxIter);
 set(rstr,'Eps0',eps0);  

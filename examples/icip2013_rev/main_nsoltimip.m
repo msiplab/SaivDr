@@ -6,7 +6,7 @@
 %
 % Requirements: MATLAB R2015b
 %
-% Copyright (c) 2014-2017, Shogo MURAMATSU
+% Copyright (c) 2014-2019, Shogo MURAMATSU
 %
 % All rights reserved.
 %
@@ -76,7 +76,8 @@ lppufb = saivdr.dictionary.utility.fcn_upgrade(s.lppufb);
 release(lppufb);
 set(lppufb,'OutputMode','ParameterMatrixSet');
 synthesizer = NsoltFactory.createSynthesis2dSystem(lppufb);
-analyzer = NsoltFactory.createAnalysis2dSystem(lppufb);
+analyzer = NsoltFactory.createAnalysis2dSystem(lppufb,...
+    'NumberOfLevels',nlevels);
 
 %% Create a step monitor
 import saivdr.utility.StepMonitoringSystem
@@ -101,7 +102,7 @@ rstr = IstaImRestoration2d(...
     'Synthesizer',synthesizer,...
     'AdjOfSynthesizer',analyzer,...
     'LinearProcess',linproc,...
-    'NumberOfTreeLevels',nlevels,...
+    ...'NumberOfTreeLevels',nlevels,...
     'Lambda',lambda);
 set(rstr,'MaxIter',maxIter);
 set(rstr,'Eps0',eps0);  
