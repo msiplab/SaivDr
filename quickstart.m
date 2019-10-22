@@ -14,7 +14,7 @@
 % Information about *SaivDr Package* is given in Contents.m.
 % The HELP command can be used to see the contents as follows:
 
-help SaivDr
+help ./Contents
 
 %% Add the package to search path
 % Before using *SaivDr Package* , it is required to add the package top 

@@ -61,6 +61,8 @@ classdef AbstOvsdLpPuFb2dTypeIISystem < ...
                     obj.mexFcn = @fcn_Order2BuildingBlockTypeII;
                 end
             end
+            %
+            obj.ParameterMatrixSet.release()
         end
         
         function resetImpl(obj)
