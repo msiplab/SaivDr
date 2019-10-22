@@ -62,6 +62,8 @@ classdef AbstOvsdLpPuFb2dTypeISystem < ...
                     obj.mexFlag = false;
                 end
             end
+            %
+            obj.ParameterMatrixSet.release()
         end
         
         function resetImpl(obj)
