@@ -134,6 +134,8 @@ classdef LpPuFb2dTvmSystem < saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2dTypeISyste
             obj.ckTvm_ = s.ckTvm_;
             obj.omgs_ = matlab.System.loadObject(s.omgs_);
             obj.ops_  = matlab.System.loadObject(s.ops_);
+            %
+            obj.omgs_.release()
         end 
         
         function updateParameterMatrixSet_(obj)
