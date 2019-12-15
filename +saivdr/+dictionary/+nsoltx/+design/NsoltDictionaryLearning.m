@@ -58,10 +58,12 @@ classdef NsoltDictionaryLearning < matlab.System
     properties (Hidden)
         StdOfAngRandomInit    = 1e-2;
         PrbOfFlipMuRandomInit = 0      
-        SgdStep = 'Constant'
-        SgdStepStart = 1
-        SgdStepFinal = 1e-4
-        SgdGaAngInit = 'off'
+        Step = 'Constant'
+        StepStart = 1
+        StepFinal = 1e-4
+        AdaGradEta = 1e-2
+        AdaGradEps = 1e-8
+        GaAngInit = 'off'
     end
     
     properties(DiscreteState, PositiveInteger)
@@ -115,17 +117,39 @@ classdef NsoltDictionaryLearning < matlab.System
     end
     
     methods (Access=protected)
-    
+        
+        function s = saveObjectImpl(obj)
+            % Call the base class method
+            s = saveObjectImpl@matlab.System(obj);
+            % Save the child System objects
+            s.OvsdLpPuFb = matlab.System.saveObject(obj.OvsdLpPuFb);
+            s.sparseAprx = matlab.System.saveObject(obj.sparseAprx);
+            s.dicUpdate = matlab.System.saveObject(obj.dicUpdateAprx);            
+            % Save the protected & private properties
+            s.nImgs = obj.nImgs;
+        end
+        
+        function loadObjectImpl(obj,s,wasLocked)
+            % Load protected and private properties
+            obj.nImgs = s.nImgs;
+            % Load the child System objects
+            obj.sparseAprx = matlab.System.loadObject(s.sparseAprx);
+            obj.dicUpdate = matlab.System.loadObject(s.dicUpdateAprx);                        
+            obj.OvsdLpPuFb = matlab.System.loadObject(s.OvsdLpPuFb);
+            % Call base class method to load public properties
+            loadObjectImpl@matlab.System(obj,s,wasLocked);             
+        end
+        
         function flag = isInactivePropertyImpl(obj,propertyName)
             if strcmp(propertyName,'NumberOfUnfixedInitialSteps')
                 flag = ~obj.IsFixedCoefs; 
             elseif strcmp(propertyName,'StdOfAngRandomInit') || ...
                     strcmp(propertyName,'PrbOfFlipMuRandomInit')
                 flag = ~obj.IsRandomInit;
-            elseif strcmp(propertyName,'SgdStep') || ...
-                    strcmp(propertyName,'SgdStepStart') || ...
-                    strcmp(propertyName,'SgdStepFinal') || ...
-                strcmp(propertyName,'SgdGaAngInit')
+            elseif strcmp(propertyName,'Step') || ...
+                    strcmp(propertyName,'StepStart') || ...
+                    strcmp(propertyName,'StepFinal') || ...
+                strcmp(propertyName,'GaAngInit')
                 flag = ~strcmp(obj.DictionaryUpdater,'NsoltDictionaryUpdateSgd');
             else
                 flag = false;
@@ -188,10 +212,12 @@ classdef NsoltDictionaryLearning < matlab.System
                     'IsFixedCoefs',obj.IsFixedCoefs,...                    
                     'IsVerbose',obj.IsVerbose,...
                     'GradObj',obj.GradObj,...
-                    'Step',obj.SgdStep,...
-                    'StepStart',obj.SgdStepStart,...
-                    'StepFinal',obj.SgdStepFinal,...
-                    'GaAngInit',obj.SgdGaAngInit);
+                    'Step',obj.Step,...
+                    'StepStart',obj.StepStart,...
+                    'StepFinal',obj.StepFinal,...
+                    'AdaGradEta',obj.AdaGradEta,...
+                    'AdaGradEps',obj.AdaGradEps,...                    
+                    'GaAngInit',obj.GaAngInit);
             else
                 import saivdr.dictionary.nsoltx.design.NsoltDictionaryUpdateGaFmin
                 obj.dicUpdate = NsoltDictionaryUpdateGaFmin(...
