@@ -12,7 +12,7 @@ srcImg    = imread([imgName '.' fileExt]);
 nSubImgs  = 64;  % # of patches
 virWidth  = 128; % Virtual width of training images
 virHeight = 128; % Virtual height of training images
-virLvTrn  = 1;   % Virtual treee level for training images
+virLvTrn  = 4;   % Virtual tree level for training images
 
 % Randam extraction of traning image patchs
 height = size(srcImg,1);
@@ -46,9 +46,9 @@ sparseAprx   = 'IterativeHardThresholding';
 plotFcn      = @optimplotfval;
 maxIter      = 128;
 gradObj      = 'on'; % Available only for a single-level Type-I NSOLT
-sgdStep      = 'Exponential'; % or 'Constant' or 'Reciprocal'
-sgdStepStart = 16;
-sgdStepFinal = 1;
+steptype     = 'AdaGrad'; %'Exponential'; % or 'Constant' or 'Reciprocal'
+adaGradEta   = 1e-2;
+adaGradEps   = 1e-8;
 isRandomInit = true;
 isVerbose    = true;
 stdOfAngRandomInit = 1e-1;
@@ -71,9 +71,9 @@ designer = NsoltDictionaryLearning(...
     'IsVerbose', isVerbose,...
     'StdOfAngRandomInit', stdOfAngRandomInit,...
     'GradObj',gradObj,...
-    'SgdStep',sgdStep,...
-    'SgdStepStart',sgdStepStart,...
-    'SgdStepFinal',sgdStepFinal);
+    'Step',steptype,...
+    'AdaGradEta',adaGradEta,...
+    'AdaGradEps',adaGradEps);
 %
 options = optimset(...
     'Display','iter',...

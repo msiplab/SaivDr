@@ -92,6 +92,8 @@ classdef LpPuFb2dVm2System < saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2dTypeISyste
             loadObjectImpl@saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2dTypeISystem(obj,s,wasLocked);
             obj.omgs_ = matlab.System.loadObject(s.omgs_);
             obj.ops_  = matlab.System.loadObject(s.ops_);
+            %
+            obj.omgs_.release()
         end 
         
         function updateParameterMatrixSet_(obj)
