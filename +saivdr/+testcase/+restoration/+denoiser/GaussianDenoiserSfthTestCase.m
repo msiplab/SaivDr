@@ -1,5 +1,5 @@
 classdef GaussianDenoiserSfthTestCase < matlab.unittest.TestCase
-    %TESTCASEPLGSOFTTHRESHOLDING Gaussian denoiser with soft thresholding
+    %GAUSSIANDENOISERSFTHTESTCASE Gaussian denoiser with soft thresholding
     %
     % Requirements: MATLAB R2015b
     %

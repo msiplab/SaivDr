@@ -1,5 +1,6 @@
 /codegen/
 /mexcodes/
+/bm4d/
 !/mexcodes/.emptyfolder
 matlab.mat
 *.asv

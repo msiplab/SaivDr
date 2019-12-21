@@ -109,8 +109,11 @@ classdef TestCaseCostEvaluator < matlab.unittest.TestCase
             
             %
             nLevels = 1;
-            fwdDic = DicUdHaarRec3();
-            adjDic = DicUdHaarDec3('NumLevels',nLevels);
+            import saivdr.dictionary.udhaar.*
+            %fwdDic = DicUdHaarRec3();
+            %adjDic = DicUdHaarDec3('NumLevels',nLevels);
+            fwdDic = UdHaarSynthesis3dSystem();
+            adjDic = UdHaarAnalysis3dSystem('NumberOfLevels',nLevels);            
             phi = RefractIdx2Reflect('PhiMode','Reflection');
             obsImg = coh3.step(phi.step(srcImg),'Forward') ...
                 + 0.1*randn(size(srcImg));

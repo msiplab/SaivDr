@@ -77,10 +77,16 @@ classdef TestCasePdsHsHcOct3 < matlab.unittest.TestCase
                 + wSigma*randn(size(uSrc));
             
             % インスタンス生成
-            fwdDic  = DicUdHaarRec3();
-            adjDic  = DicUdHaarDec3('NumLevels',nlevels);
-            gdnFcnG = PlgGdnSfth();
-            gdnFcnH = PlgGdnSfth();
+            import saivdr.dictionary.udhaar.*
+            import saivdr.restoration.denoiser.*
+            %fwdDic = DicUdHaarRec3();
+            %adjDic = DicUdHaarDec3('NumLevels',nLevels);
+            %gdnFcnG = PlgGdnSfth();
+            %gdnFcnH = PlgGdnSfth();
+            fwdDic = UdHaarSynthesis3dSystem();
+            adjDic = UdHaarAnalysis3dSystem('NumberOfLevels',nlevels);
+            gdnFcnG = GaussianDenoiserSfth();
+            gdnFcnH = GaussianDenoiserSfth();
             target  = PdsHsHcOct3(...
                 'Observation',    vObs,...
                 'PhiMode',        phimode,...
@@ -127,10 +133,16 @@ classdef TestCasePdsHsHcOct3 < matlab.unittest.TestCase
                 + wSigma*randn(size(uSrc));
             
             % インスタンス生成
-            fwdDic  = DicIdentityRec();
-            adjDic  = DicIdentityDec('IsVectorize',false);
-            gdnFcnG = PlgGdnBm4d();
-            gdnFcnH = PlgGdnSfth();
+            import saivdr.dictionary.utility.*
+            import saivdr.restoration.denoiser.*
+            %fwdDic  = DicIdentityRec();
+            %adjDic  = DicIdentityDec('IsVectorize',false);
+            fwdDic  = IdentitySynthesisSystem();
+            adjDic  = IdentityAnalysisSystem('IsVectorize',false);            
+            %gdnFcnG = PlgGdnBm4d();
+            %gdnFcnH = PlgGdnSfth();
+            gdnFcnG = GaussianDenoiserBm4d();
+            gdnFcnH = GaussianDenoiserSfth();            
             target  = PdsHsHcOct3(...
                 'Observation',    vObs,...
                 'MeasureProcess', coh3,...
@@ -174,10 +186,16 @@ classdef TestCasePdsHsHcOct3 < matlab.unittest.TestCase
                 + wSigma*randn(size(uSrc));
             
             % インスタンス生成
-            fwdDic  = DicUdHaarRec3();
-            adjDic  = DicUdHaarDec3('NumLevels',nlevels);
-            gdnFcnG = PlgGdnHdth();
-            gdnFcnH = PlgGdnHdth();
+            import saivdr.dictionary.udhaar.*
+            import saivdr.restoration.denoiser.*
+            %fwdDic = DicUdHaarRec3();
+            %adjDic = DicUdHaarDec3('NumLevels',nLevels);
+            %gdnFcnG = PlgGdnSfth();
+            %gdnFcnH = PlgGdnSfth();
+            fwdDic = UdHaarSynthesis3dSystem();
+            adjDic = UdHaarAnalysis3dSystem('NumberOfLevels',nlevels);
+            gdnFcnG = GaussianDenoiserSfth();
+            gdnFcnH = GaussianDenoiserSfth();
             target  = PdsHsHcOct3(...
                 'Observation',    vObs,...
                 'MeasureProcess', coh3,...
@@ -225,10 +243,16 @@ classdef TestCasePdsHsHcOct3 < matlab.unittest.TestCase
                 + wSigma*randn(size(uSrc));
             
             % インスタンス生成
-            fwdDic  = DicUdHaarRec3();
-            adjDic  = DicUdHaarDec3('NumLevels',nlevels);
-            gdnFcnG = PlgGdnSfth();
-            gdnFcnH = PlgGdnSfth();
+            import saivdr.dictionary.udhaar.*
+            import saivdr.restoration.denoiser.*
+            %fwdDic = DicUdHaarRec3();
+            %adjDic = DicUdHaarDec3('NumLevels',nLevels);
+            %gdnFcnG = PlgGdnSfth();
+            %gdnFcnH = PlgGdnSfth();
+            fwdDic = UdHaarSynthesis3dSystem();
+            adjDic = UdHaarAnalysis3dSystem('NumberOfLevels',nlevels);
+            gdnFcnG = GaussianDenoiserSfth();
+            gdnFcnH = GaussianDenoiserSfth();
             
             reference  = PdsHsHcOct3(...
                 'Observation',    vObs,...
@@ -286,13 +310,19 @@ classdef TestCasePdsHsHcOct3 < matlab.unittest.TestCase
             phi  = RefractIdx2Reflect();
             vObs = coh3.step(phi.step(uSrc),'Forward') ...
                 + wSigma*randn(size(uSrc));
-            fwdDic  = DicUdHaarRec3();
-            adjDic  = DicUdHaarDec3('NumLevels',nlevels);
+            import saivdr.dictionary.udhaar.*
+            %fwdDic = DicUdHaarRec3();
+            %adjDic = DicUdHaarDec3('NumLevels',nLevels);
+            fwdDic = UdHaarSynthesis3dSystem();
+            adjDic = UdHaarAnalysis3dSystem('NumberOfLevels',nlevels);
             coefs = adjDic.step(vObs);
             
             % インスタンス生成
-            gdnFcnG = PlgGdnSfth();
-            gdnFcnH = PlgGdnSfth();
+            import saivdr.restoration.denoiser.*
+            %gdnFcnG = PlgGdnSfth();
+            %gdnFcnH = PlgGdnSfth();
+            gdnFcnG = GaussianDenoiserSfth();
+            gdnFcnH = GaussianDenoiserSfth();
             target  = PdsHsHcOct3(...
                 'Lambda', barLambda,...
                 'Eta',    barEta,...

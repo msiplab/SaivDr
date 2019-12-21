@@ -199,6 +199,7 @@ classdef PdsHsHcOct3 < matlab.System
                 %
                 [obj.xpre,obj.scls] = adjDic(res0); % •ÏŠ·ŒW”‚Ì‰Šú’l
             else
+                import saivdr.restoration.*
                 gdn = obj.GaussianDenoiser{1};
                 cm = CoefsManipulator(...
                     'Manipulation',...

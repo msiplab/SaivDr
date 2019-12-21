@@ -14,12 +14,40 @@ classdef IdentityAnalysisSystem < saivdr.dictionary.AbstAnalysisSystem
     %
     % http://msiplab.eng.niigata-u.ac.jp/
     %
-   
+    properties (Nontunable)
+        IsVectorize = true
+    end
+    
+    
+    methods
+        function obj = IdentityAnalysisSystem(varargin)
+            % Support name-value pair arguments
+            setProperties(obj,nargin,varargin{:});
+            %
+        end
+    end
+    
+    
     methods (Access = protected)
         
-        function [coefs,scales] = stepImpl(~,srcImg)
-            coefs = srcImg(:);
-            scales = size(srcImg);            
+        function s = saveObjectImpl(obj)
+            s = saveObjectImpl@matlab.System(obj);
+        end
+        
+        function loadObjectImpl(obj, s, wasLocked)
+            loadObjectImpl@matlab.System(obj,s,wasLocked);
+        end
+        
+        function setupImpl(~,~,~)
+        end
+        
+       function [ coefs, scales ] = stepImpl(obj, u, ~)
+            scales = size(u);
+            if obj.IsVectorize
+                coefs = u(:); 
+            else
+                coefs = u;
+            end
         end
     end
     

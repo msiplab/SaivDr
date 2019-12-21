@@ -15,20 +15,48 @@ classdef IdentitySynthesisSystem < saivdr.dictionary.AbstSynthesisSystem
     % http://msiplab.eng.niigata-u.ac.jp/
     %
 
+    
+    properties (Nontunable, Access = private)
+        dim
+    end    
+    
     methods
         
         function obj = IdentitySynthesisSystem(varargin)
+            % Support name-value pair arguments
+            setProperties(obj,nargin,varargin{:});
+            %            
             obj.FrameBound = 1;
         end
         
     end
     
-    methods (Access = protected)
+    methods (Access=protected)
         
-        function recImg = stepImpl(~,coefs,scales)
-            recImg = reshape(coefs,scales);
+        %function validateInputsImpl(~, ~, scales)
+        %end
+   
+        function s = saveObjectImpl(obj)
+            s = saveObjectImpl@matlab.System(obj);
+            s.dim = obj.dim;
         end
         
+        function loadObjectImpl(obj, s, wasLocked)
+            obj.dim = s.dim;
+            loadObjectImpl@matlab.System(obj,s,wasLocked); 
+        end
+               
+        function setupImpl(obj, ~, scales)
+            obj.dim = scales(1,:);
+        end
+        
+        function resetImpl(~)
+        end
+        
+        function y = stepImpl(obj, u, ~)
+           y = reshape(u,obj.dim(1,:));           
+        end
+
     end
-  
+        
 end
