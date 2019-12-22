@@ -6,32 +6,56 @@
 % IEEE Signal Processing Letters, vol.24, no.8, pp.1108-1112, Aug. 2017.
 %
 
-% 可視化パラメータ
-isVisible  = true;  % グラフ表示
-isVerbose  = true;
-slicePlane = 'YZ'; % 画像スライス方向
-texture    = '2D';
-obsScale   = 10;
-estScale   = 20;
+%% 並列プール設定
+%%{
+%poolobj = gcp('nocreate');
+%delete(poolobj);
+%nWorkers = 2;
+%parpool(nWorkers)
 
-% 変換パラメータ
-nLevels = 1;
+%%  GPU 設定
+%spmd
+%  gpuDevice( 1 + mod( labindex - 1, gpuDeviceCount ) )
+%end
+%%}
 
-% method
+%% 変換パラメータ
+nLevels = 1; % ツリーレベル
+splitfactor = [1 1 1]; %2*ones(1,3);  % 垂直・水平・奥行方向並列度
+padsize = 2^(nLevels-1)*ones(1,3); % OLS/OLA パッドサイズ
+isintegritytest = false; % 整合性テスト
+useparallel = false; % 並列化
+usegpu = true; % GPU
+issingle = true; % 単精度
 method = 'udht';
 %method = 'bm4d';
+isIsta      = false; % ISTA
+isNoDcShk   = false;  % DC成分閾値回避
+%isEnvWght   = false;  % 包絡線重み付け
+
+%% 最大繰り返し回数
+maxIter = 1000;
+
+%% 可視化パラメータ
+isVerbose  = true;
+isVisible  = true;  % グラフ表示
+monint     = 10;    % モニタリング間隔
+texture    = '2D';
+slicePlane = 'YZ';  % 画像スライス方向
+daspect    = [1 1 3];
+obsScale =  20; % 観測データ用モニタの輝度調整
+estScale = 200; % 復元データ用モニタの輝度調整
+vdpScale = [1 10]; % プロット用スケール調整
 
 %% 最適化パラメータ
-maxIter = 1e+3; % 最大繰返し回数
-%isNoDcShk   = false; % DC成分閾値回避
-%isEnvWght   = false; % 包絡線重み付け
 % eta = 0, vmin=-Inf, vmax=Inf で ISTA相当
+sizecomp = true; % 正則化パラメータのサイズ補正
 if strcmp(method,'udht')
-    lambda  = 1.6e-4; % 正則化パラメータ (変換係数のスパース性）
-    eta     = 0.8; % 正則化パラメータ（奥行方向の全変動）
+    barlambda  = 1e-8; % 正則化パラメータ (変換係数のスパース性）
+    bareta     = 1e-8; % 正則化パラメータ（奥行方向の全変動）
 elseif strcmp(method,'bm4d')
-    lambda  = 1.6e-4; % 正則化パラメータ (変換係数のスパース性）
-    eta     = 0.8; % 正則化パラメータ（奥行方向の全変動）
+    barlambda  = 1e-8; % 正則化パラメータ (変換係数のスパース性）
+    bareta     = 1e-8; % 正則化パラメータ（奥行方向の全変動）
 else
     error('METHOD')
 end
@@ -47,9 +71,9 @@ phiMode   = 'Linear';
 %
 
 %% 観測パラメータ設定
-wSigma = 4e-2; % ノイズ標準偏差
-pScale = 8.00; % 光強度
-pSigma = 8.00; % 広がり
+wSigma = 1e-2; % ノイズ標準偏差
+pScale = 1.00; % 光強度
+pSigma = 4.00; % 広がり
 pFreq  = 0.25; % 周波数
 
 %% 合成辞書（パーセバルタイトフレーム）＆ ガウスノイズ除去
@@ -90,9 +114,13 @@ if isVisible
     %
     vdvsrc = VolumetricDataVisualizer(...
         'Texture',texture,...
-        'SlicePlane',slicePlane,...
-        ...'DAspect',[1 1 3],...
         'VRange',[0 2]);
+    if strcmp(texture,'2D')
+        vdvsrc.SlicePlane = slicePlane;
+    else
+        vdvsrc.DAspect = daspect;
+    end
+        
     subplot(2,3,1)
     vdvsrc.step(uSrc);
     xlabel(['Refract. Idx ' slicePlane ' slice'])
@@ -101,10 +129,10 @@ if isVisible
     vdpsrc = VolumetricDataPlot(...
         'Direction','Z',...
         'NumPlots',2,...
-        'Scales',[1 10]);
+        'Scales',vdpScale);
     vdpsrc.step(uSrc,phi.step(uSrc));
     axis([0 size(uSrc,3) -1 2])
-    legend('Refraction Idx','Reflectance x10','Location','best')
+    legend('Refraction Idx',['Reflectance x' num2str(vdpScale(2))],'Location','best')
     title('Source')
 end
 
@@ -135,14 +163,17 @@ if isVisible
     rSrc = phi.step(uSrc);
     vdvobs = VolumetricDataVisualizer(...
         'Texture',texture,....
-        'SlicePlane',slicePlane,...
-        ...'DAspect',[1 1 3],...
         'VRange',[-1 1],...
         'Scale',obsScale);    
+    if strcmp(texture,'2D')
+        vdvobs.SlicePlane = slicePlane;
+    else
+        vdvobs.DAspect = daspect;
+    end
     vdvobs.step(vObs);
+        
     xlabel(sprintf('Obs %s slice: MSE = %6.4e',slicePlane,mymse(vObs,rSrc)))
     %
-    import saivdr.utility.*
     subplot(2,3,5)
     vdpobs = VolumetricDataPlot(...
         'Direction','Z',...
@@ -211,10 +242,13 @@ end
 if isVisible
     vdv = VolumetricDataVisualizer(...
         'Texture',texture,...
-        'SlicePlane',slicePlane,...
-        ...'DAspect',[1 1 3],...
         'VRange',[-1 1],...
         'Scale',estScale);    
+    if strcmp(texture,'2D')
+       vdv.SlicePlane = slicePlane;
+    else
+        vdv.DAspect = daspect;
+    end        
     phiapx = RefractIdx2Reflect(...
         'PhiMode',phiMode,...
         'VRange', vrange);
@@ -230,7 +264,7 @@ if isVisible
     vdp = VolumetricDataPlot(...
         'Direction','Z',...
         'NumPlots',2,...
-        'Scales',[1 10]);
+        'Scales',vdpScale);
     vdp.step(vObs,r);
     axis([0 size(vObs,3) -1 2])
     legend('Refraction Idx','Reflectance x10','Location','best')
@@ -240,31 +274,50 @@ end
 %% 復元システム生成
 pdshshc = PdsHsHcOct3(...
     'Observation',    vObs,...
-    'Lambda',         lambda,...
-    'Eta',            eta,...
+    'Lambda',         barlambda,...
+    'Eta',            bareta,...
+    'IsSizeCompensation', sizecomp,...
     'Gamma1',         gamma1,...
     'PhiMode',        phiMode,...
     'VRange',         vrange,...
     'MeasureProcess', msrProc,...
     'Dictionary',     { fwdDic, adjDic },...
-    'GaussianDenoiser', { gdnFcnG, gdnFcnH } );
+    'GaussianDenoiser', { gdnFcnG, gdnFcnH },...
+    'SplitFactor',    splitfactor,...
+    'PadSize',        padsize,...
+    'UseParallel',    useparallel,...
+    'UseGpu',         usegpu,...
+    'IsIntegrityTest', isintegritytest);
 
 disp(pdshshc)
 
 %% 復元処理
 for itr = 1:maxIter
+    tic
     uEst = pdshshc.step();
+    if isVerbose && itr==1
+        lambda = pdshshc.LambdaCompensated;
+        eta   = pdshshc.EtaCompensated;
+        disp(['lambda = ' num2str(lambda)]);
+        disp(['eta    = ' num2str(eta)]);
+    end
     % Monitoring
-    vdv.step(phiapx.step(uEst));
-    vdpobs.step(vObs,msrProc(phiapx.step(uEst),'Forward'));
-    vdp.step(uEst,phiapx.step(uEst));
-    set(hTitle3,'String',sprintf('Rfl Est (%3d): MSE = %6.4e',itr,mymse(phiapx.step(uEst),phi.step(uSrc))));
-    %
-    drawnow    
+    if isVisible && (itr==1 || mod(itr,monint)==0)
+        rEst = phiapx.step(uEst);        
+        vdv.step(rEst);
+        vdpobs.step(vObs,msrProc((rEst),'Forward'));
+        vdp.step(uEst,rEst);
+        set(hTitle3,'String',sprintf('Rfl Est (%3d): MSE = %6.4e',itr,mymse(rEst,phi.step(uSrc))));
+        drawnow
+    end
+    toc
 end
+lamda = pdshshc.LambdaCompensated;
+eta   = pdshshc.EtaCompensated;
+disp(['lambda = ' num2str(lambda)]);
+disp(['eta    = ' num2str(eta)]);
 
 %% 結果表示
-rEst = phiapx.step(uEst);
 rSrc = phi.step(uSrc);
 fprintf('Restoration of Reflection: MSE = %6.4e\n',mymse(rEst,rSrc));
 
@@ -282,6 +335,8 @@ save([targetdir '/vobs_sim'],'vObs')
 
 %% データ保存
 options.method = method;
+options.barlambda = barlambda;
+options.bareta    = bareta;
 options.lambda = lambda;
 options.eta    = eta;
 options.gamma1 = gamma1;
