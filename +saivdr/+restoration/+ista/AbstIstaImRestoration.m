@@ -3,7 +3,7 @@ classdef AbstIstaImRestoration < matlab.System %~#codegen
     %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2014-2017, Shogo MURAMATSU
+    % Copyright (c) 2014-2020, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -19,7 +19,6 @@ classdef AbstIstaImRestoration < matlab.System %~#codegen
         Synthesizer
         AdjOfSynthesizer
         LinearProcess
-        NumberOfTreeLevels = 1
     end
     
 
@@ -149,3 +148,4 @@ classdef AbstIstaImRestoration < matlab.System %~#codegen
     end
     
 end
+

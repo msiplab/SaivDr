@@ -3,7 +3,7 @@ classdef Analysis2dSystemTestCase < matlab.unittest.TestCase
     %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2015-2017, Shogo MURAMATSU
+    % Copyright (c) 2015-2020, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -113,10 +113,11 @@ classdef Analysis2dSystemTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.generalfb.*
             testCase.analyzer = Analysis2dSystem(...
                 'DecimationFactor',nDecs,...
-                'AnalysisFilters',analysisFilters);
+                'AnalysisFilters',analysisFilters,...
+                'NumberOfLevels',nLevels);
             
             % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifySize(scalesActual,size(scalesExpctd));
@@ -164,10 +165,11 @@ classdef Analysis2dSystemTestCase < matlab.unittest.TestCase
             % Instantiation of target class
             testCase.analyzer = Analysis2dSystem(...
                 'DecimationFactor',nDecs,...
-                'AnalysisFilters',analysisFilters);
+                'AnalysisFilters',analysisFilters,...
+                'NumberOfLevels',nLevels);
             
             % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifySize(scalesActual,size(scalesExpctd));
@@ -215,10 +217,11 @@ classdef Analysis2dSystemTestCase < matlab.unittest.TestCase
             % Instantiation of target class
             testCase.analyzer = Analysis2dSystem(...
                 'DecimationFactor',nDecs,...
-                'AnalysisFilters',analysisFilters);
+                'AnalysisFilters',analysisFilters,...
+                'NumberOfLevels',nLevels);
             
             % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifySize(scalesActual,size(scalesExpctd));
@@ -266,10 +269,11 @@ classdef Analysis2dSystemTestCase < matlab.unittest.TestCase
             % Instantiation of target class
             testCase.analyzer = Analysis2dSystem(...
                 'DecimationFactor',nDecs,...
-                'AnalysisFilters',analysisFilters);
+                'AnalysisFilters',analysisFilters,...
+                'NumberOfLevels',nLevels);
             
             % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifySize(scalesActual,size(scalesExpctd));
@@ -320,10 +324,11 @@ classdef Analysis2dSystemTestCase < matlab.unittest.TestCase
             % Instantiation of target class
             testCase.analyzer = Analysis2dSystem(...
                 'DecimationFactor',nDecs,...
-                'AnalysisFilters',analysisFilters);
+                'AnalysisFilters',analysisFilters,...
+                'NumberOfLevels',nLevels);
             
             % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifySize(scalesActual,size(scalesExpctd));
@@ -369,10 +374,11 @@ classdef Analysis2dSystemTestCase < matlab.unittest.TestCase
             % Instantiation of target class
             testCase.analyzer = Analysis2dSystem(...
                 'DecimationFactor',nDecs,...
-                'AnalysisFilters',analysisFilters);
+                'AnalysisFilters',analysisFilters,...
+                'NumberOfLevels',nLevels);
             
             % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifySize(scalesActual,size(scalesExpctd));
@@ -438,10 +444,11 @@ classdef Analysis2dSystemTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.generalfb.*
             testCase.analyzer = Analysis2dSystem(...
                 'DecimationFactor',nDecs,...
-                'AnalysisFilters',analysisFilters);
+                'AnalysisFilters',analysisFilters,...
+                'NumberOfLevels',nLevels);
             
             % Actual values
-            [coefsActual,scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            [coefsActual,scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifySize(scalesActual,size(scalesExpctd));
@@ -517,10 +524,11 @@ classdef Analysis2dSystemTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.generalfb.*
             testCase.analyzer = Analysis2dSystem(...
                 'DecimationFactor',nDecs,...
-                'AnalysisFilters',analysisFilters);
+                'AnalysisFilters',analysisFilters,...
+                'NumberOfLevels',nLevels);
             
             % Actual values
-            [coefsActual,scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            [coefsActual,scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifySize(scalesActual,size(scalesExpctd));
@@ -612,10 +620,11 @@ classdef Analysis2dSystemTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.generalfb.*
             testCase.analyzer = Analysis2dSystem(...
                 'DecimationFactor',nDecs,...
-                'AnalysisFilters',analysisFilters);
+                'AnalysisFilters',analysisFilters,...
+                'NumberOfLevels',nLevels);
             
             % Actual values
-            [coefsActual,scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            [coefsActual,scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifySize(scalesActual,size(scalesExpctd));
@@ -662,10 +671,11 @@ classdef Analysis2dSystemTestCase < matlab.unittest.TestCase
             testCase.analyzer = Analysis2dSystem(...
                 'DecimationFactor',nDecs,...
                 'AnalysisFilters',analysisFilters,...
-                'FilterDomain','Frequency');
+                'FilterDomain','Frequency',...
+                'NumberOfLevels',nLevels);
             
             % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifySize(scalesActual,size(scalesExpctd));
@@ -714,10 +724,11 @@ classdef Analysis2dSystemTestCase < matlab.unittest.TestCase
             testCase.analyzer = Analysis2dSystem(...
                 'DecimationFactor',nDecs,...
                 'AnalysisFilters',analysisFilters,...
-                'FilterDomain','Frequency');
+                'FilterDomain','Frequency',...
+                'NumberOfLevels',nLevels);
             
             % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifySize(scalesActual,size(scalesExpctd));
@@ -766,10 +777,11 @@ classdef Analysis2dSystemTestCase < matlab.unittest.TestCase
             testCase.analyzer = Analysis2dSystem(...
                 'DecimationFactor',nDecs,...
                 'AnalysisFilters',analysisFilters,...
-                'FilterDomain','Frequency');
+                'FilterDomain','Frequency',...
+                'NumberOfLevels',nLevels);
             
             % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifySize(scalesActual,size(scalesExpctd));
@@ -818,10 +830,11 @@ classdef Analysis2dSystemTestCase < matlab.unittest.TestCase
             testCase.analyzer = Analysis2dSystem(...
                 'DecimationFactor',nDecs,...
                 'AnalysisFilters',analysisFilters,...
-                'FilterDomain','Frequency');                
+                'FilterDomain','Frequency',...
+                'NumberOfLevels',nLevels);                
             
             % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifySize(scalesActual,size(scalesExpctd));
@@ -873,10 +886,11 @@ classdef Analysis2dSystemTestCase < matlab.unittest.TestCase
             testCase.analyzer = Analysis2dSystem(...
                 'DecimationFactor',nDecs,...
                 'AnalysisFilters',analysisFilters,...
-                'FilterDomain','Frequency');                
+                'FilterDomain','Frequency',...
+                'NumberOfLevels',nLevels);                
             
             % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifySize(scalesActual,size(scalesExpctd));
@@ -924,10 +938,11 @@ classdef Analysis2dSystemTestCase < matlab.unittest.TestCase
             testCase.analyzer = Analysis2dSystem(...
                 'DecimationFactor',nDecs,...
                 'AnalysisFilters',analysisFilters,...
-                'FilterDomain','Frequency');                
+                'FilterDomain','Frequency',...
+                'NumberOfLevels',nLevels);                
             
             % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifySize(scalesActual,size(scalesExpctd));
@@ -994,10 +1009,11 @@ classdef Analysis2dSystemTestCase < matlab.unittest.TestCase
             testCase.analyzer = Analysis2dSystem(...
                 'DecimationFactor',nDecs,...
                 'AnalysisFilters',analysisFilters,...
-                 'FilterDomain','Frequency');
+                 'FilterDomain','Frequency',...
+                 'NumberOfLevels',nLevels);
             
             % Actual values
-            [coefsActual,scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            [coefsActual,scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifySize(scalesActual,size(scalesExpctd));
@@ -1074,10 +1090,11 @@ classdef Analysis2dSystemTestCase < matlab.unittest.TestCase
             testCase.analyzer = Analysis2dSystem(...
                 'DecimationFactor',nDecs,...
                 'AnalysisFilters',analysisFilters,...
-                 'FilterDomain','Frequency');
+                 'FilterDomain','Frequency',...
+                 'NumberOfLevels',nLevels);
             
             % Actual values
-            [coefsActual,scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            [coefsActual,scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifySize(scalesActual,size(scalesExpctd));
@@ -1170,10 +1187,11 @@ classdef Analysis2dSystemTestCase < matlab.unittest.TestCase
             testCase.analyzer = Analysis2dSystem(...
                 'DecimationFactor',nDecs,...
                 'AnalysisFilters',analysisFilters,...
-                'FilterDomain','Frequency');
+                'FilterDomain','Frequency',...
+                'NumberOfLevels',nLevels);
             
             % Actual values
-            [coefsActual,scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            [coefsActual,scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifySize(scalesActual,size(scalesExpctd));
@@ -1269,10 +1287,11 @@ classdef Analysis2dSystemTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.generalfb.*
             testCase.analyzer = Analysis2dSystem(...
                 'DecimationFactor',nDecs,...
-                'AnalysisFilters',analysisFilters);
+                'AnalysisFilters',analysisFilters,...
+                'NumberOfLevels',nLevels);
             
             % Actual values
-            [coefsActual,scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            [coefsActual,scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifySize(scalesActual,size(scalesExpctd));
@@ -1345,10 +1364,11 @@ classdef Analysis2dSystemTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.generalfb.*
             testCase.analyzer = Analysis2dSystem(...
                 'DecimationFactor',nDecs,...
-                'AnalysisFilters',analysisFilters);
+                'AnalysisFilters',analysisFilters,...
+                'NumberOfLevels',nLevels);
             
             % Actual values
-            [coefsActual,scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            [coefsActual,scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifySize(scalesActual,size(scalesExpctd));
@@ -1445,10 +1465,11 @@ classdef Analysis2dSystemTestCase < matlab.unittest.TestCase
             testCase.analyzer = Analysis2dSystem(...
                 'DecimationFactor',nDecs,...
                 'AnalysisFilters',analysisFilters,...
-                'FilterDomain','Frequency');
+                'FilterDomain','Frequency',...
+                'NumberOfLevels',nLevels);
             
             % Actual values
-            [coefsActual,scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            [coefsActual,scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifySize(scalesActual,size(scalesExpctd));
@@ -1522,17 +1543,18 @@ classdef Analysis2dSystemTestCase < matlab.unittest.TestCase
             testCase.analyzer = Analysis2dSystem(...
                 'DecimationFactor',nDecs,...
                 'AnalysisFilters',analysisFilters,...
-                'FilterDomain','Frequency');
+                'FilterDomain','Frequency',...
+                'NumberOfLevels',nLevels);
             
             % Actual values
-            [coefsActual,scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            [coefsActual,scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifySize(scalesActual,size(scalesExpctd));
             testCase.verifyEqual(scalesActual,scalesExpctd);
             testCase.verifySize(coefsActual,size(coefsExpctd));
             diff = max(abs(coefsExpctd - coefsActual));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-10,...
+            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-9,...
                 sprintf('%g',diff));            
             
         end
@@ -1605,10 +1627,11 @@ classdef Analysis2dSystemTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.generalfb.*
             testCase.analyzer = Analysis2dSystem(...
                 'DecimationFactor',nDecs,...
-                'AnalysisFilters',analysisFilters);
+                'AnalysisFilters',analysisFilters,...
+                'NumberOfLevels',nLevels);
             
             % Actual values
-            [coefsActual,scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            [coefsActual,scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifySize(scalesActual,size(scalesExpctd));
@@ -1689,10 +1712,11 @@ classdef Analysis2dSystemTestCase < matlab.unittest.TestCase
             testCase.analyzer = Analysis2dSystem(...
                 'DecimationFactor',nDecs,...
                 'AnalysisFilters',analysisFilters,...
-                'FilterDomain','Frequency');
+                'FilterDomain','Frequency',...
+                'NumberOfLevels',nLevels);
             
             % Actual values
-            [coefsActual,scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            [coefsActual,scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifySize(scalesActual,size(scalesExpctd));
@@ -1775,10 +1799,11 @@ classdef Analysis2dSystemTestCase < matlab.unittest.TestCase
                 'DecimationFactor',nDecs,...
                 'AnalysisFilters',analysisFilters,...
                 'FilterDomain','Frequency',...
-                'UseGpu',useGpu);
+                'UseGpu',useGpu,...
+                'NumberOfLevels',nLevels);
             
             % Actual values
-            [coefsActual,scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            [coefsActual,scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifySize(scalesActual,size(scalesExpctd));
@@ -1859,11 +1884,12 @@ classdef Analysis2dSystemTestCase < matlab.unittest.TestCase
             testCase.analyzer = Analysis2dSystem(...
                 'DecimationFactor',nDecs,...
                 'AnalysisFilters',analysisFilters,...
-                'FilterDomain','Frequency');
+                'FilterDomain','Frequency',...
+                'NumberOfLevels',nLevels);
             cloneAnalyzer  = clone(testCase.analyzer);
             
             % Actual values
-            [coefsActual,scalesActual] = step(cloneAnalyzer,srcImg,nLevels);
+            [coefsActual,scalesActual] = step(cloneAnalyzer,srcImg);
             
             % Evaluation
             testCase.verifySize(scalesActual,size(scalesExpctd));

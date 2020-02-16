@@ -1,12 +1,9 @@
 classdef GradientPursuitTestCase < matlab.unittest.TestCase
     %GradientPursuitTESTCASE Test case for sis2dSystem
     %
-    % SVN identifier:
-    % $Id: GradientPursuitTestCase.m 866 2015-11-24 04:29:42Z sho $
-    %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2014-2015, Shogo MURAMATSU
+    % Copyright (c) 2014-2020, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -62,27 +59,27 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
                 lppufb,...
                 'BoundaryOperation','Termination');                        
             testCase.gp = GradientPursuit(...
-                'Synthesizer', synthesizer,...
-                'AdjOfSynthesizer', analyzer);
+                'Dictionary', { synthesizer, analyzer });
             
             % Actual values
-            [residActual, coefsActual, scalesActual] = ...
-                step(testCase.gp,srcImg,nCoefsExpctd);
+            testCase.gp.NumberOfSparseCoefficients = nCoefsExpctd;
+            [resActual, coefsActual, scalesActual] = ...
+                testCase.gp.step(srcImg);
             nCoefsActual = nnz(coefsActual);
             
             % Evaluation
             import matlab.unittest.constraints.IsTrue;
-            testCase.verifySize(residActual, size(srcImg));
+            testCase.verifySize(resActual, size(srcImg));
             testCase.verifySize(coefsActual, sizeOfCoefExpctd);
-            testCase.verifyThat(norm(residActual(:)) < norm(srcImg(:)), ...
+            testCase.verifyThat(norm(resActual(:)) < norm(srcImg(:)), ...
                 IsTrue, ...
                 sprintf('||r||^2 = %g must be less than ||x||^2 = %g.',...
-                norm(residActual(:)),norm(srcImg(:)))); 
+                norm(resActual(:)),norm(srcImg(:)))); 
             testCase.verifyThat(nCoefsActual<=nCoefsExpctd,IsTrue);
             
-            resImg = step(synthesizer,coefsActual,scalesActual);
-            testCase.verifyEqual(resImg(:)+residActual(:), srcImg(:),...
-                'RelTol',1e-9);
+            resExpctd = step(synthesizer,coefsActual,scalesActual);
+            testCase.verifyEqual(resActual,resExpctd,...
+                'AbsTol',1e-9);
             
             %{
             mse = @(x,y) ((x(:)-y(:)).^2)/numel(x);
@@ -121,12 +118,11 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
                 'BoundaryOperation','Termination');                        
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
                 lppufb,...
-                'BoundaryOperation','Termination');                        
+                'BoundaryOperation','Termination',...
+                'NumberOfLevels',nLevels);
             import saivdr.sparserep.*
             testCase.gp = GradientPursuit(...
-                'Synthesizer',synthesizer,...
-                'AdjOfSynthesizer',analyzer,...
-                'NumberOfTreeLevels',nLevels);
+                'Dictionary', { synthesizer, analyzer });
             
             % Expected values
             nCoefs = numel(srcImg)*((sum(nChs)-1)/prod(nDecs) ...
@@ -134,23 +130,24 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
             sizeOfCoefsExpctd = [ 1 nCoefs ];
             
             % Actual values
-            [residActual, coefsActual, scalesActual] = ...
-                step(testCase.gp,srcImg,nCoefsExpctd);
+            testCase.gp.NumberOfSparseCoefficients = nCoefsExpctd;
+            [resActual, coefsActual, scalesActual] = ...
+                testCase.gp.step(srcImg);
             nCoefsActual =  nnz(coefsActual);
             
             % Evaluation
             import matlab.unittest.constraints.IsTrue;
-            testCase.verifySize(residActual, size(srcImg));
+            testCase.verifySize(resActual, size(srcImg));
             testCase.verifySize(coefsActual, sizeOfCoefsExpctd);
-            testCase.verifyThat(norm(residActual(:)) < norm(srcImg(:)), ...
+            testCase.verifyThat(norm(resActual(:)) < norm(srcImg(:)), ...
                 IsTrue, ...
                 sprintf('||r||^2 = %g must be less than ||x||^2 = %g.',...
-                norm(residActual(:)),norm(srcImg(:)))); 
+                norm(resActual(:)),norm(srcImg(:)))); 
             testCase.verifyThat(nCoefsActual<=nCoefsExpctd,IsTrue);
             
-            resImg = step(synthesizer,coefsActual,scalesActual);
-            testCase.verifyEqual(resImg(:)+residActual(:), srcImg(:),...
-                'RelTol',1e-9);
+            resExpctd = step(synthesizer,coefsActual,scalesActual);
+            testCase.verifyEqual(resActual,resExpctd,...
+                'AbsTol',1e-9);
             
             %{
             mse = @(x,y) ((x(:)-y(:)).^2)/numel(x);
@@ -189,12 +186,11 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
                 'BoundaryOperation','Termination');                        
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
                 lppufb,...
-                'BoundaryOperation','Termination');                                    
+                'BoundaryOperation','Termination',...
+                'NumberOfLevels',nLevels);                                    
             import saivdr.sparserep.*
             testCase.gp = GradientPursuit(...
-                'Synthesizer', synthesizer,...
-                'AdjOfSynthesizer', analyzer,...
-                'NumberOfTreeLevels',nLevels);
+                'Dictionary', { synthesizer, analyzer });
             
             % Expected values
             nCoefs = numel(srcImg)*((sum(nChs)-1)/prod(nDecs) ...
@@ -203,23 +199,24 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
             sizeOfCoefsExpctd = [ 1 nCoefs ];
             
             % Actual values
-            [residActual, coefsActual, scalesActual] = step(testCase.gp,...
-                srcImg,nCoefsExpctd);
+            testCase.gp.NumberOfSparseCoefficients = nCoefsExpctd;
+            [resActual, coefsActual, scalesActual] = ...
+                testCase.gp.step(srcImg);
             nCoefsActual = nnz(coefsActual);
             
             % Evaluation
             import matlab.unittest.constraints.IsTrue;
-            testCase.verifySize(residActual, size(srcImg));
+            testCase.verifySize(resActual, size(srcImg));
             testCase.verifySize(coefsActual, sizeOfCoefsExpctd);
-            testCase.verifyThat(norm(residActual(:)) < norm(srcImg(:)), ...
+            testCase.verifyThat(norm(resActual(:)) < norm(srcImg(:)), ...
                 IsTrue, ...
                 sprintf('||r||^2 = %g must be less than ||x||^2 = %g.',...
-                norm(residActual(:)),norm(srcImg(:)))); 
+                norm(resActual(:)),norm(srcImg(:)))); 
             testCase.verifyThat(nCoefsActual<=nCoefsExpctd,IsTrue);
             
-            resImg = step(synthesizer,coefsActual,scalesActual);
-            testCase.verifyEqual(resImg(:)+residActual(:), srcImg(:),...
-                'RelTol',1e-9);
+            resExpctd = step(synthesizer,coefsActual,scalesActual);
+            testCase.verifyEqual(resActual,resExpctd,...
+                'AbsTol',1e-9);
             %{
             mse = @(x,y) ((x(:)-y(:)).^2)/numel(x);
             psnr = @(x,y) -10*log10(mse(x,y));
@@ -260,27 +257,27 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
                 'BoundaryOperation','Termination');
             import saivdr.sparserep.*
             testCase.gp = GradientPursuit(...
-                'Synthesizer',synthesizer,...
-                'AdjOfSynthesizer',analyzer);
+                'Dictionary', { synthesizer, analyzer });
             
             % Actual values
-            [residActual, coefsActual, scalesActual] = ...
-                step(testCase.gp,srcImg,nCoefsExpctd);
+            testCase.gp.NumberOfSparseCoefficients = nCoefsExpctd;
+            [resActual, coefsActual, scalesActual] = ...
+                testCase.gp.step(srcImg);
             nCoefsActual = nnz(coefsActual);
             
             % Evaluation
             import matlab.unittest.constraints.IsTrue;
-            testCase.verifySize(residActual, size(srcImg));
+            testCase.verifySize(resActual, size(srcImg));
             testCase.verifySize(coefsActual, sizeOfCoefsExpctd);
-            testCase.verifyThat(norm(residActual(:)) < norm(srcImg(:)), ...
+            testCase.verifyThat(norm(resActual(:)) < norm(srcImg(:)), ...
                 IsTrue, ...
                 sprintf('||r||^2 = %g must be less than ||x||^2 = %g.',...
-                norm(residActual(:)),norm(srcImg(:)))); 
+                norm(resActual(:)),norm(srcImg(:)))); 
             testCase.verifyThat(nCoefsActual<=nCoefsExpctd,IsTrue);
             
-            resImg = step(synthesizer,coefsActual,scalesActual);
-            testCase.verifyEqual(resImg(:)+residActual(:), srcImg(:),...
-                'RelTol',1e-9);
+            resExpctd = step(synthesizer,coefsActual,scalesActual);
+            testCase.verifyEqual(resActual,resExpctd,...
+                'AbsTol',1e-9);
             
             %{
             mse = @(x,y) ((x(:)-y(:)).^2)/numel(x);
@@ -319,12 +316,11 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
                 'BoundaryOperation','Termination');            
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
                 lppufb,...
-                'BoundaryOperation','Termination');            
+                'BoundaryOperation','Termination',...
+                'NumberOfLevels',nLevels);            
             import saivdr.sparserep.*
             testCase.gp = GradientPursuit(...
-                'Synthesizer',synthesizer,...
-                'AdjOfSynthesizer',analyzer,...
-                'NumberOfTreeLevels',nLevels);
+                'Dictionary', { synthesizer, analyzer });
             
             % Expected values
             nCoefs = numel(srcImg)*(...
@@ -332,23 +328,24 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
             sizeOfCoefsExpctd = [ 1 nCoefs ];
             
             % Actual values
-            [residActual, coefsActual, scalesActual] = ...
-                step(testCase.gp,srcImg,nCoefsExpctd);
+            testCase.gp.NumberOfSparseCoefficients = nCoefsExpctd;
+            [resActual, coefsActual, scalesActual] = ...
+                testCase.gp.step(srcImg);
             nCoefsActual = nnz(coefsActual);
             
             % Evaluation
             import matlab.unittest.constraints.IsTrue;
-            testCase.verifySize(residActual, size(srcImg));
+            testCase.verifySize(resActual, size(srcImg));
             testCase.verifySize(coefsActual, sizeOfCoefsExpctd);
-            testCase.verifyThat(norm(residActual(:)) < norm(srcImg(:)), ...
+            testCase.verifyThat(norm(resActual(:)) < norm(srcImg(:)), ...
                 IsTrue, ...
                 sprintf('||r||^2 = %g must be less than ||x||^2 = %g.',...
-                norm(residActual(:)),norm(srcImg(:)))); 
+                norm(resActual(:)),norm(srcImg(:)))); 
             testCase.verifyThat(nCoefsActual<=nCoefsExpctd,IsTrue);
             
-            resImg = step(synthesizer,coefsActual,scalesActual);
-            testCase.verifyEqual(resImg(:)+residActual(:), srcImg(:),...
-                'RelTol',1e-9);
+            resExpctd = step(synthesizer,coefsActual,scalesActual);
+            testCase.verifyEqual(resActual,resExpctd,...
+                'AbsTol',1e-9);
             
             %{
             mse = @(x,y) ((x(:)-y(:)).^2)/numel(x);
@@ -387,36 +384,35 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
                 'BoundaryOperation','Termination');            
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
                 lppufb,...
-                'BoundaryOperation','Termination');                        
+                'BoundaryOperation','Termination',...
+                'NumberOfLevels',nLevels);                        
             import saivdr.sparserep.*
             testCase.gp = GradientPursuit(...
-                'Synthesizer',synthesizer,...
-                'AdjOfSynthesizer',analyzer,...
-                'NumberOfTreeLevels',nLevels);
+                'Dictionary', { synthesizer, analyzer });
             
             % Expected values
             nCoefs = numel(srcImg)*sum(nChs)/prod(nDecs);
             sizeOfCoefsExpctd = [ 1 nCoefs ];
                 
             % Actual values
-            [residActual, coefsActual, scalesActual] = ...
-                step(testCase.gp,...
-                srcImg,nCoefsExpctd);
+            testCase.gp.NumberOfSparseCoefficients = nCoefsExpctd;
+            [resActual, coefsActual, scalesActual] = ...
+                testCase.gp.step(srcImg);
             nCoefsActual = nnz(coefsActual);
             
             % Evaluation
             import matlab.unittest.constraints.IsTrue;
-            testCase.verifySize(residActual, size(srcImg));
+            testCase.verifySize(resActual, size(srcImg));
             testCase.verifySize(coefsActual, sizeOfCoefsExpctd);
-            testCase.verifyThat(norm(residActual(:)) < norm(srcImg(:)), ...
+            testCase.verifyThat(norm(resActual(:)) < norm(srcImg(:)), ...
                 IsTrue, ...
                 sprintf('||r||^2 = %g must be less than ||x||^2 = %g.',...
-                norm(residActual(:)),norm(srcImg(:)))); 
+                norm(resActual(:)),norm(srcImg(:)))); 
             testCase.verifyThat(nCoefsActual<=nCoefsExpctd,IsTrue);
             
-            resImg = step(synthesizer,coefsActual,scalesActual);
-            testCase.verifyEqual(resImg(:)+residActual(:), srcImg(:),...
-                'RelTol',1e-9);
+            resExpctd = step(synthesizer,coefsActual,scalesActual);
+            testCase.verifyEqual(resActual,resExpctd,...
+                'AbsTol',1e-9);
             
             %{
             mse = @(x,y) ((x(:)-y(:)).^2)/numel(x);
@@ -449,25 +445,26 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
                 'BoundaryOperation','Termination');            
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
                 lppufb,...
-                'BoundaryOperation','Termination');     
+                'BoundaryOperation','Termination',...
+                'NumberOfLevels',nLevels);     
             
             % Instantiation of target class
             import saivdr.sparserep.*
             testCase.gp = GradientPursuit(...
-                'Synthesizer',synthesizer,...
-                'AdjOfSynthesizer',analyzer,...
-                'NumberOfTreeLevels',nLevels);
+                'Dictionary', { synthesizer, analyzer });
             
             % Evaluation
-            import matlab.unittest.constraints.IsTrue;
-            resid0 = step(testCase.gp,srcImg,1);
+            import matlab.unittest.constraints.IsLessThan
+            testCase.gp.NumberOfSparseCoefficients = 1;
+            res0 = testCase.gp.step(srcImg);
             for nCoefs = 2:32
-                resid1 = step(testCase.gp,srcImg,nCoefs);
-                testCase.verifyThat(norm(resid1(:)) < norm(resid0(:)), ...
-                    IsTrue, ...
-                    sprintf('||r0||^2 = %g must be less than ||r1||^2 = %g.',...
-                    norm(resid0(:)),norm(resid1(:))));
-                resid0 = resid1;
+                testCase.gp.NumberOfSparseCoefficients = nCoefs;
+                res1 = testCase.gp.step(srcImg);
+                testCase.verifyThat(norm(res1(:)-srcImg(:),2),...
+                    IsLessThan(norm(res0(:)-srcImg(:),2)),...
+                    sprintf('||r1|| = %g must be less than ||r0|| = %g.',...
+                    norm(res1(:),2),norm(res0(:),2)));
+                res0 = res1;
             end
         end        
              
@@ -486,29 +483,29 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
             import saivdr.sparserep.*
             synthesizer = UdHaarSynthesis2dSystem();
             analyzer    = UdHaarAnalysis2dSystem();
+            analyzer.NumberOfLevels = nLevels;
             testCase.gp = GradientPursuit(...
-                'Synthesizer',synthesizer,...
-                'AdjOfSynthesizer',analyzer,...
-                'NumberOfTreeLevels',nLevels);
+                'Dictionary', { synthesizer, analyzer });
             
             % Actual values
-            [residActual, coefsActual] = ...
-                step(testCase.gp,srcImg,nCoefsExpctd);
+            testCase.gp.NumberOfSparseCoefficients = nCoefsExpctd;
+            [resActual, coefsActual] = ...
+                testCase.gp.step(srcImg);
             nCoefsActual = nnz(coefsActual);
             
             % Evaluation
             import matlab.unittest.constraints.IsTrue;
-            testCase.verifySize(residActual, size(srcImg));
+            testCase.verifySize(resActual, size(srcImg));
             testCase.verifySize(coefsActual, [ 1 (3*nLevels+1)*height*width]);
-            testCase.verifyThat(norm(residActual(:)) < norm(srcImg(:)), ...
+            testCase.verifyThat(norm(resActual(:)) < norm(srcImg(:)), ...
                 IsTrue, ...
                 sprintf('||r||^2 = %g must be less than ||x||^2 = %g.',...
-                norm(residActual(:)),norm(srcImg(:)))); 
+                norm(resActual(:)),norm(srcImg(:)))); 
             testCase.verifyThat(nCoefsActual<=nCoefsExpctd,IsTrue);
             
-            resImg = step(synthesizer,coefsActual,repmat(size(srcImg),[4 1]));
-            testCase.verifyEqual(resImg(:)+residActual(:), srcImg(:),...
-                'RelTol',1e-10);
+            resExpctd = step(synthesizer,coefsActual,repmat(size(srcImg),[4 1]));
+            testCase.verifyEqual(resActual,resExpctd,...
+                'AbsTol',1e-10);
             
             %{
             mse = @(x,y) ((x(:)-y(:)).^2)/numel(x);
@@ -532,29 +529,29 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
             import saivdr.sparserep.*
             synthesizer = UdHaarSynthesis2dSystem();
             analyzer    = UdHaarAnalysis2dSystem();
+            analyzer.NumberOfLevels = nLevels;
             testCase.gp = GradientPursuit(...
-                'Synthesizer',synthesizer,...
-                'AdjOfSynthesizer',analyzer,...                
-                'NumberOfTreeLevels',nLevels);
+                'Dictionary', { synthesizer, analyzer });
             
             % Actual values
-            [residActual, coefsActual] = ...
-                step(testCase.gp,srcImg,nCoefsExpctd);
+            testCase.gp.NumberOfSparseCoefficients = nCoefsExpctd;
+            [resActual, coefsActual] = ...
+                testCase.gp.step(srcImg);
             nCoefsActual = nnz(coefsActual);
             
             % Evaluation
             import matlab.unittest.constraints.IsTrue;
-            testCase.verifySize(residActual, size(srcImg));
+            testCase.verifySize(resActual, size(srcImg));
             testCase.verifySize(coefsActual, [ 1 (3*nLevels+1)*height*width]);
-            testCase.verifyThat(norm(residActual(:)) < norm(srcImg(:)), ...
+            testCase.verifyThat(norm(resActual(:)) < norm(srcImg(:)), ...
                 IsTrue, ...
                 sprintf('||r||^2 = %g must be less than ||x||^2 = %g.',...
-                norm(residActual(:)),norm(srcImg(:)))); 
+                norm(resActual(:)),norm(srcImg(:)))); 
             testCase.verifyThat(nCoefsActual<=nCoefsExpctd,IsTrue);
             
-            resImg = step(synthesizer,coefsActual,repmat(size(srcImg),[7 1]));
-            testCase.verifyEqual(resImg(:)+residActual(:), srcImg(:),...
-                'RelTol',1e-10);
+            resExpctd = step(synthesizer,coefsActual,repmat(size(srcImg),[7 1]));
+            testCase.verifyEqual(resActual,resExpctd,...
+                'AbsTol',1e-10);
             
             %{
             mse = @(x,y) ((x(:)-y(:)).^2)/numel(x);
@@ -574,6 +571,7 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.nsoltx.*
             synthesizer = NsoltFactory.createSynthesis2dSystem();
             analyzer    = NsoltFactory.createAnalysis2dSystem();
+            analyzer.NumberOfLevels = 3;
             
             % Instantiation of step monitor
             import saivdr.utility.*
@@ -585,18 +583,16 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
             % Instantiation of target class
             import saivdr.sparserep.*
             testCase.gp = GradientPursuit(...
-                'Synthesizer',synthesizer,...
-                'AdjOfSynthesizer',analyzer,...
-                'NumberOfTreeLevels',3,...
+                'Dictionary', { synthesizer, analyzer },...
                 'StepMonitor',stepMonitor);
             
             % Definition of MSE
             mse = @(x,y) sum((double(x(:))-double(y(:))).^2)/numel(x);
             
             % MSE after processing
-            resImg = step(testCase.gp,srcImg,nCoefs);
-            recImg = srcImg - resImg;
-            mseExpctd = mse(uint8(255*recImg),uint8(255*srcImg));
+            testCase.gp.NumberOfSparseCoefficients = nCoefs;
+            resImg = testCase.gp.step(srcImg);
+            mseExpctd = mse(uint8(255*resImg),uint8(255*srcImg));
             
             % Actual value
             mses = get(stepMonitor,'MSEs');
@@ -605,7 +601,7 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
             
             % Evaluation
             diff = max(abs(mseExpctd(:)-mseActual(:))./abs(mseExpctd(:)));
-            testCase.assertEqual(mseActual,mseExpctd,'RelTol',1e-10,...
+            testCase.assertEqual(mseActual,mseExpctd,'AbsTol',1e-10,...
                 sprintf('diff = %f\n',diff))
             
         end
@@ -622,6 +618,7 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.nsoltx.*
             synthesizer = NsoltFactory.createSynthesis2dSystem();
             analyzer    = NsoltFactory.createAnalysis2dSystem();
+            analyzer.NumberOfLevels = 3;
             
             % MSE before processing
             mse = @(x,y) sum((x(:)-y(:)).^2)/numel(x);
@@ -629,22 +626,20 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
             % Instantiation of target class
             import saivdr.sparserep.*
             testCase.gp = IterativeHardThresholding(...
-                'Synthesizer',synthesizer,...
-                'AdjOfSynthesizer',analyzer,...
-                'NumberOfTreeLevels',3);
+                'Dictionary', { synthesizer, analyzer });
             
             % MSE by original object
-            resImg = step(testCase.gp,srcImg,nCoefs);
-            recImg = srcImg - resImg;
-            mseOrg = mse(int16(255*recImg),int16(255*srcImg));            
+            testCase.gp.NumberOfSparseCoefficients = nCoefs;
+            resImg = testCase.gp.step(srcImg);
+            mseOrg = mse(int16(255*resImg),int16(255*srcImg));            
             
             % Instantiation of target class
             cloneGp = clone(testCase.gp);
             
             % MSE by clone object
-            resImg = step(cloneGp,srcImg,nCoefs);
-            recImg = srcImg - resImg;
-            mseCln = mse(int16(255*recImg),int16(255*srcImg));                        
+            cloneGp.NumberOfSparseCoefficients = nCoefs;
+            resImg = cloneGp.step(srcImg);
+            mseCln = mse(int16(255*resImg),int16(255*srcImg));                        
             
             % Evaluation
             testCase.verifyEqual(mseCln,mseOrg);
@@ -658,13 +653,12 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.nsoltx.*
             synthesizer = NsoltFactory.createSynthesis2dSystem();
             analyzer    = NsoltFactory.createAnalysis2dSystem();
+            analyzer.NumberOfLevels = 3;
             
             % Instantiation of target class
             import saivdr.sparserep.*
             testCase.gp = IterativeHardThresholding(...
-                'Synthesizer',synthesizer,...
-                'AdjOfSynthesizer',analyzer,...
-                'NumberOfTreeLevels',3);
+                'Dictionary', { synthesizer, analyzer });
             
             % Instantiation of target class
             cloneGp = clone(testCase.gp);
@@ -673,13 +667,13 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(cloneGp,testCase.gp);
             testCase.verifyFalse(cloneGp == testCase.gp);
             %
-            prpOrg = get(testCase.gp,'Synthesizer');
-            prpCln = get(cloneGp,'Synthesizer');
+            prpOrg = testCase.gp.Dictionary{1};
+            prpCln = cloneGp.Dictionary{1};
             testCase.verifyEqual(prpCln,prpOrg);
             testCase.verifyFalse(prpCln == prpOrg);
             %
-            prpOrg = get(testCase.gp,'AdjOfSynthesizer');
-            prpCln = get(cloneGp,'AdjOfSynthesizer');
+            prpOrg = testCase.gp.Dictionary{2};
+            prpCln = cloneGp.Dictionary{2};
             testCase.verifyEqual(prpCln,prpOrg);
             testCase.verifyFalse(prpCln == prpOrg);
             
@@ -717,27 +711,27 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
                 lppufb,'BoundaryOperation','Termination');            
             testCase.gp = IterativeHardThresholding(...
-                'Synthesizer',synthesizer,...
-                'AdjOfSynthesizer',analyzer);
+                'Dictionary',{ synthesizer, analyzer});
             
             % Actual values
-            [residActual, coefsActual, scalesActual] = ...
-                step(testCase.gp,srcImg,nCoefsExpctd);
+            testCase.gp.NumberOfSparseCoefficients = nCoefsExpctd;
+            [resActual, coefsActual, scalesActual] = ...
+                testCase.gp.step(srcImg);
             nCoefsActual = nnz(coefsActual);
             
             % Evaluation
             import matlab.unittest.constraints.IsTrue;
-            testCase.verifySize(residActual, size(srcImg));
+            testCase.verifySize(resActual, size(srcImg));
             testCase.verifySize(coefsActual, sizeOfCoefsExpctd);
-            testCase.verifyThat(norm(residActual(:)) < norm(srcImg(:)), ...
+            testCase.verifyThat(norm(resActual(:),2) < norm(srcImg(:),2), ...
                 IsTrue, ...
-                sprintf('||r||^2 = %g must be less than ||x||^2 = %g.',...
-                norm(residActual(:)),norm(srcImg(:)))); 
+                sprintf('||r|| = %g must be less than ||x|| = %g.',...
+                norm(resActual(:),2),norm(srcImg(:),2))); 
             testCase.verifyThat(nCoefsActual<=nCoefsExpctd,IsTrue);
             
-            resImg = step(synthesizer,coefsActual,scalesActual);
-            testCase.verifyEqual(resImg(:)+residActual(:), srcImg(:),...
-                'RelTol',1e-10);
+            resExpctd = step(synthesizer,coefsActual,scalesActual);
+            testCase.verifyEqual(resActual,resExpctd,...
+                'AbsTol',1e-10);
             
             %{
             mse = @(x,y) ((x(:)-y(:)).^2)/numel(x);
@@ -776,11 +770,10 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
             synthesizer = NsoltFactory.createSynthesis3dSystem(...
                 lppufb,'BoundaryOperation','Termination');            
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
-                lppufb,'BoundaryOperation','Termination');            
+                lppufb,'BoundaryOperation','Termination',...
+                'NumberOfLevels',2);            
             testCase.gp = IterativeHardThresholding(...
-                'Synthesizer',synthesizer,...
-                'AdjOfSynthesizer',analyzer,...
-                'NumberOfTreeLevels',nLevels);
+                'Dictionary',{ synthesizer, analyzer});
             
             % Expected values
             P = sum(nChs);
@@ -789,23 +782,24 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
             sizeOfCoefsExpctd = [ 1 nCoefs ];
             
             % Actual values
-            [residActual, coefsActual, scalesActual] = ...
-                step(testCase.gp,srcImg,nCoefsExpctd);
+            testCase.gp.NumberOfSparseCoefficients = nCoefsExpctd;
+            [resActual, coefsActual, scalesActual] = ...
+                testCase.gp.step(srcImg);
             nCoefsActual = nnz(coefsActual);
             
             % Evaluation
             import matlab.unittest.constraints.IsTrue;
-            testCase.verifySize(residActual, size(srcImg));
+            testCase.verifySize(resActual, size(srcImg));
             testCase.verifySize(coefsActual, sizeOfCoefsExpctd);
-            testCase.verifyThat(norm(residActual(:)) < norm(srcImg(:)), ...
+            testCase.verifyThat(norm(resActual(:)) < norm(srcImg(:)), ...
                 IsTrue, ...
                 sprintf('||r||^2 = %g must be less than ||x||^2 = %g.',...
-                norm(residActual(:)),norm(srcImg(:)))); 
+                norm(resActual(:)),norm(srcImg(:)))); 
             testCase.verifyThat(nCoefsActual<=nCoefsExpctd,IsTrue);
             
-            resImg = step(synthesizer,coefsActual,scalesActual);
-            testCase.verifyEqual(resImg(:)+residActual(:), srcImg(:),...
-                'RelTol',1e-10);
+            resExpctd = step(synthesizer,coefsActual,scalesActual);
+            testCase.verifyEqual(resActual,resExpctd,...
+                'AbsTol',1e-10);
             
             %{
             mse = @(x,y) ((x(:)-y(:)).^2)/numel(x);
@@ -844,11 +838,10 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
             synthesizer = NsoltFactory.createSynthesis3dSystem(...
                 lppufb,'BoundaryOperation','Termination');            
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
-                lppufb,'BoundaryOperation','Termination');                        
+                lppufb,'BoundaryOperation','Termination',...
+                'NumberOfLevels',nLevels);                        
             testCase.gp = IterativeHardThresholding(...
-                'Synthesizer',synthesizer,...
-                'AdjOfSynthesizer',analyzer,...
-                'NumberOfTreeLevels',nLevels);
+                'Dictionary',{ synthesizer, analyzer});
             
             % Expected values
             P = sum(nChs);
@@ -858,24 +851,24 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
             sizeOfCoefsExpctd = [ 1 nCoefs ];
             
             % Actual values
-            [residActual, coefsActual, scalesActual] = ...
-                step(testCase.gp,...
-                srcImg,nCoefsExpctd);
+            testCase.gp.NumberOfSparseCoefficients = nCoefsExpctd;
+            [resActual, coefsActual, scalesActual] = ...
+                testCase.gp.step(srcImg);
             nCoefsActual = nnz(coefsActual);
             
             % Evaluation
             import matlab.unittest.constraints.IsTrue;
-            testCase.verifySize(residActual, size(srcImg));
+            testCase.verifySize(resActual, size(srcImg));
             testCase.verifySize(coefsActual, sizeOfCoefsExpctd);
-            testCase.verifyThat(norm(residActual(:)) < norm(srcImg(:)), ...
+            testCase.verifyThat(norm(resActual(:)) < norm(srcImg(:)), ...
                 IsTrue, ...
                 sprintf('||r||^2 = %g must be less than ||x||^2 = %g.',...
-                norm(residActual(:)),norm(srcImg(:)))); 
+                norm(resActual(:)),norm(srcImg(:)))); 
             testCase.verifyThat(nCoefsActual<=nCoefsExpctd,IsTrue);
             
-            resImg = step(synthesizer,coefsActual,scalesActual);
-            testCase.verifyEqual(resImg(:)+residActual(:), srcImg(:),...
-                'RelTol',1e-10);
+            resExpctd = step(synthesizer,coefsActual,scalesActual);
+            testCase.verifyEqual(resActual,resExpctd,...
+                'AbsTol',1e-10);
             
             %{
             mse = @(x,y) ((x(:)-y(:)).^2)/numel(x);
@@ -914,11 +907,10 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
             synthesizer = NsoltFactory.createSynthesis3dSystem(...
                 lppufb,'BoundaryOperation','Termination');            
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
-                lppufb,'BoundaryOperation','Termination');                        
+                lppufb,'BoundaryOperation','Termination',...
+                'NumberOfLevels',nLevels);                        
             testCase.gp = IterativeHardThresholding(...
-                'Synthesizer',synthesizer,...
-                'AdjOfSynthesizer',analyzer,...
-                'NumberOfTreeLevels',nLevels);
+                'Dictionary',{ synthesizer, analyzer});
             
             % Expected values
             P = sum(nChs);
@@ -928,24 +920,24 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
             sizeOfCoefsExpctd = [ 1 nCoefs ];
             
             % Actual values
-            [residActual, coefsActual, scalesActual] = ...
-                step(testCase.gp,...
-                srcImg,nCoefsExpctd);
+            testCase.gp.NumberOfSparseCoefficients = nCoefsExpctd;
+            [resActual, coefsActual, scalesActual] = ...
+                testCase.gp.step(srcImg);
             nCoefsActual = nnz(coefsActual);
             
             % Evaluation
             import matlab.unittest.constraints.IsTrue;
-            testCase.verifySize(residActual, size(srcImg));
+            testCase.verifySize(resActual, size(srcImg));
             testCase.verifySize(coefsActual, sizeOfCoefsExpctd);
-            testCase.verifyThat(norm(residActual(:)) < norm(srcImg(:)), ...
+            testCase.verifyThat(norm(resActual(:)) < norm(srcImg(:)), ...
                 IsTrue, ...
                 sprintf('||r||^2 = %g must be less than ||x||^2 = %g.',...
-                norm(residActual(:)),norm(srcImg(:)))); 
+                norm(resActual(:)),norm(srcImg(:)))); 
             testCase.verifyThat(nCoefsActual<=nCoefsExpctd,IsTrue);
             
-            resImg = step(synthesizer,coefsActual,scalesActual);
-            testCase.verifyEqual(resImg(:)+residActual(:), srcImg(:),...
-                'RelTol',1e-10);
+            resExpctd = step(synthesizer,coefsActual,scalesActual);
+            testCase.verifyEqual(resActual,resExpctd,...
+                'AbsTol',1e-10);
             
             %{
             mse = @(x,y) ((x(:)-y(:)).^2)/numel(x);
@@ -984,11 +976,10 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
             synthesizer = NsoltFactory.createSynthesis3dSystem(...
                 lppufb,'BoundaryOperation','Termination');            
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
-                lppufb,'BoundaryOperation','Termination');                        
+                lppufb,'BoundaryOperation','Termination',...
+                'NumberOfLevels',nLevels);                        
             testCase.gp = IterativeHardThresholding(...
-                'Synthesizer',synthesizer,...
-                'AdjOfSynthesizer',analyzer,...
-                'NumberOfTreeLevels',nLevels);
+                'Dictionary',{ synthesizer, analyzer});
             
             % Expected values
             P = sum(nChs);
@@ -998,24 +989,24 @@ classdef GradientPursuitTestCase < matlab.unittest.TestCase
             sizeOfCoefsExpctd = [ 1 nCoefs ];
             
             % Actual values
-            [residActual, coefsActual, scalesActual] = ...
-                step(testCase.gp,...
-                srcImg,nCoefsExpctd);
+            testCase.gp.NumberOfSparseCoefficients = nCoefsExpctd;
+            [resActual, coefsActual, scalesActual] = ...
+                testCase.gp.step(srcImg);
             nCoefsActual = nnz(coefsActual);
             
             % Evaluation
             import matlab.unittest.constraints.IsTrue;
-            testCase.verifySize(residActual, size(srcImg));
+            testCase.verifySize(resActual, size(srcImg));
             testCase.verifySize(coefsActual, sizeOfCoefsExpctd);
-            testCase.verifyThat(norm(residActual(:)) < norm(srcImg(:)), ...
+            testCase.verifyThat(norm(resActual(:),2) < norm(srcImg(:),2), ...
                 IsTrue, ...
-                sprintf('||r||^2 = %g must be less than ||x||^2 = %g.',...
-                norm(residActual(:)),norm(srcImg(:)))); 
+                sprintf('||r|| = %g must be less than ||x|| = %g.',...
+                norm(resActual(:),2),norm(srcImg(:),2))); 
             testCase.verifyThat(nCoefsActual<=nCoefsExpctd,IsTrue);
             
-            resImg = step(synthesizer,coefsActual,scalesActual);
-            testCase.verifyEqual(resImg(:)+residActual(:), srcImg(:),...
-                'RelTol',1e-10);
+            resExpctd = step(synthesizer,coefsActual,scalesActual);
+            testCase.verifyEqual(resActual,resExpctd,...
+                'AbsTol',1e-10);
             
             %{
             mse = @(x,y) ((x(:)-y(:)).^2)/numel(x);

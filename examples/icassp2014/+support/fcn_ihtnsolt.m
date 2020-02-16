@@ -6,7 +6,7 @@ function psnr = fcn_ihtnsolt(params)
 %
 % Requirements: MATLAB R2015b
 %
-% Copyright (c) 2014-2015, Shogo MURAMATSU
+% Copyright (c) 2014-2020, Shogo MURAMATSU
 %
 % All rights reserved.
 %
@@ -66,7 +66,7 @@ analyzer    = NsoltFactory.createAnalysis2dSystem(...
 ihtnsolt = IterativeHardThresholding(...
     'Synthesizer',synthesizer,...
     'AdjOfSynthesizer',analyzer,...
-    'NumberOfTreeLevels',params.nLevels);
+    'NumberOfLevels',params.nLevels);
 import saivdr.utility.StepMonitoringSystem
 stepMonitor = StepMonitoringSystem(...
     'SourceImage',srcImg,...
@@ -89,3 +89,4 @@ if params.isMonitoring
     disp(str)
     title(str)
 end
+

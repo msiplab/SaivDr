@@ -4,7 +4,7 @@
 %
 % Requirements: MATLAB R2015b
 %
-% Copyright (c) 2014-2016, Shogo MURAMATSU
+% Copyright (c) 2014-2020, Shogo MURAMATSU
 %
 % All rights reserved.
 %
@@ -29,7 +29,7 @@ params.generations   = 40;         % 200 for ICASSP2014
 params.stallGenLimit = 20;         % 100 for ICASSP2014
 params.maxIterOfHybridFmin = 100;  % 800 for ICASSP2014
 params.generationFactorForMus = 2; % 5   for ICASSP2014
-params.sparseCoding = 'IterativeHardThresholding';
+params.sparseAprx = 'IterativeHardThresholding';
 %
 params.optfcn = @ga;
 params.useParallel = 'never';
@@ -97,3 +97,4 @@ for iRep = 1:nReps
         str = support.fcn_updatensolt(paramset{iPar});
     end
 end
+

@@ -3,7 +3,7 @@ classdef UdHaarAnalysis2dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
     %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2014-2018, Shogo MURAMATSU
+    % Copyright (c) 2014-2020, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -19,14 +19,14 @@ classdef UdHaarAnalysis2dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
         BoundaryOperation = 'Circular'
     end
     
+    properties (Nontunable, PositiveInteger)
+        NumberOfLevels = 1        
+    end        
+    
     properties (Hidden, Transient)
         BoundaryOperationSet = ...
             matlab.system.StringSet({'Circular'});
     end
-    
-    properties (Nontunable, PositiveInteger)
-        NumberOfLevels = 1
-    end    
     
     properties (Access = private)
         kernels
@@ -62,16 +62,16 @@ classdef UdHaarAnalysis2dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
             loadObjectImpl@saivdr.dictionary.AbstAnalysisSystem(obj,s,wasLocked); 
         end
         
-        function setupImpl(obj,u,nLevels)
-            obj.NumberOfLevels = nLevels;
+        function setupImpl(obj,u)
+            nLevels = obj.NumberOfLevels;
             obj.nPixels = numel(u);
-            obj.coefs = zeros(1,(3*nLevels+1)*obj.nPixels);
+            obj.coefs = zeros(1,(3*nLevels+1)*obj.nPixels,'like',u);
         end
         
         function resetImpl(~)
         end
         
-        function [ coefs, scales ] = stepImpl(obj, u, ~)
+        function [ coefs, scales ] = stepImpl(obj, u)
             nPixels_ = obj.nPixels;
             nLevels = obj.NumberOfLevels;
             scales = repmat(size(u),[3*nLevels+1, 1]);

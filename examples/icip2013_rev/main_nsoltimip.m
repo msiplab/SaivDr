@@ -6,7 +6,7 @@
 %
 % Requirements: MATLAB R2015b
 %
-% Copyright (c) 2014-2017, Shogo MURAMATSU
+% Copyright (c) 2014-2020, Shogo MURAMATSU
 %
 % All rights reserved.
 %
@@ -76,7 +76,8 @@ lppufb = saivdr.dictionary.utility.fcn_upgrade(s.lppufb);
 release(lppufb);
 set(lppufb,'OutputMode','ParameterMatrixSet');
 synthesizer = NsoltFactory.createSynthesis2dSystem(lppufb);
-analyzer = NsoltFactory.createAnalysis2dSystem(lppufb);
+analyzer = NsoltFactory.createAnalysis2dSystem(lppufb,...
+    'NumberOfLevels',nlevels);
 
 %% Create a step monitor
 import saivdr.utility.StepMonitoringSystem
@@ -101,7 +102,7 @@ rstr = IstaImRestoration2d(...
     'Synthesizer',synthesizer,...
     'AdjOfSynthesizer',analyzer,...
     'LinearProcess',linproc,...
-    'NumberOfTreeLevels',nlevels,...
+    ...'NumberOfTreeLevels',nlevels,...
     'Lambda',lambda);
 set(rstr,'MaxIter',maxIter);
 set(rstr,'Eps0',eps0);  
@@ -117,9 +118,9 @@ nItr   = get(stepmonitor,'nItr');
 mses_  = get(stepmonitor,'MSEs');
 psnrs_ = get(stepmonitor,'PSNRs');
 ssims_ = get(stepmonitor,'SSIMs');
-mse = mses_(1:nItr);   %#ok
-psnr = psnrs_(1:nItr); %#ok
-ssim = ssims_(1:nItr); %#ok
+mse = mses_(1:nItr);   
+psnr = psnrs_(1:nItr); 
+ssim = ssims_(1:nItr); 
 s = sprintf('%s_%s_%s_%s_ns%06.2f',...
     strpartpic,lower(stralg),lower(strdic),strlinproc,nsigma);
 imwrite(resImg,sprintf('./results/res_%s.tif',s));

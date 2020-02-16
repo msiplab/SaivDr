@@ -3,7 +3,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
     %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2014-2017, Shogo MURAMATSU
+    % Copyright (c) 2014-2020, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -5502,7 +5502,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             testCase.verifyThat(diff,IsGreaterThan(0));
         end
         
-        function testIsCloneLpPuFb2dFalse(testCase)
+        function testIsCloneLpPuFbFalse(testCase)
             
             dec = 2;
             ch = [ 4 4 ];
@@ -5538,7 +5538,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % Instantiation of target class
             testCase.synthesizer = NsoltSynthesis2dSystem(...
                 'LpPuFb2d',lppufb,...
-                'IsCloneLpPuFb2d',true);
+                'IsCloneLpPuFb',true);
             
             % Pre
             imgPre = step(testCase.synthesizer,coefs,scales);
@@ -5559,7 +5559,7 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
             % ReInstantiation of target class
             testCase.synthesizer = NsoltSynthesis2dSystem(...
                 'LpPuFb2d',lppufb,...
-                'IsCloneLpPuFb2d',false);
+                'IsCloneLpPuFb',false);
             
             % Pre
             imgPre = step(testCase.synthesizer,coefs,scales);
@@ -13356,3 +13356,4 @@ classdef NsoltSynthesis2dSystemTestCase < matlab.unittest.TestCase
     end
     
 end
+

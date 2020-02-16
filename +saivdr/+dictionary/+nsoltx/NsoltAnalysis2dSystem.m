@@ -4,7 +4,7 @@ classdef NsoltAnalysis2dSystem < ...
     %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2014-2017, Shogo MURAMATSU
+    % Copyright (c) 2014-2020, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -28,10 +28,11 @@ classdef NsoltAnalysis2dSystem < ...
     properties (Nontunable, PositiveInteger)    
         NumberOfSymmetricChannels     = 2
         NumberOfAntisymmetricChannels = 2
+        NumberOfLevels = 1
     end
     
     properties (Nontunable, Logical)
-        IsCloneLpPuFb2d = true
+        IsCloneLpPuFb = true
     end    
     
     properties (Hidden, Transient)
@@ -73,7 +74,7 @@ classdef NsoltAnalysis2dSystem < ...
                     'OutputMode','ParameterMatrixSet');
             end
             %
-            if obj.IsCloneLpPuFb2d
+            if obj.IsCloneLpPuFb
                 obj.LpPuFb2d = clone(obj.LpPuFb2d); 
             end
             %
@@ -125,7 +126,8 @@ classdef NsoltAnalysis2dSystem < ...
             obj.LpPuFb2d = matlab.System.loadObject(s.LpPuFb2d);
         end
         
-        function setupImpl(obj, srcImg, nLevels)
+        function setupImpl(obj, srcImg)
+            nLevels = obj.NumberOfLevels;
             dec = obj.decimationFactor;
             nch = [ obj.NumberOfSymmetricChannels ...
                 obj.NumberOfAntisymmetricChannels ];
@@ -155,7 +157,8 @@ classdef NsoltAnalysis2dSystem < ...
 
         end
         
-        function [ coefs, scales ] = stepImpl(obj, srcImg, nLevels)
+        function [ coefs, scales ] = stepImpl(obj, srcImg)
+            nLevels = obj.NumberOfLevels;
             %if obj.IsDifferentiation
             %else
                 pmMtx = step(obj.LpPuFb2d,[],[]);
@@ -294,3 +297,4 @@ classdef NsoltAnalysis2dSystem < ...
     end    
     
 end
+

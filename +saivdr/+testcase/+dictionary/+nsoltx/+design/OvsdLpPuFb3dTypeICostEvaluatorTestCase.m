@@ -1,12 +1,9 @@
 classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
     %OVSDLPPUFB3DTYPEICOSTEVALUATORTESTCASE Test case for OvsdLpPuFb3dTypeICostEvaluator
     %
-    % SVN identifier:
-    % $Id: OvsdLpPuFb3dTypeICostEvaluatorTestCase.m 866 2015-11-24 04:29:42Z sho $
-    %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2015, Shogo MURAMATSU
+    % Copyright (c) 2015-2020, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -90,10 +87,10 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
                 'DecimationFactor',nDecs);
             angs = get(lppufb,'Angles');
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
-                lppufb);
+                lppufb, 'NumberOfLevels', nLevels);
             synthesizer = NsoltFactory.createSynthesis3dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width*depth/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -139,10 +136,10 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             
             % Expected values
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
-                lppufb);
+                lppufb, 'NumberOfLevels', nLevels);
             synthesizer = NsoltFactory.createSynthesis3dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width*depth/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -193,10 +190,10 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             
             % Expected values
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
-                lppufb);
+                lppufb, 'NumberOfLevels', nLevels);
             synthesizer = NsoltFactory.createSynthesis3dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width*depth/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -248,11 +245,12 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             % Expected values
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
                 lppufb,...
-                'BoundaryOperation','Circular');
+                'BoundaryOperation','Circular', ...
+                'NumberOfLevels', nLevels);
             synthesizer = NsoltFactory.createSynthesis3dSystem(...
                 lppufb,...
                 'BoundaryOperation','Circular');
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width*depth/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -304,10 +302,10 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             
             % Expected values
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
-                lppufb);
+                lppufb, 'NumberOfLevels', nLevels);
             synthesizer = NsoltFactory.createSynthesis3dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width*depth/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -359,11 +357,12 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             % Expected values
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
                 lppufb,...
-                'BoundaryOperation','Circular');
+                'BoundaryOperation','Circular',...
+                'NumberOfLevels', nLevels);
             synthesizer = NsoltFactory.createSynthesis3dSystem(...
                 lppufb,...
                 'BoundaryOperation','Circular');
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width*depth/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -407,10 +406,10 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
                 'DecimationFactor',nDecs);
             angs  = get(lppufb,'Angles');
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
-                lppufb);
+                lppufb, 'NumberOfLevels', nLevels);
             synthesizer = NsoltFactory.createSynthesis3dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width*depth/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -464,10 +463,10 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
                
                % Expected values
                analyzer    = NsoltFactory.createAnalysis3dSystem(...
-                   lppufb);
+                   lppufb, 'NumberOfLevels', nLevels);
                synthesizer = NsoltFactory.createSynthesis3dSystem(...
                    lppufb);
-               [coefs,scales] = step(analyzer,srcImg,nLevels);
+               [coefs,scales] = step(analyzer,srcImg);
                [~,idxs] = sort(abs(coefs));
                coefs(idxs(1:floor(height*width*depth/2)))=0;
                recImg = step(synthesizer,coefs,scales);
@@ -522,11 +521,12 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             % Expected values
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
                 lppufb,...
-                'BoundaryOperation','Circular');
+                'BoundaryOperation','Circular',...
+                'NumberOfLevels', nLevels);
             synthesizer = NsoltFactory.createSynthesis3dSystem(...
                 lppufb,...
                 'BoundaryOperation','Circular');
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width*depth/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -581,10 +581,10 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             
             % Expected values
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
-                lppufb);
+                lppufb, 'NumberOfLevels', nLevels);
             synthesizer = NsoltFactory.createSynthesis3dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width*depth/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -639,11 +639,12 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             % Expected values
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
                 lppufb,...
-                'BoundaryOperation','Circular');
+                'BoundaryOperation','Circular',...
+                'NumberOfLevels', nLevels);
             synthesizer = NsoltFactory.createSynthesis3dSystem(...
                 lppufb,...
                 'BoundaryOperation','Circular');
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width*depth/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -697,11 +698,12 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             % Expected values
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
                 lppufb,...
-                'BoundaryOperation','Circular');
+                'BoundaryOperation','Circular',...
+                'NumberOfLevels', nLevels);
             synthesizer = NsoltFactory.createSynthesis3dSystem(...
                 lppufb,...
                 'BoundaryOperation','Circular');
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width*depth/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -755,11 +757,12 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             % Expected values
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
                 lppufb,...
-                'BoundaryOperation','Circular');
+                'BoundaryOperation','Circular',...
+                'NumberOfLevels', nLevels);
             synthesizer = NsoltFactory.createSynthesis3dSystem(...
                 lppufb,...
                 'BoundaryOperation','Circular');
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width*depth/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -811,10 +814,10 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             
             % Expected values
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
-                lppufb);
+                lppufb, 'NumberOfLevels', nLevels);
             synthesizer = NsoltFactory.createSynthesis3dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width*depth/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -864,10 +867,10 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             
             % Expected values
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
-                lppufb);
+                lppufb, 'NumberOfLevels', nLevels);
             synthesizer = NsoltFactory.createSynthesis3dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width*depth/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -915,10 +918,10 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             
             % Expected values
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
-                lppufb);
+                lppufb, 'NumberOfLevels', nLevels);
             synthesizer = NsoltFactory.createSynthesis3dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width*depth/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -968,10 +971,10 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             
             % Expected values
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
-                lppufb);
+                lppufb, 'NumberOfLevels', nLevels);
             synthesizer = NsoltFactory.createSynthesis3dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width*depth/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -1025,11 +1028,12 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             % Expected values
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
                 lppufb,...
-                'BoundaryOperation','Circular');
+                'BoundaryOperation','Circular',...
+                'NumberOfLevels', nLevels);
             synthesizer = NsoltFactory.createSynthesis3dSystem(...
                 lppufb,...
                 'BoundaryOperation','Circular');
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width*depth/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -1084,10 +1088,10 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             
             % Expected values
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
-                lppufb);
+                lppufb, 'NumberOfLevels', nLevels);
             synthesizer = NsoltFactory.createSynthesis3dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width*depth/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -1141,10 +1145,10 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             
             % Expected values
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
-                lppufb);
+                lppufb, 'NumberOfLevels', nLevels);
             synthesizer = NsoltFactory.createSynthesis3dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width*depth/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -1200,11 +1204,12 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             % Expected values
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
                 lppufb,...
-                'BoundaryOperation','Circular');
+                'BoundaryOperation','Circular',...
+                'NumberOfLevels', nLevels);
             synthesizer = NsoltFactory.createSynthesis3dSystem(...
                 lppufb,...
                 'BoundaryOperation','Circular');
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width*depth/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -1260,11 +1265,12 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             % Expected values
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
                 lppufb,...
-                'BoundaryOperation','Circular');
+                'BoundaryOperation','Circular',...
+                'NumberOfLevels', nLevels);
             synthesizer = NsoltFactory.createSynthesis3dSystem(...
                 lppufb,...
                 'BoundaryOperation','Circular');
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width*depth/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -1320,10 +1326,10 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             
             % Expected values
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
-                lppufb);
+                lppufb, 'NumberOfLevels', nLevels);
             synthesizer = NsoltFactory.createSynthesis3dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width*depth/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -1375,10 +1381,10 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             
             % Expected values
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
-                lppufb);
+                lppufb, 'NumberOfLevels', nLevels);
             synthesizer = NsoltFactory.createSynthesis3dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width*depth/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -1431,11 +1437,12 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             % Expected values
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
                 lppufb,...
-                'BoundaryOperation','Circular');
+                'BoundaryOperation','Circular',...
+                'NumberOfLevels', nLevels);
             synthesizer = NsoltFactory.createSynthesis3dSystem(...
                 lppufb,...
                 'BoundaryOperation','Circular');
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width*depth/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -1488,10 +1495,10 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             
             % Expected values
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
-                lppufb);
+                lppufb, 'NumberOfLevels', nLevels);
             synthesizer = NsoltFactory.createSynthesis3dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width*depth/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -1542,10 +1549,10 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             
             % Expected values
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
-                lppufb);
+                lppufb, 'NumberOfLevels', nLevels);
             synthesizer = NsoltFactory.createSynthesis3dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width*depth/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -1599,11 +1606,12 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             % Expected values
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
                 lppufb,...
-                'BoundaryOperation','Circular');
+                'BoundaryOperation','Circular',...
+                'NumberOfLevels', nLevels);
             synthesizer = NsoltFactory.createSynthesis3dSystem(...
                 lppufb,...
                 'BoundaryOperation','Circular');
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width*depth/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -1658,11 +1666,12 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             % Expected values
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
                 lppufb,...
-                'BoundaryOperation','Circular');
+                'BoundaryOperation','Circular',...
+                'NumberOfLevels', nLevels);
             synthesizer = NsoltFactory.createSynthesis3dSystem(...
                 lppufb,...
                 'BoundaryOperation','Circular');
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width*depth/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -1716,10 +1725,10 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             
             % Expected values
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
-                lppufb);
+                lppufb, 'NumberOfLevels', nLevels);
             synthesizer = NsoltFactory.createSynthesis3dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width*depth/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -1772,11 +1781,12 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             % Expected values
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
                 lppufb,...
-                'BoundaryOperation','Circular');
+                'BoundaryOperation','Circular', ...
+                'NumberOfLevels', nLevels);
             synthesizer = NsoltFactory.createSynthesis3dSystem(...
                 lppufb,...
                 'BoundaryOperation','Circular');
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width*depth/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -1829,10 +1839,10 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             
             % Expected values
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
-                lppufb);
+                lppufb, 'NumberOfLevels', nLevels);
             synthesizer = NsoltFactory.createSynthesis3dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width*depth/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -1885,11 +1895,12 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             % Expected values
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
                 lppufb,...
-                'BoundaryOperation','Circular');
+                'BoundaryOperation','Circular',...
+                'NumberOfLevels', nLevels);
             synthesizer = NsoltFactory.createSynthesis3dSystem(...
                 lppufb,...
                 'BoundaryOperation','Circular');
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width*depth/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -1942,10 +1953,10 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             
             % Expected values
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
-                lppufb);
+                lppufb, 'NumberOfLevels', nLevels);
             synthesizer = NsoltFactory.createSynthesis3dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width*depth/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -1996,10 +2007,10 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             
             % Expected values
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
-                lppufb);
+                lppufb, 'NumberOfLevels', nLevels);
             synthesizer = NsoltFactory.createSynthesis3dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width*depth/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -2050,10 +2061,10 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             
             % Expected values
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
-                lppufb);
+                lppufb, 'NumberOfLevels', nLevels);
             synthesizer = NsoltFactory.createSynthesis3dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width*depth/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -2104,10 +2115,10 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             
             % Expected values
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
-                lppufb);
+                lppufb, 'NumberOfLevels', nLevels);
             synthesizer = NsoltFactory.createSynthesis3dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width*depth/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -2158,10 +2169,10 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             
             % Expected values
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
-                lppufb);
+                lppufb, 'NumberOfLevels', nLevels);
             synthesizer = NsoltFactory.createSynthesis3dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width*depth/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -2212,10 +2223,10 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             
             % Expected values
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
-                lppufb);
+                lppufb, 'NumberOfLevels', nLevels);
             synthesizer = NsoltFactory.createSynthesis3dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width*depth/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -2266,10 +2277,10 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             
             % Expected values
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
-                lppufb);
+                lppufb, 'NumberOfLevels', nLevels);
             synthesizer = NsoltFactory.createSynthesis3dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width*depth/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -2320,10 +2331,10 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             
             % Expected values
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
-                lppufb);
+                lppufb, 'NumberOfLevels', nLevels);
             synthesizer = NsoltFactory.createSynthesis3dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width*depth/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -2376,11 +2387,12 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             % Expected values
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
                 lppufb,...
-                'BoundaryOperation','Circular');
+                'BoundaryOperation','Circular',...
+                'NumberOfLevels', nLevels);
             synthesizer = NsoltFactory.createSynthesis3dSystem(...
                 lppufb,...
                 'BoundaryOperation','Circular');
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width*depth/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -2435,11 +2447,12 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             % Expected values
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
                 lppufb,...
-                'BoundaryOperation','Circular');
+                'BoundaryOperation','Circular',...
+                'NumberOfLevels', nLevels);
             synthesizer = NsoltFactory.createSynthesis3dSystem(...
                 lppufb,...
                 'BoundaryOperation','Circular');
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width*depth/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -2494,11 +2507,12 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             % Expected values
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
                 lppufb,...
-                'BoundaryOperation','Circular');
+                'BoundaryOperation','Circular',...
+                'NumberOfLevels', nLevels);
             synthesizer = NsoltFactory.createSynthesis3dSystem(...
                 lppufb,...
                 'BoundaryOperation','Circular');
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width*depth/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -2553,11 +2567,12 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             % Expected values
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
                 lppufb,...
-                'BoundaryOperation','Circular');
+                'BoundaryOperation','Circular',...
+                'NumberOfLevels', nLevels);
             synthesizer = NsoltFactory.createSynthesis3dSystem(...
                 lppufb,...
                 'BoundaryOperation','Circular');
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width*depth/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -2612,11 +2627,12 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             % Expected values
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
                 lppufb,...
-                'BoundaryOperation','Circular');
+                'BoundaryOperation','Circular',...
+                'NumberOfLevels', nLevels);
             synthesizer = NsoltFactory.createSynthesis3dSystem(...
                 lppufb,...
                 'BoundaryOperation','Circular');
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width*depth/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -2671,11 +2687,12 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             % Expected values
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
                 lppufb,...
-                'BoundaryOperation','Circular');
+                'BoundaryOperation','Circular',...
+                'NumberOfLevels', nLevels);
             synthesizer = NsoltFactory.createSynthesis3dSystem(...
                 lppufb,...
                 'BoundaryOperation','Circular');
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width*depth/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -2730,11 +2747,12 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             % Expected values
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
                 lppufb,...
-                'BoundaryOperation','Circular');
+                'BoundaryOperation','Circular',...
+                'NumberOfLevels', nLevels);
             synthesizer = NsoltFactory.createSynthesis3dSystem(...
                 lppufb,...
                 'BoundaryOperation','Circular');
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width*depth/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -2789,11 +2807,12 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             % Expected values
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
                 lppufb,...
-                'BoundaryOperation','Circular');
+                'BoundaryOperation','Circular',...
+                'NumberOfLevels', nLevels);
             synthesizer = NsoltFactory.createSynthesis3dSystem(...
                 lppufb,...
                 'BoundaryOperation','Circular');
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width*depth/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -2845,10 +2864,10 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             
             % Expected values
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
-                lppufb);
+                lppufb, 'NumberOfLevels', nLevels);
             synthesizer = NsoltFactory.createSynthesis3dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width*depth/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -2898,10 +2917,10 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             
             % Expected values
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
-                lppufb);
+                lppufb, 'NumberOfLevels', nLevels);
             synthesizer = NsoltFactory.createSynthesis3dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width*depth/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -2954,11 +2973,12 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             % Expected values
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
                 lppufb,...
-                'BoundaryOperation','Circular');
+                'BoundaryOperation','Circular',...
+                'NumberOfLevels', nLevels);
             synthesizer = NsoltFactory.createSynthesis3dSystem(...
                 lppufb,...
                 'BoundaryOperation','Circular');
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width*depth/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -3013,11 +3033,12 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             % Expected values
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
                 lppufb,...
-                'BoundaryOperation','Circular');
+                'BoundaryOperation','Circular',...
+                'NumberOfLevels', nLevels);
             synthesizer = NsoltFactory.createSynthesis3dSystem(...
                 lppufb,...
                 'BoundaryOperation','Circular');
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width*depth/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -3069,10 +3090,10 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             
             % Expected values
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
-                lppufb);
+                lppufb, 'NumberOfLevels', nLevels);
             synthesizer = NsoltFactory.createSynthesis3dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width*depth/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -3122,10 +3143,10 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             
             % Expected values
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
-                lppufb);
+                lppufb, 'NumberOfLevels', nLevels);
             synthesizer = NsoltFactory.createSynthesis3dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width*depth/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -3178,11 +3199,11 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             % Expected values
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
                 lppufb,...
-                'BoundaryOperation','Circular');
+                'BoundaryOperation','Circular', 'NumberOfLevels', nLevels);
             synthesizer = NsoltFactory.createSynthesis3dSystem(...
                 lppufb,...
                 'BoundaryOperation','Circular');
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width*depth/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -3237,11 +3258,11 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             % Expected values
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
                 lppufb,...
-                'BoundaryOperation','Circular');
+                'BoundaryOperation','Circular', 'NumberOfLevels', nLevels);
             synthesizer = NsoltFactory.createSynthesis3dSystem(...
                 lppufb,...
                 'BoundaryOperation','Circular');
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width*depth/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -3290,11 +3311,11 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             % Instantiation of target class
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
                 lppufb,...
-                'BoundaryOperation','Circular');
+                'BoundaryOperation','Circular', 'NumberOfLevels', nLevels);
             synthesizer = NsoltFactory.createSynthesis3dSystem(...
                 lppufb,...
                 'BoundaryOperation','Circular');
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width*depth/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -3329,7 +3350,7 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             testCase.verifyThat(diff,IsGreaterThan(0));
         end
         
-        function testIsCloneLpPuFb3dFalse(testCase)
+        function testIsCloneLpPuFbFalse(testCase)
             
             dec = 2;
             ch = [ 6 6 ];
@@ -3370,7 +3391,7 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             % Instantiation of target class
             testCase.evaluator = NsoltSynthesis3dSystem(...
                 'LpPuFb3d',lppufb,...
-                'IsCloneLpPuFb3d',true);
+                'IsCloneLpPuFb',true);
             
             % Pre
             imgPre = step(testCase.evaluator,coefs,scales);
@@ -3391,7 +3412,7 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             % ReInstantiation of target class
             testCase.evaluator = NsoltSynthesis3dSystem(...
                 'LpPuFb3d',lppufb,...
-                'IsCloneLpPuFb3d',false);
+                'IsCloneLpPuFb',false);
             
             % Pre
             imgPre = step(testCase.evaluator,coefs,scales);
@@ -3428,8 +3449,8 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',nChs,...
                 'PolyPhaseOrder',nOrds);
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
-                lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+                lppufb, 'NumberOfLevels', nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width*depth/2)))=0;
             
@@ -3483,10 +3504,10 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             
             % Expected values
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
-                lppufb);
+                lppufb, 'NumberOfLevels', nLevels);
             synthesizer = NsoltFactory.createSynthesis3dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width*depth/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -3540,10 +3561,10 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             
             % Expected values
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
-                lppufb);
+                lppufb, 'NumberOfLevels', nLevels);
             synthesizer = NsoltFactory.createSynthesis3dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width*depth/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -3597,10 +3618,10 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             
             % Expected values
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
-                lppufb);
+                lppufb, 'NumberOfLevels', nLevels);
             synthesizer = NsoltFactory.createSynthesis3dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width*depth/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -3654,10 +3675,10 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             
             % Expected values
             analyzer    = NsoltFactory.createAnalysis3dSystem(...
-                lppufb);
+                lppufb, 'NumberOfLevels', nLevels);
             synthesizer = NsoltFactory.createSynthesis3dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width*depth/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -3700,7 +3721,7 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             % Preparation
             import saivdr.dictionary.nsoltx.*
             synCur = NsoltFactory.createSynthesis3dSystem(lppufb,...
-                'IsCloneLpPuFb3d',true);
+                'IsCloneLpPuFb',true);
             if isPext
                 set(synCur,'BoundaryOperation','Circular');
             end            
@@ -3711,7 +3732,7 @@ classdef OvsdLpPuFb3dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             % Numerical gradient
             clonefb = clone(lppufb);
             synDlt = NsoltFactory.createSynthesis3dSystem(clonefb,...
-                'IsCloneLpPuFb3d',false);
+                'IsCloneLpPuFb',false);
             if isPext
                 set(synDlt,'BoundaryOperation','Circular');
             end

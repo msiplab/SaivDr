@@ -76,7 +76,7 @@ dgrd = DegradationSystem(... % Integration of blur and AWGN
 % Then, let us generate an observed image $\mathbf{x}$ by the 
 % DegradationSystem object, _dgrd_ , created in the previous step.
 
-obsImg = step(dgrd,orgImg);
+obsImg = dgrd.step(orgImg);
 
 %% Create an NSOLT system object
 % In order to restore the clearn image $\mathbf{u}$, let us assume that
@@ -105,18 +105,28 @@ obsImg = step(dgrd,orgImg);
 
 % Parameters for NSOLT
 nLevels = 4;     % # of wavelet tree levels
-nDec    = [2 2]; % Decimation factor
+nDecs   = [2 2]; % Decimation factor
 nChs    = [4 4]; % # of channels
-nOrd    = [4 4]; % Polyphase order
+nOrds   = [4 4]; % Polyphase order
 nVm     = 1;     % # of vanishing moments
 
 % Location which containts a pre-designed NSOLT
 sdir = './examples/quickdesign/results';
 
 % Load a pre-designed dictionary from a MAT-file
+%%{
 s = load(sprintf('%s/nsolt_d%dx%d_c%d+%d_o%d+%d_v%d_l%d_n%d_%s.mat',...
-    sdir,nDec(1),nDec(2),nChs(1),nChs(2),nOrd(1),nOrd(2),nVm,nLevels,...
+    sdir,nDecs(1),nDecs(2),nChs(1),nChs(2),nOrds(1),nOrds(2),nVm,nLevels,...
     2048,'peppers128x128'),'nsolt');
+%%}
+%{
+virLvTrn = 1;
+s = load(sprintf('%s/nsolt_d%dx%d_c%d+%d_o%d+%d_v%d_vl%d_vn%d_%s_sgd.mat',...
+    sdir,...
+    nDecs(1),nDecs(2),nChs(1),nChs(2),...
+    nOrds(1),nOrds(2),nVm,virLvTrn,...
+    2048,'peppers128x128'),'nsolt');
+%}
 nsolt = s.nsolt; % saivdr.dictionary.nsolt.OvsdLpPuFb2dTypeIVm1System
 
 % Conversion of nsolt to new package style
@@ -124,8 +134,8 @@ nsolt = s.nsolt; % saivdr.dictionary.nsolt.OvsdLpPuFb2dTypeIVm1System
 
 % Show the atomic images by using a method atmimshow()
 hfig1 = figure(1);
-atmimshow(nsolt)
-set(hfig1,'Name','Atomic images of NSOLT')
+nsolt.atmimshow()
+hfig1.Name = 'Atomic images of NSOLT';
 
 %% Create an analysis and synthesis system object
 % Since the object of OvsdLpPuFb2dTypeIVm1System, _nsolt_ , is not able 
@@ -141,29 +151,30 @@ import saivdr.dictionary.generalfb.Synthesis2dSystem
 
 % Change the output mode of NSOLT to 'AnalysisFilters' and
 % draw inpulse responses of the analysis filters.
-release(nsolt)
-set(nsolt,'OutputMode','AnalysisFilters')
-analysisFilters = step(nsolt,[],[]);
+nsolt.release()
+nsolt.OutputMode = 'AnalysisFilters';
+analysisFilters = nsolt.step([],[]);
 
 % Change the output mode of NSOLT to 'SynthesisFilters' and
 % draw inpulse responses of the synthesis filters.
-release(nsolt)
-set(nsolt,'OutputMode','SynthesisFilters')
-synthesisFilters = step(nsolt,[],[]);
+nsolt.release()
+nsolt.OutputMode = 'SynthesisFilters';
+synthesisFilters = nsolt.step([],[]);
 
 % Create analysis ans synthesis system objects with
 % frequency domain filtering mode.
 analyzer    = Analysis2dSystem(...
-    'DecimationFactor',nDec,...
-    'AnalysisFilters',analysisFilters,...
+    'DecimationFactor', nDecs,...
+    'AnalysisFilters',  analysisFilters,...
+    'NumberOfLevels',   nLevels,...
     'FilterDomain','Frequency');
-set(analyzer,'UseGpu',false)
+analyzer.UseGpu = false;
 synthesizer = Synthesis2dSystem(...
-    'DecimationFactor',nDec,...
+    'DecimationFactor',nDecs,...
     'SynthesisFilters',synthesisFilters,...
     'FilterDomain','Frequency');
-setFrameBound(synthesizer,1);
-set(synthesizer,'UseGpu',false);
+synthesizer.setFrameBound(1);
+synthesizer.UseGpu = false;
 
 %%
 % The following static factory methods can also be used to create
@@ -207,9 +218,8 @@ ista = IstaImRestoration2d(...
     'Synthesizer',        synthesizer,... % Synthesizer (Dictionary)
     'AdjOfSynthesizer',   analyzer,...    % Analyzer (Adj. of dictionary)
     'LinearProcess',      blur,...        % Blur process
-    'NumberOfTreeLevels', nLevels,...     % # of tree levels of NSOLT
     'Lambda',             lambda);        % Parameter lambda
-set(ista,'Eps0',1e-6)
+ista.Eps0 = 1e-6;
 
 %% Create a step monitor system object
 % ISTA iteratively approaches to the optimum solution. In order to 
@@ -221,7 +231,7 @@ set(ista,'Eps0',1e-6)
 isverbose = true;  % Verbose mode
 isvisible = true;  % Monitor intermediate results
 hfig2 = figure(2); % Figure to show the source, observed and result image 
-set(hfig2,'Name','ISTA-based Image Restoration')
+hfig2.Name = 'ISTA-based Image Restoration';
 
 % Instantiation of StepMonitoringSystem
 import saivdr.utility.StepMonitoringSystem
@@ -237,7 +247,7 @@ stepmonitor = StepMonitoringSystem(...
     'ImageFigureHandle',hfig2);    % Figure handle
     
 % Set the object to the ISTA system object
-set(ista,'StepMonitor',stepmonitor);
+ista.StepMonitor = stepmonitor;
 
 %% Perform ISTA-based image restoration
 % STEP method of IstaImRestoration system object, _ista_ , executes 
@@ -249,7 +259,7 @@ set(ista,'StepMonitor',stepmonitor);
 % is obtained.
 
 fprintf('\n ISTA')
-resImg = step(ista,obsImg); % STEP method of IstaImRestoration
+resImg = ista.step(obsImg); % STEP method of IstaImRestoration
 
 %% Extract the final evaluation  
 % The object of StepMonitoringSystem, _stepmonitor_ , stores the 
@@ -257,8 +267,8 @@ resImg = step(ista,obsImg); % STEP method of IstaImRestoration
 % method of _stepmonitor_  can be used to extract the number of iterations
 % and the sequence of PSNRs. 
 
-nItr  = get(stepmonitor,'nItr');
-psnrs = get(stepmonitor,'PSNRs');
+nItr  = stepmonitor.nItr;
+psnrs = stepmonitor.PSNRs;
 psnr_ista = psnrs(nItr);
 
 %% Perform Wiener filtering
@@ -275,7 +285,7 @@ stepmonitor = StepMonitoringSystem(...
     'IsVerbose', isverbose);
 
 % Use the same blur kernel as that applied to the observed image, obsImg
-blurKernel = get(blur,'BlurKernel');
+blurKernel = blur.BlurKernel;
 
 % Estimation of noise to signal ratio
 nsr = noise_var/var(orgImg(:));
@@ -285,7 +295,7 @@ wnfImg = deconvwnr(obsImg, blurKernel, nsr);
 
 % Evaluation
 fprintf('\n Wiener')
-psnr_wfdc = step(stepmonitor,wnfImg); % STEP method of StepMonitoringSystem
+psnr_wfdc = stepmonitor.step(wnfImg); % STEP method of StepMonitoringSystem
 
 %% Compare deblurring performances
 % In order to compare the deblurring performances between two methods,
@@ -316,5 +326,4 @@ title(['{\bf u}\^ by Wiener: ' num2str(psnr_wfdc) ' [dB]'])
 
 %% Release notes
 % RELEASENOTES.txt contains release notes on *SaivDr Package*.
-
 type('RELEASENOTES.txt')

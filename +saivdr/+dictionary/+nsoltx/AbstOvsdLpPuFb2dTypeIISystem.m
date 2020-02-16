@@ -4,7 +4,7 @@ classdef AbstOvsdLpPuFb2dTypeIISystem < ...
     %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2014-2017, Shogo MURAMATSU
+    % Copyright (c) 2014-2020, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -59,6 +59,7 @@ classdef AbstOvsdLpPuFb2dTypeIISystem < ...
                 else
                     import saivdr.dictionary.nsoltx.mexsrcs.fcn_Order2BuildingBlockTypeII
                     obj.mexFcn = @fcn_Order2BuildingBlockTypeII;
+                    obj.mexFlag = false;
                 end
             end
             %
@@ -66,7 +67,7 @@ classdef AbstOvsdLpPuFb2dTypeIISystem < ...
         end
         
         function resetImpl(obj)
-            resetImpl@saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2dSystem(obj);      
+            resetImpl@saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2dSystem(obj);
         end
         
         function setupImpl(obj,varargin)
@@ -277,3 +278,4 @@ classdef AbstOvsdLpPuFb2dTypeIISystem < ...
     end
     
 end
+

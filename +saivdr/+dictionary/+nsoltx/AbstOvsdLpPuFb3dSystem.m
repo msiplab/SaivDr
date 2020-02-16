@@ -3,7 +3,7 @@ classdef AbstOvsdLpPuFb3dSystem < matlab.System %#codegen
     %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2014-2017, Kosuke FURUYA and Shogo MURAMATSU
+    % Copyright (c) 2014-2020, Kosuke FURUYA and Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -38,6 +38,15 @@ classdef AbstOvsdLpPuFb3dSystem < matlab.System %#codegen
         ColorMapAtmImShow      = 'cool'
         SliceIntervalAtmImShow = 1/2;
         IsColorBarAtmImShow    = false;
+        AlphaScale = 0.2;
+    end
+    
+    properties (Nontunable, Logical, Hidden)
+        UseClassicVisualizer = false
+    end
+    
+    properties (Access = private)
+        volVisSet
     end
     
     properties (GetAccess = public, SetAccess = protected)
@@ -50,7 +59,7 @@ classdef AbstOvsdLpPuFb3dSystem < matlab.System %#codegen
     
     properties(Access = protected, Logical)
         mexFlag = false
-    end    
+    end
     
     methods (Access = protected, Abstract = true)
         value = getAnalysisFilterBank_(obj)
@@ -72,90 +81,87 @@ classdef AbstOvsdLpPuFb3dSystem < matlab.System %#codegen
             H = flip(flip(flip(H,1),2),3);
             cmn = min(H(:));
             cmx = max(H(:));
-            H = padarray(H,[2 2 2]);
-            ly = size(H,1);
-            lx = size(H,2);
-            lz = size(H,3);
-            %
-            [x,y,z] = meshgrid(-(lx-1)/2:(lx-1)/2,-(ly-1)/2:(ly-1)/2,-(lz-1)/2:(lz-1)/2);
-            coder.extrinsic('slice')
-            coder.extrinsic('colorbar')
-            coder.extrinsic('isprop')
-            for ib=1:sum(obj.NumberOfChannels)
-                %hold off
+            if obj.UseClassicVisualizer
+                H = padarray(H,[2 2 2]);
+                ly = size(H,1);
+                lx = size(H,2);
+                lz = size(H,3);
                 %
-                subplot(2,obj.NumberOfChannels(1),ib);
-                v = H(:,:,:,ib);
-                v = 2*(v-cmn)/(cmx-cmn)-1;
-                %{
-                    ngd = 16;
-                    hsg = surf(linspace(-lx/2,lx/2,ngd*lx),...
-                        linspace(-ly/2,ly/2,ngd*ly),...
-                        zeros(ngd*lx,ngd*ly));
-                    rotate(hsg,[-1,1,0],-45)
-                    xd = get(hsg,'XData');
-                    yd = get(hsg,'YData');
-                    zd = get(hsg,'ZData');
-                    hsd = slice(x,y,z,v,xd,yd,zd,'nearest');
-                    hold on
-                    set(hsd,'FaceColor','interp',...
+                [x,y,z] = meshgrid(-(lx-1)/2:(lx-1)/2,-(ly-1)/2:(ly-1)/2,-(lz-1)/2:(lz-1)/2);
+                coder.extrinsic('slice')
+                coder.extrinsic('colorbar')
+                coder.extrinsic('isprop')
+                for ib=1:sum(obj.NumberOfChannels)
+                    %hold off
+                    %
+                    subplot(2,obj.NumberOfChannels(1),ib);
+                    v = H(:,:,:,ib);
+                    v = 2*(v-cmn)/(cmx-cmn)-1;
+                    
+                    sliceInterval = obj.SliceIntervalAtmImShow;
+                    xslice = -(lx-1)/2:sliceInterval:(lx-1)/2;
+                    yslice = -(ly-1)/2:sliceInterval:(ly-1)/2;
+                    zslice = -(lz-1)/2:sliceInterval:(lz-1)/2;
+                    hslice = slice(x,y,z,v,xslice,yslice,zslice,'nearest');
+                    set(hslice,'FaceColor','interp',...
                         'EdgeColor','none',...
-                        'DiffuseStrength',.8)
-                    xslice = (lx-1)/2;
-                    yslice = (ly-1)/2;
-                    zslice = (lz-1)/2;
-                %}
-                sliceInterval = obj.SliceIntervalAtmImShow;
-                xslice = -(lx-1)/2:sliceInterval:(lx-1)/2;
-                yslice = -(ly-1)/2:sliceInterval:(ly-1)/2;
-                zslice = -(lz-1)/2:sliceInterval:(lz-1)/2;
-                hslice = slice(x,y,z,v,xslice,yslice,zslice,'nearest');
-                set(hslice,'FaceColor','interp',...
-                    'EdgeColor','none',...
-                    'DiffuseStrength',.8);
-                caxis([cmn cmx]);
-                axis equal
-                axis vis3d
-                %grid off
-                set(gca,'XTickLabel',[])
-                set(gca,'YTickLabel',[])
-                set(gca,'ZTickLabel',[])
-                set(gca,'TickLength',[0 0])
-                %xlabel('x')
-                %ylabel('y')
-                %zlabel('z')
-                colormap(obj.ColorMapAtmImShow)
-                if obj.IsColorBarAtmImShow
-                    hcb = colorbar('location','southoutside');
-                    if isprop(hcb,'YTickLabel')
-                        set(hcb,'YTickLabel',[]);
+                        'DiffuseStrength',.8);
+                    caxis([cmn cmx]);
+                    axis equal
+                    axis vis3d
+                    %grid off
+                    set(gca,'XTickLabel',[])
+                    set(gca,'YTickLabel',[])
+                    set(gca,'ZTickLabel',[])
+                    set(gca,'TickLength',[0 0])
+                    
+                    colormap(obj.ColorMapAtmImShow)
+                    if obj.IsColorBarAtmImShow
+                        hcb = colorbar('location','southoutside');
+                        if isprop(hcb,'YTickLabel')
+                            set(hcb,'YTickLabel',[]);
+                        end
+                        if isprop(hcb,'XTickLabel')
+                            set(hcb,'XTickLabel',[]);
+                        end
+                        if isprop(hcb,'ZTickLabel')
+                            set(hcb,'ZTickLabel',[]);
+                        end
                     end
-                    if isprop(hcb,'XTickLabel')
-                        set(hcb,'XTickLabel',[]);
-                    end                
-                    if isprop(hcb,'ZTickLabel')
-                        set(hcb,'ZTickLabel',[]);
-                    end                
-                end
-                for iSlice = 1:length(hslice)
-                    map = abs(get(hslice(iSlice),'CData'));
-                    set(hslice(iSlice),...
-                        'AlphaDataMapping','scaled',...
-                        'AlphaData',map.^1.6,...
-                        'FaceAlpha','texture',...
-                        'FaceColor','texture');
-                end
-                %{
-                    for iz = lz-1:-1:1
-                        pause(0.1)
-                        zd = get(hslice(3),'ZData') - 1;
-                        set(hslice(3),'ZData',zd);
-                        set(hslice(3),'CData',v(:,:,iz))
-                        drawnow
+                    for iSlice = 1:length(hslice)
+                        map = abs(get(hslice(iSlice),'CData'));
+                        set(hslice(iSlice),...
+                            'AlphaDataMapping','scaled',...
+                            'AlphaData',map.^1.6,...
+                            'FaceAlpha','texture',...
+                            'FaceColor','texture');
                     end
-                    pause(0.1)
-                    set(hslice,'Visible','off')
-                %}
+                end
+            else
+                import saivdr.utility.*
+                nChs = sum(obj.NumberOfChannels);
+                if isempty(obj.volVisSet)
+                    obj.volVisSet = cell(nChs,1);
+                    for ib=1:sum(nChs)
+                        obj.volVisSet{ib} = VolumetricDataVisualizer(...
+                            'Texture','3D',...
+                            'VRange',[cmn cmx],...
+                            'Scale',1,...
+                            'AlphaScale', obj.AlphaScale);
+                    end
+                end
+                for ib=1:nChs
+                    subplot(2,obj.NumberOfChannels(1),ib);
+                    v = H(:,:,:,ib);
+                    hVol = obj.volVisSet{ib}.step(v);
+                    ax = hVol.Parent;
+                    ax.YTick = [];
+                    ax.XTick = [];
+                    ax.ZTick = [];
+                    ax.YLabel = [];
+                    ax.XLabel = [];
+                    ax.ZLabel = [];
+                end
             end
         end
         

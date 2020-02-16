@@ -21,7 +21,7 @@ function [mses, lppufbs] = fcn_nsoltdiclrn2(params)
 %   params.stallGenLimit = 10;              % Stall generation limit
 %   params.maxIterOfHybridFmin = 10;        % Max. Iter. of Hybrid Func.
 %   params.generationFactorForMus = 2;      % Geration factor for MUS
-%   params.sparseCoding = 'IterativeHardThresholding';
+%   params.sparseAprx = 'IterativeHardThresholding';
 %   params.optfcn = @ga;                    % Options for optimization
 %   params.isOptMus = true;                 % Flag for optimization of MUS
 %   params.isFixedCoefs = true;             % Flag if fix Coefs. support
@@ -61,7 +61,7 @@ if nargin < 1
     stallGenLimit = [];
     maxIterOfHybridFmin    = [];
     generationFactorForMus = 2;
-    sparseCoding = 'IterativeHardThresholding';
+    sparseAprx = 'IterativeHardThresholding';
     %
     optfcn      = 'fminsgd';
     useParallel = 'never';
@@ -87,7 +87,7 @@ else
     nLevels = params.nLevels;
     Display = params.Display;
     plotFcn = params.plotFcn;
-    sparseCoding = params.sparseCoding;
+    sparseAprx = params.sparseAprx;
     isRandomInit = params.isRandomInit;
     %
     optfcn = params.optfcn;
@@ -123,16 +123,16 @@ end
 %% Instantiation of target class
 import saivdr.dictionary.nsoltx.design.NsoltDictionaryLearning
 designer = NsoltDictionaryLearning(...
-    'SourceImages',srcImgs,...
+    'TrainingImages',srcImgs,...
     'DecimationFactor',dec,...
     'NumberOfSparseCoefficients',nCoefs,...
-    'NumberOfTreeLevels',nLevels,...
+    'NumberOfLevels',nLevels,...
     'NumberOfSymmetricChannel',chs(1),...
     'NumberOfAntisymmetricChannel',chs(2),...
     'OptimizationFunction',optfcn,...
     'NumbersOfPolyphaseOrder',ord,...
     'OrderOfVanishingMoment',nVm,...
-    'SparseCoding',sparseCoding,...
+    'SparseApproximation',sparseAprx,...
     'IsFixedCoefs',isFixedCoefs,...
     'IsRandomInit',isRandomInit);
 %
@@ -186,10 +186,10 @@ if (isVisible || isVerbose)
         'IsPSNR',true);
     set(stepMonitor,'IsVerbose',isVerbose)
     if isVisible
-        hfig1 = findobj(get(groot,'Children'),'Name','Sparse Coding');
+        hfig1 = findobj(get(groot,'Children'),'Name','Sparse Approximation');
         if isempty(hfig1)
             hfig1 = figure;
-            set(hfig1,'Name','Sparse Coding')
+            set(hfig1,'Name','Sparse Approximation')
         end
         set(stepMonitor,'IsVisible',true,...
             'ImageFigureHandle',hfig1);

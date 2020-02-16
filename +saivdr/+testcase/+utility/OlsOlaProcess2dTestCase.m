@@ -3,7 +3,7 @@ classdef OlsOlaProcess2dTestCase < matlab.unittest.TestCase
     %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2018, Shogo MURAMATSU
+    % Copyright (c) 2018-2020, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -98,7 +98,7 @@ classdef OlsOlaProcess2dTestCase < matlab.unittest.TestCase
             nLevels = level;
             srcImg = rand(height,width);
             import saivdr.dictionary.udhaar.*
-            analyzer = UdHaarAnalysis2dSystem();
+            analyzer = UdHaarAnalysis2dSystem('NumberOfLevels',nLevels);
             synthesizer = UdHaarSynthesis2dSystem();
             
             % Instantiation of target class
@@ -108,7 +108,7 @@ classdef OlsOlaProcess2dTestCase < matlab.unittest.TestCase
                 'Synthesizer',synthesizer);
             
             % Actual values
-            recImg = step(testCase.target,srcImg,nLevels);
+            recImg = step(testCase.target,srcImg);
             
             % Evaluation
             testCase.verifySize(recImg,size(srcImg));
@@ -129,7 +129,7 @@ classdef OlsOlaProcess2dTestCase < matlab.unittest.TestCase
             nHorPad = 2^(level-1);
             srcImg = rand(height,width);
             import saivdr.dictionary.udhaar.*
-            analyzer = UdHaarAnalysis2dSystem();
+            analyzer = UdHaarAnalysis2dSystem('NumberOfLevels',nLevels);
             synthesizer = UdHaarSynthesis2dSystem();
             
             % Instantiation of target class
@@ -143,7 +143,7 @@ classdef OlsOlaProcess2dTestCase < matlab.unittest.TestCase
                 'UseParallel',useparallel);
             
             % Actual values
-            recImg = step(testCase.target,srcImg,nLevels);
+            recImg = step(testCase.target,srcImg);
 
             % Evaluation
             testCase.verifySize(recImg,size(srcImg));
@@ -165,7 +165,7 @@ classdef OlsOlaProcess2dTestCase < matlab.unittest.TestCase
             nHorPad = 2^(level-1);
             srcImg = rand(height_,width_);
             import saivdr.dictionary.udhaar.*
-            analyzer = UdHaarAnalysis2dSystem();
+            analyzer = UdHaarAnalysis2dSystem('NumberOfLevels',nLevels);
             synthesizer = UdHaarSynthesis2dSystem();
             
             % Instantiation of target class
@@ -179,7 +179,7 @@ classdef OlsOlaProcess2dTestCase < matlab.unittest.TestCase
                 'UseParallel',useparallel);
             
             % Actual values
-            recImg = step(testCase.target,srcImg,nLevels);
+            recImg = step(testCase.target,srcImg);
 
             % Evaluation
             testCase.verifySize(recImg,size(srcImg));
@@ -199,7 +199,7 @@ classdef OlsOlaProcess2dTestCase < matlab.unittest.TestCase
             nHorPad = 2^(level-1);
             srcImg = rand(height,width);
             import saivdr.dictionary.udhaar.*
-            analyzer = UdHaarAnalysis2dSystem();
+            analyzer = UdHaarAnalysis2dSystem('NumberOfLevels',nLevels);
             synthesizer = UdHaarSynthesis2dSystem();
             
             % Expected values
@@ -218,7 +218,7 @@ classdef OlsOlaProcess2dTestCase < matlab.unittest.TestCase
             
             % Evaluation
             try
-                step(testCase.target,srcImg,nLevels);
+                step(testCase.target,srcImg);
                 if mod(width,nHorSplit) ~=0 || mod(height,nVerSplit) ~= 0
                     testCase.verifyFail(sprintf('%s must be thrown.',...
                         exceptionIdExpctd));
@@ -246,7 +246,7 @@ classdef OlsOlaProcess2dTestCase < matlab.unittest.TestCase
             nHorPad = 2^(level_-1)-1;
             srcImg = rand(height,width);            
             import saivdr.dictionary.udhaar.*
-            analyzer = UdHaarAnalysis2dSystem();
+            analyzer = UdHaarAnalysis2dSystem('NumberOfLevels',level_);
             synthesizer = UdHaarSynthesis2dSystem();
 
             % Expected values
@@ -264,7 +264,7 @@ classdef OlsOlaProcess2dTestCase < matlab.unittest.TestCase
             
             % Evaluation
             try
-                step(testCase.target,srcImg,level_);
+                testCase.target.step(srcImg);
                 testCase.verifyFail(sprintf('%s must be thrown.',...
                     exceptionIdExpctd));
             catch me
@@ -290,7 +290,7 @@ classdef OlsOlaProcess2dTestCase < matlab.unittest.TestCase
             nHorPad = 2^(level_-1)-1;
             srcImg = rand(height,width);            
             import saivdr.dictionary.udhaar.*
-            analyzer = UdHaarAnalysis2dSystem();
+            analyzer = UdHaarAnalysis2dSystem('NumberOfLevels',level_);
             synthesizer = UdHaarSynthesis2dSystem();
 
             % Instantiation of target class
@@ -305,7 +305,7 @@ classdef OlsOlaProcess2dTestCase < matlab.unittest.TestCase
             
             % Evaluation
             try
-                step(testCase.target,srcImg,level_);
+                testCase.target.step(srcImg);
             catch me
                 testCase.verifyFail(me.message);
             end
@@ -322,7 +322,7 @@ classdef OlsOlaProcess2dTestCase < matlab.unittest.TestCase
             nHorPad = 2^(nLevels-1);
             srcImg = rand(height,width);
             import saivdr.dictionary.udhaar.*
-            analyzer = UdHaarAnalysis2dSystem();
+            analyzer = UdHaarAnalysis2dSystem('NumberOfLevels',nLevels);
             synthesizer = UdHaarSynthesis2dSystem();
             
             % Functions
@@ -330,7 +330,7 @@ classdef OlsOlaProcess2dTestCase < matlab.unittest.TestCase
             g = @(x) sign(x).*((abs(x)-lambda)+abs(abs(x)-lambda))/2;
 
             % Expected values
-            [coefspre,scales] = analyzer.step(srcImg,nLevels);
+            [coefspre,scales] = analyzer.step(srcImg);
             coefspst = g(coefspre);
             imgExpctd = synthesizer.step(coefspst,scales);
             
@@ -348,7 +348,7 @@ classdef OlsOlaProcess2dTestCase < matlab.unittest.TestCase
                 'UseParallel',useparallel);
             
             % Actual values
-            imgActual = testCase.target.step(srcImg,nLevels);
+            imgActual = testCase.target.step(srcImg);
             
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd));
@@ -369,7 +369,7 @@ classdef OlsOlaProcess2dTestCase < matlab.unittest.TestCase
             nHorPad = 2^(nLevels-1);
             srcImg = rand(height,width);
             import saivdr.dictionary.udhaar.*
-            analyzer = UdHaarAnalysis2dSystem();
+            analyzer = UdHaarAnalysis2dSystem('NumberOfLevels',nLevels);
             synthesizer = UdHaarSynthesis2dSystem();
             
             % Functions
@@ -381,7 +381,7 @@ classdef OlsOlaProcess2dTestCase < matlab.unittest.TestCase
             h = srcImg;
             y = 0;
             for iIter = 1:nIters
-                [v,scales] = analyzer.step(h,nLevels);
+                [v,scales] = analyzer.step(h);
                 y = f(v,y);
                 hu = synthesizer.step(y,scales);
                 h = hu - srcImg;
@@ -406,7 +406,7 @@ classdef OlsOlaProcess2dTestCase < matlab.unittest.TestCase
             h = srcImg;
             coefsmanipulator.State = 0;
             for iIter = 1:nIters
-                hu = testCase.target.step(h,nLevels);                
+                hu = testCase.target.step(h);
                 h = hu - srcImg;
             end            
            imgActual = hu;

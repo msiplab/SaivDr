@@ -3,7 +3,7 @@ classdef NsoltFactoryTestCase < matlab.unittest.TestCase
     %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2014-2016, Shogo MURAMATSU
+    % Copyright (c) 2014-2020, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -987,7 +987,7 @@ classdef NsoltFactoryTestCase < matlab.unittest.TestCase
             
         end
         
-        function testCreateSynthesis2dSystemIsCloneLpPuFb2dFalse(testCase)
+        function testCreateSynthesis2dSystemIsCloneLpPuFbFalse(testCase)
             
             %
             import saivdr.dictionary.nsoltx.*
@@ -995,17 +995,17 @@ classdef NsoltFactoryTestCase < matlab.unittest.TestCase
             % Instantiation of target class
             lppufb = NsoltFactory.createOvsdLpPuFb2dSystem();
             testCase.obj = NsoltFactory.createSynthesis2dSystem(lppufb,...
-                'IsCloneLpPuFb2d',false);
+                'IsCloneLpPuFb',false);
             
             % Actual values
-            flagActual = get(testCase.obj,'IsCloneLpPuFb2d');
+            flagActual = get(testCase.obj,'IsCloneLpPuFb');
             
             % Evaluation
             testCase.verifyFalse(flagActual);
             
         end
         
-        function testCreateAnalysis2dSystemIsCloneLpPuFb2dFalse(testCase)
+        function testCreateAnalysis2dSystemIsCloneLpPuFbFalse(testCase)
             
             %
             import saivdr.dictionary.nsoltx.*
@@ -1013,10 +1013,10 @@ classdef NsoltFactoryTestCase < matlab.unittest.TestCase
             % Instantiation of target class
             lppufb = NsoltFactory.createOvsdLpPuFb2dSystem();
             testCase.obj = NsoltFactory.createAnalysis2dSystem(lppufb,...
-                'IsCloneLpPuFb2d',false);
+                'IsCloneLpPuFb',false);
             
             % Actual values
-            flagActual = get(testCase.obj,'IsCloneLpPuFb2d');
+            flagActual = get(testCase.obj,'IsCloneLpPuFb');
             
             % Evaluation
             testCase.verifyFalse(flagActual);
@@ -1414,3 +1414,4 @@ classdef NsoltFactoryTestCase < matlab.unittest.TestCase
     end
     
 end
+

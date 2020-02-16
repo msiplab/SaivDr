@@ -1,12 +1,9 @@
 classdef AbstNsoltDesigner < matlab.System %#~codegen
     %ABSTNSOLTDESIGNER Abstract class of NSOLT Designer
     %
-    % SVN identifier:
-    % $Id: AbstNsoltDesigner.m 866 2015-11-24 04:29:42Z sho $
-    %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2014-2015, Shogo MURAMATSU
+    % Copyright (c) 2014-2020, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -19,6 +16,10 @@ classdef AbstNsoltDesigner < matlab.System %#~codegen
     %
     
     properties
+        TrainingImages
+        SparseCoefficients
+        SetOfScales
+        %
         IsOptimizationOfMus    = false
         GenerationFactorForMus = 2
         GradObj = 'off'

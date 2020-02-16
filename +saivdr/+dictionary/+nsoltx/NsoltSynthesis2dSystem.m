@@ -4,7 +4,7 @@ classdef NsoltSynthesis2dSystem  < ...
     %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2014-2017, Shogo MURAMATSU
+    % Copyright (c) 2014-2020, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -31,7 +31,7 @@ classdef NsoltSynthesis2dSystem  < ...
     end
     
     properties (Nontunable, Logical)
-        IsCloneLpPuFb2d = true;
+        IsCloneLpPuFb = true;
     end
     
     properties (Hidden, Transient)
@@ -69,7 +69,7 @@ classdef NsoltSynthesis2dSystem  < ...
                     'OutputMode','ParameterMatrixSet');
             end            
             %
-            if obj.IsCloneLpPuFb2d
+            if obj.IsCloneLpPuFb
                 obj.LpPuFb2d = clone(obj.LpPuFb2d); 
             end
             %       
@@ -268,4 +268,3 @@ classdef NsoltSynthesis2dSystem  < ...
     end
     
 end
-

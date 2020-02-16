@@ -3,7 +3,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
     %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2014-2017, Shogo MURAMATSU
+    % Copyright (c) 2014-2020, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -113,12 +113,13 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...
                 'NumberOfSymmetricChannels',nChs(1),...
                 'NumberOfAntisymmetricChannels',nChs(2),...
                 'BoundaryOperation','Circular');
             
             % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifyEqual(scalesActual,scalesExpctd);
@@ -172,12 +173,13 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                
                 'NumberOfSymmetricChannels',nChs(1),...
                 'NumberOfAntisymmetricChannels',nChs(2),...
                 'BoundaryOperation','Circular');
             
             % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifyEqual(scalesActual,scalesExpctd);
@@ -251,12 +253,13 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                
                 'NumberOfSymmetricChannels',nChs(1),...
                 'NumberOfAntisymmetricChannels',nChs(2),...
                 'BoundaryOperation','Circular');
             
             % Actual values
-            [coefsActual,scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            [coefsActual,scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifyEqual(scalesActual,scalesExpctd);
@@ -330,12 +333,13 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                
                 'NumberOfSymmetricChannels',nChs(1),...
                 'NumberOfAntisymmetricChannels',nChs(2),...
                 'BoundaryOperation','Circular');
             
             % Actual values
-            [coefsActual,scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            [coefsActual,scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifyEqual(scalesActual,scalesExpctd);
@@ -389,12 +393,13 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                
                 'NumberOfSymmetricChannels',nChs(1),...
                 'NumberOfAntisymmetricChannels',nChs(2),...
                 'BoundaryOperation','Circular');
             
             % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifyEqual(scalesActual,scalesExpctd);
@@ -467,12 +472,13 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                
                 'NumberOfSymmetricChannels',nChs(1),...
                 'NumberOfAntisymmetricChannels',nChs(2),...
                 'BoundaryOperation','Circular');
             
             % Actual values
-            [coefsActual,scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            [coefsActual,scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifyEqual(scalesActual,scalesExpctd);
@@ -526,12 +532,13 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                
                 'NumberOfSymmetricChannels',nChs(1),...
                 'NumberOfAntisymmetricChannels',nChs(2),...
                 'BoundaryOperation','Circular');
             
             % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifyEqual(scalesActual,scalesExpctd);
@@ -608,12 +615,13 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                
                 'NumberOfSymmetricChannels',nChs(1),...
                 'NumberOfAntisymmetricChannels',nChs(2),...
                 'BoundaryOperation','Circular');
             
             % Actual values
-            [coefsActual,scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            [coefsActual,scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifyEqual(scalesActual,scalesExpctd);
@@ -666,12 +674,13 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                
                 'NumberOfSymmetricChannels',nChs(1),...
                 'NumberOfAntisymmetricChannels',nChs(2),...
                 'BoundaryOperation','Circular');
             
             % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifyEqual(scalesActual,scalesExpctd);
@@ -753,12 +762,13 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                
                 'NumberOfSymmetricChannels',nChs(1),...
                 'NumberOfAntisymmetricChannels',nChs(2),...
                 'BoundaryOperation','Circular');
             
             % Actual values
-            [coefsActual,scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            [coefsActual,scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifyEqual(scalesActual,scalesExpctd);
@@ -811,12 +821,13 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                
                 'NumberOfSymmetricChannels',nChs(1),...
                 'NumberOfAntisymmetricChannels',nChs(2),...
                 'BoundaryOperation','Circular');
             
             % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifyEqual(scalesActual,scalesExpctd);
@@ -889,12 +900,13 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                
                 'NumberOfSymmetricChannels',nChs(1),...
                 'NumberOfAntisymmetricChannels',nChs(2),...
                 'BoundaryOperation','Circular');
             
             % Actual values
-            [coefsActual,scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            [coefsActual,scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifyEqual(scalesActual,scalesExpctd);
@@ -946,12 +958,13 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                
                 'NumberOfSymmetricChannels',chs(1),...
                 'NumberOfAntisymmetricChannels',chs(2),...
                 'BoundaryOperation','Circular');
             
             % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifyEqual(scalesActual,scalesExpctd);
@@ -1004,12 +1017,13 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                
                 'NumberOfSymmetricChannels',chs(1),...
                 'NumberOfAntisymmetricChannels',chs(2),...
                 'BoundaryOperation','Circular');
             
             % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifyEqual(scalesActual,scalesExpctd);
@@ -1062,12 +1076,13 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                
                 'NumberOfSymmetricChannels',chs(1),...
                 'NumberOfAntisymmetricChannels',chs(2),...
                 'BoundaryOperation','Circular');
             
             % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifyEqual(scalesActual,scalesExpctd);
@@ -1141,12 +1156,13 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                
                 'NumberOfSymmetricChannels',nChs(1),...
                 'NumberOfAntisymmetricChannels',nChs(2),...
                 'BoundaryOperation','Circular');
             
             % Actual values
-            [coefsActual,scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            [coefsActual,scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifyEqual(scalesActual,scalesExpctd);
@@ -1200,12 +1216,13 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                
                 'NumberOfSymmetricChannels',nChs(1),...
                 'NumberOfAntisymmetricChannels',nChs(2),...
                 'BoundaryOperation','Circular');
             
             % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifyEqual(scalesActual,scalesExpctd);
@@ -1283,12 +1300,13 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                
                 'NumberOfSymmetricChannels',nChs(1),...
                 'NumberOfAntisymmetricChannels',nChs(2),...
                 'BoundaryOperation','Circular');
             
             % Actual values
-            [coefsActual,scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            [coefsActual,scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifyEqual(scalesActual,scalesExpctd);
@@ -1341,12 +1359,13 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                
                 'NumberOfSymmetricChannels',nChs(1),...
                 'NumberOfAntisymmetricChannels',nChs(2),...
                 'BoundaryOperation','Circular');
             
             % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifyEqual(scalesActual,scalesExpctd);
@@ -1428,12 +1447,13 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                
                 'NumberOfSymmetricChannels',nChs(1),...
                 'NumberOfAntisymmetricChannels',nChs(2),...
                 'BoundaryOperation','Circular');
 
             % Actual values
-            [coefsActual, scalesActual]= step(testCase.analyzer,srcImg,nLevels);
+            [coefsActual, scalesActual]= step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifyEqual(scalesActual,scalesExpctd);
@@ -1528,13 +1548,14 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                
                 'NumberOfSymmetricChannels',nChs(1),...
                 'NumberOfAntisymmetricChannels',nChs(2),...
                 'BoundaryOperation','Circular');
             
             % Actual values
             [coefsActual,scalesActual] = ...
-                step(testCase.analyzer,srcImg,nLevels);
+                step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifyEqual(scalesActual,scalesExpctd);
@@ -1567,13 +1588,14 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                
                 'BoundaryOperation','Termination');
-            coefsPre = step(testCase.analyzer,srcImg,nLevels);
+            coefsPre = step(testCase.analyzer,srcImg);
             %
             angs = get(lppufb,'Angles');
             angs = randn(size(angs));
             set(lppufb,'Angles',angs); 
-            coefsPst1 = step(testCase.analyzer,srcImg,nLevels);
+            coefsPst1 = step(testCase.analyzer,srcImg);
             
             % Evaluation
             diff = norm(coefsPst1(:)-coefsPre(:));
@@ -1583,8 +1605,9 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             % Reinstatiation 
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                
                 'BoundaryOperation','Termination');
-            coefsPst2 = step(testCase.analyzer,srcImg,nLevels);
+            coefsPst2 = step(testCase.analyzer,srcImg);
             
             % Evaluation
             import matlab.unittest.constraints.IsGreaterThan
@@ -1615,13 +1638,14 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                
                 'BoundaryOperation','Termination');
-            coefsPre = step(testCase.analyzer,srcImg,nLevels);
+            coefsPre = step(testCase.analyzer,srcImg);
             %
             angs = get(lppufb,'Angles');
             angs = randn(size(angs));
             set(lppufb,'Angles',angs); 
-            coefsPst1 = step(testCase.analyzer,srcImg,nLevels);
+            coefsPst1 = step(testCase.analyzer,srcImg);
             
             % Evaluation
             diff = norm(coefsPst1(:)-coefsPre(:));
@@ -1631,8 +1655,9 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             % Reinstatiation 
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                
                 'BoundaryOperation','Termination');
-            coefsPst2 = step(testCase.analyzer,srcImg,nLevels);
+            coefsPst2 = step(testCase.analyzer,srcImg);
             
             % Evaluation
             import matlab.unittest.constraints.IsGreaterThan
@@ -1662,16 +1687,17 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             % Instantiation of target class
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                
                 'BoundaryOperation','Termination',...
-                'IsCloneLpPuFb2d',true);
+                'IsCloneLpPuFb',true);
             
             % Pre
-            coefsPre1 = step(testCase.analyzer,srcImg,nLevels);
+            coefsPre1 = step(testCase.analyzer,srcImg);
             
             % Pst
             angs = randn(size(get(lppufb,'Angles')));
             set(lppufb,'Angles',angs);
-            coefsPst1 = step(testCase.analyzer,srcImg,nLevels);
+            coefsPst1 = step(testCase.analyzer,srcImg);
             
             % Evaluation
             diff = norm(coefsPst1(:)-coefsPre1(:));
@@ -1680,16 +1706,17 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             % Instantiation of target class
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                
                 'BoundaryOperation','Termination',...
-                'IsCloneLpPuFb2d',false);
+                'IsCloneLpPuFb',false);
             
             % Pre
-            coefsPre1 = step(testCase.analyzer,srcImg,nLevels);
+            coefsPre1 = step(testCase.analyzer,srcImg);
             
             % Pst
             angs = randn(size(get(lppufb,'Angles')));
             set(lppufb,'Angles',angs);
-            coefsPst1 = step(testCase.analyzer,srcImg,nLevels);
+            coefsPst1 = step(testCase.analyzer,srcImg);
             
             % Evaluation
             import matlab.unittest.constraints.IsGreaterThan
@@ -1720,6 +1747,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             % Instantiation of target class
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                
                 'BoundaryOperation','Termination');
             %s = matlab.System.saveObject(testCase.analyzer);
             
@@ -1734,8 +1762,8 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(prpCln,prpOrg);
             testCase.verifyFalse(prpCln == prpOrg);
             %
-            [coefExpctd,scaleExpctd] = step(testCase.analyzer,srcImg,nLevels);
-            [coefActual,scaleActual] = step(cloneAnalyzer,srcImg,nLevels);
+            [coefExpctd,scaleExpctd] = step(testCase.analyzer,srcImg);
+            [coefActual,scaleActual] = step(cloneAnalyzer,srcImg);
             testCase.assertEqual(coefActual,coefExpctd);
             testCase.assertEqual(scaleActual,scaleExpctd);
             
@@ -1831,12 +1859,13 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                
                 'NumberOfSymmetricChannels',decch(3),...
                 'NumberOfAntisymmetricChannels',decch(4),...
                 'BoundaryOperation','Circular');
             
             % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifyEqual(scalesActual,scalesExpctd);
@@ -1892,12 +1921,13 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                
                 'NumberOfSymmetricChannels',decch(3),...
                 'NumberOfAntisymmetricChannels',decch(4),...
                 'BoundaryOperation','Circular');
             
             % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifyEqual(scalesActual,scalesExpctd);
@@ -1973,13 +2003,14 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                
                 'NumberOfSymmetricChannels',decch(3),...
                 'NumberOfAntisymmetricChannels',decch(4),...
                 'BoundaryOperation','Circular');
             
             % Actual values
             [coefsActual,scalesActual] = ...
-                step(testCase.analyzer,srcImg,nLevels);
+                step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifyEqual(scalesActual,scalesExpctd);
@@ -2055,13 +2086,14 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                
                 'NumberOfSymmetricChannels',decch(3),...
                 'NumberOfAntisymmetricChannels',decch(4),...
                 'BoundaryOperation','Circular');
             
             % Actual values
             [coefsActual,scalesActual] = ...
-                step(testCase.analyzer,srcImg,nLevels);
+                step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifyEqual(scalesActual,scalesExpctd);
@@ -2115,12 +2147,13 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                
                 'NumberOfSymmetricChannels',decch(3),...
                 'NumberOfAntisymmetricChannels',decch(4),...
                 'BoundaryOperation','Circular');
             
             % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifyEqual(scalesActual,scalesExpctd);
@@ -2173,12 +2206,13 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                
                 'NumberOfSymmetricChannels',decch(3),...
                 'NumberOfAntisymmetricChannels',decch(4),...
                 'BoundaryOperation','Circular');
             
             % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifyEqual(scalesActual,scalesExpctd);
@@ -2253,13 +2287,14 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                
                 'NumberOfSymmetricChannels',decch(3),...
                 'NumberOfAntisymmetricChannels',decch(4),...
                 'BoundaryOperation','Circular');
             
             % Actual values
             [coefsActual,scalesActual] = ...
-                step(testCase.analyzer,srcImg,nLevels);
+                step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifyEqual(scalesActual,scalesExpctd);
@@ -2313,12 +2348,13 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                
                 'NumberOfSymmetricChannels',decch(3),...
                 'NumberOfAntisymmetricChannels',decch(4),...
                 'BoundaryOperation','Circular');
             
             % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifyEqual(scalesActual,scalesExpctd);
@@ -2397,13 +2433,14 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                
                 'NumberOfSymmetricChannels',decch(3),...
                 'NumberOfAntisymmetricChannels',decch(4),...
                 'BoundaryOperation','Circular');
             
             % Actual values
             [coefsActual,scalesActual] = ...
-                step(testCase.analyzer,srcImg,nLevels);
+                step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifyEqual(scalesActual,scalesExpctd);
@@ -2458,12 +2495,13 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                
                 'NumberOfSymmetricChannels',decch(3),...
                 'NumberOfAntisymmetricChannels',decch(4),...
                 'BoundaryOperation','Circular');
             
             % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifyEqual(scalesActual,scalesExpctd);
@@ -2545,13 +2583,14 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                
                 'NumberOfSymmetricChannels',decch(3),...
                 'NumberOfAntisymmetricChannels',decch(4),...
                 'BoundaryOperation','Circular');
             
             % Actual values
             [coefsActual,scalesActual] = ...
-                step(testCase.analyzer,srcImg,nLevels);
+                step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifyEqual(scalesActual,scalesExpctd);
@@ -2606,12 +2645,13 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                
                 'NumberOfSymmetricChannels',decch(3),...
                 'NumberOfAntisymmetricChannels',decch(4),...
                 'BoundaryOperation','Circular');
             
             % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifyEqual(scalesActual,scalesExpctd);
@@ -2686,13 +2726,14 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                
                 'NumberOfSymmetricChannels',decch(3),...
                 'NumberOfAntisymmetricChannels',decch(4),...
                 'BoundaryOperation','Circular');
             
             % Actual values
             [coefsActual,scalesActual] = ...
-                step(testCase.analyzer,srcImg,nLevels);
+                step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifyEqual(scalesActual,scalesExpctd);
@@ -2747,12 +2788,13 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                
                 'NumberOfSymmetricChannels',decch(3),...
                 'NumberOfAntisymmetricChannels',decch(4),...
                 'BoundaryOperation','Circular');
             
             % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifyEqual(scalesActual,scalesExpctd);
@@ -2827,13 +2869,14 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                
                 'NumberOfSymmetricChannels',decch(3),...
                 'NumberOfAntisymmetricChannels',decch(4),...
                 'BoundaryOperation','Circular');
             
             % Actual values
             [coefsActual,scalesActual] = ...
-                step(testCase.analyzer,srcImg,nLevels);
+                step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifyEqual(scalesActual,scalesExpctd);
@@ -2888,12 +2931,13 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                
                 'NumberOfSymmetricChannels',decch(3),...
                 'NumberOfAntisymmetricChannels',decch(4),...
                 'BoundaryOperation','Circular');
             
             % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifyEqual(scalesActual,scalesExpctd);
@@ -2972,13 +3016,14 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                
                 'NumberOfSymmetricChannels',decch(3),...
                 'NumberOfAntisymmetricChannels',decch(4),...
                 'BoundaryOperation','Circular');
             
             % Actual values
             [coefsActual,scalesActual] = ...
-                step(testCase.analyzer,srcImg,nLevels);
+                step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifyEqual(scalesActual,scalesExpctd);
@@ -3033,12 +3078,13 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                
                 'NumberOfSymmetricChannels',decch(3),...
                 'NumberOfAntisymmetricChannels',decch(4),...
                 'BoundaryOperation','Circular');
             
             % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifyEqual(scalesActual,scalesExpctd);
@@ -3123,13 +3169,14 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                
                 'NumberOfSymmetricChannels',decch(3),...
                 'NumberOfAntisymmetricChannels',decch(4),...
                 'BoundaryOperation','Circular');
             
             % Actual values
             [coefsActual,scalesActual] = ...
-                step(testCase.analyzer,srcImg,nLevels);
+                step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifyEqual(scalesActual,scalesExpctd);
@@ -3231,13 +3278,14 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                
                 'NumberOfSymmetricChannels',decch(3),...
                 'NumberOfAntisymmetricChannels',decch(4),...
                 'BoundaryOperation','Circular');
             
             % Actual values
             [coefsActual,scalesActual] = ...
-                step(testCase.analyzer,srcImg,nLevels);
+                step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifyEqual(scalesActual,scalesExpctd);
@@ -3338,13 +3386,14 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                
                 'NumberOfSymmetricChannels',decch(3),...
                 'NumberOfAntisymmetricChannels',decch(4),...
                 'BoundaryOperation','Circular');
             
             % Actual values
             [coefsActual,scalesActual] = ...
-                step(testCase.analyzer,srcImg,nLevels);
+                step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifyEqual(scalesActual,scalesExpctd);
@@ -3397,12 +3446,13 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                
                 'NumberOfSymmetricChannels',decch(3),...
                 'NumberOfAntisymmetricChannels',decch(4),...
                 'BoundaryOperation','Circular');
             
             % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifyEqual(scalesActual,scalesExpctd);
@@ -3477,13 +3527,14 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                
                 'NumberOfSymmetricChannels',decch(3),...
                 'NumberOfAntisymmetricChannels',decch(4),...
                 'BoundaryOperation','Circular');
             
             % Actual values
             [coefsActual,scalesActual] = ...
-                step(testCase.analyzer,srcImg,nLevels);
+                step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifyEqual(scalesActual,scalesExpctd);
@@ -3535,12 +3586,13 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                
                 'NumberOfSymmetricChannels',decch(3),...
                 'NumberOfAntisymmetricChannels',decch(4),...
                 'BoundaryOperation','Circular');
             
             % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifyEqual(scalesActual,scalesExpctd);
@@ -3616,13 +3668,14 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                
                 'NumberOfSymmetricChannels',decch(3),...
                 'NumberOfAntisymmetricChannels',decch(4),...
                 'BoundaryOperation','Circular');
             
             % Actual values
             [coefsActual,scalesActual] = ...
-                step(testCase.analyzer,srcImg,nLevels);
+                step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifyEqual(scalesActual,scalesExpctd);
@@ -3655,13 +3708,14 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                
                 'BoundaryOperation','Termination');
-            coefsPre = step(testCase.analyzer,srcImg,nLevels);
+            coefsPre = step(testCase.analyzer,srcImg);
             %
             angs = get(lppufb,'Angles');
             angs = randn(size(angs));
             set(lppufb,'Angles',angs);
-            coefsPst1 = step(testCase.analyzer,srcImg,nLevels);
+            coefsPst1 = step(testCase.analyzer,srcImg);
             
             % Evaluation
             diff = norm(coefsPst1(:)-coefsPre(:));
@@ -3671,8 +3725,9 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             % Reinstatiation
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                
                 'BoundaryOperation','Termination');
-            coefsPst2 = step(testCase.analyzer,srcImg,nLevels);
+            coefsPst2 = step(testCase.analyzer,srcImg);
             
             % Evaluation
             import matlab.unittest.constraints.IsGreaterThan
@@ -3702,16 +3757,17 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             % Instantiation of target class
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                
                 'BoundaryOperation','Termination',...
-                'IsCloneLpPuFb2d',true);
+                'IsCloneLpPuFb',true);
             
             % Pre
-            coefsPre1 = step(testCase.analyzer,srcImg,nLevels);
+            coefsPre1 = step(testCase.analyzer,srcImg);
             
             % Pst
             angs = randn(size(get(lppufb,'Angles')));
             set(lppufb,'Angles',angs);
-            coefsPst1 = step(testCase.analyzer,srcImg,nLevels);
+            coefsPst1 = step(testCase.analyzer,srcImg);
             
             % Evaluation
             diff = norm(coefsPst1(:)-coefsPre1(:));
@@ -3720,16 +3776,17 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             % Instantiation of target class
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                
                 'BoundaryOperation','Termination',...
-                'IsCloneLpPuFb2d',false);
+                'IsCloneLpPuFb',false);
             
             % Pre
-            coefsPre1 = step(testCase.analyzer,srcImg,nLevels);
+            coefsPre1 = step(testCase.analyzer,srcImg);
             
             % Pst
             angs = randn(size(get(lppufb,'Angles')));
             set(lppufb,'Angles',angs);
-            coefsPst1 = step(testCase.analyzer,srcImg,nLevels);
+            coefsPst1 = step(testCase.analyzer,srcImg);
             
             % Evaluation
             import matlab.unittest.constraints.IsGreaterThan
@@ -3760,6 +3817,7 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             % Instantiation of target class
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                
                 'BoundaryOperation','Termination');
             %s = matlab.System.saveObject(testCase.analyzer);
 
@@ -3774,8 +3832,8 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(prpCln,prpOrg);
             testCase.verifyFalse(prpCln == prpOrg);
             %            
-            [coefExpctd,scaleExpctd] = step(testCase.analyzer,srcImg,nLevels);
-            [coefActual,scaleActual] = step(cloneAnalyzer,srcImg,nLevels);
+            [coefExpctd,scaleExpctd] = step(testCase.analyzer,srcImg);
+            [coefActual,scaleActual] = step(cloneAnalyzer,srcImg);
             testCase.assertEqual(coefActual,coefExpctd);
             testCase.assertEqual(scaleActual,scaleExpctd);
             
@@ -3871,13 +3929,14 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                
                 'NumberOfSymmetricChannels',decch(3),...
                 'NumberOfAntisymmetricChannels',decch(4),...
                 'BoundaryOperation','Circular');
             
             % Actual values
             [coefsActual,scalesActual] = ...
-                step(testCase.analyzer,srcImg,nLevels);
+                step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifyEqual(scalesActual,scalesExpctd);
@@ -3977,13 +4036,14 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                
                 'NumberOfSymmetricChannels',decch(3),...
                 'NumberOfAntisymmetricChannels',decch(4),...
                 'BoundaryOperation','Circular');
             
             % Actual values
             [coefsActual,scalesActual] = ...
-                step(testCase.analyzer,srcImg,nLevels);
+                step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifyEqual(scalesActual,scalesExpctd);
@@ -4036,12 +4096,13 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                
                 'NumberOfSymmetricChannels',decch(3),...
                 'NumberOfAntisymmetricChannels',decch(4),...
                 'BoundaryOperation','Circular');
             
             % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifyEqual(scalesActual,scalesExpctd);
@@ -4116,13 +4177,14 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                
                 'NumberOfSymmetricChannels',decch(3),...
                 'NumberOfAntisymmetricChannels',decch(4),...
                 'BoundaryOperation','Circular');
             
             % Actual values
             [coefsActual,scalesActual] = ...
-                step(testCase.analyzer,srcImg,nLevels);
+                step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifyEqual(scalesActual,scalesExpctd);
@@ -4174,12 +4236,13 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                
                 'NumberOfSymmetricChannels',decch(3),...
                 'NumberOfAntisymmetricChannels',decch(4),...
                 'BoundaryOperation','Circular');
             
             % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg,nLevels);
+            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifyEqual(scalesActual,scalesExpctd);
@@ -4255,13 +4318,14 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                
                 'NumberOfSymmetricChannels',decch(3),...
                 'NumberOfAntisymmetricChannels',decch(4),...
                 'BoundaryOperation','Circular');
             
             % Actual values
             [coefsActual,scalesActual] = ...
-                step(testCase.analyzer,srcImg,nLevels);
+                step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifyEqual(scalesActual,scalesExpctd);
@@ -4294,13 +4358,14 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                
                 'BoundaryOperation','Termination');
-            coefsPre = step(testCase.analyzer,srcImg,nLevels);
+            coefsPre = step(testCase.analyzer,srcImg);
             %
             angs = get(lppufb,'Angles');
             angs = randn(size(angs));
             set(lppufb,'Angles',angs);
-            coefsPst1 = step(testCase.analyzer,srcImg,nLevels);
+            coefsPst1 = step(testCase.analyzer,srcImg);
             
             % Evaluation
             diff = norm(coefsPst1(:)-coefsPre(:));
@@ -4310,8 +4375,9 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             % Reinstatiation
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                    
                 'BoundaryOperation','Termination');
-            coefsPst2 = step(testCase.analyzer,srcImg,nLevels);
+            coefsPst2 = step(testCase.analyzer,srcImg);
             
             % Evaluation
             import matlab.unittest.constraints.IsGreaterThan
@@ -4342,13 +4408,14 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                                    
                 'BoundaryOperation','Termination');
-            coefsPre = step(testCase.analyzer,srcImg,nLevels);
+            coefsPre = step(testCase.analyzer,srcImg);
             %
             angs = get(lppufb,'Angles');
             angs = randn(size(angs));
             set(lppufb,'Angles',angs);
-            coefsPst1 = step(testCase.analyzer,srcImg,nLevels);
+            coefsPst1 = step(testCase.analyzer,srcImg);
             
             % Evaluation
             diff = norm(coefsPst1(:)-coefsPre(:));
@@ -4358,8 +4425,9 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             % Reinstatiation
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                                    
                 'BoundaryOperation','Termination');
-            coefsPst2 = step(testCase.analyzer,srcImg,nLevels);
+            coefsPst2 = step(testCase.analyzer,srcImg);
             
             % Evaluation
             import matlab.unittest.constraints.IsGreaterThan
@@ -4390,13 +4458,14 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                                    
                 'BoundaryOperation','Termination');
-            coefsPre = step(testCase.analyzer,srcImg,nLevels);
+            coefsPre = step(testCase.analyzer,srcImg);
             %
             angs = get(lppufb,'Angles');
             angs = randn(size(angs));
             set(lppufb,'Angles',angs);
-            coefsPst1 = step(testCase.analyzer,srcImg,nLevels);
+            coefsPst1 = step(testCase.analyzer,srcImg);
             
             % Evaluation
             diff = norm(coefsPst1(:)-coefsPre(:));
@@ -4406,8 +4475,9 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             % Reinstatiation
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                                    
                 'BoundaryOperation','Termination');
-            coefsPst2 = step(testCase.analyzer,srcImg,nLevels);
+            coefsPst2 = step(testCase.analyzer,srcImg);
             
             % Evaluation
             import matlab.unittest.constraints.IsGreaterThan
@@ -4438,13 +4508,14 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                                    
                 'BoundaryOperation','Termination');
-            coefsPre = step(testCase.analyzer,srcImg,nLevels);
+            coefsPre = step(testCase.analyzer,srcImg);
             %
             angs = get(lppufb,'Angles');
             angs = randn(size(angs));
             set(lppufb,'Angles',angs);
-            coefsPst1 = step(testCase.analyzer,srcImg,nLevels);
+            coefsPst1 = step(testCase.analyzer,srcImg);
             
             % Evaluation
             diff = norm(coefsPst1(:)-coefsPre(:));
@@ -4454,8 +4525,9 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             % Reinstatiation
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                                    
                 'BoundaryOperation','Termination');
-            coefsPst2 = step(testCase.analyzer,srcImg,nLevels);
+            coefsPst2 = step(testCase.analyzer,srcImg);
             
             % Evaluation
             import matlab.unittest.constraints.IsGreaterThan
@@ -4486,13 +4558,14 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                                    
                 'BoundaryOperation','Termination');
-            coefsPre = step(testCase.analyzer,srcImg,nLevels);
+            coefsPre = step(testCase.analyzer,srcImg);
             %
             angs = get(lppufb,'Angles');
             angs = randn(size(angs));
             set(lppufb,'Angles',angs);
-            coefsPst1 = step(testCase.analyzer,srcImg,nLevels);
+            coefsPst1 = step(testCase.analyzer,srcImg);
             
             % Evaluation
             diff = norm(coefsPst1(:)-coefsPre(:));
@@ -4502,8 +4575,9 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             % Reinstatiation
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                                    
                 'BoundaryOperation','Termination');
-            coefsPst2 = step(testCase.analyzer,srcImg,nLevels);
+            coefsPst2 = step(testCase.analyzer,srcImg);
             
             % Evaluation
             import matlab.unittest.constraints.IsGreaterThan
@@ -4534,13 +4608,14 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                                    
                 'BoundaryOperation','Termination');
-            coefsPre = step(testCase.analyzer,srcImg,nLevels);
+            coefsPre = step(testCase.analyzer,srcImg);
             %
             angs = get(lppufb,'Angles');
             angs = randn(size(angs));
             set(lppufb,'Angles',angs);
-            coefsPst1 = step(testCase.analyzer,srcImg,nLevels);
+            coefsPst1 = step(testCase.analyzer,srcImg);
             
             % Evaluation
             diff = norm(coefsPst1(:)-coefsPre(:));
@@ -4550,8 +4625,9 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             % Reinstatiation
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                                    
                 'BoundaryOperation','Termination');
-            coefsPst2 = step(testCase.analyzer,srcImg,nLevels);
+            coefsPst2 = step(testCase.analyzer,srcImg);
             
             % Evaluation
             import matlab.unittest.constraints.IsGreaterThan
@@ -4582,13 +4658,14 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             set(lppufb,'OutputMode','ParameterMatrixSet');
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                                    
                 'BoundaryOperation','Termination');
-            coefsPre = step(testCase.analyzer,srcImg,nLevels);
+            coefsPre = step(testCase.analyzer,srcImg);
             %
             angs = get(lppufb,'Angles');
             angs = randn(size(angs));
             set(lppufb,'Angles',angs);
-            coefsPst1 = step(testCase.analyzer,srcImg,nLevels);
+            coefsPst1 = step(testCase.analyzer,srcImg);
             
             % Evaluation
             diff = norm(coefsPst1(:)-coefsPre(:));
@@ -4598,8 +4675,9 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
             % Reinstatiation
             testCase.analyzer = NsoltAnalysis2dSystem(...
                 'LpPuFb2d',lppufb,...
+                'NumberOfLevels',nLevels,...                                    
                 'BoundaryOperation','Termination');
-            coefsPst2 = step(testCase.analyzer,srcImg,nLevels);
+            coefsPst2 = step(testCase.analyzer,srcImg);
             
             % Evaluation
             import matlab.unittest.constraints.IsGreaterThan
@@ -4611,6 +4689,4 @@ classdef NsoltAnalysis2dSystemTestCase < matlab.unittest.TestCase
     end
     
 end
-
-
 

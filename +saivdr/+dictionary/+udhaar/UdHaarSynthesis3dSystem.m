@@ -3,7 +3,7 @@ classdef UdHaarSynthesis3dSystem <  saivdr.dictionary.AbstSynthesisSystem  %#cod
     %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2014-2018, Shogo MURAMATSU
+    % Copyright (c) 2014-2020, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -100,7 +100,10 @@ classdef UdHaarSynthesis3dSystem <  saivdr.dictionary.AbstSynthesisSystem  %#cod
             loadObjectImpl@saivdr.dictionary.AbstSynthesisSystem(obj,s,wasLocked);
         end
         
-        function setupImpl(obj, ~, scales)
+        function setupImpl(obj, coefs, scales)
+            if isa(coefs,'gpuArray')
+                obj.UseGpu = true;
+            end
             obj.dim = scales(1,:);
             obj.nPixels = prod(obj.dim);
             obj.nLevels = (size(scales,1)-1)/7;
@@ -116,6 +119,9 @@ classdef UdHaarSynthesis3dSystem <  saivdr.dictionary.AbstSynthesisSystem  %#cod
         end
         
         function y = stepImpl(obj, coefs, ~)
+            if obj.UseGpu
+                coefs = gpuArray(coefs);
+            end
             % NOTE:
             % imfilter of R2017a has a bug for double precision array
             if strcmp(version('-release'),'2017a') && ...
@@ -174,7 +180,7 @@ classdef UdHaarSynthesis3dSystem <  saivdr.dictionary.AbstSynthesisSystem  %#cod
     methods (Access = private)
         
         function value = upsmplfilter3_(~,u,x,ufactor)
-                value = imfilter(u,...
+            value = imfilter(u,...
                 shiftdim(upsample(...
                 shiftdim(upsample(...
                 shiftdim(upsample(x,...
@@ -186,3 +192,4 @@ classdef UdHaarSynthesis3dSystem <  saivdr.dictionary.AbstSynthesisSystem  %#cod
         
     end
 end
+

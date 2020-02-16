@@ -3,7 +3,7 @@ classdef NsoltAnalysisSynthesisTestCase < matlab.unittest.TestCase
     %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2014-2016, Shogo MURAMATSU
+    % Copyright (c) 2014-2020, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -51,10 +51,11 @@ classdef NsoltAnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb,'BoundaryOperation','Termination');
             testCase.analyzer    = NsoltFactory.createAnalysis2dSystem(...
-                lppufb,'BoundaryOperation','Termination');
+                lppufb,'BoundaryOperation','Termination',...
+                'NumberOfLevels',nLevels);
 
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -90,10 +91,11 @@ classdef NsoltAnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.synthesizer = saivdr.dictionary.nsoltx.NsoltFactory.createSynthesis2dSystem(...
                 lppufb,'BoundaryOperation','Termination');
             testCase.analyzer    = saivdr.dictionary.nsoltx.NsoltFactory.createAnalysis2dSystem(...
-                lppufb,'BoundaryOperation','Termination');
+                lppufb,'BoundaryOperation','Termination',...
+                'NumberOfLevels',nLevels);
             
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -129,10 +131,11 @@ classdef NsoltAnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.synthesizer = saivdr.dictionary.nsoltx.NsoltFactory.createSynthesis2dSystem(...
                 lppufb,'BoundaryOperation','Termination');
             testCase.analyzer    = saivdr.dictionary.nsoltx.NsoltFactory.createAnalysis2dSystem(...
-                lppufb,'BoundaryOperation','Termination');
+                lppufb,'BoundaryOperation','Termination',...
+                'NumberOfLevels',nLevels);
             
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -168,10 +171,11 @@ classdef NsoltAnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.synthesizer = saivdr.dictionary.nsoltx.NsoltFactory.createSynthesis2dSystem(...
                 lppufb,'BoundaryOperation','Termination');
             testCase.analyzer    = saivdr.dictionary.nsoltx.NsoltFactory.createAnalysis2dSystem(...
-                lppufb,'BoundaryOperation','Termination');
+                lppufb,'BoundaryOperation','Termination',...
+                'NumberOfLevels',nLevels);
             
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -207,10 +211,11 @@ classdef NsoltAnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb,'BoundaryOperation','Termination');
             testCase.analyzer    = NsoltFactory.createAnalysis2dSystem(...
-                lppufb,'BoundaryOperation','Termination');
+                lppufb,'BoundaryOperation','Termination',...
+                'NumberOfLevels',nLevels);
             
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -246,10 +251,11 @@ classdef NsoltAnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.synthesizer = saivdr.dictionary.nsoltx.NsoltFactory.createSynthesis2dSystem(...
                 lppufb,'BoundaryOperation','Termination');
             testCase.analyzer    = saivdr.dictionary.nsoltx.NsoltFactory.createAnalysis2dSystem(...
-                lppufb,'BoundaryOperation','Termination');
+                lppufb,'BoundaryOperation','Termination',...
+                'NumberOfLevels',nLevels);
             
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -285,10 +291,11 @@ classdef NsoltAnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.synthesizer = saivdr.dictionary.nsoltx.NsoltFactory.createSynthesis2dSystem(...
                 lppufb,'BoundaryOperation','Termination');
             testCase.analyzer    = saivdr.dictionary.nsoltx.NsoltFactory.createAnalysis2dSystem(...
-                lppufb,'BoundaryOperation','Termination');
+                lppufb,'BoundaryOperation','Termination',...
+                'NumberOfLevels',nLevels);
             
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -324,10 +331,11 @@ classdef NsoltAnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.synthesizer = saivdr.dictionary.nsoltx.NsoltFactory.createSynthesis2dSystem(...
                 lppufb,'BoundaryOperation','Termination');
             testCase.analyzer    = saivdr.dictionary.nsoltx.NsoltFactory.createAnalysis2dSystem(...
-                lppufb,'BoundaryOperation','Termination');
+                lppufb,'BoundaryOperation','Termination',...
+                'NumberOfLevels',nLevels);
             
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -367,7 +375,7 @@ classdef NsoltAnalysisSynthesisTestCase < matlab.unittest.TestCase
                 lppufb,'BoundaryOperation','Termination');
             
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -407,7 +415,7 @@ classdef NsoltAnalysisSynthesisTestCase < matlab.unittest.TestCase
                 lppufb,'BoundaryOperation','Termination');
             
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -447,7 +455,7 @@ classdef NsoltAnalysisSynthesisTestCase < matlab.unittest.TestCase
                 lppufb,'BoundaryOperation','Termination');
             
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -487,7 +495,7 @@ classdef NsoltAnalysisSynthesisTestCase < matlab.unittest.TestCase
                 lppufb,'BoundaryOperation','Termination');
             
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -527,7 +535,7 @@ classdef NsoltAnalysisSynthesisTestCase < matlab.unittest.TestCase
                 lppufb,'BoundaryOperation','Termination');
             
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -567,7 +575,7 @@ classdef NsoltAnalysisSynthesisTestCase < matlab.unittest.TestCase
                 lppufb,'BoundaryOperation','Termination');
             
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -607,7 +615,7 @@ classdef NsoltAnalysisSynthesisTestCase < matlab.unittest.TestCase
                 lppufb,'BoundaryOperation','Termination');
             
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -647,7 +655,7 @@ classdef NsoltAnalysisSynthesisTestCase < matlab.unittest.TestCase
                 lppufb,'BoundaryOperation','Termination');
             
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -683,10 +691,11 @@ classdef NsoltAnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb,'BoundaryOperation','Termination');
             testCase.analyzer    = NsoltFactory.createAnalysis2dSystem(...
-                lppufb,'BoundaryOperation','Termination');
+                lppufb,'BoundaryOperation','Termination',...
+                'NumberOfLevels',nLevels);
             
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -722,10 +731,11 @@ classdef NsoltAnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.synthesizer = saivdr.dictionary.nsoltx.NsoltFactory.createSynthesis2dSystem(...
                 lppufb,'BoundaryOperation','Termination');
             testCase.analyzer    = saivdr.dictionary.nsoltx.NsoltFactory.createAnalysis2dSystem(...
-                lppufb,'BoundaryOperation','Termination');
+                lppufb,'BoundaryOperation','Termination',...
+                'NumberOfLevels',nLevels);
             
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -734,7 +744,7 @@ classdef NsoltAnalysisSynthesisTestCase < matlab.unittest.TestCase
                 'AbsTol',1e-10,sprintf('diff = %g',diff));
             testCase.verifySize(recImg,[ height width ]);
             diff = max(abs(recImg(:)-srcImg(:))./abs(srcImg(:)));
-            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-9,...
+            testCase.verifyEqual(recImg,srcImg,'RelTol',1e-8,...
                 sprintf('diff = %g',diff));
         end
         
@@ -761,10 +771,11 @@ classdef NsoltAnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.synthesizer = saivdr.dictionary.nsoltx.NsoltFactory.createSynthesis2dSystem(...
                 lppufb,'BoundaryOperation','Termination');
             testCase.analyzer    = saivdr.dictionary.nsoltx.NsoltFactory.createAnalysis2dSystem(...
-                lppufb,'BoundaryOperation','Termination');
+                lppufb,'BoundaryOperation','Termination',...
+                'NumberOfLevels',nLevels);
             
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -800,10 +811,11 @@ classdef NsoltAnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.synthesizer = saivdr.dictionary.nsoltx.NsoltFactory.createSynthesis2dSystem(...
                 lppufb,'BoundaryOperation','Termination');
             testCase.analyzer    = saivdr.dictionary.nsoltx.NsoltFactory.createAnalysis2dSystem(...
-                lppufb,'BoundaryOperation','Termination');
+                lppufb,'BoundaryOperation','Termination',...
+                'NumberOfLevels',nLevels);
             
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -844,7 +856,7 @@ classdef NsoltAnalysisSynthesisTestCase < matlab.unittest.TestCase
                 lppufb,'BoundaryOperation','Termination');
             
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -884,7 +896,7 @@ classdef NsoltAnalysisSynthesisTestCase < matlab.unittest.TestCase
                 lppufb,'BoundaryOperation','Termination');
             
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -924,7 +936,7 @@ classdef NsoltAnalysisSynthesisTestCase < matlab.unittest.TestCase
                 lppufb,'BoundaryOperation','Termination');
             
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -964,7 +976,7 @@ classdef NsoltAnalysisSynthesisTestCase < matlab.unittest.TestCase
                 lppufb,'BoundaryOperation','Termination');
             
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -1000,10 +1012,11 @@ classdef NsoltAnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb,'BoundaryOperation','Termination');
             testCase.analyzer    = NsoltFactory.createAnalysis2dSystem(...
-                lppufb,'BoundaryOperation','Termination');
+                lppufb,'BoundaryOperation','Termination',...
+                'NumberOfLevels',nLevels);
             
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -1043,7 +1056,7 @@ classdef NsoltAnalysisSynthesisTestCase < matlab.unittest.TestCase
                 lppufb,'BoundaryOperation','Termination');
             
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -1058,3 +1071,4 @@ classdef NsoltAnalysisSynthesisTestCase < matlab.unittest.TestCase
     end
     
 end
+

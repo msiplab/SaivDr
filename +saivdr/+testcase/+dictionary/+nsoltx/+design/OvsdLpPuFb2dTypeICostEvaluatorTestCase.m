@@ -1,12 +1,9 @@
 classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
     %OVSDLPPUFB2dTYPEICOSTEVALUATORTESTCASE Test case for OvsdLpPuFb2dTypeICostEvaluator
     %
-    % SVN identifier:
-    % $Id: OvsdLpPuFb2dTypeICostEvaluatorTestCase.m 866 2015-11-24 04:29:42Z sho $
-    %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2015, Shogo MURAMATSU
+    % Copyright (c) 2015-2020, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -89,10 +86,10 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
                 'DecimationFactor',nDecs);
             angs = get(lppufb,'Angles');
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
-                lppufb);
+                lppufb, 'NumberOfLevels',nLevels);
             synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -137,10 +134,10 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             
             % Expected values
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
-                lppufb);
+                lppufb, 'NumberOfLevels',nLevels);
             synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -190,10 +187,10 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             
             % Expected values
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
-                lppufb);
+                lppufb, 'NumberOfLevels',nLevels);
             synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -244,11 +241,12 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             % Expected values
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
                 lppufb,...
-                'BoundaryOperation','Circular');
+                'BoundaryOperation','Circular',...
+                'NumberOfLevels',nLevels);
             synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb,...
                'BoundaryOperation','Circular');
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -299,10 +297,10 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             
             % Expected values
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
-                lppufb);
+                lppufb, 'NumberOfLevels',nLevels);
             synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -353,11 +351,12 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             % Expected values
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
                 lppufb,...
-                'BoundaryOperation','Circular');
+                'BoundaryOperation','Circular',...
+                'NumberOfLevels',nLevels);
             synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb,...
                 'BoundaryOperation','Circular');
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -400,10 +399,10 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
                 'DecimationFactor',nDecs);
             angs  = get(lppufb,'Angles');
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
-                lppufb);
+                lppufb, 'NumberOfLevels',nLevels);
             synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -456,10 +455,10 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             
             % Expected values
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
-                lppufb);
+                lppufb, 'NumberOfLevels',nLevels);
             synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -513,11 +512,12 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             % Expected values
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
                 lppufb,...
-                'BoundaryOperation','Circular');
+                'BoundaryOperation','Circular',...
+                'NumberOfLevels',nLevels);
             synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb,...
                 'BoundaryOperation','Circular');
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -571,10 +571,10 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             
             % Expected values
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
-                lppufb);
+                lppufb, 'NumberOfLevels',nLevels);
             synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -628,11 +628,12 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             % Expected values
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
                 lppufb,...
-                'BoundaryOperation','Circular');
+                'BoundaryOperation','Circular',...
+                'NumberOfLevels',nLevels);
             synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb,...
                 'BoundaryOperation','Circular');
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -685,11 +686,12 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             % Expected values
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
                 lppufb,...
-                'BoundaryOperation','Circular');
+                'BoundaryOperation','Circular', ...
+                'NumberOfLevels',nLevels);
             synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb,...
                 'BoundaryOperation','Circular');
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -742,11 +744,12 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             % Expected values
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
                 lppufb,...
-                'BoundaryOperation','Circular');
+                'BoundaryOperation','Circular',...
+                'NumberOfLevels',nLevels);
             synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb,...
                 'BoundaryOperation','Circular');
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -797,10 +800,10 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             
             % Expected values
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
-                lppufb);
+                lppufb, 'NumberOfLevels',nLevels);
             synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -849,10 +852,10 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             
             % Expected values
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
-                lppufb);
+                lppufb, 'NumberOfLevels',nLevels);
             synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -899,10 +902,10 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             
             % Expected values
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
-                lppufb);
+                lppufb, 'NumberOfLevels',nLevels);
             synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -951,10 +954,10 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             
             % Expected values
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
-                lppufb);
+                lppufb, 'NumberOfLevels',nLevels);
             synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -1007,11 +1010,12 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             % Expected values
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
                 lppufb,...
-                'BoundaryOperation','Circular');
+                'BoundaryOperation','Circular',...
+                'NumberOfLevels',nLevels);
             synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb,...
                 'BoundaryOperation','Circular');
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -1065,10 +1069,10 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             
             % Expected values
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
-                lppufb);
+                lppufb, 'NumberOfLevels',nLevels);
             synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -1121,10 +1125,10 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             
             % Expected values
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
-                lppufb);
+                lppufb, 'NumberOfLevels',nLevels);
             synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -1179,11 +1183,12 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             % Expected values
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
                 lppufb,...
-                'BoundaryOperation','Circular');
+                'BoundaryOperation','Circular',...
+                'NumberOfLevels',nLevels);
             synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb,...
                 'BoundaryOperation','Circular');
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -1238,11 +1243,12 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             % Expected values
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
                 lppufb,...
-                'BoundaryOperation','Circular');
+                'BoundaryOperation','Circular', ...
+                'NumberOfLevels',nLevels);
             synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb,...
                 'BoundaryOperation','Circular');
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -1297,10 +1303,10 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             
             % Expected values
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
-                lppufb);
+                lppufb, 'NumberOfLevels',nLevels);
             synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -1351,10 +1357,10 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             
             % Expected values
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
-                lppufb);
+                lppufb, 'NumberOfLevels',nLevels);
             synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -1406,11 +1412,12 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             % Expected values
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
                 lppufb,...
-                'BoundaryOperation','Circular');
+                'BoundaryOperation','Circular', ...
+                'NumberOfLevels',nLevels);
             synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb,...
                 'BoundaryOperation','Circular');
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -1462,10 +1469,10 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             
             % Expected values
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
-                lppufb);
+                lppufb, 'NumberOfLevels',nLevels);
             synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -1515,10 +1522,10 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             
             % Expected values
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
-                lppufb);
+                lppufb, 'NumberOfLevels',nLevels);
             synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -1571,11 +1578,12 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             % Expected values
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
                 lppufb,...
-                'BoundaryOperation','Circular');
+                'BoundaryOperation','Circular', ...
+                'NumberOfLevels',nLevels);
             synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb,...
                 'BoundaryOperation','Circular');
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -1629,11 +1637,12 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             % Expected values
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
                 lppufb,...
-                'BoundaryOperation','Circular');
+                'BoundaryOperation','Circular',...
+                'NumberOfLevels',nLevels);
             synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb,...
                 'BoundaryOperation','Circular');
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -1687,10 +1696,10 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             
             % Expected values
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
-                lppufb);
+                lppufb, 'NumberOfLevels',nLevels);
             synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -1742,11 +1751,12 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             % Expected values
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
                 lppufb,...
-                'BoundaryOperation','Circular');
+                'BoundaryOperation','Circular',...
+                'NumberOfLevels',nLevels);
             synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb,...
                 'BoundaryOperation','Circular');
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -1798,10 +1808,10 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             
             % Expected values
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
-                lppufb);
+                lppufb, 'NumberOfLevels',nLevels);
             synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -1853,11 +1863,12 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             % Expected values
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
                 lppufb,...
-                'BoundaryOperation','Circular');
+                'BoundaryOperation','Circular',...
+                'NumberOfLevels',nLevels);
             synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb,...
                 'BoundaryOperation','Circular');
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -1909,10 +1920,10 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             
             % Expected values
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
-                lppufb);
+                lppufb, 'NumberOfLevels',nLevels);
             synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -1962,10 +1973,10 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             
             % Expected values
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
-                lppufb);
+                lppufb, 'NumberOfLevels',nLevels);
             synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -2015,10 +2026,10 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             
             % Expected values
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
-                lppufb);
+                lppufb, 'NumberOfLevels',nLevels);
             synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -2068,10 +2079,10 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             
             % Expected values
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
-                lppufb);
+                lppufb, 'NumberOfLevels',nLevels);
             synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -2121,10 +2132,10 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             
             % Expected values
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
-                lppufb);
+                lppufb, 'NumberOfLevels',nLevels);
             synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -2174,10 +2185,10 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             
             % Expected values
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
-                lppufb);
+                lppufb, 'NumberOfLevels',nLevels);
             synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -2227,10 +2238,10 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             
             % Expected values
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
-                lppufb);
+                lppufb, 'NumberOfLevels',nLevels);
             synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -2280,10 +2291,10 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             
             % Expected values
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
-                lppufb);
+                lppufb, 'NumberOfLevels',nLevels);
             synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -2335,11 +2346,12 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             % Expected values
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
                 lppufb,...
-                'BoundaryOperation','Circular');
+                'BoundaryOperation','Circular', ...
+                'NumberOfLevels',nLevels);
             synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb,...
                 'BoundaryOperation','Circular');
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -2393,11 +2405,12 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             % Expected values
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
                 lppufb,...
-                'BoundaryOperation','Circular');
+                'BoundaryOperation','Circular', ...
+                'NumberOfLevels',nLevels);
             synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb,...
                 'BoundaryOperation','Circular');
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -2451,11 +2464,12 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             % Expected values
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
                 lppufb,...
-                'BoundaryOperation','Circular');
+                'BoundaryOperation','Circular',...
+                'NumberOfLevels',nLevels);
             synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb,...
                 'BoundaryOperation','Circular');
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -2509,11 +2523,12 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             % Expected values
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
                 lppufb,...
-                'BoundaryOperation','Circular');
+                'BoundaryOperation','Circular',...
+                'NumberOfLevels',nLevels);
             synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb,...
                 'BoundaryOperation','Circular');
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -2567,11 +2582,12 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             % Expected values
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
                 lppufb,...
-                'BoundaryOperation','Circular');
+                'BoundaryOperation','Circular', ...
+                'NumberOfLevels',nLevels);
             synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb,...
                 'BoundaryOperation','Circular');
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -2625,11 +2641,12 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             % Expected values
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
                 lppufb,...
-                'BoundaryOperation','Circular');
+                'BoundaryOperation','Circular', ...
+                'NumberOfLevels',nLevels);
             synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb,...
                 'BoundaryOperation','Circular');
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -2683,11 +2700,12 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             % Expected values
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
                 lppufb,...
-                'BoundaryOperation','Circular');
+                'BoundaryOperation','Circular',...
+                'NumberOfLevels',nLevels);
             synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb,...
                 'BoundaryOperation','Circular');
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -2741,11 +2759,12 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             % Expected values
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
                 lppufb,...
-                'BoundaryOperation','Circular');
+                'BoundaryOperation','Circular', ...
+                'NumberOfLevels',nLevels);
             synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb,...
                 'BoundaryOperation','Circular');
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -2796,10 +2815,10 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             
             % Expected values
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
-                lppufb);
+                lppufb, 'NumberOfLevels',nLevels);
             synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -2848,10 +2867,10 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             
             % Expected values
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
-                lppufb);
+                lppufb, 'NumberOfLevels',nLevels);
             synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -2903,11 +2922,12 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             % Expected values
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
                 lppufb,...
-                'BoundaryOperation','Circular');
+                'BoundaryOperation','Circular', ...
+                'NumberOfLevels',nLevels);
             synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb,...
                 'BoundaryOperation','Circular');
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -2961,11 +2981,12 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             % Expected values
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
                 lppufb,...
-                'BoundaryOperation','Circular');
+                'BoundaryOperation','Circular', ...
+                'NumberOfLevels',nLevels);
             synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb,...
                 'BoundaryOperation','Circular');
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -3016,10 +3037,10 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             
             % Expected values
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
-                lppufb);
+                lppufb, 'NumberOfLevels',nLevels);
             synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -3068,10 +3089,10 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             
             % Expected values
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
-                lppufb);
+                lppufb, 'NumberOfLevels',nLevels);
             synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -3123,11 +3144,12 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             % Expected values
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
                 lppufb,...
-                'BoundaryOperation','Circular');
+                'BoundaryOperation','Circular', ...
+                'NumberOfLevels',nLevels);
             synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb,...
                 'BoundaryOperation','Circular');
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -3181,11 +3203,11 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             % Expected values
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
                 lppufb,...
-                'BoundaryOperation','Circular');
+                'BoundaryOperation','Circular', 'NumberOfLevels',nLevels);
             synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb,...
                 'BoundaryOperation','Circular');
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -3233,11 +3255,12 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             % Instantiation of target class
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
                 lppufb,...
-                'BoundaryOperation','Circular');
+                'BoundaryOperation','Circular', ...
+                'NumberOfLevels',nLevels);
             synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb,...
                 'BoundaryOperation','Circular');
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -3272,7 +3295,7 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             testCase.verifyThat(diff,IsGreaterThan(0));
         end
         
-        function testIsCloneLpPuFb2dFalse(testCase)
+        function testIsCloneLpPuFbFalse(testCase)
             
             dec = 2;
             ch = [ 4 4 ];
@@ -3308,7 +3331,7 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             % Instantiation of target class
             testCase.evaluator = NsoltSynthesis2dSystem(...
                 'LpPuFb2d',lppufb,...
-                'IsCloneLpPuFb2d',true);
+                'IsCloneLpPuFb',true);
             
             % Pre
             imgPre = step(testCase.evaluator,coefs,scales);
@@ -3329,7 +3352,7 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             % ReInstantiation of target class
             testCase.evaluator = NsoltSynthesis2dSystem(...
                 'LpPuFb2d',lppufb,...
-                'IsCloneLpPuFb2d',false);
+                'IsCloneLpPuFb',false);
             
             % Pre
             imgPre = step(testCase.evaluator,coefs,scales);
@@ -3365,8 +3388,8 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',nChs,...
                 'PolyPhaseOrder',nOrds);
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
-                lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+                lppufb, 'NumberOfLevels',nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width/2)))=0;
             
@@ -3419,10 +3442,10 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             
             % Expected values
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
-                lppufb);
+                lppufb, 'NumberOfLevels',nLevels);
             synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -3475,10 +3498,10 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             
             % Expected values
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
-                lppufb);
+                lppufb, 'NumberOfLevels',nLevels);
             synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -3531,10 +3554,10 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             
             % Expected values
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
-                lppufb);
+                lppufb,'NumberOfLevels',nLevels);
             synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -3587,10 +3610,10 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             
             % Expected values
             analyzer    = NsoltFactory.createAnalysis2dSystem(...
-                lppufb);
+                lppufb,'NumberOfLevels',nLevels);
             synthesizer = NsoltFactory.createSynthesis2dSystem(...
                 lppufb);
-            [coefs,scales] = step(analyzer,srcImg,nLevels);
+            [coefs,scales] = step(analyzer,srcImg);
             [~,idxs] = sort(abs(coefs));
             coefs(idxs(1:floor(height*width/2)))=0;
             recImg = step(synthesizer,coefs,scales);
@@ -3633,7 +3656,7 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             % Preparation
             import saivdr.dictionary.nsoltx.*
             synCur = NsoltFactory.createSynthesis2dSystem(lppufb,...
-                'IsCloneLpPuFb2d',true);
+                'IsCloneLpPuFb',true);
             if isPext
                 set(synCur,'BoundaryOperation','Circular');
             end            
@@ -3644,7 +3667,7 @@ classdef OvsdLpPuFb2dTypeICostEvaluatorTestCase < matlab.unittest.TestCase
             % Numerical gradient
             clonefb = clone(lppufb);
             synDlt = NsoltFactory.createSynthesis2dSystem(clonefb,...
-                'IsCloneLpPuFb2d',false);
+                'IsCloneLpPuFb',false);
             if isPext
                 set(synDlt,'BoundaryOperation','Circular');
             end

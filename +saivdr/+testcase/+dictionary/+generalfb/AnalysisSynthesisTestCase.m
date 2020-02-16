@@ -3,7 +3,7 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
     %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2015-2017, Shogo MURAMATSU
+    % Copyright (c) 2015-2020, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -62,10 +62,11 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
                 'SynthesisFilters',synthesisFilters);
             testCase.analyzer    = Analysis2dSystem(...
                 'DecimationFactor',nDecs,...
-                'AnalysisFilters',analysisFilters);
+                'AnalysisFilters',analysisFilters,...
+                'NumberOfLevels',nLevels);
 
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -112,10 +113,11 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
                 'SynthesisFilters',synthesisFilters);
             testCase.analyzer    = Analysis2dSystem(...
                 'DecimationFactor',nDecs,...
-                'AnalysisFilters',analysisFilters);
+                'AnalysisFilters',analysisFilters,...
+                'NumberOfLevels',nLevels);
 
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -162,10 +164,11 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
                 'SynthesisFilters',synthesisFilters);
             testCase.analyzer    = Analysis2dSystem(...
                 'DecimationFactor',nDecs,...
-                'AnalysisFilters',analysisFilters);
+                'AnalysisFilters',analysisFilters,...
+                'NumberOfLevels',nLevels);
 
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -212,10 +215,11 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
                 'SynthesisFilters',synthesisFilters);
             testCase.analyzer    = Analysis2dSystem(...
                 'DecimationFactor',nDecs,...
-                'AnalysisFilters',analysisFilters);
+                'AnalysisFilters',analysisFilters,...
+                'NumberOfLevels',nLevels);
 
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -262,10 +266,11 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
                 'SynthesisFilters',synthesisFilters);
             testCase.analyzer    = Analysis2dSystem(...
                 'DecimationFactor',nDecs,...
-                'AnalysisFilters',analysisFilters);
+                'AnalysisFilters',analysisFilters,...
+                'NumberOfLevels',nLevels);
 
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -312,10 +317,11 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
                 'SynthesisFilters',synthesisFilters);
             testCase.analyzer    = Analysis2dSystem(...
                 'DecimationFactor',nDecs,...
-                'AnalysisFilters',analysisFilters);
+                'AnalysisFilters',analysisFilters,...
+                'NumberOfLevels',nLevels);
 
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -362,10 +368,11 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
                 'SynthesisFilters',synthesisFilters);
             testCase.analyzer    = Analysis2dSystem(...
                 'DecimationFactor',nDecs,...
-                'AnalysisFilters',analysisFilters);
+                'AnalysisFilters',analysisFilters,...
+                'NumberOfLevels',nLevels);
 
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -412,10 +419,11 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
                 'SynthesisFilters',synthesisFilters);
             testCase.analyzer    = Analysis2dSystem(...
                 'DecimationFactor',nDecs,...
-                'AnalysisFilters',analysisFilters);
+                'AnalysisFilters',analysisFilters,...
+                'NumberOfLevels',nLevels);
             
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -454,7 +462,8 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             release(lppufb)
             set(lppufb,'OutputMode', 'ParameterMatrixSet');            
             testCase.analyzer    = NsoltFactory.createAnalysis2dSystem(...
-                lppufb,'BoundaryOperation','Circular');
+                lppufb,'BoundaryOperation','Circular',...
+                'NumberOfLevels',nLevels);
             
             % Instantiation of targets
             import saivdr.dictionary.generalfb.*
@@ -463,7 +472,7 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
                 'SynthesisFilters',synthesisFilters);
 
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -508,10 +517,11 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.generalfb.*
             testCase.analyzer    = Analysis2dSystem(...
                 'DecimationFactor',nDecs,...
-                'AnalysisFilters',analysisFilters);
+                'AnalysisFilters',analysisFilters,...
+                'NumberOfLevels',nLevels);
             
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -559,10 +569,11 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
                 'SynthesisFilters',synthesisFilters);
             testCase.analyzer    = Analysis3dSystem(...
                 'DecimationFactor',nDecs,...
-                'AnalysisFilters',analysisFilters);
+                'AnalysisFilters',analysisFilters,...
+                'NumberOfLevels',nLevels);
             
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -610,10 +621,11 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
                 'SynthesisFilters',synthesisFilters);
             testCase.analyzer    = Analysis3dSystem(...
                 'DecimationFactor',nDecs,...
-                'AnalysisFilters',analysisFilters);
+                'AnalysisFilters',analysisFilters,...
+                'NumberOfLevels',nLevels);
             
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -661,10 +673,11 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
                 'SynthesisFilters',synthesisFilters);
             testCase.analyzer    = Analysis3dSystem(...
                 'DecimationFactor',nDecs,...
-                'AnalysisFilters',analysisFilters);
+                'AnalysisFilters',analysisFilters,...
+                'NumberOfLevels',nLevels);
             
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -712,10 +725,11 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
                 'SynthesisFilters',synthesisFilters);
             testCase.analyzer    = Analysis3dSystem(...
                 'DecimationFactor',nDecs,...
-                'AnalysisFilters',analysisFilters);
+                'AnalysisFilters',analysisFilters,...
+                'NumberOfLevels',nLevels);
             
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -763,10 +777,11 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
                 'SynthesisFilters',synthesisFilters);
             testCase.analyzer    = Analysis3dSystem(...
                 'DecimationFactor',nDecs,...
-                'AnalysisFilters',analysisFilters);
+                'AnalysisFilters',analysisFilters,...
+                'NumberOfLevels',nLevels);
             
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -814,10 +829,11 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
                 'SynthesisFilters',synthesisFilters);
             testCase.analyzer    = Analysis3dSystem(...
                 'DecimationFactor',nDecs,...
-                'AnalysisFilters',analysisFilters);
+                'AnalysisFilters',analysisFilters,...
+                'NumberOfLevels',nLevels);
             
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -865,10 +881,11 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
                 'SynthesisFilters',synthesisFilters);
             testCase.analyzer    = Analysis3dSystem(...
                 'DecimationFactor',nDecs,...
-                'AnalysisFilters',analysisFilters);
+                'AnalysisFilters',analysisFilters,...
+                'NumberOfLevels',nLevels);
             
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -916,10 +933,11 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
                 'SynthesisFilters',synthesisFilters);
             testCase.analyzer    = Analysis3dSystem(...
                 'DecimationFactor',nDecs,...
-                'AnalysisFilters',analysisFilters);
+                'AnalysisFilters',analysisFilters,...
+                'NumberOfLevels',nLevels);
             
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -959,7 +977,8 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             release(lppufb)
             set(lppufb,'OutputMode', 'ParameterMatrixSet');
             testCase.analyzer    = NsoltFactory.createAnalysis3dSystem(...
-                lppufb,'BoundaryOperation','Circular');
+                lppufb,'BoundaryOperation','Circular',...
+                'NumberOfLevels',nLevels);
             
             % Instantiation of targets
             import saivdr.dictionary.generalfb.*
@@ -968,7 +987,7 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
                 'SynthesisFilters',synthesisFilters);
             
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -1014,10 +1033,11 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.generalfb.*
             testCase.analyzer    = Analysis3dSystem(...
                 'DecimationFactor',nDecs,...
-                'AnalysisFilters',analysisFilters);
+                'AnalysisFilters',analysisFilters,...
+                'NumberOfLevels',nLevels);
             
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -1066,10 +1086,11 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.analyzer    = Analysis2dSystem(...
                 'DecimationFactor',nDecs,...
                 'AnalysisFilters',analysisFilters,...
-                'FilterDomain','Frequency');
+                'FilterDomain','Frequency',...
+                'NumberOfLevels',nLevels);
 
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -1118,10 +1139,11 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.analyzer    = Analysis2dSystem(...
                 'DecimationFactor',nDecs,...
                 'AnalysisFilters',analysisFilters,...
-                'FilterDomain','Frequency');
+                'FilterDomain','Frequency',...
+                'NumberOfLevels',nLevels);
 
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -1170,10 +1192,11 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.analyzer    = Analysis2dSystem(...
                 'DecimationFactor',nDecs,...
                 'AnalysisFilters',analysisFilters,...
-                'FilterDomain','Frequency');
+                'FilterDomain','Frequency',...
+                'NumberOfLevels',nLevels);
 
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -1222,10 +1245,11 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.analyzer    = Analysis2dSystem(...
                 'DecimationFactor',nDecs,...
                 'AnalysisFilters',analysisFilters,...
-                'FilterDomain','Frequency');
+                'FilterDomain','Frequency',...
+                'NumberOfLevels',nLevels);
 
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -1274,10 +1298,11 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.analyzer    = Analysis2dSystem(...
                 'DecimationFactor',nDecs,...
                 'AnalysisFilters',analysisFilters,...
-                'FilterDomain','Frequency');
+                'FilterDomain','Frequency',...
+                'NumberOfLevels',nLevels);
 
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -1326,10 +1351,11 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.analyzer    = Analysis2dSystem(...
                 'DecimationFactor',nDecs,...
                 'AnalysisFilters',analysisFilters,...
-                'FilterDomain','Frequency');
+                'FilterDomain','Frequency',...
+                'NumberOfLevels',nLevels);
 
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -1378,10 +1404,11 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.analyzer    = Analysis2dSystem(...
                 'DecimationFactor',nDecs,...
                 'AnalysisFilters',analysisFilters,...
-                'FilterDomain','Frequency');
+                'FilterDomain','Frequency',...
+                'NumberOfLevels',nLevels);
 
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -1430,10 +1457,11 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.analyzer    = Analysis2dSystem(...
                 'DecimationFactor',nDecs,...
                 'AnalysisFilters',analysisFilters,...
-                'FilterDomain','Frequency');
+                'FilterDomain','Frequency',...
+                'NumberOfLevels',nLevels);
             
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -1472,7 +1500,8 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             release(lppufb)
             set(lppufb,'OutputMode', 'ParameterMatrixSet');            
             testCase.analyzer    = NsoltFactory.createAnalysis2dSystem(...
-                lppufb,'BoundaryOperation','Circular');
+                lppufb,'BoundaryOperation','Circular',...
+                'NumberOfLevels',nLevels);
             
             % Instantiation of targets
             import saivdr.dictionary.generalfb.*
@@ -1482,7 +1511,7 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
                 'FilterDomain','Frequency');
 
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -1528,10 +1557,11 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.analyzer    = Analysis2dSystem(...
                 'DecimationFactor',nDecs,...
                 'AnalysisFilters',analysisFilters,...
-                'FilterDomain','Frequency');
+                'FilterDomain','Frequency',...
+                'NumberOfLevels',nLevels);
             
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -1581,10 +1611,11 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.analyzer    = Analysis3dSystem(...
                 'DecimationFactor',nDecs,...
                 'AnalysisFilters',analysisFilters,...
-                'FilterDomain','Frequency');
+                'FilterDomain','Frequency',...
+                'NumberOfLevels',nLevels);
             
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -1634,10 +1665,11 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.analyzer    = Analysis3dSystem(...
                 'DecimationFactor',nDecs,...
                 'AnalysisFilters',analysisFilters,...
-                'FilterDomain','Frequency');
+                'FilterDomain','Frequency',...
+                'NumberOfLevels',nLevels);
             
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -1687,10 +1719,11 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.analyzer    = Analysis3dSystem(...
                 'DecimationFactor',nDecs,...
                 'AnalysisFilters',analysisFilters,...
-                'FilterDomain','Frequency');
+                'FilterDomain','Frequency',...
+                'NumberOfLevels',nLevels);
             
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -1740,10 +1773,11 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.analyzer    = Analysis3dSystem(...
                 'DecimationFactor',nDecs,...
                 'AnalysisFilters',analysisFilters,...
-                'FilterDomain','Frequency');
+                'FilterDomain','Frequency',...
+                'NumberOfLevels',nLevels);
             
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -1793,10 +1827,11 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.analyzer    = Analysis3dSystem(...
                 'DecimationFactor',nDecs,...
                 'AnalysisFilters',analysisFilters,...
-                'FilterDomain','Frequency');
+                'FilterDomain','Frequency',...
+                'NumberOfLevels',nLevels);
             
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -1846,10 +1881,11 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.analyzer    = Analysis3dSystem(...
                 'DecimationFactor',nDecs,...
                 'AnalysisFilters',analysisFilters,...
-                'FilterDomain','Frequency');
+                'FilterDomain','Frequency',...
+                'NumberOfLevels',nLevels);
             
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -1899,10 +1935,11 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.analyzer    = Analysis3dSystem(...
                 'DecimationFactor',nDecs,...
                 'AnalysisFilters',analysisFilters,...
-                'FilterDomain','Frequency');
+                'FilterDomain','Frequency',...
+                'NumberOfLevels',nLevels);
             
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -1952,10 +1989,11 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.analyzer    = Analysis3dSystem(...
                 'DecimationFactor',nDecs,...
                 'AnalysisFilters',analysisFilters,...
-                'FilterDomain','Frequency');
+                'FilterDomain','Frequency',...
+                'NumberOfLevels',nLevels);
             
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -1995,7 +2033,8 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             release(lppufb)
             set(lppufb,'OutputMode', 'ParameterMatrixSet');
             testCase.analyzer    = NsoltFactory.createAnalysis3dSystem(...
-                lppufb,'BoundaryOperation','Circular');
+                lppufb,'BoundaryOperation','Circular',...
+                'NumberOfLevels',nLevels);
             
             % Instantiation of targets
             import saivdr.dictionary.generalfb.*
@@ -2005,7 +2044,7 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
                 'FilterDomain','Frequency');
             
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -2052,10 +2091,11 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.analyzer    = Analysis3dSystem(...
                 'DecimationFactor',nDecs,...
                 'AnalysisFilters',analysisFilters,...
-                'FilterDomain','Frequency');
+                'FilterDomain','Frequency',...
+                'NumberOfLevels',nLevels);
             
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -2104,14 +2144,15 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.analyzer    = Analysis2dSystem(...
                 'DecimationFactor',nDecs,...
                 'AnalysisFilters',analysisFilters,...
-                'FilterDomain','Frequency');
+                'FilterDomain','Frequency',...
+                'NumberOfLevels',nLevels);
 
             % Clone
             cloneSynthesizer = clone(testCase.synthesizer);
             cloneAnalyzer = clone(testCase.analyzer);
             
             % Step
-            [ coefs, scales ] = step(cloneAnalyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(cloneAnalyzer,srcImg);
             recImg = step(cloneSynthesizer,coefs,scales);
             
             % Evaluation
@@ -2161,14 +2202,15 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.analyzer    = Analysis3dSystem(...
                 'DecimationFactor',nDecs,...
                 'AnalysisFilters',analysisFilters,...
-                'FilterDomain','Frequency');
+                'FilterDomain','Frequency',...
+                'NumberOfLevels',nLevels);
             
             % Clone
             cloneSynthesizer = testCase.synthesizer;
             cloneAnalyzer    = testCase.analyzer;
             
             % Step
-            [ coefs, scales ] = step(cloneAnalyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(cloneAnalyzer,srcImg);
             recImg = step(cloneSynthesizer,coefs,scales);
             
             % Evaluation
@@ -2217,10 +2259,11 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.analyzer    = Analysis2dSystem(...
                 'DecimationFactor',nDecs,...
                 'AnalysisFilters',analysisFilters,...
-                'FilterDomain','Spatial');
+                'FilterDomain','Spatial',...
+                'NumberOfLevels',nLevels);
 
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -2269,10 +2312,11 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.analyzer    = Analysis2dSystem(...
                 'DecimationFactor',nDecs,...
                 'AnalysisFilters',analysisFilters,...
-                'FilterDomain','Frequency');
+                'FilterDomain','Frequency',...
+                'NumberOfLevels',nLevels);
 
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -2321,10 +2365,11 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.analyzer    = Analysis2dSystem(...
                 'DecimationFactor',nDecs,...
                 'AnalysisFilters',analysisFilters,...
-                'FilterDomain','Spatial');
+                'FilterDomain','Spatial',...
+                'NumberOfLevels',nLevels);
 
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -2373,10 +2418,11 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.analyzer    = Analysis2dSystem(...
                 'DecimationFactor',nDecs,...
                 'AnalysisFilters',analysisFilters,...
-                'FilterDomain','Frequency');
+                'FilterDomain','Frequency',...
+                'NumberOfLevels',nLevels);
 
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -2425,10 +2471,11 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.analyzer    = Analysis2dSystem(...
                 'DecimationFactor',nDecs,...
                 'AnalysisFilters',analysisFilters,...
-                'FilterDomain','Spatial');
+                'FilterDomain','Spatial',...
+                'NumberOfLevels',nLevels);
 
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -2477,10 +2524,11 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.analyzer    = Analysis2dSystem(...
                 'DecimationFactor',nDecs,...
                 'AnalysisFilters',analysisFilters,...
-                'FilterDomain','Frequency');
+                'FilterDomain','Frequency',...
+                'NumberOfLevels',nLevels);
 
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -2529,10 +2577,11 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.analyzer    = Analysis2dSystem(...
                 'DecimationFactor',nDecs,...
                 'AnalysisFilters',analysisFilters,...
-                'FilterDomain','Spatial');
+                'FilterDomain','Spatial',...
+                'NumberOfLevels',nLevels);
 
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -2581,10 +2630,11 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.analyzer    = Analysis2dSystem(...
                 'DecimationFactor',nDecs,...
                 'AnalysisFilters',analysisFilters,...
-                'FilterDomain','Frequency');
+                'FilterDomain','Frequency',...
+                'NumberOfLevels',nLevels);
 
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -2636,10 +2686,11 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
                 'DecimationFactor',nDecs,...
                 'AnalysisFilters',analysisFilters,...
                 'FilterDomain','Frequency',...
-                'UseGpu',useGpu);
+                'UseGpu',useGpu,...
+                'NumberOfLevels',nLevels);
 
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -2687,10 +2738,11 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
                 'SynthesisFilters',synthesisFilters);
             testCase.analyzer    = Analysis3dSystem(...
                 'DecimationFactor',nDecs,...
-                'AnalysisFilters',analysisFilters);
+                'AnalysisFilters',analysisFilters,...
+                'NumberOfLevels',nLevels);
             
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -2740,10 +2792,11 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.analyzer    = Analysis3dSystem(...
                 'DecimationFactor',nDecs,...
                 'AnalysisFilters',analysisFilters,...
-                'FilterDomain','Frequency');
+                'FilterDomain','Frequency',...
+                'NumberOfLevels',nLevels);
             
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -2791,10 +2844,11 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
                 'SynthesisFilters',synthesisFilters);
             testCase.analyzer    = Analysis3dSystem(...
                 'DecimationFactor',nDecs,...
-                'AnalysisFilters',analysisFilters);
+                'AnalysisFilters',analysisFilters,...
+                'NumberOfLevels',nLevels);
             
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -2844,10 +2898,11 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.analyzer    = Analysis3dSystem(...
                 'DecimationFactor',nDecs,...
                 'AnalysisFilters',analysisFilters,...
-                'FilterDomain','Frequency');
+                'FilterDomain','Frequency',...
+                'NumberOfLevels',nLevels);
             
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -2895,10 +2950,11 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
                 'SynthesisFilters',synthesisFilters);
             testCase.analyzer    = Analysis3dSystem(...
                 'DecimationFactor',nDecs,...
-                'AnalysisFilters',analysisFilters);
+                'AnalysisFilters',analysisFilters,...
+                'NumberOfLevels',nLevels);
             
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation
@@ -2948,10 +3004,11 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
             testCase.analyzer    = Analysis3dSystem(...
                 'DecimationFactor',nDecs,...
                 'AnalysisFilters',analysisFilters,...
-                'FilterDomain','Frequency');
+                'FilterDomain','Frequency',...
+                'NumberOfLevels',nLevels);
             
             % Step
-            [ coefs, scales ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
             recImg = step(testCase.synthesizer,coefs,scales);
             
             % Evaluation

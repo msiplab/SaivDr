@@ -4,7 +4,7 @@ classdef NsoltAnalysis3dSystem < ...
     %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2014-2017, Shogo MURAMATSU
+    % Copyright (c) 2014-2020, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -28,10 +28,11 @@ classdef NsoltAnalysis3dSystem < ...
     properties (Nontunable, PositiveInteger)    
         NumberOfSymmetricChannels     = 4
         NumberOfAntisymmetricChannels = 4
+        NumberOfLevels = 1
     end
     
     properties (Nontunable, Logical)
-        IsCloneLpPuFb3d = true;
+        IsCloneLpPuFb = true;
     end
     
     properties (Hidden, Transient)
@@ -78,7 +79,7 @@ classdef NsoltAnalysis3dSystem < ...
                     'OutputMode','ParameterMatrixSet');
             end
             %
-            if obj.IsCloneLpPuFb3d
+            if obj.IsCloneLpPuFb
                 obj.LpPuFb3d = clone(obj.LpPuFb3d); 
             end
             %
@@ -130,7 +131,8 @@ classdef NsoltAnalysis3dSystem < ...
             obj.LpPuFb3d = matlab.System.loadObject(s.LpPuFb3d);
         end
         
-        function setupImpl(obj,srcImg,nLevels)
+        function setupImpl(obj,srcImg)
+            nLevels = obj.NumberOfLevels;
             dec = obj.decimationFactor;
             nch = [ obj.NumberOfSymmetricChannels ...
                 obj.NumberOfAntisymmetricChannels ];
@@ -160,7 +162,8 @@ classdef NsoltAnalysis3dSystem < ...
 
         end
         
-        function [ coefs, scales ] = stepImpl(obj, srcImg, nLevels)
+        function [ coefs, scales ] = stepImpl(obj, srcImg)
+            nLevels = obj.NumberOfLevels;
             pmMtx = step(obj.LpPuFb3d,[],[]);
             pmMtxCoefs = get(pmMtx,'Coefficients');
             [ coefs, scales ] = analyze_(obj, srcImg, nLevels, pmMtxCoefs);

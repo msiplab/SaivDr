@@ -4,7 +4,7 @@ classdef AbstOvsdLpPuFb3dTypeISystem < ...
     %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2014-2017, Shogo MURAMATSU
+    % Copyright (c) 2014-2020, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -59,6 +59,7 @@ classdef AbstOvsdLpPuFb3dTypeISystem < ...
                 else
                     import saivdr.dictionary.nsoltx.mexsrcs.fcn_Order1BuildingBlockTypeI
                     obj.mexFcn = @fcn_Order1BuildingBlockTypeI;
+                    obj.mexFlag = false;
                 end
             end
         end

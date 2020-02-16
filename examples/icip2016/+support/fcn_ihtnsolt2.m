@@ -1,12 +1,9 @@
 function [ psnr, apxImg ] = fcn_ihtnsolt2(params)
 %FCN_IHTNSOLT 
 %
-% SVN identifier:
-% $Id: fcn_ihtnsolt2.m 867 2015-11-24 04:54:56Z sho $
-%
 % Requirements: MATLAB R2015b
 %
-% Copyright (c) 2014-2016, Shogo MURAMATSU
+% Copyright (c) 2014-2020, Shogo MURAMATSU
 %
 % All rights reserved.
 %
@@ -106,7 +103,7 @@ end
 ihtnsolt = IterativeHardThresholding(...
     'Synthesizer',synthesizer,...
     'AdjOfSynthesizer',analyzer,...
-    'NumberOfTreeLevels',params.nLevelsImpl);
+    'NumberOfLevels',params.nLevelsImpl);
 import saivdr.utility.StepMonitoringSystem
 stepMonitor = StepMonitoringSystem(...
     'SourceImage',srcImg,...

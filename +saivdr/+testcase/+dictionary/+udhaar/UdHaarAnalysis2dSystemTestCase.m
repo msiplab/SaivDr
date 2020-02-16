@@ -1,12 +1,9 @@
 classdef UdHaarAnalysis2dSystemTestCase < matlab.unittest.TestCase
     %UdHaarAnalysis2dSystemTESTCASE Test case for UdHaarAnalysis2dSystem
     %
-    % SVN identifier:
-    % $Id: UdHaarAnalysis2dSystemTestCase.m 683 2015-05-29 08:22:13Z sho $
-    %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2014-2015, Shogo MURAMATSU
+    % Copyright (c) 2014-2020, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -52,10 +49,11 @@ classdef UdHaarAnalysis2dSystemTestCase < matlab.unittest.TestCase
             
             % Instantiation of target class
             import saivdr.dictionary.udhaar.*
-            testCase.analyzer = UdHaarAnalysis2dSystem();
+            testCase.analyzer = UdHaarAnalysis2dSystem(...
+                'NumberOfLevels',nLevels);
             
             % Actual values
-            [ coefActual, scalesActual ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefActual, scalesActual ] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifySize(coefActual,size(coefExpctd));
@@ -85,10 +83,11 @@ classdef UdHaarAnalysis2dSystemTestCase < matlab.unittest.TestCase
             
             % Instantiation of target class
             import saivdr.dictionary.udhaar.*            
-            testCase.analyzer = UdHaarAnalysis2dSystem();
+            testCase.analyzer = UdHaarAnalysis2dSystem(...
+                'NumberOfLevels',nLevels);
             
             % Actual values
-            [ coefActual, scalesActual ] = step(testCase.analyzer,srcImg,nLevels);
+            [ coefActual, scalesActual ] = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifySize(coefActual,size(coefExpctd));
@@ -125,10 +124,11 @@ classdef UdHaarAnalysis2dSystemTestCase < matlab.unittest.TestCase
             
             % Instantiation of target class
             import saivdr.dictionary.udhaar.*            
-            testCase.analyzer = UdHaarAnalysis2dSystem();
+            testCase.analyzer = UdHaarAnalysis2dSystem(...
+                'NumberOfLevels',nLevels);
             
             % Actual values
-            coefActual = step(testCase.analyzer,srcImg,nLevels);
+            coefActual = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifySize(coefActual,size(coefExpctd));
@@ -164,10 +164,11 @@ classdef UdHaarAnalysis2dSystemTestCase < matlab.unittest.TestCase
             
             % Instantiation of target class
             import saivdr.dictionary.udhaar.*            
-            testCase.analyzer = UdHaarAnalysis2dSystem();
+            testCase.analyzer = UdHaarAnalysis2dSystem(...
+                'NumberOfLevels',nLevels);
             
             % Actual values
-            coefActual = step(testCase.analyzer,srcImg,nLevels);
+            coefActual = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifySize(coefActual,size(coefExpctd));
@@ -213,10 +214,11 @@ classdef UdHaarAnalysis2dSystemTestCase < matlab.unittest.TestCase
             
             % Instantiation of target class
             import saivdr.dictionary.udhaar.*            
-            testCase.analyzer = UdHaarAnalysis2dSystem();
+            testCase.analyzer = UdHaarAnalysis2dSystem(...
+                'NumberOfLevels',nLevels);
             
             % Actual values
-            coefActual = step(testCase.analyzer,srcImg,nLevels);
+            coefActual = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifySize(coefActual,size(coefExpctd));
@@ -262,10 +264,11 @@ classdef UdHaarAnalysis2dSystemTestCase < matlab.unittest.TestCase
             
             % Instantiation of target class
             import saivdr.dictionary.udhaar.*            
-            testCase.analyzer = UdHaarAnalysis2dSystem();
+            testCase.analyzer = UdHaarAnalysis2dSystem(...
+                'NumberOfLevels',nLevels);
             
             % Actual values
-            coefActual = step(testCase.analyzer,srcImg,nLevels);
+            coefActual = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifySize(coefActual,size(coefExpctd));
@@ -289,10 +292,11 @@ classdef UdHaarAnalysis2dSystemTestCase < matlab.unittest.TestCase
 
             % Instantiation of target class
             import saivdr.dictionary.udhaar.*            
-            testCase.analyzer = UdHaarAnalysis2dSystem();
+            testCase.analyzer = UdHaarAnalysis2dSystem(...
+                'NumberOfLevels',nLevels);
         
             % Analysis
-            coefs = step(testCase.analyzer,imgExpctd,nLevels);
+            coefs = step(testCase.analyzer,imgExpctd);
             ca = reshape(coefs(1:nPixels),height,width);
             ch = reshape(coefs(nPixels+1:2*nPixels),height,width);
             cv = reshape(coefs(2*nPixels+1:3*nPixels),height,width);
@@ -331,10 +335,11 @@ classdef UdHaarAnalysis2dSystemTestCase < matlab.unittest.TestCase
 
             % Instantiation of target class
             import saivdr.dictionary.udhaar.*            
-            testCase.analyzer = UdHaarAnalysis2dSystem();
+            testCase.analyzer = UdHaarAnalysis2dSystem(...
+                'NumberOfLevels',nLevels);
         
             % Analysis
-            coefs = step(testCase.analyzer,imgExpctd,nLevels);
+            coefs = step(testCase.analyzer,imgExpctd);
             ca = reshape(coefs(1:nPixels),height,width);
             ch = reshape(coefs(nPixels+1:2*nPixels),height,width);
             cv = reshape(coefs(2*nPixels+1:3*nPixels),height,width);
@@ -373,10 +378,11 @@ classdef UdHaarAnalysis2dSystemTestCase < matlab.unittest.TestCase
 
             % Instantiation of target class
             import saivdr.dictionary.udhaar.*            
-            testCase.analyzer = UdHaarAnalysis2dSystem();
+            testCase.analyzer = UdHaarAnalysis2dSystem(...
+                'NumberOfLevels',nLevels);
         
             % Analysis
-            coefs = step(testCase.analyzer,imgExpctd,nLevels);
+            coefs = step(testCase.analyzer,imgExpctd);
             ca1 = reshape(coefs(1:nPixels),height,width);
             ch1 = reshape(coefs(nPixels+1:2*nPixels),height,width);
             cv1 = reshape(coefs(2*nPixels+1:3*nPixels),height,width);
@@ -425,10 +431,11 @@ classdef UdHaarAnalysis2dSystemTestCase < matlab.unittest.TestCase
 
             % Instantiation of target class
             import saivdr.dictionary.udhaar.*            
-            testCase.analyzer = UdHaarAnalysis2dSystem();
+            testCase.analyzer = UdHaarAnalysis2dSystem(...
+                'NumberOfLevels',nLevels);
         
             % Analysis
-            coefs = step(testCase.analyzer,imgExpctd,nLevels);
+            coefs = step(testCase.analyzer,imgExpctd);
             ca1 = reshape(coefs(1:nPixels),height,width);
             ch1 = reshape(coefs(nPixels+1:2*nPixels),height,width);
             cv1 = reshape(coefs(2*nPixels+1:3*nPixels),height,width);
@@ -477,10 +484,11 @@ classdef UdHaarAnalysis2dSystemTestCase < matlab.unittest.TestCase
 
             % Instantiation of target class
             import saivdr.dictionary.udhaar.*            
-            testCase.analyzer = UdHaarAnalysis2dSystem();
+            testCase.analyzer = UdHaarAnalysis2dSystem(...
+                'NumberOfLevels',nLevels);
         
             % Analysis
-            coefs = step(testCase.analyzer,imgExpctd,nLevels);
+            coefs = step(testCase.analyzer,imgExpctd);
             ca1 = reshape(coefs(1:nPixels),height,width);
             ch1 = reshape(coefs(nPixels+1:2*nPixels),height,width);
             cv1 = reshape(coefs(2*nPixels+1:3*nPixels),height,width);
@@ -539,10 +547,11 @@ classdef UdHaarAnalysis2dSystemTestCase < matlab.unittest.TestCase
 
             % Instantiation of target class
             import saivdr.dictionary.udhaar.*            
-            testCase.analyzer = UdHaarAnalysis2dSystem();
+            testCase.analyzer = UdHaarAnalysis2dSystem(...
+                'NumberOfLevels',nLevels);
         
             % Analysis
-            coefs = step(testCase.analyzer,imgExpctd,nLevels);
+            coefs = step(testCase.analyzer,imgExpctd);
             ca1 = reshape(coefs(1:nPixels),height,width);
             ch1 = reshape(coefs(nPixels+1:2*nPixels),height,width);
             cv1 = reshape(coefs(2*nPixels+1:3*nPixels),height,width);
@@ -633,10 +642,11 @@ classdef UdHaarAnalysis2dSystemTestCase < matlab.unittest.TestCase
             
             % Instantiation of target class
             import saivdr.dictionary.udhaar.*            
-            testCase.analyzer = UdHaarAnalysis2dSystem();
+            testCase.analyzer = UdHaarAnalysis2dSystem(...
+                'NumberOfLevels',nLevels);
             
             % Actual values
-            coefActual = step(testCase.analyzer,srcImg,nLevels);
+            coefActual = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifySize(coefActual,size(coefExpctd));
@@ -690,10 +700,11 @@ classdef UdHaarAnalysis2dSystemTestCase < matlab.unittest.TestCase
             
             % Instantiation of target class
             import saivdr.dictionary.udhaar.*            
-            testCase.analyzer = UdHaarAnalysis2dSystem();
+            testCase.analyzer = UdHaarAnalysis2dSystem(...
+                'NumberOfLevels',nLevels);
             
             % Actual values
-            coefActual = step(testCase.analyzer,srcImg,nLevels);
+            coefActual = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifySize(coefActual,size(coefExpctd));
@@ -755,10 +766,11 @@ classdef UdHaarAnalysis2dSystemTestCase < matlab.unittest.TestCase
             
             % Instantiation of target class
             import saivdr.dictionary.udhaar.*            
-            testCase.analyzer = UdHaarAnalysis2dSystem();
+            testCase.analyzer = UdHaarAnalysis2dSystem(...
+                'NumberOfLevels',nLevels);
             
             % Actual values
-            coefActual = step(testCase.analyzer,srcImg,nLevels);
+            coefActual = step(testCase.analyzer,srcImg);
             
             % Evaluation
             testCase.verifySize(coefActual,size(coefExpctd));
@@ -770,3 +782,4 @@ classdef UdHaarAnalysis2dSystemTestCase < matlab.unittest.TestCase
     end
     
 end
+

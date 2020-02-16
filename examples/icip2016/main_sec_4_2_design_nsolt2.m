@@ -28,9 +28,6 @@
 %
 %  * tiff/fig02x.tif ( x in {a,b,c,d} )
 %
-% SVN identifier:
-% $Id: main_pkg_design_nsolt2.m 875 2016-01-20 01:51:38Z sho $
-%
 % Requirements: MATLAB R2014a
 %
 %  * Signal Processing Toolbox
@@ -65,7 +62,7 @@ nTrials   =  1; % # of trials
 params.nCoefs         = (picSize)^2/8; % # of Coefs.
 params.Display        = 'iter';
 params.plotFcn        = @optimplotfval;
-params.sparseCoding   = 'IterativeHardThresholding';
+params.sparseAprx   = 'IterativeHardThresholding';
 params.filterDomain   = 'frequency'; % or 'lattice_termination'
 %
 params.optfcn         = 'fminsgd'; % Stocastic gradient descent

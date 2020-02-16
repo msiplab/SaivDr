@@ -3,7 +3,7 @@ classdef AbstAnalysisSystem < matlab.System %#codegen
     %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2014-2017, Shogo MURAMATSU
+    % Copyright (c) 2014-2020, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -37,7 +37,7 @@ classdef AbstAnalysisSystem < matlab.System %#codegen
         
         function N = getNumInputsImpl(~)
             % Specify number of System inputs
-            N = 2; % Because stepImpl has one argument beyond obj
+            N = 1; % Because stepImpl has one argument beyond obj
         end
         
         function N = getNumOutputsImpl(~)
@@ -47,4 +47,3 @@ classdef AbstAnalysisSystem < matlab.System %#codegen
     end
     
 end
-

@@ -1,12 +1,9 @@
 classdef UdHaarAnalysis3dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
     %UDHAARANALYSIS3DSYSTEM Analysis system for undecimated Haar transform
     %
-    % SVN identifier:
-    % $Id: DicUdHaarDec3.m 683 2015-05-29 08:22:13Z sho $
-    %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2018, Shogo MURAMATSU
+    % Copyright (c) 2018-2020, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -23,6 +20,10 @@ classdef UdHaarAnalysis3dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
         BoundaryOperation = 'Circular'
     end
     
+    properties (Nontunable, PositiveInteger)
+        NumberOfLevels = 1        
+    end            
+    
     properties (Hidden, Transient)
         BoundaryOperationSet = ...
             matlab.system.StringSet({'Circular'});
@@ -30,10 +31,6 @@ classdef UdHaarAnalysis3dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
     
     properties (Logical)
         UseParallel = false
-    end
-    
-    properties (Nontunable, PositiveInteger)
-        NumberOfLevels = 1
     end
     
     properties (Nontunable, Access = private)
@@ -93,10 +90,16 @@ classdef UdHaarAnalysis3dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
             loadObjectImpl@saivdr.dictionary.AbstAnalysisSystem(obj,s,wasLocked);
         end
         
-        function setupImpl(obj,u,nLevels)
-            obj.NumberOfLevels = nLevels;
+        function setupImpl(obj,u)
+            nLevels = obj.NumberOfLevels;
             obj.nPixels = numel(u);
-            obj.coefs = zeros(1,(7*nLevels+1)*obj.nPixels);
+            if isa(u,'gpuArray')
+                obj.UseGpu = true;
+            end
+            if obj.UseGpu
+                u = gpuArray(u);
+            end
+            obj.coefs = zeros(1,(7*nLevels+1)*obj.nPixels,'like',u);
             
             if obj.UseParallel
                 obj.nWorkers = Inf;
@@ -116,7 +119,11 @@ classdef UdHaarAnalysis3dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
         function resetImpl(~)
         end
         
-        function [ coefs_, scales ] = stepImpl(obj, u, ~)
+        
+        function [ coefs_, scales ] = stepImpl(obj, u)
+            if obj.UseGpu
+                u = gpuArray(u);
+            end
             nPixels_ = obj.nPixels;
             coefs_ = obj.coefs;
             nLevels = obj.NumberOfLevels;
@@ -155,6 +162,7 @@ classdef UdHaarAnalysis3dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
         end
     end
 
+
     methods (Access = private)
         
         function value = upsmplfilter3_(~,u,x,ufactor)
@@ -170,3 +178,4 @@ classdef UdHaarAnalysis3dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
         
     end
 end
+

@@ -21,7 +21,7 @@ function [mses, lppufbs] = fcn_nsoltdiclrn(params)
 %   params.stallGenLimit = 10;              % Stall generation limit
 %   params.maxIterOfHybridFmin = 10;        % Max. Iter. of Hybrid Func.
 %   params.generationFactorForMus = 2;      % Geration factor for MUS
-%   params.sparseCoding = 'IterativeHardThresholding';
+%   params.sparseAprx = 'IterativeHardThresholding';
 %   params.optfcn = @ga;                    % Options for optimization
 %   params.isOptMus = true;                 % Flag for optimization of MUS
 %   params.isFixedCoefs = true;             % Flag if fix Coefs. support
@@ -34,12 +34,9 @@ function [mses, lppufbs] = fcn_nsoltdiclrn(params)
 % Output 'mses' is mean squared errors of sparse approximation results 
 % with designed NSOLTs. Output 'lppufbs' is the designed NSOLTs.
 %
-% SVN identifier:
-% $Id: fcn_nsoltdiclrn.m 683 2015-05-29 08:22:13Z sho $
-%
 % Requirements: MATLAB R2015b
 %
-% Copyright (c) 2014-2015, Shogo MURAMATSU
+% Copyright (c) 2014-2020, Shogo MURAMATSU
 %
 % All rights reserved.
 %
@@ -67,7 +64,7 @@ if nargin < 1
     stallGenLimit = 10;
     maxIterOfHybridFmin    = 10;
     generationFactorForMus = 2;
-    sparseCoding = 'IterativeHardThresholding';
+    sparseAprx = 'IterativeHardThresholding';
     %
     optfcn = @ga;
     useParallel = 'never';
@@ -93,7 +90,7 @@ else
     stallGenLimit = params.stallGenLimit;
     maxIterOfHybridFmin    = params.maxIterOfHybridFmin;
     generationFactorForMus = params.generationFactorForMus;
-    sparseCoding = params.sparseCoding;
+    sparseAprx = params.sparseAprx;
     %
     optfcn = params.optfcn;
     useParallel = params.useParallel;
@@ -109,9 +106,9 @@ end
 %% Instantiation of target class
 import saivdr.dictionary.nsoltx.design.NsoltDictionaryLearning
 designer = NsoltDictionaryLearning(...
-    'SourceImages',srcImgs,...
+    'TrainingImages',srcImgs,...
     'NumberOfSparseCoefficients',nCoefs,...
-    'NumberOfTreeLevels',nLevels,...
+    'NumberOfLevels',nLevels,...
     'NumberOfSymmetricChannel',chs(1),...
     'NumberOfAntisymmetricChannel',chs(2),...
     'OptimizationFunction',optfcn,...
@@ -119,7 +116,7 @@ designer = NsoltDictionaryLearning(...
     'OrderOfVanishingMoment',nVm,...
     'MaxIterOfHybridFmin',maxIterOfHybridFmin,...
     'GenerationFactorForMus',generationFactorForMus,...
-    'SparseCoding',sparseCoding,...
+    'SparseApproximation',sparseAprx,...
     'IsFixedCoefs',isFixedCoefs,...
     'IsRandomInit',isRandomInit);
 %
@@ -171,3 +168,4 @@ for iter = 1:nIters
         atmimshow(lppufbs{iter})        
     end 
 end
+

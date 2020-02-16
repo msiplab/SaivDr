@@ -23,7 +23,7 @@ function str = fcn_updatensolt( params )
 %   params.stallGenLimit = 10;              % Stall generation limit
 %   params.maxIterOfHybridFmin = 10;        % Max. Iter. of Hybrid Func.
 %   params.generationFactorForMus = 2;      % Geration factor for MUS
-%   params.sparseCoding = 'IterativeHardThresholding';
+%   params.sparseAprx = 'IterativeHardThresholding';
 %   params.optfcn = @ga;                    % Options for optimization
 %   params.isOptMus = true;                 % Flag for optimization of MUS
 %   params.isFixedCoefs = true;             % Flag if fix Coefs. support
@@ -35,12 +35,9 @@ function str = fcn_updatensolt( params )
 %
 % Outputs 'str' is a string which contains a design summary.
 %
-% SVN identifier:
-% $Id: fcn_updatensolt.m 683 2015-05-29 08:22:13Z sho $
-%
 % Requirements: MATLAB R2015b
 %
-% Copyright (c) 2014-2015, Shogo MURAMATSU
+% Copyright (c) 2014-2020, Shogo MURAMATSU
 %
 % All rights reserved.
 %
@@ -70,7 +67,7 @@ if nargin < 1
     params.stallGenLimit = 10;
     params.maxIterOfHybridFmin = 10;
     params.generationFactorForMus = 2;
-    params.sparseCoding = 'IterativeHardThresholding';
+    params.sparseAprx = 'IterativeHardThresholding';
     %
     params.optfcn = @ga;
     params.useParallel = 'never';
@@ -98,10 +95,10 @@ else
 end
 
 % Create tasks
-[mses,lppufbs] = support.fcn_nsoltdiclrn(params); %#ok
+[mses,lppufbs] = support.fcn_nsoltdiclrn(params); 
 
 % Save data
-[minmse,bstidx] = min(cell2mat(mses)); %#ok
+[minmse,bstidx] = min(cell2mat(mses)); 
 if minmse < premse
     maxpsnr = 10*log10(255^2/minmse);
     save(filename,'mses','lppufbs','params','maxpsnr','bstidx')
@@ -114,3 +111,4 @@ if params.isVerbose
     disp(str)
 end
 end
+

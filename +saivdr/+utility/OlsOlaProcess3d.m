@@ -9,7 +9,7 @@ classdef OlsOlaProcess3d < matlab.System
     %
     % Requirements: MATLAB R2018a
     %
-    % Copyright (c) 2018, Shogo MURAMATSU
+    % Copyright (c) 2018-2020, Shogo MURAMATSU
     %
     % All rights reserved.
     %

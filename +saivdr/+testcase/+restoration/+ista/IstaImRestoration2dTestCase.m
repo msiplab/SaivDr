@@ -1,12 +1,9 @@
 classdef IstaImRestoration2dTestCase < matlab.unittest.TestCase
     %IstaImRestoration2dTESTCASE Test Case for IstaImRestoration2d
     %
-    % SVN identifier:
-    % $Id: IstaImRestoration2dTestCase.m 683 2015-05-29 08:22:13Z sho $
-    %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2014-2015, Shogo MURAMATSU
+    % Copyright (c) 2014-2020, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -37,6 +34,8 @@ classdef IstaImRestoration2dTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.nsoltx.*
             synthesizer = NsoltFactory.createSynthesis2dSystem();
             analyzer = NsoltFactory.createAnalysis2dSystem();
+            analyzer.NumberOfLevels = 3;
+            
             import saivdr.degradation.*
             import saivdr.degradation.linearprocess.*
             import saivdr.degradation.noiseprocess.*
@@ -57,7 +56,6 @@ classdef IstaImRestoration2dTestCase < matlab.unittest.TestCase
                 'Synthesizer',synthesizer,...
                 'AdjOfSynthesizer',analyzer,...
                 'LinearProcess',linearProcess,...
-                'NumberOfTreeLevels',3,...
                 'Lambda',1e-2);
             
             % MSE after processing
@@ -83,6 +81,8 @@ classdef IstaImRestoration2dTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.nsoltx.*
             synthesizer = NsoltFactory.createSynthesis2dSystem();
             analyzer = NsoltFactory.createAnalysis2dSystem();
+            analyzer.NumberOfLevels = 3;
+            
             import saivdr.degradation.*
             import saivdr.degradation.linearprocess.*
             import saivdr.degradation.noiseprocess.*
@@ -104,7 +104,6 @@ classdef IstaImRestoration2dTestCase < matlab.unittest.TestCase
                 'Synthesizer',synthesizer,...
                 'AdjOfSynthesizer',analyzer,...
                 'LinearProcess',linearProcess,...
-                'NumberOfTreeLevels',3,...
                 'Lambda',1e-2);
             
             % MSE after processing
@@ -130,6 +129,7 @@ classdef IstaImRestoration2dTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.nsoltx.*
             synthesizer = NsoltFactory.createSynthesis2dSystem();
             analyzer = NsoltFactory.createAnalysis2dSystem();
+            analyzer.NumberOfLevels = 3;            
             import saivdr.degradation.*
             import saivdr.degradation.linearprocess.*
             import saivdr.degradation.noiseprocess.*
@@ -150,7 +150,6 @@ classdef IstaImRestoration2dTestCase < matlab.unittest.TestCase
                 'Synthesizer',synthesizer,...
                 'AdjOfSynthesizer',analyzer,...
                 'LinearProcess',linearProcess,...
-                'NumberOfTreeLevels',3,...
                 'Lambda',1e-2);
             
             % MSE after processing
@@ -176,6 +175,7 @@ classdef IstaImRestoration2dTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.nsoltx.*
             synthesizer = NsoltFactory.createSynthesis2dSystem();
             analyzer = NsoltFactory.createAnalysis2dSystem();
+            analyzer.NumberOfLevels = 3;            
             import saivdr.degradation.*
             import saivdr.degradation.linearprocess.*
             import saivdr.degradation.noiseprocess.*
@@ -196,7 +196,6 @@ classdef IstaImRestoration2dTestCase < matlab.unittest.TestCase
                 'Synthesizer',synthesizer,...
                 'AdjOfSynthesizer',analyzer,...
                 'LinearProcess',linearProcess,...
-                'NumberOfTreeLevels',3,...
                 'Lambda',1e-2);
             
             % MSE after processing
@@ -225,6 +224,7 @@ classdef IstaImRestoration2dTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.nsoltx.*
             synthesizer = NsoltFactory.createSynthesis2dSystem();
             analyzer = NsoltFactory.createAnalysis2dSystem();
+            analyzer.NumberOfLevels = 3;            
             import saivdr.degradation.*
             import saivdr.degradation.linearprocess.*
             import saivdr.degradation.noiseprocess.*
@@ -245,7 +245,6 @@ classdef IstaImRestoration2dTestCase < matlab.unittest.TestCase
                 'Synthesizer',synthesizer,...
                 'AdjOfSynthesizer',analyzer,...
                 'LinearProcess',linearProcess,...
-                'NumberOfTreeLevels',3,...
                 'Lambda',1e-2);
             
             % MSE after processing
@@ -273,6 +272,7 @@ classdef IstaImRestoration2dTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.nsoltx.*
             synthesizer = NsoltFactory.createSynthesis2dSystem();
             analyzer = NsoltFactory.createAnalysis2dSystem();
+            analyzer.NumberOfLevels = 3;            
             import saivdr.degradation.*
             import saivdr.degradation.linearprocess.*
             import saivdr.degradation.noiseprocess.*
@@ -294,7 +294,6 @@ classdef IstaImRestoration2dTestCase < matlab.unittest.TestCase
                 'Synthesizer',synthesizer,...
                 'AdjOfSynthesizer',analyzer,...
                 'LinearProcess',linearProcess,...
-                'NumberOfTreeLevels',3,...
                 'Lambda',1e-2);
             
             % MSE after processing
@@ -322,6 +321,7 @@ classdef IstaImRestoration2dTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.nsoltx.*
             synthesizer = NsoltFactory.createSynthesis2dSystem();
             analyzer = NsoltFactory.createAnalysis2dSystem();
+            analyzer.NumberOfLevels = 3;            
             import saivdr.degradation.*
             import saivdr.degradation.linearprocess.*
             import saivdr.degradation.noiseprocess.*
@@ -342,7 +342,6 @@ classdef IstaImRestoration2dTestCase < matlab.unittest.TestCase
                 'Synthesizer',synthesizer,...
                 'AdjOfSynthesizer',analyzer,...
                 'LinearProcess',linearProcess,...
-                'NumberOfTreeLevels',3,...
                 'Lambda',1e-2);
             
             % MSE after processing
@@ -370,6 +369,7 @@ classdef IstaImRestoration2dTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.nsoltx.*
             synthesizer = NsoltFactory.createSynthesis2dSystem();
             analyzer = NsoltFactory.createAnalysis2dSystem();
+            analyzer.NumberOfLevels = 3;            
             import saivdr.degradation.*
             import saivdr.degradation.linearprocess.*
             import saivdr.degradation.noiseprocess.*
@@ -391,7 +391,6 @@ classdef IstaImRestoration2dTestCase < matlab.unittest.TestCase
                 'Synthesizer',synthesizer,...
                 'AdjOfSynthesizer',analyzer,...
                 'LinearProcess',linearProcess,...
-                'NumberOfTreeLevels',3,...
                 'Lambda',1e-2);
             
             % MSE after processing
@@ -417,6 +416,7 @@ classdef IstaImRestoration2dTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.nsoltx.*
             synthesizer = NsoltFactory.createSynthesis2dSystem();
             analyzer = NsoltFactory.createAnalysis2dSystem();
+            anlyzer.NumberOfLevels = 3;            
             import saivdr.degradation.*
             import saivdr.degradation.linearprocess.*
             import saivdr.degradation.noiseprocess.*
@@ -440,7 +440,6 @@ classdef IstaImRestoration2dTestCase < matlab.unittest.TestCase
                 'Synthesizer',synthesizer,...
                 'AdjOfSynthesizer',analyzer,...
                 'LinearProcess',linearProcess,...
-                'NumberOfTreeLevels',3,...
                 'Lambda',1e-2,...
                 'StepMonitor',stepMonitor);
             
@@ -468,6 +467,7 @@ classdef IstaImRestoration2dTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.nsoltx.*
             synthesizer = NsoltFactory.createSynthesis2dSystem();
             analyzer = NsoltFactory.createAnalysis2dSystem();
+            analyzer.NumberOfLevels = 3;            
             import saivdr.degradation.*
             import saivdr.degradation.linearprocess.*
             import saivdr.degradation.noiseprocess.*
@@ -491,7 +491,6 @@ classdef IstaImRestoration2dTestCase < matlab.unittest.TestCase
                 'Synthesizer',synthesizer,...
                 'AdjOfSynthesizer',analyzer,...
                 'LinearProcess',linearProcess,...
-                'NumberOfTreeLevels',3,...
                 'Lambda',1e-2,...
                 'StepMonitor',stepMonitor);
             
@@ -521,6 +520,8 @@ classdef IstaImRestoration2dTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.udhaar.*
             synthesizer = UdHaarSynthesis2dSystem();
             analyzer = UdHaarAnalysis2dSystem();
+            analyzer.NumberOfLevels = 3;
+            
             import saivdr.degradation.*
             import saivdr.degradation.linearprocess.*
             import saivdr.degradation.noiseprocess.*
@@ -541,7 +542,6 @@ classdef IstaImRestoration2dTestCase < matlab.unittest.TestCase
                 'Synthesizer',synthesizer,...
                 'AdjOfSynthesizer',analyzer,...
                 'LinearProcess',linearProcess,...
-                'NumberOfTreeLevels',3,...
                 'Lambda',1e-2);
             
             % MSE after processing
@@ -673,6 +673,7 @@ classdef IstaImRestoration2dTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.udhaar.*
             synthesizer = UdHaarSynthesis2dSystem();
             analyzer = UdHaarAnalysis2dSystem();
+            analyzer.NumberOfLevels = 3;            
             import saivdr.degradation.*
             import saivdr.degradation.linearprocess.*
             import saivdr.degradation.noiseprocess.*
@@ -692,7 +693,6 @@ classdef IstaImRestoration2dTestCase < matlab.unittest.TestCase
                 'Synthesizer',synthesizer,...
                 'AdjOfSynthesizer',analyzer,...
                 'LinearProcess',linearProcess,...
-                'NumberOfTreeLevels',3,...
                 'Lambda',1e-2);
             
             % MSE by original object
@@ -719,6 +719,7 @@ classdef IstaImRestoration2dTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.nsoltx.*
             synthesizer = NsoltFactory.createSynthesis2dSystem();
             analyzer = NsoltFactory.createAnalysis2dSystem();
+            analyzer.NumberOfLevels = 3;            
             import saivdr.degradation.*
             import saivdr.degradation.linearprocess.*
             import saivdr.degradation.noiseprocess.*
@@ -738,7 +739,6 @@ classdef IstaImRestoration2dTestCase < matlab.unittest.TestCase
                 'Synthesizer',synthesizer,...
                 'AdjOfSynthesizer',analyzer,...
                 'LinearProcess',linearProcess,...
-                'NumberOfTreeLevels',3,...
                 'Lambda',1e-2);
             
             % MSE by original object
@@ -764,6 +764,7 @@ classdef IstaImRestoration2dTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.nsoltx.*
             synthesizer = NsoltFactory.createSynthesis2dSystem();
             analyzer = NsoltFactory.createAnalysis2dSystem();
+            analyzer.NumberOfLevels = 3;            
             import saivdr.degradation.*
             import saivdr.degradation.linearprocess.*
             import saivdr.degradation.noiseprocess.*
@@ -775,7 +776,6 @@ classdef IstaImRestoration2dTestCase < matlab.unittest.TestCase
                 'Synthesizer',synthesizer,...
                 'AdjOfSynthesizer',analyzer,...
                 'LinearProcess',linearProcess,...
-                'NumberOfTreeLevels',3,...
                 'Lambda',1e-2);
             
             % Instantiation of target class
@@ -809,6 +809,7 @@ classdef IstaImRestoration2dTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.udhaar.*
             synthesizer = UdHaarSynthesis2dSystem();
             analyzer = UdHaarAnalysis2dSystem();
+            analyzer.NumberOfLevels = 3;            
             import saivdr.degradation.*
             import saivdr.degradation.linearprocess.*
             import saivdr.degradation.noiseprocess.*
@@ -820,7 +821,6 @@ classdef IstaImRestoration2dTestCase < matlab.unittest.TestCase
                 'Synthesizer',synthesizer,...
                 'AdjOfSynthesizer',analyzer,...
                 'LinearProcess',linearProcess,...
-                'NumberOfTreeLevels',3,...
                 'Lambda',1e-2);
             
             % Instantiation of target class

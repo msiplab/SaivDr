@@ -23,7 +23,7 @@ function str = fcn_updatensolt2( params )
 %   params.stallGenLimit = 10;              % Stall generation limit
 %   params.maxIterOfHybridFmin = 10;        % Max. Iter. of Hybrid Func.
 %   params.generationFactorForMus = 2;      % Geration factor for MUS
-%   params.sparseCoding = 'IterativeHardThresholding';
+%   params.sparseAprx = 'IterativeHardThresholding';
 %   params.optfcn = @ga;                    % Options for optimization
 %   params.isOptMus = true;                 % Flag for optimization of MUS
 %   params.isFixedCoefs = true;             % Flag if fix Coefs. support
@@ -34,9 +34,6 @@ function str = fcn_updatensolt2( params )
 %   params.nIters = 2;                      % # of iterations
 %
 % Outputs 'str' is a string which contains a design summary.
-%
-% SVN identifier:
-% $Id: fcn_updatensolt2.m 867 2015-11-24 04:54:56Z sho $
 %
 % Requirements: MATLAB R2015b
 %
@@ -70,7 +67,7 @@ if nargin < 1
 %     params.stallGenLimit = 10;
 %     params.maxIterOfHybridFmin = 10;
     params.generationFactorForMus = 2;
-    params.sparseCoding = 'IterativeHardThresholding';
+    params.sparseAprx = 'IterativeHardThresholding';
     %
     params.optfcn = 'fminsgd';
     params.useParallel = 'never';
