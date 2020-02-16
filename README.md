@@ -174,7 +174,7 @@ Information about SaivDr Package is given in Contents.m. The HELP command can be
  
 ## Acknowledgement
  
-This project was supported by JSPS KAKENHI (JP23560443,JP26420347).
+This project was supported by JSPS KAKENHI (JP23560443,JP26420347,JP19H04135).
  
 ## Contributors
 
@@ -195,4 +195,5 @@ This project was supported by JSPS KAKENHI (JP23560443,JP26420347).
 * Genki FUJII,       2017-
 * Naoki YAMAZAKI,    2017-
 * Yuhei KANEKO,      2017-
-* Nawapan Laocharoensuk, 2019-
+* Nawapan LAOCHAROENSUK, 2019-
+* Yusuke ARAI, 2020-

@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>Quickstart of SaivDr Package</title><meta name="generator" content="MATLAB 9.7"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-10-22"><meta name="DC.source" content="quickstart.m"><style type="text/css">
+      --><title>Quickstart of SaivDr Package</title><meta name="generator" content="MATLAB 9.7"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-02-15"><meta name="DC.source" content="quickstart.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -66,189 +66,207 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>Quickstart of <b>SaivDr Package</b></h1><!--introduction--><p>A brief introduction to image restroation with <b>SaivDr Package</b></p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Summary</a></li><li><a href="#2">Add the package to search path</a></li><li><a href="#3">Read a source image</a></li><li><a href="#4">Create a degradation system object</a></li><li><a href="#5">Generate an observed image</a></li><li><a href="#6">Create an NSOLT system object</a></li><li><a href="#7">Create an analysis and synthesis system object</a></li><li><a href="#10">Create an ISTA-based image restoration system object</a></li><li><a href="#11">Create a step monitor system object</a></li><li><a href="#12">Perform ISTA-based image restoration</a></li><li><a href="#13">Extract the final evaluation</a></li><li><a href="#14">Perform Wiener filtering</a></li><li><a href="#15">Compare deblurring performances</a></li><li><a href="#16">Release notes</a></li></ul></div><h2 id="1">Summary</h2><p><b>SaivDr</b> is an abbreviation of <i>Sparsity-Aware Image and Volume Data Restoration</i>. This package is developed in order for making</p><div><ul><li>Experiments,</li><li>Development and</li><li>Implementation</li></ul></div><p>of sparsity-aware image and volume data restoraition algorithms simple.</p><p>Information about <b>SaivDr Package</b> is given in Contents.m. The HELP command can be used to see the contents as follows:</p><pre class="codeinput">help <span class="string">./Contents</span>
-</pre><pre class="codeoutput">  Sparsity-Aware Image and Volumetric Data Restoration Package
+  </style></head><body><div class="content"><h1>Quickstart of <b>SaivDr Package</b></h1><!--introduction--><p>A brief introduction to image restroation with <b>SaivDr Package</b></p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Summary</a></li><li><a href="#2">Add the package to search path</a></li><li><a href="#3">Read a source image</a></li><li><a href="#4">Create a degradation system object</a></li><li><a href="#5">Generate an observed image</a></li><li><a href="#6">Create an NSOLT system object</a></li><li><a href="#7">Create an analysis and synthesis system object</a></li><li><a href="#10">Create an ISTA-based image restoration system object</a></li><li><a href="#11">Create a step monitor system object</a></li><li><a href="#12">Perform ISTA-based image restoration</a></li><li><a href="#13">Extract the final evaluation</a></li><li><a href="#14">Perform Wiener filtering</a></li><li><a href="#15">Compare deblurring performances</a></li><li><a href="#16">Release notes</a></li></ul></div><h2 id="1">Summary</h2><p><b>SaivDr</b> is an abbreviation of <i>Sparsity-Aware Image and Volume Data Restoration</i>. This package is developed in order for making</p><div><ul><li>Experiments,</li><li>Development and</li><li>Implementation</li></ul></div><p>of sparsity-aware image and volume data restoraition algorithms simple.</p><p>Information about <b>SaivDr Package</b> is given in Contents.m. The HELP command can be used to see the contents as follows:</p><pre class="codeinput">type <span class="string">README.md</span>
+</pre><pre class="codeoutput">
+# SaivDr Package for MATLAB/Simulink
+System object definitions for sparsity-aware image and volumetric data restoration
+
+## Summary
+
+SaivDr is an abbreviation of Sparsity-Aware Image and Volumetric Data Restoration. This package is developed in order for making
+
+* Experiments,
+* Development and
+* Implementation
+
+of sparsity-aware image and volumetric data restoraition algorithms simple.
+
+Information about SaivDr Package is given in Contents.m. The HELP command can be used to see the contents as follows:
+
+       &gt;&gt; help SaivDr
+        
+       Sparsity-Aware Image and Volume Data Restoration Package
+         
+           Files
+             mytest     - Script of unit testing for SaivDr Package
+             quickstart - Quickstart of *SaivDr Package*
+             setpath    - Path setup for *SaivDr Package*
+          
+           * Package structure
+               
+               + saivdr -+- testcase -+- sparserep 
+                         |            |
+                         |            +- embedded
+                         |            |
+                         |            +- dictionary  -+- nsolt     -+- design
+                         |            |               |
+                         |            |               +- nsoltx    -+- design
+                         |            |               |
+                         |            |               +- nsgenlot  -+- design
+                         |            |               |
+                         |            |               +- nsgenlotx -+- design
+                         |            |               |
+                         |            |               +- olaols
+                         |            |               |
+                         |            |               +- olpprfb
+                         |            |               |
+                         |            |               +- udhaar 
+                         |            |               |
+                         |            |               +- generalfb
+                         |            |               |
+                         |            |               +- mixture
+                         |            |               |
+                         |            |               +- utility
+                         |            |
+                         |            +- restoration -+- ista
+                         |            |
+                         |            +- degradation -+- linearprocess
+                         |            |               |
+                         |            |               +- noiseprocess
+                         |            |
+                         |            +- utility 
+                         |
+                         +- sparserep
+                         |
+                         +- embedded
+                         |
+                         +- dictionary  -+- nsolt     -+- design
+                         |               |             |
+                         |               |             +- mexsrcs
+                         |               |        
+                         |               +- nsoltx    -+- design
+                         |               |             |
+                         |               |             +- mexsrcs
+                         |               |
+                         |               +- nsgenlot  -+- design
+                         |               |         
+                         |               +- nsgenlotx -+- design
+                         |               |         
+                         |               +- olaols
+                         |               |         
+                         |               +- olpprfb
+                         |               |         
+                         |               +- udhaar 
+                         |               |
+                         |               +- generalfb
+                         |               |
+                         |               +- mixture
+                         |               |
+                         |               +- utility
+                         |
+                         +- restoration -+- ista  
+                         |
+                         +- degradation -+- linearprocess
+                         |               |
+                         |               +- noiseprocess
+                         |
+                         +- utility
+    
+## Requirements
  
-  Files
-    mytest     - Script of unit testing for SaivDr Package
-    quickstart - Quickstart of *SaivDr Package*
-    setpath    - Path setup for *SaivDr Package*
-  
-  * Package structure
-  
-    + saivdr -+- testcase -+- sparserep 
-              |            |
-              |            +- embedded
-              |            |
-              |            +- dictionary  -+- nsolt     -+- design
-              |            |               |
-              |            |               +- nsoltx    -+- design
-              |            |               |
-              |            |               +- nsgenlot  -+- design
-              |            |               |
-              |            |               +- nsgenlotx -+- design
-              |            |               |
-              |            |               +- olaols
-              |            |               |
-              |            |               +- olpprfb
-              |            |               |
-              |            |               +- udhaar 
-              |            |               |
-              |            |               +- generalfb
-              |            |               |
-              |            |               +- mixture
-              |            |               |
-              |            |               +- utility
-              |            |
-              |            +- restoration -+- ista
-              |            |
-              |            +- degradation -+- linearprocess
-              |            |               |
-              |            |               +- noiseprocess
-              |            |
-              |            +- utility 
-              |
-              +- sparserep
-              |
-              +- embedded
-              |
-              +- dictionary  -+- nsolt     -+- design
-              |               |             |
-              |               |             +- mexsrcs
-              |               |        
-              |               +- nsoltx    -+- design
-              |               |             |
-              |               |             +- mexsrcs
-              |               |
-              |               +- nsgenlot  -+- design
-              |               |         
-              |               +- nsgenlotx -+- design
-              |               |         
-              |               +- olaols
-              |               |         
-              |               +- olpprfb
-              |               |         
-              |               +- udhaar 
-              |               |
-              |               +- generalfb
-              |               |
-              |               +- mixture
-              |               |
-              |               +- utility
-              |
-              +- restoration -+- ista  
-              |
-              +- degradation -+- linearprocess
-              |               |
-              |               +- noiseprocess
-              |
-              +- utility
+* MATLAB R2013b or later. R2015b is recommended.
+ * Signal Processing Toolbox
+ * Image Processing Toolbox
+ * Optimization Toolbox
  
-  * Requirements
-  
-  - MATLAB R2013b or later. R2015b is recommended.
-  -- Signal Processing Toolbox
-  -- Image Processing Toolbox
-  -- Optimization Toolbox
-  
-  * Recomendation
-  
-  -- Global Optimization Toolbox 
-  -- Parallel Computing Toolbox
-  -- MATLAB Coder
-  
-  * Brief introduction
-  
-  1. Change current directory to where this file contains on MATLAB.
-  
-  2. Set the path by using the following command:
-  
-   &gt;&gt; setpath
-  
-  3. Build MEX codes if you have MATLAB Coder.
+## Recomendation
  
-   &gt;&gt; mybuild
+ * Global Optimization Toolbox 
+ * Parallel Computing Toolbox
+ * MATLAB Coder
+
+## Brief introduction
  
-  4. Several example codes are found under the second layer directory 
-     'examples' of this package. Change current directory to one under 
-     the second layer directiory 'examples' and execute an M-file of 
-     which name begins with 'main,' such as
-  
-   &gt;&gt; main_xxxx
-  
-     and then execute an M-file of which name begins with 'disp,' such as
-  
-   &gt;&gt; disp_xxxx
-  
-  * Contact address
-  
+1. Change current directory to where this file contains on MATLAB.
+2. Set the path by using the following command:
+
+        &gt;&gt; setpath
+
+3. Build MEX codes if you have MATLAB Coder.
+
+        &gt;&gt; mybuild
+
+4. Several example codes are found under the second layer directory 
+   'examples' of this package. Change current directory to one under 
+   the second layer directiory 'examples' and execute an M-file of 
+   which name begins with 'main,' such as
+ 
+        &gt;&gt; main_xxxx
+ 
+   and then execute an M-file of which name begins with 'disp,' such as
+ 
+        &gt;&gt; disp_xxxx
+ 
+## Contact address
+ 
      Shogo MURAMATSU,
      Faculty of Engineering, Niigata University,
      8050 2-no-cho Ikarashi, Nishi-ku,
      Niigata, 950-2181, JAPAN
-     https://msiplab.eng.niigata-u.ac.jp/
-  
-  * References
-  
-  - Shogo Muramatsu, Kosuke Furuya and Naotaka Yuki, "Multidimensional 
-    Nonseparable Oversampled Lapped Transforms: Theory and Design," 
-    IEEE Trans. on Signal Process.Vol.65, No.5, pp.1251-1264,
-    DOI:10.1109/TSP.2016.2633240, March 2017.
-    
-  - Kota Horiuchi and Shogo Muramatsu, "Fast convolution technique for 
-    Non-separable Oversampled Lapped transforms," Proc. of Asia Pacific 
-    Signal and Information Proc. Assoc. Annual Summit and Conf. 
-    (APSIPA ASC), Dec. 2016.
+     http://msiplab.eng.niigata-u.ac.jp/
  
-  - Shogo Muramatsu, Masaki Ishii and Zhiyu Chen,
-    "Efficient Parameter Optimization for Example-Based Design of 
-    Non-separable Oversampled Lapped Transform," Proc. of 2016 IEEE Intl.
-    Conf. on Image Processing (ICIP), pp.3618-3622, Sept. 2016.
- 
-  - Shogo Muramatsu, "Structured Dictionary Learning with 2-D Non-
+## References
+
+* Shogo Muramatsu, Kosuke Furuya and Naotaka Yuki, "Multidimensional
+   Nonseparable Oversampled Lapped Transforms: Theory and Design,"
+   IEEE Trans. on Signal Process., Vol.65, No.5, pp.1251-1264, 
+   DOI:10.1109/TSP.2016.2633240, March 2017. [SigPort](https://sigport.org/documents/multidimensional-nonseparable-oversampled-lapped-transforms-theory-and-design)
+
+* Kota Horiuchi and Shogo Muramatsu, "Fast convolution technique for
+   Non-separable Oversampled Lapped Transforms," Proc. of Asia 
+    Pacific Signal and Information Proc. Assoc. Annual Summit and Conf.
+    (APSIPA ASC), Dec. 2016
+
+* Shogo Muramatsu, Masaki Ishii and Zhiyu Chen, "Efficient Parameter 
+   Optimization for Example-Based Design of Non-separable Oversampled 
+   Lapped Transform," Proc. of 2016 IEEE Intl. Conf. on Image Process. 
+   (ICIP),  pp.3618-3622, Sept. 2016
+
+* Shogo Muramatsu, "Structured Dictionary Learning with 2-D Non-
     separable Oversampled Lapped Transform," Proc. of 2014 IEEE 
     International Conference on Acoustics, Speech and Signal Processing
     (ICASSP), pp.2643-2647, May 2014
  
-  - Kousuke Furuya, Shintaro Hara and Shogo Muramatsu, "Boundary Operation
+* Kousuke Furuya, Shintaro Hara and Shogo Muramatsu, "Boundary Operation
     of 2-D non-separable Oversampled Lapped Transforms," Proc. of Asia 
     Pacific Signal and Information Proc. Assoc. Annual Summit and Conf.
     (APSIPA ASC), Nov. 2013
  
-  - Shogo Muramatsu and Natsuki Aizawa, "Image Restoration with 2-D 
+* Shogo Muramatsu and Natsuki Aizawa, "Image Restoration with 2-D 
     Non-separable Oversampled Lapped Transforms," Proc. of 2013 IEEE 
-    International Conference on Image Processing (ICIP), pp.1051-1055, 
+    International Conference on Image Process. (ICIP), pp.1051-1055, 
     Sep. 2013 
  
-  - Shogo Muramatsu and Natsuki Aizawa, "Lattice Structures for 2-D 
+* Shogo Muramatsu and Natsuki Aizawa, "Lattice Structures for 2-D 
     Non-separable Oversampled Lapped Transforms, Proc. of 2013 IEEE 
-    International Conference on Acoustics, Speech and Signal Processing
+    International Conference on Acoustics, Speech and Signal Process.
     (ICASSP), pp.5632-5636, May 2013 
  
-  * Acknowledgement
+## Acknowledgement
  
-    This project was supported by JSPS KAKENHI (JP23560443,JP26420347).
+This project was supported by JSPS KAKENHI (JP23560443,JP26420347,JP19H04135).
  
-  * Contributors
-  
-  - Developpers
-  -- Shintaro HARA,  2013-2014
-  -- Natsuki AIZAWA, 2013-2014
-  -- Kosuke FURUYA,  2013-2015
-  -- Naotaka YUKI,   2014-2015
-  
-  - Test contributers
-  -- Hidenori WATANABE, 2014-
-  -- Kota HORIUCHI,     2015-
-  -- Masaki ISHII,      2015-
-  -- Takumi KAWAMURA,   2015-
-  -- Kenta SEINO,       2015-
-  -- Satoshi NAGAYAMA,  2017-
-  -- Shota KAYAMORI,    2017-
-  -- Genki FUJII,       2017-
-  -- Naoki YAMAZAKI,    2017-
-  -- Yuhei KANEKO,      2017-
+## Contributors
 
+### Developpers
+* Shintaro HARA,  2013-2014
+* Natsuki AIZAWA, 2013-2014
+* Kosuke FURUYA,  2013-2015
+* Naotaka YUKI,   2014-2015
+ 
+### Test contributers
+* Hidenori WATANABE, 2014-
+* Kota HORIUCHI,     2015-
+* Masaki ISHII,      2015-
+* Takumi KAWAMURA,   2015-
+* Kenta SEINO,       2015-
+* Satoshi NAGAYAMA,  2017-
+* Shota KAYAMORI,    2017-
+* Genki FUJII,       2017-
+* Naoki YAMAZAKI,    2017-
+* Yuhei KANEKO,      2017-
+* Nawapan LAOCHAROENSUK, 2019-
+* Yusuke ARAI, 2020-
 </pre><h2 id="2">Add the package to search path</h2><p>Before using <b>SaivDr Package</b> , it is required to add the package top and 'mexcode' directory in the second layer to the MATLAB's search path. After moving to the top directory, execute the following command:</p><pre class="codeinput">setpath
 </pre><h2 id="3">Read a source image</h2><p>In the followings, an image restoration procedure with this package is described. As a preliminary, let us read an RGB picture as the source image.</p><pre class="codeinput">srcImg = imread(<span class="string">'peppers.png'</span>);
 width  = 256; <span class="comment">% Width</span>
@@ -369,7 +387,7 @@ resImg = step(ista,obsImg); <span class="comment">% STEP method of IstaImRestora
 </pre><pre class="codeoutput">
  ISTA
 (   1)  PSNR =  27.20 [dB] 
-(   2)  PSNR =  27.94 [dB] 
+(   2)  PSNR =  27.93 [dB] 
 (   3)  PSNR =  28.38 [dB] 
 (   4)  PSNR =  28.68 [dB] 
 (   5)  PSNR =  28.90 [dB] 
@@ -393,7 +411,7 @@ resImg = step(ista,obsImg); <span class="comment">% STEP method of IstaImRestora
 (  23)  PSNR =  29.96 [dB] 
 (  24)  PSNR =  29.98 [dB] 
 (  25)  PSNR =  29.99 [dB] 
-(  26)  PSNR =  30.01 [dB] 
+(  26)  PSNR =  30.00 [dB] 
 (  27)  PSNR =  30.02 [dB] 
 (  28)  PSNR =  30.03 [dB] 
 (  29)  PSNR =  30.04 [dB] 
@@ -403,13 +421,13 @@ resImg = step(ista,obsImg); <span class="comment">% STEP method of IstaImRestora
 (  33)  PSNR =  30.08 [dB] 
 (  34)  PSNR =  30.08 [dB] 
 (  35)  PSNR =  30.09 [dB] 
-(  36)  PSNR =  30.10 [dB] 
+(  36)  PSNR =  30.09 [dB] 
 (  37)  PSNR =  30.10 [dB] 
 (  38)  PSNR =  30.11 [dB] 
 (  39)  PSNR =  30.11 [dB] 
 (  40)  PSNR =  30.12 [dB] 
 (  41)  PSNR =  30.12 [dB] 
-(  42)  PSNR =  30.13 [dB] 
+(  42)  PSNR =  30.12 [dB] 
 (  43)  PSNR =  30.13 [dB] 
 (  44)  PSNR =  30.13 [dB] 
 (  45)  PSNR =  30.13 [dB] 
@@ -417,7 +435,7 @@ resImg = step(ista,obsImg); <span class="comment">% STEP method of IstaImRestora
 (  47)  PSNR =  30.14 [dB] 
 (  48)  PSNR =  30.14 [dB] 
 (  49)  PSNR =  30.14 [dB] 
-(  50)  PSNR =  30.14 [dB] 
+(  50)  PSNR =  30.15 [dB] 
 (  51)  PSNR =  30.15 [dB] 
 (  52)  PSNR =  30.15 [dB] 
 </pre><img vspace="5" hspace="5" src="quickstart_02.png" alt=""> <h2 id="13">Extract the final evaluation</h2><p>The object of StepMonitoringSystem, <i>stepmonitor</i> , stores the evaluation values calculated iteratively in ISTA as a vector. The GET method of <i>stepmonitor</i>  can be used to extract the number of iterations and the sequence of PSNRs.</p><pre class="codeinput">nItr  = get(stepmonitor,<span class="string">'nItr'</span>);
@@ -447,7 +465,7 @@ fprintf(<span class="string">'\n Wiener'</span>)
 psnr_wfdc = step(stepmonitor,wnfImg); <span class="comment">% STEP method of StepMonitoringSystem</span>
 </pre><pre class="codeoutput">
  Wiener
-(   1)  PSNR =  25.58 [dB] 
+(   1)  PSNR =  25.56 [dB] 
 </pre><h2 id="15">Compare deblurring performances</h2><p>In order to compare the deblurring performances between two methods, ISTA-based deblurring with NSOLT and Wiener filter, let us show the original, observed and two results in one figure together.</p><pre class="codeinput">hfig3 = figure(3);
 
 <span class="comment">% Original image x</span>
@@ -602,7 +620,7 @@ title([<span class="string">'{\bf u}\^ by Wiener: '</span> num2str(psnr_wfdc) <s
 % Information about *SaivDr Package* is given in Contents.m.
 % The HELP command can be used to see the contents as follows:
 
-help ./Contents
+type README.md
 
 %% Add the package to search path
 % Before using *SaivDr Package* , it is required to add the package top 

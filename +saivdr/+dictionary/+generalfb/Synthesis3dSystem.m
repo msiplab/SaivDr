@@ -9,7 +9,7 @@ classdef Synthesis3dSystem < saivdr.dictionary.AbstSynthesisSystem
     %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2015-2017, Shogo MURAMATSU
+    % Copyright (c) 2015-2020, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -59,7 +59,7 @@ classdef Synthesis3dSystem < saivdr.dictionary.AbstSynthesisSystem
     methods (Access = protected)
         
         function s = saveObjectImpl(obj)
-            s = saveObjectImpl@matlab.System(obj);
+            s = saveObjectImpl@saivdr.dictionary.AbstSynthesisSystem(obj);
             s.nChs = obj.nChs;
             s.SynthesisFilters = obj.SynthesisFilters;
             s.FilterDomain = obj.FilterDomain;
@@ -71,7 +71,7 @@ classdef Synthesis3dSystem < saivdr.dictionary.AbstSynthesisSystem
             obj.SynthesisFilters = s.SynthesisFilters;
             obj.FilterDomain = s.FilterDomain;
             obj.freqRes = s.freqRes;
-            loadObjectImpl@matlab.System(obj,s,wasLocked);
+            loadObjectImpl@saivdr.dictionary.AbstSynthesisSystem(obj,s,wasLocked);
         end
         
         function flag = isInactivePropertyImpl(obj,propertyName)
