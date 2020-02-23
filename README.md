@@ -137,10 +137,27 @@ Information about SaivDr Package is given in Contents.m. The HELP command can be
  
 ## References
 
+* Genki Fujii, Yuta Yoshida, Shogo Muramatsu, Shunsuke Ono, Samuel Choi,
+  Takeru Ota, Fumiaki Nin, Hiroshi HibinoTitle: "OCT Volumetric Data 
+  Restoration with Latent Distribution of Refractive Index,"
+  Proc. of 2019 IEEE International Conference on Image Processing (ICIP), 
+  pp.764-768, Sept. 2019
+
+* Yuhei Kaneko, Shogo Muramatsu, Hiroyasu Yasuda, Kiyoshi Hayasaka, 
+  Yu Otake, Shunsuke Ono, Masahiro Yukawa, "Convolutional-Sparse-Coded 
+  Dynamic Mode Decompsition and Its Application to River State Estimation," 
+  Proc. of 2019 IEEE International Conference on Acoustics, Speech and 
+  Signal Processing (ICASSP), pp.1872-1876, May 2019
+
+* Shogo Muramatsu, Samuel Choi, Shunske Ono, Takeru Ota, Fumiaki Nin, 
+  Hiroshi Hibino, "OCT Volumetric Data Restoration via Primal-Dual 
+  Plug-and-Play Method," Proc. of 2018 IEEE International Conference on 
+  Acoustics, Speech and Signal Processing (ICASSP), pp.801-805, Apr. 2018
+
 * Shogo Muramatsu, Kosuke Furuya and Naotaka Yuki, "Multidimensional
    Nonseparable Oversampled Lapped Transforms: Theory and Design,"
    IEEE Trans. on Signal Process., Vol.65, No.5, pp.1251-1264, 
-   DOI:10.1109/TSP.2016.2633240, March 2017. [SigPort](https://sigport.org/documents/multidimensional-nonseparable-oversampled-lapped-transforms-theory-and-design)
+   DOI:10.1109/TSP.2016.2633240, March 2017. 
 
 * Kota Horiuchi and Shogo Muramatsu, "Fast convolution technique for
    Non-separable Oversampled Lapped Transforms," Proc. of Asia 
@@ -168,7 +185,7 @@ Information about SaivDr Package is given in Contents.m. The HELP command can be
     Sep. 2013 
  
 * Shogo Muramatsu and Natsuki Aizawa, "Lattice Structures for 2-D 
-    Non-separable Oversampled Lapped Transforms, Proc. of 2013 IEEE 
+    Non-separable Oversampled Lapped Transforms," Proc. of 2013 IEEE 
     International Conference on Acoustics, Speech and Signal Process.
     (ICASSP), pp.5632-5636, May 2013 
  
@@ -196,4 +213,6 @@ This project was supported by JSPS KAKENHI (JP23560443,JP26420347,JP19H04135).
 * Naoki YAMAZAKI,    2017-
 * Yuhei KANEKO,      2017-
 * Nawapan LAOCHAROENSUK, 2019-
-* Yusuke ARAI, 2020-
+* Yusuke ARAI,       2020-
+* Yuya KODAMA,       2020-
+
