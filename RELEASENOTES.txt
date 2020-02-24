@@ -1,5 +1,29 @@
 * Release notes on Sparsity-Aware Image and Volumetric Data Restoration Package
 
+- SaivDr20200229
+-- (Major) Revised to use property 'NumberOfLevels' and deprecated to set nLevels argument for STEP methods
+--- saivdr.dictionary.*
+--- saivdr.restoration.*
+-- (Major) Start to support GPU Arrays
+--- saivdr.dictionary.*
+--- saivdr.degradation.*
+--- saivdr.restoration.*
+-- (Major) Enhanced volumetric data visualization
+--- saivdr.utility.VolumetricDataPlot
+--- saivdr.utility.VolumetricDataVisualizer
+-- (Major) Added new classes for restoration
+--- saivdr.restoration.ista
+--- saivdr.restoration.pds
+--- saivdr.restoration.metricproj
+--- saivdr.restoration.denoiser
+-- (Major)Revised specification, which may affects to the backward compatibility
+--- saivdr.sparserep.AbstSparseApproximationSystem
+-- (Minor) Added createAnalysisSystem and createSynthesisSystem method.
+--- saivdr.dictionary.nsoltx.NsoltFactory
+-- (Minor) Revised handling of mex functions
+--- saivdr.dictionary.nsoltx.*
+-- (Minor) QUICKSTART was revised by rewriting method calls as the OBJ.METHOD style
+
 - SaivDr20180827
 -- (Major) Added wrapper classes for parallel processing
 --- saivdr.dictionary.olaols.*

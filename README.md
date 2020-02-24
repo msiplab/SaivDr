@@ -3,7 +3,8 @@ System object definitions for sparsity-aware image and volumetric data restorati
 
 ## Summary
 
-SaivDr is an abbreviation of Sparsity-Aware Image and Volumetric Data Restoration. This package is developed in order for making
+SaivDr is an abbreviation of Sparsity-Aware Image and Volumetric Data Restoration. 
+This package is developed in order for making
 
 * Experiments,
 * Development and
@@ -11,7 +12,8 @@ SaivDr is an abbreviation of Sparsity-Aware Image and Volumetric Data Restoratio
 
 of sparsity-aware image and volumetric data restoraition algorithms simple.
 
-Information about SaivDr Package is given in Contents.m. The HELP command can be used to see the contents as follows:
+Information about SaivDr Package is given in Contents.m. The HELP command can 
+be used to see the contents as follows:
 
        >> help SaivDr
         
@@ -49,6 +51,12 @@ Information about SaivDr Package is given in Contents.m. The HELP command can be
                          |            |               +- utility
                          |            |
                          |            +- restoration -+- ista
+                         |            |               |
+                         |            |               +- pds
+                         |            |               |
+                         |            |               +- metricproj
+                         |            |               |
+                         |            |               +- denoiser
                          |            |
                          |            +- degradation -+- linearprocess
                          |            |               |
@@ -85,7 +93,13 @@ Information about SaivDr Package is given in Contents.m. The HELP command can be
                          |               +- utility
                          |
                          +- restoration -+- ista  
-                         |
+                         |               |
+                         |               +- pds
+                         |               |
+                         |               +- metricproj
+                         |               |
+                         |               +- denoiser
+                         |            
                          +- degradation -+- linearprocess
                          |               |
                          |               +- noiseprocess
@@ -94,7 +108,7 @@ Information about SaivDr Package is given in Contents.m. The HELP command can be
     
 ## Requirements
  
-* MATLAB R2013b or later. R2015b is recommended.
+* MATLAB R2013b or later. R2019b is recommended.
  * Signal Processing Toolbox
  * Image Processing Toolbox
  * Optimization Toolbox
@@ -137,61 +151,53 @@ Information about SaivDr Package is given in Contents.m. The HELP command can be
  
 ## References
 
-* Genki Fujii, Yuta Yoshida, Shogo Muramatsu, Shunsuke Ono, Samuel Choi,
-  Takeru Ota, Fumiaki Nin, Hiroshi HibinoTitle: "OCT Volumetric Data 
-  Restoration with Latent Distribution of Refractive Index,"
-  Proc. of 2019 IEEE International Conference on Image Processing (ICIP), 
-  pp.764-768, Sept. 2019
+* Genki Fujii, Yuta Yoshida, Shogo Muramatsu, Shunsuke Ono, Samuel Choi, Takeru Ota, 
+  Fumiaki Nin, Hiroshi HibinoTitle: "OCT Volumetric Data Restoration with 
+  Latent Distribution of Refractive Index," Proc. of 2019 IEEE International 
+  Conference on Image Processing (ICIP), pp.764-768, Sept. 2019
 
-* Yuhei Kaneko, Shogo Muramatsu, Hiroyasu Yasuda, Kiyoshi Hayasaka, 
-  Yu Otake, Shunsuke Ono, Masahiro Yukawa, "Convolutional-Sparse-Coded 
-  Dynamic Mode Decompsition and Its Application to River State Estimation," 
-  Proc. of 2019 IEEE International Conference on Acoustics, Speech and 
-  Signal Processing (ICASSP), pp.1872-1876, May 2019
+* Yuhei Kaneko, Shogo Muramatsu, Hiroyasu Yasuda, Kiyoshi Hayasaka, Yu Otake, 
+  Shunsuke Ono, Masahiro Yukawa, "Convolutional-Sparse-Coded Dynamic Mode Decompsition 
+  and Its Application to River State Estimation," Proc. of 2019 IEEE International 
+  Conference on Acoustics, Speech and Signal Processing (ICASSP), pp.1872-1876, 
+  May 2019
 
-* Shogo Muramatsu, Samuel Choi, Shunske Ono, Takeru Ota, Fumiaki Nin, 
-  Hiroshi Hibino, "OCT Volumetric Data Restoration via Primal-Dual 
-  Plug-and-Play Method," Proc. of 2018 IEEE International Conference on 
-  Acoustics, Speech and Signal Processing (ICASSP), pp.801-805, Apr. 2018
+* Shogo Muramatsu, Samuel Choi, Shunske Ono, Takeru Ota, Fumiaki Nin, Hiroshi Hibino,
+  "OCT Volumetric Data Restoration via Primal-Dual Plug-and-Play Method," Proc. 
+  of 2018 IEEE International Conference on Acoustics, Speech and Signal Processing 
+  (ICASSP), pp.801-805, Apr. 2018
 
-* Shogo Muramatsu, Kosuke Furuya and Naotaka Yuki, "Multidimensional
-   Nonseparable Oversampled Lapped Transforms: Theory and Design,"
-   IEEE Trans. on Signal Process., Vol.65, No.5, pp.1251-1264, 
-   DOI:10.1109/TSP.2016.2633240, March 2017. 
+* Shogo Muramatsu, Kosuke Furuya and Naotaka Yuki, "Multidimensional Nonseparable 
+  Oversampled Lapped Transforms: Theory and Design," IEEE Trans. on Signal Process., 
+  Vol.65, No.5, pp.1251-1264, DOI:10.1109/TSP.2016.2633240, March 2017. 
 
-* Kota Horiuchi and Shogo Muramatsu, "Fast convolution technique for
-   Non-separable Oversampled Lapped Transforms," Proc. of Asia 
-    Pacific Signal and Information Proc. Assoc. Annual Summit and Conf.
-    (APSIPA ASC), Dec. 2016
+* Kota Horiuchi and Shogo Muramatsu, "Fast convolution technique for Non-separable 
+  Oversampled Lapped Transforms," Proc. of Asia Pacific Signal and Information Proc. 
+  Assoc. Annual Summit and Conf. (APSIPA ASC), Dec. 2016
 
-* Shogo Muramatsu, Masaki Ishii and Zhiyu Chen, "Efficient Parameter 
-   Optimization for Example-Based Design of Non-separable Oversampled 
-   Lapped Transform," Proc. of 2016 IEEE Intl. Conf. on Image Process. 
-   (ICIP),  pp.3618-3622, Sept. 2016
+* Shogo Muramatsu, Masaki Ishii and Zhiyu Chen, "Efficient Parameter Optimization 
+  for Example-Based Design of Non-separable Oversampled Lapped Transform," Proc. 
+  of 2016 IEEE Intl. Conf. on Image Process. (ICIP),  pp.3618-3622, Sept. 2016
 
-* Shogo Muramatsu, "Structured Dictionary Learning with 2-D Non-
-    separable Oversampled Lapped Transform," Proc. of 2014 IEEE 
-    International Conference on Acoustics, Speech and Signal Processing
-    (ICASSP), pp.2643-2647, May 2014
+* Shogo Muramatsu, "Structured Dictionary Learning with 2-D Non-separable 
+  Oversampled Lapped Transform," Proc. of 2014 IEEE International Conference 
+  on Acoustics, Speech and Signal Processing (ICASSP), pp.2643-2647, May 2014
  
-* Kousuke Furuya, Shintaro Hara and Shogo Muramatsu, "Boundary Operation
-    of 2-D non-separable Oversampled Lapped Transforms," Proc. of Asia 
-    Pacific Signal and Information Proc. Assoc. Annual Summit and Conf.
-    (APSIPA ASC), Nov. 2013
+* Kousuke Furuya, Shintaro Hara and Shogo Muramatsu, "Boundary Operation of 
+  2-D non-separable Oversampled Lapped Transforms," Proc. of Asia Pacific Signal 
+  and Information Proc. Assoc. Annual Summit and Conf. (APSIPA ASC), Nov. 2013
  
-* Shogo Muramatsu and Natsuki Aizawa, "Image Restoration with 2-D 
-    Non-separable Oversampled Lapped Transforms," Proc. of 2013 IEEE 
-    International Conference on Image Process. (ICIP), pp.1051-1055, 
-    Sep. 2013 
+* Shogo Muramatsu and Natsuki Aizawa, "Image Restoration with 2-D Non-separable 
+  Oversampled Lapped Transforms," Proc. of 2013 IEEE International Conference 
+  on Image Process. (ICIP), pp.1051-1055, Sep. 2013 
  
-* Shogo Muramatsu and Natsuki Aizawa, "Lattice Structures for 2-D 
-    Non-separable Oversampled Lapped Transforms," Proc. of 2013 IEEE 
-    International Conference on Acoustics, Speech and Signal Process.
-    (ICASSP), pp.5632-5636, May 2013 
+* Shogo Muramatsu and Natsuki Aizawa, "Lattice Structures for 2-D Non-separable 
+  Oversampled Lapped Transforms," Proc. of 2013 IEEE International Conference 
+  on Acoustics, Speech and Signal Process. (ICASSP), pp.5632-5636, May 2013 
  
 ## Acknowledgement
  
-This project was supported by JSPS KAKENHI (JP23560443,JP26420347,JP19H04135).
+This work was supported by JSPS KAKENHI Grant Numbers JP23560443, JP26420347 and JP19H04135.
  
 ## Contributors
 

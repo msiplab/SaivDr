@@ -66,14 +66,15 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>Quickstart of <b>SaivDr Package</b></h1><!--introduction--><p>A brief introduction to image restroation with <b>SaivDr Package</b></p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Summary</a></li><li><a href="#2">Add the package to search path</a></li><li><a href="#3">Read a source image</a></li><li><a href="#4">Create a degradation system object</a></li><li><a href="#5">Generate an observed image</a></li><li><a href="#6">Create an NSOLT system object</a></li><li><a href="#7">Create an analysis and synthesis system object</a></li><li><a href="#10">Create an ISTA-based image restoration system object</a></li><li><a href="#11">Create a step monitor system object</a></li><li><a href="#12">Perform ISTA-based image restoration</a></li><li><a href="#13">Extract the final evaluation</a></li><li><a href="#14">Perform Wiener filtering</a></li><li><a href="#15">Compare deblurring performances</a></li><li><a href="#16">Release notes</a></li></ul></div><h2 id="1">Summary</h2><p><b>SaivDr</b> is an abbreviation of <i>Sparsity-Aware Image and Volume Data Restoration</i>. This package is developed in order for making</p><div><ul><li>Experiments,</li><li>Development and</li><li>Implementation</li></ul></div><p>of sparsity-aware image and volume data restoraition algorithms simple.</p><p>Information about <b>SaivDr Package</b> is given in Contents.m. The HELP command can be used to see the contents as follows:</p><pre class="codeinput">type <span class="string">README.md</span>
+  </style></head><body><div class="content"><h1>Quickstart of <b>SaivDr Package</b></h1><!--introduction--><p>A brief introduction to image restroation with <b>SaivDr Package</b></p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Summary</a></li><li><a href="#2">Add the package to search path</a></li><li><a href="#3">Read a source image</a></li><li><a href="#4">Create a degradation system object</a></li><li><a href="#5">Generate an observed image</a></li><li><a href="#6">Create an NSOLT system object</a></li><li><a href="#7">Create an analysis and synthesis system object</a></li><li><a href="#10">Create an ISTA-based image restoration system object</a></li><li><a href="#11">Create a step monitor system object</a></li><li><a href="#12">Perform ISTA-based image restoration</a></li><li><a href="#13">Extract the final evaluation</a></li><li><a href="#14">Perform Wiener filtering</a></li><li><a href="#15">Compare deblurring performances</a></li><li><a href="#16">Release notes</a></li></ul></div><h2 id="1">Summary</h2><p><b>SaivDr</b> is an abbreviation of <i>Sparsity-Aware Image and Volume Data Restoration</i>. This package is developed in order for making</p><div><ul><li>Experiments,</li><li>Development and</li><li>Implementationhel</li></ul></div><p>of sparsity-aware image and volume data restoraition algorithms simple.</p><p>Information about <b>SaivDr Package</b> is given in Contents.m. The HELP command can be used to see the contents as follows:</p><pre class="codeinput">type <span class="string">README.md</span>
 </pre><pre class="codeoutput">
 # SaivDr Package for MATLAB/Simulink
 System object definitions for sparsity-aware image and volumetric data restoration
 
 ## Summary
 
-SaivDr is an abbreviation of Sparsity-Aware Image and Volumetric Data Restoration. This package is developed in order for making
+SaivDr is an abbreviation of Sparsity-Aware Image and Volumetric Data Restoration. 
+This package is developed in order for making
 
 * Experiments,
 * Development and
@@ -81,7 +82,8 @@ SaivDr is an abbreviation of Sparsity-Aware Image and Volumetric Data Restoratio
 
 of sparsity-aware image and volumetric data restoraition algorithms simple.
 
-Information about SaivDr Package is given in Contents.m. The HELP command can be used to see the contents as follows:
+Information about SaivDr Package is given in Contents.m. The HELP command can 
+be used to see the contents as follows:
 
        &gt;&gt; help SaivDr
         
@@ -119,6 +121,12 @@ Information about SaivDr Package is given in Contents.m. The HELP command can be
                          |            |               +- utility
                          |            |
                          |            +- restoration -+- ista
+                         |            |               |
+                         |            |               +- pds
+                         |            |               |
+                         |            |               +- metricproj
+                         |            |               |
+                         |            |               +- denoiser
                          |            |
                          |            +- degradation -+- linearprocess
                          |            |               |
@@ -155,7 +163,13 @@ Information about SaivDr Package is given in Contents.m. The HELP command can be
                          |               +- utility
                          |
                          +- restoration -+- ista  
-                         |
+                         |               |
+                         |               +- pds
+                         |               |
+                         |               +- metricproj
+                         |               |
+                         |               +- denoiser
+                         |            
                          +- degradation -+- linearprocess
                          |               |
                          |               +- noiseprocess
@@ -164,7 +178,7 @@ Information about SaivDr Package is given in Contents.m. The HELP command can be
     
 ## Requirements
  
-* MATLAB R2013b or later. R2015b is recommended.
+* MATLAB R2013b or later. R2019b is recommended.
  * Signal Processing Toolbox
  * Image Processing Toolbox
  * Optimization Toolbox
@@ -207,61 +221,53 @@ Information about SaivDr Package is given in Contents.m. The HELP command can be
  
 ## References
 
-* Genki Fujii, Yuta Yoshida, Shogo Muramatsu, Shunsuke Ono, Samuel Choi,
-  Takeru Ota, Fumiaki Nin, Hiroshi HibinoTitle: "OCT Volumetric Data 
-  Restoration with Latent Distribution of Refractive Index,"
-  Proc. of 2019 IEEE International Conference on Image Processing (ICIP), 
-  pp.764-768, Sept. 2019
+* Genki Fujii, Yuta Yoshida, Shogo Muramatsu, Shunsuke Ono, Samuel Choi, Takeru Ota, 
+  Fumiaki Nin, Hiroshi HibinoTitle: "OCT Volumetric Data Restoration with 
+  Latent Distribution of Refractive Index," Proc. of 2019 IEEE International 
+  Conference on Image Processing (ICIP), pp.764-768, Sept. 2019
 
-* Yuhei Kaneko, Shogo Muramatsu, Hiroyasu Yasuda, Kiyoshi Hayasaka, 
-  Yu Otake, Shunsuke Ono, Masahiro Yukawa, "Convolutional-Sparse-Coded 
-  Dynamic Mode Decompsition and Its Application to River State Estimation," 
-  Proc. of 2019 IEEE International Conference on Acoustics, Speech and 
-  Signal Processing (ICASSP), pp.1872-1876, May 2019
+* Yuhei Kaneko, Shogo Muramatsu, Hiroyasu Yasuda, Kiyoshi Hayasaka, Yu Otake, 
+  Shunsuke Ono, Masahiro Yukawa, "Convolutional-Sparse-Coded Dynamic Mode Decompsition 
+  and Its Application to River State Estimation," Proc. of 2019 IEEE International 
+  Conference on Acoustics, Speech and Signal Processing (ICASSP), pp.1872-1876, 
+  May 2019
 
-* Shogo Muramatsu, Samuel Choi, Shunske Ono, Takeru Ota, Fumiaki Nin, 
-  Hiroshi Hibino, "OCT Volumetric Data Restoration via Primal-Dual 
-  Plug-and-Play Method," Proc. of 2018 IEEE International Conference on 
-  Acoustics, Speech and Signal Processing (ICASSP), pp.801-805, Apr. 2018
+* Shogo Muramatsu, Samuel Choi, Shunske Ono, Takeru Ota, Fumiaki Nin, Hiroshi Hibino,
+  "OCT Volumetric Data Restoration via Primal-Dual Plug-and-Play Method," Proc. 
+  of 2018 IEEE International Conference on Acoustics, Speech and Signal Processing 
+  (ICASSP), pp.801-805, Apr. 2018
 
-* Shogo Muramatsu, Kosuke Furuya and Naotaka Yuki, "Multidimensional
-   Nonseparable Oversampled Lapped Transforms: Theory and Design,"
-   IEEE Trans. on Signal Process., Vol.65, No.5, pp.1251-1264, 
-   DOI:10.1109/TSP.2016.2633240, March 2017. 
+* Shogo Muramatsu, Kosuke Furuya and Naotaka Yuki, "Multidimensional Nonseparable 
+  Oversampled Lapped Transforms: Theory and Design," IEEE Trans. on Signal Process., 
+  Vol.65, No.5, pp.1251-1264, DOI:10.1109/TSP.2016.2633240, March 2017. 
 
-* Kota Horiuchi and Shogo Muramatsu, "Fast convolution technique for
-   Non-separable Oversampled Lapped Transforms," Proc. of Asia 
-    Pacific Signal and Information Proc. Assoc. Annual Summit and Conf.
-    (APSIPA ASC), Dec. 2016
+* Kota Horiuchi and Shogo Muramatsu, "Fast convolution technique for Non-separable 
+  Oversampled Lapped Transforms," Proc. of Asia Pacific Signal and Information Proc. 
+  Assoc. Annual Summit and Conf. (APSIPA ASC), Dec. 2016
 
-* Shogo Muramatsu, Masaki Ishii and Zhiyu Chen, "Efficient Parameter 
-   Optimization for Example-Based Design of Non-separable Oversampled 
-   Lapped Transform," Proc. of 2016 IEEE Intl. Conf. on Image Process. 
-   (ICIP),  pp.3618-3622, Sept. 2016
+* Shogo Muramatsu, Masaki Ishii and Zhiyu Chen, "Efficient Parameter Optimization 
+  for Example-Based Design of Non-separable Oversampled Lapped Transform," Proc. 
+  of 2016 IEEE Intl. Conf. on Image Process. (ICIP),  pp.3618-3622, Sept. 2016
 
-* Shogo Muramatsu, "Structured Dictionary Learning with 2-D Non-
-    separable Oversampled Lapped Transform," Proc. of 2014 IEEE 
-    International Conference on Acoustics, Speech and Signal Processing
-    (ICASSP), pp.2643-2647, May 2014
+* Shogo Muramatsu, "Structured Dictionary Learning with 2-D Non-separable 
+  Oversampled Lapped Transform," Proc. of 2014 IEEE International Conference 
+  on Acoustics, Speech and Signal Processing (ICASSP), pp.2643-2647, May 2014
  
-* Kousuke Furuya, Shintaro Hara and Shogo Muramatsu, "Boundary Operation
-    of 2-D non-separable Oversampled Lapped Transforms," Proc. of Asia 
-    Pacific Signal and Information Proc. Assoc. Annual Summit and Conf.
-    (APSIPA ASC), Nov. 2013
+* Kousuke Furuya, Shintaro Hara and Shogo Muramatsu, "Boundary Operation of 
+  2-D non-separable Oversampled Lapped Transforms," Proc. of Asia Pacific Signal 
+  and Information Proc. Assoc. Annual Summit and Conf. (APSIPA ASC), Nov. 2013
  
-* Shogo Muramatsu and Natsuki Aizawa, "Image Restoration with 2-D 
-    Non-separable Oversampled Lapped Transforms," Proc. of 2013 IEEE 
-    International Conference on Image Process. (ICIP), pp.1051-1055, 
-    Sep. 2013 
+* Shogo Muramatsu and Natsuki Aizawa, "Image Restoration with 2-D Non-separable 
+  Oversampled Lapped Transforms," Proc. of 2013 IEEE International Conference 
+  on Image Process. (ICIP), pp.1051-1055, Sep. 2013 
  
-* Shogo Muramatsu and Natsuki Aizawa, "Lattice Structures for 2-D 
-    Non-separable Oversampled Lapped Transforms," Proc. of 2013 IEEE 
-    International Conference on Acoustics, Speech and Signal Process.
-    (ICASSP), pp.5632-5636, May 2013 
+* Shogo Muramatsu and Natsuki Aizawa, "Lattice Structures for 2-D Non-separable 
+  Oversampled Lapped Transforms," Proc. of 2013 IEEE International Conference 
+  on Acoustics, Speech and Signal Process. (ICASSP), pp.5632-5636, May 2013 
  
 ## Acknowledgement
  
-This project was supported by JSPS KAKENHI (JP23560443,JP26420347,JP19H04135).
+This work was supported by JSPS KAKENHI Grant Numbers JP23560443, JP26420347 and JP19H04135.
  
 ## Contributors
 
@@ -416,57 +422,57 @@ resImg = ista.step(obsImg); <span class="comment">% STEP method of IstaImRestora
 </pre><pre class="codeoutput">
  ISTA
 (   1)  PSNR =  27.20 [dB] 
-(   2)  PSNR =  27.93 [dB] 
+(   2)  PSNR =  27.94 [dB] 
 (   3)  PSNR =  28.38 [dB] 
 (   4)  PSNR =  28.68 [dB] 
 (   5)  PSNR =  28.90 [dB] 
 (   6)  PSNR =  29.07 [dB] 
-(   7)  PSNR =  29.21 [dB] 
-(   8)  PSNR =  29.32 [dB] 
+(   7)  PSNR =  29.20 [dB] 
+(   8)  PSNR =  29.31 [dB] 
 (   9)  PSNR =  29.41 [dB] 
-(  10)  PSNR =  29.49 [dB] 
-(  11)  PSNR =  29.56 [dB] 
-(  12)  PSNR =  29.62 [dB] 
-(  13)  PSNR =  29.67 [dB] 
-(  14)  PSNR =  29.71 [dB] 
-(  15)  PSNR =  29.75 [dB] 
-(  16)  PSNR =  29.79 [dB] 
-(  17)  PSNR =  29.82 [dB] 
-(  18)  PSNR =  29.85 [dB] 
-(  19)  PSNR =  29.88 [dB] 
-(  20)  PSNR =  29.90 [dB] 
-(  21)  PSNR =  29.92 [dB] 
-(  22)  PSNR =  29.94 [dB] 
-(  23)  PSNR =  29.96 [dB] 
-(  24)  PSNR =  29.98 [dB] 
-(  25)  PSNR =  29.99 [dB] 
-(  26)  PSNR =  30.00 [dB] 
-(  27)  PSNR =  30.02 [dB] 
-(  28)  PSNR =  30.03 [dB] 
-(  29)  PSNR =  30.04 [dB] 
-(  30)  PSNR =  30.05 [dB] 
-(  31)  PSNR =  30.06 [dB] 
-(  32)  PSNR =  30.07 [dB] 
-(  33)  PSNR =  30.08 [dB] 
-(  34)  PSNR =  30.08 [dB] 
-(  35)  PSNR =  30.09 [dB] 
+(  10)  PSNR =  29.48 [dB] 
+(  11)  PSNR =  29.55 [dB] 
+(  12)  PSNR =  29.61 [dB] 
+(  13)  PSNR =  29.66 [dB] 
+(  14)  PSNR =  29.70 [dB] 
+(  15)  PSNR =  29.74 [dB] 
+(  16)  PSNR =  29.78 [dB] 
+(  17)  PSNR =  29.81 [dB] 
+(  18)  PSNR =  29.84 [dB] 
+(  19)  PSNR =  29.87 [dB] 
+(  20)  PSNR =  29.89 [dB] 
+(  21)  PSNR =  29.91 [dB] 
+(  22)  PSNR =  29.93 [dB] 
+(  23)  PSNR =  29.95 [dB] 
+(  24)  PSNR =  29.97 [dB] 
+(  25)  PSNR =  29.98 [dB] 
+(  26)  PSNR =  29.99 [dB] 
+(  27)  PSNR =  30.01 [dB] 
+(  28)  PSNR =  30.02 [dB] 
+(  29)  PSNR =  30.03 [dB] 
+(  30)  PSNR =  30.04 [dB] 
+(  31)  PSNR =  30.05 [dB] 
+(  32)  PSNR =  30.06 [dB] 
+(  33)  PSNR =  30.07 [dB] 
+(  34)  PSNR =  30.07 [dB] 
+(  35)  PSNR =  30.08 [dB] 
 (  36)  PSNR =  30.09 [dB] 
-(  37)  PSNR =  30.10 [dB] 
-(  38)  PSNR =  30.11 [dB] 
-(  39)  PSNR =  30.11 [dB] 
-(  40)  PSNR =  30.12 [dB] 
-(  41)  PSNR =  30.12 [dB] 
+(  37)  PSNR =  30.09 [dB] 
+(  38)  PSNR =  30.10 [dB] 
+(  39)  PSNR =  30.10 [dB] 
+(  40)  PSNR =  30.11 [dB] 
+(  41)  PSNR =  30.11 [dB] 
 (  42)  PSNR =  30.12 [dB] 
-(  43)  PSNR =  30.13 [dB] 
-(  44)  PSNR =  30.13 [dB] 
-(  45)  PSNR =  30.13 [dB] 
-(  46)  PSNR =  30.14 [dB] 
-(  47)  PSNR =  30.14 [dB] 
-(  48)  PSNR =  30.14 [dB] 
-(  49)  PSNR =  30.14 [dB] 
-(  50)  PSNR =  30.15 [dB] 
-(  51)  PSNR =  30.15 [dB] 
-(  52)  PSNR =  30.15 [dB] 
+(  43)  PSNR =  30.12 [dB] 
+(  44)  PSNR =  30.12 [dB] 
+(  45)  PSNR =  30.12 [dB] 
+(  46)  PSNR =  30.13 [dB] 
+(  47)  PSNR =  30.13 [dB] 
+(  48)  PSNR =  30.13 [dB] 
+(  49)  PSNR =  30.13 [dB] 
+(  50)  PSNR =  30.13 [dB] 
+(  51)  PSNR =  30.14 [dB] 
+(  52)  PSNR =  30.14 [dB] 
 </pre><img vspace="5" hspace="5" src="quickstart_02.png" alt=""> <h2 id="13">Extract the final evaluation</h2><p>The object of StepMonitoringSystem, <i>stepmonitor</i> , stores the evaluation values calculated iteratively in ISTA as a vector. The GET method of <i>stepmonitor</i>  can be used to extract the number of iterations and the sequence of PSNRs.</p><pre class="codeinput">nItr  = stepmonitor.nItr;
 psnrs = stepmonitor.PSNRs;
 psnr_ista = psnrs(nItr);
@@ -494,7 +500,7 @@ fprintf(<span class="string">'\n Wiener'</span>)
 psnr_wfdc = stepmonitor.step(wnfImg); <span class="comment">% STEP method of StepMonitoringSystem</span>
 </pre><pre class="codeoutput">
  Wiener
-(   1)  PSNR =  25.56 [dB] 
+(   1)  PSNR =  25.51 [dB] 
 </pre><h2 id="15">Compare deblurring performances</h2><p>In order to compare the deblurring performances between two methods, ISTA-based deblurring with NSOLT and Wiener filter, let us show the original, observed and two results in one figure together.</p><pre class="codeinput">hfig3 = figure(3);
 
 <span class="comment">% Original image x</span>
@@ -519,6 +525,30 @@ title([<span class="string">'{\bf u}\^ by Wiener: '</span> num2str(psnr_wfdc) <s
 </pre><img vspace="5" hspace="5" src="quickstart_03.png" alt=""> <h2 id="16">Release notes</h2><p>RELEASENOTES.txt contains release notes on <b>SaivDr Package</b>.</p><pre class="codeinput">type(<span class="string">'RELEASENOTES.txt'</span>)
 </pre><pre class="codeoutput">
 * Release notes on Sparsity-Aware Image and Volumetric Data Restoration Package
+
+- SaivDr20200229
+-- (Major) Revised to use property 'NumberOfLevels' and deprecated to set nLevels argument for STEP methods
+--- saivdr.dictionary.*
+--- saivdr.restoration.*
+-- (Major) Start to support GPU Arrays
+--- saivdr.dictionary.*
+--- saivdr.degradation.*
+--- saivdr.restoration.*
+-- (Major) Enhanced volumetric data visualization
+--- saivdr.utility.VolumetricDataPlot
+--- saivdr.utility.VolumetricDataVisualizer
+-- (Major) Added new classes for restoration
+--- saivdr.restoration.ista
+--- saivdr.restoration.pds
+--- saivdr.restoration.metricproj
+--- saivdr.restoration.denoiser
+-- (Major)Revised specification, which may affects to the backward compatibility
+--- saivdr.sparserep.AbstSparseApproximationSystem
+-- (Minor) Added createAnalysisSystem and createSynthesisSystem method.
+--- saivdr.dictionary.nsoltx.NsoltFactory
+-- (Minor) Revised handling of mex functions
+--- saivdr.dictionary.nsoltx.*
+-- (Minor) QUICKSTART was revised by rewriting method calls as the OBJ.METHOD style
 
 - SaivDr20180827
 -- (Major) Added wrapper classes for parallel processing
@@ -642,7 +672,7 @@ title([<span class="string">'{\bf u}\^ by Wiener: '</span> num2str(psnr_wfdc) <s
 % 
 % * Experiments, 
 % * Development and 
-% * Implementation
+% * Implementationhel
 % 
 % of sparsity-aware image and volume data restoraition algorithms simple.
 %
