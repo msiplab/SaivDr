@@ -127,13 +127,14 @@ classdef LpPuFb2dTvmSystem < saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2dTypeISyste
         end
         
         function loadObjectImpl(obj,s,wasLocked)
-            loadObjectImpl@saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2dTypeISystem(obj,s,wasLocked);
             obj.lenx3 = s.lenx3;
             obj.lambdaueq = s.lambdaueq;            
             obj.x3_ = s.x3_;
             obj.ckTvm_ = s.ckTvm_;
             obj.omgs_ = matlab.System.loadObject(s.omgs_);
             obj.ops_  = matlab.System.loadObject(s.ops_);
+            %
+            loadObjectImpl@saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2dTypeISystem(obj,s,wasLocked);
             %
             obj.omgs_.release()
         end 

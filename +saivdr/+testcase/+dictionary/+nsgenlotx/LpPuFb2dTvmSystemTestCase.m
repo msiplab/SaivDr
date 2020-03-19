@@ -734,11 +734,17 @@ classdef LpPuFb2dTvmSystemTestCase < matlab.unittest.TestCase
             cloneLpPuFb = clone(testCase.lppufb);
             
             % Evaluation
-            testCase.verifyEqual(cloneLpPuFb,testCase.lppufb);
+            import matlab.unittest.constraints.IsEqualTo
+            import matlab.unittest.constraints.PublicPropertyComparator
+            %testCase.verifyEqual(cloneLpPuFb,testCase.lppufb);
+            testCase.verifyThat(cloneLpPuFb, IsEqualTo(testCase.lppufb,...
+            'Using', PublicPropertyComparator.supportingAllValues))            
             testCase.verifyFalse(cloneLpPuFb == testCase.lppufb);
             prpOrg = get(testCase.lppufb,'ParameterMatrixSet');
             prpCln = get(cloneLpPuFb,'ParameterMatrixSet');
-            testCase.verifyEqual(prpCln,prpOrg);
+            %testCase.verifyEqual(prpCln,prpOrg);
+            testCase.verifyThat(prpCln, IsEqualTo(prpOrg,...
+            'Using', PublicPropertyComparator.supportingAllValues))                        
             testCase.verifyFalse(prpCln == prpOrg);
             
             % Expected values

@@ -36,8 +36,8 @@ classdef OvsdLpPuFb2dTypeIVm1System < saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2dT
         end
         
         function loadObjectImpl(obj,s,wasLocked)
-            loadObjectImpl@saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2dTypeISystem(obj,s,wasLocked);
             obj.omgs_ = matlab.System.loadObject(s.omgs_);
+            loadObjectImpl@saivdr.dictionary.nsoltx.AbstOvsdLpPuFb2dTypeISystem(obj,s,wasLocked);
         end        
         
         function updateParameterMatrixSet_(obj)
