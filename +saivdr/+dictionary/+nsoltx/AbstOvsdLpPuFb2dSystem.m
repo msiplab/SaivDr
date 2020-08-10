@@ -210,7 +210,7 @@ classdef AbstOvsdLpPuFb2dSystem < matlab.System %#codegen
                 end
             end
             for iCol = 2:2:nCols % x-o
-                for iRow = 2:2:nRows % y-e
+                for iRow = 2:2:nRows % y-o
                     dctCoef = zeros(nRows,nCols);
                     dctCoef(iRow,iCol) = 1;
                     basisImage = dctY.'*dctCoef*dctX;
