@@ -1,11 +1,11 @@
 classdef nsoltBlockDct2LayerTestCase < matlab.unittest.TestCase
     %NSOLTBLOCKDCT2LAYERTESTCASE
     %
-    %   ベクトル配列をブロック配列を入力(nComponents=1のみサポート):
+    %   ベクトル配列をブロック配列を入力:
     %      (Stride(1)xnRows) x (Stride(2)xnCols) x nComponents x nSamples
     %
-    %   コンポーネント別に出力(nComponents=1のみサポート):
-    %      nRows x nCols x nDecs x nSamples
+    %   コンポーネント別に出力:
+    %      nRows x nCols x nLays x nDecs x nSamples
     %
     % Requirements: MATLAB R2020a
     %
