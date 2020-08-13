@@ -19,11 +19,12 @@ classdef nsoltInitialRotationLayer < nnet.layer.Layer
     %                Niigata, 950-2181, JAPAN
     %
     % http://msiplab.eng.niigata-u.ac.jp/
-    
+      
     properties
         % (Optional) Layer properties.
         NumberOfChannels
         DecimationFactor
+        NoDcLeakage
         Mus
         
         % Layer properties go here.
@@ -43,6 +44,7 @@ classdef nsoltInitialRotationLayer < nnet.layer.Layer
             addParameter(p,'Name','')
             addParameter(p,'Mus',[])
             addParameter(p,'Angles',[])
+            addParameter(p,'NoDcLeakage',false);
             parse(p,varargin{:})
             
             % Layer constructor function goes here.
@@ -51,21 +53,25 @@ classdef nsoltInitialRotationLayer < nnet.layer.Layer
             layer.Name = p.Results.Name;
             layer.Mus = p.Results.Mus;
             layer.Angles = p.Results.Angles;
-            layer.Description = "NSOLT initial rotation ( " ...
+            layer.NoDcLeakage = p.Results.NoDcLeakage;
+            layer.Description = "NSOLT initial rotation " ...
                 + "(ps,pa) = (" ...
                 + layer.NumberOfChannels(1) + "," ...
                 + layer.NumberOfChannels(2) + "), "  ...
                 + "(mv,mh) = (" ...
                 + layer.DecimationFactor(1) + "," ...
-                + layer.DecimationFactor(2) + ")" ...
-                + " )";
+                + layer.DecimationFactor(2) + ")";
             layer.Type = '';
-                        
+            
+            nChsTotal = sum(layer.NumberOfChannels);
+            nAngles = (nChsTotal-2)*nChsTotal/4;
             if isempty(layer.Angles)
-                nChsTotal = sum(layer.NumberOfChannels);
-                nAngles = (nChsTotal-2)*nChsTotal/4;
                 layer.Angles = zeros(nAngles,1);
             end
+            if length(layer.Angles)~=nAngles
+                error('Invalid # of angles')
+            end
+            
         end
         
         function Z = predict(layer, X)
@@ -77,8 +83,8 @@ classdef nsoltInitialRotationLayer < nnet.layer.Layer
             %         X1, ..., Xn - Input data (n: # of components)
             % Outputs:
             %         Z           - Outputs of layer forward function
-            %  
-            import saivdr.dcnn.*
+            %
+            import saivdr.dcnn.fcn_orthonormalmatrixgenerate
             
             % Layer forward function for prediction goes here.
             nrows = size(X,1);
@@ -94,6 +100,9 @@ classdef nsoltInitialRotationLayer < nnet.layer.Layer
                 muW = 1;
                 muU = 1;
             else
+                if layer.NoDcLeakage
+                    layer.Mus(1) = 1;
+                end
                 muW = layer.Mus(1:ps);
                 muU = layer.Mus(ps+1:end);
             end
@@ -101,6 +110,10 @@ classdef nsoltInitialRotationLayer < nnet.layer.Layer
                 W0 = eye(ps);
                 U0 = eye(pa);
             else
+                if layer.NoDcLeakage
+                    layer.Angles(1:length(layer.Angles)/2-1) = ...
+                        zeros(length(layer.Angles)/2-1,1,'like',layer.Angles);
+                end
                 anglesW = layer.Angles(1:length(layer.Angles)/2);
                 anglesU = layer.Angles(length(layer.Angles)/2+1:end);
                 W0 = fcn_orthonormalmatrixgenerate(anglesW,muW);
@@ -111,9 +124,9 @@ classdef nsoltInitialRotationLayer < nnet.layer.Layer
             Za = U0(:,1:nDecs/2)*Y(nDecs/2+1:end,:);
             Z = ipermute(reshape([Zs;Za],nChsTotal,nrows,ncols,nSamples),...
                 [3 1 2 4]);
-
+            
         end
-
+        
     end
     
 end

@@ -21,12 +21,13 @@ classdef nsoltFinalRotationLayer < nnet.layer.Layer
     %
     % http://msiplab.eng.niigata-u.ac.jp/
         
-    properties
+     properties
         % (Optional) Layer properties.
         NumberOfChannels
         DecimationFactor
+        NoDcLeakage
         Mus
-        
+
         % Layer properties go here.
     end
     
@@ -45,6 +46,7 @@ classdef nsoltFinalRotationLayer < nnet.layer.Layer
             addParameter(p,'Mus',[]);
             addParameter(p,'Angles',[]);
             addParameter(p,'Name','')
+            addParameter(p,'NoDcLeakage',false);
             parse(p,varargin{:})
             
             % Layer constructor function goes here.
@@ -52,24 +54,25 @@ classdef nsoltFinalRotationLayer < nnet.layer.Layer
             layer.DecimationFactor = p.Results.DecimationFactor;
             layer.Mus = p.Results.Mus;
             layer.Angles = p.Results.Angles;
+            layer.NoDcLeakage = p.Results.NoDcLeakage;
             layer.Name = p.Results.Name;
-            layer.Description = "NSOLT final rotation ( " ...
+            layer.Description = "NSOLT final rotation " ...
                 + "(ps,pa) = (" ...
                 + layer.NumberOfChannels(1) + "," ...
                 + layer.NumberOfChannels(2) + "), "  ...
                 + "(mv,mh) = (" ...
                 + layer.DecimationFactor(1) + "," ...
-                + layer.DecimationFactor(2) + ")" ...
-                + " )";
+                + layer.DecimationFactor(2) + ")";
             layer.Type = '';
-            
-                        
+
+            nChsTotal = sum(layer.NumberOfChannels);
+            nAngles = (nChsTotal-2)*nChsTotal/4;
             if isempty(layer.Angles)
-                nChsTotal = sum(layer.NumberOfChannels);
-                nAngles = (nChsTotal-2)*nChsTotal/4;
                 layer.Angles = zeros(nAngles,1);
             end
-            
+            if length(layer.Angles)~=nAngles
+                error('Invalid # of angles')
+            end
         end
         
         function Z = predict(layer, X)
@@ -82,7 +85,7 @@ classdef nsoltFinalRotationLayer < nnet.layer.Layer
             % Outputs:
             %         Z           - Outputs of layer forward function
             %  
-            import saivdr.dcnn.*
+            import saivdr.dcnn.fcn_orthonormalmatrixgenerate
             
             % Layer forward function for prediction goes here.
             nrows = size(X,1);
@@ -97,6 +100,9 @@ classdef nsoltFinalRotationLayer < nnet.layer.Layer
                 muW = 1;
                 muU = 1;
             else
+                if layer.NoDcLeakage
+                    layer.Mus(1) = 1;
+                end
                 muW = layer.Mus(1:ps);
                 muU = layer.Mus(ps+1:end);
             end
@@ -104,6 +110,10 @@ classdef nsoltFinalRotationLayer < nnet.layer.Layer
                 W0T = eye(ps);
                 U0T = eye(pa);
             else
+                if layer.NoDcLeakage
+                    layer.Angles(1:length(layer.Angles)/2-1) = ...
+                        zeros(length(layer.Angles)/2-1,1,'like',layer.Angles);
+                end
                 anglesW = layer.Angles(1:length(layer.Angles)/2);
                 anglesU = layer.Angles(length(layer.Angles)/2+1:end);
                 W0T = transpose(fcn_orthonormalmatrixgenerate(anglesW,muW));
@@ -113,10 +123,12 @@ classdef nsoltFinalRotationLayer < nnet.layer.Layer
             Ys = reshape(Y(1:ps,:,:,:),ps,nrows*ncols*nSamples);
             Ya = reshape(Y(ps+1:ps+pa,:,:,:),pa,nrows*ncols*nSamples);
             Zsa = [ W0T(1:nDecs/2,:)*Ys; U0T(1:nDecs/2,:)*Ya ];
-            Z = permute(reshape(Zsa,nDecs,nrows,ncols,nSamples),[2 3 1 4]);
+            Z = ipermute(reshape(Zsa,nDecs,nrows,ncols,nSamples),...
+                [3 1 2 4]);
         end
         
     end
+    
 
 end
 
