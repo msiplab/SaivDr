@@ -18,7 +18,7 @@ classdef nsoltBlockIdct2LayerTestCase < matlab.unittest.TestCase
     %                8050 2-no-cho Ikarashi, Nishi-ku,
     %                Niigata, 950-2181, JAPAN
     %
-    % http://msiplab.eng.niigata-u.ac.jp/    
+    % http://msiplab.eng.niigata-u.ac.jp/
     
     properties (TestParameter)
         stride = { [2 2], [4 4] };
@@ -33,7 +33,7 @@ classdef nsoltBlockIdct2LayerTestCase < matlab.unittest.TestCase
             layer = nsoltBlockIdct2Layer(...
                 'DecimationFactor',[2 2]);
             fprintf("\n --- Check layer for 2-D images ---\n");
-            checkLayer(layer,[8 8 4],'ObservationDimension',4)      
+            checkLayer(layer,[8 8 4],'ObservationDimension',4)
         end
     end
     
@@ -44,7 +44,7 @@ classdef nsoltBlockIdct2LayerTestCase < matlab.unittest.TestCase
             % Expected values
             expctdName = 'E0~';
             expctdDescription = "Block IDCT of size " ...
-                + stride(1) + "x"' + stride(2);
+                + stride(1) + "x" + stride(2);
             
             % Instantiation of target class
             import saivdr.dcnn.*
@@ -63,7 +63,7 @@ classdef nsoltBlockIdct2LayerTestCase < matlab.unittest.TestCase
         
         function testPredictGrayScale(testCase, ...
                 stride, height, width, datatype)
-                
+            
             import matlab.unittest.constraints.IsEqualTo
             import matlab.unittest.constraints.AbsoluteTolerance
             tolObj = AbsoluteTolerance(1e-6,single(1e-6));
@@ -97,6 +97,68 @@ classdef nsoltBlockIdct2LayerTestCase < matlab.unittest.TestCase
             
             % Actual values
             actualZ = layer.predict(X);
+            
+            % Evaluation
+            testCase.verifyInstanceOf(actualZ,datatype);
+            testCase.verifyThat(actualZ,...
+                IsEqualTo(expctdZ,'Within',tolObj));
+            
+        end
+        
+        function testPredictRgbColor(testCase, ...
+                stride, height, width, datatype)
+            
+            import matlab.unittest.constraints.IsEqualTo
+            import matlab.unittest.constraints.AbsoluteTolerance
+            tolObj = AbsoluteTolerance(1e-6,single(1e-6));
+            
+            % Parameters
+            nSamples = 8;
+            nrows = height/stride(1);
+            ncols = width/stride(2);
+            nDecs = prod(stride);
+            nComponents = 3; % RGB
+            Xr = rand(nrows,ncols,nDecs,nSamples,datatype);
+            Xg = rand(nrows,ncols,nDecs,nSamples,datatype);
+            Xb = rand(nrows,ncols,nDecs,nSamples,datatype);
+            
+            % Expected values
+            expctdZ = zeros(height,width,nComponents,datatype);
+            for iSample = 1:nSamples
+                Ar = reshape(permute(Xr(:,:,:,iSample),[3 1 2]),...
+                    nDecs*nrows,ncols);
+                Ag = reshape(permute(Xg(:,:,:,iSample),[3 1 2]),...
+                    nDecs*nrows,ncols);
+                Ab = reshape(permute(Xb(:,:,:,iSample),[3 1 2]),...
+                    nDecs*nrows,ncols);
+                Yr = blockproc(Ar,[nDecs 1],...
+                    @(x) testCase.permuteIdctCoefs_(x.data,stride));
+                Yg = blockproc(Ag,[nDecs 1],...
+                    @(x) testCase.permuteIdctCoefs_(x.data,stride));
+                Yb = blockproc(Ab,[nDecs 1],...
+                    @(x) testCase.permuteIdctCoefs_(x.data,stride));
+                expctdZ(:,:,1,iSample) = ...
+                    blockproc(Yr,...
+                    stride,...
+                    @(x) idct2(x.data));
+                expctdZ(:,:,2,iSample) = ...
+                    blockproc(Yg,...
+                    stride,...
+                    @(x) idct2(x.data));
+                expctdZ(:,:,3,iSample) = ...
+                    blockproc(Yb,...
+                    stride,...
+                    @(x) idct2(x.data));
+            end
+            
+            % Instantiation of target class
+            import saivdr.dcnn.*
+            layer = nsoltBlockIdct2Layer(...
+                'DecimationFactor',stride,...
+                'Name','E0~');
+            
+            % Actual values
+            actualZ = layer.predict(Xr,Xg,Xb);
             
             % Evaluation
             testCase.verifyInstanceOf(actualZ,datatype);

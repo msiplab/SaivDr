@@ -66,13 +66,13 @@ classdef nsoltBlockDct2Layer < nnet.layer.Layer
             
         end
         
-        function Z = predict(layer, X)
+        function varargout = predict(layer, X)
             % Forward input data through the layer at prediction time and
             % output the result.
             %
             % Inputs:
             %         layer       - Layer to forward propagate through
-            %         X1, ..., Xn - Input data
+            %         X           - Input data
             % Outputs:
             %         Z1, ..., Zm - Outputs of layer forward function
             
@@ -90,28 +90,20 @@ classdef nsoltBlockDct2Layer < nnet.layer.Layer
             nSamples = size(X,4);
             %
             A = zeros(nDecs,nRows,nCols,nSamples,'like',X);
-            for iSample = 1:nSamples
-                for iComponent = 1:nComponents
+            for iComponent = 1:nComponents
+                for iSample = 1:nSamples
                     for iCol = 1:nCols
                         for iRow = 1:nRows
                             x = X((iRow-1)*decV+1:iRow*decV,...
                                 (iCol-1)*decH+1:iCol*decH,...
                                 iComponent,iSample);
-                            %coefs = Cv_*x*Ch_T;
-                            %cee = coefs(1:ceil(decV/2),    1:ceil(decH/2));
-                            %coo = coefs(ceil(decV/2)+1:end,ceil(decH/2)+1:end);
-                            %coe = coefs(ceil(decV/2)+1:end,1:ceil(decH/2));
-                            %ceo = coefs(1:ceil(decV/2),    ceil(decH/2)+1:end);
-                            %z =  [ cee(:); coo(:); coe(:); ceo(:) ];
-                            %
                             A(:,iRow,iCol,iSample) = Cvh_*x(:);
                         end
                     end
                 end
+                varargout{iComponent} = permute(A,[2 3 1 4]);                
             end
-            Z = permute(A,[2 3 1 4]);
-        end        
-
+        end
     end
     
 end

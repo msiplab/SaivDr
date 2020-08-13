@@ -6,7 +6,7 @@ classdef nsoltBlockDct2LayerTestCase < matlab.unittest.TestCase
     %
     %   コンポーネント別に出力(nComponents=1のみサポート):
     %      nRows x nCols x nDecs x nSamples
-    %    
+    %
     % Requirements: MATLAB R2020a
     %
     % Copyright (c) 2020, Shogo MURAMATSU
@@ -19,7 +19,7 @@ classdef nsoltBlockDct2LayerTestCase < matlab.unittest.TestCase
     %                Niigata, 950-2181, JAPAN
     %
     % http://msiplab.eng.niigata-u.ac.jp/
-
+    
     properties (TestParameter)
         stride = { [2 2], [4 4] };
         datatype = { 'single', 'double' };
@@ -44,7 +44,7 @@ classdef nsoltBlockDct2LayerTestCase < matlab.unittest.TestCase
             % Expected values
             expctdName = 'E0';
             expctdDescription = "Block DCT of size " ...
-                + stride(1) + "x"' + stride(2);
+                + stride(1) + "x" + stride(2);
             
             % Instantiation of target class
             import saivdr.dcnn.*
@@ -63,7 +63,7 @@ classdef nsoltBlockDct2LayerTestCase < matlab.unittest.TestCase
         
         function testPredictGrayScale(testCase, ...
                 stride, height, width, datatype)
-                
+            
             import matlab.unittest.constraints.IsEqualTo
             import matlab.unittest.constraints.AbsoluteTolerance
             tolObj = AbsoluteTolerance(1e-6,single(1e-6));
@@ -86,7 +86,7 @@ classdef nsoltBlockDct2LayerTestCase < matlab.unittest.TestCase
                 A = blockproc(Y,...
                     stride,@testCase.permuteDctCoefs_);
                 expctdZ(:,:,:,iSample) = ...
-                    permute(reshape(A,ndecs,nrows,ncols),[2 3 1]);                
+                    permute(reshape(A,ndecs,nrows,ncols),[2 3 1]);
             end
             
             % Instantiation of target class
@@ -104,7 +104,71 @@ classdef nsoltBlockDct2LayerTestCase < matlab.unittest.TestCase
                 IsEqualTo(expctdZ,'Within',tolObj));
             
         end
-       
+        
+        function testPredictRgbColor(testCase, ...
+                stride, height, width, datatype)
+            
+            import matlab.unittest.constraints.IsEqualTo
+            import matlab.unittest.constraints.AbsoluteTolerance
+            tolObj = AbsoluteTolerance(1e-6,single(1e-6));
+            
+            % Parameters
+            nSamples = 8;
+            nComponents = 3; % RGB
+            X = rand(height,width,nComponents,nSamples, datatype);
+            
+            % Expected values
+            nrows = height/stride(1);
+            ncols = width/stride(2);
+            ndecs = prod(stride);
+            expctdZr = zeros(nrows,ncols,ndecs,nSamples,datatype);
+            expctdZg = zeros(nrows,ncols,ndecs,nSamples,datatype);
+            expctdZb = zeros(nrows,ncols,ndecs,nSamples,datatype);
+            for iSample = 1:nSamples
+                % Block DCT
+                Yr = blockproc(X(:,:,1,iSample),...
+                    stride,@(x) dct2(x.data));
+                Yg = blockproc(X(:,:,2,iSample),...
+                    stride,@(x) dct2(x.data));
+                Yb = blockproc(X(:,:,3,iSample),...
+                    stride,@(x) dct2(x.data));
+                % Rearrange the DCT Coefs.
+                Ar = blockproc(Yr,...
+                    stride,@testCase.permuteDctCoefs_);
+                Ag = blockproc(Yg,...
+                    stride,@testCase.permuteDctCoefs_);
+                Ab = blockproc(Yb,...
+                    stride,@testCase.permuteDctCoefs_);
+                expctdZr(:,:,:,iSample) = ...
+                    permute(reshape(Ar,ndecs,nrows,ncols),[2 3 1]);
+                expctdZg(:,:,:,iSample) = ...
+                    permute(reshape(Ag,ndecs,nrows,ncols),[2 3 1]);
+                expctdZb(:,:,:,iSample) = ...
+                    permute(reshape(Ab,ndecs,nrows,ncols),[2 3 1]);
+            end
+            
+            % Instantiation of target class
+            import saivdr.dcnn.*
+            layer = nsoltBlockDct2Layer(...
+                'DecimationFactor',stride,...
+                'Name','E0');
+            
+            % Actual values
+            [actualZr,actualZg,actualZb] = layer.predict(X);
+            
+            % Evaluation
+            testCase.verifyInstanceOf(actualZr,datatype);
+            testCase.verifyInstanceOf(actualZg,datatype);            
+            testCase.verifyInstanceOf(actualZb,datatype);
+            testCase.verifyThat(actualZr,...
+                IsEqualTo(expctdZr,'Within',tolObj));
+            testCase.verifyThat(actualZg,...
+                IsEqualTo(expctdZg,'Within',tolObj));
+            testCase.verifyThat(actualZb,...
+                IsEqualTo(expctdZb,'Within',tolObj));            
+            
+        end
+        
     end
     
     methods (Static, Access = private)

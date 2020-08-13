@@ -66,7 +66,7 @@ classdef nsoltBlockIdct2Layer < nnet.layer.Layer
             
         end
         
-        function Z = predict(layer, X)
+        function Z = predict(layer, varargin)
             % Forward input data through the layer at prediction time and
             % output the result.
             %
@@ -77,39 +77,26 @@ classdef nsoltBlockIdct2Layer < nnet.layer.Layer
             %         Z1, ..., Zm - Outputs of layer forward function
             
             % Layer forward function for prediction goes here.
+            nComponents = nargin - 1;
             decFactor = layer.DecimationFactor;
             decV = decFactor(1);
             decH = decFactor(2);
-            %Cv_T = layer.Cv.';
-            %Ch_ = layer.Ch;
             Cvh_T = layer.Cvh.';
-            nRows = size(X,1);
-            nCols = size(X,2);
-            nComponents = 1;
-            nSamples = size(X,4);
-            %nQDecsee = ceil(decV/2)*ceil(decH/2);
-            %nQDecsoo = floor(decV/2)*floor(decH/2);
-            %nQDecsoe = floor(decV/2)*ceil(decH/2);
-            %
-            height = decFactor(1)*nRows;
-            width = decFactor(2)*nCols;
-            Z = zeros(height,width,nComponents,nSamples,'like',X);
-            A = permute(X,[3 1 2 4]);
-            for iSample = 1:nSamples
-                for iComponent = 1:nComponents
+            for iComponent = 1:nComponents
+                X = varargin{iComponent};
+                if iComponent == 1
+                    nRows = size(X,1);
+                    nCols = size(X,2);
+                    height = decFactor(1)*nRows;
+                    width = decFactor(2)*nCols;
+                    nSamples = size(X,4);
+                    Z = zeros(height,width,nComponents,nSamples,'like',X);
+                end
+                A = permute(X,[3 1 2 4]);
+                for iSample = 1:nSamples
                     for iCol = 1:nCols
                         for iRow = 1:nRows
                             coefs = A(:,iRow,iCol,iSample);
-                            %cee = coefs(         1:  nQDecsee);
-                            %coo = coefs(nQDecsee+1:nQDecsee+nQDecsoo);
-                            %coe = coefs(nQDecsee+nQDecsoo+1:nQDecsee+nQDecsoo+nQDecsoe);
-                            %ceo = coefs(nQDecsee+nQDecsoo+nQDecsoe+1:end);
-                            %x = [
-                            %    reshape(cee,ceil(decV/2),ceil(decH/2)) reshape(ceo,ceil(decV/2),floor(decH/2));
-                            %    reshape(coe,floor(decV/2),ceil(decH/2)) reshape(coo,floor(decV/2),floor(decH/2))
-                            %    ];
-                            %
-                            %z = Cv_T*x*Ch_;
                             Z((iRow-1)*decV+1:iRow*decV,...
                                 (iCol-1)*decH+1:iCol*decH,...
                                 iComponent,iSample) = ...
@@ -119,8 +106,7 @@ classdef nsoltBlockIdct2Layer < nnet.layer.Layer
                 end
             end
         end
-        
     end
-
+    
 end
 
