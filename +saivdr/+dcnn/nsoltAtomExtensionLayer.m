@@ -105,7 +105,6 @@ classdef nsoltAtomExtensionLayer < nnet.layer.Layer
                     layer.TargetChannels))
             end
             % Block butterfly
-            % Block butterfly
             Ys = Y(1:ps,:,:,:);
             Ya = Y(ps+1:ps+pa,:,:,:);
             Y =  [ Ys+Ya ; Ys-Ya ];
@@ -114,67 +113,6 @@ classdef nsoltAtomExtensionLayer < nnet.layer.Layer
         end
         
     end
-    
-    methods (Static, Access = private)
-        
-        function value = permuteIdctCoefs_(x,blockSize)
-            coefs = x;
-            decY_ = blockSize(1);
-            decX_ = blockSize(2);
-            nQDecsee = ceil(decY_/2)*ceil(decX_/2);
-            nQDecsoo = floor(decY_/2)*floor(decX_/2);
-            nQDecsoe = floor(decY_/2)*ceil(decX_/2);
-            cee = coefs(         1:  nQDecsee);
-            coo = coefs(nQDecsee+1:nQDecsee+nQDecsoo);
-            coe = coefs(nQDecsee+nQDecsoo+1:nQDecsee+nQDecsoo+nQDecsoe);
-            ceo = coefs(nQDecsee+nQDecsoo+nQDecsoe+1:end);
-            value = zeros(decY_,decX_,'like',x);
-            value(1:2:decY_,1:2:decX_) = reshape(cee,ceil(decY_/2),ceil(decX_/2));
-            value(2:2:decY_,2:2:decX_) = reshape(coo,floor(decY_/2),floor(decX_/2));
-            value(2:2:decY_,1:2:decX_) = reshape(coe,floor(decY_/2),ceil(decX_/2));
-            value(1:2:decY_,2:2:decX_) = reshape(ceo,ceil(decY_/2),floor(decX_/2));
-        end
-        
-        function matrix = orthmtxgen_(angles,mus,pdAng)
-            
-            if nargin < 3
-                pdAng = 0;
-            end
-            
-            if isempty(angles)
-                matrix = diag(mus);
-            else
-                nDim_ = (1+sqrt(1+8*length(angles)))/2;
-                matrix = eye(nDim_);
-                iAng = 1;
-                for iTop=1:nDim_-1
-                    vt = matrix(iTop,:);
-                    for iBtm=iTop+1:nDim_
-                        angle = angles(iAng);
-                        if iAng == pdAng
-                            angle = angle + pi/2;
-                        end
-                        c = cos(angle); %
-                        s = sin(angle); %
-                        vb = matrix(iBtm,:);
-                        %
-                        u  = s*(vt + vb);
-                        vt = (c + s)*vt;
-                        vb = (c - s)*vb;
-                        vt = vt - u;
-                        if iAng == pdAng
-                            matrix = 0*matrix;
-                        end
-                        matrix(iBtm,:) = vb + u;
-                        %
-                        iAng = iAng + 1;
-                    end
-                    matrix(iTop,:) = vt;
-                end
-                matrix = diag(mus)*matrix;
-            end
-        end
 
-    end
 end
 
