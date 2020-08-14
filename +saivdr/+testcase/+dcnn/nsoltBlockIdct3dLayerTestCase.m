@@ -1,11 +1,11 @@
-classdef nsoltBlockDct3LayerTestCase < matlab.unittest.TestCase
-    %NSOLTBLOCKDCT3LAYERTESTCASE
+classdef nsoltBlockIdct3dLayerTestCase < matlab.unittest.TestCase
+    %NSOLTBLOCKIDCT3LAYERTESTCASE
     %
-    %   ベクトル配列をブロック配列を入力(nComponents=1のみサポート):
-    %      (Stride(1)xnRows) x (Stride(2)xnCols) x nComponents x nSamples
-    %
-    %   コンポーネント別に出力(nComponents=1のみサポート):
+    %   コンポーネント別に入力(nComponents=1のみサポート):
     %      nRows x nCols x nDecs x nSamples
+    %
+    %   ベクトル配列をブロック配列にして出力(nComponents=1のみサポート):
+    %      (Stride(1)xnRows) x (Stride(2)xnCols) x nComponents x nSamples
     %
     % Requirements: MATLAB R2020a
     %
@@ -25,13 +25,13 @@ classdef nsoltBlockDct3LayerTestCase < matlab.unittest.TestCase
         datatype = { 'single', 'double' };
         height = struct('small', 8,'medium', 16, 'large', 32);
         width = struct('small', 8,'medium', 16, 'large', 32);
-        depth = struct('small', 8,'medium', 16, 'large', 32);
+        depth = struct('small', 8,'medium', 16, 'large', 32);        
     end
     
     methods (TestClassTeardown)
         function finalCheck(~)
             import saivdr.dcnn.*
-            layer = nsoltBlockDct3Layer(...
+            layer = nsoltBlockIdct3dLayer(...
                 'DecimationFactor',[2 2 2]);
             fprintf("\n --- Check layer for 3-D images ---\n");
             checkLayer(layer,[8 8 8 8],'ObservationDimension',5)
@@ -43,13 +43,13 @@ classdef nsoltBlockDct3LayerTestCase < matlab.unittest.TestCase
         function testConstructor(testCase, stride)
             
             % Expected values
-            expctdName = 'E0';
-            expctdDescription = "Block DCT of size " ...
+            expctdName = 'E0~';
+            expctdDescription = "Block IDCT of size " ...
                 + stride(1) + "x" + stride(2) + "x" + stride(3);
             
             % Instantiation of target class
             import saivdr.dcnn.*
-            layer = nsoltBlockDct3Layer(...
+            layer = nsoltBlockIdct3dLayer(...
                 'DecimationFactor',stride,...
                 'Name',expctdName);
             
@@ -64,38 +64,37 @@ classdef nsoltBlockDct3LayerTestCase < matlab.unittest.TestCase
         
         function testPredict(testCase, ...
                 stride, height, width, depth, datatype)
-            
+            import saivdr.dictionary.utility.Direction            
             import matlab.unittest.constraints.IsEqualTo
             import matlab.unittest.constraints.AbsoluteTolerance
             tolObj = AbsoluteTolerance(1e-6,single(1e-6));
             
             % Parameters
             nSamples = 8;
-            nComponents = 1;
-            X = rand(height,width,depth, nComponents,nSamples, datatype);
+            nrows = height/stride(Direction.VERTICAL);
+            ncols = width/stride(Direction.HORIZONTAL);
+            nlays = depth/stride(Direction.DEPTH);            
+            nDecs = prod(stride);
+            X = rand(nrows,ncols,nlays,nDecs,nSamples,datatype);
             
             % Expected values
-            nrows = height/stride(1);
-            ncols = width/stride(2);
-            nlays = depth/stride(3);
-            ndecs = prod(stride);
-            expctdZ = zeros(nrows,ncols,nlays,ndecs,nSamples,datatype);
+            expctdZ = zeros(height,width,depth,datatype);
+            E0_T = transpose(testCase.getMatrixE0_(stride));
             for iSample = 1:nSamples
-                % Block DCT
-                Y = testCase.vol2col_(X(:,:,:,1,iSample),stride,...
+                % Rearrange the DCT coefs
+                A = reshape(permute(X(:,:,:,:,iSample),[4 1 2 3]),...
+                    nDecs,nrows*ncols*nlays);
+                % Block IDCT
+                Y = E0_T*A;
+                expctdZ(:,:,:,1,iSample) = testCase.col2vol_(Y,stride,...
                     [nrows,ncols,nlays]);
-                E0 = testCase.getMatrixE0_(stride);
-                A = E0*Y;
-                % Rearrange the DCT Coefs.
-                expctdZ(:,:,:,:,iSample) = ...
-                    permute(reshape(A,ndecs,nrows,ncols,nlays),[2 3 4 1]);
             end
             
             % Instantiation of target class
             import saivdr.dcnn.*
-            layer = nsoltBlockDct3Layer(...
+            layer = nsoltBlockIdct3dLayer(...
                 'DecimationFactor',stride,...
-                'Name','E0');
+                'Name','E0~');
             
             % Actual values
             actualZ = layer.predict(X);
@@ -106,22 +105,22 @@ classdef nsoltBlockDct3LayerTestCase < matlab.unittest.TestCase
                 IsEqualTo(expctdZ,'Within',tolObj));
             
         end
-
+        
     end
     
     methods (Static, Access = private)
         
-        function y = vol2col_(x,decFactor,nBlocks)
+        function x = col2vol_(y,decFactor,nBlocks)
             import saivdr.dictionary.utility.Direction
-            decY = decFactor(1);
-            decX = decFactor(2);
-            decZ = decFactor(3);
-            nRows_ = nBlocks(1);
-            nCols_ = nBlocks(2);
-            nLays_ = nBlocks(3);
+            decY = decFactor(Direction.VERTICAL);
+            decX = decFactor(Direction.HORIZONTAL);
+            decZ = decFactor(Direction.DEPTH);
+            nRows_ = nBlocks(Direction.VERTICAL);
+            nCols_ = nBlocks(Direction.HORIZONTAL);
+            nLays_ = nBlocks(Direction.DEPTH);
             
             idx = 0;
-            y = zeros(decY*decX*decZ,nRows_*nCols_*nLays_);
+            x = zeros(decY*nRows_,decX*nCols_,decZ*nLays_);
             for iLay = 1:nLays_
                 idxZ = iLay*decZ;
                 for iCol = 1:nCols_
@@ -129,22 +128,22 @@ classdef nsoltBlockDct3LayerTestCase < matlab.unittest.TestCase
                     for iRow = 1:nRows_
                         idxY = iRow*decY;
                         idx = idx + 1;
-                        blockData = x(...
-                            idxY-decY+1:idxY,...
+                        blockData = y(:,idx);
+                        x(idxY-decY+1:idxY,...
                             idxX-decX+1:idxX,...
-                            idxZ-decZ+1:idxZ);
-                        y(:,idx) = blockData(:);
+                            idxZ-decZ+1:idxZ) = ...
+                            reshape(blockData,decY,decX,decZ);
                     end
                 end
             end
             
         end
         
-        function value = getMatrixE0_(decFactor)
+         function value = getMatrixE0_(decFactor)
             import saivdr.dictionary.utility.Direction
-            decY_ = decFactor(1);
-            decX_ = decFactor(2);
-            decZ_ = decFactor(3);
+            decY_ = decFactor(Direction.VERTICAL);
+            decX_ = decFactor(Direction.HORIZONTAL);
+            decZ_ = decFactor(Direction.DEPTH);
             nElmBi = decY_*decX_*decZ_;
             coefs = zeros(nElmBi);
             iElm = 1;
@@ -281,8 +280,6 @@ classdef nsoltBlockDct3LayerTestCase < matlab.unittest.TestCase
             value = coefs;
         end
         
-        
     end
-    
 end
 

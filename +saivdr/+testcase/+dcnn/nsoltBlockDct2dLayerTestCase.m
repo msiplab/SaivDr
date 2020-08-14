@@ -1,5 +1,5 @@
-classdef nsoltBlockDct2LayerTestCase < matlab.unittest.TestCase
-    %NSOLTBLOCKDCT2LAYERTESTCASE
+classdef nsoltBlockDct2dLayerTestCase < matlab.unittest.TestCase
+    %NSOLTBLOCKDCT2DLAYERTESTCASE
     %
     %   ベクトル配列をブロック配列を入力:
     %      (Stride(1)xnRows) x (Stride(2)xnCols) x nComponents x nSamples
@@ -48,7 +48,7 @@ classdef nsoltBlockDct2LayerTestCase < matlab.unittest.TestCase
             
             % Instantiation of target class
             import saivdr.dcnn.*
-            layer = nsoltBlockDct2Layer(...
+            layer = nsoltBlockDct2dLayer(...
                 'DecimationFactor',stride,...
                 'Name',expctdName);
             
@@ -63,7 +63,7 @@ classdef nsoltBlockDct2LayerTestCase < matlab.unittest.TestCase
         
         function testPredictGrayScale(testCase, ...
                 stride, height, width, datatype)
-            
+            import saivdr.dictionary.utility.Direction                                                
             import matlab.unittest.constraints.IsEqualTo
             import matlab.unittest.constraints.AbsoluteTolerance
             tolObj = AbsoluteTolerance(1e-6,single(1e-6));
@@ -74,8 +74,8 @@ classdef nsoltBlockDct2LayerTestCase < matlab.unittest.TestCase
             X = rand(height,width,nComponents,nSamples, datatype);
             
             % Expected values
-            nrows = height/stride(1);
-            ncols = width/stride(2);
+            nrows = height/stride(Direction.VERTICAL);
+            ncols = width/stride(Direction.HORIZONTAL);
             ndecs = prod(stride);
             expctdZ = zeros(nrows,ncols,ndecs,nSamples,datatype);
             for iSample = 1:nSamples
@@ -91,7 +91,7 @@ classdef nsoltBlockDct2LayerTestCase < matlab.unittest.TestCase
             
             % Instantiation of target class
             import saivdr.dcnn.*
-            layer = nsoltBlockDct2Layer(...
+            layer = nsoltBlockDct2dLayer(...
                 'DecimationFactor',stride,...
                 'Name','E0');
             
@@ -107,7 +107,7 @@ classdef nsoltBlockDct2LayerTestCase < matlab.unittest.TestCase
         
         function testPredictRgbColor(testCase, ...
                 stride, height, width, datatype)
-            
+            import saivdr.dictionary.utility.Direction                                                
             import matlab.unittest.constraints.IsEqualTo
             import matlab.unittest.constraints.AbsoluteTolerance
             tolObj = AbsoluteTolerance(1e-6,single(1e-6));
@@ -118,8 +118,8 @@ classdef nsoltBlockDct2LayerTestCase < matlab.unittest.TestCase
             X = rand(height,width,nComponents,nSamples, datatype);
             
             % Expected values
-            nrows = height/stride(1);
-            ncols = width/stride(2);
+            nrows = height/stride(Direction.VERTICAL);
+            ncols = width/stride(Direction.HORIZONTAL);
             ndecs = prod(stride);
             expctdZr = zeros(nrows,ncols,ndecs,nSamples,datatype);
             expctdZg = zeros(nrows,ncols,ndecs,nSamples,datatype);
@@ -149,7 +149,7 @@ classdef nsoltBlockDct2LayerTestCase < matlab.unittest.TestCase
             
             % Instantiation of target class
             import saivdr.dcnn.*
-            layer = nsoltBlockDct2Layer(...
+            layer = nsoltBlockDct2dLayer(...
                 'DecimationFactor',stride,...
                 'Name','E0');
             

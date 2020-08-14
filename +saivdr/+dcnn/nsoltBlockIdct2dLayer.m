@@ -1,12 +1,12 @@
-classdef nsoltBlockDct2Layer < nnet.layer.Layer
-    %NSOLTBLOCKDCT2LAYER
+classdef nsoltBlockIdct2dLayer < nnet.layer.Layer
+    %NSOLTBLOCKIDCT2DLAYER
     %
-    %   ベクトル配列をブロック配列を入力:
+    %   コンポーネント別に入力(nComponents):
+    %      nRows x nCols x nDecs x nSamples
+    %
+    %   ベクトル配列をブロック配列にして出力:
     %      (Stride(1)xnRows) x (Stride(2)xnCols) x nComponents x nSamples
     %
-    %   コンポーネント別に出力(nComponents):
-    %      nRows x nCols x nDecs x nSamples
-    %    
     % Requirements: MATLAB R2020a
     %
     % Copyright (c) 2020, Shogo MURAMATSU
@@ -18,8 +18,8 @@ classdef nsoltBlockDct2Layer < nnet.layer.Layer
     %                8050 2-no-cho Ikarashi, Nishi-ku,
     %                Niigata, 950-2181, JAPAN
     %
-    % http://msiplab.eng.niigata-u.ac.jp/
-        
+    % http://msiplab.eng.niigata-u.ac.jp/    
+    
     properties
         % (Optional) Layer properties.
         DecimationFactor
@@ -32,9 +32,10 @@ classdef nsoltBlockDct2Layer < nnet.layer.Layer
     end
     
     methods
-        function layer = nsoltBlockDct2Layer(varargin)
+        function layer = nsoltBlockIdct2dLayer(varargin)
             % (Optional) Create a myLayer.
             % This function must have the same name as the class.
+            import saivdr.dictionary.utility.Direction                                                
             p = inputParser;
             addParameter(p,'DecimationFactor',[])
             addParameter(p,'Name','')
@@ -43,17 +44,19 @@ classdef nsoltBlockDct2Layer < nnet.layer.Layer
             % Layer constructor function goes here.
             layer.DecimationFactor = p.Results.DecimationFactor;
             layer.Name = p.Results.Name;
-            layer.Description = "Block DCT of size " ...
-                + layer.DecimationFactor(1) + "x" + layer.DecimationFactor(2);
+            layer.Description = "Block IDCT of size " ...
+                + layer.DecimationFactor(Direction.VERTICAL) + "x" ...
+                + layer.DecimationFactor(Direction.HORIZONTAL);
             layer.Type = '';
-            
-            Cv_ = dctmtx(layer.DecimationFactor(1));
-            Ch_ = dctmtx(layer.DecimationFactor(2));
+
+            decV = layer.DecimationFactor(Direction.VERTICAL);
+            decH = layer.DecimationFactor(Direction.HORIZONTAL);
+
+            Cv_ = dctmtx(decV);
+            Ch_ = dctmtx(decH);
             Cv_ = [ Cv_(1:2:end,:) ; Cv_(2:2:end,:) ];
             Ch_ = [ Ch_(1:2:end,:) ; Ch_(2:2:end,:) ];
             %
-            decV = layer.DecimationFactor(1);
-            decH = layer.DecimationFactor(2);
             Cve = Cv_(1:ceil(decV/2),:);
             Cvo = Cv_(ceil(decV/2)+1:end,:);
             Che = Ch_(1:ceil(decH/2),:);
@@ -66,43 +69,44 @@ classdef nsoltBlockDct2Layer < nnet.layer.Layer
             
         end
         
-        function varargout = predict(layer, X)
+        function Z = predict(layer, varargin)
             % Forward input data through the layer at prediction time and
             % output the result.
             %
             % Inputs:
             %         layer       - Layer to forward propagate through
-            %         X           - Input data
+            %         X1, ..., Xn - Input data
             % Outputs:
             %         Z1, ..., Zm - Outputs of layer forward function
-            varargout = cell(1,nargout);
             
             % Layer forward function for prediction goes here.
+            nComponents = nargin - 1;
             decFactor = layer.DecimationFactor;
             decV = decFactor(1);
             decH = decFactor(2);
-            %
-            Cvh_ = layer.Cvh;
-            %
-            nRows = size(X,1)/decV;
-            nCols = size(X,2)/decH;
-            nDecs = prod(decFactor);
-            nComponents = size(X,3);
-            nSamples = size(X,4);
-            %
-            A = zeros(nDecs,nRows,nCols,nSamples,'like',X);
+            Cvh_T = layer.Cvh.';
             for iComponent = 1:nComponents
+                X = varargin{iComponent};
+                if iComponent == 1
+                    nRows = size(X,1);
+                    nCols = size(X,2);
+                    height = decFactor(1)*nRows;
+                    width = decFactor(2)*nCols;
+                    nSamples = size(X,4);
+                    Z = zeros(height,width,nComponents,nSamples,'like',X);
+                end
+                A = permute(X,[3 1 2 4]);
                 for iSample = 1:nSamples
                     for iCol = 1:nCols
                         for iRow = 1:nRows
-                            x = X((iRow-1)*decV+1:iRow*decV,...
+                            coefs = A(:,iRow,iCol,iSample);
+                            Z((iRow-1)*decV+1:iRow*decV,...
                                 (iCol-1)*decH+1:iCol*decH,...
-                                iComponent,iSample);
-                            A(:,iRow,iCol,iSample) = Cvh_*x(:);
+                                iComponent,iSample) = ...
+                                reshape(Cvh_T*coefs,decV,decH);
                         end
                     end
                 end
-                varargout{iComponent} = permute(A,[2 3 1 4]);                
             end
         end
     end

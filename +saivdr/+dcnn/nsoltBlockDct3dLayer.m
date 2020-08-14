@@ -1,10 +1,10 @@
-classdef nsoltBlockDct3Layer < nnet.layer.Layer
-    %NSOLTBLOCKDCT2LAYER
+classdef nsoltBlockDct3dLayer < nnet.layer.Layer
+    %NSOLTBLOCKDCT3DLAYER
     %
     %   ベクトル配列をブロック配列を入力:
     %      (Stride(1)xnRows) x (Stride(2)xnCols) x (Stride(3)xnLays) x nComponents x nSamples
     %
-    %   コンポーネント別に出力(nComponents):
+    %   コンポーネント別に出力(nComponents=1):
     %      nRows x nCols x nDecs x nSamples
     %    
     % Requirements: MATLAB R2020a
@@ -32,9 +32,10 @@ classdef nsoltBlockDct3Layer < nnet.layer.Layer
     end
     
     methods
-        function layer = nsoltBlockDct3Layer(varargin)
+        function layer = nsoltBlockDct3dLayer(varargin)
             % (Optional) Create a myLayer.
             % This function must have the same name as the class.
+            import saivdr.dictionary.utility.Direction            
             p = inputParser;
             addParameter(p,'DecimationFactor',[])
             addParameter(p,'Name','')
@@ -49,16 +50,17 @@ classdef nsoltBlockDct3Layer < nnet.layer.Layer
                 + layer.DecimationFactor(3);
             layer.Type = '';
             
-            Cv_ = dctmtx(layer.DecimationFactor(1));
-            Ch_ = dctmtx(layer.DecimationFactor(2));
-            Cd_ = dctmtx(layer.DecimationFactor(3));
+            decV = layer.DecimationFactor(Direction.VERTICAL);
+            decH = layer.DecimationFactor(Direction.HORIZONTAL);
+            decD = layer.DecimationFactor(Direction.DEPTH);            
+            %
+            Cv_ = dctmtx(decV);
+            Ch_ = dctmtx(decH);
+            Cd_ = dctmtx(decD);
             Cv_ = [ Cv_(1:2:end,:) ; Cv_(2:2:end,:) ];
             Ch_ = [ Ch_(1:2:end,:) ; Ch_(2:2:end,:) ];
             Cd_ = [ Cd_(1:2:end,:) ; Cd_(2:2:end,:) ];            
             %
-            decV = layer.DecimationFactor(1);
-            decH = layer.DecimationFactor(2);
-            decD = layer.DecimationFactor(3);            
             Cve = Cv_(1:ceil(decV/2),:);
             Cvo = Cv_(ceil(decV/2)+1:end,:);
             Che = Ch_(1:ceil(decH/2),:);
@@ -93,13 +95,14 @@ classdef nsoltBlockDct3Layer < nnet.layer.Layer
             %         X           - Input data
             % Outputs:
             %         Z1, ..., Zm - Outputs of layer forward function
+            import saivdr.dictionary.utility.Direction                        
             varargout = cell(1,nargout);
             
             % Layer forward function for prediction goes here.
             decFactor = layer.DecimationFactor;
-            decV = decFactor(1);
-            decH = decFactor(2);
-            decD = decFactor(3);            
+            decV = decFactor(Direction.VERTICAL);
+            decH = decFactor(Direction.HORIZONTAL);
+            decD = decFactor(Direction.DEPTH);            
             %
             Cvhd_ = layer.Cvhd;
             %
