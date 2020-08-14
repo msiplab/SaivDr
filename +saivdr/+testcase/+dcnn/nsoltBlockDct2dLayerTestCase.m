@@ -30,7 +30,7 @@ classdef nsoltBlockDct2dLayerTestCase < matlab.unittest.TestCase
     methods (TestClassTeardown)
         function finalCheck(~)
             import saivdr.dcnn.*
-            layer = nsoltBlockDct2Layer(...
+            layer = nsoltBlockDct2dLayer(...
                 'DecimationFactor',[2 2]);
             fprintf("\n --- Check layer for 2-D images ---\n");
             checkLayer(layer,[8 8 4],'ObservationDimension',4)
