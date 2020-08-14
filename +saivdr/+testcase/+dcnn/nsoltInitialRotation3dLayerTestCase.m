@@ -1,11 +1,11 @@
-classdef nsoltFinalRotation2dLayerTestCase < matlab.unittest.TestCase
-    %NSOLTFINALROTATION2DLAYERTESTCASE 
+classdef nsoltInitialRotation3dLayerTestCase < matlab.unittest.TestCase
+    %NSOLTINITIALROTATION3DLAYERTESTCASE
     %
-    %   コンポーネント別に入力(nComponents):
-    %      nRows x nCols x nChs x nSamples
+    %   コンポーネント別に入力(nComponents=1のみサポート):
+    %      nRows x nCols x nLays x nDecs x nSamples
     %
-    %   コンポーネント別に出力(nComponents):
-    %      nRows x nCols x nDecs x nSamples
+    %   コンポーネント別に出力(nComponents=1のみサポート):
+    %      nRows x nCols x nChs x nLays x nSamples
     %
     % Requirements: MATLAB R2020a
     %
@@ -18,24 +18,25 @@ classdef nsoltFinalRotation2dLayerTestCase < matlab.unittest.TestCase
     %                8050 2-no-cho Ikarashi, Nishi-ku,
     %                Niigata, 950-2181, JAPAN
     %
-    % http://msiplab.eng.niigata-u.ac.jp/ 
+    % http://msiplab.eng.niigata-u.ac.jp/
     
     properties (TestParameter)
-        nchs = { [3 3], [4 4] };
-        stride = { [2 2] };
+        nchs = { [4 4], [5 5] };
+        stride = { [2 2 2], [1 2 4] };
         datatype = { 'single', 'double' };
         nrows = struct('small', 4,'medium', 8, 'large', 16);
-        ncols = struct('small', 4,'medium', 8, 'large', 16);
+        ncols = struct('small', 4,'medium', 8, 'large', 16);        
+        nlays = struct('small', 4,'medium', 8, 'large', 16);                
     end
     
     methods (TestClassTeardown)
         function finalCheck(~)
             import saivdr.dcnn.*
-            layer = nsoltFinalRotation2dLayer(...
-                'NumberOfChannels',[3 3],...
-                'DecimationFactor',[2 2]);
-            fprintf("\n --- Check layer for 2-D images ---\n");
-            checkLayer(layer,[8 8 6],'ObservationDimension',4)
+            layer = nsoltInitialRotation3dLayer(...
+                'NumberOfChannels',[5 5],...
+                'DecimationFactor',[2 2 2]);
+            fprintf("\n --- Check layer for 3-D images ---\n");
+            checkLayer(layer,[8 8 8 8],'ObservationDimension',5)
         end
     end
     
@@ -44,16 +45,16 @@ classdef nsoltFinalRotation2dLayerTestCase < matlab.unittest.TestCase
         function testConstructor(testCase, nchs, stride)
             
             % Expected values
-            expctdName = 'V0~';
-            expctdDescription = "NSOLT final rotation " ...
+            expctdName = 'V0';
+            expctdDescription = "NSOLT initial rotation " ...
                 + "(ps,pa) = (" ...
                 + nchs(1) + "," + nchs(2) + "), "  ...
-                + "(mv,mh) = (" ...
-                + stride(1) + "," + stride(2) + ")";
+                + "(mv,mh,md) = (" ...
+                + stride(1) + "," + stride(2) + "," + stride(3) + ")";
             
             % Instantiation of target class
             import saivdr.dcnn.*
-            layer = nsoltFinalRotation2dLayer(...
+            layer = nsoltInitialRotation3dLayer(...
                 'NumberOfChannels',nchs,...
                 'DecimationFactor',stride,...
                 'Name',expctdName);
@@ -66,9 +67,9 @@ classdef nsoltFinalRotation2dLayerTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(actualName,expctdName);
             testCase.verifyEqual(actualDescription,expctdDescription);
         end
-
+        
         function testPredictGrayscale(testCase, ...
-                nchs, stride, nrows, ncols, datatype)
+                nchs, stride, nrows, ncols, nlays, datatype)
             
             import matlab.unittest.constraints.IsEqualTo
             import matlab.unittest.constraints.AbsoluteTolerance
@@ -77,27 +78,38 @@ classdef nsoltFinalRotation2dLayerTestCase < matlab.unittest.TestCase
             % Parameters
             nSamples = 8;
             nDecs = prod(stride);
-            % nRows x nCols x nChs x nSamples
-            X = randn(nrows,ncols,sum(nchs),nSamples,datatype);
-            % Expected values        
-            % nRows x nCols x nDecs x nSamples
+            nChsTotal = sum(nchs);
+            % nRows x nCols x nLays x nDecs x nSamples            
+            X = randn(nrows,ncols,nlays,nDecs,nSamples,datatype);
+            
+            % Expected values
+            % nRows x nCols x nLays x nChs x nSamples
             ps = nchs(1);
             pa = nchs(2);
-            W0T = eye(ps,datatype);
-            U0T = eye(pa,datatype);
-            Y = permute(X,[3 1 2 4]);
-            Ys = reshape(Y(1:ps,:,:,:),ps,nrows*ncols*nSamples);
-            Ya = reshape(Y(ps+1:ps+pa,:,:,:),pa,nrows*ncols*nSamples);
-            Zsa = [ W0T(1:nDecs/2,:)*Ys; U0T(1:nDecs/2,:)*Ya ];
-            expctdZ = ipermute(reshape(Zsa,nDecs,nrows,ncols,nSamples),...
-                [3 1 2 4]);
+            W0 = eye(ps,datatype);
+            U0 = eye(pa,datatype);
+            expctdZ = zeros(nrows,ncols,nlays,nChsTotal,nSamples,datatype);
+            Y  = zeros(nChsTotal,nrows,ncols,nlays,datatype);
+            for iSample=1:nSamples
+                % Perumation in each block                
+                Ai = permute(X(:,:,:,:,iSample),[4 1 2 3]); 
+                Yi = reshape(Ai,nDecs,nrows,ncols,nlays);
+                %
+                Ys = Yi(1:nDecs/2,:);
+                Ya = Yi(nDecs/2+1:end,:);
+                Y(1:ps,:,:,:) = ...
+                    reshape(W0(:,1:nDecs/2)*Ys,ps,nrows,ncols,nlays);
+                Y(ps+1:ps+pa,:,:,:) = ...
+                    reshape(U0(:,1:nDecs/2)*Ya,pa,nrows,ncols,nlays);
+                expctdZ(:,:,:,:,iSample) = ipermute(Y,[4 1 2 3]);                
+            end
             
             % Instantiation of target class
             import saivdr.dcnn.*
-            layer = nsoltFinalRotation2dLayer(...
+            layer = nsoltInitialRotation3dLayer(...
                 'NumberOfChannels',nchs,...
                 'DecimationFactor',stride,...
-                'Name','V0~');
+                'Name','V0');
             
             % Actual values
             actualZ = layer.predict(X);
@@ -110,7 +122,7 @@ classdef nsoltFinalRotation2dLayerTestCase < matlab.unittest.TestCase
         end
         
         function testPredictGrayscaleWithRandomAngles(testCase, ...
-                nchs, stride, nrows, ncols, datatype)
+                nchs, stride, nrows, ncols, nlays, datatype)
             
             import matlab.unittest.constraints.IsEqualTo
             import matlab.unittest.constraints.AbsoluteTolerance
@@ -123,26 +135,35 @@ classdef nsoltFinalRotation2dLayerTestCase < matlab.unittest.TestCase
             nSamples = 8;
             nDecs = prod(stride);
             nChsTotal = sum(nchs);
-            % nRows x nCols x nChs x nSamples
-            X = randn(nrows,ncols,sum(nchs),nSamples,datatype);
+            % nRows x nCols x nLays x nDecs x nSamples            
+            X = randn(nrows,ncols,nlays,nDecs,nSamples,datatype);
             angles = randn((nChsTotal-2)*nChsTotal/4,1);
             
             % Expected values
-            % nRows x nCols x nDecs x nSamples
+            % nRows x nCols x nLays x nChs x nSamples
             ps = nchs(1);
             pa = nchs(2);
-            W0T = transpose(genW.step(angles(1:length(angles)/2),1));
-            U0T = transpose(genU.step(angles(length(angles)/2+1:end),1));
-            Y = permute(X,[3 1 2 4]);
-            Ys = reshape(Y(1:ps,:,:,:),ps,nrows*ncols*nSamples);
-            Ya = reshape(Y(ps+1:ps+pa,:,:,:),pa,nrows*ncols*nSamples);
-            Zsa = [ W0T(1:nDecs/2,:)*Ys; U0T(1:nDecs/2,:)*Ya ];
-            expctdZ = ipermute(reshape(Zsa,nDecs,nrows,ncols,nSamples),...
-                [3 1 2 4]);
+            W0 = genW.step(angles(1:length(angles)/2),1);
+            U0 = genU.step(angles(length(angles)/2+1:end),1);
+            expctdZ = zeros(nrows,ncols,nlays,nChsTotal,nSamples,datatype);
+            Y  = zeros(nChsTotal,nrows,ncols,nlays,datatype);
+            for iSample=1:nSamples
+                % Perumation in each block                
+                Ai = permute(X(:,:,:,:,iSample),[4 1 2 3]); 
+                Yi = reshape(Ai,nDecs,nrows,ncols,nlays);
+                %
+                Ys = Yi(1:nDecs/2,:);
+                Ya = Yi(nDecs/2+1:end,:);
+                Y(1:ps,:,:,:) = ...
+                    reshape(W0(:,1:nDecs/2)*Ys,ps,nrows,ncols,nlays);
+                Y(ps+1:ps+pa,:,:,:) = ...
+                    reshape(U0(:,1:nDecs/2)*Ya,pa,nrows,ncols,nlays);
+                expctdZ(:,:,:,:,iSample) = ipermute(Y,[4 1 2 3]);
+            end
             
             % Instantiation of target class
             import saivdr.dcnn.*
-            layer = nsoltFinalRotation2dLayer(...
+            layer = nsoltInitialRotation3dLayer(...
                 'NumberOfChannels',nchs,...
                 'DecimationFactor',stride,...
                 'Name','V0~');
@@ -159,7 +180,7 @@ classdef nsoltFinalRotation2dLayerTestCase < matlab.unittest.TestCase
         end
         
         function testPredictGrayscaleWithRandomAnglesNoDcLeackage(testCase, ...
-                nchs, stride, nrows, ncols, datatype)
+                nchs, stride, nrows, ncols, nlays, datatype)
             
             import matlab.unittest.constraints.IsEqualTo
             import matlab.unittest.constraints.AbsoluteTolerance
@@ -172,28 +193,37 @@ classdef nsoltFinalRotation2dLayerTestCase < matlab.unittest.TestCase
             nSamples = 8;
             nDecs = prod(stride);
             nChsTotal = sum(nchs);
-            % nRows x nCols x nChs x nSamples
-            X = randn(nrows,ncols,sum(nchs),nSamples,datatype);
+            % nRows x nCols x nLays x nDecs x nSamples
+            X = randn(nrows,ncols,nlays,nDecs,nSamples,datatype);
             angles = randn((nChsTotal-2)*nChsTotal/4,1);
             
             % Expected values
-            % nRows x nCols x nDecs x nSamples
+            % nRows x nCols x nLays x nChs x nSamples
             ps = nchs(1);
             pa = nchs(2);
             anglesNoDc = angles;
             anglesNoDc(1:length(angles)/2-1,1)=zeros(length(angles)/2-1,1);
-            W0T = transpose(genW.step(anglesNoDc(1:length(angles)/2),1));
-            U0T = transpose(genU.step(anglesNoDc(length(angles)/2+1:end),1));
-            Y = permute(X,[3 1 2 4]);
-            Ys = reshape(Y(1:ps,:,:,:),ps,nrows*ncols*nSamples);
-            Ya = reshape(Y(ps+1:ps+pa,:,:,:),pa,nrows*ncols*nSamples);
-            Zsa = [ W0T(1:nDecs/2,:)*Ys; U0T(1:nDecs/2,:)*Ya ];
-            expctdZ = ipermute(reshape(Zsa,nDecs,nrows,ncols,nSamples),...
-                [3 1 2 4]);
+            W0 = genW.step(anglesNoDc(1:length(angles)/2),1);
+            U0 = genU.step(anglesNoDc(length(angles)/2+1:end),1);
+            expctdZ = zeros(nrows,ncols,nlays,nChsTotal,nSamples,datatype);
+            Y  = zeros(nChsTotal,nrows,ncols,nlays,datatype);
+            for iSample=1:nSamples
+                % Perumation in each block
+                Ai = permute(X(:,:,:,:,iSample),[4 1 2 3]);
+                Yi = reshape(Ai,nDecs,nrows,ncols,nlays);
+                %
+                Ys = Yi(1:nDecs/2,:);
+                Ya = Yi(nDecs/2+1:end,:);
+                Y(1:ps,:,:,:) = ...
+                    reshape(W0(:,1:nDecs/2)*Ys,ps,nrows,ncols,nlays);
+                Y(ps+1:ps+pa,:,:,:) = ...
+                    reshape(U0(:,1:nDecs/2)*Ya,pa,nrows,ncols,nlays);
+                expctdZ(:,:,:,:,iSample) = ipermute(Y,[4 1 2 3]);
+            end
             
             % Instantiation of target class
             import saivdr.dcnn.*
-            layer = nsoltFinalRotation2dLayer(...
+            layer = nsoltInitialRotation3dLayer(...
                 'NumberOfChannels',nchs,...
                 'DecimationFactor',stride,...
                 'NoDcLeakage',true,...
@@ -212,26 +242,5 @@ classdef nsoltFinalRotation2dLayerTestCase < matlab.unittest.TestCase
 
     end
     
-    methods (Static, Access = private)
-        
-        function value = permuteIdctCoefs_(x)
-            coefs = x.data;
-            decY_ = x.blockSize(1);
-            decX_ = x.blockSize(2);
-            nQDecsee = ceil(decY_/2)*ceil(decX_/2);
-            nQDecsoo = floor(decY_/2)*floor(decX_/2);
-            nQDecsoe = floor(decY_/2)*ceil(decX_/2);
-            cee = coefs(         1:  nQDecsee);
-            coo = coefs(nQDecsee+1:nQDecsee+nQDecsoo);
-            coe = coefs(nQDecsee+nQDecsoo+1:nQDecsee+nQDecsoo+nQDecsoe);
-            ceo = coefs(nQDecsee+nQDecsoo+nQDecsoe+1:end);
-            value = zeros(decY_,decX_);
-            value(1:2:decY_,1:2:decX_) = reshape(cee,ceil(decY_/2),ceil(decX_/2));
-            value(2:2:decY_,2:2:decX_) = reshape(coo,floor(decY_/2),floor(decX_/2));
-            value(2:2:decY_,1:2:decX_) = reshape(coe,floor(decY_/2),ceil(decX_/2));
-            value(1:2:decY_,2:2:decX_) = reshape(ceo,ceil(decY_/2),floor(decX_/2));
-        end
-        
-    end
 end
 
