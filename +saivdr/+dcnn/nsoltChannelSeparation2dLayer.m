@@ -1,5 +1,5 @@
-classdef nsoltChannelConcatenationLayer < nnet.layer.Layer
-    %NSOLTCHANNELSEPARATIONLAYER
+classdef nsoltChannelSeparation2dLayer < nnet.layer.Layer
+    %NSOLTCHANNELSEPARATION2DLAYER
     %
     %   １コンポーネント入力(nComponents=1のみサポート):
     %      nRows x nCols x nChsTotal x nSamples
@@ -28,7 +28,7 @@ classdef nsoltChannelConcatenationLayer < nnet.layer.Layer
     end
     
     methods
-        function layer = nsoltChannelConcatenationLayer(varargin)
+        function layer = nsoltChannelSeparation2dLayer(varargin)
             % (Optional) Create a myLayer.
             % This function must have the same name as the class.
             p = inputParser;
@@ -37,25 +37,25 @@ classdef nsoltChannelConcatenationLayer < nnet.layer.Layer
             
             % Layer constructor function goes here.
             layer.Name = p.Results.Name;
-            layer.Description =  "Channel concatenation";
+            layer.Description =  "Channel separation";
             layer.Type = '';
-            layer.NumInputs = 2;
-            
+            layer.NumOutputs = 2;
         end
         
-        function Z = predict(layer, X1,X2)
+        function [Z1,Z2] = predict(layer, X)
             % Forward input data through the layer at prediction time and
             % output the result.
             %
             % Inputs:
             %         layer       - Layer to forward propagate through
-            %         X1, X2      - Input data (2 components)
+            %         X           - Input data (1 component)
             % Outputs:
-            %         Z           - Outputs of layer forward function
+            %         Z1, Z2      - Outputs of layer forward function
             %  
             
             % Layer forward function for prediction goes here.
-            Z = cat(3,X1,X2);
+            Z1 = X(:,:,1,:);
+            Z2 = X(:,:,2:end,:);
         end
         
     end

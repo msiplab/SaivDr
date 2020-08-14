@@ -1,5 +1,5 @@
-classdef nsoltFinalRotationLayer < nnet.layer.Layer
-    %NSOLTFINALROTATIONLAYER
+classdef nsoltFinalRotation2dLayer < nnet.layer.Layer
+    %NSOLTFINALROTATION2DLAYER
     %
     %   コンポーネント別に入力(nComponents):
     %      nRows x nCols x nChs x nSamples
@@ -37,7 +37,7 @@ classdef nsoltFinalRotationLayer < nnet.layer.Layer
     
     
     methods
-        function layer = nsoltFinalRotationLayer(varargin)
+        function layer = nsoltFinalRotation2dLayer(varargin)
             % (Optional) Create a myLayer.
             % This function must have the same name as the class.
             p = inputParser;

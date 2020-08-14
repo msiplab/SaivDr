@@ -1,5 +1,5 @@
-classdef nsoltAtomExtensionLayer < nnet.layer.Layer
-    %NSOLTATOMEXTENSIONLAYER
+classdef nsoltAtomExtension2dLayer < nnet.layer.Layer
+    %NSOLTATOMEXTENSION2DLAYER
     %
     %   コンポーネント別に入力(nComponents=1のみサポート):
     %      nRows x nCols x nChsTotal x nSamples
@@ -30,7 +30,7 @@ classdef nsoltAtomExtensionLayer < nnet.layer.Layer
     end
     
     methods
-        function layer = nsoltAtomExtensionLayer(varargin)
+        function layer = nsoltAtomExtension2dLayer(varargin)
             % (Optional) Create a myLayer.
             % This function must have the same name as the class.
             p = inputParser;

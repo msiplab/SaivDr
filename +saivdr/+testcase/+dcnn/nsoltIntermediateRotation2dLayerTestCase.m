@@ -1,5 +1,5 @@
-classdef nsoltIntermediateRotationLayerTestCase < matlab.unittest.TestCase
-    %NSOLTINTERMEDIATEROTATIONLAYERTESTCASE 
+classdef nsoltIntermediateRotation2dLayerTestCase < matlab.unittest.TestCase
+    %NSOLTINTERMEDIATEROTATION2DLAYERTESTCASE 
     %   
     %   コンポーネント別に入力(nComponents):
     %      nRows x nCols x nChsTotal x nSamples
@@ -31,7 +31,7 @@ classdef nsoltIntermediateRotationLayerTestCase < matlab.unittest.TestCase
     methods (TestClassTeardown)
         function finalCheck(~)
             import saivdr.dcnn.*
-            layer = nsoltIntermediateRotationLayer(...
+            layer = nsoltIntermediateRotation2dLayer(...
                 'NumberOfChannels',[3 3]);
             fprintf("\n --- Check layer for 2-D images ---\n");
             checkLayer(layer,[8 8 6],'ObservationDimension',4)      
@@ -51,7 +51,7 @@ classdef nsoltIntermediateRotationLayerTestCase < matlab.unittest.TestCase
             
             % Instantiation of target class
             import saivdr.dcnn.*
-            layer = nsoltIntermediateRotationLayer(...
+            layer = nsoltIntermediateRotation2dLayer(...
                 'NumberOfChannels',nchs,...
                 'Name',expctdName);
             
@@ -92,7 +92,7 @@ classdef nsoltIntermediateRotationLayerTestCase < matlab.unittest.TestCase
             
             % Instantiation of target class
             import saivdr.dcnn.*
-            layer = nsoltIntermediateRotationLayer(...
+            layer = nsoltIntermediateRotation2dLayer(...
                 'NumberOfChannels',nchs,...
                 'Name','Vn~');
             
@@ -136,7 +136,7 @@ classdef nsoltIntermediateRotationLayerTestCase < matlab.unittest.TestCase
             
             % Instantiation of target class
             import saivdr.dcnn.*
-            layer = nsoltIntermediateRotationLayer(...
+            layer = nsoltIntermediateRotation2dLayer(...
                 'NumberOfChannels',nchs,...
                 'Name','Vn~');
             
@@ -184,7 +184,7 @@ classdef nsoltIntermediateRotationLayerTestCase < matlab.unittest.TestCase
             
             % Instantiation of target class
             import saivdr.dcnn.*
-            layer = nsoltIntermediateRotationLayer(...
+            layer = nsoltIntermediateRotation2dLayer(...
                 'NumberOfChannels',nchs,...
                 'Name','Vn',...
                 'Mode','Analysis');

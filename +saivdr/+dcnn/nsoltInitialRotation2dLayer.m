@@ -1,5 +1,5 @@
-classdef nsoltInitialRotationLayer < nnet.layer.Layer
-    %NSOLTINITIALROTATIONLAYER
+classdef nsoltInitialRotation2dLayer < nnet.layer.Layer
+    %NSOLTINITIALROTATION2DLAYER
     %
     %   コンポーネント別に入力(nComponents):
     %      nRows x nCols x nDecs x nSamples
@@ -35,7 +35,7 @@ classdef nsoltInitialRotationLayer < nnet.layer.Layer
     end
     
     methods
-        function layer = nsoltInitialRotationLayer(varargin)
+        function layer = nsoltInitialRotation2dLayer(varargin)
             % (Optional) Create a myLayer.
             % This function must have the same name as the class.
             p = inputParser;

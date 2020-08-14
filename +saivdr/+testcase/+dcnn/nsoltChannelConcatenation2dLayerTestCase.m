@@ -1,5 +1,5 @@
-classdef nsoltChannelConcatenationLayerTestCase < matlab.unittest.TestCase
-    %NSOLTCHANNELCONCATENATIONLAYERTESTCASE
+classdef nsoltChannelConcatenation2dLayerTestCase < matlab.unittest.TestCase
+    %NSOLTCHANNELCONCATENATION2DLAYERTESTCASE
     %
     %   ２コンポーネント入力(nComponents=2のみサポート):
     %      nRows x nCols x 1 x nSamples
@@ -31,7 +31,7 @@ classdef nsoltChannelConcatenationLayerTestCase < matlab.unittest.TestCase
     methods (TestClassTeardown)
         function finalCheck(~)
             import saivdr.dcnn.*
-            layer = nsoltChannelConcatenationLayer();
+            layer = nsoltChannelConcatenation2dLayer();
             fprintf("\n --- Check layer for 2-D images ---\n");
             checkLayer(layer,{[8 8 1], [8 8 5]},'ObservationDimension',4)
         end
@@ -47,7 +47,7 @@ classdef nsoltChannelConcatenationLayerTestCase < matlab.unittest.TestCase
             
             % Instantiation of target class
             import saivdr.dcnn.*
-            layer = nsoltChannelConcatenationLayer('Name',expctdName);
+            layer = nsoltChannelConcatenation2dLayer('Name',expctdName);
             
             % Actual values
             actualName = layer.Name;
@@ -78,7 +78,7 @@ classdef nsoltChannelConcatenationLayerTestCase < matlab.unittest.TestCase
             
             % Instantiation of target class
             import saivdr.dcnn.*
-            layer = nsoltChannelConcatenationLayer('Name','Cn');
+            layer = nsoltChannelConcatenation2dLayer('Name','Cn');
             
             % Actual values
             actualZ = layer.predict(X1,X2);

@@ -1,5 +1,5 @@
-classdef nsoltChannelSeparationLayerTestCase < matlab.unittest.TestCase
-    %NSOLTCHANNELSEPARATIONLAYERTESTCASE
+classdef nsoltChannelSeparation2dLayerTestCase < matlab.unittest.TestCase
+    %NSOLTCHANNELSEPARATION2DLAYERTESTCASE
     %
     %   １コンポーネント入力(nComponents=1のみサポート):
     %      nRows x nCols x nChsTotal x nSamples
@@ -31,7 +31,7 @@ classdef nsoltChannelSeparationLayerTestCase < matlab.unittest.TestCase
     methods (TestClassTeardown)
         function finalCheck(~)
             import saivdr.dcnn.*
-            layer = nsoltChannelSeparationLayer();
+            layer = nsoltChannelSeparation2dLayer();
             fprintf("\n --- Check layer for 2-D images ---\n");
             checkLayer(layer,[8 8 6],'ObservationDimension',4)
         end
@@ -47,7 +47,7 @@ classdef nsoltChannelSeparationLayerTestCase < matlab.unittest.TestCase
             
             % Instantiation of target class
             import saivdr.dcnn.*
-            layer = nsoltChannelSeparationLayer('Name',expctdName);
+            layer = nsoltChannelSeparation2dLayer('Name',expctdName);
             
             % Actual values
             actualName = layer.Name;
@@ -78,7 +78,7 @@ classdef nsoltChannelSeparationLayerTestCase < matlab.unittest.TestCase
             
             % Instantiation of target class
             import saivdr.dcnn.*
-            layer = nsoltChannelSeparationLayer('Name','Sp');
+            layer = nsoltChannelSeparation2dLayer('Name','Sp');
             
             % Actual values
             [actualZ1,actualZ2] = layer.predict(X);

@@ -1,5 +1,5 @@
-classdef nsoltIntermediateRotationLayer < nnet.layer.Layer
-    %NSOLTINTERMEDIATEROTATIONLAYER
+classdef nsoltIntermediateRotation2dLayer < nnet.layer.Layer
+    %NSOLTINTERMEDIATEROTATION2DLAYER
     %
     % Requirements: MATLAB R2020a
     %
@@ -29,7 +29,7 @@ classdef nsoltIntermediateRotationLayer < nnet.layer.Layer
     end
     
     methods
-        function layer = nsoltIntermediateRotationLayer(varargin)
+        function layer = nsoltIntermediateRotation2dLayer(varargin)
             % (Optional) Create a myLayer.
             % This function must have the same name as the class.
             p = inputParser;
