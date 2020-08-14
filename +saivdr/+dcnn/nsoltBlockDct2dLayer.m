@@ -39,6 +39,7 @@ classdef nsoltBlockDct2dLayer < nnet.layer.Layer
             p = inputParser;
             addParameter(p,'DecimationFactor',[])
             addParameter(p,'Name','')
+            addParameter(p,'NumberOfComponents',1);
             parse(p,varargin{:})
             
             % Layer constructor function goes here.
@@ -48,6 +49,8 @@ classdef nsoltBlockDct2dLayer < nnet.layer.Layer
                 + layer.DecimationFactor(Direction.VERTICAL) + "x" ...
                 + layer.DecimationFactor(Direction.HORIZONTAL);
             layer.Type = '';
+            layer.NumOutputs = p.Results.NumberOfComponents;
+            layer.NumInputs = 1;
             
             decV = layer.DecimationFactor(Direction.VERTICAL);
             decH = layer.DecimationFactor(Direction.HORIZONTAL);
@@ -79,8 +82,9 @@ classdef nsoltBlockDct2dLayer < nnet.layer.Layer
             % Outputs:
             %         Z1, ..., Zm - Outputs of layer forward function
             import saivdr.dictionary.utility.Direction                                                                        
-            varargout = cell(1,nargout);
-            
+            nComponents = layer.NumOutputs;            
+            varargout = cell(1,nComponents);
+                        
             % Layer forward function for prediction goes here.
             decFactor = layer.DecimationFactor;
             decV = decFactor(Direction.VERTICAL);
@@ -91,7 +95,6 @@ classdef nsoltBlockDct2dLayer < nnet.layer.Layer
             nRows = size(X,1)/decV;
             nCols = size(X,2)/decH;
             nDecs = prod(decFactor);
-            nComponents = size(X,3);
             nSamples = size(X,4);
             %
             A = zeros(nDecs,nRows,nCols,nSamples,'like',X);

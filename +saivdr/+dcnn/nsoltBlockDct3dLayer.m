@@ -39,6 +39,7 @@ classdef nsoltBlockDct3dLayer < nnet.layer.Layer
             p = inputParser;
             addParameter(p,'DecimationFactor',[])
             addParameter(p,'Name','')
+            addParameter(p,'NumberOfComponents',1)
             parse(p,varargin{:})
             
             % Layer constructor function goes here.
@@ -49,6 +50,8 @@ classdef nsoltBlockDct3dLayer < nnet.layer.Layer
                 + layer.DecimationFactor(2) + "x" ...
                 + layer.DecimationFactor(3);
             layer.Type = '';
+            layer.NumOutputs = p.Results.NumberOfComponents;
+            layer.NumInputs = 1;
             
             decV = layer.DecimationFactor(Direction.VERTICAL);
             decH = layer.DecimationFactor(Direction.HORIZONTAL);

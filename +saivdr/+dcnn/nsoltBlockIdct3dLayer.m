@@ -39,6 +39,7 @@ classdef nsoltBlockIdct3dLayer < nnet.layer.Layer
             p = inputParser;
             addParameter(p,'DecimationFactor',[])
             addParameter(p,'Name','')
+            addParameter(p,'NumberOfComponents',1)
             parse(p,varargin{:})
             
             % Layer constructor function goes here.
@@ -49,6 +50,8 @@ classdef nsoltBlockIdct3dLayer < nnet.layer.Layer
                 + layer.DecimationFactor(Direction.HORIZONTAL) + "x" ...
                 + layer.DecimationFactor(Direction.DEPTH);
             layer.Type = '';
+            layer.NumInputs = p.Results.NumberOfComponents;
+            layer.NumOutputs = 1;
             
             decV = layer.DecimationFactor(Direction.VERTICAL);
             decH = layer.DecimationFactor(Direction.HORIZONTAL);
@@ -96,7 +99,7 @@ classdef nsoltBlockIdct3dLayer < nnet.layer.Layer
             % Outputs:
             %         Z1, ..., Zm - Outputs of layer forward function
             import saivdr.dictionary.utility.Direction                                    
-            nComponents = nargin - 1;
+            nComponents = layer.NumInputs;
             
             % Layer forward function for prediction goes here.
             decFactor = layer.DecimationFactor;

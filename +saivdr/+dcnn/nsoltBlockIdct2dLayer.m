@@ -39,6 +39,7 @@ classdef nsoltBlockIdct2dLayer < nnet.layer.Layer
             p = inputParser;
             addParameter(p,'DecimationFactor',[])
             addParameter(p,'Name','')
+            addParameter(p,'NumberOfComponents',1)
             parse(p,varargin{:})
             
             % Layer constructor function goes here.
@@ -48,6 +49,8 @@ classdef nsoltBlockIdct2dLayer < nnet.layer.Layer
                 + layer.DecimationFactor(Direction.VERTICAL) + "x" ...
                 + layer.DecimationFactor(Direction.HORIZONTAL);
             layer.Type = '';
+            layer.NumInputs = p.Results.NumberOfComponents;
+            layer.NumOutputs = 1;
 
             decV = layer.DecimationFactor(Direction.VERTICAL);
             decH = layer.DecimationFactor(Direction.HORIZONTAL);
@@ -80,7 +83,7 @@ classdef nsoltBlockIdct2dLayer < nnet.layer.Layer
             %         Z1, ..., Zm - Outputs of layer forward function
             
             % Layer forward function for prediction goes here.
-            nComponents = nargin - 1;
+            nComponents = layer.NumInputs;
             decFactor = layer.DecimationFactor;
             decV = decFactor(1);
             decH = decFactor(2);
