@@ -19,7 +19,7 @@ classdef nsoltInitialRotation2dLayer < nnet.layer.Layer
     %                Niigata, 950-2181, JAPAN
     %
     % http://msiplab.eng.niigata-u.ac.jp/
-      
+    
     properties
         % (Optional) Layer properties.
         NumberOfChannels
@@ -107,7 +107,7 @@ classdef nsoltInitialRotation2dLayer < nnet.layer.Layer
                     zeros(ps-1,1,'like',layer.Angles);
             end
             muW = layer.Mus(1:ps);
-            muU = layer.Mus(ps+1:end);            
+            muU = layer.Mus(ps+1:end);
             anglesW = layer.Angles(1:length(layer.Angles)/2);
             anglesU = layer.Angles(length(layer.Angles)/2+1:end);
             W0 = fcn_orthonormalmatrixgenerate(anglesW,muW);
@@ -137,7 +137,7 @@ classdef nsoltInitialRotation2dLayer < nnet.layer.Layer
             memory = X;
         end
         
-         function [dLdX, dLdW] = ...
+        function [dLdX, dLdW] = ...
                 backward(layer, ~, ~, dLdZ, memory)
             % (Optional) Backward propagate the derivative of the loss
             % function through the layer.
@@ -152,14 +152,14 @@ classdef nsoltInitialRotation2dLayer < nnet.layer.Layer
             %         dLdX1, ..., dLdXn - Derivatives of the loss with respect to the
             %                             inputs
             %         dLdW1, ..., dLdWk - Derivatives of the loss with respect to each
-            %      
+            %
             import saivdr.dcnn.fcn_orthonormalmatrixgenerate
             
             nrows = size(dLdZ,1);
             ncols = size(dLdZ,2);
             ps = layer.NumberOfChannels(1);
             pa = layer.NumberOfChannels(2);
-            nAngles = length(layer.Angles);            
+            nAngles = length(layer.Angles);
             nSamples = size(dLdZ,4);
             stride = layer.DecimationFactor;
             nDecs = prod(stride);
@@ -173,7 +173,7 @@ classdef nsoltInitialRotation2dLayer < nnet.layer.Layer
                 layer.Mus(1) = 1;
                 layer.Angles(1:ps-1) = ...
                     zeros(ps-1,1,'like',layer.Angles);
-            end            
+            end
             muW = layer.Mus(1:ps);
             muU = layer.Mus(ps+1:end);
             anglesW = layer.Angles(1:length(layer.Angles)/2);
@@ -207,7 +207,7 @@ classdef nsoltInitialRotation2dLayer < nnet.layer.Layer
                 dLdW(iAngle) = sum(dldz_upp.*d_upp,'all');
                 dLdW(nAngles/2+iAngle) = sum(dldz_low.*d_low,'all');
             end
-         end
+        end
     end
     
 end
