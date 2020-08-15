@@ -107,7 +107,84 @@ classdef nsoltIntermediateRotation3dLayer < nnet.layer.Layer
             Z = ipermute(Y,[4 1 2 3 5]);
         end
         
+        function [Z, memory] = forward(layer, X)
+            % (Optional) Forward input data through the layer at training
+            % time and output the result and a memory value.
+            %
+            % Inputs:
+            %         layer       - Layer to forward propagate through
+            %         X1, ..., Xn - Input data
+            % Outputs:
+            %         Z1, ..., Zm - Outputs of layer forward function
+            %         memory      - Memory value for custom backward propagation
+            
+            % Layer forward function for training goes here.
+            Z = layer.predict(X);
+            memory = X;
+        end
+        
+        function [dLdX, dLdW] = ...
+                backward(layer, ~, ~, dLdZ, memory)
+            % (Optional) Backward propagate the derivative of the loss
+            % function through the layer.
+            %
+            % Inputs:
+            %         layer             - Layer to backward propagate through
+            %         X1, ..., Xn       - Input data
+            %         Z1, ..., Zm       - Outputs of layer forward function
+            %         dLdZ1, ..., dLdZm - Gradients propagated from the next layers
+            %         memory            - Memory value from forward function
+            % Outputs:
+            %         dLdX1, ..., dLdXn - Derivatives of the loss with respect to the
+            %                             inputs
+            %         dLdW1, ..., dLdWk - Derivatives of the loss with respect to each
+            %                             learnable parameter
+            import saivdr.dcnn.*
+            nrows = size(dLdZ,1);
+            ncols = size(dLdZ,2);
+            nlays = size(dLdZ,3);            
+            nSamples = size(dLdZ,5);
+            anglesU = layer.Angles;
+            musU = layer.Mus;
+            ps = layer.NumberOfChannels(1);
+            pa = layer.NumberOfChannels(2);
+            
+            % Layer backward function goes here.
+            % dLdX = dZdX x dLdZ
+            Un = fcn_orthonormalmatrixgenerate(anglesU,musU,0);
+            adLd_ = permute(dLdZ,[4 1 2 3 5]);
+            cdLd_low = reshape(adLd_(ps+1:ps+pa,:,:,:,:),...
+                pa,nrows*ncols*nlays*nSamples);
+            if strcmp(layer.Mode,'Analysis')
+                cdLd_low = Un.'*cdLd_low;
+            else
+                cdLd_low = Un*cdLd_low;
+            end
+            adLd_(ps+1:ps+pa,:,:,:,:) = reshape(cdLd_low,...
+                pa,nrows,ncols,nlays,nSamples);
+            dLdX = ipermute(adLd_,[4 1 2 3 5]);
+            
+            % dLdWi = <dLdZ,(dVdWi)X>
+            nAngles = length(anglesU);
+            dLdW = zeros(nAngles,1,'like',dLdZ);
+            for iAngle = 1:nAngles
+                dUn = fcn_orthonormalmatrixgenerate(anglesU,musU,iAngle);
+                a_ = permute(memory,[4 1 2 3 5]);
+                c_low = reshape(a_(ps+1:ps+pa,:,:,:,:),pa,nrows*ncols*nlays*nSamples);
+                if strcmp(layer.Mode,'Analysis')
+                    c_low = dUn*c_low;
+                else
+                    c_low = dUn.'*c_low;
+                end
+                a_ = zeros(size(a_),'like',dLdZ);
+                a_(ps+1:ps+pa,:,:,:,:) = reshape(c_low,pa,nrows,ncols,nlays,nSamples);
+                dVdW_X = ipermute(a_,[4 1 2 3 5]);
+                %
+                dLdW(iAngle) = sum(dLdZ.*dVdW_X,'all');
+            end
+        end
+        
     end
-
+    
 end
 
