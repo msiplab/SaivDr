@@ -25,7 +25,7 @@ classdef nsoltBlockIdct3dLayerTestCase < matlab.unittest.TestCase
         datatype = { 'single', 'double' };
         height = struct('small', 8,'medium', 16, 'large', 32);
         width = struct('small', 8,'medium', 16, 'large', 32);
-        depth = struct('small', 8,'medium', 16, 'large', 32);        
+        depth = struct('small', 8,'medium', 16, 'large', 32);
     end
     
     methods (TestClassTeardown)
@@ -34,7 +34,7 @@ classdef nsoltBlockIdct3dLayerTestCase < matlab.unittest.TestCase
             layer = nsoltBlockIdct3dLayer(...
                 'DecimationFactor',[2 2 2]);
             fprintf("\n --- Check layer for 3-D images ---\n");
-            checkLayer(layer,[8 8 8 8],'ObservationDimension',5)
+            checkLayer(layer,[4 4 4 8],'ObservationDimension',5)
         end
     end
     
@@ -64,7 +64,7 @@ classdef nsoltBlockIdct3dLayerTestCase < matlab.unittest.TestCase
         
         function testPredict(testCase, ...
                 stride, height, width, depth, datatype)
-            import saivdr.dictionary.utility.Direction            
+            import saivdr.dictionary.utility.Direction
             import matlab.unittest.constraints.IsEqualTo
             import matlab.unittest.constraints.AbsoluteTolerance
             tolObj = AbsoluteTolerance(1e-6,single(1e-6));
@@ -73,7 +73,7 @@ classdef nsoltBlockIdct3dLayerTestCase < matlab.unittest.TestCase
             nSamples = 8;
             nrows = height/stride(Direction.VERTICAL);
             ncols = width/stride(Direction.HORIZONTAL);
-            nlays = depth/stride(Direction.DEPTH);            
+            nlays = depth/stride(Direction.DEPTH);
             nDecs = prod(stride);
             X = rand(nrows,ncols,nlays,nDecs,nSamples,datatype);
             
@@ -105,6 +105,53 @@ classdef nsoltBlockIdct3dLayerTestCase < matlab.unittest.TestCase
                 IsEqualTo(expctdZ,'Within',tolObj));
             
         end
+        
+                
+        function testBackward(testCase, ...
+                stride, height, width, depth, datatype)
+            import saivdr.dictionary.utility.Direction            
+            import matlab.unittest.constraints.IsEqualTo
+            import matlab.unittest.constraints.AbsoluteTolerance
+            tolObj = AbsoluteTolerance(1e-6,single(1e-6));
+            
+            % Parameters
+            nSamples = 8;
+            nComponents = 1;
+            dLdZ = rand(height,width,depth, nComponents,nSamples, datatype);
+            
+            % Expected values
+            nrows = height/stride(Direction.VERTICAL);
+            ncols = width/stride(Direction.HORIZONTAL);
+            nlays = depth/stride(Direction.DEPTH);            
+            ndecs = prod(stride);
+            expctddLdZ = zeros(nrows,ncols,nlays,ndecs,nSamples,datatype);
+            E0 = testCase.getMatrixE0_(stride);
+            for iSample = 1:nSamples
+                % Block DCT
+                Y = testCase.vol2col_(dLdZ(:,:,:,1,iSample),stride,...
+                    [nrows,ncols,nlays]);
+                A = E0*Y;
+                % Rearrange the DCT Coefs.
+                expctddLdZ(:,:,:,:,iSample) = ...
+                    permute(reshape(A,ndecs,nrows,ncols,nlays),[2 3 4 1]);
+            end
+            
+            % Instantiation of target class
+            import saivdr.dcnn.*
+            layer = nsoltBlockIdct3dLayer(...
+                'DecimationFactor',stride,...
+                'Name','E0');
+            
+            % Actual values
+            actualdLdX = layer.backward([],[],dLdZ,[]);
+            
+            % Evaluation
+            testCase.verifyInstanceOf(actualdLdX,datatype);
+            testCase.verifyThat(actualdLdX,...
+                IsEqualTo(expctddLdZ,'Within',tolObj));
+            
+        end
+        
         
     end
     
@@ -139,7 +186,36 @@ classdef nsoltBlockIdct3dLayerTestCase < matlab.unittest.TestCase
             
         end
         
-         function value = getMatrixE0_(decFactor)
+        function y = vol2col_(x,decFactor,nBlocks)
+            import saivdr.dictionary.utility.Direction
+            decY = decFactor(Direction.VERTICAL);
+            decX = decFactor(Direction.HORIZONTAL);
+            decZ = decFactor(Direction.DEPTH);
+            nRows_ = nBlocks(Direction.VERTICAL);
+            nCols_ = nBlocks(Direction.HORIZONTAL);
+            nLays_ = nBlocks(Direction.DEPTH);
+            
+            idx = 0;
+            y = zeros(decY*decX*decZ,nRows_*nCols_*nLays_);
+            for iLay = 1:nLays_
+                idxZ = iLay*decZ;
+                for iCol = 1:nCols_
+                    idxX = iCol*decX;
+                    for iRow = 1:nRows_
+                        idxY = iRow*decY;
+                        idx = idx + 1;
+                        blockData = x(...
+                            idxY-decY+1:idxY,...
+                            idxX-decX+1:idxX,...
+                            idxZ-decZ+1:idxZ);
+                        y(:,idx) = blockData(:);
+                    end
+                end
+            end
+            
+        end
+        
+        function value = getMatrixE0_(decFactor)
             import saivdr.dictionary.utility.Direction
             decY_ = decFactor(Direction.VERTICAL);
             decX_ = decFactor(Direction.HORIZONTAL);

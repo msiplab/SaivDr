@@ -34,7 +34,7 @@ classdef nsoltBlockDct3dLayerTestCase < matlab.unittest.TestCase
             layer = nsoltBlockDct3dLayer(...
                 'DecimationFactor',[2 2 2]);
             fprintf("\n --- Check layer for 3-D images ---\n");
-            checkLayer(layer,[8 8 8 8],'ObservationDimension',5)
+            checkLayer(layer,[8 8 8 1],'ObservationDimension',5)
         end
     end
     
@@ -106,10 +106,85 @@ classdef nsoltBlockDct3dLayerTestCase < matlab.unittest.TestCase
                 IsEqualTo(expctdZ,'Within',tolObj));
             
         end
-
+        
+            
+        function testBackward(testCase, ...
+                stride, height, width, depth, datatype)
+            import saivdr.dictionary.utility.Direction
+            import matlab.unittest.constraints.IsEqualTo
+            import matlab.unittest.constraints.AbsoluteTolerance
+            tolObj = AbsoluteTolerance(1e-6,single(1e-6));
+            
+            % Parameters
+            nSamples = 8;
+            nrows = height/stride(Direction.VERTICAL);
+            ncols = width/stride(Direction.HORIZONTAL);
+            nlays = depth/stride(Direction.DEPTH);
+            nDecs = prod(stride);
+            dLdZ = rand(nrows,ncols,nlays,nDecs,nSamples,datatype);
+            
+            % Expected values
+            expctddLdX = zeros(height,width,depth,datatype);
+            E0_T = transpose(testCase.getMatrixE0_(stride));
+            for iSample = 1:nSamples
+                % Rearrange the DCT coefs
+                A = reshape(permute(dLdZ(:,:,:,:,iSample),[4 1 2 3]),...
+                    nDecs,nrows*ncols*nlays);
+                % Block IDCT
+                Y = E0_T*A;
+                expctddLdX(:,:,:,1,iSample) = testCase.col2vol_(Y,stride,...
+                    [nrows,ncols,nlays]);
+            end
+            
+            % Instantiation of target class
+            import saivdr.dcnn.*
+            layer = nsoltBlockDct3dLayer(...
+                'DecimationFactor',stride,...
+                'Name','E0~');
+            
+            % Actual values
+            actualdLdX = layer.backward([],[],dLdZ,[]);
+            
+            % Evaluation
+            testCase.verifyInstanceOf(actualdLdX,datatype);
+            testCase.verifyThat(actualdLdX,...
+                IsEqualTo(expctddLdX,'Within',tolObj));
+            
+        end
+            
+        
     end
     
     methods (Static, Access = private)
+        
+        function x = col2vol_(y,decFactor,nBlocks)
+            import saivdr.dictionary.utility.Direction
+            decY = decFactor(Direction.VERTICAL);
+            decX = decFactor(Direction.HORIZONTAL);
+            decZ = decFactor(Direction.DEPTH);
+            nRows_ = nBlocks(Direction.VERTICAL);
+            nCols_ = nBlocks(Direction.HORIZONTAL);
+            nLays_ = nBlocks(Direction.DEPTH);
+            
+            idx = 0;
+            x = zeros(decY*nRows_,decX*nCols_,decZ*nLays_);
+            for iLay = 1:nLays_
+                idxZ = iLay*decZ;
+                for iCol = 1:nCols_
+                    idxX = iCol*decX;
+                    for iRow = 1:nRows_
+                        idxY = iRow*decY;
+                        idx = idx + 1;
+                        blockData = y(:,idx);
+                        x(idxY-decY+1:idxY,...
+                            idxX-decX+1:idxX,...
+                            idxZ-decZ+1:idxZ) = ...
+                            reshape(blockData,decY,decX,decZ);
+                    end
+                end
+            end
+            
+        end
         
         function y = vol2col_(x,decFactor,nBlocks)
             import saivdr.dictionary.utility.Direction
