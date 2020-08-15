@@ -84,7 +84,7 @@ classdef nsoltInitialRotation2dLayer < nnet.layer.Layer
             % Outputs:
             %         Z           - Outputs of layer forward function
             %
-            import saivdr.dcnn.fcn_orthonormalmatrixgenerate
+            import saivdr.dcnn.fcn_orthmtxgen
             
             % Layer forward function for prediction goes here.
             nrows = size(X,1);
@@ -110,8 +110,8 @@ classdef nsoltInitialRotation2dLayer < nnet.layer.Layer
             muU = layer.Mus(ps+1:end);
             anglesW = layer.Angles(1:length(layer.Angles)/2);
             anglesU = layer.Angles(length(layer.Angles)/2+1:end);
-            W0 = fcn_orthonormalmatrixgenerate(anglesW,muW);
-            U0 = fcn_orthonormalmatrixgenerate(anglesU,muU);
+            W0 = fcn_orthmtxgen(anglesW,muW);
+            U0 = fcn_orthmtxgen(anglesU,muU);
             
             Y = reshape(permute(X,[3 1 2 4]),nDecs,nrows*ncols*nSamples);
             Zs = W0(:,1:nDecs/2)*Y(1:nDecs/2,:);
@@ -137,7 +137,7 @@ classdef nsoltInitialRotation2dLayer < nnet.layer.Layer
             %                             inputs
             %         dLdW1, ..., dLdWk - Derivatives of the loss with respect to each
             %
-            import saivdr.dcnn.fcn_orthonormalmatrixgenerate
+            import saivdr.dcnn.fcn_orthmtxgen
             
             nrows = size(dLdZ,1);
             ncols = size(dLdZ,2);
@@ -162,8 +162,8 @@ classdef nsoltInitialRotation2dLayer < nnet.layer.Layer
             muU = layer.Mus(ps+1:end);
             anglesW = layer.Angles(1:length(layer.Angles)/2);
             anglesU = layer.Angles(length(layer.Angles)/2+1:end);
-            W0T = transpose(fcn_orthonormalmatrixgenerate(anglesW,muW,0));
-            U0T = transpose(fcn_orthonormalmatrixgenerate(anglesU,muU,0));
+            W0T = transpose(fcn_orthmtxgen(anglesW,muW,0));
+            U0T = transpose(fcn_orthmtxgen(anglesU,muU,0));
             
             % Layer backward function goes here.
             % dLdX = dZdX x dLdZ
@@ -181,8 +181,8 @@ classdef nsoltInitialRotation2dLayer < nnet.layer.Layer
             dldz_low = reshape(dldz_(ps+1:ps+pa,:,:,:),pa,nrows*ncols*nSamples);
             % (dVdWi)X
             for iAngle = 1:nAngles/2
-                dW0 = fcn_orthonormalmatrixgenerate(anglesW,muW,iAngle);
-                dU0 = fcn_orthonormalmatrixgenerate(anglesU,muU,iAngle);
+                dW0 = fcn_orthmtxgen(anglesW,muW,iAngle);
+                dU0 = fcn_orthmtxgen(anglesU,muU,iAngle);
                 a_ = permute(X,[3 1 2 4]);
                 c_upp = reshape(a_(1:nDecs/2,:,:,:),nDecs/2,nrows*ncols*nSamples);
                 c_low = reshape(a_(nDecs/2+1:nDecs,:,:,:),nDecs/2,nrows*ncols*nSamples);

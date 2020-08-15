@@ -87,7 +87,7 @@ classdef nsoltFinalRotation3dLayer < nnet.layer.Layer
             % Outputs:
             %         Z           - Outputs of layer forward function
             %
-            import saivdr.dcnn.fcn_orthonormalmatrixgenerate
+            import saivdr.dcnn.fcn_orthmtxgen
             
             % Layer forward function for prediction goes here.
             nrows = size(X,1);
@@ -113,8 +113,8 @@ classdef nsoltFinalRotation3dLayer < nnet.layer.Layer
             muU = layer.Mus(ps+1:end);
             anglesW = layer.Angles(1:length(layer.Angles)/2);
             anglesU = layer.Angles(length(layer.Angles)/2+1:end);
-            W0T = transpose(fcn_orthonormalmatrixgenerate(anglesW,muW));
-            U0T = transpose(fcn_orthonormalmatrixgenerate(anglesU,muU));
+            W0T = transpose(fcn_orthmtxgen(anglesW,muW));
+            U0T = transpose(fcn_orthmtxgen(anglesU,muU));
             
             Y = permute(X,[4 1 2 3 5]);
             Ys = reshape(Y(1:ps,:,:,:,:),ps,nrows*ncols*nlays*nSamples);
@@ -166,8 +166,8 @@ classdef nsoltFinalRotation3dLayer < nnet.layer.Layer
             
             % Layer backward function goes here.
             % dLdX = dZdX x dLdZ
-            W0 = fcn_orthonormalmatrixgenerate(anglesW,muW,0);
-            U0 = fcn_orthonormalmatrixgenerate(anglesU,muU,0);
+            W0 = fcn_orthmtxgen(anglesW,muW,0);
+            U0 = fcn_orthmtxgen(anglesU,muU,0);
             adldz_ = permute(dLdZ,[4 1 2 3 5]);
             cdLd_ = reshape(adldz_,nDecs,nrows*ncols*nlays*nSamples);
             cdLd_upp = W0(:,1:nDecs/2)*cdLd_(1:nDecs/2,:);
@@ -182,8 +182,8 @@ classdef nsoltFinalRotation3dLayer < nnet.layer.Layer
             dldz_upp = reshape(dldz_(1:nDecs/2,:,:,:),nDecs/2,nrows*ncols*nlays*nSamples);
             dldz_low = reshape(dldz_(nDecs/2+1:nDecs,:,:,:),nDecs/2,nrows*ncols*nlays*nSamples);
             for iAngle = 1:nAngles/2
-                dW0_T = transpose(fcn_orthonormalmatrixgenerate(anglesW,muW,iAngle));
-                dU0_T = transpose(fcn_orthonormalmatrixgenerate(anglesU,muU,iAngle));
+                dW0_T = transpose(fcn_orthmtxgen(anglesW,muW,iAngle));
+                dU0_T = transpose(fcn_orthmtxgen(anglesU,muU,iAngle));
                 a_ = permute(X,[4 1 2 3 5]);
                 c_upp = reshape(a_(1:ps,:,:,:),ps,nrows*ncols*nlays*nSamples);
                 c_low = reshape(a_(ps+1:ps+pa,:,:,:),pa,nrows*ncols*nlays*nSamples);

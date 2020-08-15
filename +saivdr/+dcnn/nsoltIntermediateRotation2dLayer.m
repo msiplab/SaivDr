@@ -86,7 +86,7 @@ classdef nsoltIntermediateRotation2dLayer < nnet.layer.Layer
                 musU = layer.Mus;
             end
             anglesU = layer.Angles;
-            Un = fcn_orthonormalmatrixgenerate(anglesU,musU);
+            Un = fcn_orthmtxgen(anglesU,musU);
             %
             Y = permute(X,[3 1 2 4]);
             Ya = reshape(Y(ps+1:ps+pa,:,:,:),pa,nrows*ncols*nSamples);
@@ -130,7 +130,7 @@ classdef nsoltIntermediateRotation2dLayer < nnet.layer.Layer
             
             % Layer backward function goes here.
             % dLdX = dZdX x dLdZ
-            Un = fcn_orthonormalmatrixgenerate(anglesU,musU,0);
+            Un = fcn_orthmtxgen(anglesU,musU,0);
             adLd_ = permute(dLdZ,[3 1 2 4]);
             cdLd_low = reshape(adLd_(ps+1:ps+pa,:,:,:),...
                 pa,nrows*ncols*nSamples);
@@ -147,7 +147,7 @@ classdef nsoltIntermediateRotation2dLayer < nnet.layer.Layer
             nAngles = length(anglesU);
             dLdW = zeros(nAngles,1,'like',dLdZ);
             for iAngle = 1:nAngles
-                dUn = fcn_orthonormalmatrixgenerate(anglesU,musU,iAngle);
+                dUn = fcn_orthmtxgen(anglesU,musU,iAngle);
                 a_ = permute(X,[3 1 2 4]);
                 c_low = reshape(a_(ps+1:ps+pa,:,:,:),pa,nrows*ncols*nSamples);
                 if strcmp(layer.Mode,'Analysis')                
