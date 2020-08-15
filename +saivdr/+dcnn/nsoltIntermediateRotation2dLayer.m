@@ -85,12 +85,9 @@ classdef nsoltIntermediateRotation2dLayer < nnet.layer.Layer
             else
                 musU = layer.Mus;
             end
-            if isempty(layer.Angles)
-                Un = musU*eye(pa);
-            else
-                anglesU = layer.Angles;
-                Un = fcn_orthonormalmatrixgenerate(anglesU,musU);
-            end
+            anglesU = layer.Angles;
+            Un = fcn_orthonormalmatrixgenerate(anglesU,musU);
+            %
             Y = permute(X,[3 1 2 4]);
             Ya = reshape(Y(ps+1:ps+pa,:,:,:),pa,nrows*ncols*nSamples);
             if strcmp(layer.Mode,'Analysis')

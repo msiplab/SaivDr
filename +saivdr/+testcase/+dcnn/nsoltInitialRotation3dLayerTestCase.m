@@ -201,8 +201,9 @@ classdef nsoltInitialRotation3dLayerTestCase < matlab.unittest.TestCase
             % nRows x nCols x nLays x nChs x nSamples
             ps = nchs(1);
             pa = nchs(2);
+            % TODO: mus
             anglesNoDc = angles;
-            anglesNoDc(1:length(angles)/2-1,1)=zeros(length(angles)/2-1,1);
+            anglesNoDc(1:ps-1,1)=zeros(ps-1,1);
             W0 = genW.step(anglesNoDc(1:length(angles)/2),1);
             U0 = genU.step(anglesNoDc(length(angles)/2+1:end),1);
             expctdZ = zeros(nrows,ncols,nlays,nChsTotal,nSamples,datatype);

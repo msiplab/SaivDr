@@ -132,6 +132,7 @@ classdef nsoltFinalRotation3dLayerTestCase < matlab.unittest.TestCase
             % nRows x nCols x nLays x nDecs x nSamples
             ps = nchs(1);
             pa = nchs(2);
+            % TODO: mus
             W0T = transpose(genW.step(angles(1:length(angles)/2),1));
             U0T = transpose(genU.step(angles(length(angles)/2+1:end),1));
             Y = permute(X,[4 1 2 3 5]);
@@ -182,7 +183,7 @@ classdef nsoltFinalRotation3dLayerTestCase < matlab.unittest.TestCase
             ps = nchs(1);
             pa = nchs(2);
             anglesNoDc = angles;
-            anglesNoDc(1:length(angles)/2-1,1)=zeros(length(angles)/2-1,1);
+            anglesNoDc(1:ps-1,1)=zeros(ps-1,1);
             W0T = transpose(genW.step(anglesNoDc(1:length(angles)/2),1));
             U0T = transpose(genU.step(anglesNoDc(length(angles)/2+1:end),1));
             Y = permute(X,[4 1 2 3 5]);

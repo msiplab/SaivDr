@@ -158,7 +158,7 @@ classdef nsoltIntermediateRotation3dLayerTestCase < matlab.unittest.TestCase
             
             import matlab.unittest.constraints.IsEqualTo
             import matlab.unittest.constraints.AbsoluteTolerance
-            tolObj = AbsoluteTolerance(1e-6,single(1e-6));
+            tolObj = AbsoluteTolerance(1e-5,single(1e-5));
             import saivdr.dictionary.utility.*
             genU = OrthonormalMatrixGenerationSystem();
             

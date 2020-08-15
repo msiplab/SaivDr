@@ -70,7 +70,7 @@ classdef nsoltIntermediateRotation3dLayer < nnet.layer.Layer
             %         X1, ..., Xn - Input data (n: # of components)
             % Outputs:
             %         Z           - Outputs of layer forward function
-            %  
+            %
             import saivdr.dcnn.*
             
             % Layer forward function for prediction goes here.
@@ -86,12 +86,9 @@ classdef nsoltIntermediateRotation3dLayer < nnet.layer.Layer
             else
                 musU = layer.Mus;
             end
-            if isempty(layer.Angles)
-                Un = musU*eye(pa);
-            else
-                anglesU = layer.Angles;
-                Un = fcn_orthonormalmatrixgenerate(anglesU,musU);
-            end
+            anglesU = layer.Angles;
+            Un = fcn_orthonormalmatrixgenerate(anglesU,musU);
+            
             Y = permute(X,[4 1 2 3 5]);
             Ya = reshape(Y(ps+1:ps+pa,:,:,:,:),pa,nrows*ncols*nlays*nSamples);
             if strcmp(layer.Mode,'Analysis')

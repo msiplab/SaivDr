@@ -109,19 +109,15 @@ classdef nsoltFinalRotation3dLayer < nnet.layer.Layer
                 muW = layer.Mus(1:ps);
                 muU = layer.Mus(ps+1:end);
             end
-            if isempty(layer.Angles)
-                W0T = eye(ps);
-                U0T = eye(pa);
-            else
-                if layer.NoDcLeakage
-                    layer.Angles(1:length(layer.Angles)/2-1) = ...
-                        zeros(length(layer.Angles)/2-1,1,'like',layer.Angles);
-                end
-                anglesW = layer.Angles(1:length(layer.Angles)/2);
-                anglesU = layer.Angles(length(layer.Angles)/2+1:end);
-                W0T = transpose(fcn_orthonormalmatrixgenerate(anglesW,muW));
-                U0T = transpose(fcn_orthonormalmatrixgenerate(anglesU,muU));
+            if layer.NoDcLeakage
+                layer.Angles(1:ps-1) = ...
+                    zeros(ps-1,1,'like',layer.Angles);
             end
+            anglesW = layer.Angles(1:length(layer.Angles)/2);
+            anglesU = layer.Angles(length(layer.Angles)/2+1:end);
+            W0T = transpose(fcn_orthonormalmatrixgenerate(anglesW,muW));
+            U0T = transpose(fcn_orthonormalmatrixgenerate(anglesU,muU));
+            
             Y = permute(X,[4 1 2 3 5]);
             Ys = reshape(Y(1:ps,:,:,:,:),ps,nrows*ncols*nlays*nSamples);
             Ya = reshape(Y(ps+1:ps+pa,:,:,:,:),pa,nrows*ncols*nlays*nSamples);

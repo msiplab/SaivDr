@@ -100,6 +100,7 @@ classdef nsoltInitialRotation3dLayer < nnet.layer.Layer
             nChsTotal = ps + pa;
             %
             if isempty(layer.Mus)
+                layer.Mus = 1;
                 muW = 1;
                 muU = 1;
             else
@@ -109,19 +110,15 @@ classdef nsoltInitialRotation3dLayer < nnet.layer.Layer
                 muW = layer.Mus(1:ps);
                 muU = layer.Mus(ps+1:end);
             end
-            if isempty(layer.Angles)
-                W0 = eye(ps);
-                U0 = eye(pa);
-            else
-                if layer.NoDcLeakage
-                    layer.Angles(1:length(layer.Angles)/2-1) = ...
-                        zeros(length(layer.Angles)/2-1,1,'like',layer.Angles);
-                end
-                anglesW = layer.Angles(1:length(layer.Angles)/2);
-                anglesU = layer.Angles(length(layer.Angles)/2+1:end);
-                W0 = fcn_orthonormalmatrixgenerate(anglesW,muW);
-                U0 = fcn_orthonormalmatrixgenerate(anglesU,muU);
+            if layer.NoDcLeakage
+                layer.Angles(1:ps-1) = ...
+                    zeros(ps-1,1,'like',layer.Angles);
             end
+            anglesW = layer.Angles(1:length(layer.Angles)/2);
+            anglesU = layer.Angles(length(layer.Angles)/2+1:end);
+            W0 = fcn_orthonormalmatrixgenerate(anglesW,muW);
+            U0 = fcn_orthonormalmatrixgenerate(anglesU,muU);
+            
             Y = reshape(permute(X,[4 1 2 3 5]),nDecs,nrows*ncols*nlays*nSamples);
             Zs = W0(:,1:nDecs/2)*Y(1:nDecs/2,:);
             Za = U0(:,1:nDecs/2)*Y(nDecs/2+1:end,:);
