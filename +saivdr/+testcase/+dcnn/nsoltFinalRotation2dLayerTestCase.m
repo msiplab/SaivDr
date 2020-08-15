@@ -329,8 +329,8 @@ classdef nsoltFinalRotation2dLayerTestCase < matlab.unittest.TestCase
             nDecs = prod(stride);
             nChsTotal = sum(nchs);
             nAnglesH = (nChsTotal-2)*nChsTotal/8;
-            anglesW = randn(nAnglesH,1);
-            anglesU = randn(nAnglesH,1);
+            anglesW = randn(nAnglesH,1,datatype);
+            anglesU = randn(nAnglesH,1,datatype);
             mus_ = 1;
             
             % nRows x nCols x nDecs x nSamples
@@ -427,8 +427,8 @@ classdef nsoltFinalRotation2dLayerTestCase < matlab.unittest.TestCase
             nDecs = prod(stride);
             nChsTotal = sum(nchs);
             nAnglesH = (nChsTotal-2)*nChsTotal/8;
-            anglesW = randn(nAnglesH,1);
-            anglesU = randn(nAnglesH,1);
+            anglesW = randn(nAnglesH,1,datatype);
+            anglesU = randn(nAnglesH,1,datatype);
             
             % nRows x nCols x nDecs x nSamples
             X = randn(nrows,ncols,sum(nchs),nSamples,datatype);
