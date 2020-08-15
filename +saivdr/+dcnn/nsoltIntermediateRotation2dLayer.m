@@ -153,7 +153,11 @@ classdef nsoltIntermediateRotation2dLayer < nnet.layer.Layer
             adLd_ = permute(dLdZ,[3 1 2 4]);
             cdLd_low = reshape(adLd_(ps+1:ps+pa,:,:,:),...
                 pa,nrows*ncols*nSamples);
-            cdLd_low = Un*cdLd_low;
+            if strcmp(layer.Mode,'Analysis')
+                cdLd_low = Un.'*cdLd_low;                
+            else
+                cdLd_low = Un*cdLd_low;                
+            end
             adLd_(ps+1:ps+pa,:,:,:) = reshape(cdLd_low,...
                 pa,nrows,ncols,nSamples);
             dLdX = ipermute(adLd_,[3 1 2 4]);
@@ -162,11 +166,14 @@ classdef nsoltIntermediateRotation2dLayer < nnet.layer.Layer
             nAngles = length(anglesU);
             dLdW = zeros(nAngles,1,'like',dLdZ);
             for iAngle = 1:nAngles
-                dUn_T = transpose(...
-                    fcn_orthonormalmatrixgenerate(anglesU,musU,iAngle));
+                dUn = fcn_orthonormalmatrixgenerate(anglesU,musU,iAngle);
                 a_ = permute(memory,[3 1 2 4]);
                 c_low = reshape(a_(ps+1:ps+pa,:,:,:),pa,nrows*ncols*nSamples);
-                c_low = dUn_T*c_low;
+                if strcmp(layer.Mode,'Analysis')                
+                    c_low = dUn*c_low;
+                else
+                    c_low = dUn.'*c_low;
+                end
                 a_ = zeros(size(a_),'like',dLdZ);
                 a_(ps+1:ps+pa,:,:,:) = reshape(c_low,pa,nrows,ncols,nSamples);
                 dVdW_X = ipermute(a_,[3 1 2 4]);
