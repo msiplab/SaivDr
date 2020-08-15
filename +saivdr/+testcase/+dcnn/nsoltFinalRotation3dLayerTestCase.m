@@ -23,6 +23,7 @@ classdef nsoltFinalRotation3dLayerTestCase < matlab.unittest.TestCase
     properties (TestParameter)
         nchs = { [4 4], [5 5] };
         stride = { [2 2 2], [1 2 4] };
+        mus = { -1, 1 };
         datatype = { 'single', 'double' };
         nrows = struct('small', 4,'medium', 8, 'large', 16);
         ncols = struct('small', 4,'medium', 8, 'large', 16);
@@ -132,7 +133,6 @@ classdef nsoltFinalRotation3dLayerTestCase < matlab.unittest.TestCase
             % nRows x nCols x nLays x nDecs x nSamples
             ps = nchs(1);
             pa = nchs(2);
-            % TODO: mus
             W0T = transpose(genW.step(angles(1:length(angles)/2),1));
             U0T = transpose(genU.step(angles(length(angles)/2+1:end),1));
             Y = permute(X,[4 1 2 3 5]);
@@ -161,7 +161,7 @@ classdef nsoltFinalRotation3dLayerTestCase < matlab.unittest.TestCase
         end
         
         function testPredictGrayscaleWithRandomAnglesNoDcLeackage(testCase, ...
-                nchs, stride, nrows, ncols, nlays, datatype)
+                nchs, stride, nrows, ncols, nlays, mus, datatype)
             
             import matlab.unittest.constraints.IsEqualTo
             import matlab.unittest.constraints.AbsoluteTolerance
@@ -184,8 +184,11 @@ classdef nsoltFinalRotation3dLayerTestCase < matlab.unittest.TestCase
             pa = nchs(2);
             anglesNoDc = angles;
             anglesNoDc(1:ps-1,1)=zeros(ps-1,1);
-            W0T = transpose(genW.step(anglesNoDc(1:length(angles)/2),1));
-            U0T = transpose(genU.step(anglesNoDc(length(angles)/2+1:end),1));
+            musW = mus*ones(ps,1);
+            musW(1,1) = 1;
+            musU = mus*ones(pa,1);
+            W0T = transpose(genW.step(anglesNoDc(1:length(angles)/2),musW));
+            U0T = transpose(genU.step(anglesNoDc(length(angles)/2+1:end),musU));
             Y = permute(X,[4 1 2 3 5]);
             Ys = reshape(Y(1:ps,:,:,:,:),ps,nrows*ncols*nlays*nSamples);
             Ya = reshape(Y(ps+1:ps+pa,:,:,:,:),pa,nrows*ncols*nlays*nSamples);
@@ -202,6 +205,7 @@ classdef nsoltFinalRotation3dLayerTestCase < matlab.unittest.TestCase
                 'Name','V0~');
             
             % Actual values
+            layer.Mus = mus;
             layer.Angles = angles;
             actualZ = layer.predict(X);
             

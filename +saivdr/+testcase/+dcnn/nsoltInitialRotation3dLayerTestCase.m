@@ -23,6 +23,7 @@ classdef nsoltInitialRotation3dLayerTestCase < matlab.unittest.TestCase
     properties (TestParameter)
         nchs = { [4 4], [5 5] };
         stride = { [2 2 2], [1 2 4] };
+        mus = { -1, 1 };
         datatype = { 'single', 'double' };
         nrows = struct('small', 4,'medium', 8, 'large', 16);
         ncols = struct('small', 4,'medium', 8, 'large', 16);        
@@ -180,7 +181,7 @@ classdef nsoltInitialRotation3dLayerTestCase < matlab.unittest.TestCase
         end
         
         function testPredictGrayscaleWithRandomAnglesNoDcLeackage(testCase, ...
-                nchs, stride, nrows, ncols, nlays, datatype)
+                nchs, stride, nrows, ncols, nlays, mus, datatype)
             
             import matlab.unittest.constraints.IsEqualTo
             import matlab.unittest.constraints.AbsoluteTolerance
@@ -201,11 +202,13 @@ classdef nsoltInitialRotation3dLayerTestCase < matlab.unittest.TestCase
             % nRows x nCols x nLays x nChs x nSamples
             ps = nchs(1);
             pa = nchs(2);
-            % TODO: mus
             anglesNoDc = angles;
             anglesNoDc(1:ps-1,1)=zeros(ps-1,1);
-            W0 = genW.step(anglesNoDc(1:length(angles)/2),1);
-            U0 = genU.step(anglesNoDc(length(angles)/2+1:end),1);
+            musW = mus*ones(ps,1);
+            musW(1,1) = 1;
+            musU = mus*ones(pa,1);
+            W0 = genW.step(anglesNoDc(1:length(angles)/2),musW);
+            U0 = genU.step(anglesNoDc(length(angles)/2+1:end),musU);
             expctdZ = zeros(nrows,ncols,nlays,nChsTotal,nSamples,datatype);
             Y  = zeros(nChsTotal,nrows,ncols,nlays,datatype);
             for iSample=1:nSamples
@@ -231,6 +234,7 @@ classdef nsoltInitialRotation3dLayerTestCase < matlab.unittest.TestCase
                 'Name','V0~');
             
             % Actual values
+            layer.Mus = mus;
             layer.Angles = angles;
             actualZ = layer.predict(X);
             

@@ -100,20 +100,17 @@ classdef nsoltInitialRotation3dLayer < nnet.layer.Layer
             nChsTotal = ps + pa;
             %
             if isempty(layer.Mus)
-                layer.Mus = 1;
-                muW = 1;
-                muU = 1;
-            else
-                if layer.NoDcLeakage
-                    layer.Mus(1) = 1;
-                end
-                muW = layer.Mus(1:ps);
-                muU = layer.Mus(ps+1:end);
+                layer.Mus = ones(ps+pa,1);
+            elseif isscalar(layer.Mus)
+                layer.Mus = layer.Mus*ones(ps+pa,1);
             end
             if layer.NoDcLeakage
+                layer.Mus(1) = 1;
                 layer.Angles(1:ps-1) = ...
                     zeros(ps-1,1,'like',layer.Angles);
             end
+            muW = layer.Mus(1:ps);
+            muU = layer.Mus(ps+1:end);    
             anglesW = layer.Angles(1:length(layer.Angles)/2);
             anglesU = layer.Angles(length(layer.Angles)/2+1:end);
             W0 = fcn_orthonormalmatrixgenerate(anglesW,muW);
