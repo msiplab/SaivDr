@@ -203,6 +203,164 @@ classdef nsoltIntermediateRotation2dLayerTestCase < matlab.unittest.TestCase
             
         end
         
+        function testForwardBackwardGrayscale(testCase, ...
+                nchs, nrows, ncols, mus, datatype)
+            
+            import matlab.unittest.constraints.IsEqualTo
+            import matlab.unittest.constraints.AbsoluteTolerance
+            tolObj = AbsoluteTolerance(1e-4,single(1e-4));
+            import saivdr.dictionary.utility.*
+            genU = OrthonormalMatrixGenerationSystem(...
+                'PartialDifference','on');
+            
+            % Parameters
+            nSamples = 8;
+            nChsTotal = sum(nchs);
+            nAngles = (nChsTotal-2)*nChsTotal/8;
+            angles = zeros(nAngles,1,datatype);
+            
+            % nRows x nCols x nChsTotal x nSamples
+            X = randn(nrows,ncols,nChsTotal,nSamples,datatype);            
+            dLdZ = randn(nrows,ncols,nChsTotal,nSamples,datatype);
+
+            % Expected values
+            expctdMem = X;
+            % nRows x nCols x nChsTotal x nSamples
+            ps = nchs(1);
+            pa = nchs(2);
+            
+            % dLdX = dZdX x dLdZ
+            Un = genU.step(angles,mus,0);
+            adLd_ = permute(dLdZ,[3 1 2 4]);
+            cdLd_low = reshape(adLd_(ps+1:ps+pa,:,:,:),pa,nrows*ncols*nSamples);
+            cdLd_low = Un*cdLd_low;
+            adLd_(ps+1:ps+pa,:,:,:) = reshape(cdLd_low,pa,nrows,ncols,nSamples);
+            expctddLdX = ipermute(adLd_,[3 1 2 4]);           
+            
+            % dLdWi = <dLdZ,(dVdWi)X>
+            expctddLdW = zeros(nAngles,1,datatype);
+            for iAngle = 1:nAngles
+                dUn_T = transpose(genU.step(angles,mus,iAngle));
+                a_ = permute(X,[3 1 2 4]);
+                c_low = reshape(a_(ps+1:ps+pa,:,:,:),pa,nrows*ncols*nSamples);
+                c_low = dUn_T*c_low;
+                a_ = zeros(size(a_),datatype);
+                a_(ps+1:ps+pa,:,:,:) = reshape(c_low,pa,nrows,ncols,nSamples);
+                dVdW_X = ipermute(a_,[3 1 2 4]);
+                %
+                expctddLdW(iAngle) = sum(dLdZ.*dVdW_X,'all');
+            end
+            
+            % Instantiation of target class
+            import saivdr.dcnn.*
+            layer = nsoltIntermediateRotation2dLayer(...
+                'NumberOfChannels',nchs,...
+                'Name','Vn~');
+            layer.Mus = mus;
+            expctdZ = layer.predict(X);
+            
+            % Actual values
+            [actualZ,actualMem] = layer.forward(X);
+            [actualdLdX,actualdLdW] = layer.backward([],[],dLdZ,actualMem);
+            
+            % Evaluation
+            testCase.verifyInstanceOf(actualMem,datatype);            
+            testCase.verifyInstanceOf(actualZ,datatype);                        
+            testCase.verifyInstanceOf(actualdLdX,datatype);
+            testCase.verifyInstanceOf(actualdLdW,datatype);            
+            testCase.verifyThat(actualMem,...
+                IsEqualTo(expctdMem,'Within',tolObj));
+            testCase.verifyThat(actualZ,...
+                IsEqualTo(expctdZ,'Within',tolObj));
+            testCase.verifyThat(actualdLdX,...
+                IsEqualTo(expctddLdX,'Within',tolObj));            
+            testCase.verifyThat(actualdLdW,...
+                IsEqualTo(expctddLdW,'Within',tolObj));                        
+        end
+        
+        function testForwardBackwardGrayscaleWithRandomAngles(testCase, ...
+                nchs, nrows, ncols, mus, datatype)
+    
+            import matlab.unittest.constraints.IsEqualTo
+            import matlab.unittest.constraints.AbsoluteTolerance
+            tolObj = AbsoluteTolerance(1e-4,single(1e-4));
+            import saivdr.dictionary.utility.*
+            genU = OrthonormalMatrixGenerationSystem(...
+                'PartialDifference','on');
+            
+            % Parameters
+            nSamples = 8;
+            nChsTotal = sum(nchs);
+            nAngles = (nChsTotal-2)*nChsTotal/8;
+            angles = randn((nChsTotal-2)*nChsTotal/8,1);
+                 
+            % nRows x nCols x nChsTotal x nSamples
+            X = randn(nrows,ncols,nChsTotal,nSamples,datatype);            
+            dLdZ = randn(nrows,ncols,nChsTotal,nSamples,datatype);
+
+            % Expected values
+            expctdMem = X;
+            % nRows x nCols x nChsTotal x nSamples
+            ps = nchs(1);
+            pa = nchs(2);
+            
+            % dLdX = dZdX x dLdZ
+            Un = genU.step(angles,mus,0);
+            adLd_ = permute(dLdZ,[3 1 2 4]);
+            cdLd_low = reshape(adLd_(ps+1:ps+pa,:,:,:),pa,nrows*ncols*nSamples);
+            cdLd_low = Un*cdLd_low;
+            adLd_(ps+1:ps+pa,:,:,:) = reshape(cdLd_low,pa,nrows,ncols,nSamples);
+            expctddLdX = ipermute(adLd_,[3 1 2 4]);           
+            
+            % dLdWi = <dLdZ,(dVdWi)X>
+            expctddLdW = zeros(nAngles,1,datatype);
+            for iAngle = 1:nAngles
+                dUn_T = transpose(genU.step(angles,mus,iAngle));
+                a_ = permute(X,[3 1 2 4]);
+                c_low = reshape(a_(ps+1:ps+pa,:,:,:),pa,nrows*ncols*nSamples);
+                c_low = dUn_T*c_low;
+                a_ = zeros(size(a_),datatype);
+                a_(ps+1:ps+pa,:,:,:) = reshape(c_low,pa,nrows,ncols,nSamples);
+                dVdW_X = ipermute(a_,[3 1 2 4]);
+                %
+                expctddLdW(iAngle) = sum(dLdZ.*dVdW_X,'all');
+            end
+            
+            % Instantiation of target class
+            import saivdr.dcnn.*
+            layer = nsoltIntermediateRotation2dLayer(...
+                'NumberOfChannels',nchs,...
+                'Name','Vn~');
+            layer.Mus = mus;
+            layer.Angles = angles;            
+            expctdZ = layer.predict(X);
+            
+            % Actual values
+            [actualZ,actualMem] = layer.forward(X);
+            [actualdLdX,actualdLdW] = layer.backward([],[],dLdZ,actualMem);
+            
+            % Evaluation
+            testCase.verifyInstanceOf(actualMem,datatype);            
+            testCase.verifyInstanceOf(actualZ,datatype);                        
+            testCase.verifyInstanceOf(actualdLdX,datatype);
+            testCase.verifyInstanceOf(actualdLdW,datatype);            
+            testCase.verifyThat(actualMem,...
+                IsEqualTo(expctdMem,'Within',tolObj));
+            testCase.verifyThat(actualZ,...
+                IsEqualTo(expctdZ,'Within',tolObj));
+            testCase.verifyThat(actualdLdX,...
+                IsEqualTo(expctddLdX,'Within',tolObj));            
+            testCase.verifyThat(actualdLdW,...
+                IsEqualTo(expctddLdW,'Within',tolObj));                          
+        end
+        
+        %{
+        
+        function testForwardBackwardGrayscaleAnalysisMode(testCase, ...
+                nchs, nrows, ncols, mus, datatype)
+            
+        end
+        %}
     end
     
 end

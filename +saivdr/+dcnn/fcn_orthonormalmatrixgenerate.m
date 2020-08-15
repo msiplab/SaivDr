@@ -23,15 +23,16 @@ if nargin < 3
     pdAng = 0;
 end
 
+nDim_ = (1+sqrt(1+8*length(angles)))/2;
 if isempty(angles)
-    matrix = diag(mus);
+    matrix = zeros(nDim_);
 else
-    nDim_ = (1+sqrt(1+8*length(angles)))/2;
-    %matrix = eye(nDim_,'like',angles);
     matrix = zeros(nDim_,'like',angles);
-    for idx = 1:nDim_
-        matrix(idx,idx) = 1;
-    end
+end
+for idx = 1:nDim_
+    matrix(idx,idx) = 1;
+end
+if ~isempty(angles)
     iAng = 1;
     for iTop=1:nDim_-1
         vt = matrix(iTop,:);
@@ -57,7 +58,13 @@ else
         end
         matrix(iTop,:) = vt;
     end
-    matrix = diag(mus)*matrix;
+end
+if isscalar(mus)
+    matrix = mus*matrix;
+elseif ~isempty(mus)
+    for idx = 1:nDim_
+        matrix(idx,:) = mus(idx)*matrix(idx,:);
+    end
 end
 end
 
