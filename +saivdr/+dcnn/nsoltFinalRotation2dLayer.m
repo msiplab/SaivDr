@@ -97,31 +97,22 @@ classdef nsoltFinalRotation2dLayer < nnet.layer.Layer
             nDecs = prod(stride);
             %
             if isempty(layer.Mus)
-                muW = 1;
-                muU = 1;
+                layer.Mus = ones(ps+pa,1);
             elseif isscalar(layer.Mus)
-                muW = layer.Mus;
-                muU = layer.Mus;
-            else
-                muW = layer.Mus(1:ps);
-                muU = layer.Mus(ps+1:end);
+                layer.Mus = layer.Mus*ones(ps+pa,1);
             end
             if layer.NoDcLeakage
                 layer.Mus(1) = 1;
-            end
-            if isempty(layer.Angles)
-                W0T = eye(ps);
-                U0T = eye(pa);
-            else
-                if layer.NoDcLeakage
-                    layer.Angles(1:length(layer.Angles)/2-1) = ...
-                        zeros(length(layer.Angles)/2-1,1,'like',layer.Angles);
-                end
-                anglesW = layer.Angles(1:length(layer.Angles)/2);
-                anglesU = layer.Angles(length(layer.Angles)/2+1:end);
-                W0T = transpose(fcn_orthonormalmatrixgenerate(anglesW,muW));
-                U0T = transpose(fcn_orthonormalmatrixgenerate(anglesU,muU));
-            end
+                layer.Angles(1:ps-1) = ...
+                    zeros(ps-1,1,'like',layer.Angles);
+            end            
+            muW = layer.Mus(1:ps);
+            muU = layer.Mus(ps+1:end);
+            anglesW = layer.Angles(1:length(layer.Angles)/2);
+            anglesU = layer.Angles(length(layer.Angles)/2+1:end);
+            W0T = transpose(fcn_orthonormalmatrixgenerate(anglesW,muW));
+            U0T = transpose(fcn_orthonormalmatrixgenerate(anglesU,muU));
+
             Y = permute(X,[3 1 2 4]);
             Ys = reshape(Y(1:ps,:,:,:),ps,nrows*ncols*nSamples);
             Ya = reshape(Y(ps+1:ps+pa,:,:,:),pa,nrows*ncols*nSamples);
@@ -166,29 +157,31 @@ classdef nsoltFinalRotation2dLayer < nnet.layer.Layer
             nrows = size(dLdZ,1);
             ncols = size(dLdZ,2);
             nSamples = size(dLdZ,4);
-            nDecs = prod(layer.DecimationFactor);            
+            nDecs = prod(layer.DecimationFactor);
             ps = layer.NumberOfChannels(1);
             pa = layer.NumberOfChannels(2);
             nAngles = length(layer.Angles);
+            if isempty(layer.Mus)
+                layer.Mus = ones(ps+pa,1);
+            elseif isscalar(layer.Mus)
+                layer.Mus = layer.Mus*ones(ps+pa,1);
+            end
+            if layer.NoDcLeakage
+                layer.Mus(1) = 1;
+                layer.Angles(1:ps-1) = ...
+                    zeros(ps-1,1,'like',layer.Angles);
+            end
+            muW = layer.Mus(1:ps);
+            muU = layer.Mus(ps+1:end);
             anglesW = layer.Angles(1:nAngles/2);
             anglesU = layer.Angles(nAngles/2+1:end);
-            if isempty(layer.Mus)
-                musW = 1;
-                musU = 1;
-            elseif isscalar(layer.Mus)
-                musW = layer.Mus;
-                musU = layer.Mus;
-            else
-                musW = layer.Mus(1:ps);
-                musU = layer.Mus(ps+1:end);
-            end
             
             % Layer backward function goes here.
             % dLdX = dZdX x dLdZ
-            W0 = fcn_orthonormalmatrixgenerate(anglesW,musW,0);            
-            U0 = fcn_orthonormalmatrixgenerate(anglesU,musU,0);
+            W0 = fcn_orthonormalmatrixgenerate(anglesW,muW,0);
+            U0 = fcn_orthonormalmatrixgenerate(anglesU,muU,0);
             adldz_ = permute(dLdZ,[3 1 2 4]);
-            cdLd_ = reshape(adldz_,nDecs,nrows*ncols*nSamples);            
+            cdLd_ = reshape(adldz_,nDecs,nrows*ncols*nSamples);
             cdLd_upp = W0(:,1:nDecs/2)*cdLd_(1:nDecs/2,:);
             cdLd_low = U0(:,1:nDecs/2)*cdLd_(nDecs/2+1:nDecs,:);
             adLd_ = reshape([cdLd_upp;cdLd_low],...
@@ -201,8 +194,8 @@ classdef nsoltFinalRotation2dLayer < nnet.layer.Layer
             dldz_upp = reshape(dldz_(1:nDecs/2,:,:,:),nDecs/2,nrows*ncols*nSamples);
             dldz_low = reshape(dldz_(nDecs/2+1:nDecs,:,:,:),nDecs/2,nrows*ncols*nSamples);
             for iAngle = 1:nAngles/2
-                dW0_T = transpose(fcn_orthonormalmatrixgenerate(anglesW,musW,iAngle));
-                dU0_T = transpose(fcn_orthonormalmatrixgenerate(anglesU,musU,iAngle));
+                dW0_T = transpose(fcn_orthonormalmatrixgenerate(anglesW,muW,iAngle));
+                dU0_T = transpose(fcn_orthonormalmatrixgenerate(anglesU,muU,iAngle));
                 a_ = permute(memory,[3 1 2 4]);
                 c_upp = reshape(a_(1:ps,:,:,:),ps,nrows*ncols*nSamples);
                 c_low = reshape(a_(ps+1:ps+pa,:,:,:),pa,nrows*ncols*nSamples);

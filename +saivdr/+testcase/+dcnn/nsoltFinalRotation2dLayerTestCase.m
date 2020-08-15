@@ -23,6 +23,7 @@ classdef nsoltFinalRotation2dLayerTestCase < matlab.unittest.TestCase
     properties (TestParameter)
         nchs = { [3 3], [4 4] };
         stride = { [2 2] };
+        mus = { -1, 1 };
         datatype = { 'single', 'double' };
         nrows = struct('small', 4,'medium', 8, 'large', 16);
         ncols = struct('small', 4,'medium', 8, 'large', 16);
@@ -159,7 +160,7 @@ classdef nsoltFinalRotation2dLayerTestCase < matlab.unittest.TestCase
         end
         
         function testPredictGrayscaleWithRandomAnglesNoDcLeackage(testCase, ...
-                nchs, stride, nrows, ncols, datatype)
+                nchs, stride, nrows, ncols, mus, datatype)
             
             import matlab.unittest.constraints.IsEqualTo
             import matlab.unittest.constraints.AbsoluteTolerance
@@ -181,9 +182,12 @@ classdef nsoltFinalRotation2dLayerTestCase < matlab.unittest.TestCase
             ps = nchs(1);
             pa = nchs(2);
             anglesNoDc = angles;
-            anglesNoDc(1:length(angles)/2-1,1)=zeros(length(angles)/2-1,1);
-            W0T = transpose(genW.step(anglesNoDc(1:length(angles)/2),1));
-            U0T = transpose(genU.step(anglesNoDc(length(angles)/2+1:end),1));
+            anglesNoDc(1:ps-1,1)=zeros(ps-1,1);
+            musW = mus*ones(ps,1);
+            musW(1,1) = 1;
+            musU = mus*ones(pa,1);
+            W0T = transpose(genW.step(anglesNoDc(1:length(angles)/2),musW));
+            U0T = transpose(genU.step(anglesNoDc(length(angles)/2+1:end),musU));
             Y = permute(X,[3 1 2 4]);
             Ys = reshape(Y(1:ps,:,:,:),ps,nrows*ncols*nSamples);
             Ya = reshape(Y(ps+1:ps+pa,:,:,:),pa,nrows*ncols*nSamples);
@@ -200,6 +204,7 @@ classdef nsoltFinalRotation2dLayerTestCase < matlab.unittest.TestCase
                 'Name','V0~');
             
             % Actual values
+            layer.Mus = mus;
             layer.Angles = angles;
             actualZ = layer.predict(X);
             
@@ -229,7 +234,7 @@ classdef nsoltFinalRotation2dLayerTestCase < matlab.unittest.TestCase
             nAnglesH = (nChsTotal-2)*nChsTotal/8;
             anglesW = zeros(nAnglesH,1,datatype);            
             anglesU = zeros(nAnglesH,1,datatype);  
-            mus = 1;
+            mus_ = 1;
             
             % nRows x nCols x nDecs x nSamples            
             X = randn(nrows,ncols,sum(nchs),nSamples,datatype);            
@@ -242,8 +247,8 @@ classdef nsoltFinalRotation2dLayerTestCase < matlab.unittest.TestCase
             pa = nchs(2);
             
             % dLdX = dZdX x dLdZ
-            W0 = genW.step(anglesW,mus,0);
-            U0 = genU.step(anglesU,mus,0);
+            W0 = genW.step(anglesW,mus_,0);
+            U0 = genU.step(anglesU,mus_,0);
             expctddLdX = zeros(nrows,ncols,nChsTotal,nSamples,datatype);
             Y  = zeros(nChsTotal,nrows,ncols,datatype);
             for iSample=1:nSamples
@@ -267,8 +272,8 @@ classdef nsoltFinalRotation2dLayerTestCase < matlab.unittest.TestCase
             dldz_low = reshape(dldz_(nDecs/2+1:nDecs,:,:,:),nDecs/2,nrows*ncols*nSamples);
             % (dVdWi)X
             for iAngle = 1:nAnglesH
-                dW0_T = transpose(genW.step(anglesW,mus,iAngle));
-                dU0_T = transpose(genU.step(anglesU,mus,iAngle));
+                dW0_T = transpose(genW.step(anglesW,mus_,iAngle));
+                dU0_T = transpose(genU.step(anglesU,mus_,iAngle));
                 a_ = permute(X,[3 1 2 4]);
                 c_upp = reshape(a_(1:ps,:,:,:),ps,nrows*ncols*nSamples);                
                 c_low = reshape(a_(ps+1:ps+pa,:,:,:),pa,nrows*ncols*nSamples);
@@ -284,7 +289,7 @@ classdef nsoltFinalRotation2dLayerTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',nchs,...
                 'DecimationFactor',stride,...
                 'Name','V0~');
-            layer.Mus = mus;
+            layer.Mus = mus_;
             expctdZ = layer.predict(X);
             
             % Actual values
@@ -307,36 +312,45 @@ classdef nsoltFinalRotation2dLayerTestCase < matlab.unittest.TestCase
             
         end
         
-        %{
         function testForwardBackwardGayscaleWithRandomAngles(testCase, ...
                 nchs, stride, nrows, ncols, datatype)
             
             import matlab.unittest.constraints.IsEqualTo
             import matlab.unittest.constraints.AbsoluteTolerance
-            tolObj = AbsoluteTolerance(1e-6,single(1e-6));
+            tolObj = AbsoluteTolerance(1e-4,single(1e-4));
             import saivdr.dictionary.utility.*
-            genW = OrthonormalMatrixGenerationSystem();
-            genU = OrthonormalMatrixGenerationSystem();
+            genW = OrthonormalMatrixGenerationSystem(...
+                'PartialDifference','on');
+            genU = OrthonormalMatrixGenerationSystem(...
+                'PartialDifference','on');
             
             % Parameters
             nSamples = 8;
             nDecs = prod(stride);
             nChsTotal = sum(nchs);
-            % nRows x nCols x nDecs x nSamples            
-            X = randn(nrows,ncols,nDecs,nSamples,datatype);
-            angles = randn((nChsTotal-2)*nChsTotal/4,1);
+            nAnglesH = (nChsTotal-2)*nChsTotal/8;
+            anglesW = randn(nAnglesH,1);
+            anglesU = randn(nAnglesH,1);
+            mus_ = 1;
+            
+            % nRows x nCols x nDecs x nSamples
+            X = randn(nrows,ncols,sum(nchs),nSamples,datatype);
+            dLdZ = randn(nrows,ncols,nDecs,nSamples,datatype);
             
             % Expected values
+            expctdMem = X;
             % nRows x nCols x nChs x nSamples
             ps = nchs(1);
             pa = nchs(2);
-            W0 = genW.step(angles(1:length(angles)/2),1);
-            U0 = genU.step(angles(length(angles)/2+1:end),1);
-            expctdZ = zeros(nrows,ncols,nChsTotal,nSamples,datatype);
+            
+            % dLdX = dZdX x dLdZ
+            W0 = genW.step(anglesW,mus_,0);
+            U0 = genU.step(anglesU,mus_,0);
+            expctddLdX = zeros(nrows,ncols,nChsTotal,nSamples,datatype);
             Y  = zeros(nChsTotal,nrows,ncols,datatype);
             for iSample=1:nSamples
-                % Perumation in each block                
-                Ai = permute(X(:,:,:,iSample),[3 1 2]); 
+                % Perumation in each block
+                Ai = permute(dLdZ(:,:,:,iSample),[3 1 2]);
                 Yi = reshape(Ai,nDecs,nrows,ncols);
                 %
                 Ys = Yi(1:nDecs/2,:);
@@ -345,7 +359,25 @@ classdef nsoltFinalRotation2dLayerTestCase < matlab.unittest.TestCase
                     reshape(W0(:,1:nDecs/2)*Ys,ps,nrows,ncols);
                 Y(ps+1:ps+pa,:,:) = ...
                     reshape(U0(:,1:nDecs/2)*Ya,pa,nrows,ncols);
-                expctdZ(:,:,:,iSample) = ipermute(Y,[3 1 2]);
+                expctddLdX(:,:,:,iSample) = ipermute(Y,[3 1 2]);
+            end
+            
+            % dLdWi = <dLdZ,(dVdWi)X>
+            expctddLdW = zeros(2*nAnglesH,1,datatype);
+            dldz_ = permute(dLdZ,[3 1 2 4]);
+            dldz_upp = reshape(dldz_(1:nDecs/2,:,:,:),nDecs/2,nrows*ncols*nSamples);
+            dldz_low = reshape(dldz_(nDecs/2+1:nDecs,:,:,:),nDecs/2,nrows*ncols*nSamples);
+            % (dVdWi)X
+            for iAngle = 1:nAnglesH
+                dW0_T = transpose(genW.step(anglesW,mus_,iAngle));
+                dU0_T = transpose(genU.step(anglesU,mus_,iAngle));
+                a_ = permute(X,[3 1 2 4]);
+                c_upp = reshape(a_(1:ps,:,:,:),ps,nrows*ncols*nSamples);
+                c_low = reshape(a_(ps+1:ps+pa,:,:,:),pa,nrows*ncols*nSamples);
+                d_upp = dW0_T(1:nDecs/2,:)*c_upp;
+                d_low = dU0_T(1:nDecs/2,:)*c_low;
+                expctddLdW(iAngle) = sum(dldz_upp.*d_upp,'all');
+                expctddLdW(nAnglesH+iAngle) = sum(dldz_low.*d_low,'all');
             end
             
             % Instantiation of target class
@@ -354,49 +386,73 @@ classdef nsoltFinalRotation2dLayerTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',nchs,...
                 'DecimationFactor',stride,...
                 'Name','V0~');
+            layer.Mus = mus_;
+            layer.Angles = [anglesW; anglesU];
+            expctdZ = layer.predict(X);
             
             % Actual values
-            layer.Angles = angles;
-            actualZ = layer.predict(X);
+            [actualZ,actualMem] = layer.forward(X);
+            [actualdLdX,actualdLdW] = layer.backward([],[],dLdZ,actualMem);
             
             % Evaluation
+            testCase.verifyInstanceOf(actualMem,datatype);
             testCase.verifyInstanceOf(actualZ,datatype);
+            testCase.verifyInstanceOf(actualdLdX,datatype);
+            testCase.verifyInstanceOf(actualdLdW,datatype);
+            testCase.verifyThat(actualMem,...
+                IsEqualTo(expctdMem,'Within',tolObj));
             testCase.verifyThat(actualZ,...
                 IsEqualTo(expctdZ,'Within',tolObj));
+            testCase.verifyThat(actualdLdX,...
+                IsEqualTo(expctddLdX,'Within',tolObj));
+            testCase.verifyThat(actualdLdW,...
+                IsEqualTo(expctddLdW,'Within',tolObj));
             
         end
         
         function testForwardBackwardWithRandomAnglesNoDcLeackage(testCase, ...
-                nchs, stride, nrows, ncols, datatype)
+                nchs, stride, nrows, ncols, mus, datatype)
             
             import matlab.unittest.constraints.IsEqualTo
             import matlab.unittest.constraints.AbsoluteTolerance
-            tolObj = AbsoluteTolerance(1e-6,single(1e-6));
+            tolObj = AbsoluteTolerance(1e-4,single(1e-4));
             import saivdr.dictionary.utility.*
-            genW = OrthonormalMatrixGenerationSystem();
-            genU = OrthonormalMatrixGenerationSystem();
+            genW = OrthonormalMatrixGenerationSystem(...
+                'PartialDifference','on');
+            genU = OrthonormalMatrixGenerationSystem(...
+                'PartialDifference','on');
             
             % Parameters
             nSamples = 8;
             nDecs = prod(stride);
             nChsTotal = sum(nchs);
+            nAnglesH = (nChsTotal-2)*nChsTotal/8;
+            anglesW = randn(nAnglesH,1);
+            anglesU = randn(nAnglesH,1);
+            
             % nRows x nCols x nDecs x nSamples
-            X = randn(nrows,ncols,nDecs,nSamples,datatype);
-            angles = randn((nChsTotal-2)*nChsTotal/4,1);
+            X = randn(nrows,ncols,sum(nchs),nSamples,datatype);
+            dLdZ = randn(nrows,ncols,nDecs,nSamples,datatype);
             
             % Expected values
+            expctdMem = X;
             % nRows x nCols x nChs x nSamples
             ps = nchs(1);
             pa = nchs(2);
-            anglesNoDc = angles;
-            anglesNoDc(1:length(angles)/2-1,1)=zeros(length(angles)/2-1,1);
-            W0 = genW.step(anglesNoDc(1:length(angles)/2),1);
-            U0 = genU.step(anglesNoDc(length(angles)/2+1:end),1);
-            expctdZ = zeros(nrows,ncols,nChsTotal,nSamples,datatype);
+            
+            % dLdX = dZdX x dLdZ
+            anglesW_NoDc = anglesW;
+            anglesW_NoDc(1:ps-1,1)=zeros(ps-1,1);
+            musW = mus*ones(ps,1);
+            musW(1,1) = 1;
+            musU = mus*ones(pa,1);
+            W0 = genW.step(anglesW_NoDc,musW,0);
+            U0 = genU.step(anglesU,musU,0);
+            expctddLdX = zeros(nrows,ncols,nChsTotal,nSamples,datatype);
             Y  = zeros(nChsTotal,nrows,ncols,datatype);
             for iSample=1:nSamples
                 % Perumation in each block
-                Ai = permute(X(:,:,:,iSample),[3 1 2]);
+                Ai = permute(dLdZ(:,:,:,iSample),[3 1 2]);
                 Yi = reshape(Ai,nDecs,nrows,ncols);
                 %
                 Ys = Yi(1:nDecs/2,:);
@@ -405,7 +461,25 @@ classdef nsoltFinalRotation2dLayerTestCase < matlab.unittest.TestCase
                     reshape(W0(:,1:nDecs/2)*Ys,ps,nrows,ncols);
                 Y(ps+1:ps+pa,:,:) = ...
                     reshape(U0(:,1:nDecs/2)*Ya,pa,nrows,ncols);
-                expctdZ(:,:,:,iSample) = ipermute(Y,[3 1 2]);
+                expctddLdX(:,:,:,iSample) = ipermute(Y,[3 1 2]);
+            end
+            
+            % dLdWi = <dLdZ,(dVdWi)X>
+            expctddLdW = zeros(2*nAnglesH,1,datatype);
+            dldz_ = permute(dLdZ,[3 1 2 4]);
+            dldz_upp = reshape(dldz_(1:nDecs/2,:,:,:),nDecs/2,nrows*ncols*nSamples);
+            dldz_low = reshape(dldz_(nDecs/2+1:nDecs,:,:,:),nDecs/2,nrows*ncols*nSamples);
+            % (dVdWi)X
+            for iAngle = 1:nAnglesH
+                dW0_T = transpose(genW.step(anglesW_NoDc,musW,iAngle));
+                dU0_T = transpose(genU.step(anglesU,musU,iAngle));
+                a_ = permute(X,[3 1 2 4]);
+                c_upp = reshape(a_(1:ps,:,:,:),ps,nrows*ncols*nSamples);
+                c_low = reshape(a_(ps+1:ps+pa,:,:,:),pa,nrows*ncols*nSamples);
+                d_upp = dW0_T(1:nDecs/2,:)*c_upp;
+                d_low = dU0_T(1:nDecs/2,:)*c_low;
+                expctddLdW(iAngle) = sum(dldz_upp.*d_upp,'all');
+                expctddLdW(nAnglesH+iAngle) = sum(dldz_low.*d_low,'all');
             end
             
             % Instantiation of target class
@@ -415,18 +489,29 @@ classdef nsoltFinalRotation2dLayerTestCase < matlab.unittest.TestCase
                 'DecimationFactor',stride,...
                 'NoDcLeakage',true,...
                 'Name','V0~');
+            layer.Mus = mus;
+            layer.Angles = [anglesW; anglesU];
+            expctdZ = layer.predict(X);
             
             % Actual values
-            layer.Angles = angles;
-            actualZ = layer.predict(X);
+            [actualZ,actualMem] = layer.forward(X);
+            [actualdLdX,actualdLdW] = layer.backward([],[],dLdZ,actualMem);
             
             % Evaluation
+            testCase.verifyInstanceOf(actualMem,datatype);
             testCase.verifyInstanceOf(actualZ,datatype);
+            testCase.verifyInstanceOf(actualdLdX,datatype);
+            testCase.verifyInstanceOf(actualdLdW,datatype);
+            testCase.verifyThat(actualMem,...
+                IsEqualTo(expctdMem,'Within',tolObj));
             testCase.verifyThat(actualZ,...
                 IsEqualTo(expctdZ,'Within',tolObj));
-            
+            testCase.verifyThat(actualdLdX,...
+                IsEqualTo(expctddLdX,'Within',tolObj));
+            testCase.verifyThat(actualdLdW,...
+                IsEqualTo(expctddLdW,'Within',tolObj));
         end
-        %}
+
     end
 
 end
