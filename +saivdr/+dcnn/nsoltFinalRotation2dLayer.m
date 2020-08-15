@@ -20,14 +20,14 @@ classdef nsoltFinalRotation2dLayer < nnet.layer.Layer
     %                Niigata, 950-2181, JAPAN
     %
     % http://msiplab.eng.niigata-u.ac.jp/
-        
-     properties
+    
+    properties
         % (Optional) Layer properties.
         NumberOfChannels
         DecimationFactor
         NoDcLeakage
         Mus
-
+        
         % Layer properties go here.
     end
     
@@ -64,7 +64,7 @@ classdef nsoltFinalRotation2dLayer < nnet.layer.Layer
                 + layer.DecimationFactor(1) + "," ...
                 + layer.DecimationFactor(2) + ")";
             layer.Type = '';
-
+            
             nChsTotal = sum(layer.NumberOfChannels);
             nAngles = (nChsTotal-2)*nChsTotal/4;
             if isempty(layer.Angles)
@@ -84,7 +84,7 @@ classdef nsoltFinalRotation2dLayer < nnet.layer.Layer
             %         X1, ..., Xn - Input data (n: # of components)
             % Outputs:
             %         Z           - Outputs of layer forward function
-            %  
+            %
             import saivdr.dcnn.fcn_orthonormalmatrixgenerate
             
             % Layer forward function for prediction goes here.
@@ -99,12 +99,15 @@ classdef nsoltFinalRotation2dLayer < nnet.layer.Layer
             if isempty(layer.Mus)
                 muW = 1;
                 muU = 1;
+            elseif isscalar(layer.Mus)
+                muW = layer.Mus;
+                muU = layer.Mus;
             else
-                if layer.NoDcLeakage
-                    layer.Mus(1) = 1;
-                end
                 muW = layer.Mus(1:ps);
                 muU = layer.Mus(ps+1:end);
+            end
+            if layer.NoDcLeakage
+                layer.Mus(1) = 1;
             end
             if isempty(layer.Angles)
                 W0T = eye(ps);
@@ -127,8 +130,90 @@ classdef nsoltFinalRotation2dLayer < nnet.layer.Layer
                 [3 1 2 4]);
         end
         
+        function [Z, memory] = forward(layer, X)
+            % (Optional) Forward input data through the layer at training
+            % time and output the result and a memory value.
+            %
+            % Inputs:
+            %         layer       - Layer to forward propagate through
+            %         X1, ..., Xn - Input data
+            % Outputs:
+            %         Z1, ..., Zm - Outputs of layer forward function
+            %         memory      - Memory value for custom backward propagation
+            
+            % Layer forward function for training goes here.
+            Z = layer.predict(X);
+            memory = X;
+        end
+        
+        function [dLdX, dLdW] = ...
+                backward(layer, ~, ~, dLdZ, memory)
+            % (Optional) Backward propagate the derivative of the loss
+            % function through the layer.
+            %
+            % Inputs:
+            %         layer             - Layer to backward propagate through
+            %         X1, ..., Xn       - Input data
+            %         Z1, ..., Zm       - Outputs of layer forward function
+            %         dLdZ1, ..., dLdZm - Gradients propagated from the next layers
+            %         memory            - Memory value from forward function
+            % Outputs:
+            %         dLdX1, ..., dLdXn - Derivatives of the loss with respect to the
+            %                             inputs
+            %         dLdW1, ..., dLdWk - Derivatives of the loss with respect to each
+            %                             learnable parameter
+            import saivdr.dcnn.*
+            nrows = size(dLdZ,1);
+            ncols = size(dLdZ,2);
+            nSamples = size(dLdZ,4);
+            nDecs = prod(layer.DecimationFactor);            
+            ps = layer.NumberOfChannels(1);
+            pa = layer.NumberOfChannels(2);
+            nAngles = length(layer.Angles);
+            anglesW = layer.Angles(1:nAngles/2);
+            anglesU = layer.Angles(nAngles/2+1:end);
+            if isempty(layer.Mus)
+                musW = 1;
+                musU = 1;
+            elseif isscalar(layer.Mus)
+                musW = layer.Mus;
+                musU = layer.Mus;
+            else
+                musW = layer.Mus(1:ps);
+                musU = layer.Mus(ps+1:end);
+            end
+            
+            % Layer backward function goes here.
+            % dLdX = dZdX x dLdZ
+            W0 = fcn_orthonormalmatrixgenerate(anglesW,musW,0);            
+            U0 = fcn_orthonormalmatrixgenerate(anglesU,musU,0);
+            adldz_ = permute(dLdZ,[3 1 2 4]);
+            cdLd_ = reshape(adldz_,nDecs,nrows*ncols*nSamples);            
+            cdLd_upp = W0(:,1:nDecs/2)*cdLd_(1:nDecs/2,:);
+            cdLd_low = U0(:,1:nDecs/2)*cdLd_(nDecs/2+1:nDecs,:);
+            adLd_ = reshape([cdLd_upp;cdLd_low],...
+                pa+ps,nrows,ncols,nSamples);
+            dLdX = ipermute(adLd_,[3 1 2 4]);
+            
+            % dLdWi = <dLdZ,(dVdWi)X>
+            dLdW = zeros(nAngles,1,'like',dLdZ);
+            dldz_ = permute(dLdZ,[3 1 2 4]);
+            dldz_upp = reshape(dldz_(1:nDecs/2,:,:,:),nDecs/2,nrows*ncols*nSamples);
+            dldz_low = reshape(dldz_(nDecs/2+1:nDecs,:,:,:),nDecs/2,nrows*ncols*nSamples);
+            for iAngle = 1:nAngles/2
+                dW0_T = transpose(fcn_orthonormalmatrixgenerate(anglesW,musW,iAngle));
+                dU0_T = transpose(fcn_orthonormalmatrixgenerate(anglesU,musU,iAngle));
+                a_ = permute(memory,[3 1 2 4]);
+                c_upp = reshape(a_(1:ps,:,:,:),ps,nrows*ncols*nSamples);
+                c_low = reshape(a_(ps+1:ps+pa,:,:,:),pa,nrows*ncols*nSamples);
+                d_upp = dW0_T(1:nDecs/2,:)*c_upp;
+                d_low = dU0_T(1:nDecs/2,:)*c_low;
+                dLdW(iAngle) = sum(dldz_upp.*d_upp,'all');
+                dLdW(nAngles/2+iAngle) = sum(dldz_low.*d_low,'all');
+            end
+        end
+        
     end
-    
-
+       
 end
 
