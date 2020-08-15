@@ -112,6 +112,51 @@ classdef nsoltBlockDct2dLayer < nnet.layer.Layer
                 varargout{iComponent} = permute(A,[2 3 1 4]);                
             end
         end
+        
+        function dLdX = backward(layer, varargin)
+            % (Optional) Backward propagate the derivative of the loss  
+            % function through the layer.
+            %
+            % Inputs:
+            %         layer             - Layer to backward propagate through
+            %         X1, ..., Xn       - Input data
+            %         Z1, ..., Zm       - Outputs of layer forward function            
+            %         dLdZ1, ..., dLdZm - Gradients propagated from the next layers
+            %         memory            - Memory value from forward function
+            % Outputs:
+            %         dLdX1, ..., dLdXn - Derivatives of the loss with respect to the
+            %                             inputs
+            %         dLdW1, ..., dLdWk - Derivatives of the loss with respect to each
+            %                             learnable parameter
+            nComponents = layer.NumOutputs;
+            decFactor = layer.DecimationFactor;
+            decV = decFactor(1);
+            decH = decFactor(2);
+            Cvh_T = layer.Cvh.';
+            for iComponent = 1:nComponents
+                X = varargin{layer.NumInputs+layer.NumOutputs+iComponent};
+                if iComponent == 1
+                    nRows = size(X,1);
+                    nCols = size(X,2);
+                    height = decFactor(1)*nRows;
+                    width = decFactor(2)*nCols;
+                    nSamples = size(X,4);
+                    dLdX = zeros(height,width,nComponents,nSamples,'like',X);
+                end
+                A = permute(X,[3 1 2 4]);
+                for iSample = 1:nSamples
+                    for iCol = 1:nCols
+                        for iRow = 1:nRows
+                            coefs = A(:,iRow,iCol,iSample);
+                            dLdX((iRow-1)*decV+1:iRow*decV,...
+                                (iCol-1)*decH+1:iCol*decH,...
+                                iComponent,iSample) = ...
+                                reshape(Cvh_T*coefs,decV,decH);
+                        end
+                    end
+                end
+            end
+        end
     end
     
 end

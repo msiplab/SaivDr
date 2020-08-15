@@ -25,7 +25,7 @@ classdef nsoltAtomExtension3dLayerTestCase < matlab.unittest.TestCase
         datatype = { 'single', 'double' };
         nrows = struct('small', 4,'medium', 8, 'large', 16);
         ncols = struct('small', 4,'medium', 8, 'large', 16);
-        nlays = struct('small', 4,'medium', 8, 'large', 16);        
+        nlays = struct('small', 4,'medium', 8, 'large', 16);
         dir = { 'Right', 'Left', 'Up', 'Down', 'Back','Front' };
     end
     
@@ -37,7 +37,7 @@ classdef nsoltAtomExtension3dLayerTestCase < matlab.unittest.TestCase
                 'Direction','Right',...
                 'TargetChannels','Lower');
             fprintf("\n --- Check layer for 3-D images ---\n");
-            checkLayer(layer,[8 8 8 10],'ObservationDimension',5)      
+            checkLayer(layer,[8 8 8 10],'ObservationDimension',5)
         end
     end
     
@@ -70,7 +70,7 @@ classdef nsoltAtomExtension3dLayerTestCase < matlab.unittest.TestCase
             % Evaluation
             testCase.verifyEqual(actualName,expctdName);
             testCase.verifyEqual(actualDirection,expctdDirection);
-            testCase.verifyEqual(actualTargetChannels,expctdTargetChannels);            
+            testCase.verifyEqual(actualTargetChannels,expctdTargetChannels);
             testCase.verifyEqual(actualDescription,expctdDescription);
         end
         
@@ -100,7 +100,7 @@ classdef nsoltAtomExtension3dLayerTestCase < matlab.unittest.TestCase
             elseif strcmp(dir,'Back')
                 shift = [ 0  0 0 1 0  ];
             elseif strcmp(dir,'Front')
-                shift = [ 0 0 0 -1 0  ];                
+                shift = [ 0 0 0 -1 0  ];
             else
                 shift = [ 0 0 0 0 0 ];
             end
@@ -165,7 +165,7 @@ classdef nsoltAtomExtension3dLayerTestCase < matlab.unittest.TestCase
             elseif strcmp(dir,'Back')
                 shift = [ 0  0 0 1 0];
             elseif strcmp(dir,'Front')
-                shift = [ 0 0 0 -1 0];                
+                shift = [ 0 0 0 -1 0];
             else
                 shift = [ 0 0 0 0 ];
             end
@@ -203,7 +203,135 @@ classdef nsoltAtomExtension3dLayerTestCase < matlab.unittest.TestCase
                 IsEqualTo(expctdZ,'Within',tolObj));
             
         end
+        function testBackwardGrayscaleShiftLowerCoefs(testCase, ...
+                nchs, nrows, ncols, nlays, dir, datatype)
+            
+            import matlab.unittest.constraints.IsEqualTo
+            import matlab.unittest.constraints.AbsoluteTolerance
+            tolObj = AbsoluteTolerance(1e-6,single(1e-6));
+            
+            % Parameters
+            nSamples = 8;
+            nChsTotal = sum(nchs);
+            target = 'Lower';
+            % nRows x nCols x nLays x nChsTotal x nSamples
+            dLdZ = randn(nrows,ncols,nlays, nChsTotal,nSamples,datatype);
+            
+            % Expected values
+            if strcmp(dir,'Right')
+                shift = [ 0 0 -1 0 0  ]; % Reverse
+            elseif strcmp(dir,'Left')
+                shift = [ 0 0 1 0 0  ]; % Reverse
+            elseif strcmp(dir,'Down')
+                shift = [ 0  -1 0 0 0  ]; % Reverse
+            elseif strcmp(dir,'Up')
+                shift = [ 0 1 0 0 0  ]; % Reverse
+            elseif strcmp(dir,'Back')
+                shift = [ 0  0 0 -1 0  ]; % Reverse
+            elseif strcmp(dir,'Front')
+                shift = [ 0 0 0 1 0  ]; % Reverse
+            else
+                shift = [ 0 0 0 0 0 ];
+            end
+            % nRows x nCols x nLays x nChsTotal x nSamples
+            ps = nchs(1);
+            pa = nchs(2);
+            Y = permute(dLdZ,[4 1 2 3 5]); % [ch ver hor dep smpl]
+            % Block butterfly
+            Ys = Y(1:ps,:,:,:,:);
+            Ya = Y(ps+1:ps+pa,:,:,:,:);
+            Y =  [ Ys+Ya ; Ys-Ya ]/sqrt(2);
+            % Block circular shift
+            Y(ps+1:ps+pa,:,:,:,:) = circshift(Y(ps+1:ps+pa,:,:,:,:),shift);
+            % Block butterfly
+            Ys = Y(1:ps,:,:,:,:);
+            Ya = Y(ps+1:ps+pa,:,:,:,:);
+            Y =  [ Ys+Ya ; Ys-Ya ]/sqrt(2);
+            % Output
+            expctddLdX = ipermute(Y,[4 1 2 3 5]);
+            
+            % Instantiation of target class
+            import saivdr.dcnn.*
+            layer = nsoltAtomExtension3dLayer(...
+                'NumberOfChannels',nchs,...
+                'Name','Qn~',...
+                'Direction',dir,...
+                'TargetChannel',target);
+            
+            % Actual values
+            actualdLdX = layer.backward([],[],dLdZ,[]);
+            
+            % Evaluation
+            testCase.verifyInstanceOf(actualdLdX,datatype);
+            testCase.verifyThat(actualdLdX,...
+                IsEqualTo(expctddLdX,'Within',tolObj));
+            
+        end
         
+        function testBackwardGrayscaleShiftUpperCoefs(testCase, ...
+                nchs, nrows, ncols, nlays, dir, datatype)
+            
+            import matlab.unittest.constraints.IsEqualTo
+            import matlab.unittest.constraints.AbsoluteTolerance
+            tolObj = AbsoluteTolerance(1e-6,single(1e-6));
+            
+            % Parameters
+            nSamples = 8;
+            nChsTotal = sum(nchs);
+            target = 'Upper';
+            % nRows x nCols x nLays x nChsTotal x nSamples
+            dLdZ = randn(nrows,ncols,nlays,nChsTotal,nSamples,datatype);
+            
+            % Expected values
+            if strcmp(dir,'Right')
+                shift = [ 0 0 -1 0 0 ]; % Reverse
+            elseif strcmp(dir,'Left')
+                shift = [ 0 0 1 0 0]; % Reverse
+            elseif strcmp(dir,'Down')
+                shift = [ 0 -1 0 0 0]; % Reverse
+            elseif strcmp(dir,'Up')
+                shift = [ 0 1 0 0 0]; % Reverse
+            elseif strcmp(dir,'Back')
+                shift = [ 0  0 0 -1 0]; % Reverse
+            elseif strcmp(dir,'Front')
+                shift = [ 0 0 0 1 0]; % Reverse
+            else
+                shift = [ 0 0 0 0 ];
+            end
+            % nRows x nCols x nLays x nChsTotal x nSamples
+            ps = nchs(1);
+            pa = nchs(2);
+            Y = permute(dLdZ,[4 1 2 3 5]); % [ch ver hor dep smpl]
+            % Block butterfly
+            Ys = Y(1:ps,:,:,:,:);
+            Ya = Y(ps+1:ps+pa,:,:,:,:);
+            Y =  [ Ys+Ya ; Ys-Ya ]/sqrt(2);
+            % Block circular shift
+            Y(1:ps,:,:,:,:) = circshift(Y(1:ps,:,:,:,:),shift);
+            % Block butterfly
+            Ys = Y(1:ps,:,:,:,:);
+            Ya = Y(ps+1:ps+pa,:,:,:,:);
+            Y =  [ Ys+Ya ; Ys-Ya ]/sqrt(2);
+            % Output
+            expctddLdX = ipermute(Y,[4 1 2 3 5]);
+            
+            % Instantiation of target class
+            import saivdr.dcnn.*
+            layer = nsoltAtomExtension3dLayer(...
+                'NumberOfChannels',nchs,...
+                'Name','Qn~',...
+                'Direction',dir,...
+                'TargetChannels',target);
+            
+            % Actual values
+            actualdLdX = layer.backward([],[],dLdZ,[]);
+            
+            % Evaluation
+            testCase.verifyInstanceOf(actualdLdX,datatype);
+            testCase.verifyThat(actualdLdX,...
+                IsEqualTo(expctddLdX,'Within',tolObj));
+            
+        end
     end
     
 end

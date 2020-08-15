@@ -70,10 +70,7 @@ classdef nsoltAtomExtension3dLayer < nnet.layer.Layer
             %  
             
             % Layer forward function for prediction goes here.
-            ps = layer.NumberOfChannels(1);
-            pa = layer.NumberOfChannels(2);
             dir = layer.Direction;
-            target = layer.TargetChannels;
             %
             if strcmp(dir,'Right')
                 shift = [ 0 0 1 0 0 ];
@@ -92,6 +89,56 @@ classdef nsoltAtomExtension3dLayer < nnet.layer.Layer
                     '%s : Direction should be either of Right, Left, Down, Up, Back or Front',...
                     layer.Direction))
             end
+            %
+            Z = layer.atomext_(X,shift);
+            
+        end
+        
+        function dLdX = backward(layer, ~, ~, dLdZ, ~)
+            % (Optional) Backward propagate the derivative of the loss
+            % function through the layer.
+            %
+            % Inputs:
+            %         layer             - Layer to backward propagate through
+            %         X1, ..., Xn       - Input data
+            %         Z1, ..., Zm       - Outputs of layer forward function
+            %         dLdZ1, ..., dLdZm - Gradients propagated from the next layers
+            %         memory            - Memory value from forward function
+            % Outputs:
+            %         dLdX1, ..., dLdXn - Derivatives of the loss with respect to the
+            %                             inputs
+            %         dLdW1, ..., dLdWk - Derivatives of the loss with respect to each
+            %                             learnable parameter
+            
+            % Layer forward function for prediction goes here.
+            dir = layer.Direction;
+            
+            %
+            % Expected values
+            if strcmp(dir,'Right')
+                shift = [ 0 0 -1 0 0 ]; % Reverse
+            elseif strcmp(dir,'Left')
+                shift = [ 0 0 1 0 0]; % Reverse
+            elseif strcmp(dir,'Down')
+                shift = [ 0 -1 0 0 0]; % Reverse
+            elseif strcmp(dir,'Up')
+                shift = [ 0 1 0 0 0]; % Reverse
+            elseif strcmp(dir,'Back')
+                shift = [ 0  0 0 -1 0]; % Reverse
+            elseif strcmp(dir,'Front')
+                shift = [ 0 0 0 1 0]; % Reverse
+            else
+                throw(MException('NsoltLayer:InvalidDirection',...
+                    '%s : Direction should be either of Right, Left, Down, Up, Back or Front',...
+                    layer.Direction))
+            end
+            %
+            dLdX = layer.atomext_(dLdZ,shift);
+        end
+        function Z = atomext_(layer,X,shift)
+            ps = layer.NumberOfChannels(1);
+            pa = layer.NumberOfChannels(2);
+            target = layer.TargetChannels;
             %
             Y = permute(X,[4 1 2 3 5]); % [ch ver hor dep smpl]
             % Block butterfly

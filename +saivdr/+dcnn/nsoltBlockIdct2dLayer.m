@@ -112,6 +112,55 @@ classdef nsoltBlockIdct2dLayer < nnet.layer.Layer
                 end
             end
         end
+        
+                
+        function varargout = backward(layer,varargin)
+            % function through the layer.
+            %
+            % Inputs:
+            %         layer             - Layer to backward propagate through
+            %         X1, ..., Xn       - Input data
+            %         Z1, ..., Zm       - Outputs of layer forward function            
+            %         dLdZ1, ..., dLdZm - Gradients propagated from the next layers
+            %         memory            - Memory value from forward function
+            % Outputs:
+            %         dLdX1, ..., dLdXn - Derivatives of the loss with respect to the
+            %                             inputs
+            %         dLdW1, ..., dLdWk - Derivatives of the loss with respect to each
+            %                             learnable parameter
+            import saivdr.dictionary.utility.Direction                                                                        
+            nComponents = layer.NumInputs;        
+            dLdZ = varargin{layer.NumInputs+layer.NumOutputs+1};
+            varargout = cell(1,nComponents);
+                        
+            % Layer forward function for prediction goes here.
+            decFactor = layer.DecimationFactor;
+            decV = decFactor(Direction.VERTICAL);
+            decH = decFactor(Direction.HORIZONTAL);
+            %
+            Cvh_ = layer.Cvh;
+            %
+            nRows = size(dLdZ,1)/decV;
+            nCols = size(dLdZ,2)/decH;
+            nDecs = prod(decFactor);
+            nSamples = size(dLdZ,4);
+            %
+            A = zeros(nDecs,nRows,nCols,nSamples,'like',dLdZ);
+            for iComponent = 1:nComponents
+                for iSample = 1:nSamples
+                    for iCol = 1:nCols
+                        for iRow = 1:nRows
+                            x = dLdZ((iRow-1)*decV+1:iRow*decV,...
+                                (iCol-1)*decH+1:iCol*decH,...
+                                iComponent,iSample);
+                            A(:,iRow,iCol,iSample) = Cvh_*x(:);
+                        end
+                    end
+                end
+                varargout{iComponent} = permute(A,[2 3 1 4]);                
+            end
+        end
+        
     end
     
 end

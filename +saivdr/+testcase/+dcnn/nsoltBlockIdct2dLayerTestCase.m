@@ -30,10 +30,17 @@ classdef nsoltBlockIdct2dLayerTestCase < matlab.unittest.TestCase
     methods (TestClassTeardown)
         function finalCheck(~)
             import saivdr.dcnn.*
+            fprintf("\n --- Check layer for 2-D images ---\n");
+            % Grayscale
             layer = nsoltBlockIdct2dLayer(...
                 'DecimationFactor',[2 2]);
-            fprintf("\n --- Check layer for 2-D images ---\n");
             checkLayer(layer,[8 8 4],'ObservationDimension',4)
+            % RGB color
+            layer = nsoltBlockIdct2dLayer(...
+                'NumberOfComponents',3,...
+                'DecimationFactor',[2 2]);
+            checkLayer(layer,{[8 8 4],[8 8 4],[8 8 4]},...
+                'ObservationDimension',4)
         end
     end
     
@@ -63,7 +70,7 @@ classdef nsoltBlockIdct2dLayerTestCase < matlab.unittest.TestCase
         
         function testPredictGrayScale(testCase, ...
                 stride, height, width, datatype)
-            import saivdr.dictionary.utility.Direction                        
+            import saivdr.dictionary.utility.Direction
             import matlab.unittest.constraints.IsEqualTo
             import matlab.unittest.constraints.AbsoluteTolerance
             tolObj = AbsoluteTolerance(1e-6,single(1e-6));
@@ -107,7 +114,7 @@ classdef nsoltBlockIdct2dLayerTestCase < matlab.unittest.TestCase
         
         function testPredictRgbColor(testCase, ...
                 stride, height, width, datatype)
-            import saivdr.dictionary.utility.Direction                                    
+            import saivdr.dictionary.utility.Direction
             import matlab.unittest.constraints.IsEqualTo
             import matlab.unittest.constraints.AbsoluteTolerance
             tolObj = AbsoluteTolerance(1e-6,single(1e-6));
@@ -168,10 +175,127 @@ classdef nsoltBlockIdct2dLayerTestCase < matlab.unittest.TestCase
             
         end
         
+        function testBackwardGrayScale(testCase, ...
+                stride, height, width, datatype)
+            import saivdr.dictionary.utility.Direction
+            import matlab.unittest.constraints.IsEqualTo
+            import matlab.unittest.constraints.AbsoluteTolerance
+            tolObj = AbsoluteTolerance(1e-6,single(1e-6));
+            
+            % Parameters
+            nSamples = 8;
+            nComponents = 1;
+            dLdZ = rand(height,width,nComponents,nSamples, datatype);
+            
+            % Expected values
+            nrows = height/stride(Direction.VERTICAL);
+            ncols = width/stride(Direction.HORIZONTAL);
+            ndecs = prod(stride);
+            expctddLdX = zeros(nrows,ncols,ndecs,nSamples,datatype);
+            for iSample = 1:nSamples
+                % Block DCT
+                Y = blockproc(dLdZ(:,:,nComponents,iSample),...
+                    stride,@(x) dct2(x.data));
+                % Rearrange the DCT Coefs.
+                A = blockproc(Y,...
+                    stride,@testCase.permuteDctCoefs_);
+                expctddLdX(:,:,:,iSample) = ...
+                    permute(reshape(A,ndecs,nrows,ncols),[2 3 1]);
+            end
+            
+            % Instantiation of target class
+            import saivdr.dcnn.*
+            layer = nsoltBlockIdct2dLayer(...
+                'DecimationFactor',stride,...
+                'Name','E0');
+            
+            % Actual values
+            actualdLdX = layer.backward([],[],dLdZ,[]);
+            
+            % Evaluation
+            testCase.verifyInstanceOf(actualdLdX,datatype);
+            testCase.verifyThat(actualdLdX,...
+                IsEqualTo(expctddLdX,'Within',tolObj));
+            
+        end
+        
+        function testBackwardRgbColor(testCase, ...
+                stride, height, width, datatype)
+            import saivdr.dictionary.utility.Direction
+            import matlab.unittest.constraints.IsEqualTo
+            import matlab.unittest.constraints.AbsoluteTolerance
+            tolObj = AbsoluteTolerance(1e-6,single(1e-6));
+            
+            % Parameters
+            nSamples = 8;
+            nComponents = 3; % RGB
+            dLdZ = rand(height,width,nComponents,nSamples, datatype);
+            
+            % Expected values
+            nrows = height/stride(Direction.VERTICAL);
+            ncols = width/stride(Direction.HORIZONTAL);
+            ndecs = prod(stride);
+            expctddLdXr = zeros(nrows,ncols,ndecs,nSamples,datatype);
+            expctddLdXg = zeros(nrows,ncols,ndecs,nSamples,datatype);
+            expctddLdXb = zeros(nrows,ncols,ndecs,nSamples,datatype);
+            for iSample = 1:nSamples
+                % Block DCT
+                Yr = blockproc(dLdZ(:,:,1,iSample),...
+                    stride,@(x) dct2(x.data));
+                Yg = blockproc(dLdZ(:,:,2,iSample),...
+                    stride,@(x) dct2(x.data));
+                Yb = blockproc(dLdZ(:,:,3,iSample),...
+                    stride,@(x) dct2(x.data));
+                % Rearrange the DCT Coefs.
+                Ar = blockproc(Yr,...
+                    stride,@testCase.permuteDctCoefs_);
+                Ag = blockproc(Yg,...
+                    stride,@testCase.permuteDctCoefs_);
+                Ab = blockproc(Yb,...
+                    stride,@testCase.permuteDctCoefs_);
+                expctddLdXr(:,:,:,iSample) = ...
+                    permute(reshape(Ar,ndecs,nrows,ncols),[2 3 1]);
+                expctddLdXg(:,:,:,iSample) = ...
+                    permute(reshape(Ag,ndecs,nrows,ncols),[2 3 1]);
+                expctddLdXb(:,:,:,iSample) = ...
+                    permute(reshape(Ab,ndecs,nrows,ncols),[2 3 1]);
+            end
+            
+            % Instantiation of target class
+            import saivdr.dcnn.*
+            layer = nsoltBlockIdct2dLayer(...
+                'DecimationFactor',stride,...
+                'NumberOfComponents',nComponents,...
+                'Name','E0');
+            
+            % Actual values
+            [actualdLdXr,actualdLdXg,actualdLdXb] = ...
+                layer.backward([],[],[],[],dLdZ,[]);
+            
+            % Evaluation
+            testCase.verifyInstanceOf(actualdLdXr,datatype);
+            testCase.verifyInstanceOf(actualdLdXg,datatype);
+            testCase.verifyInstanceOf(actualdLdXb,datatype);
+            testCase.verifyThat(actualdLdXr,...
+                IsEqualTo(expctddLdXr,'Within',tolObj));
+            testCase.verifyThat(actualdLdXg,...
+                IsEqualTo(expctddLdXg,'Within',tolObj));
+            testCase.verifyThat(actualdLdXb,...
+                IsEqualTo(expctddLdXb,'Within',tolObj));
+            
+        end
+        
     end
     
     methods (Static, Access = private)
-        
+        function value = permuteDctCoefs_(x)
+            coefs = x.data;
+            cee = coefs(1:2:end,1:2:end);
+            coo = coefs(2:2:end,2:2:end);
+            coe = coefs(2:2:end,1:2:end);
+            ceo = coefs(1:2:end,2:2:end);
+            value = [ cee(:) ; coo(:) ; coe(:) ; ceo(:) ];
+        end
         function value = permuteIdctCoefs_(x,blockSize)
             coefs = x;
             decY_ = blockSize(1);
