@@ -209,7 +209,7 @@ classdef nsoltIntermediateRotation3dLayerTestCase < matlab.unittest.TestCase
             
             import matlab.unittest.constraints.IsEqualTo
             import matlab.unittest.constraints.AbsoluteTolerance
-            tolObj = AbsoluteTolerance(1e-4,single(1e-4));
+            tolObj = AbsoluteTolerance(1e-3,single(1e-3));
             import saivdr.dictionary.utility.*
             genU = OrthonormalMatrixGenerationSystem(...
                 'PartialDifference','on');
@@ -284,7 +284,7 @@ classdef nsoltIntermediateRotation3dLayerTestCase < matlab.unittest.TestCase
     
             import matlab.unittest.constraints.IsEqualTo
             import matlab.unittest.constraints.AbsoluteTolerance
-            tolObj = AbsoluteTolerance(1e-4,single(1e-4));
+            tolObj = AbsoluteTolerance(1e-3,single(1e-3));
             import saivdr.dictionary.utility.*
             genU = OrthonormalMatrixGenerationSystem(...
                 'PartialDifference','on');
@@ -360,7 +360,7 @@ classdef nsoltIntermediateRotation3dLayerTestCase < matlab.unittest.TestCase
             
             import matlab.unittest.constraints.IsEqualTo
             import matlab.unittest.constraints.AbsoluteTolerance
-            tolObj = AbsoluteTolerance(1e-4,single(1e-4));
+            tolObj = AbsoluteTolerance(1e-3,single(1e-3));
             import saivdr.dictionary.utility.*
             genU = OrthonormalMatrixGenerationSystem(...
                 'PartialDifference','on');
