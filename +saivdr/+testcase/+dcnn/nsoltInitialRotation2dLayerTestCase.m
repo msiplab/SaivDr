@@ -244,7 +244,7 @@ classdef nsoltInitialRotation2dLayerTestCase < matlab.unittest.TestCase
             
         end
         
-        function testForwardBackwardGrayscale(testCase, ...
+        function testBackwardGrayscale(testCase, ...
                 nchs, stride, nrows, ncols, datatype)
             
             import matlab.unittest.constraints.IsEqualTo
@@ -270,7 +270,6 @@ classdef nsoltInitialRotation2dLayerTestCase < matlab.unittest.TestCase
             dLdZ = randn(nrows,ncols,sum(nchs),nSamples,datatype);
             
             % Expected values
-            expctdMem = X;
             % nRows x nCols x nDecs x nSamples
             ps = nchs(1);
             pa = nchs(2);
@@ -313,18 +312,11 @@ classdef nsoltInitialRotation2dLayerTestCase < matlab.unittest.TestCase
             expctdZ = layer.predict(X);
             
             % Actual values
-            [actualZ,actualMem] = layer.forward(X);
-            [actualdLdX,actualdLdW] = layer.backward([],[],dLdZ,actualMem);
+            [actualdLdX,actualdLdW] = layer.backward(X,[],dLdZ,[]);
             
             % Evaluation
-            testCase.verifyInstanceOf(actualMem,datatype);
-            testCase.verifyInstanceOf(actualZ,datatype);
             testCase.verifyInstanceOf(actualdLdX,datatype);
             testCase.verifyInstanceOf(actualdLdW,datatype);
-            testCase.verifyThat(actualMem,...
-                IsEqualTo(expctdMem,'Within',tolObj));
-            testCase.verifyThat(actualZ,...
-                IsEqualTo(expctdZ,'Within',tolObj));
             testCase.verifyThat(actualdLdX,...
                 IsEqualTo(expctddLdX,'Within',tolObj));
             testCase.verifyThat(actualdLdW,...
@@ -332,7 +324,7 @@ classdef nsoltInitialRotation2dLayerTestCase < matlab.unittest.TestCase
             
         end
         
-        function testForwarBackwardGrayscaleWithRandomAngles(testCase, ...
+        function testBackwardGrayscaleWithRandomAngles(testCase, ...
                 nchs, stride, nrows, ncols, datatype)
             
             import matlab.unittest.constraints.IsEqualTo
@@ -358,7 +350,6 @@ classdef nsoltInitialRotation2dLayerTestCase < matlab.unittest.TestCase
             dLdZ = randn(nrows,ncols,sum(nchs),nSamples,datatype);
             
             % Expected values
-            expctdMem = X;
             % nRows x nCols x nDecs x nSamples
             ps = nchs(1);
             pa = nchs(2);
@@ -402,18 +393,11 @@ classdef nsoltInitialRotation2dLayerTestCase < matlab.unittest.TestCase
             expctdZ = layer.predict(X);
             
             % Actual values
-            [actualZ,actualMem] = layer.forward(X);
-            [actualdLdX,actualdLdW] = layer.backward([],[],dLdZ,actualMem);
+            [actualdLdX,actualdLdW] = layer.backward(X,[],dLdZ,[]);
             
             % Evaluation
-            testCase.verifyInstanceOf(actualMem,datatype);
-            testCase.verifyInstanceOf(actualZ,datatype);
             testCase.verifyInstanceOf(actualdLdX,datatype);
             testCase.verifyInstanceOf(actualdLdW,datatype);
-            testCase.verifyThat(actualMem,...
-                IsEqualTo(expctdMem,'Within',tolObj));
-            testCase.verifyThat(actualZ,...
-                IsEqualTo(expctdZ,'Within',tolObj));
             testCase.verifyThat(actualdLdX,...
                 IsEqualTo(expctddLdX,'Within',tolObj));
             testCase.verifyThat(actualdLdW,...
@@ -421,7 +405,7 @@ classdef nsoltInitialRotation2dLayerTestCase < matlab.unittest.TestCase
             
         end
         
-        function testForwardBackwardGrayscaleWithRandomAnglesNoDcLeackage(testCase, ...
+        function testBackwardGrayscaleWithRandomAnglesNoDcLeackage(testCase, ...
                 nchs, stride, nrows, ncols, mus, datatype)
             
             import matlab.unittest.constraints.IsEqualTo
@@ -446,7 +430,6 @@ classdef nsoltInitialRotation2dLayerTestCase < matlab.unittest.TestCase
             dLdZ = randn(nrows,ncols,sum(nchs),nSamples,datatype);
             
             % Expected values
-            expctdMem = X;
             % nRows x nCols x nDecs x nSamples
             ps = nchs(1);
             pa = nchs(2);
@@ -496,18 +479,11 @@ classdef nsoltInitialRotation2dLayerTestCase < matlab.unittest.TestCase
             expctdZ = layer.predict(X);
             
             % Actual values
-            [actualZ,actualMem] = layer.forward(X);
-            [actualdLdX,actualdLdW] = layer.backward([],[],dLdZ,actualMem);
+            [actualdLdX,actualdLdW] = layer.backward(X,[],dLdZ,[]);
             
             % Evaluation
-            testCase.verifyInstanceOf(actualMem,datatype);
-            testCase.verifyInstanceOf(actualZ,datatype);
             testCase.verifyInstanceOf(actualdLdX,datatype);
             testCase.verifyInstanceOf(actualdLdW,datatype);
-            testCase.verifyThat(actualMem,...
-                IsEqualTo(expctdMem,'Within',tolObj));
-            testCase.verifyThat(actualZ,...
-                IsEqualTo(expctdZ,'Within',tolObj));
             testCase.verifyThat(actualdLdX,...
                 IsEqualTo(expctddLdX,'Within',tolObj));
             testCase.verifyThat(actualdLdW,...

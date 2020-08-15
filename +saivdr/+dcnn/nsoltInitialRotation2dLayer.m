@@ -121,24 +121,8 @@ classdef nsoltInitialRotation2dLayer < nnet.layer.Layer
             
         end
         
-        function [Z, memory] = forward(layer, X)
-            % (Optional) Forward input data through the layer at training
-            % time and output the result and a memory value.
-            %
-            % Inputs:
-            %         layer       - Layer to forward propagate through
-            %         X1, ..., Xn - Input data
-            % Outputs:
-            %         Z1, ..., Zm - Outputs of layer forward function
-            %         memory      - Memory value for custom backward propagation
-            
-            % Layer forward function for training goes here.
-            Z = layer.predict(X);
-            memory = X;
-        end
-        
         function [dLdX, dLdW] = ...
-                backward(layer, ~, ~, dLdZ, memory)
+                backward(layer, X, ~, dLdZ, ~)
             % (Optional) Backward propagate the derivative of the loss
             % function through the layer.
             %
@@ -199,7 +183,7 @@ classdef nsoltInitialRotation2dLayer < nnet.layer.Layer
             for iAngle = 1:nAngles/2
                 dW0 = fcn_orthonormalmatrixgenerate(anglesW,muW,iAngle);
                 dU0 = fcn_orthonormalmatrixgenerate(anglesU,muU,iAngle);
-                a_ = permute(memory,[3 1 2 4]);
+                a_ = permute(X,[3 1 2 4]);
                 c_upp = reshape(a_(1:nDecs/2,:,:,:),nDecs/2,nrows*ncols*nSamples);
                 c_low = reshape(a_(nDecs/2+1:nDecs,:,:,:),nDecs/2,nrows*ncols*nSamples);
                 d_upp = dW0(:,1:nDecs/2)*c_upp;
