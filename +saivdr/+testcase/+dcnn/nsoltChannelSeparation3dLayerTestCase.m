@@ -94,6 +94,40 @@ classdef nsoltChannelSeparation3dLayerTestCase < matlab.unittest.TestCase
             
         end
 
+                
+        function testBackward(testCase,nchs,nrows,ncols,nlays,datatype)
+            
+            import matlab.unittest.constraints.IsEqualTo
+            import matlab.unittest.constraints.AbsoluteTolerance
+            tolObj = AbsoluteTolerance(1e-6,single(1e-6));
+            
+            % Parameters
+            nSamples = 8;
+            nChsTotal = sum(nchs);
+            % nRows x nCols x nLays x 1 x nSamples
+            dLdZ1 = randn(nrows,ncols,nlays,1,nSamples,datatype);
+            % nRows x nCols x nLays x (nChsTotal-1) x nSamples 
+            dLdZ2 = randn(nrows,ncols,nlays,nChsTotal-1,nSamples,datatype);
+            
+            % Expected values
+            % nRows x nCols x nChsTotal x nSamples
+            expctddLdX = cat(4,dLdZ1,dLdZ2);
+            
+            % Instantiation of target class
+            import saivdr.dcnn.*
+            layer = nsoltChannelSeparation3dLayer('Name','Sp');
+            
+            % Actual values
+            actualdLdX = layer.backward([],[],[],dLdZ1,dLdZ2,[]);
+            
+            % Evaluation
+            testCase.verifyInstanceOf(actualdLdX,datatype);
+            testCase.verifyThat(actualdLdX,...
+                IsEqualTo(expctddLdX,'Within',tolObj));
+            
+        end
+
+        
     end
     
 end

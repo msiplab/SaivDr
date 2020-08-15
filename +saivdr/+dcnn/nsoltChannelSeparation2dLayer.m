@@ -42,7 +42,7 @@ classdef nsoltChannelSeparation2dLayer < nnet.layer.Layer
             layer.NumOutputs = 2;
         end
         
-        function [Z1,Z2] = predict(layer, X)
+        function [Z1,Z2] = predict(~, X)
             % Forward input data through the layer at prediction time and
             % output the result.
             %
@@ -58,6 +58,25 @@ classdef nsoltChannelSeparation2dLayer < nnet.layer.Layer
             Z2 = X(:,:,2:end,:);
         end
         
+        function dLdX = backward(~, ~, ~, ~, dLdZ1,dLdX2,~)
+            % (Optional) Backward propagate the derivative of the loss  
+            % function through the layer.
+            %
+            % Inputs:
+            %         layer             - Layer to backward propagate through
+            %         X1, ..., Xn       - Input data
+            %         Z1, ..., Zm       - Outputs of layer forward function            
+            %         dLdZ1, ..., dLdZm - Gradients propagated from the next layers
+            %         memory            - Memory value from forward function
+            % Outputs:
+            %         dLdX1, ..., dLdXn - Derivatives of the loss with respect to the
+            %                             inputs
+            %         dLdW1, ..., dLdWk - Derivatives of the loss with respect to each
+            %                             learnable parameter
+            
+            % Layer forward function for prediction goes here.
+            dLdX = cat(3,dLdZ1,dLdX2);
+        end
     end
     
 end

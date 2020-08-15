@@ -208,7 +208,7 @@ classdef nsoltBlockDct2dLayerTestCase < matlab.unittest.TestCase
             import saivdr.dcnn.*
             layer = nsoltBlockDct2dLayer(...
                 'DecimationFactor',stride,...
-                'Name','E0~');
+                'Name','E0');
             
             % Actual values
             actualdLdX = layer.backward([],[],dLdZ,[]);
@@ -271,7 +271,7 @@ classdef nsoltBlockDct2dLayerTestCase < matlab.unittest.TestCase
             layer = nsoltBlockDct2dLayer(...
                 'DecimationFactor',stride,...
                 'NumberOfComponents',nComponents,...
-                'Name','E0~');
+                'Name','E0');
             
             % Actual values
             actualdLdX = layer.backward([],[],[],[],dLdZr,dLdZg,dLdZb,[]);

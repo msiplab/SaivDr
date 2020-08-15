@@ -140,7 +140,7 @@ classdef nsoltBlockDct3dLayerTestCase < matlab.unittest.TestCase
             import saivdr.dcnn.*
             layer = nsoltBlockDct3dLayer(...
                 'DecimationFactor',stride,...
-                'Name','E0~');
+                'Name','E0');
             
             % Actual values
             actualdLdX = layer.backward([],[],dLdZ,[]);

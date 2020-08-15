@@ -6,7 +6,7 @@ classdef nsoltChannelConcatenation3dLayer < nnet.layer.Layer
     %
     %   ２コンポーネント出力(nComponents=2のみサポート):
     %      nRows x nCols x nLays x 1 x nSamples
-    %      nRows x nCols x nLays x (nChsTotal-1) x nSamples    
+    %      nRows x nCols x nLays x (nChsTotal-1) x nSamples
     %
     % Requirements: MATLAB R2020a
     %
@@ -43,7 +43,7 @@ classdef nsoltChannelConcatenation3dLayer < nnet.layer.Layer
             
         end
         
-        function Z = predict(layer, X1,X2)
+        function Z = predict(~, X1,X2)
             % Forward input data through the layer at prediction time and
             % output the result.
             %
@@ -52,10 +52,31 @@ classdef nsoltChannelConcatenation3dLayer < nnet.layer.Layer
             %         X1, X2      - Input data (2 components)
             % Outputs:
             %         Z           - Outputs of layer forward function
-            %  
+            %
             
             % Layer forward function for prediction goes here.
             Z = cat(4,X1,X2);
+        end
+        
+        function [dLdX1,dLdX2] = backward(~, ~, ~, ~, dLdZ, ~)
+            % (Optional) Backward propagate the derivative of the loss
+            % function through the layer.
+            %
+            % Inputs:
+            %         layer             - Layer to backward propagate through
+            %         X1, ..., Xn       - Input data
+            %         Z1, ..., Zm       - Outputs of layer forward function
+            %         dLdZ1, ..., dLdZm - Gradients propagated from the next layers
+            %         memory            - Memory value from forward function
+            % Outputs:
+            %         dLdX1, ..., dLdXn - Derivatives of the loss with respect to the
+            %                             inputs
+            %         dLdW1, ..., dLdWk - Derivatives of the loss with respect to each
+            %                             learnable parameter
+            
+            % Layer forward function for prediction goes here.
+            dLdX1 = dLdZ(:,:,:,1,:);
+            dLdX2 = dLdZ(:,:,:,2:end,:);
         end
         
     end

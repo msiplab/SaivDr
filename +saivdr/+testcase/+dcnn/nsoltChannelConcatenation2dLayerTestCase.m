@@ -89,7 +89,42 @@ classdef nsoltChannelConcatenation2dLayerTestCase < matlab.unittest.TestCase
                 IsEqualTo(expctdZ,'Within',tolObj));
             
         end
-
+                
+        function testBackward(testCase,nchs,nrows,ncols,datatype)
+            
+            import matlab.unittest.constraints.IsEqualTo
+            import matlab.unittest.constraints.AbsoluteTolerance
+            tolObj = AbsoluteTolerance(1e-6,single(1e-6));
+            
+            % Parameters
+            nSamples = 8;
+            nChsTotal = sum(nchs);
+            % nRows x nCols x nChsTotal x nSamples
+            dLdZ = randn(nrows,ncols,nChsTotal,nSamples,datatype);
+            
+            % Expected values
+            % nRows x nCols x 1 x nSamples
+            expctddLdX1 = dLdZ(:,:,1,:);
+            % nRows x nCols x (nChsTotal-1) x nSamples 
+            expctddLdX2 = dLdZ(:,:,2:end,:);
+            
+            % Instantiation of target class
+            import saivdr.dcnn.*
+            layer = nsoltChannelConcatenation2dLayer('Name','Cn');
+            
+            % Actual values
+            [actualdLdX1,actualdLdX2] = layer.backward([],[],[],dLdZ,[]);
+            
+            % Evaluation
+            testCase.verifyInstanceOf(actualdLdX1,datatype);
+            testCase.verifyInstanceOf(actualdLdX2,datatype);            
+            testCase.verifyThat(actualdLdX1,...
+                IsEqualTo(expctddLdX1,'Within',tolObj));
+            testCase.verifyThat(actualdLdX2,...
+                IsEqualTo(expctddLdX2,'Within',tolObj));            
+            
+        end
+        
     end
     
 end
