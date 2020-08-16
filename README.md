@@ -26,9 +26,11 @@ be used to see the contents as follows:
           
            * Package structure
                
-               + saivdr -+- testcase -+- sparserep 
+               + saivdr -+- testcase -+- dcnn
                          |            |
-                         |            +- embedded
+                         |            +- sparserep 
+                         |            |                         
+                         |            +- embedded                          
                          |            |
                          |            +- dictionary  -+- nsolt     -+- design
                          |            |               |
@@ -64,8 +66,10 @@ be used to see the contents as follows:
                          |            |
                          |            +- utility 
                          |
-                         +- sparserep
+                         +- dcnn
                          |
+                         +- sparserep
+                         |                         
                          +- embedded
                          |
                          +- dictionary  -+- nsolt     -+- design
@@ -108,13 +112,14 @@ be used to see the contents as follows:
     
 ## Requirements
  
-* MATLAB R2013b or later. R2019b is recommended.
+* MATLAB R2013b or later. R2020a is recommended.
  * Signal Processing Toolbox
  * Image Processing Toolbox
  * Optimization Toolbox
  
 ## Recomendation
  
+ * Deep Learning Toolbox
  * Global Optimization Toolbox 
  * Parallel Computing Toolbox
  * MATLAB Coder
