@@ -1,5 +1,5 @@
-function matrix = fcn_orthonormalmatrixgenerate(angles,mus,pdAng)
-%FCN_ORTHONORMALMATRIXGENERATE
+function matrix = fcn_orthmtxgen(angles,mus,pdAng)
+%FCN_ORTHMTXGEN
 %
 % Function realization of
 % saivdr.dictionary.utility.OrthonormalMatrixGenerationSystem

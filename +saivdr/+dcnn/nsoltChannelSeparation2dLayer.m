@@ -39,7 +39,8 @@ classdef nsoltChannelSeparation2dLayer < nnet.layer.Layer
             layer.Name = p.Results.Name;
             layer.Description =  "Channel separation";
             layer.Type = '';
-            layer.NumOutputs = 2;
+            %layer.NumOutputs = 2;
+            layer.OutputNames = { 'dc', 'ac' };            
         end
         
         function [Z1,Z2] = predict(~, X)
