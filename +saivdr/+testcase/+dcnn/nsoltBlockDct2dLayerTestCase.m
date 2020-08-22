@@ -21,7 +21,7 @@ classdef nsoltBlockDct2dLayerTestCase < matlab.unittest.TestCase
     % http://msiplab.eng.niigata-u.ac.jp/
     
     properties (TestParameter)
-        stride = { [2 2], [4 4] };
+        stride = { [1 1], [2 2], [2 4], [4 1], [4 4] };
         datatype = { 'single', 'double' };
         height = struct('small', 8,'medium', 16, 'large', 32);
         width = struct('small', 8,'medium', 16, 'large', 32);
@@ -80,8 +80,8 @@ classdef nsoltBlockDct2dLayerTestCase < matlab.unittest.TestCase
             X = rand(height,width,nComponents,nSamples, datatype);
             
             % Expected values
-            nrows = height/stride(Direction.VERTICAL);
-            ncols = width/stride(Direction.HORIZONTAL);
+            nrows = ceil(height/stride(Direction.VERTICAL));
+            ncols = ceil(width/stride(Direction.HORIZONTAL));
             ndecs = prod(stride);
             expctdZ = zeros(nrows,ncols,ndecs,nSamples,datatype);
             for iSample = 1:nSamples
@@ -229,8 +229,8 @@ classdef nsoltBlockDct2dLayerTestCase < matlab.unittest.TestCase
             
             % Parameters
             nSamples = 8;
-            nrows = height/stride(Direction.VERTICAL);
-            ncols = width/stride(Direction.HORIZONTAL);
+            nrows = ceil(height/stride(Direction.VERTICAL));
+            ncols = ceil(width/stride(Direction.HORIZONTAL));
             nDecs = prod(stride);
             nComponents = 3; % RGB
             dLdZr = rand(nrows,ncols,nDecs,nSamples,datatype);

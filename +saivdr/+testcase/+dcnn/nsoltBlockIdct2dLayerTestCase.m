@@ -21,7 +21,7 @@ classdef nsoltBlockIdct2dLayerTestCase < matlab.unittest.TestCase
     % http://msiplab.eng.niigata-u.ac.jp/
     
     properties (TestParameter)
-        stride = { [2 2], [4 4] };
+        stride = { [1 1], [2 2], [2 4], [4 1], [4 4] };
         datatype = { 'single', 'double' };
         height = struct('small', 8,'medium', 16, 'large', 32);
         width = struct('small', 8,'medium', 16, 'large', 32);
