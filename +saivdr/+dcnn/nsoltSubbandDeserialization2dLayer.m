@@ -1,8 +1,8 @@
 classdef nsoltSubbandDeserialization2dLayer < nnet.layer.Layer
     %NSOLTSUBBANDSERIALIZATION2DLAYER
     %
-    %   １コンポーネント入力(SB):
-    %      nElements x nSamples
+    %   １コンポーネント入力(SSCB):
+    %      nElements x 1 x 1 x nSamples
     %
     %   複数コンポーネント出力 (SSCB):（ツリーレベル数）
     %      nRowsLv1 x nColsLv1 x nChsTotal x nSamples
@@ -120,27 +120,34 @@ classdef nsoltSubbandDeserialization2dLayer < nnet.layer.Layer
             end
         end
         
-        %{
-function varargout = backward(~, varargin)
-            % (Optional) Backward propagate the derivative of the loss
-            % function through the layer.
+       function dLdX = backward(layer, varargin)
+            % Forward input data through the layer at prediction time and
+            % output the result.
             %
             % Inputs:
-            %         layer             - Layer to backward propagate through
-            %         X1, ..., Xn       - Input data
-            %         Z1, ..., Zm       - Outputs of layer forward function
-            %         dLdZ1, ..., dLdZm - Gradients propagated from the next layers
-            %         memory            - Memory value from forward function
+            %         layer       - Layer to forward propagate through
+            %         X           - Input data (1 component)
             % Outputs:
-            %         dLdX1, ..., dLdXn - Derivatives of the loss with respect to the
-            %                             inputs
-            %         dLdW1, ..., dLdWk - Derivatives of the loss with respect to each
-            %                             learnable parameter
+            %         Z1, Z2      - Outputs of layer forward function
+            %  
             
             % Layer forward function for prediction goes here.
-
+            nLevels = layer.NumberOfLevels;
+            nSamples = size(varargin{nLevels+2},4);
+            nElements = sum(prod(layer.Scales,2));
+            dLdX = zeros(nElements,1,1,nSamples,'like',varargin{nLevels+2});
+            for iSample = 1:nSamples
+                x = zeros(nElements,1,'like',dLdX);
+                sidx = 0;
+                for iRevLv = 1:nLevels
+                    nSubElements = prod(layer.Scales(iRevLv,:));
+                    a = varargin{nLevels+2+nLevels-iRevLv}(:,:,:,iSample);
+                    x(sidx+1:sidx+nSubElements) = a(:);
+                    sidx = sidx+nSubElements;
+                end
+                dLdX(:,1,1,iSample) = x;
+            end
         end
-        %}
     end
     
 end

@@ -7,8 +7,8 @@ classdef nsoltSubbandSerialization2dLayer < nnet.layer.Layer
     %       :
     %      nRowsLvN x nColsLvN x (nChsTotal-1) x nSamples    
     %
-    %   １コンポーネント出力(TCB):
-    %      nElements x 1 x nSamples
+    %   １コンポーネント出力(SSCB):
+    %      nElements x 1 x 1 x nSamples
     %
     % Requirements: MATLAB R2020a
     %
@@ -103,7 +103,7 @@ classdef nsoltSubbandSerialization2dLayer < nnet.layer.Layer
             nLevels = layer.NumberOfLevels;
             nSamples = size(varargin{1},4);
             nElements = sum(prod(layer.Scales,2));
-            Z = zeros(nElements,nSamples,'like',varargin{1});
+            Z = zeros(nElements,1,1,nSamples,'like',varargin{1});
             for iSample = 1:nSamples
                 x = zeros(nElements,1,'like',Z);
                 sidx = 0;
@@ -113,40 +113,41 @@ classdef nsoltSubbandSerialization2dLayer < nnet.layer.Layer
                     x(sidx+1:sidx+nSubElements) = a(:);
                     sidx = sidx+nSubElements;
                 end
-                Z(:,iSample) = x;
+                Z(:,1,1,iSample) = x;
             end
         end
         
-        %{
-        function varargout = backward(~, varargin)
-            % (Optional) Backward propagate the derivative of the loss  
-            % function through the layer.
+         function varargout = backward(layer,varargin)
+            % Forward input data through the layer at prediction time and
+            % output the result.
             %
             % Inputs:
-            %         layer             - Layer to backward propagate through
-            %         X1, ..., Xn       - Input data
-            %         Z1, ..., Zm       - Outputs of layer forward function            
-            %         dLdZ1, ..., dLdZm - Gradients propagated from the next layers
-            %         memory            - Memory value from forward function
+            %         layer       - Layer to forward propagate through
+            %         X           - Input data (1 component)
             % Outputs:
-            %         dLdX1, ..., dLdXn - Derivatives of the loss with respect to the
-            %                             inputs
-            %         dLdW1, ..., dLdWk - Derivatives of the loss with respect to each
-            %                             learnable parameter
-            
-            % Layer forward function for prediction goes here.
+            %         Z1, Z2      - Outputs of layer forward function
+            %
             nLevels = layer.NumberOfLevels;
-            nSamples = size(varargin{1},2);
+            dLdZ = varargin{nLevels+2};            
+            nChsTotal = sum(layer.NumberOfChannels);
+            scales = layer.Scales;
+            varargout = cell(1,nLevels);
+            sidx = 0;
             for iRevLv = 1:nLevels
                 if iRevLv == 1
                     wodc = 0;
                 else
                     wodc = 1;
                 end
-                %z = reshape(varargin{iRevLv},subHeight,subWidth,nChsTotal-wodc,nSamples);
-            end            varargout = varargin{:};
+                nSubElements = prod(scales(iRevLv,:));
+                subHeight = scales(iRevLv,1);
+                subWidth = scales(iRevLv,2);
+                varargout{nLevels-iRevLv+1} = ...
+                    reshape(dLdZ(sidx+1:sidx+nSubElements,:),...
+                    subHeight,subWidth,nChsTotal-wodc,[]);
+                sidx = sidx + nSubElements;
+            end
         end
-        %}
     end
     
 end
