@@ -39,7 +39,8 @@ classdef nsoltChannelConcatenation3dLayer < nnet.layer.Layer
             layer.Name = p.Results.Name;
             layer.Description =  "Channel concatenation";
             layer.Type = '';
-            layer.NumInputs = 2;
+            %layer.NumInputs = 2;
+            layer.InputNames = { 'dc', 'ac' };            
             
         end
         
