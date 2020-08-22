@@ -1,14 +1,14 @@
-classdef nsoltSubbandSerialization2dLayer < nnet.layer.Layer
+classdef nsoltSubbandDeserialization2dLayer < nnet.layer.Layer
     %NSOLTSUBBANDSERIALIZATION2DLAYER
     %
-    %   複数コンポーネント入力 (SSCB):（ツリーレベル数）
+    %   １コンポーネント入力(SB):
+    %      nElements x nSamples
+    %
+    %   複数コンポーネント出力 (SSCB):（ツリーレベル数）
     %      nRowsLv1 x nColsLv1 x nChsTotal x nSamples
     %      nRowsLv2 x nColsLv2 x (nChsTotal-1) x nSamples
     %       :
-    %      nRowsLvN x nColsLvN x (nChsTotal-1) x nSamples    
-    %
-    %   １コンポーネント出力(TCB):
-    %      nElements x 1 x nSamples
+    %      nRowsLvN x nColsLvN x (nChsTotal-1) x nSamples
     %
     % Requirements: MATLAB R2020a
     %
@@ -34,7 +34,7 @@ classdef nsoltSubbandSerialization2dLayer < nnet.layer.Layer
     end
     
     methods
-        function layer = nsoltSubbandSerialization2dLayer(varargin)
+        function layer = nsoltSubbandDeserialization2dLayer(varargin)
             % (Optional) Create a myLayer.
             % This function must have the same name as the class.
             import saivdr.dictionary.utility.Direction
@@ -54,13 +54,13 @@ classdef nsoltSubbandSerialization2dLayer < nnet.layer.Layer
             layer.DecimationFactor = p.Results.DecimationFactor;
             layer.NumberOfLevels = p.Results.NumberOfLevels;
             layer.Name = p.Results.Name;
-
+            
             nLevels = layer.NumberOfLevels;
             height = layer.OriginalDimension(Direction.VERTICAL);
-            width = layer.OriginalDimension(Direction.HORIZONTAL);            
-            layer.Description = "Subband serialization " ...
+            width = layer.OriginalDimension(Direction.HORIZONTAL);
+            layer.Description = "Subband deserialization " ...
                 + "(h,w) = (" ...
-                + height + "," + width + "), "  ...                
+                + height + "," + width + "), "  ...
                 + "lv = " ...
                 + nLevels + ", " ...
                 + "(ps,pa) = (" ...
@@ -68,27 +68,27 @@ classdef nsoltSubbandSerialization2dLayer < nnet.layer.Layer
                 + "(mv,mh) = (" ...
                 + layer.DecimationFactor(Direction.VERTICAL) + "," + layer.DecimationFactor(Direction.HORIZONTAL) + ")";
             layer.Type = '';
-            inputNames = cell(1,layer.NumberOfLevels);
+            outputNames = cell(1,layer.NumberOfLevels);
             for iLv = 1:nLevels
-                inputNames{iLv} = [ 'Lv' num2str(iLv) '_SbIn' ];
-            end            
-            layer.InputNames = inputNames;
-
+                outputNames{iLv} = [ 'Lv' num2str(iLv) '_SbOut' ];
+            end
+            layer.OutputNames = outputNames;
+            
             %
             nChsTotal = sum(layer.NumberOfChannels);
             stride = layer.DecimationFactor;
             
             nrows = height*stride(Direction.VERTICAL).^(-nLevels);
-            ncols = width*stride(Direction.HORIZONTAL).^(-nLevels);     
-            layer.Scales = zeros(nLevels,3);            
+            ncols = width*stride(Direction.HORIZONTAL).^(-nLevels);
+            layer.Scales = zeros(nLevels,3);
             layer.Scales(1,:) = [nrows ncols nChsTotal];
             for iRevLv = 2:nLevels
                 layer.Scales(iRevLv,:) = ...
                     [nrows*stride(Direction.VERTICAL)^(iRevLv-1) ncols*stride(Direction.HORIZONTAL)^(iRevLv-1)  nChsTotal-1];
             end
         end
-       
-        function Z = predict(layer, varargin)
+        
+        function varargout = predict(layer,X)
             % Forward input data through the layer at prediction time and
             % output the result.
             %
@@ -97,35 +97,38 @@ classdef nsoltSubbandSerialization2dLayer < nnet.layer.Layer
             %         X           - Input data (1 component)
             % Outputs:
             %         Z1, Z2      - Outputs of layer forward function
-            %  
+            %
             
-            % Layer forward function for prediction goes here.
             nLevels = layer.NumberOfLevels;
-            nSamples = size(varargin{1},4);
-            nElements = sum(prod(layer.Scales,2));
-            Z = zeros(nElements,nSamples,'like',varargin{1});
-            for iSample = 1:nSamples
-                x = zeros(nElements,1,'like',Z);
-                sidx = 0;
-                for iRevLv = 1:nLevels
-                    nSubElements = prod(layer.Scales(iRevLv,:));
-                    a = varargin{nLevels-iRevLv+1}(:,:,:,iSample);
-                    x(sidx+1:sidx+nSubElements) = a(:);
-                    sidx = sidx+nSubElements;
+            nChsTotal = sum(layer.NumberOfChannels);
+            scales = layer.Scales;
+            varargout = cell(1,nLevels);
+            sidx = 0;
+            for iRevLv = 1:nLevels
+                if iRevLv == 1
+                    wodc = 0;
+                else
+                    wodc = 1;
                 end
-                Z(:,iSample) = x;
+                nSubElements = prod(scales(iRevLv,:));
+                subHeight = scales(iRevLv,1);
+                subWidth = scales(iRevLv,2);
+                varargout{nLevels-iRevLv+1} = ...
+                    reshape(X(sidx+1:sidx+nSubElements,:),...
+                    subHeight,subWidth,nChsTotal-wodc,[]);
+                sidx = sidx + nSubElements;
             end
         end
         
         %{
-        function varargout = backward(~, varargin)
-            % (Optional) Backward propagate the derivative of the loss  
+function varargout = backward(~, varargin)
+            % (Optional) Backward propagate the derivative of the loss
             % function through the layer.
             %
             % Inputs:
             %         layer             - Layer to backward propagate through
             %         X1, ..., Xn       - Input data
-            %         Z1, ..., Zm       - Outputs of layer forward function            
+            %         Z1, ..., Zm       - Outputs of layer forward function
             %         dLdZ1, ..., dLdZm - Gradients propagated from the next layers
             %         memory            - Memory value from forward function
             % Outputs:
@@ -135,16 +138,7 @@ classdef nsoltSubbandSerialization2dLayer < nnet.layer.Layer
             %                             learnable parameter
             
             % Layer forward function for prediction goes here.
-            nLevels = layer.NumberOfLevels;
-            nSamples = size(varargin{1},2);
-            for iRevLv = 1:nLevels
-                if iRevLv == 1
-                    wodc = 0;
-                else
-                    wodc = 1;
-                end
-                %z = reshape(varargin{iRevLv},subHeight,subWidth,nChsTotal-wodc,nSamples);
-            end            varargout = varargin{:};
+
         end
         %}
     end
