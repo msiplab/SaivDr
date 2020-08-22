@@ -21,8 +21,8 @@ classdef nsoltInitialRotation2dLayerTestCase < matlab.unittest.TestCase
     % http://msiplab.eng.niigata-u.ac.jp/
     
     properties (TestParameter)
-        nchs = { [3 3], [4 4] };
-        stride = { [2 2] };
+        nchs = { [2 2], [3 3], [4 4] };
+        stride = { [1 1], [1 2], [2 2] };
         mus = { -1, 1 };
         datatype = { 'single', 'double' };
         nrows = struct('small', 4,'medium', 8, 'large', 16);
@@ -95,12 +95,12 @@ classdef nsoltInitialRotation2dLayerTestCase < matlab.unittest.TestCase
                 Ai = permute(X(:,:,:,iSample),[3 1 2]);
                 Yi = reshape(Ai,nDecs,nrows,ncols);
                 %
-                Ys = Yi(1:nDecs/2,:);
-                Ya = Yi(nDecs/2+1:end,:);
+                Ys = Yi(1:ceil(nDecs/2),:);
+                Ya = Yi(ceil(nDecs/2)+1:end,:);
                 Y(1:ps,:,:) = ...
-                    reshape(W0(:,1:nDecs/2)*Ys,ps,nrows,ncols);
+                    reshape(W0(:,1:ceil(nDecs/2))*Ys,ps,nrows,ncols);
                 Y(ps+1:ps+pa,:,:) = ...
-                    reshape(U0(:,1:nDecs/2)*Ya,pa,nrows,ncols);
+                    reshape(U0(:,1:floor(nDecs/2))*Ya,pa,nrows,ncols);
                 expctdZ(:,:,:,iSample) = ipermute(Y,[3 1 2]);
             end
             
@@ -152,12 +152,12 @@ classdef nsoltInitialRotation2dLayerTestCase < matlab.unittest.TestCase
                 Ai = permute(X(:,:,:,iSample),[3 1 2]);
                 Yi = reshape(Ai,nDecs,nrows,ncols);
                 %
-                Ys = Yi(1:nDecs/2,:);
-                Ya = Yi(nDecs/2+1:end,:);
+                Ys = Yi(1:ceil(nDecs/2),:);
+                Ya = Yi(ceil(nDecs/2)+1:end,:);
                 Y(1:ps,:,:) = ...
-                    reshape(W0(:,1:nDecs/2)*Ys,ps,nrows,ncols);
+                    reshape(W0(:,1:ceil(nDecs/2))*Ys,ps,nrows,ncols);
                 Y(ps+1:ps+pa,:,:) = ...
-                    reshape(U0(:,1:nDecs/2)*Ya,pa,nrows,ncols);
+                    reshape(U0(:,1:floor(nDecs/2))*Ya,pa,nrows,ncols);
                 expctdZ(:,:,:,iSample) = ipermute(Y,[3 1 2]);
             end
             
@@ -215,12 +215,12 @@ classdef nsoltInitialRotation2dLayerTestCase < matlab.unittest.TestCase
                 Ai = permute(X(:,:,:,iSample),[3 1 2]);
                 Yi = reshape(Ai,nDecs,nrows,ncols);
                 %
-                Ys = Yi(1:nDecs/2,:);
-                Ya = Yi(nDecs/2+1:end,:);
+                Ys = Yi(1:ceil(nDecs/2),:);
+                Ya = Yi(ceil(nDecs/2)+1:end,:);
                 Y(1:ps,:,:) = ...
-                    reshape(W0(:,1:nDecs/2)*Ys,ps,nrows,ncols);
+                    reshape(W0(:,1:ceil(nDecs/2))*Ys,ps,nrows,ncols);
                 Y(ps+1:ps+pa,:,:) = ...
-                    reshape(U0(:,1:nDecs/2)*Ya,pa,nrows,ncols);
+                    reshape(U0(:,1:floor(nDecs/2))*Ya,pa,nrows,ncols);
                 expctdZ(:,:,:,iSample) = ipermute(Y,[3 1 2]);
             end
             
@@ -280,7 +280,7 @@ classdef nsoltInitialRotation2dLayerTestCase < matlab.unittest.TestCase
             Y = permute(dLdZ,[3 1 2 4]);
             Ys = reshape(Y(1:ps,:,:,:),ps,nrows*ncols*nSamples);
             Ya = reshape(Y(ps+1:ps+pa,:,:,:),pa,nrows*ncols*nSamples);
-            Zsa = [ W0T(1:nDecs/2,:)*Ys; U0T(1:nDecs/2,:)*Ya ];
+            Zsa = [ W0T(1:ceil(nDecs/2),:)*Ys; U0T(1:floor(nDecs/2),:)*Ya ];
             expctddLdX = ipermute(reshape(Zsa,nDecs,nrows,ncols,nSamples),...
                 [3 1 2 4]);
             
@@ -294,10 +294,10 @@ classdef nsoltInitialRotation2dLayerTestCase < matlab.unittest.TestCase
                 dW0 = genW.step(anglesW,mus_,iAngle);
                 dU0 = genU.step(anglesU,mus_,iAngle);
                 a_ = permute(X,[3 1 2 4]);
-                c_upp = reshape(a_(1:nDecs/2,:,:,:),nDecs/2,nrows*ncols*nSamples);
-                c_low = reshape(a_(nDecs/2+1:nDecs,:,:,:),nDecs/2,nrows*ncols*nSamples);
-                d_upp = dW0(:,1:nDecs/2)*c_upp;
-                d_low = dU0(:,1:nDecs/2)*c_low;
+                c_upp = reshape(a_(1:ceil(nDecs/2),:,:,:),ceil(nDecs/2),nrows*ncols*nSamples);
+                c_low = reshape(a_(ceil(nDecs/2)+1:nDecs,:,:,:),floor(nDecs/2),nrows*ncols*nSamples);
+                d_upp = dW0(:,1:ceil(nDecs/2))*c_upp;
+                d_low = dU0(:,1:floor(nDecs/2))*c_low;
                 expctddLdW(iAngle) = sum(dldz_upp.*d_upp,'all');
                 expctddLdW(nAnglesH+iAngle) = sum(dldz_low.*d_low,'all');
             end
@@ -309,7 +309,7 @@ classdef nsoltInitialRotation2dLayerTestCase < matlab.unittest.TestCase
                 'DecimationFactor',stride,...
                 'Name','V0');
             layer.Mus = mus_;
-            expctdZ = layer.predict(X);
+            %expctdZ = layer.predict(X);
             
             % Actual values
             [actualdLdX,actualdLdW] = layer.backward(X,[],dLdZ,[]);
@@ -360,7 +360,7 @@ classdef nsoltInitialRotation2dLayerTestCase < matlab.unittest.TestCase
             Y = permute(dLdZ,[3 1 2 4]);
             Ys = reshape(Y(1:ps,:,:,:),ps,nrows*ncols*nSamples);
             Ya = reshape(Y(ps+1:ps+pa,:,:,:),pa,nrows*ncols*nSamples);
-            Zsa = [ W0T(1:nDecs/2,:)*Ys; U0T(1:nDecs/2,:)*Ya ];
+            Zsa = [ W0T(1:ceil(nDecs/2),:)*Ys; U0T(1:floor(nDecs/2),:)*Ya ];
             expctddLdX = ipermute(reshape(Zsa,nDecs,nrows,ncols,nSamples),...
                 [3 1 2 4]);
             
@@ -374,10 +374,10 @@ classdef nsoltInitialRotation2dLayerTestCase < matlab.unittest.TestCase
                 dW0 = genW.step(anglesW,mus_,iAngle);
                 dU0 = genU.step(anglesU,mus_,iAngle);
                 a_ = permute(X,[3 1 2 4]);
-                c_upp = reshape(a_(1:nDecs/2,:,:,:),nDecs/2,nrows*ncols*nSamples);
-                c_low = reshape(a_(nDecs/2+1:nDecs,:,:,:),nDecs/2,nrows*ncols*nSamples);
-                d_upp = dW0(:,1:nDecs/2)*c_upp;
-                d_low = dU0(:,1:nDecs/2)*c_low;
+                c_upp = reshape(a_(1:ceil(nDecs/2),:,:,:),ceil(nDecs/2),nrows*ncols*nSamples);
+                c_low = reshape(a_(ceil(nDecs/2)+1:nDecs,:,:,:),floor(nDecs/2),nrows*ncols*nSamples);
+                d_upp = dW0(:,1:ceil(nDecs/2))*c_upp;
+                d_low = dU0(:,1:floor(nDecs/2))*c_low;
                 expctddLdW(iAngle) = sum(dldz_upp.*d_upp,'all');
                 expctddLdW(nAnglesH+iAngle) = sum(dldz_low.*d_low,'all');
             end
@@ -390,7 +390,7 @@ classdef nsoltInitialRotation2dLayerTestCase < matlab.unittest.TestCase
                 'Name','V0');
             layer.Mus = mus_;
             layer.Angles = [anglesW; anglesU];
-            expctdZ = layer.predict(X);
+            %expctdZ = layer.predict(X);
             
             % Actual values
             [actualdLdX,actualdLdW] = layer.backward(X,[],dLdZ,[]);
@@ -445,7 +445,7 @@ classdef nsoltInitialRotation2dLayerTestCase < matlab.unittest.TestCase
             Y = permute(dLdZ,[3 1 2 4]);
             Ys = reshape(Y(1:ps,:,:,:),ps,nrows*ncols*nSamples);
             Ya = reshape(Y(ps+1:ps+pa,:,:,:),pa,nrows*ncols*nSamples);
-            Zsa = [ W0T(1:nDecs/2,:)*Ys; U0T(1:nDecs/2,:)*Ya ];
+            Zsa = [ W0T(1:ceil(nDecs/2),:)*Ys; U0T(1:floor(nDecs/2),:)*Ya ];
             expctddLdX = ipermute(reshape(Zsa,nDecs,nrows,ncols,nSamples),...
                 [3 1 2 4]);
             
@@ -459,10 +459,10 @@ classdef nsoltInitialRotation2dLayerTestCase < matlab.unittest.TestCase
                 dW0 = genW.step(anglesW_NoDc,musW,iAngle);
                 dU0 = genU.step(anglesU,musU,iAngle);
                 a_ = permute(X,[3 1 2 4]);
-                c_upp = reshape(a_(1:nDecs/2,:,:,:),nDecs/2,nrows*ncols*nSamples);
-                c_low = reshape(a_(nDecs/2+1:nDecs,:,:,:),nDecs/2,nrows*ncols*nSamples);
-                d_upp = dW0(:,1:nDecs/2)*c_upp;
-                d_low = dU0(:,1:nDecs/2)*c_low;
+                c_upp = reshape(a_(1:ceil(nDecs/2),:,:,:),ceil(nDecs/2),nrows*ncols*nSamples);
+                c_low = reshape(a_(ceil(nDecs/2)+1:nDecs,:,:,:),floor(nDecs/2),nrows*ncols*nSamples);
+                d_upp = dW0(:,1:ceil(nDecs/2))*c_upp;
+                d_low = dU0(:,1:floor(nDecs/2))*c_low;
                 expctddLdW(iAngle) = sum(dldz_upp.*d_upp,'all');
                 expctddLdW(nAnglesH+iAngle) = sum(dldz_low.*d_low,'all');
             end
@@ -476,7 +476,7 @@ classdef nsoltInitialRotation2dLayerTestCase < matlab.unittest.TestCase
                 'Name','V0');
             layer.Mus = mus;
             layer.Angles = [anglesW; anglesU];
-            expctdZ = layer.predict(X);
+            %expctdZ = layer.predict(X);
             
             % Actual values
             [actualdLdX,actualdLdW] = layer.backward(X,[],dLdZ,[]);

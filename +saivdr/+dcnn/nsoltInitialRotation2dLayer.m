@@ -114,8 +114,8 @@ classdef nsoltInitialRotation2dLayer < nnet.layer.Layer
             U0 = fcn_orthmtxgen(anglesU,muU);
             
             Y = reshape(permute(X,[3 1 2 4]),nDecs,nrows*ncols*nSamples);
-            Zs = W0(:,1:nDecs/2)*Y(1:nDecs/2,:);
-            Za = U0(:,1:nDecs/2)*Y(nDecs/2+1:end,:);
+            Zs = W0(:,1:ceil(nDecs/2))*Y(1:ceil(nDecs/2),:);
+            Za = U0(:,1:floor(nDecs/2))*Y(ceil(nDecs/2)+1:end,:);
             Z = ipermute(reshape([Zs;Za],nChsTotal,nrows,ncols,nSamples),...
                 [3 1 2 4]);
             
@@ -170,7 +170,7 @@ classdef nsoltInitialRotation2dLayer < nnet.layer.Layer
             Y = permute(dLdZ,[3 1 2 4]);
             Ys = reshape(Y(1:ps,:,:,:),ps,nrows*ncols*nSamples);
             Ya = reshape(Y(ps+1:ps+pa,:,:,:),pa,nrows*ncols*nSamples);
-            Zsa = [ W0T(1:nDecs/2,:)*Ys; U0T(1:nDecs/2,:)*Ya ];
+            Zsa = [ W0T(1:ceil(nDecs/2),:)*Ys; U0T(1:floor(nDecs/2),:)*Ya ];
             dLdX = ipermute(reshape(Zsa,nDecs,nrows,ncols,nSamples),...
                 [3 1 2 4]);
             
@@ -184,10 +184,10 @@ classdef nsoltInitialRotation2dLayer < nnet.layer.Layer
                 dW0 = fcn_orthmtxgen(anglesW,muW,iAngle);
                 dU0 = fcn_orthmtxgen(anglesU,muU,iAngle);
                 a_ = permute(X,[3 1 2 4]);
-                c_upp = reshape(a_(1:nDecs/2,:,:,:),nDecs/2,nrows*ncols*nSamples);
-                c_low = reshape(a_(nDecs/2+1:nDecs,:,:,:),nDecs/2,nrows*ncols*nSamples);
-                d_upp = dW0(:,1:nDecs/2)*c_upp;
-                d_low = dU0(:,1:nDecs/2)*c_low;
+                c_upp = reshape(a_(1:ceil(nDecs/2),:,:,:),ceil(nDecs/2),nrows*ncols*nSamples);
+                c_low = reshape(a_(ceil(nDecs/2)+1:nDecs,:,:,:),floor(nDecs/2),nrows*ncols*nSamples);
+                d_upp = dW0(:,1:ceil(nDecs/2))*c_upp;
+                d_low = dU0(:,1:floor(nDecs/2))*c_low;
                 dLdW(iAngle) = sum(dldz_upp.*d_upp,'all');
                 dLdW(nAngles/2+iAngle) = sum(dldz_low.*d_low,'all');
             end
