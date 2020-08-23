@@ -22,12 +22,17 @@ import saivdr.dcnn.*
 targetlayer = 'Lv1_V0~';
 nLayers = length(synthesisnet.Layers);
 nLevels = 0;
+isSerialized = false;
 for iLayer = 1:nLayers
-    if strcmp(synthesisnet.Layers(iLayer).Name,targetlayer)
-        nChannels = synthesisnet.Layers(iLayer).NumberOfChannels;
-        decFactor = synthesisnet.Layers(iLayer).DecimationFactor;
+    layer = synthesisnet.Layers(iLayer);
+    if strcmp(layer.Name,'Sb_Dsz')
+        isSerialized = true;
     end
-    if ~isempty(strfind(synthesisnet.Layers(iLayer).Name,'E0'))
+    if strcmp(layer.Name,targetlayer)
+        nChannels = layer.NumberOfChannels;
+        decFactor = layer.DecimationFactor;
+    end
+    if ~isempty(strfind(layer.Name,'E0'))
         nLevels = nLevels + 1;
     end
 end
@@ -46,6 +51,16 @@ if nargin < 2
     maxDecFactor = decFactor.^nLevels;
     
     patchsize = (ceil(estKernelExt./maxDecFactor)+MARGIN).*maxDecFactor;
+end
+
+% Remove deserialization
+if isSerialized
+    synthesislgraph = layerGraph(synthesisnet);
+    synthesislgraph = synthesislgraph.removeLayers('Sb_Dsz');
+    synthesislgraph = synthesislgraph.removeLayers('Subband images');
+    [~,synthesislgraph] = fcn_replaceinputlayers([],...
+        synthesislgraph,patchsize);
+    synthesisnet = dlnetwork(synthesislgraph);
 end
 
 % Calculation of atomic images
