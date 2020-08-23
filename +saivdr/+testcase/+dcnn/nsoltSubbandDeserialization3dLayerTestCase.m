@@ -118,6 +118,7 @@ classdef nsoltSubbandDeserialization3dLayerTestCase < matlab.unittest.TestCase
                 expctdScales(iRevLv,:) = ...
                     [nrows*stride(1)^(iRevLv-1) ncols*stride(2)^(iRevLv-1) nlays*stride(3)^(iRevLv-1) nChsTotal-1];                
             end
+            expctdInputSize = [sum(prod(expctdScales,2)) 1 1 1 ];
             
             % Input
             nElements = sum(prod(expctdScales,2));
@@ -146,6 +147,7 @@ classdef nsoltSubbandDeserialization3dLayerTestCase < matlab.unittest.TestCase
             % Actual values
             [actualZ{1:nlevels}] = layer.predict(X);
             actualScales = layer.Scales;
+            actualInputSize = layer.InputSize;
             
             % Evaluation
             for iLv = 1:nlevels
@@ -155,7 +157,9 @@ classdef nsoltSubbandDeserialization3dLayerTestCase < matlab.unittest.TestCase
             end
             testCase.verifyThat(actualScales,...
                 IsEqualTo(expctdScales,'Within',tolObj));
-            
+            testCase.verifyThat(actualInputSize,...
+                IsEqualTo(expctdInputSize,'Within',tolObj));
+                        
         end
         
         function testBackward(testCase,...

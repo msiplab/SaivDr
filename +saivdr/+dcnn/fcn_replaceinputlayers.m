@@ -17,22 +17,36 @@ function [analysislgraph, synthesislgraph] = fcn_replaceinputlayers(analysislgra
 import saivdr.dcnn.*
 
 % Analysis layer graph
-analysislgraph = analysislgraph.replaceLayer(...
-    'Lv1_In',...
-    imageInputLayer(imagesize,'Name','Input image','Normalization','none'));
-nChannels = analysislgraph.Layers(2).NumberOfChannels;
-decFactors = analysislgraph.Layers(2).DecimationFactor;
-nLevels = str2double(analysislgraph.Layers(end).Name(3));
+if ~isempty(analysislgraph)
+    analysislgraph = analysislgraph.replaceLayer(...
+        'Lv1_In',...
+        imageInputLayer(imagesize,'Name','Input image','Normalization','none'));
+end
 
 % Synthesis layer graph
-for iLv = 1:nLevels-1
+if ~isempty(synthesislgraph)
+    nLayers = length(synthesislgraph.Layers);
+    nLevels = 0;
+    for iLayer = 1:nLayers
+        layerName = synthesislgraph.Layers(iLayer).Name;
+        if contains(layerName,'_E0~')
+            nLevels = nLevels + 1;
+        end
+        if contains(layerName,'Lv1_V0~')
+            nChannels = synthesislgraph.Layers(iLayer).NumberOfChannels;
+            decFactor = synthesislgraph.Layers(iLayer).DecimationFactor;
+        end
+    end
+    
+    for iLv = 1:nLevels-1
+        synthesislgraph = synthesislgraph.replaceLayer(...
+            ['Lv' num2str(iLv) '_AcIn'],...
+            imageInputLayer([imagesize./(decFactor.^iLv) (sum(nChannels)-1)],...
+            'Name',['Lv' num2str(iLv) ' subband images'],'Normalization','none'));
+    end
     synthesislgraph = synthesislgraph.replaceLayer(...
-        ['Lv' num2str(iLv) '_AcIn'],...
-        imageInputLayer([imagesize./(decFactors.^iLv) (sum(nChannels)-1)],...
-        'Name',['Lv' num2str(iLv) ' subband images'],'Normalization','none'));   
+        ['Lv' num2str(nLevels) '_DcAcIn'],...
+        imageInputLayer([imagesize./(decFactor.^nLevels) sum(nChannels)],...
+        'Name',['Lv' num2str(nLevels) ' subband images'],'Normalization','none'));
 end
-synthesislgraph = synthesislgraph.replaceLayer(...
-    ['Lv' num2str(nLevels) '_DcAcIn'],...
-    imageInputLayer([imagesize./(decFactors.^nLevels) sum(nChannels)],...
-    'Name',['Lv' num2str(nLevels) ' subband images'],'Normalization','none'));
 end

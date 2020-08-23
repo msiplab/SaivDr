@@ -30,6 +30,7 @@ classdef nsoltSubbandDeserialization3dLayer < nnet.layer.Layer
         DecimationFactor
         NumberOfLevels
         Scales
+        InputSize
         % Layer properties go here.
     end
     
@@ -88,6 +89,9 @@ classdef nsoltSubbandDeserialization3dLayer < nnet.layer.Layer
                 layer.Scales(iRevLv,:) = ...
                     [nrows*stride(Direction.VERTICAL)^(iRevLv-1) ncols*stride(Direction.HORIZONTAL)^(iRevLv-1) nlays*stride(Direction.DEPTH)^(iRevLv-1) nChsTotal-1];
             end
+            
+            layer.InputSize = [sum(prod(layer.Scales,2)) 1 1 1 ];
+  
         end
         
         function varargout = predict(layer,X)

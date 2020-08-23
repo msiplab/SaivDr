@@ -128,6 +128,7 @@ classdef nsoltSubbandDeserialization2dLayerTestCase < matlab.unittest.TestCase
                 end
                 X(:,1,1,iSample) = x;
             end
+            expctdInputSize = [sum(prod(expctdScales,2)) 1 1 ];            
             
             % Instantiation of target class
             import saivdr.dcnn.*
@@ -141,6 +142,7 @@ classdef nsoltSubbandDeserialization2dLayerTestCase < matlab.unittest.TestCase
             % Actual values
             [actualZ{1:nlevels}] = layer.predict(X);
             actualScales = layer.Scales;
+            actualInputSize = layer.InputSize;            
             
             % Evaluation
             for iLv = 1:nlevels
@@ -150,6 +152,8 @@ classdef nsoltSubbandDeserialization2dLayerTestCase < matlab.unittest.TestCase
             end
             testCase.verifyThat(actualScales,...
                 IsEqualTo(expctdScales,'Within',tolObj));
+            testCase.verifyThat(actualInputSize,...
+                IsEqualTo(expctdInputSize,'Within',tolObj));            
             
         end
         
