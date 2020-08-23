@@ -136,7 +136,7 @@ classdef nsoltSubbandDeserialization2dLayer < nnet.layer.Layer
             nLevels = layer.NumberOfLevels;
             nSamples = size(varargin{nLevels+2},4);
             nElements = sum(prod(layer.Scales,2));
-            scales = Layer.Scales;
+            scales = layer.Scales;
             dLdX = zeros(nElements,1,1,nSamples,'like',varargin{nLevels+2});
             for iSample = 1:nSamples
                 x = zeros(nElements,1,'like',dLdX);
