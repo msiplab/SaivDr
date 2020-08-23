@@ -1,14 +1,14 @@
-classdef nsoltSubbandDeserialization2dLayer < nnet.layer.Layer
+classdef nsoltSubbandDeserialization3dLayer < nnet.layer.Layer
     %NSOLTSUBBANDSERIALIZATION2DLAYER
     %
-    %   １コンポーネント入力(SSCB):
-    %      nElements x 1 x 1 x nSamples
+    %   １コンポーネント入力(SSSCB):
+    %      nElements x 1 x 1 x 1 x nSamples
     %
-    %   複数コンポーネント出力 (SSCB):（ツリーレベル数）
-    %      nRowsLv1 x nColsLv1 x nChsTotal x nSamples
-    %      nRowsLv2 x nColsLv2 x (nChsTotal-1) x nSamples
+    %   複数コンポーネント出力 (SSSCB):（ツリーレベル数）
+    %      nRowsLv1 x nColsLv1 x nLaysLv1 x nChsTotal x nSamples
+    %      nRowsLv2 x nColsLv2 x nLaysLv2 x (nChsTotal-1) x nSamples
     %       :
-    %      nRowsLvN x nColsLvN x (nChsTotal-1) x nSamples
+    %      nRowsLvN x nColsLvN x nLaysLvN x (nChsTotal-1) x nSamples
     %
     % Requirements: MATLAB R2020a
     %
@@ -34,7 +34,7 @@ classdef nsoltSubbandDeserialization2dLayer < nnet.layer.Layer
     end
     
     methods
-        function layer = nsoltSubbandDeserialization2dLayer(varargin)
+        function layer = nsoltSubbandDeserialization3dLayer(varargin)
             % (Optional) Create a myLayer.
             % This function must have the same name as the class.
             import saivdr.dictionary.utility.Direction
@@ -42,9 +42,9 @@ classdef nsoltSubbandDeserialization2dLayer < nnet.layer.Layer
             
             p = inputParser;
             addParameter(p,'Name','')
-            addParameter(p,'OriginalDimension',[8 8]);
-            addParameter(p,'NumberOfChannels',[2 2]);
-            addParameter(p,'DecimationFactor',[2 2]);
+            addParameter(p,'OriginalDimension',[8 8 8]);
+            addParameter(p,'NumberOfChannels',[4 4]);
+            addParameter(p,'DecimationFactor',[2 2 2]);
             addParameter(p,'NumberOfLevels',1);
             parse(p,varargin{:})
             
@@ -58,15 +58,16 @@ classdef nsoltSubbandDeserialization2dLayer < nnet.layer.Layer
             nLevels = layer.NumberOfLevels;
             height = layer.OriginalDimension(Direction.VERTICAL);
             width = layer.OriginalDimension(Direction.HORIZONTAL);
+            depth = layer.OriginalDimension(Direction.DEPTH);
             layer.Description = "Subband deserialization " ...
-                + "(h,w) = (" ...
-                + height + "," + width + "), "  ...
+                + "(h,w,d) = (" ...
+                + height + "," + width + "," + depth + "), "  ...
                 + "lv = " ...
                 + nLevels + ", " ...
                 + "(ps,pa) = (" ...
                 + layer.NumberOfChannels(ChannelGroup.UPPER) + "," + layer.NumberOfChannels(ChannelGroup.LOWER) + "), "  ...
-                + "(mv,mh) = (" ...
-                + layer.DecimationFactor(Direction.VERTICAL) + "," + layer.DecimationFactor(Direction.HORIZONTAL) + ")";
+                + "(mv,mh,md) = (" ...
+                + layer.DecimationFactor(Direction.VERTICAL) + "," + layer.DecimationFactor(Direction.HORIZONTAL) + "," + layer.DecimationFactor(Direction.DEPTH) + ")";
             layer.Type = '';
             outputNames = cell(1,layer.NumberOfLevels);
             for iLv = 1:nLevels
@@ -77,15 +78,15 @@ classdef nsoltSubbandDeserialization2dLayer < nnet.layer.Layer
             %
             nChsTotal = sum(layer.NumberOfChannels);
             stride = layer.DecimationFactor;
-
+            
             nrows = height*stride(Direction.VERTICAL).^(-nLevels);
             ncols = width*stride(Direction.HORIZONTAL).^(-nLevels);
-
-            layer.Scales = zeros(nLevels,3);
-            layer.Scales(1,:) = [nrows ncols nChsTotal];
+            nlays = depth*stride(Direction.DEPTH).^(-nLevels);            
+            layer.Scales = zeros(nLevels,4);
+            layer.Scales(1,:) = [nrows ncols nlays nChsTotal];
             for iRevLv = 2:nLevels
                 layer.Scales(iRevLv,:) = ...
-                    [nrows*stride(Direction.VERTICAL)^(iRevLv-1) ncols*stride(Direction.HORIZONTAL)^(iRevLv-1)  nChsTotal-1];
+                    [nrows*stride(Direction.VERTICAL)^(iRevLv-1) ncols*stride(Direction.HORIZONTAL)^(iRevLv-1) nlays*stride(Direction.DEPTH)^(iRevLv-1) nChsTotal-1];
             end
         end
         
@@ -114,9 +115,10 @@ classdef nsoltSubbandDeserialization2dLayer < nnet.layer.Layer
                 nSubElements = prod(scales(iRevLv,:));
                 subHeight = scales(iRevLv,1);
                 subWidth = scales(iRevLv,2);
+                subDepth = scales(iRevLv,3);
                 varargout{nLevels-iRevLv+1} = ...
                     reshape(X(sidx+1:sidx+nSubElements,:),...
-                    subHeight,subWidth,nChsTotal-wodc,[]);
+                    subHeight,subWidth,subDepth,nChsTotal-wodc,[]);
                 sidx = sidx + nSubElements;
             end
         end
@@ -134,20 +136,20 @@ classdef nsoltSubbandDeserialization2dLayer < nnet.layer.Layer
             
             % Layer forward function for prediction goes here.
             nLevels = layer.NumberOfLevels;
-            nSamples = size(varargin{nLevels+2},4);
-            nElements = sum(prod(layer.Scales,2));
-            scales = Layer.Scales;
-            dLdX = zeros(nElements,1,1,nSamples,'like',varargin{nLevels+2});
+            nSamples = size(varargin{nLevels+2},5);
+            scales = layer.Scales;            
+            nElements = sum(prod(scales,2));
+            dLdX = zeros(nElements,1,1,1,nSamples,'like',varargin{nLevels+2});
             for iSample = 1:nSamples
                 x = zeros(nElements,1,'like',dLdX);
                 sidx = 0;
                 for iRevLv = 1:nLevels
                     nSubElements = prod(scales(iRevLv,:));
-                    a = varargin{nLevels+2+nLevels-iRevLv}(:,:,:,iSample);
+                    a = varargin{nLevels+2+nLevels-iRevLv}(:,:,:,:,iSample);
                     x(sidx+1:sidx+nSubElements) = a(:);
                     sidx = sidx+nSubElements;
                 end
-                dLdX(:,1,1,iSample) = x;
+                dLdX(:,1,1,1,iSample) = x;
             end
         end
     end
