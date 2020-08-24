@@ -1,4 +1,4 @@
-function analysisnet = fcn_cpparamssyn2ana(synthesisnet,analysisnet)
+function analysisnet = fcn_cpparamssyn2ana(analysisnet,synthesisnet)
 %FCN_CPPARAMSSYN2ANA
 %
 % Setting up the analysis dictionary (adjoint operator) by copying
