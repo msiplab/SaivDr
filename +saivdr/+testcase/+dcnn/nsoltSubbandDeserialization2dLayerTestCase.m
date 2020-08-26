@@ -82,6 +82,35 @@ classdef nsoltSubbandDeserialization2dLayerTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(actualDescription,expctdDescription);
         end
         
+        function testSetOriginalDimension(testCase,...
+                nrows,ncols,nchs,stride,nlevels)
+            
+            % Expected values
+            height = nrows*(stride(1)^nlevels);
+            width = ncols*(stride(2)^nlevels);
+            
+            % Instantiation of target class
+            import saivdr.dcnn.*
+            layer = nsoltSubbandDeserialization2dLayer(...
+                'Name','Sb_Dsz',...
+                'OriginalDimension',[height width],...
+                'NumberOfChannels',nchs,...
+                'DecimationFactor',stride,...
+                'NumberOfLevels',nlevels);
+            expctdOriginalDimension = 2*[height width];
+            expctdInputSize = [2^2 1 1].*layer.InputSize;
+            
+            % Actual values
+            layer = layer.setOriginalDimension(expctdOriginalDimension);
+            actualOriginalDimension = layer.OriginalDimension;
+            actualInputSize = layer.InputSize;
+            
+            % Evaluation
+            testCase.verifyEqual(actualOriginalDimension,expctdOriginalDimension);
+            testCase.verifyEqual(actualInputSize,expctdInputSize);
+            
+        end
+        
         function testPredict(testCase,...
                 nchs,nrows,ncols,stride,nlevels,datatype)
             

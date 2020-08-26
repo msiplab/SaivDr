@@ -84,6 +84,37 @@ classdef nsoltSubbandSerialization3dLayerTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(actualDescription,expctdDescription);
         end
         
+        function testSetOriginalDimension(testCase,...
+                nrows,ncols,nlays,nchs,stride,nlevels)
+            
+            % Expected values
+            height = nrows*(stride(1)^nlevels);
+            width = ncols*(stride(2)^nlevels);
+            depth = nlays*(stride(3)^nlevels);
+            
+            % Instantiation of target class
+            import saivdr.dcnn.*
+            layer = nsoltSubbandSerialization3dLayer(...
+                'Name','Sb_Srz',...
+                'OriginalDimension',[height width depth],...
+                'NumberOfChannels',nchs,...
+                'DecimationFactor',stride,...
+                'NumberOfLevels',nlevels);
+            expctdOriginalDimension = 2*[height width depth];
+            expctdScales = [2 2 2 1].*layer.Scales;
+            
+            % Actual values
+            layer = layer.setOriginalDimension(expctdOriginalDimension);
+            actualOriginalDimension = layer.OriginalDimension;
+            actualScales = layer.Scales;
+            
+            % Evaluation
+            testCase.verifyEqual(actualOriginalDimension,expctdOriginalDimension);
+            testCase.verifyEqual(actualScales,expctdScales);
+            
+        end
+        
+        
         function testPredict(testCase,...
                 nchs,nrows,ncols,nlays,stride,nlevels,datatype)
             

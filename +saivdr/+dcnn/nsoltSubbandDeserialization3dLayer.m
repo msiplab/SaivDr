@@ -38,8 +38,6 @@ classdef nsoltSubbandDeserialization3dLayer < nnet.layer.Layer
         function layer = nsoltSubbandDeserialization3dLayer(varargin)
             % (Optional) Create a myLayer.
             % This function must have the same name as the class.
-            import saivdr.dictionary.utility.Direction
-            import saivdr.dictionary.nsoltx.ChannelGroup
             
             p = inputParser;
             addParameter(p,'Name','')
@@ -50,12 +48,26 @@ classdef nsoltSubbandDeserialization3dLayer < nnet.layer.Layer
             parse(p,varargin{:})
             
             % Layer constructor function goes here.
-            layer.OriginalDimension = p.Results.OriginalDimension;
             layer.NumberOfChannels = p.Results.NumberOfChannels;
             layer.DecimationFactor = p.Results.DecimationFactor;
             layer.NumberOfLevels = p.Results.NumberOfLevels;
             layer.Name = p.Results.Name;
+            layer = layer.setOriginalDimension(p.Results.OriginalDimension);
+            layer.Type = '';
+
+            nLevels = layer.NumberOfLevels;
+            outputNames = cell(1,layer.NumberOfLevels);
+            for iLv = 1:nLevels
+                outputNames{iLv} = [ 'Lv' num2str(iLv) '_SbOut' ];
+            end
+            layer.OutputNames = outputNames;
             
+        end
+        
+        function layer = setOriginalDimension(layer,orgdim)
+            import saivdr.dictionary.utility.Direction
+            import saivdr.dictionary.nsoltx.ChannelGroup
+            layer.OriginalDimension = orgdim;
             nLevels = layer.NumberOfLevels;
             height = layer.OriginalDimension(Direction.VERTICAL);
             width = layer.OriginalDimension(Direction.HORIZONTAL);
@@ -69,12 +81,6 @@ classdef nsoltSubbandDeserialization3dLayer < nnet.layer.Layer
                 + layer.NumberOfChannels(ChannelGroup.UPPER) + "," + layer.NumberOfChannels(ChannelGroup.LOWER) + "), "  ...
                 + "(mv,mh,md) = (" ...
                 + layer.DecimationFactor(Direction.VERTICAL) + "," + layer.DecimationFactor(Direction.HORIZONTAL) + "," + layer.DecimationFactor(Direction.DEPTH) + ")";
-            layer.Type = '';
-            outputNames = cell(1,layer.NumberOfLevels);
-            for iLv = 1:nLevels
-                outputNames{iLv} = [ 'Lv' num2str(iLv) '_SbOut' ];
-            end
-            layer.OutputNames = outputNames;
             
             %
             nChsTotal = sum(layer.NumberOfChannels);
@@ -82,16 +88,15 @@ classdef nsoltSubbandDeserialization3dLayer < nnet.layer.Layer
             
             nrows = height*stride(Direction.VERTICAL).^(-nLevels);
             ncols = width*stride(Direction.HORIZONTAL).^(-nLevels);
-            nlays = depth*stride(Direction.DEPTH).^(-nLevels);            
+            nlays = depth*stride(Direction.DEPTH).^(-nLevels);
+           
             layer.Scales = zeros(nLevels,4);
             layer.Scales(1,:) = [nrows ncols nlays nChsTotal];
             for iRevLv = 2:nLevels
                 layer.Scales(iRevLv,:) = ...
                     [nrows*stride(Direction.VERTICAL)^(iRevLv-1) ncols*stride(Direction.HORIZONTAL)^(iRevLv-1) nlays*stride(Direction.DEPTH)^(iRevLv-1) nChsTotal-1];
             end
-            
-            layer.InputSize = [sum(prod(layer.Scales,2)) 1 1 1 ];
-  
+            layer.InputSize = [sum(prod(layer.Scales,2)) 1 1 1];            
         end
         
         function varargout = predict(layer,X)
