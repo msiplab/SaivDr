@@ -83,7 +83,8 @@ classdef nsoltBlockDct2dLayerTestCase < matlab.unittest.TestCase
             nrows = ceil(height/stride(Direction.VERTICAL));
             ncols = ceil(width/stride(Direction.HORIZONTAL));
             ndecs = prod(stride);
-            expctdZ = zeros(nrows,ncols,ndecs,nSamples,datatype);
+            %expctdZ = zeros(nrows,ncols,ndecs,nSamples,datatype);
+            expctdZ = zeros(ndecs,nrows,ncols,nSamples,datatype);
             for iSample = 1:nSamples
                 % Block DCT
                 Y = blockproc(X(:,:,nComponents,iSample),...
@@ -92,7 +93,8 @@ classdef nsoltBlockDct2dLayerTestCase < matlab.unittest.TestCase
                 A = blockproc(Y,...
                     stride,@testCase.permuteDctCoefs_);
                 expctdZ(:,:,:,iSample) = ...
-                    permute(reshape(A,ndecs,nrows,ncols),[2 3 1]);
+                    ...permute(reshape(A,ndecs,nrows,ncols),[2 3 1]);
+                    reshape(A,ndecs,nrows,ncols);
             end
             
             % Instantiation of target class
@@ -128,7 +130,8 @@ classdef nsoltBlockDct2dLayerTestCase < matlab.unittest.TestCase
             nrows = ceil(height/stride(Direction.VERTICAL));
             ncols = ceil(width/stride(Direction.HORIZONTAL));
             ndecs = prod(stride);
-            expctdZ = zeros(nrows,ncols,ndecs,nSamples,datatype);
+            %expctdZ = zeros(nrows,ncols,ndecs,nSamples,datatype);
+            expctdZ = zeros(ndecs,nrows,ncols,nSamples,datatype);
             for iSample = 1:nSamples
                 % Block DCT
                 Y = blockproc(X(:,:,nComponents,iSample),...
@@ -137,7 +140,8 @@ classdef nsoltBlockDct2dLayerTestCase < matlab.unittest.TestCase
                 A = blockproc(Y,...
                     stride,@testCase.permuteDctCoefs_);
                 expctdZ(:,:,:,iSample) = ...
-                    permute(reshape(A,ndecs,nrows,ncols),[2 3 1]);
+                    ...permute(reshape(A,ndecs,nrows,ncols),[2 3 1]);
+                    reshape(A,ndecs,nrows,ncols);
             end
             
             % Instantiation of target class
@@ -173,9 +177,12 @@ classdef nsoltBlockDct2dLayerTestCase < matlab.unittest.TestCase
             nrows = height/stride(Direction.VERTICAL);
             ncols = width/stride(Direction.HORIZONTAL);
             ndecs = prod(stride);
-            expctdZr = zeros(nrows,ncols,ndecs,nSamples,datatype);
-            expctdZg = zeros(nrows,ncols,ndecs,nSamples,datatype);
-            expctdZb = zeros(nrows,ncols,ndecs,nSamples,datatype);
+            %expctdZr = zeros(nrows,ncols,ndecs,nSamples,datatype);
+            %expctdZg = zeros(nrows,ncols,ndecs,nSamples,datatype);
+            %expctdZb = zeros(nrows,ncols,ndecs,nSamples,datatype);
+            expctdZr = zeros(ndecs,nrows,ncols,nSamples,datatype);
+            expctdZg = zeros(ndecs,nrows,ncols,nSamples,datatype);
+            expctdZb = zeros(ndecs,nrows,ncols,nSamples,datatype);            
             for iSample = 1:nSamples
                 % Block DCT
                 Yr = blockproc(X(:,:,1,iSample),...
@@ -192,11 +199,14 @@ classdef nsoltBlockDct2dLayerTestCase < matlab.unittest.TestCase
                 Ab = blockproc(Yb,...
                     stride,@testCase.permuteDctCoefs_);
                 expctdZr(:,:,:,iSample) = ...
-                    permute(reshape(Ar,ndecs,nrows,ncols),[2 3 1]);
+                    ...permute(reshape(Ar,ndecs,nrows,ncols),[2 3 1]);
+                    reshape(Ar,ndecs,nrows,ncols);
                 expctdZg(:,:,:,iSample) = ...
-                    permute(reshape(Ag,ndecs,nrows,ncols),[2 3 1]);
+                    ...permute(reshape(Ag,ndecs,nrows,ncols),[2 3 1]);
+                    reshape(Ag,ndecs,nrows,ncols);
                 expctdZb(:,:,:,iSample) = ...
-                    permute(reshape(Ab,ndecs,nrows,ncols),[2 3 1]);
+                    ...permute(reshape(Ab,ndecs,nrows,ncols),[2 3 1]);
+                    reshape(Ab,ndecs,nrows,ncols);
             end
             
             % Instantiation of target class
@@ -222,7 +232,7 @@ classdef nsoltBlockDct2dLayerTestCase < matlab.unittest.TestCase
             
         end
         
-                function testForwardRgbColor(testCase, ...
+        function testForwardRgbColor(testCase, ...
                 stride, height, width, datatype)
             import saivdr.dictionary.utility.Direction
             import matlab.unittest.constraints.IsEqualTo
@@ -238,9 +248,12 @@ classdef nsoltBlockDct2dLayerTestCase < matlab.unittest.TestCase
             nrows = height/stride(Direction.VERTICAL);
             ncols = width/stride(Direction.HORIZONTAL);
             ndecs = prod(stride);
-            expctdZr = zeros(nrows,ncols,ndecs,nSamples,datatype);
-            expctdZg = zeros(nrows,ncols,ndecs,nSamples,datatype);
-            expctdZb = zeros(nrows,ncols,ndecs,nSamples,datatype);
+            %expctdZr = zeros(nrows,ncols,ndecs,nSamples,datatype);
+            %expctdZg = zeros(nrows,ncols,ndecs,nSamples,datatype);
+            %expctdZb = zeros(nrows,ncols,ndecs,nSamples,datatype);
+            expctdZr = zeros(ndecs,nrows,ncols,nSamples,datatype);
+            expctdZg = zeros(ndecs,nrows,ncols,nSamples,datatype);
+            expctdZb = zeros(ndecs,nrows,ncols,nSamples,datatype);            
             for iSample = 1:nSamples
                 % Block DCT
                 Yr = blockproc(X(:,:,1,iSample),...
@@ -257,11 +270,14 @@ classdef nsoltBlockDct2dLayerTestCase < matlab.unittest.TestCase
                 Ab = blockproc(Yb,...
                     stride,@testCase.permuteDctCoefs_);
                 expctdZr(:,:,:,iSample) = ...
-                    permute(reshape(Ar,ndecs,nrows,ncols),[2 3 1]);
+                    ...permute(reshape(Ar,ndecs,nrows,ncols),[2 3 1]);
+                    reshape(Ar,ndecs,nrows,ncols);
                 expctdZg(:,:,:,iSample) = ...
-                    permute(reshape(Ag,ndecs,nrows,ncols),[2 3 1]);
+                    ...permute(reshape(Ag,ndecs,nrows,ncols),[2 3 1]);
+                    reshape(Ag,ndecs,nrows,ncols);
                 expctdZb(:,:,:,iSample) = ...
-                    permute(reshape(Ab,ndecs,nrows,ncols),[2 3 1]);
+                    ...permute(reshape(Ab,ndecs,nrows,ncols),[2 3 1]);
+                    reshape(Ab,ndecs,nrows,ncols);
             end
             
             % Instantiation of target class
@@ -301,13 +317,15 @@ classdef nsoltBlockDct2dLayerTestCase < matlab.unittest.TestCase
             ncols = width/stride(Direction.HORIZONTAL);
             nDecs = prod(stride);
             nComponents = 1;
-            dLdZ = rand(nrows,ncols,nDecs,nSamples,datatype);
+            %dLdZ = rand(nrows,ncols,nDecs,nSamples,datatype);
+            dLdZ = rand(nDecs,nrows,ncols,nSamples,datatype);
             
             % Expected values
             expctddLdX = zeros(height,width,datatype);
             for iSample = 1:nSamples
-                A = reshape(permute(dLdZ(:,:,:,iSample),[3 1 2]),...
-                    nDecs*nrows,ncols);
+                %A = reshape(permute(dLdZ(:,:,:,iSample),[3 1 2]),...
+                %    nDecs*nrows,ncols);
+                A = reshape(dLdZ(:,:,:,iSample),nDecs*nrows,ncols);                
                 Y = blockproc(A,[nDecs 1],...
                     @(x) testCase.permuteIdctCoefs_(x.data,stride));
                 expctddLdX(:,:,nComponents,iSample) = ...
@@ -345,19 +363,25 @@ classdef nsoltBlockDct2dLayerTestCase < matlab.unittest.TestCase
             ncols = ceil(width/stride(Direction.HORIZONTAL));
             nDecs = prod(stride);
             nComponents = 3; % RGB
-            dLdZr = rand(nrows,ncols,nDecs,nSamples,datatype);
-            dLdZg = rand(nrows,ncols,nDecs,nSamples,datatype);
-            dLdZb = rand(nrows,ncols,nDecs,nSamples,datatype);
+            %dLdZr = rand(nrows,ncols,nDecs,nSamples,datatype);
+            %dLdZg = rand(nrows,ncols,nDecs,nSamples,datatype);
+            %dLdZb = rand(nrows,ncols,nDecs,nSamples,datatype);
+            dLdZr = rand(nDecs,nrows,ncols,nSamples,datatype);
+            dLdZg = rand(nDecs,nrows,ncols,nSamples,datatype);
+            dLdZb = rand(nDecs,nrows,ncols,nSamples,datatype);            
             
             % Expected values
             expctddLdX = zeros(height,width,nComponents,datatype);
             for iSample = 1:nSamples
-                Ar = reshape(permute(dLdZr(:,:,:,iSample),[3 1 2]),...
-                    nDecs*nrows,ncols);
-                Ag = reshape(permute(dLdZg(:,:,:,iSample),[3 1 2]),...
-                    nDecs*nrows,ncols);
-                Ab = reshape(permute(dLdZb(:,:,:,iSample),[3 1 2]),...
-                    nDecs*nrows,ncols);
+                %Ar = reshape(permute(dLdZr(:,:,:,iSample),[3 1 2]),...
+                %    nDecs*nrows,ncols);
+                %Ag = reshape(permute(dLdZg(:,:,:,iSample),[3 1 2]),...
+                %    nDecs*nrows,ncols);
+                %Ab = reshape(permute(dLdZb(:,:,:,iSample),[3 1 2]),...
+                %    nDecs*nrows,ncols);
+                Ar = reshape(dLdZr(:,:,:,iSample),nDecs*nrows,ncols);
+                Ag = reshape(dLdZg(:,:,:,iSample),nDecs*nrows,ncols);
+                Ab = reshape(dLdZb(:,:,:,iSample),nDecs*nrows,ncols);                
                 Yr = blockproc(Ar,[nDecs 1],...
                     @(x) testCase.permuteIdctCoefs_(x.data,stride));
                 Yg = blockproc(Ag,[nDecs 1],...
