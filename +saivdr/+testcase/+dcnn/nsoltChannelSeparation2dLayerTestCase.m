@@ -5,8 +5,8 @@ classdef nsoltChannelSeparation2dLayerTestCase < matlab.unittest.TestCase
     %      nChsTotal x nRows x nCols x nSamples
     %
     %   ２コンポーネント出力(nComponents=2のみサポート):
-    %      1 x nRows x nCols x nSamples
-    %      (nChsTotal-1) x nRows x nCols x nSamples    
+    %      nRows x nCols x 1 x nSamples
+    %      nRows x nCols x (nChsTotal-1) x nSamples    
     %
     % Requirements: MATLAB R2020a
     %
@@ -72,12 +72,12 @@ classdef nsoltChannelSeparation2dLayerTestCase < matlab.unittest.TestCase
             X = randn(nChsTotal,nrows,ncols,nSamples,datatype);
             
             % Expected values
-            % 1 x nRows x nCols x nSamples
+            % nRows x nCols x 1 x nSamples
             %expctdZ1 = X(:,:,1,:);
-            expctdZ1 = X(1,:,:,:);
-            % (nChsTotal-1) x nRows x nCols x nSamples 
+            expctdZ1 = permute(X(1,:,:,:),[2 3 1 4]);
+            % nRows x nCols x (nChsTotal-1) x nSamples 
             %expctdZ2 = X(:,:,2:end,:);
-            expctdZ2 = X(2:end,:,:,:);
+            expctdZ2 = permute(X(2:end,:,:,:),[2 3 1 4]);
             
             % Instantiation of target class
             import saivdr.dcnn.*
@@ -106,16 +106,16 @@ classdef nsoltChannelSeparation2dLayerTestCase < matlab.unittest.TestCase
             nSamples = 8;
             nChsTotal = sum(nchs);
             % 1 x nRows x nCols x nSamples
-            %dLdZ1 = randn(nrows,ncols,1,nSamples,datatype);
-            dLdZ1 = randn(1,nrows,ncols,nSamples,datatype);
+            dLdZ1 = randn(nrows,ncols,1,nSamples,datatype);
+            %dLdZ1 = randn(1,nrows,ncols,nSamples,datatype);
             % (nChsTotal-1) x nRows x nCols x nSamples 
-            %dLdZ2 = randn(nrows,ncols,nChsTotal-1,nSamples,datatype);
-            dLdZ2 = randn(nChsTotal-1,nrows,ncols,nSamples,datatype);
+            dLdZ2 = randn(nrows,ncols,nChsTotal-1,nSamples,datatype);
+            %dLdZ2 = randn(nChsTotal-1,nrows,ncols,nSamples,datatype);
             
             % Expected values
             % nChsTotal x nRows x nCols x nSamples
             %expctddLdX = cat(3,dLdZ1,dLdZ2);
-            expctddLdX = cat(1,dLdZ1,dLdZ2);
+            expctddLdX = ipermute(cat(3,dLdZ1,dLdZ2),[2 3 1 4]);
             
             % Instantiation of target class
             import saivdr.dcnn.*

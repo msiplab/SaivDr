@@ -56,8 +56,7 @@ classdef nsoltChannelConcatenation2dLayer < nnet.layer.Layer
             %  
             
             % Layer forward function for prediction goes here.
-            %Z = cat(3,X1,X2);
-            Z = cat(1,X1,X2);
+            Z = permute(cat(3,X1,X2),[3 1 2 4]);
         end
         
         function [dLdX1,dLdX2] = backward(~,~, ~, ~, dLdZ, ~)
@@ -79,8 +78,8 @@ classdef nsoltChannelConcatenation2dLayer < nnet.layer.Layer
             % Layer forward function for prediction goes here.
             %dLdX1 = dLdZ(:,:,1,:);
             %dLdX2 = dLdZ(:,:,2:end,:);
-            dLdX1 = dLdZ(1,:,:,:);
-            dLdX2 = dLdZ(2:end,:,:,:);            
+            dLdX1 = ipermute(dLdZ(1,:,:,:),[3 1 2 4]);
+            dLdX2 = ipermute(dLdZ(2:end,:,:,:),[3 1 2 4]);            
         end
     end
     
