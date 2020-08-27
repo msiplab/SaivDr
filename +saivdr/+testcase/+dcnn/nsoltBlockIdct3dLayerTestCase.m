@@ -106,6 +106,49 @@ classdef nsoltBlockIdct3dLayerTestCase < matlab.unittest.TestCase
             
         end
         
+        function testForward(testCase, ...
+                stride, height, width, depth, datatype)
+            import saivdr.dictionary.utility.Direction
+            import matlab.unittest.constraints.IsEqualTo
+            import matlab.unittest.constraints.AbsoluteTolerance
+            tolObj = AbsoluteTolerance(1e-6,single(1e-6));
+            
+            % Parameters
+            nSamples = 8;
+            nrows = height/stride(Direction.VERTICAL);
+            ncols = width/stride(Direction.HORIZONTAL);
+            nlays = depth/stride(Direction.DEPTH);
+            nDecs = prod(stride);
+            X = rand(nrows,ncols,nlays,nDecs,nSamples,datatype);
+            
+            % Expected values
+            expctdZ = zeros(height,width,depth,datatype);
+            E0_T = transpose(testCase.getMatrixE0_(stride));
+            for iSample = 1:nSamples
+                % Rearrange the DCT coefs
+                A = reshape(permute(X(:,:,:,:,iSample),[4 1 2 3]),...
+                    nDecs,nrows*ncols*nlays);
+                % Block IDCT
+                Y = E0_T*A;
+                expctdZ(:,:,:,1,iSample) = testCase.col2vol_(Y,stride,...
+                    [nrows,ncols,nlays]);
+            end
+            
+            % Instantiation of target class
+            import saivdr.dcnn.*
+            layer = nsoltBlockIdct3dLayer(...
+                'DecimationFactor',stride,...
+                'Name','E0~');
+            
+            % Actual values
+            actualZ = layer.forward(X);
+            
+            % Evaluation
+            testCase.verifyInstanceOf(actualZ,datatype);
+            testCase.verifyThat(actualZ,...
+                IsEqualTo(expctdZ,'Within',tolObj));
+            
+        end
                 
         function testBackward(testCase, ...
                 stride, height, width, depth, datatype)

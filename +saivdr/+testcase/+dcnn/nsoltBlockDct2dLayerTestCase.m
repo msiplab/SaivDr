@@ -111,6 +111,52 @@ classdef nsoltBlockDct2dLayerTestCase < matlab.unittest.TestCase
             
         end
         
+                
+        function testForwardGrayScale(testCase, ...
+                stride, height, width, datatype)
+            import saivdr.dictionary.utility.Direction
+            import matlab.unittest.constraints.IsEqualTo
+            import matlab.unittest.constraints.AbsoluteTolerance
+            tolObj = AbsoluteTolerance(1e-6,single(1e-6));
+            
+            % Parameters
+            nSamples = 8;
+            nComponents = 1;
+            X = rand(height,width,nComponents,nSamples, datatype);
+            
+            % Expected values
+            nrows = ceil(height/stride(Direction.VERTICAL));
+            ncols = ceil(width/stride(Direction.HORIZONTAL));
+            ndecs = prod(stride);
+            expctdZ = zeros(nrows,ncols,ndecs,nSamples,datatype);
+            for iSample = 1:nSamples
+                % Block DCT
+                Y = blockproc(X(:,:,nComponents,iSample),...
+                    stride,@(x) dct2(x.data));
+                % Rearrange the DCT Coefs.
+                A = blockproc(Y,...
+                    stride,@testCase.permuteDctCoefs_);
+                expctdZ(:,:,:,iSample) = ...
+                    permute(reshape(A,ndecs,nrows,ncols),[2 3 1]);
+            end
+            
+            % Instantiation of target class
+            import saivdr.dcnn.*
+            layer = nsoltBlockDct2dLayer(...
+                'DecimationFactor',stride,...
+                'Name','E0');
+            
+            % Actual values
+            actualZ = layer.forward(X);
+            
+            % Evaluation
+            testCase.verifyInstanceOf(actualZ,datatype);
+            testCase.verifyThat(actualZ,...
+                IsEqualTo(expctdZ,'Within',tolObj));
+            
+        end
+        
+        
         function testPredictRgbColor(testCase, ...
                 stride, height, width, datatype)
             import saivdr.dictionary.utility.Direction
@@ -175,6 +221,72 @@ classdef nsoltBlockDct2dLayerTestCase < matlab.unittest.TestCase
                 IsEqualTo(expctdZb,'Within',tolObj));
             
         end
+        
+                function testForwardRgbColor(testCase, ...
+                stride, height, width, datatype)
+            import saivdr.dictionary.utility.Direction
+            import matlab.unittest.constraints.IsEqualTo
+            import matlab.unittest.constraints.AbsoluteTolerance
+            tolObj = AbsoluteTolerance(1e-6,single(1e-6));
+            
+            % Parameters
+            nSamples = 8;
+            nComponents = 3; % RGB
+            X = rand(height,width,nComponents,nSamples, datatype);
+            
+            % Expected values
+            nrows = height/stride(Direction.VERTICAL);
+            ncols = width/stride(Direction.HORIZONTAL);
+            ndecs = prod(stride);
+            expctdZr = zeros(nrows,ncols,ndecs,nSamples,datatype);
+            expctdZg = zeros(nrows,ncols,ndecs,nSamples,datatype);
+            expctdZb = zeros(nrows,ncols,ndecs,nSamples,datatype);
+            for iSample = 1:nSamples
+                % Block DCT
+                Yr = blockproc(X(:,:,1,iSample),...
+                    stride,@(x) dct2(x.data));
+                Yg = blockproc(X(:,:,2,iSample),...
+                    stride,@(x) dct2(x.data));
+                Yb = blockproc(X(:,:,3,iSample),...
+                    stride,@(x) dct2(x.data));
+                % Rearrange the DCT Coefs.
+                Ar = blockproc(Yr,...
+                    stride,@testCase.permuteDctCoefs_);
+                Ag = blockproc(Yg,...
+                    stride,@testCase.permuteDctCoefs_);
+                Ab = blockproc(Yb,...
+                    stride,@testCase.permuteDctCoefs_);
+                expctdZr(:,:,:,iSample) = ...
+                    permute(reshape(Ar,ndecs,nrows,ncols),[2 3 1]);
+                expctdZg(:,:,:,iSample) = ...
+                    permute(reshape(Ag,ndecs,nrows,ncols),[2 3 1]);
+                expctdZb(:,:,:,iSample) = ...
+                    permute(reshape(Ab,ndecs,nrows,ncols),[2 3 1]);
+            end
+            
+            % Instantiation of target class
+            import saivdr.dcnn.*
+            layer = nsoltBlockDct2dLayer(...
+                'DecimationFactor',stride,...
+                'NumberOfComponents',nComponents,...
+                'Name','E0');
+            
+            % Actual values
+            [actualZr,actualZg,actualZb] = layer.forward(X);
+            
+            % Evaluation
+            testCase.verifyInstanceOf(actualZr,datatype);
+            testCase.verifyInstanceOf(actualZg,datatype);
+            testCase.verifyInstanceOf(actualZb,datatype);
+            testCase.verifyThat(actualZr,...
+                IsEqualTo(expctdZr,'Within',tolObj));
+            testCase.verifyThat(actualZg,...
+                IsEqualTo(expctdZg,'Within',tolObj));
+            testCase.verifyThat(actualZb,...
+                IsEqualTo(expctdZb,'Within',tolObj));
+            
+        end
+        
         
         function testBackwardGrayScale(testCase, ...
                 stride, height, width, datatype)
