@@ -74,8 +74,10 @@ classdef nsoltIntermediateRotation2dLayer < nnet.layer.Layer
             import saivdr.dcnn.*
             
             % Layer forward function for prediction goes here.
-            nrows = size(X,1);
-            ncols = size(X,2);
+            %nrows = size(X,1);
+            %ncols = size(X,2);
+            nrows = size(X,2);
+            ncols = size(X,3);            
             ps = layer.NumberOfChannels(1);
             pa = layer.NumberOfChannels(2);
             nSamples = size(X,4);
@@ -88,7 +90,7 @@ classdef nsoltIntermediateRotation2dLayer < nnet.layer.Layer
             anglesU = layer.Angles;
             Un = fcn_orthmtxgen(anglesU,musU);
             %
-            Y = permute(X,[3 1 2 4]);
+            Y = X; %permute(X,[3 1 2 4]);
             Ya = reshape(Y(ps+1:ps+pa,:,:,:),pa,nrows*ncols*nSamples);
             if strcmp(layer.Mode,'Analysis')
                 Za = Un*Ya;
@@ -100,7 +102,7 @@ classdef nsoltIntermediateRotation2dLayer < nnet.layer.Layer
                     layer.Mode))
             end
             Y(ps+1:ps+pa,:,:,:) = reshape(Za,pa,nrows,ncols,nSamples);
-            Z = ipermute(Y,[3 1 2 4]);
+            Z = Y; %ipermute(Y,[3 1 2 4]);
         end
         
         function [dLdX, dLdW] = ...
@@ -120,8 +122,10 @@ classdef nsoltIntermediateRotation2dLayer < nnet.layer.Layer
             %         dLdW1, ..., dLdWk - Derivatives of the loss with respect to each
             %                             learnable parameter
             import saivdr.dcnn.*
-            nrows = size(dLdZ,1);
-            ncols = size(dLdZ,2);
+            %nrows = size(dLdZ,1);
+            %ncols = size(dLdZ,2);
+            nrows = size(dLdZ,2);
+            ncols = size(dLdZ,3);
             nSamples = size(dLdZ,4);            
             anglesU = layer.Angles;
             musU = layer.Mus;
@@ -131,7 +135,7 @@ classdef nsoltIntermediateRotation2dLayer < nnet.layer.Layer
             % Layer backward function goes here.
             % dLdX = dZdX x dLdZ
             Un = fcn_orthmtxgen(anglesU,musU,0);
-            adLd_ = permute(dLdZ,[3 1 2 4]);
+            adLd_ = dLdZ; %permute(dLdZ,[3 1 2 4]);
             cdLd_low = reshape(adLd_(ps+1:ps+pa,:,:,:),...
                 pa,nrows*ncols*nSamples);
             if strcmp(layer.Mode,'Analysis')
@@ -141,14 +145,14 @@ classdef nsoltIntermediateRotation2dLayer < nnet.layer.Layer
             end
             adLd_(ps+1:ps+pa,:,:,:) = reshape(cdLd_low,...
                 pa,nrows,ncols,nSamples);
-            dLdX = ipermute(adLd_,[3 1 2 4]);
+            dLdX = adLd_; %ipermute(adLd_,[3 1 2 4]);
             
             % dLdWi = <dLdZ,(dVdWi)X>
             nAngles = length(anglesU);
             dLdW = zeros(nAngles,1,'like',dLdZ);
             for iAngle = 1:nAngles
                 dUn = fcn_orthmtxgen(anglesU,musU,iAngle);
-                a_ = permute(X,[3 1 2 4]);
+                a_ = X; % permute(X,[3 1 2 4]);
                 c_low = reshape(a_(ps+1:ps+pa,:,:,:),pa,nrows*ncols*nSamples);
                 if strcmp(layer.Mode,'Analysis')                
                     c_low = dUn*c_low;
@@ -157,7 +161,7 @@ classdef nsoltIntermediateRotation2dLayer < nnet.layer.Layer
                 end
                 a_ = zeros(size(a_),'like',dLdZ);
                 a_(ps+1:ps+pa,:,:,:) = reshape(c_low,pa,nrows,ncols,nSamples);
-                dVdW_X = ipermute(a_,[3 1 2 4]);
+                dVdW_X = a_; %ipermute(a_,[3 1 2 4]);
                 %
                 dLdW(iAngle) = sum(dLdZ.*dVdW_X,'all');
             end
