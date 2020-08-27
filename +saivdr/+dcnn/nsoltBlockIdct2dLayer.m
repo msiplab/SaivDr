@@ -91,14 +91,17 @@ classdef nsoltBlockIdct2dLayer < nnet.layer.Layer
             for iComponent = 1:nComponents
                 X = varargin{iComponent};
                 if iComponent == 1
-                    nRows = size(X,1);
-                    nCols = size(X,2);
+                    %nRows = size(X,1);
+                    %nCols = size(X,2);
+                    nRows = size(X,2);
+                    nCols = size(X,3);                    
                     height = decFactor(1)*nRows;
                     width = decFactor(2)*nCols;
                     nSamples = size(X,4);
                     Z = zeros(height,width,nComponents,nSamples,'like',X);
                 end
-                A = permute(X,[3 1 2 4]);
+                %A = permute(X,[3 1 2 4]);
+                A = X;
                 for iSample = 1:nSamples
                     for iCol = 1:nCols
                         for iRow = 1:nRows
@@ -157,7 +160,8 @@ classdef nsoltBlockIdct2dLayer < nnet.layer.Layer
                         end
                     end
                 end
-                varargout{iComponent} = permute(A,[2 3 1 4]);                
+                %varargout{iComponent} = permute(A,[2 3 1 4]);                
+                varargout{iComponent} = A;
             end
         end
         
