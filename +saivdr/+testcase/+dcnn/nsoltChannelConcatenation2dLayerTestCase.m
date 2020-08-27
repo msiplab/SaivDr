@@ -2,8 +2,8 @@ classdef nsoltChannelConcatenation2dLayerTestCase < matlab.unittest.TestCase
     %NSOLTCHANNELCONCATENATION2DLAYERTESTCASE
     %
     %   ２コンポーネント入力(nComponents=2のみサポート):
-    %      nRows x nCols x 1 x nSamples
-    %      nRows x nCols x (nChsTotal-1) x nSamples    
+    %      1 x nRows x nCols x nSamples
+    %      (nChsTotal-1) x nRows x nCols x nSamples    
     %
     %   １コンポーネント出力(nComponents=1のみサポート):
     %      nRows x nCols x nChsTotal x nSamples
@@ -33,7 +33,7 @@ classdef nsoltChannelConcatenation2dLayerTestCase < matlab.unittest.TestCase
             import saivdr.dcnn.*
             layer = nsoltChannelConcatenation2dLayer();
             fprintf("\n --- Check layer for 2-D images ---\n");
-            checkLayer(layer,{[8 8 1], [8 8 5]},'ObservationDimension',4)
+            checkLayer(layer,{[1 8 8], [5 8 8]},'ObservationDimension',4)
         end
     end
     
@@ -67,14 +67,16 @@ classdef nsoltChannelConcatenation2dLayerTestCase < matlab.unittest.TestCase
             % Parameters
             nSamples = 8;
             nChsTotal = sum(nchs);
-            % nRows x nCols x 1 x nSamples
-            X1 = randn(nrows,ncols,1,nSamples,datatype);
-            % nRows x nCols x (nChsTotal-1) x nSamples 
-            X2 = randn(nrows,ncols,nChsTotal-1,nSamples,datatype);
+            % 1 x nRows x nCols x nSamples
+            %X1 = randn(nrows,ncols,1,nSamples,datatype);
+            X1 = randn(1,nrows,ncols,nSamples,datatype);
+            % (nChsTotal-1) x nRows x nCols x nSamples 
+            %X2 = randn(nrows,ncols,nChsTotal-1,nSamples,datatype);
+            X2 = randn(nChsTotal-1,nrows,ncols,nSamples,datatype);
             
             % Expected values
-            % nRows x nCols x nChsTotal x nSamples
-            expctdZ = cat(3,X1,X2);
+            % nChsTotal x nRows x nCols x nSamples
+            expctdZ = cat(1,X1,X2);
             
             % Instantiation of target class
             import saivdr.dcnn.*
@@ -99,14 +101,17 @@ classdef nsoltChannelConcatenation2dLayerTestCase < matlab.unittest.TestCase
             % Parameters
             nSamples = 8;
             nChsTotal = sum(nchs);
-            % nRows x nCols x nChsTotal x nSamples
-            dLdZ = randn(nrows,ncols,nChsTotal,nSamples,datatype);
+            % nChsTotal x nRows x nCols x nSamples
+            %dLdZ = randn(nrows,ncols,nChsTotal,nSamples,datatype);
+            dLdZ = randn(nChsTotal,nrows,ncols,nSamples,datatype);
             
             % Expected values
-            % nRows x nCols x 1 x nSamples
-            expctddLdX1 = dLdZ(:,:,1,:);
-            % nRows x nCols x (nChsTotal-1) x nSamples 
-            expctddLdX2 = dLdZ(:,:,2:end,:);
+            % 1 x nRows x nCols x nSamples
+            %expctddLdX1 = dLdZ(:,:,1,:);
+            expctddLdX1 = dLdZ(1,:,:,:);
+            % (nChsTotal-1) x nRows x nCols x nSamples 
+            %expctddLdX2 = dLdZ(:,:,2:end,:);
+            expctddLdX2 = dLdZ(2:end,:,:,:);
             
             % Instantiation of target class
             import saivdr.dcnn.*

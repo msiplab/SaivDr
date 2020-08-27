@@ -2,11 +2,11 @@ classdef nsoltChannelSeparation2dLayerTestCase < matlab.unittest.TestCase
     %NSOLTCHANNELSEPARATION2DLAYERTESTCASE
     %
     %   １コンポーネント入力(nComponents=1のみサポート):
-    %      nRows x nCols x nChsTotal x nSamples
+    %      nChsTotal x nRows x nCols x nSamples
     %
     %   ２コンポーネント出力(nComponents=2のみサポート):
-    %      nRows x nCols x 1 x nSamples
-    %      nRows x nCols x (nChsTotal-1) x nSamples    
+    %      1 x nRows x nCols x nSamples
+    %      (nChsTotal-1) x nRows x nCols x nSamples    
     %
     % Requirements: MATLAB R2020a
     %
@@ -33,7 +33,7 @@ classdef nsoltChannelSeparation2dLayerTestCase < matlab.unittest.TestCase
             import saivdr.dcnn.*
             layer = nsoltChannelSeparation2dLayer();
             fprintf("\n --- Check layer for 2-D images ---\n");
-            checkLayer(layer,[8 8 6],'ObservationDimension',4)
+            checkLayer(layer,[6 8 8],'ObservationDimension',4)
         end
     end
     
@@ -67,14 +67,17 @@ classdef nsoltChannelSeparation2dLayerTestCase < matlab.unittest.TestCase
             % Parameters
             nSamples = 8;
             nChsTotal = sum(nchs);
-            % nRows x nCols x nChsTotal x nSamples
-            X = randn(nrows,ncols,nChsTotal,nSamples,datatype);
+            % nChsTotal x nRows x nCols x nSamples
+            %X = randn(nrows,ncols,nChsTotal,nSamples,datatype);
+            X = randn(nChsTotal,nrows,ncols,nSamples,datatype);
             
             % Expected values
-            % nRows x nCols x 1 x nSamples
-            expctdZ1 = X(:,:,1,:);
-            % nRows x nCols x (nChsTotal-1) x nSamples 
-            expctdZ2 = X(:,:,2:end,:);
+            % 1 x nRows x nCols x nSamples
+            %expctdZ1 = X(:,:,1,:);
+            expctdZ1 = X(1,:,:,:);
+            % (nChsTotal-1) x nRows x nCols x nSamples 
+            %expctdZ2 = X(:,:,2:end,:);
+            expctdZ2 = X(2:end,:,:,:);
             
             % Instantiation of target class
             import saivdr.dcnn.*
@@ -102,14 +105,17 @@ classdef nsoltChannelSeparation2dLayerTestCase < matlab.unittest.TestCase
             % Parameters
             nSamples = 8;
             nChsTotal = sum(nchs);
-            % nRows x nCols x 1 x nSamples
-            dLdZ1 = randn(nrows,ncols,1,nSamples,datatype);
-            % nRows x nCols x (nChsTotal-1) x nSamples 
-            dLdZ2 = randn(nrows,ncols,nChsTotal-1,nSamples,datatype);
+            % 1 x nRows x nCols x nSamples
+            %dLdZ1 = randn(nrows,ncols,1,nSamples,datatype);
+            dLdZ1 = randn(1,nrows,ncols,nSamples,datatype);
+            % (nChsTotal-1) x nRows x nCols x nSamples 
+            %dLdZ2 = randn(nrows,ncols,nChsTotal-1,nSamples,datatype);
+            dLdZ2 = randn(nChsTotal-1,nrows,ncols,nSamples,datatype);
             
             % Expected values
-            % nRows x nCols x nChsTotal x nSamples
-            expctddLdX = cat(3,dLdZ1,dLdZ2);
+            % nChsTotal x nRows x nCols x nSamples
+            %expctddLdX = cat(3,dLdZ1,dLdZ2);
+            expctddLdX = cat(1,dLdZ1,dLdZ2);
             
             % Instantiation of target class
             import saivdr.dcnn.*
@@ -124,10 +130,6 @@ classdef nsoltChannelSeparation2dLayerTestCase < matlab.unittest.TestCase
                 IsEqualTo(expctddLdX,'Within',tolObj));
             
         end
-
-         
-        
-        
     end
     
 end

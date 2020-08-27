@@ -2,11 +2,11 @@ classdef nsoltChannelSeparation2dLayer < nnet.layer.Layer
     %NSOLTCHANNELSEPARATION2DLAYER
     %
     %   １コンポーネント入力(nComponents=1のみサポート):
-    %      nRows x nCols x nChsTotal x nSamples
+    %      nChsTotal x nRows x nCols x nSamples
     %
     %   ２コンポーネント出力(nComponents=2のみサポート):
-    %      nRows x nCols x 1 x nSamples
-    %      nRows x nCols x (nChsTotal-1) x nSamples    
+    %      1 x nRows x nCols x nSamples
+    %      (nChsTotal-1) x nRows x nCols x nSamples    
     %
     % Requirements: MATLAB R2020a
     %
@@ -55,8 +55,10 @@ classdef nsoltChannelSeparation2dLayer < nnet.layer.Layer
             %  
             
             % Layer forward function for prediction goes here.
-            Z1 = X(:,:,1,:);
-            Z2 = X(:,:,2:end,:);
+            %Z1 = X(:,:,1,:);
+            %Z2 = X(:,:,2:end,:);
+            Z1 = X(1,:,:,:);
+            Z2 = X(2:end,:,:,:);            
         end
         
         function dLdX = backward(~, ~, ~, ~, dLdZ1,dLdX2,~)
@@ -76,7 +78,8 @@ classdef nsoltChannelSeparation2dLayer < nnet.layer.Layer
             %                             learnable parameter
             
             % Layer forward function for prediction goes here.
-            dLdX = cat(3,dLdZ1,dLdX2);
+            %dLdX = cat(3,dLdZ1,dLdX2);
+            dLdX = cat(1,dLdZ1,dLdX2);
         end
     end
     

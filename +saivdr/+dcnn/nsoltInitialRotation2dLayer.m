@@ -2,10 +2,10 @@ classdef nsoltInitialRotation2dLayer < nnet.layer.Layer
     %NSOLTINITIALROTATION2DLAYER
     %
     %   コンポーネント別に入力(nComponents):
-    %      nRows x nCols x nDecs x nSamples
+    %      nDecs x nRows x nCols x nSamples
     %
     %   コンポーネント別に出力(nComponents):
-    %      nRows x nCols x nChs x nSamples
+    %      nChs x nRows x nCols x nSamples
     %
     % Requirements: MATLAB R2020a
     %
@@ -87,8 +87,10 @@ classdef nsoltInitialRotation2dLayer < nnet.layer.Layer
             import saivdr.dcnn.fcn_orthmtxgen
             
             % Layer forward function for prediction goes here.
-            nrows = size(X,1);
-            ncols = size(X,2);
+            %nrows = size(X,1);
+            %ncols = size(X,2);
+            nrows = size(X,2);
+            ncols = size(X,3);            
             ps = layer.NumberOfChannels(1);
             pa = layer.NumberOfChannels(2);
             nSamples = size(X,4);
@@ -113,11 +115,13 @@ classdef nsoltInitialRotation2dLayer < nnet.layer.Layer
             W0 = fcn_orthmtxgen(anglesW,muW);
             U0 = fcn_orthmtxgen(anglesU,muU);
             
-            Y = reshape(permute(X,[3 1 2 4]),nDecs,nrows*ncols*nSamples);
+            %Y = reshape(permute(X,[3 1 2 4]),nDecs,nrows*ncols*nSamples);
+            Y = reshape(X,nDecs,nrows*ncols*nSamples);
             Zs = W0(:,1:ceil(nDecs/2))*Y(1:ceil(nDecs/2),:);
             Za = U0(:,1:floor(nDecs/2))*Y(ceil(nDecs/2)+1:end,:);
-            Z = ipermute(reshape([Zs;Za],nChsTotal,nrows,ncols,nSamples),...
-                [3 1 2 4]);
+            %Z = ipermute(reshape([Zs;Za],nChsTotal,nrows,ncols,nSamples),...
+            %    [3 1 2 4]);
+            Z = reshape([Zs;Za],nChsTotal,nrows,ncols,nSamples);
             
         end
         
@@ -139,8 +143,10 @@ classdef nsoltInitialRotation2dLayer < nnet.layer.Layer
             %
             import saivdr.dcnn.fcn_orthmtxgen
             
-            nrows = size(dLdZ,1);
-            ncols = size(dLdZ,2);
+            %nrows = size(dLdZ,1);
+            %ncols = size(dLdZ,2);
+            nrows = size(dLdZ,2);
+            ncols = size(dLdZ,3);            
             ps = layer.NumberOfChannels(1);
             pa = layer.NumberOfChannels(2);
             nAngles = length(layer.Angles);
@@ -167,23 +173,24 @@ classdef nsoltInitialRotation2dLayer < nnet.layer.Layer
             
             % Layer backward function goes here.
             % dLdX = dZdX x dLdZ
-            Y = permute(dLdZ,[3 1 2 4]);
+            Y = dLdZ; %permute(dLdZ,[3 1 2 4]);
             Ys = reshape(Y(1:ps,:,:,:),ps,nrows*ncols*nSamples);
             Ya = reshape(Y(ps+1:ps+pa,:,:,:),pa,nrows*ncols*nSamples);
             Zsa = [ W0T(1:ceil(nDecs/2),:)*Ys; U0T(1:floor(nDecs/2),:)*Ya ];
-            dLdX = ipermute(reshape(Zsa,nDecs,nrows,ncols,nSamples),...
-                [3 1 2 4]);
+            %dLdX = ipermute(reshape(Zsa,nDecs,nrows,ncols,nSamples),...
+            %    [3 1 2 4]);
+            dLdX = reshape(Zsa,nDecs,nrows,ncols,nSamples);
             
             % dLdWi = <dLdZ,(dVdWi)X>
             dLdW = zeros(nAngles,1,'like',dLdZ);
-            dldz_ = permute(dLdZ,[3 1 2 4]);
+            dldz_ = dLdZ; %permute(dLdZ,[3 1 2 4]);
             dldz_upp = reshape(dldz_(1:ps,:,:,:),ps,nrows*ncols*nSamples);
             dldz_low = reshape(dldz_(ps+1:ps+pa,:,:,:),pa,nrows*ncols*nSamples);
             % (dVdWi)X
             for iAngle = 1:nAngles/2
                 dW0 = fcn_orthmtxgen(anglesW,muW,iAngle);
                 dU0 = fcn_orthmtxgen(anglesU,muU,iAngle);
-                a_ = permute(X,[3 1 2 4]);
+                a_ = X; %permute(X,[3 1 2 4]);
                 c_upp = reshape(a_(1:ceil(nDecs/2),:,:,:),ceil(nDecs/2),nrows*ncols*nSamples);
                 c_low = reshape(a_(ceil(nDecs/2)+1:nDecs,:,:,:),floor(nDecs/2),nrows*ncols*nSamples);
                 d_upp = dW0(:,1:ceil(nDecs/2))*c_upp;

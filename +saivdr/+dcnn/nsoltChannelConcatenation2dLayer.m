@@ -2,11 +2,11 @@ classdef nsoltChannelConcatenation2dLayer < nnet.layer.Layer
     %NSOLTCHANNELSEPARATION2DLAYER
     %
     %   １コンポーネント入力(nComponents=1のみサポート):
-    %      nRows x nCols x nChsTotal x nSamples
+    %      nChsTotal x nRows x nCols x nSamples
     %
     %   ２コンポーネント出力(nComponents=2のみサポート):
-    %      nRows x nCols x 1 x nSamples
-    %      nRows x nCols x (nChsTotal-1) x nSamples    
+    %      1 x nRows x nCols x nSamples
+    %      (nChsTotal-1) x nRows x nCols x nSamples    
     %
     % Requirements: MATLAB R2020a
     %
@@ -56,7 +56,8 @@ classdef nsoltChannelConcatenation2dLayer < nnet.layer.Layer
             %  
             
             % Layer forward function for prediction goes here.
-            Z = cat(3,X1,X2);
+            %Z = cat(3,X1,X2);
+            Z = cat(1,X1,X2);
         end
         
         function [dLdX1,dLdX2] = backward(~,~, ~, ~, dLdZ, ~)
@@ -76,8 +77,10 @@ classdef nsoltChannelConcatenation2dLayer < nnet.layer.Layer
             %                             learnable parameter
             
             % Layer forward function for prediction goes here.
-            dLdX1 = dLdZ(:,:,1,:);
-            dLdX2 = dLdZ(:,:,2:end,:);
+            %dLdX1 = dLdZ(:,:,1,:);
+            %dLdX2 = dLdZ(:,:,2:end,:);
+            dLdX1 = dLdZ(1,:,:,:);
+            dLdX2 = dLdZ(2:end,:,:,:);            
         end
     end
     
