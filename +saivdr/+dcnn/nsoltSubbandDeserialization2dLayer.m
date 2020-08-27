@@ -5,10 +5,11 @@ classdef nsoltSubbandDeserialization2dLayer < nnet.layer.Layer
     %      nElements x 1 x 1 x nSamples
     %
     %   複数コンポーネント出力 (SSCB):（ツリーレベル数）
-    %      nChsTotal x nRowsLv1 x nColsLv1 x nSamples
-    %      (nChsTotal-1) x nRowsLv2 x nColsLv2 x nSamples
+    %      nRowsLv1 x nColsLv1 x (nChsTotal-1) x nSamples
+    %      nRowsLv2 x nColsLv2 x (nChsTotal-1) x nSamples
     %       :
-    %      (nChsTotal-1) x nRowsLvN x nColsLvN x nSamples
+    %      nRowsLvN x nColsLvN x (nChsTotal-1) x nSamples
+    %      nRowsLvN x nColsLvN x 1 x nSamples    
     %
     % Requirements: MATLAB R2020a
     %
@@ -56,10 +57,12 @@ classdef nsoltSubbandDeserialization2dLayer < nnet.layer.Layer
             layer.Type = '';            
             
             nLevels = layer.NumberOfLevels;
-            outputNames = cell(1,layer.NumberOfLevels);
+            %outputNames = cell(1,layer.NumberOfLevels);
+            outputNames = cell(1,layer.NumberOfLevels+1);
             for iLv = 1:nLevels
-                outputNames{iLv} = [ 'Lv' num2str(iLv) '_SbOut' ];
+                outputNames{iLv} = [ 'Lv' num2str(iLv) '_SbAcOut' ];
             end
+            outputNames{nLevels+1} = [ 'Lv' num2str(nLevels) '_SbDcOut' ]; %            
             layer.OutputNames = outputNames;
         end
         
@@ -88,9 +91,11 @@ classdef nsoltSubbandDeserialization2dLayer < nnet.layer.Layer
             ncols = width*stride(Direction.HORIZONTAL).^(-nLevels);
 
             layer.Scales = zeros(nLevels,3);
-            layer.Scales(1,:) = [nrows ncols nChsTotal];
-            for iRevLv = 2:nLevels
-                layer.Scales(iRevLv,:) = ...
+            %layer.Scales(1,:) = [nrows ncols nChsTotal];
+            layer.Scales(1,:) = [nrows ncols 1];
+            for iRevLv = 1:nLevels % 2:nLevels
+                %layer.Scales(iRevLv,:) = ...
+                layer.Scales(iRevLv+1,:) = ...
                     [nrows*stride(Direction.VERTICAL)^(iRevLv-1) ncols*stride(Direction.HORIZONTAL)^(iRevLv-1)  nChsTotal-1];
             end
             
@@ -111,51 +116,65 @@ classdef nsoltSubbandDeserialization2dLayer < nnet.layer.Layer
             nLevels = layer.NumberOfLevels;
             nChsTotal = sum(layer.NumberOfChannels);
             scales = layer.Scales;
-            varargout = cell(1,nLevels);
+            %varargout = cell(1,nLevels);
+            varargout = cell(1,nLevels+1);            
             sidx = 0;
+            nSubElements = prod(scales(1,:));
+            subHeight = scales(1,1);
+            subWidth = scales(1,2);
+            varargout{nLevels+1} = ...
+                reshape(X(1:nSubElements,:),...
+                subHeight,subWidth,1,[]);
+            sidx = sidx + nSubElements;            
             for iRevLv = 1:nLevels
-                if iRevLv == 1
-                    wodc = 0;
-                else
-                    wodc = 1;
-                end
-                nSubElements = prod(scales(iRevLv,:));
-                subHeight = scales(iRevLv,1);
-                subWidth = scales(iRevLv,2);
-                %varargout{nLevels-iRevLv+1} = ...
-                %    reshape(X(sidx+1:sidx+nSubElements,:),...
-                %    subHeight,subWidth,nChsTotal-wodc,[]);
+                %nSubElements = prod(scales(iRevLv,:));
+                nSubElements = prod(scales(iRevLv+1,:));
+                %subHeight = scales(iRevLv,1);
+                %subWidth = scales(iRevLv,2);
+                subHeight = scales(iRevLv+1,1);
+                subWidth = scales(iRevLv+1,2);                
                 varargout{nLevels-iRevLv+1} = ...
-                    ipermute(reshape(X(sidx+1:sidx+nSubElements,:),...
-                    subHeight,subWidth,nChsTotal-wodc,[]),[2 3 1 4]);                
+                    reshape(X(sidx+1:sidx+nSubElements,:),...
+                    subHeight,subWidth,nChsTotal-1,[]);
                 sidx = sidx + nSubElements;
             end
         end
         
        function dLdX = backward(layer, varargin)
-            % Forward input data through the layer at prediction time and
-            % output the result.
+            % (Optional) Backward propagate the derivative of the loss  
+            % function through the layer.
             %
             % Inputs:
-            %         layer       - Layer to forward propagate through
-            %         X           - Input data (1 component)
+            %         layer             - Layer to backward propagate through
+            %         X                 - Input data
+            %         Z1, ..., Zm       - Outputs of layer forward function            
+            %         dLdZ1, ..., dLdZm - Gradients propagated from the next layers
+            %         memory            - Memory value from forward function
             % Outputs:
-            %         Z1, Z2      - Outputs of layer forward function
+            %         dLdX1, ..., dLdXn - Derivatives of the loss with respect to the
+            %                             inputs
+            %         dLdW1, ..., dLdWk - Derivatives of the loss with respect to each
             %  
             
             % Layer forward function for prediction goes here.
             nLevels = layer.NumberOfLevels;
-            nSamples = size(varargin{nLevels+2},4);
+            %nSamples = size(varargin{nLevels+2},4);
+            nSamples = size(varargin{nLevels+3},4);
             nElements = sum(prod(layer.Scales,2));
             scales = layer.Scales;
-            dLdX = zeros(nElements,1,1,nSamples,'like',varargin{nLevels+2});
+            %dLdX = zeros(nElements,1,1,nSamples,'like',varargin{nLevels+2});
+            dLdX = zeros(nElements,1,1,nSamples,'like',varargin{nLevels+3});
             for iSample = 1:nSamples
                 x = zeros(nElements,1,'like',dLdX);
                 sidx = 0;
+                nSubElements = prod(scales(1,:));
+                a = varargin{1+nLevels+1+nLevels+1}(:,:,:,iSample);
+                x(1:nSubElements) = a(:);
+                sidx = sidx+nSubElements;
                 for iRevLv = 1:nLevels
-                    nSubElements = prod(scales(iRevLv,:));
-                    %a = varargin{nLevels+2+nLevels-iRevLv}(:,:,:,iSample);
-                    a = permute(varargin{nLevels+2+nLevels-iRevLv}(:,:,:,iSample),[2 3 1 4]);
+                    %nSubElements = prod(scales(iRevLv,:));
+                    nSubElements = prod(scales(iRevLv+1,:));
+                    a = varargin{nLevels+3+nLevels-iRevLv}(:,:,:,iSample);
                     x(sidx+1:sidx+nSubElements) = a(:);
                     sidx = sidx+nSubElements;
                 end

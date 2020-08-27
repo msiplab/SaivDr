@@ -2,10 +2,11 @@ classdef nsoltSubbandSerialization2dLayer < nnet.layer.Layer
     %NSOLTSUBBANDSERIALIZATION2DLAYER
     %
     %   複数コンポーネント入力 (SSCB):（ツリーレベル数）
-    %      nChsTotal x nRowsLv1 x nColsLv1 x nSamples
+    %      (nChsTotal-1) x nRowsLv1 x nColsLv1 x nSamples
     %      (nChsTotal-1) x nRowsLv2 x nColsLv2 x nSamples
     %       :
     %      (nChsTotal-1) x nRowsLvN x nColsLvN x nSamples    
+    %      1 x nRowsLvN x nColsLvN x nSamples        
     %
     %   １コンポーネント出力(SSCB):
     %      nElements x 1 x 1 x nSamples
@@ -55,10 +56,12 @@ classdef nsoltSubbandSerialization2dLayer < nnet.layer.Layer
             layer.Type = '';       
             
             nLevels = layer.NumberOfLevels;            
-            inputNames = cell(1,layer.NumberOfLevels);
+            %inputNames = cell(1,layer.NumberOfLevels);
+            inputNames = cell(1,layer.NumberOfLevels+1);
             for iLv = 1:nLevels
-                inputNames{iLv} = [ 'Lv' num2str(iLv) '_SbIn' ];
+                inputNames{iLv} = [ 'Lv' num2str(iLv) '_SbAcIn' ];
             end            
+            inputNames{nLevels+1} = [ 'Lv' num2str(nLevels) '_SbDcIn' ]; %
             layer.InputNames = inputNames;
 
         end
@@ -86,10 +89,12 @@ classdef nsoltSubbandSerialization2dLayer < nnet.layer.Layer
             
             nrows = height*stride(Direction.VERTICAL).^(-nLevels);
             ncols = width*stride(Direction.HORIZONTAL).^(-nLevels);     
-            layer.Scales = zeros(nLevels,3);            
-            layer.Scales(1,:) = [nrows ncols nChsTotal];
-            for iRevLv = 2:nLevels
-                layer.Scales(iRevLv,:) = ...
+            layer.Scales = zeros(nLevels,3);        
+            %layer.Scales(1,:) = [nrows ncols nChsTotal];            
+            layer.Scales(1,:) = [nrows ncols 1];
+            for iRevLv = 1:nLevels %2:nLevels
+                %layer.Scales(iRevLv,:) = ...
+                layer.Scales(iRevLv+1,:) = ...                
                     [nrows*stride(Direction.VERTICAL)^(iRevLv-1) ncols*stride(Direction.HORIZONTAL)^(iRevLv-1)  nChsTotal-1];
             end
             
@@ -114,10 +119,14 @@ classdef nsoltSubbandSerialization2dLayer < nnet.layer.Layer
             for iSample = 1:nSamples
                 x = zeros(nElements,1,'like',Z);
                 sidx = 0;
+                nSubElements = prod(layer.Scales(1,:));
+                a = varargin{nLevels+1}(:,:,:,iSample);
+                x(1:nSubElements) = a(:);
+                sidx = sidx+nSubElements;
                 for iRevLv = 1:nLevels
-                    nSubElements = prod(layer.Scales(iRevLv,:));
-                    %a = varargin{nLevels-iRevLv+1}(:,:,:,iSample);
-                    a = permute(varargin{nLevels-iRevLv+1}(:,:,:,iSample),[2 3 1 4]);
+                    %nSubElements = prod(layer.Scales(iRevLv,:));
+                    nSubElements = prod(layer.Scales(iRevLv+1,:));
+                    a = varargin{nLevels-iRevLv+1}(:,:,:,iSample);
                     x(sidx+1:sidx+nSubElements) = a(:);
                     sidx = sidx+nSubElements;
                 end
@@ -126,36 +135,45 @@ classdef nsoltSubbandSerialization2dLayer < nnet.layer.Layer
         end
         
          function varargout = backward(layer,varargin)
-            % Forward input data through the layer at prediction time and
-            % output the result.
+            % (Optional) Backward propagate the derivative of the loss  
+            % function through the layer.
             %
             % Inputs:
-            %         layer       - Layer to forward propagate through
-            %         X           - Input data (1 component)
+            %         layer             - Layer to backward propagate through
+            %         X1, ..., Xn       - Input data
+            %         Z                 - Outputs of layer forward function            
+            %         dLdZ              - Gradients propagated from the next layers
+            %         memory            - Memory value from forward function
             % Outputs:
-            %         Z1, Z2      - Outputs of layer forward function
-            %
+            %         dLdX1, ..., dLdXn - Derivatives of the loss with respect to the
+            %                             inputs
+            %         dLdW1, ..., dLdWk - Derivatives of the loss with respect to each
+            % 
             nLevels = layer.NumberOfLevels;
-            dLdZ = varargin{nLevels+2};            
+            %dLdZ = varargin{nLevels+2};            
+            dLdZ = varargin{nLevels+3};            
             nChsTotal = sum(layer.NumberOfChannels);
             scales = layer.Scales;
-            varargout = cell(1,nLevels);
+            %varargout = cell(1,nLevels);
+            varargout = cell(1,nLevels+1);
             sidx = 0;
+            nSubElements = prod(scales(1,:));
+            subHeight = scales(1,1);
+            subWidth = scales(1,2);
+            varargout{nLevels+1} = ...
+                reshape(dLdZ(sidx+1:sidx+nSubElements,:),...
+                subHeight,subWidth,1,[]);
+            sidx = sidx + nSubElements;            
             for iRevLv = 1:nLevels
-                if iRevLv == 1
-                    wodc = 0;
-                else
-                    wodc = 1;
-                end
-                nSubElements = prod(scales(iRevLv,:));
-                subHeight = scales(iRevLv,1);
-                subWidth = scales(iRevLv,2);
-                %varargout{nLevels-iRevLv+1} = ...
-                %    reshape(dLdZ(sidx+1:sidx+nSubElements,:),...
-                %    subHeight,subWidth,nChsTotal-wodc,[]);
+                %nSubElements = prod(scales(iRevLv,:));
+                nSubElements = prod(scales(iRevLv+1,:));
+                %subHeight = scales(iRevLv,1);
+                %subWidth = scales(iRevLv,2);
+                subHeight = scales(iRevLv+1,1);
+                subWidth = scales(iRevLv+1,2);                
                 varargout{nLevels-iRevLv+1} = ...
-                    ipermute(reshape(dLdZ(sidx+1:sidx+nSubElements,:),...
-                    subHeight,subWidth,nChsTotal-wodc,[]),[2 3 1 4]);                
+                    reshape(dLdZ(sidx+1:sidx+nSubElements,:),...
+                    subHeight,subWidth,nChsTotal-1,[]);
                 sidx = sidx + nSubElements;
             end
         end

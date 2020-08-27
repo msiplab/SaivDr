@@ -2,10 +2,11 @@ classdef nsoltSubbandSerialization2dLayerTestCase < matlab.unittest.TestCase
     %NSOLTSUBBANDSERIALIZATION2DLAYERTESTCASE
     %
     %   複数コンポーネント入力 (SSCB):（ツリーレベル数）
-    %      nChsTotal x nRowsLv1 x nColsLv1 x nSamples
-    %      (nChsTotal-1) x nRowsLv2 x nColsLv2 x nSamples
+    %      nRowsLv1 x nColsLv1 x (nChsT0tal-1) x nSamples
+    %      nRowsLv2 x nColsLv2 x (nChsT0tal-1) x nSamples
     %       :
-    %      (nChsTotal-1) x nRowsLvN x nColsLvN x nSamples
+    %      nRowsLvN x nColsLvN x (nChsTotal-1) x nSamples
+    %      nRowsLvN x nColsLvN x 1 xnSamples    
     %
     %   １コンポーネント出力(SSCB):
     %      nElements x 1 x 1 x nSamples
@@ -41,7 +42,7 @@ classdef nsoltSubbandSerialization2dLayerTestCase < matlab.unittest.TestCase
                 'DecimationFactor',[2 2],...
                 'NumberOfLevels',3);
             fprintf("\n --- Check layer for 2-D images ---\n");
-            checkLayer(layer,{[5 8 8], [5 4 4], [6 2 2]},'ObservationDimension',4)
+            checkLayer(layer,{[8 8 5], [4 4 5], [2 2 5], [2 2 1]},'ObservationDimension',4)
         end
     end
     
@@ -125,25 +126,24 @@ classdef nsoltSubbandSerialization2dLayerTestCase < matlab.unittest.TestCase
             % Parameters
             nSamples = 8;
             nChsTotal = sum(nchs);
-            X = cell(nlevels,1);
-            for iLv = 1:nlevels-1
+            %X = cell(nlevels,1);
+            X = cell(nlevels+1,1);
+            for iLv = 1:nlevels %-1
                 subHeight = nrows * stride(1)^(nlevels-iLv);
                 subWidth = ncols * stride(2)^(nlevels-iLv);
-                %X{iLv} = randn(subHeight,subWidth,nChsTotal-1,...
-                %    nSamples,datatype);
-                X{iLv} = randn(nChsTotal-1,subHeight,subWidth,...
-                    nSamples,datatype);                
+                X{iLv} = randn(subHeight,subWidth,nChsTotal-1,...
+                    nSamples,datatype);
             end
-            %X{nlevels} = randn(nrows,ncols,nChsTotal,...
-            %    nSamples,datatype);
-            X{nlevels} = randn(nChsTotal,nrows,ncols,...
-                nSamples,datatype);            
+            X{nlevels+1} = randn(nrows,ncols,1,...
+                nSamples,datatype);
             
             % Expected values
-            expctdScales = zeros(nlevels,3);
-            expctdScales(1,:) = [nrows ncols nChsTotal];
-            for iRevLv = 2:nlevels
-                expctdScales(iRevLv,:) = ...
+            %expctdScales = zeros(nlevels,3);
+            expctdScales = zeros(nlevels+1,3);
+            %expctdScales(1,:) = [nrows ncols nChsTotal];
+            expctdScales(1,:) = [nrows ncols 1];
+            for iRevLv = 1:nlevels %2:nlevels
+                expctdScales(iRevLv+1,:) = ...
                     [nrows*stride(1)^(iRevLv-1) ncols*stride(2)^(iRevLv-1)  nChsTotal-1];
             end
             nElements = sum(prod(expctdScales,2));
@@ -151,10 +151,13 @@ classdef nsoltSubbandSerialization2dLayerTestCase < matlab.unittest.TestCase
             for iSample = 1:nSamples
                 x = zeros(nElements,1,datatype);
                 sidx = 0;
+                nSubElements = prod(expctdScales(1,:));                
+                a = X{nlevels+1}(:,:,:,iSample);                
+                x(1:nSubElements) = a(:);                
+                sidx = sidx+nSubElements;                
                 for iRevLv = 1:nlevels
-                    nSubElements = prod(expctdScales(iRevLv,:));
-                    %a = X{nlevels-iRevLv+1}(:,:,:,iSample);
-                    a = permute(X{nlevels-iRevLv+1}(:,:,:,iSample),[2 3 1]);
+                    nSubElements = prod(expctdScales(iRevLv+1,:));
+                    a = X{nlevels-iRevLv+1}(:,:,:,iSample);
                     x(sidx+1:sidx+nSubElements) = a(:);
                     sidx = sidx+nSubElements;
                 end
@@ -199,23 +202,21 @@ classdef nsoltSubbandSerialization2dLayerTestCase < matlab.unittest.TestCase
             
             % Expected values
             expctddLdX = cell(nlevels,1);
-            for iLv = 1:nlevels-1
+            for iLv = 1:nlevels %-1
                 subHeight = nrows * stride(1)^(nlevels-iLv);
                 subWidth = ncols * stride(2)^(nlevels-iLv);
-                %expctddLdX{iLv} = randn(subHeight,subWidth,nChsTotal-1,...
-                %    nSamples,datatype);
-                expctddLdX{iLv} = randn(nChsTotal-1,subHeight,subWidth,...
-                    nSamples,datatype);                
+                expctddLdX{iLv} = randn(subHeight,subWidth,nChsTotal-1,...
+                    nSamples,datatype);
             end
-            %expctddLdX{nlevels} = randn(nrows,ncols,nChsTotal,...
-            %    nSamples,datatype);
-            expctddLdX{nlevels} = randn(nChsTotal,nrows,ncols,...
-                nSamples,datatype);            
+            expctddLdX{nlevels+1} = randn(nrows,ncols,1,...
+                nSamples,datatype); %
             
-            expctdScales = zeros(nlevels,3);
-            expctdScales(1,:) = [nrows ncols nChsTotal];
-            for iRevLv = 2:nlevels
-                expctdScales(iRevLv,:) = ...
+            %expctdScales = zeros(nlevels,3);
+            expctdScales = zeros(nlevels+1,3);
+            %expctdScales(1,:) = [nrows ncols nChsTotal];
+            expctdScales(1,:) = [nrows ncols 1];
+            for iRevLv = 1:nlevels %2:nlevels
+                expctdScales(iRevLv+1,:) = ...
                     [nrows*stride(1)^(iRevLv-1) ncols*stride(2)^(iRevLv-1)  nChsTotal-1];
             end
             
@@ -225,10 +226,14 @@ classdef nsoltSubbandSerialization2dLayerTestCase < matlab.unittest.TestCase
             for iSample = 1:nSamples
                 x = zeros(nElements,1,datatype);
                 sidx = 0;
+                nSubElements = prod(expctdScales(1,:));                
+                a = expctddLdX{nlevels+1}(:,:,:,iSample);
+                x(1:nSubElements) = a(:);
+                sidx = sidx+nSubElements;                
                 for iRevLv = 1:nlevels
-                    nSubElements = prod(expctdScales(iRevLv,:));
-                    %a = expctddLdX{nlevels-iRevLv+1}(:,:,:,iSample);
-                    a = permute(expctddLdX{nlevels-iRevLv+1}(:,:,:,iSample),[2 3 1]);
+                    %nSubElements = prod(expctdScales(iRevLv,:));
+                    nSubElements = prod(expctdScales(iRevLv+1,:));
+                    a = expctddLdX{nlevels-iRevLv+1}(:,:,:,iSample);
                     x(sidx+1:sidx+nSubElements) = a(:);
                     sidx = sidx+nSubElements;
                 end
@@ -245,12 +250,15 @@ classdef nsoltSubbandSerialization2dLayerTestCase < matlab.unittest.TestCase
                 'NumberOfLevels',nlevels);
             
             % Actual values
-            args = cell(1,nlevels+1+1+1);
-            args{nlevels+2} = dLdZ;
-            [actualdLdX{1:nlevels}] = layer.backward(args{:});
+            %args = cell(1,nlevels+1+1+1);
+            args = cell(1,nlevels+2+1+1);
+            %args{nlevels+2} = dLdZ;
+            args{nlevels+3} = dLdZ;
+            %[actualdLdX{1:nlevels}] = layer.backward(args{:});
+            [actualdLdX{1:nlevels+1}] = layer.backward(args{:});
             
             % Evaluation
-            for iLv = 1:nlevels
+            for iLv = 1:nlevels+1 %1:nlevels
                 testCase.verifyInstanceOf(actualdLdX{iLv},datatype);
                 testCase.verifyThat(actualdLdX{iLv},...
                     IsEqualTo(expctddLdX{iLv},'Within',tolObj));
