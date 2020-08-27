@@ -2,10 +2,10 @@ classdef nsoltSubbandSerialization2dLayer < nnet.layer.Layer
     %NSOLTSUBBANDSERIALIZATION2DLAYER
     %
     %   複数コンポーネント入力 (SSCB):（ツリーレベル数）
-    %      nRowsLv1 x nColsLv1 x nChsTotal x nSamples
-    %      nRowsLv2 x nColsLv2 x (nChsTotal-1) x nSamples
+    %      nChsTotal x nRowsLv1 x nColsLv1 x nSamples
+    %      (nChsTotal-1) x nRowsLv2 x nColsLv2 x nSamples
     %       :
-    %      nRowsLvN x nColsLvN x (nChsTotal-1) x nSamples    
+    %      (nChsTotal-1) x nRowsLvN x nColsLvN x nSamples    
     %
     %   １コンポーネント出力(SSCB):
     %      nElements x 1 x 1 x nSamples
@@ -116,7 +116,8 @@ classdef nsoltSubbandSerialization2dLayer < nnet.layer.Layer
                 sidx = 0;
                 for iRevLv = 1:nLevels
                     nSubElements = prod(layer.Scales(iRevLv,:));
-                    a = varargin{nLevels-iRevLv+1}(:,:,:,iSample);
+                    %a = varargin{nLevels-iRevLv+1}(:,:,:,iSample);
+                    a = permute(varargin{nLevels-iRevLv+1}(:,:,:,iSample),[2 3 1 4]);
                     x(sidx+1:sidx+nSubElements) = a(:);
                     sidx = sidx+nSubElements;
                 end
@@ -149,9 +150,12 @@ classdef nsoltSubbandSerialization2dLayer < nnet.layer.Layer
                 nSubElements = prod(scales(iRevLv,:));
                 subHeight = scales(iRevLv,1);
                 subWidth = scales(iRevLv,2);
+                %varargout{nLevels-iRevLv+1} = ...
+                %    reshape(dLdZ(sidx+1:sidx+nSubElements,:),...
+                %    subHeight,subWidth,nChsTotal-wodc,[]);
                 varargout{nLevels-iRevLv+1} = ...
-                    reshape(dLdZ(sidx+1:sidx+nSubElements,:),...
-                    subHeight,subWidth,nChsTotal-wodc,[]);
+                    ipermute(reshape(dLdZ(sidx+1:sidx+nSubElements,:),...
+                    subHeight,subWidth,nChsTotal-wodc,[]),[2 3 1 4]);                
                 sidx = sidx + nSubElements;
             end
         end

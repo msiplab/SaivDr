@@ -5,10 +5,10 @@ classdef nsoltSubbandDeserialization2dLayer < nnet.layer.Layer
     %      nElements x 1 x 1 x nSamples
     %
     %   複数コンポーネント出力 (SSCB):（ツリーレベル数）
-    %      nRowsLv1 x nColsLv1 x nChsTotal x nSamples
-    %      nRowsLv2 x nColsLv2 x (nChsTotal-1) x nSamples
+    %      nChsTotal x nRowsLv1 x nColsLv1 x nSamples
+    %      (nChsTotal-1) x nRowsLv2 x nColsLv2 x nSamples
     %       :
-    %      nRowsLvN x nColsLvN x (nChsTotal-1) x nSamples
+    %      (nChsTotal-1) x nRowsLvN x nColsLvN x nSamples
     %
     % Requirements: MATLAB R2020a
     %
@@ -122,9 +122,12 @@ classdef nsoltSubbandDeserialization2dLayer < nnet.layer.Layer
                 nSubElements = prod(scales(iRevLv,:));
                 subHeight = scales(iRevLv,1);
                 subWidth = scales(iRevLv,2);
+                %varargout{nLevels-iRevLv+1} = ...
+                %    reshape(X(sidx+1:sidx+nSubElements,:),...
+                %    subHeight,subWidth,nChsTotal-wodc,[]);
                 varargout{nLevels-iRevLv+1} = ...
-                    reshape(X(sidx+1:sidx+nSubElements,:),...
-                    subHeight,subWidth,nChsTotal-wodc,[]);
+                    ipermute(reshape(X(sidx+1:sidx+nSubElements,:),...
+                    subHeight,subWidth,nChsTotal-wodc,[]),[2 3 1 4]);                
                 sidx = sidx + nSubElements;
             end
         end
@@ -151,7 +154,8 @@ classdef nsoltSubbandDeserialization2dLayer < nnet.layer.Layer
                 sidx = 0;
                 for iRevLv = 1:nLevels
                     nSubElements = prod(scales(iRevLv,:));
-                    a = varargin{nLevels+2+nLevels-iRevLv}(:,:,:,iSample);
+                    %a = varargin{nLevels+2+nLevels-iRevLv}(:,:,:,iSample);
+                    a = permute(varargin{nLevels+2+nLevels-iRevLv}(:,:,:,iSample),[2 3 1 4]);
                     x(sidx+1:sidx+nSubElements) = a(:);
                     sidx = sidx+nSubElements;
                 end

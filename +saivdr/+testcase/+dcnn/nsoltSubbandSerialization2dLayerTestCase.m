@@ -2,10 +2,10 @@ classdef nsoltSubbandSerialization2dLayerTestCase < matlab.unittest.TestCase
     %NSOLTSUBBANDSERIALIZATION2DLAYERTESTCASE
     %
     %   複数コンポーネント入力 (SSCB):（ツリーレベル数）
-    %      nRowsLv1 x nColsLv1 x nChsTotal x nSamples
-    %      nRowsLv2 x nColsLv2 x (nChsTotal-1) x nSamples
+    %      nChsTotal x nRowsLv1 x nColsLv1 x nSamples
+    %      (nChsTotal-1) x nRowsLv2 x nColsLv2 x nSamples
     %       :
-    %      nRowsLvN x nColsLvN x (nChsTotal-1) x nSamples
+    %      (nChsTotal-1) x nRowsLvN x nColsLvN x nSamples
     %
     %   １コンポーネント出力(SSCB):
     %      nElements x 1 x 1 x nSamples
@@ -41,7 +41,7 @@ classdef nsoltSubbandSerialization2dLayerTestCase < matlab.unittest.TestCase
                 'DecimationFactor',[2 2],...
                 'NumberOfLevels',3);
             fprintf("\n --- Check layer for 2-D images ---\n");
-            checkLayer(layer,{[8 8 5], [4 4 5], [2 2 6]},'ObservationDimension',4)
+            checkLayer(layer,{[5 8 8], [5 4 4], [6 2 2]},'ObservationDimension',4)
         end
     end
     
@@ -129,11 +129,15 @@ classdef nsoltSubbandSerialization2dLayerTestCase < matlab.unittest.TestCase
             for iLv = 1:nlevels-1
                 subHeight = nrows * stride(1)^(nlevels-iLv);
                 subWidth = ncols * stride(2)^(nlevels-iLv);
-                X{iLv} = randn(subHeight,subWidth,nChsTotal-1,...
-                    nSamples,datatype);
+                %X{iLv} = randn(subHeight,subWidth,nChsTotal-1,...
+                %    nSamples,datatype);
+                X{iLv} = randn(nChsTotal-1,subHeight,subWidth,...
+                    nSamples,datatype);                
             end
-            X{nlevels} = randn(nrows,ncols,nChsTotal,...
-                nSamples,datatype);
+            %X{nlevels} = randn(nrows,ncols,nChsTotal,...
+            %    nSamples,datatype);
+            X{nlevels} = randn(nChsTotal,nrows,ncols,...
+                nSamples,datatype);            
             
             % Expected values
             expctdScales = zeros(nlevels,3);
@@ -149,7 +153,8 @@ classdef nsoltSubbandSerialization2dLayerTestCase < matlab.unittest.TestCase
                 sidx = 0;
                 for iRevLv = 1:nlevels
                     nSubElements = prod(expctdScales(iRevLv,:));
-                    a = X{nlevels-iRevLv+1}(:,:,:,iSample);
+                    %a = X{nlevels-iRevLv+1}(:,:,:,iSample);
+                    a = permute(X{nlevels-iRevLv+1}(:,:,:,iSample),[2 3 1]);
                     x(sidx+1:sidx+nSubElements) = a(:);
                     sidx = sidx+nSubElements;
                 end
@@ -197,11 +202,15 @@ classdef nsoltSubbandSerialization2dLayerTestCase < matlab.unittest.TestCase
             for iLv = 1:nlevels-1
                 subHeight = nrows * stride(1)^(nlevels-iLv);
                 subWidth = ncols * stride(2)^(nlevels-iLv);
-                expctddLdX{iLv} = randn(subHeight,subWidth,nChsTotal-1,...
-                    nSamples,datatype);
+                %expctddLdX{iLv} = randn(subHeight,subWidth,nChsTotal-1,...
+                %    nSamples,datatype);
+                expctddLdX{iLv} = randn(nChsTotal-1,subHeight,subWidth,...
+                    nSamples,datatype);                
             end
-            expctddLdX{nlevels} = randn(nrows,ncols,nChsTotal,...
-                nSamples,datatype);
+            %expctddLdX{nlevels} = randn(nrows,ncols,nChsTotal,...
+            %    nSamples,datatype);
+            expctddLdX{nlevels} = randn(nChsTotal,nrows,ncols,...
+                nSamples,datatype);            
             
             expctdScales = zeros(nlevels,3);
             expctdScales(1,:) = [nrows ncols nChsTotal];
@@ -218,7 +227,8 @@ classdef nsoltSubbandSerialization2dLayerTestCase < matlab.unittest.TestCase
                 sidx = 0;
                 for iRevLv = 1:nlevels
                     nSubElements = prod(expctdScales(iRevLv,:));
-                    a = expctddLdX{nlevels-iRevLv+1}(:,:,:,iSample);
+                    %a = expctddLdX{nlevels-iRevLv+1}(:,:,:,iSample);
+                    a = permute(expctddLdX{nlevels-iRevLv+1}(:,:,:,iSample),[2 3 1]);
                     x(sidx+1:sidx+nSubElements) = a(:);
                     sidx = sidx+nSubElements;
                 end
