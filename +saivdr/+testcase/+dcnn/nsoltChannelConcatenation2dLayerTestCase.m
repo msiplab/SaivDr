@@ -75,7 +75,7 @@ classdef nsoltChannelConcatenation2dLayerTestCase < matlab.unittest.TestCase
             
             % Expected values
             % nChsTotal x nRows x nCols x nSamples
-            expctdZ = permute(cat(3,Xac,Xdc),[3 1 2 4]);
+            expctdZ = permute(cat(3,Xdc,Xac),[3 1 2 4]);
             
             % Instantiation of target class
             import saivdr.dcnn.*
@@ -106,9 +106,9 @@ classdef nsoltChannelConcatenation2dLayerTestCase < matlab.unittest.TestCase
             
             % Expected values
             % nRows x nCols x (nChsTotal-1) x nSamples 
-            expctddLdXac = permute(dLdZ(1:end-1,:,:,:),[2 3 1 4]);
+            expctddLdXac = permute(dLdZ(2:end,:,:,:),[2 3 1 4]);
             % nRows x nCols x 1 x nSamples
-            expctddLdXdc = permute(dLdZ(end,:,:,:),[2 3 1 4]);
+            expctddLdXdc = permute(dLdZ(1,:,:,:),[2 3 1 4]);
             
             % Instantiation of target class
             import saivdr.dcnn.*

@@ -57,8 +57,8 @@ classdef nsoltChannelSeparation2dLayer < nnet.layer.Layer
             % Layer forward function for prediction goes here.
             %Z1 = X(:,:,1,:);
             %Z2 = X(:,:,2:end,:);
-            Zac = permute(X(1:end-1,:,:,:),[2 3 1 4]);            
-            Zdc = permute(X(end,:,:,:),[2 3 1 4]);
+            Zac = permute(X(2:end,:,:,:),[2 3 1 4]);            
+            Zdc = permute(X(1,:,:,:),[2 3 1 4]);            
         end
         
         function dLdX = backward(~, ~, ~, ~, dLdZac,dLdZdc,~)
@@ -79,7 +79,7 @@ classdef nsoltChannelSeparation2dLayer < nnet.layer.Layer
             
             % Layer forward function for prediction goes here.
             %dLdX = cat(3,dLdZ1,dLdZ2);
-            dLdX = ipermute(cat(3,dLdZac,dLdZdc),[2 3 1 4]);
+            dLdX = ipermute(cat(3,dLdZdc,dLdZac),[2 3 1 4]);
         end
     end
     

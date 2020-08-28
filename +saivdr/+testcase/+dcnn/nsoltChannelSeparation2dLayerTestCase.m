@@ -74,10 +74,10 @@ classdef nsoltChannelSeparation2dLayerTestCase < matlab.unittest.TestCase
             % Expected values
             % nRows x nCols x (nChsTotal-1) x nSamples 
             %expctdZ2 = X(:,:,2:end,:);
-            expctdZac = permute(X(1:end-1,:,:,:),[2 3 1 4]);
+            expctdZac = permute(X(2:end,:,:,:),[2 3 1 4]);
             % nRows x nCols x 1 x nSamples
             %expctdZ1 = X(:,:,1,:);
-            expctdZdc = permute(X(end,:,:,:),[2 3 1 4]);
+            expctdZdc = permute(X(1,:,:,:),[2 3 1 4]);
             
             % Instantiation of target class
             import saivdr.dcnn.*
@@ -115,7 +115,7 @@ classdef nsoltChannelSeparation2dLayerTestCase < matlab.unittest.TestCase
             % Expected values
             % nChsTotal x nRows x nCols x nSamples
             %expctddLdX = cat(3,dLdZ1,dLdZ2);
-            expctddLdX = ipermute(cat(3,dLdZac,dLdZdc),[2 3 1 4]);
+            expctddLdX = ipermute(cat(3,dLdZdc,dLdZac),[2 3 1 4]);
             
             % Instantiation of target class
             import saivdr.dcnn.*
