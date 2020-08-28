@@ -123,9 +123,10 @@ for iLv = 1:nLevels
     end
     if iLv > 1
         strLvPre = sprintf('Lv%0d_',iLv-1);
-        analysisNsoltLgraph = analysisNsoltLgraph.connectLayers([strLvPre 'Sp/dc'],[strLv 'E0'] );
         analysisNsoltLgraph = analysisNsoltLgraph.addLayers(nsoltIdentityLayer('Name',[strLvPre 'AcOut']));
         analysisNsoltLgraph = analysisNsoltLgraph.connectLayers([strLvPre 'Sp/ac'],[strLvPre 'AcOut']);
+        analysisNsoltLgraph = analysisNsoltLgraph.connectLayers([strLvPre 'Sp/dc'],[strLv 'E0'] );
+        %
         synthesisNsoltLgraph = synthesisNsoltLgraph.connectLayers([strLv 'E0~'],[strLvPre 'Cn/dc']);
         synthesisNsoltLgraph = synthesisNsoltLgraph.addLayers(nsoltIdentityLayer('Name',[strLvPre 'AcIn']));
         synthesisNsoltLgraph = synthesisNsoltLgraph.connectLayers([strLvPre 'AcIn'],[strLvPre 'Cn/ac']);
@@ -134,10 +135,10 @@ end
 analysisNsoltLgraph = analysisNsoltLgraph.addLayers(nsoltIdentityLayer('Name','Lv1_In'));
 analysisNsoltLgraph = analysisNsoltLgraph.connectLayers('Lv1_In','Lv1_E0');
 %
-analysisNsoltLgraph = analysisNsoltLgraph.addLayers(nsoltIdentityLayer('Name',[strLv 'DcOut']));
 analysisNsoltLgraph = analysisNsoltLgraph.addLayers(nsoltIdentityLayer('Name',[strLv 'AcOut']));
-analysisNsoltLgraph = analysisNsoltLgraph.connectLayers([strLv 'Sp/dc'],[strLv 'DcOut']);
+analysisNsoltLgraph = analysisNsoltLgraph.addLayers(nsoltIdentityLayer('Name',[strLv 'DcOut']));
 analysisNsoltLgraph = analysisNsoltLgraph.connectLayers([strLv 'Sp/ac'],[strLv 'AcOut']);    
+analysisNsoltLgraph = analysisNsoltLgraph.connectLayers([strLv 'Sp/dc'],[strLv 'DcOut']);
 %
 synthesisNsoltLgraph = synthesisNsoltLgraph.addLayers(nsoltIdentityLayer('Name','Lv1_Out'));
 synthesisNsoltLgraph = synthesisNsoltLgraph.connectLayers('Lv1_E0~','Lv1_Out');
