@@ -72,27 +72,27 @@ classdef nsoltChannelSeparation2dLayerTestCase < matlab.unittest.TestCase
             X = randn(nChsTotal,nrows,ncols,nSamples,datatype);
             
             % Expected values
-            % nRows x nCols x 1 x nSamples
-            %expctdZ1 = X(:,:,1,:);
-            expctdZ1 = permute(X(1,:,:,:),[2 3 1 4]);
             % nRows x nCols x (nChsTotal-1) x nSamples 
             %expctdZ2 = X(:,:,2:end,:);
-            expctdZ2 = permute(X(2:end,:,:,:),[2 3 1 4]);
+            expctdZac = permute(X(1:end-1,:,:,:),[2 3 1 4]);
+            % nRows x nCols x 1 x nSamples
+            %expctdZ1 = X(:,:,1,:);
+            expctdZdc = permute(X(end,:,:,:),[2 3 1 4]);
             
             % Instantiation of target class
             import saivdr.dcnn.*
             layer = nsoltChannelSeparation2dLayer('Name','Sp');
             
             % Actual values
-            [actualZ1,actualZ2] = layer.predict(X);
+            [actualZac,actualZdc] = layer.predict(X);
             
             % Evaluation
-            testCase.verifyInstanceOf(actualZ1,datatype);
-            testCase.verifyInstanceOf(actualZ2,datatype);            
-            testCase.verifyThat(actualZ1,...
-                IsEqualTo(expctdZ1,'Within',tolObj));
-            testCase.verifyThat(actualZ2,...
-                IsEqualTo(expctdZ2,'Within',tolObj));            
+            testCase.verifyInstanceOf(actualZdc,datatype);
+            testCase.verifyInstanceOf(actualZac,datatype);            
+            testCase.verifyThat(actualZdc,...
+                IsEqualTo(expctdZdc,'Within',tolObj));
+            testCase.verifyThat(actualZac,...
+                IsEqualTo(expctdZac,'Within',tolObj));            
             
         end
 
@@ -105,24 +105,24 @@ classdef nsoltChannelSeparation2dLayerTestCase < matlab.unittest.TestCase
             % Parameters
             nSamples = 8;
             nChsTotal = sum(nchs);
-            % 1 x nRows x nCols x nSamples
-            dLdZ1 = randn(nrows,ncols,1,nSamples,datatype);
-            %dLdZ1 = randn(1,nrows,ncols,nSamples,datatype);
             % (nChsTotal-1) x nRows x nCols x nSamples 
-            dLdZ2 = randn(nrows,ncols,nChsTotal-1,nSamples,datatype);
+            dLdZac = randn(nrows,ncols,nChsTotal-1,nSamples,datatype);
             %dLdZ2 = randn(nChsTotal-1,nrows,ncols,nSamples,datatype);
+            % 1 x nRows x nCols x nSamples
+            dLdZdc = randn(nrows,ncols,1,nSamples,datatype);
+            %dLdZ1 = randn(1,nrows,ncols,nSamples,datatype);
             
             % Expected values
             % nChsTotal x nRows x nCols x nSamples
             %expctddLdX = cat(3,dLdZ1,dLdZ2);
-            expctddLdX = ipermute(cat(3,dLdZ1,dLdZ2),[2 3 1 4]);
+            expctddLdX = ipermute(cat(3,dLdZac,dLdZdc),[2 3 1 4]);
             
             % Instantiation of target class
             import saivdr.dcnn.*
             layer = nsoltChannelSeparation2dLayer('Name','Sp');
             
             % Actual values
-            actualdLdX = layer.backward([],[],[],dLdZ1,dLdZ2,[]);
+            actualdLdX = layer.backward([],[],[],dLdZac,dLdZdc,[]);
             
             % Evaluation
             testCase.verifyInstanceOf(actualdLdX,datatype);

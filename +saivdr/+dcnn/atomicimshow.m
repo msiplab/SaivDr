@@ -56,8 +56,7 @@ end
 % Remove deserialization
 if isSerialized
     synthesislgraph = layerGraph(synthesisnet);
-    synthesislgraph = synthesislgraph.removeLayers('Sb_Dsz');
-    synthesislgraph = synthesislgraph.removeLayers('Subband images');
+    synthesislgraph = synthesislgraph.removeLayers({'Sb_Dsz','Subband images'});
     [~,synthesislgraph] = fcn_replaceinputlayers([],...
         synthesislgraph,patchsize);
     synthesisnet = dlnetwork(synthesislgraph);
@@ -65,27 +64,35 @@ end
 
 % Calculation of atomic images
 atomicImages = zeros([patchsize 1 nChsTotal]);
-idx = 1;
-dls = cell(nLevels,1);
-for iLv = nLevels:-1:1
-    if iLv == nLevels
-        wodc = 0;
+
+% Impluse arrays
+dls = cell(nLevels+1,1);
+for iRevLv = nLevels:-1:1
+    if iRevLv == nLevels
+        dls{nLevels+1} = dlarray(...
+            zeros([patchsize./(decFactor.^nLevels) 1],'single'),...
+            'SSC');
+        dls{nLevels} = dlarray(...
+            zeros([patchsize./(decFactor.^nLevels) (nChsPerLv-1)],'single'),...
+            'SSC');
     else
-        wodc = 1;
+        dls{iRevLv} = dlarray(...
+            zeros([patchsize./(decFactor.^iRevLv) (nChsPerLv-1)],'single'),...
+            'SSC');
     end
-    dls{iLv} = dlarray(...
-        zeros([patchsize./(decFactor.^iLv) (nChsPerLv-wodc)],'single'),...
-        'SSC');
 end
-for iLv = nLevels:-1:1
-    if iLv == nLevels
-        wodc = 0;
-    else
-        wodc = 1;
-    end    
-    for iAtom = 1:nChsPerLv-wodc
+
+% Impluse responses
+idx = 1;
+dld = dls;
+dld{nLevels+1}(round(end/2),round(end/2),1)  = 1;
+atomicImages(:,:,1,idx) = ...
+    extractdata(synthesisnet.predict(dld{:}));
+idx = idx+1;
+for iRevLv = nLevels:-1:1
+    for iAtom = 1:nChsPerLv-1
         dld = dls;
-        dld{iLv}(round(end/2),round(end/2),iAtom)  = 1;
+        dld{iRevLv}(round(end/2),round(end/2),iAtom)  = 1;
         atomicImages(:,:,1,idx) = ...
             extractdata(synthesisnet.predict(dld{:}));
         idx = idx+1;

@@ -108,14 +108,12 @@ for iLv = 1:nLevels
             ];
     end
     % Channel separation and concatenation
-    if iLv < nLevels
-        analysisLayers = [ analysisLayers
-            nsoltChannelSeparation2dLayer('Name',[strLv 'Sp'])
-            ];
-        synthesisLayers = [ synthesisLayers
-            nsoltChannelConcatenation2dLayer('Name',[strLv 'Cn'])
-            ];
-    end
+    analysisLayers = [ analysisLayers
+        nsoltChannelSeparation2dLayer('Name',[strLv 'Sp'])
+        ];
+    synthesisLayers = [ synthesisLayers
+        nsoltChannelConcatenation2dLayer('Name',[strLv 'Cn'])
+        ];
     if iLv == 1
         analysisNsoltLgraph = layerGraph(analysisLayers);
         synthesisNsoltLgraph = layerGraph(synthesisLayers(end:-1:1));
@@ -136,24 +134,17 @@ end
 analysisNsoltLgraph = analysisNsoltLgraph.addLayers(nsoltIdentityLayer('Name','Lv1_In'));
 analysisNsoltLgraph = analysisNsoltLgraph.connectLayers('Lv1_In','Lv1_E0');
 %
-analysisNsoltLgraph = analysisNsoltLgraph.addLayers(nsoltIdentityLayer('Name',[strLv 'DcAcOut']));
-if ppOrder(1) > 0
-    analysisNsoltLgraph = analysisNsoltLgraph.connectLayers([strLv 'Vv' num2str(ppOrder(1))],[strLv 'DcAcOut']);
-elseif ppOrder(2) > 0
-    analysisNsoltLgraph = analysisNsoltLgraph.connectLayers([strLv 'Vh' num2str(ppOrder(2))],[strLv 'DcAcOut']);    
-else
-    analysisNsoltLgraph = analysisNsoltLgraph.connectLayers([strLv 'V0'],[strLv 'DcAcOut']);        
-end
+analysisNsoltLgraph = analysisNsoltLgraph.addLayers(nsoltIdentityLayer('Name',[strLv 'DcOut']));
+analysisNsoltLgraph = analysisNsoltLgraph.addLayers(nsoltIdentityLayer('Name',[strLv 'AcOut']));
+analysisNsoltLgraph = analysisNsoltLgraph.connectLayers([strLv 'Sp/dc'],[strLv 'DcOut']);
+analysisNsoltLgraph = analysisNsoltLgraph.connectLayers([strLv 'Sp/ac'],[strLv 'AcOut']);    
 %
 synthesisNsoltLgraph = synthesisNsoltLgraph.addLayers(nsoltIdentityLayer('Name','Lv1_Out'));
 synthesisNsoltLgraph = synthesisNsoltLgraph.connectLayers('Lv1_E0~','Lv1_Out');
 %
-synthesisNsoltLgraph = synthesisNsoltLgraph.addLayers(nsoltIdentityLayer('Name',[strLv 'DcAcIn']));
-if ppOrder(1) > 0
-    synthesisNsoltLgraph = synthesisNsoltLgraph.connectLayers([strLv 'DcAcIn'],[strLv 'Vv' num2str(ppOrder(1)) '~']);
-elseif ppOrder(2) > 0
-    synthesisNsoltLgraph = synthesisNsoltLgraph.connectLayers([strLv 'DcAcIn'],[strLv 'Vh' num2str(ppOrder(2)) '~']);    
-else
-    synthesisNsoltLgraph = synthesisNsoltLgraph.connectLayers([strLv 'DcAcIn'],[strLv 'V0~']);    
-end
+synthesisNsoltLgraph = synthesisNsoltLgraph.addLayers(nsoltIdentityLayer('Name',[strLv 'AcIn']));
+synthesisNsoltLgraph = synthesisNsoltLgraph.connectLayers([strLv 'AcIn'],[strLv 'Cn/ac']);
+synthesisNsoltLgraph = synthesisNsoltLgraph.addLayers(nsoltIdentityLayer('Name',[strLv 'DcIn']));
+synthesisNsoltLgraph = synthesisNsoltLgraph.connectLayers([strLv 'DcIn'],[strLv 'Cn/dc']);
+
 end

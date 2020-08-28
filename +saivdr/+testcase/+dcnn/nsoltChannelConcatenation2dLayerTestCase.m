@@ -2,11 +2,11 @@ classdef nsoltChannelConcatenation2dLayerTestCase < matlab.unittest.TestCase
     %NSOLTCHANNELCONCATENATION2DLAYERTESTCASE
     %
     %   ２コンポーネント入力(nComponents=2のみサポート):
-    %      nRows x nCols x 1 x nSamples
     %      nRows x nCols x (nChsTotal-1) x nSamples    
+    %      nRows x nCols x 1 x nSamples
     %
     %   １コンポーネント出力(nComponents=1のみサポート):
-    %      nRows x nCols x nChsTotal x nSamples
+    %       nChsTotal x nRows x nCols xnSamples
     %
     % Requirements: MATLAB R2020a
     %
@@ -33,7 +33,7 @@ classdef nsoltChannelConcatenation2dLayerTestCase < matlab.unittest.TestCase
             import saivdr.dcnn.*
             layer = nsoltChannelConcatenation2dLayer();
             fprintf("\n --- Check layer for 2-D images ---\n");
-            checkLayer(layer,{[8 8 1], [8 8 5]},'ObservationDimension',4)
+            checkLayer(layer,{[8 8 5], [8 8 1]},'ObservationDimension',4)
         end
     end
     
@@ -67,21 +67,22 @@ classdef nsoltChannelConcatenation2dLayerTestCase < matlab.unittest.TestCase
             % Parameters
             nSamples = 8;
             nChsTotal = sum(nchs);
-            % nRows x nCols x 1 x nSamples
-            X1 = randn(nrows,ncols,1,nSamples,datatype);
             % nRows x nCols x (nChsTotal-1) x nSamples 
-            X2 = randn(nrows,ncols,nChsTotal-1,nSamples,datatype);
+            Xac = randn(nrows,ncols,nChsTotal-1,nSamples,datatype);
+            % nRows x nCols x 1 x nSamples
+            Xdc = randn(nrows,ncols,1,nSamples,datatype);
+
             
             % Expected values
             % nChsTotal x nRows x nCols x nSamples
-            expctdZ = permute(cat(3,X1,X2),[3 1 2 4]);
+            expctdZ = permute(cat(3,Xac,Xdc),[3 1 2 4]);
             
             % Instantiation of target class
             import saivdr.dcnn.*
             layer = nsoltChannelConcatenation2dLayer('Name','Cn');
             
             % Actual values
-            actualZ = layer.predict(X1,X2);
+            actualZ = layer.predict(Xac,Xdc);
             
             % Evaluation
             testCase.verifyInstanceOf(actualZ,datatype);
@@ -104,25 +105,25 @@ classdef nsoltChannelConcatenation2dLayerTestCase < matlab.unittest.TestCase
             dLdZ = randn(nChsTotal,nrows,ncols,nSamples,datatype);
             
             % Expected values
-            % nRows x nCols x 1 x nSamples
-            expctddLdX1 = permute(dLdZ(1,:,:,:),[2 3 1 4]);
             % nRows x nCols x (nChsTotal-1) x nSamples 
-            expctddLdX2 = permute(dLdZ(2:end,:,:,:),[2 3 1 4]);
+            expctddLdXac = permute(dLdZ(1:end-1,:,:,:),[2 3 1 4]);
+            % nRows x nCols x 1 x nSamples
+            expctddLdXdc = permute(dLdZ(end,:,:,:),[2 3 1 4]);
             
             % Instantiation of target class
             import saivdr.dcnn.*
             layer = nsoltChannelConcatenation2dLayer('Name','Cn');
             
             % Actual values
-            [actualdLdX1,actualdLdX2] = layer.backward([],[],[],dLdZ,[]);
+            [actualdLdXac,actualdLdXdc] = layer.backward([],[],[],dLdZ,[]);
             
             % Evaluation
-            testCase.verifyInstanceOf(actualdLdX1,datatype);
-            testCase.verifyInstanceOf(actualdLdX2,datatype);            
-            testCase.verifyThat(actualdLdX1,...
-                IsEqualTo(expctddLdX1,'Within',tolObj));
-            testCase.verifyThat(actualdLdX2,...
-                IsEqualTo(expctddLdX2,'Within',tolObj));            
+            testCase.verifyInstanceOf(actualdLdXdc,datatype);
+            testCase.verifyInstanceOf(actualdLdXac,datatype);            
+            testCase.verifyThat(actualdLdXdc,...
+                IsEqualTo(expctddLdXdc,'Within',tolObj));
+            testCase.verifyThat(actualdLdXac,...
+                IsEqualTo(expctddLdXac,'Within',tolObj));            
             
         end
         

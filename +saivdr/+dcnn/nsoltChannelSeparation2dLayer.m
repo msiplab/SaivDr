@@ -2,8 +2,8 @@ classdef nsoltChannelSeparation2dLayer < nnet.layer.Layer
     %NSOLTCHANNELSEPARATION2DLAYER
     %
     %   ２コンポーネント入力(nComponents=2のみサポート):
-    %      nRows x nCols x 1 x nSamples
     %      nRows x nCols x (nChsTotal-1) x nSamples    
+    %      nRows x nCols x 1 x nSamples
     %
     %   １コンポーネント出力(nComponents=1のみサポート):
     %      nChsTotal x nRows x nCols x nSamples
@@ -40,10 +40,10 @@ classdef nsoltChannelSeparation2dLayer < nnet.layer.Layer
             layer.Description =  "Channel separation";
             layer.Type = '';
             %layer.NumOutputs = 2;
-            layer.OutputNames = { 'dc', 'ac' };            
+            layer.OutputNames = { 'ac', 'dc' };            
         end
         
-        function [Z1,Z2] = predict(~, X)
+        function [Zac,Zdc] = predict(~, X)
             % Forward input data through the layer at prediction time and
             % output the result.
             %
@@ -57,11 +57,11 @@ classdef nsoltChannelSeparation2dLayer < nnet.layer.Layer
             % Layer forward function for prediction goes here.
             %Z1 = X(:,:,1,:);
             %Z2 = X(:,:,2:end,:);
-            Z1 = permute(X(1,:,:,:),[2 3 1 4]);
-            Z2 = permute(X(2:end,:,:,:),[2 3 1 4]);            
+            Zac = permute(X(1:end-1,:,:,:),[2 3 1 4]);            
+            Zdc = permute(X(end,:,:,:),[2 3 1 4]);
         end
         
-        function dLdX = backward(~, ~, ~, ~, dLdZ1,dLdX2,~)
+        function dLdX = backward(~, ~, ~, ~, dLdZac,dLdZdc,~)
             % (Optional) Backward propagate the derivative of the loss  
             % function through the layer.
             %
@@ -78,8 +78,8 @@ classdef nsoltChannelSeparation2dLayer < nnet.layer.Layer
             %                             learnable parameter
             
             % Layer forward function for prediction goes here.
-            %dLdX = cat(3,dLdZ1,dLdX2);
-            dLdX = ipermute(cat(3,dLdZ1,dLdX2),[2 3 1 4]);
+            %dLdX = cat(3,dLdZ1,dLdZ2);
+            dLdX = ipermute(cat(3,dLdZac,dLdZdc),[2 3 1 4]);
         end
     end
     
