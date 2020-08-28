@@ -34,7 +34,7 @@ classdef nsoltBlockIdct3dLayerTestCase < matlab.unittest.TestCase
             layer = nsoltBlockIdct3dLayer(...
                 'DecimationFactor',[2 2 2]);
             fprintf("\n --- Check layer for 3-D images ---\n");
-            checkLayer(layer,[4 4 4 8],'ObservationDimension',5)
+            checkLayer(layer,[8 4 4 4],'ObservationDimension',5)
         end
     end
     
