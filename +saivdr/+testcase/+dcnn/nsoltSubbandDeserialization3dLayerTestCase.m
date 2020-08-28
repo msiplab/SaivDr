@@ -5,10 +5,11 @@ classdef nsoltSubbandDeserialization3dLayerTestCase < matlab.unittest.TestCase
     %      nElements x 1 x 1 x 1 x nSamples
     %
     %   複数コンポーネント出力 (SSSCB):（ツリーレベル数）
-    %      nRowsLv1 x nColsLv1 x nLaysLv1 x nChsTotal x nSamples
+    %      nRowsLv1 x nColsLv1 x nLaysLv1 x (nChsTotal-1) x nSamples
     %      nRowsLv2 x nColsLv2 x nLaysLv2 x (nChsTotal-1) x nSamples
     %       :
     %      nRowsLvN x nColsLvN x nLaysLvN x (nChsTotal-1) x nSamples
+    %      nRowsLvN x nColsLvN x nLaysLvN x 1 x nSamples     
     %
     % Requirements: MATLAB R2020a
     %
@@ -130,8 +131,9 @@ classdef nsoltSubbandDeserialization3dLayerTestCase < matlab.unittest.TestCase
             nChsTotal = sum(nchs);
             
             % Expected values
-            expctdZ = cell(nlevels,1);
-            for iLv = 1:nlevels-1
+            %expctdZ = cell(nlevels,1);
+            expctdZ = cell(nlevels+1,1);
+            for iLv = 1:nlevels %-1
                 subHeight = nrows * stride(1)^(nlevels-iLv);
                 subWidth = ncols * stride(2)^(nlevels-iLv);
                 subDepth = nlays * stride(3)^(nlevels-iLv);                                
@@ -139,13 +141,16 @@ classdef nsoltSubbandDeserialization3dLayerTestCase < matlab.unittest.TestCase
                     nChsTotal-1,...
                     nSamples,datatype);
             end
-            expctdZ{nlevels} = randn(nrows,ncols,nlays,nChsTotal,...
-                nSamples,datatype);
+            expctdZ{nlevels+1} = randn(nrows,ncols,nlays,1,...
+                nSamples,datatype); %
             
-            expctdScales = zeros(nlevels,4);
-            expctdScales(1,:) = [nrows ncols nlays nChsTotal];
-            for iRevLv = 2:nlevels
-                expctdScales(iRevLv,:) = ...
+            %expctdScales = zeros(nlevels,4);
+            expctdScales = zeros(nlevels+1,4);
+            %expctdScales(1,:) = [nrows ncols nlays nChsTotal];
+            expctdScales(1,:) = [nrows ncols nlays 1];
+            for iRevLv = 1:nlevels %2:nlevels
+                %expctdScales(iRevLv,:) = ...
+                expctdScales(iRevLv+1,:) = ...
                     [nrows*stride(1)^(iRevLv-1) ncols*stride(2)^(iRevLv-1) nlays*stride(3)^(iRevLv-1) nChsTotal-1];                
             end
             expctdInputSize = [sum(prod(expctdScales,2)) 1 1 1 ];
@@ -156,8 +161,13 @@ classdef nsoltSubbandDeserialization3dLayerTestCase < matlab.unittest.TestCase
             for iSample = 1:nSamples
                 x = zeros(nElements,1,datatype);
                 sidx = 0;
+                nSubElements = prod(expctdScales(1,:));
+                a = expctdZ{nlevels+1}(:,:,:,:,iSample);
+                x(1:nSubElements) = a(:);
+                sidx = sidx+nSubElements;
                 for iRevLv = 1:nlevels
-                    nSubElements = prod(expctdScales(iRevLv,:));
+                    %nSubElements = prod(expctdScales(iRevLv,:));
+                    nSubElements = prod(expctdScales(iRevLv+1,:));
                     a = expctdZ{nlevels-iRevLv+1}(:,:,:,:,iSample);
                     x(sidx+1:sidx+nSubElements) = a(:);
                     sidx = sidx+nSubElements;
@@ -175,12 +185,13 @@ classdef nsoltSubbandDeserialization3dLayerTestCase < matlab.unittest.TestCase
                 'NumberOfLevels',nlevels);
             
             % Actual values
-            [actualZ{1:nlevels}] = layer.predict(X);
+            %[actualZ{1:nlevels}] = layer.predict(X);
+            [actualZ{1:nlevels+1}] = layer.predict(X);
             actualScales = layer.Scales;
             actualInputSize = layer.InputSize;
             
             % Evaluation
-            for iLv = 1:nlevels
+            for iLv = 1:nlevels+1 %1:nlevels
                 testCase.verifyInstanceOf(actualZ{iLv},datatype);
                 testCase.verifyThat(actualZ{iLv},...
                     IsEqualTo(expctdZ{iLv},'Within',tolObj));
@@ -206,8 +217,9 @@ classdef nsoltSubbandDeserialization3dLayerTestCase < matlab.unittest.TestCase
             % Parameters
             nSamples = 8;
             nChsTotal = sum(nchs);
-            dLdZ = cell(nlevels,1);
-            for iLv = 1:nlevels-1
+            %dLdZ = cell(nlevels,1);
+            dLdZ = cell(nlevels+1,1);
+            for iLv = 1:nlevels %-1
                 subHeight = nrows * stride(1)^(nlevels-iLv);
                 subWidth = ncols * stride(2)^(nlevels-iLv);
                 subDepth = nlays * stride(3)^(nlevels-iLv);                                
@@ -215,14 +227,16 @@ classdef nsoltSubbandDeserialization3dLayerTestCase < matlab.unittest.TestCase
                     nChsTotal-1,...
                     nSamples,datatype);
             end
-            dLdZ{nlevels} = randn(nrows,ncols,nlays,nChsTotal,...
-                nSamples,datatype);
+            dLdZ{nlevels+1} = randn(nrows,ncols,nlays,1,...nChsTotal,...
+                nSamples,datatype); %
             
             % Expected values
-            expctdScales = zeros(nlevels,4);
-            expctdScales(1,:) = [nrows ncols nlays nChsTotal];
-            for iRevLv = 2:nlevels
-                expctdScales(iRevLv,:) = ...
+            %expctdScales = zeros(nlevels,4);
+            expctdScales = zeros(nlevels+1,4);
+            %expctdScales(1,:) = [nrows ncols nlays nChsTotal];
+            expctdScales(1,:) = [nrows ncols nlays 1];
+            for iRevLv = 1:nlevels %2:nlevels
+                expctdScales(iRevLv+1,:) = ...
                     [nrows*stride(1)^(iRevLv-1) ncols*stride(2)^(iRevLv-1) nlays*stride(3)^(iRevLv-1) nChsTotal-1];
             end
             nElements = sum(prod(expctdScales,2));
@@ -230,8 +244,12 @@ classdef nsoltSubbandDeserialization3dLayerTestCase < matlab.unittest.TestCase
             for iSample = 1:nSamples
                 x = zeros(nElements,1,datatype);
                 sidx = 0;
+                nSubElements = prod(expctdScales(1,:));
+                a = dLdZ{nlevels+1}(:,:,:,:,iSample);
+                x(1:nSubElements) = a(:);
+                sidx = sidx+nSubElements;
                 for iRevLv = 1:nlevels
-                    nSubElements = prod(expctdScales(iRevLv,:));
+                    nSubElements = prod(expctdScales(iRevLv+1,:));
                     a = dLdZ{nlevels-iRevLv+1}(:,:,:,:,iSample);
                     x(sidx+1:sidx+nSubElements) = a(:);
                     sidx = sidx+nSubElements;
@@ -249,9 +267,11 @@ classdef nsoltSubbandDeserialization3dLayerTestCase < matlab.unittest.TestCase
                 'NumberOfLevels',nlevels);
             
             % Actual values
-            args = cell(1,1+nlevels+nlevels+1);
-            for iLv = 1:nlevels
-                args{1+nlevels+iLv} = dLdZ{iLv};
+            %args = cell(1,1+nlevels+nlevels+1);
+            args = cell(1,1+nlevels+1+nlevels+1+1);
+            for iLv = 1:nlevels+1 % 1:nlevels
+                %args{1+nlevels+iLv} = dLdZ{iLv};
+                args{1+nlevels+1+iLv} = dLdZ{iLv};
             end
             actualdLdX = layer.backward(args{:});
             

@@ -2,7 +2,7 @@ classdef nsoltChannelSeparation3dLayerTestCase < matlab.unittest.TestCase
     %NSOLTCHANNELSEPARATION3DLAYERTESTCASE
     %
     %   １コンポーネント入力(nComponents=1のみサポート):
-    %      nRows x nCols x nChsTotal x nSamples
+    %      nChsTotal x nRows x nCols x nSamples
     %
     %   ２コンポーネント出力(nComponents=2のみサポート):
     %      nRows x nCols x 1 x nSamples
@@ -34,7 +34,7 @@ classdef nsoltChannelSeparation3dLayerTestCase < matlab.unittest.TestCase
             import saivdr.dcnn.*
             layer = nsoltChannelSeparation3dLayer();
             fprintf("\n --- Check layer for 3-D images ---\n");
-            checkLayer(layer,[8 8 8 10],'ObservationDimension',5)
+            checkLayer(layer,[10 8 8 8],'ObservationDimension',5)
         end
     end
     
@@ -68,29 +68,32 @@ classdef nsoltChannelSeparation3dLayerTestCase < matlab.unittest.TestCase
             % Parameters
             nSamples = 8;
             nChsTotal = sum(nchs);
-            % nRows x nCols x nLays x nChsTotal x nSamples
-            X = randn(nrows,ncols,nlays,nChsTotal,nSamples,datatype);
+            % nChsTotal x nRows x nCols x nLays x nSamples
+            %X = randn(nrows,ncols,nlays,nChsTotal,nSamples,datatype);
+            X = randn(nChsTotal,nrows,ncols,nlays,nSamples,datatype);
             
             % Expected values
-            % nRows x nCols x nLays x 1 x nSamples
-            expctdZ1 = X(:,:,:,1,:);
             % nRows x nCols x nLays x (nChsTotal-1) x nSamples 
-            expctdZ2 = X(:,:,:,2:end,:);
+            %expctdZ2 = X(:,:,:,2:end,:);
+            expctdZac = permute(X(2:end,:,:,:,:),[2 3 4 1 5]);
+            % nRows x nCols x nLays x (nChsTotal-1) x nSamples
+            %expctdZ1 = X(:,:,:,1,:);
+            expctdZdc = permute(X(1,:,:,:,:),[2 3 4 1 5]);
             
             % Instantiation of target class
             import saivdr.dcnn.*
             layer = nsoltChannelSeparation3dLayer('Name','Sp');
             
             % Actual values
-            [actualZ1,actualZ2] = layer.predict(X);
+            [actualZac,actualZdc] = layer.predict(X);
             
             % Evaluation
-            testCase.verifyInstanceOf(actualZ1,datatype);
-            testCase.verifyInstanceOf(actualZ2,datatype);            
-            testCase.verifyThat(actualZ1,...
-                IsEqualTo(expctdZ1,'Within',tolObj));
-            testCase.verifyThat(actualZ2,...
-                IsEqualTo(expctdZ2,'Within',tolObj));            
+            testCase.verifyInstanceOf(actualZdc,datatype);
+            testCase.verifyInstanceOf(actualZac,datatype);            
+            testCase.verifyThat(actualZdc,...
+                IsEqualTo(expctdZdc,'Within',tolObj));
+            testCase.verifyThat(actualZac,...
+                IsEqualTo(expctdZac,'Within',tolObj));            
             
         end
 
@@ -104,21 +107,23 @@ classdef nsoltChannelSeparation3dLayerTestCase < matlab.unittest.TestCase
             % Parameters
             nSamples = 8;
             nChsTotal = sum(nchs);
-            % nRows x nCols x nLays x 1 x nSamples
-            dLdZ1 = randn(nrows,ncols,nlays,1,nSamples,datatype);
-            % nRows x nCols x nLays x (nChsTotal-1) x nSamples 
-            dLdZ2 = randn(nrows,ncols,nlays,nChsTotal-1,nSamples,datatype);
+            % (nChsTotal-1) x nRows x nCols x nLays x nSamples 
+            dLdZac = randn(nrows,ncols,nlays,nChsTotal-1,nSamples,datatype);
+            % 1 x nRows x nCols x nLays x nSamples
+            dLdZdc = randn(nrows,ncols,nlays,1,nSamples,datatype);
+
             
             % Expected values
-            % nRows x nCols x nChsTotal x nSamples
-            expctddLdX = cat(4,dLdZ1,dLdZ2);
+            %  nChsTotal x nRows x nCols xnSamples
+            %expctddLdX = cat(4,dLdZdc,dLdZac);
+            expctddLdX = ipermute(cat(4,dLdZdc,dLdZac),[2 3 4 1 5]);
             
             % Instantiation of target class
             import saivdr.dcnn.*
             layer = nsoltChannelSeparation3dLayer('Name','Sp');
             
             % Actual values
-            actualdLdX = layer.backward([],[],[],dLdZ1,dLdZ2,[]);
+            actualdLdX = layer.backward([],[],[],dLdZac,dLdZdc,[]);
             
             % Evaluation
             testCase.verifyInstanceOf(actualdLdX,datatype);

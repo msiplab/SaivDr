@@ -1,12 +1,12 @@
 classdef nsoltChannelSeparation2dLayer < nnet.layer.Layer
     %NSOLTCHANNELSEPARATION2DLAYER
     %
-    %   ２コンポーネント入力(nComponents=2のみサポート):
+    %   １コンポーネント入力(nComponents=1のみサポート):
+    %      nChsTotal x nRows x nCols x nSamples
+    %
+    %   ２コンポーネント出力(nComponents=2のみサポート):
     %      nRows x nCols x (nChsTotal-1) x nSamples    
     %      nRows x nCols x 1 x nSamples
-    %
-    %   １コンポーネント出力(nComponents=1のみサポート):
-    %      nChsTotal x nRows x nCols x nSamples
     %
     % Requirements: MATLAB R2020a
     %

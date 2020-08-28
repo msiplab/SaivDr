@@ -1,11 +1,11 @@
 classdef nsoltChannelConcatenation2dLayer < nnet.layer.Layer
     %NSOLTCHANNELCONCATENATION2DLAYER
     %
-    %   ２コンポーネント出力(nComponents=2のみサポート):
+    %   ２コンポーネント入力(nComponents=2のみサポート):
     %      nRows x nCols x (nChsTotal-1) x nSamples    
     %      nRows x nCols x 1 x nSamples
     %
-    %   １コンポーネント入力(nComponents=1のみサポート):
+    %   １コンポーネント出力(nComponents=1のみサポート):
     %      nChsTotal x nRows x nCols x nSamples
     %
     % Requirements: MATLAB R2020a

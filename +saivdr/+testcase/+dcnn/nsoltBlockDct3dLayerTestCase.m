@@ -5,7 +5,7 @@ classdef nsoltBlockDct3dLayerTestCase < matlab.unittest.TestCase
     %      (Stride(1)xnRows) x (Stride(2)xnCols) x nComponents x nSamples
     %
     %   コンポーネント別に出力(nComponents=1のみサポート):
-    %      nRows x nCols x nDecs x nSamples
+    %      nDecs x nRows x nCols x nSamples
     %
     % Requirements: MATLAB R2020a
     %
@@ -79,7 +79,8 @@ classdef nsoltBlockDct3dLayerTestCase < matlab.unittest.TestCase
             ncols = width/stride(Direction.HORIZONTAL);
             nlays = depth/stride(Direction.DEPTH);
             ndecs = prod(stride);
-            expctdZ = zeros(nrows,ncols,nlays,ndecs,nSamples,datatype);
+            %expctdZ = zeros(nrows,ncols,nlays,ndecs,nSamples,datatype);
+            expctdZ = zeros(ndecs,nrows,ncols,nlays,nSamples,datatype);
             E0 = testCase.getMatrixE0_(stride);
             for iSample = 1:nSamples
                 % Block DCT
@@ -88,7 +89,8 @@ classdef nsoltBlockDct3dLayerTestCase < matlab.unittest.TestCase
                 A = E0*Y;
                 % Rearrange the DCT Coefs.
                 expctdZ(:,:,:,:,iSample) = ...
-                    permute(reshape(A,ndecs,nrows,ncols,nlays),[2 3 4 1]);
+                    ...permute(reshape(A,ndecs,nrows,ncols,nlays),[2 3 4 1]);
+                    reshape(A,ndecs,nrows,ncols,nlays);
             end
             
             % Instantiation of target class
@@ -124,7 +126,8 @@ classdef nsoltBlockDct3dLayerTestCase < matlab.unittest.TestCase
             ncols = width/stride(Direction.HORIZONTAL);
             nlays = depth/stride(Direction.DEPTH);            
             ndecs = prod(stride);
-            expctdZ = zeros(nrows,ncols,nlays,ndecs,nSamples,datatype);
+            %expctdZ = zeros(nrows,ncols,nlays,ndecs,nSamples,datatype);
+            expctdZ = zeros(ndecs,nrows,ncols,nlays,nSamples,datatype);
             E0 = testCase.getMatrixE0_(stride);
             for iSample = 1:nSamples
                 % Block DCT
@@ -133,7 +136,8 @@ classdef nsoltBlockDct3dLayerTestCase < matlab.unittest.TestCase
                 A = E0*Y;
                 % Rearrange the DCT Coefs.
                 expctdZ(:,:,:,:,iSample) = ...
-                    permute(reshape(A,ndecs,nrows,ncols,nlays),[2 3 4 1]);
+                    ...permute(reshape(A,ndecs,nrows,ncols,nlays),[2 3 4 1]);
+                    reshape(A,ndecs,nrows,ncols,nlays);
             end
             
             % Instantiation of target class
@@ -166,15 +170,17 @@ classdef nsoltBlockDct3dLayerTestCase < matlab.unittest.TestCase
             ncols = width/stride(Direction.HORIZONTAL);
             nlays = depth/stride(Direction.DEPTH);
             nDecs = prod(stride);
-            dLdZ = rand(nrows,ncols,nlays,nDecs,nSamples,datatype);
+            %dLdZ = rand(nrows,ncols,nlays,nDecs,nSamples,datatype);
+            dLdZ = rand(nDecs,nrows,ncols,nlays,nSamples,datatype);
             
             % Expected values
             expctddLdX = zeros(height,width,depth,datatype);
             E0_T = transpose(testCase.getMatrixE0_(stride));
             for iSample = 1:nSamples
                 % Rearrange the DCT coefs
-                A = reshape(permute(dLdZ(:,:,:,:,iSample),[4 1 2 3]),...
-                    nDecs,nrows*ncols*nlays);
+                %A = reshape(permute(dLdZ(:,:,:,:,iSample),[4 1 2 3]),...
+                %    nDecs,nrows*ncols*nlays);
+                A = reshape(dLdZ(:,:,:,:,iSample),nDecs,nrows*ncols*nlays);
                 % Block IDCT
                 Y = E0_T*A;
                 expctddLdX(:,:,:,1,iSample) = testCase.col2vol_(Y,stride,...

@@ -2,7 +2,7 @@ classdef nsoltBlockIdct3dLayerTestCase < matlab.unittest.TestCase
     %NSOLTBLOCKIDCT3LAYERTESTCASE
     %
     %   コンポーネント別に入力(nComponents=1のみサポート):
-    %      nRows x nCols x nDecs x nSamples
+    %      nDecs x nRows x nCols x nSamples
     %
     %   ベクトル配列をブロック配列にして出力(nComponents=1のみサポート):
     %      (Stride(1)xnRows) x (Stride(2)xnCols) x nComponents x nSamples
@@ -75,15 +75,17 @@ classdef nsoltBlockIdct3dLayerTestCase < matlab.unittest.TestCase
             ncols = width/stride(Direction.HORIZONTAL);
             nlays = depth/stride(Direction.DEPTH);
             nDecs = prod(stride);
-            X = rand(nrows,ncols,nlays,nDecs,nSamples,datatype);
+            %X = rand(nrows,ncols,nlays,nDecs,nSamples,datatype);
+            X = rand(nDecs,nrows,ncols,nlays,nSamples,datatype);
             
             % Expected values
             expctdZ = zeros(height,width,depth,datatype);
             E0_T = transpose(testCase.getMatrixE0_(stride));
             for iSample = 1:nSamples
                 % Rearrange the DCT coefs
-                A = reshape(permute(X(:,:,:,:,iSample),[4 1 2 3]),...
-                    nDecs,nrows*ncols*nlays);
+                %A = reshape(permute(X(:,:,:,:,iSample),[4 1 2 3]),...
+                %    nDecs,nrows*ncols*nlays);
+                A = reshape(X(:,:,:,:,iSample),nDecs,nrows*ncols*nlays);
                 % Block IDCT
                 Y = E0_T*A;
                 expctdZ(:,:,:,1,iSample) = testCase.col2vol_(Y,stride,...
@@ -119,15 +121,17 @@ classdef nsoltBlockIdct3dLayerTestCase < matlab.unittest.TestCase
             ncols = width/stride(Direction.HORIZONTAL);
             nlays = depth/stride(Direction.DEPTH);
             nDecs = prod(stride);
-            X = rand(nrows,ncols,nlays,nDecs,nSamples,datatype);
+            %X = rand(nrows,ncols,nlays,nDecs,nSamples,datatype);
+            X = rand(nDecs,nrows,ncols,nlays,nSamples,datatype);
             
             % Expected values
             expctdZ = zeros(height,width,depth,datatype);
             E0_T = transpose(testCase.getMatrixE0_(stride));
             for iSample = 1:nSamples
                 % Rearrange the DCT coefs
-                A = reshape(permute(X(:,:,:,:,iSample),[4 1 2 3]),...
-                    nDecs,nrows*ncols*nlays);
+                %A = reshape(permute(X(:,:,:,:,iSample),[4 1 2 3]),...
+                %    nDecs,nrows*ncols*nlays);
+                A = reshape(X(:,:,:,:,iSample),nDecs,nrows*ncols*nlays);
                 % Block IDCT
                 Y = E0_T*A;
                 expctdZ(:,:,:,1,iSample) = testCase.col2vol_(Y,stride,...
@@ -167,7 +171,8 @@ classdef nsoltBlockIdct3dLayerTestCase < matlab.unittest.TestCase
             ncols = width/stride(Direction.HORIZONTAL);
             nlays = depth/stride(Direction.DEPTH);            
             ndecs = prod(stride);
-            expctddLdZ = zeros(nrows,ncols,nlays,ndecs,nSamples,datatype);
+            %expctddLdZ = zeros(nrows,ncols,nlays,ndecs,nSamples,datatype);
+            expctddLdZ = zeros(ndecs,nrows,ncols,nlays,nSamples,datatype);
             E0 = testCase.getMatrixE0_(stride);
             for iSample = 1:nSamples
                 % Block DCT
@@ -176,7 +181,8 @@ classdef nsoltBlockIdct3dLayerTestCase < matlab.unittest.TestCase
                 A = E0*Y;
                 % Rearrange the DCT Coefs.
                 expctddLdZ(:,:,:,:,iSample) = ...
-                    permute(reshape(A,ndecs,nrows,ncols,nlays),[2 3 4 1]);
+                    ...permute(reshape(A,ndecs,nrows,ncols,nlays),[2 3 4 1]);
+                    reshape(A,ndecs,nrows,ncols,nlays);
             end
             
             % Instantiation of target class

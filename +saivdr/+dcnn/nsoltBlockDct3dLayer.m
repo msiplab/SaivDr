@@ -5,7 +5,7 @@ classdef nsoltBlockDct3dLayer < nnet.layer.Layer
     %      (Stride(1)xnRows) x (Stride(2)xnCols) x (Stride(3)xnLays) x nComponents x nSamples
     %
     %   コンポーネント別に出力(nComponents=1):
-    %      nRows x nCols x nDecs x nSamples
+    %      nDecs x nRows x nCols x nSamples
     %
     % Requirements: MATLAB R2020a
     %
@@ -132,7 +132,8 @@ classdef nsoltBlockDct3dLayer < nnet.layer.Layer
                         end
                     end
                 end
-                varargout{iComponent} = permute(A,[2 3 4 1 5]);
+                %varargout{iComponent} = permute(A,[2 3 4 1 5]);
+                varargout{iComponent} = A; 
             end
         end
         
@@ -164,16 +165,20 @@ classdef nsoltBlockDct3dLayer < nnet.layer.Layer
             for iComponent = 1:nComponents
                 dLdZ = varargin{layer.NumInputs+layer.NumOutputs+iComponent};
                 if iComponent == 1
-                    nRows = size(dLdZ,1);
-                    nCols = size(dLdZ,2);
-                    nLays = size(dLdZ,3);
+                    %nRows = size(dLdZ,1);
+                    %nCols = size(dLdZ,2);
+                    %nLays = size(dLdZ,3);
+                    nRows = size(dLdZ,2);
+                    nCols = size(dLdZ,3);
+                    nLays = size(dLdZ,4);                    
                     height = decV*nRows;
                     width = decH*nCols;
                     depth = decD*nLays;
                     nSamples = size(dLdZ,5);
                     dLdX = zeros(height,width,depth,nComponents,nSamples,'like',dLdZ);
                 end
-                A = permute(dLdZ,[4 1 2 3 5]);
+                %A = permute(dLdZ,[4 1 2 3 5]);
+                A = dLdZ;
                 for iSample = 1:nSamples
                     for iLay = 1:nLays
                         for iCol = 1:nCols

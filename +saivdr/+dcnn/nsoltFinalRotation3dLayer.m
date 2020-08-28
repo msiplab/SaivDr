@@ -2,10 +2,10 @@ classdef nsoltFinalRotation3dLayer < nnet.layer.Layer
     %NSOLTFINALROTATION2DLAYER
     %
     %   コンポーネント別に入力(nComponents):
-    %      nRows x nCols x nLays x nChs x nSamples
+    %      nChs x nRows x nCols x nLays x nSamples
     %
     %   コンポーネント別に出力(nComponents):
-    %      nRows x nCols x nLays x nDecs x nSamples
+    %      nDecs x nRows x nCols x nLays x nSamples
     %
     %
     % Requirements: MATLAB R2020a
@@ -90,9 +90,12 @@ classdef nsoltFinalRotation3dLayer < nnet.layer.Layer
             import saivdr.dcnn.fcn_orthmtxgen
             
             % Layer forward function for prediction goes here.
-            nrows = size(X,1);
-            ncols = size(X,2);
-            nlays = size(X,3);
+            %nrows = size(X,1);
+            %ncols = size(X,2);
+            %nlays = size(X,3);
+            nrows = size(X,2);
+            ncols = size(X,3);
+            nlays = size(X,4);            
             ps = layer.NumberOfChannels(1);
             pa = layer.NumberOfChannels(2);
             nSamples = size(X,5);
@@ -116,12 +119,13 @@ classdef nsoltFinalRotation3dLayer < nnet.layer.Layer
             W0T = transpose(fcn_orthmtxgen(anglesW,muW));
             U0T = transpose(fcn_orthmtxgen(anglesU,muU));
             
-            Y = permute(X,[4 1 2 3 5]);
+            Y = X; %permute(X,[4 1 2 3 5]);
             Ys = reshape(Y(1:ps,:,:,:,:),ps,nrows*ncols*nlays*nSamples);
             Ya = reshape(Y(ps+1:ps+pa,:,:,:,:),pa,nrows*ncols*nlays*nSamples);
             Zsa = [ W0T(1:ceil(nDecs/2),:)*Ys; U0T(1:floor(nDecs/2),:)*Ya ];
-            Z = ipermute(reshape(Zsa,nDecs,nrows,ncols,nlays,nSamples),...
-                [4 1 2 3 5]);
+            %Z = ipermute(reshape(Zsa,nDecs,nrows,ncols,nlays,nSamples),...
+            %    [4 1 2 3 5]);
+            Z = reshape(Zsa,nDecs,nrows,ncols,nlays,nSamples);
         end
         
         function [dLdX, dLdW] = ...
@@ -141,9 +145,12 @@ classdef nsoltFinalRotation3dLayer < nnet.layer.Layer
             %         dLdW1, ..., dLdWk - Derivatives of the loss with respect to each
             %                             learnable parameter
             import saivdr.dcnn.*
-            nrows = size(dLdZ,1);
-            ncols = size(dLdZ,2);
-            nlays = size(dLdZ,3);
+            %nrows = size(dLdZ,1);
+            %ncols = size(dLdZ,2);
+            %nlays = size(dLdZ,3);
+            nrows = size(dLdZ,2);
+            ncols = size(dLdZ,3);
+            nlays = size(dLdZ,4);            
             nSamples = size(dLdZ,5);
             nDecs = prod(layer.DecimationFactor);
             ps = layer.NumberOfChannels(1);
@@ -168,23 +175,23 @@ classdef nsoltFinalRotation3dLayer < nnet.layer.Layer
             % dLdX = dZdX x dLdZ
             W0 = fcn_orthmtxgen(anglesW,muW,0);
             U0 = fcn_orthmtxgen(anglesU,muU,0);
-            adldz_ = permute(dLdZ,[4 1 2 3 5]);
+            adldz_ = dLdZ; %permute(dLdZ,[4 1 2 3 5]);
             cdLd_ = reshape(adldz_,nDecs,nrows*ncols*nlays*nSamples);
             cdLd_upp = W0(:,1:ceil(nDecs/2))*cdLd_(1:ceil(nDecs/2),:);
             cdLd_low = U0(:,1:floor(nDecs/2))*cdLd_(ceil(nDecs/2)+1:nDecs,:);
             adLd_ = reshape([cdLd_upp;cdLd_low],...
                 pa+ps,nrows,ncols,nlays,nSamples);
-            dLdX = ipermute(adLd_,[4 1 2 3 5]);
+            dLdX = adLd_; %ipermute(adLd_,[4 1 2 3 5]);
             
             % dLdWi = <dLdZ,(dVdWi)X>
             dLdW = zeros(nAngles,1,'like',dLdZ);
-            dldz_ = permute(dLdZ,[4 1 2 3 5]);
+            dldz_ = dLdZ; %permute(dLdZ,[4 1 2 3 5]);
             dldz_upp = reshape(dldz_(1:ceil(nDecs/2),:,:,:),ceil(nDecs/2),nrows*ncols*nlays*nSamples);
             dldz_low = reshape(dldz_(ceil(nDecs/2)+1:nDecs,:,:,:),floor(nDecs/2),nrows*ncols*nlays*nSamples);
             for iAngle = 1:nAngles/2
                 dW0_T = transpose(fcn_orthmtxgen(anglesW,muW,iAngle));
                 dU0_T = transpose(fcn_orthmtxgen(anglesU,muU,iAngle));
-                a_ = permute(X,[4 1 2 3 5]);
+                a_ = X; %permute(X,[4 1 2 3 5]);
                 c_upp = reshape(a_(1:ps,:,:,:),ps,nrows*ncols*nlays*nSamples);
                 c_low = reshape(a_(ps+1:ps+pa,:,:,:),pa,nrows*ncols*nlays*nSamples);
                 d_upp = dW0_T(1:ceil(nDecs/2),:)*c_upp;

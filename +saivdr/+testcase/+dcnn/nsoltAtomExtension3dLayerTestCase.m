@@ -2,10 +2,10 @@ classdef nsoltAtomExtension3dLayerTestCase < matlab.unittest.TestCase
     %NSOLTATOMEXTENSION3DLAYERTESTCASE
     %
     %   コンポーネント別に入力(nComponents=1のみサポート):
-    %      nRows x nCols x nLays x nChsTotal x nSamples
+    %      nChsTotal x nRows x nCols x nLays x nSamples
     %
     %   コンポーネント別に出力(nComponents=1のみサポート):
-    %      nRows x nCols x nLays x nChsTotal x nSamples
+    %      nChsTotal x nRows x nCols x nLays x nSamples
     %
     % Requirements: MATLAB R2020a
     %
@@ -37,7 +37,7 @@ classdef nsoltAtomExtension3dLayerTestCase < matlab.unittest.TestCase
                 'Direction','Right',...
                 'TargetChannels','Lower');
             fprintf("\n --- Check layer for 3-D images ---\n");
-            checkLayer(layer,[8 8 8 10],'ObservationDimension',5)
+            checkLayer(layer,[10 8 8 8],'ObservationDimension',5)
         end
     end
     
@@ -85,8 +85,9 @@ classdef nsoltAtomExtension3dLayerTestCase < matlab.unittest.TestCase
             nSamples = 8;
             nChsTotal = sum(nchs);
             target = 'Lower';
-            % nRows x nCols x nLays x nChsTotal x nSamples
-            X = randn(nrows,ncols,nlays, nChsTotal,nSamples,datatype);
+            % nChsTotal x nRows x nCols x nLays x nSamples
+            %X = randn(nrows,ncols,nlays, nChsTotal,nSamples,datatype);
+            X = randn(nChsTotal,nrows,ncols,nlays,nSamples,datatype);
             
             % Expected values
             if strcmp(dir,'Right')
@@ -107,7 +108,7 @@ classdef nsoltAtomExtension3dLayerTestCase < matlab.unittest.TestCase
             % nRows x nCols x nLays x nChsTotal x nSamples
             ps = nchs(1);
             pa = nchs(2);
-            Y = permute(X,[4 1 2 3 5]); % [ch ver hor dep smpl]
+            Y = X; %permute(X,[4 1 2 3 5]); % [ch ver hor dep smpl]
             % Block butterfly
             Ys = Y(1:ps,:,:,:,:);
             Ya = Y(ps+1:ps+pa,:,:,:,:);
@@ -119,7 +120,7 @@ classdef nsoltAtomExtension3dLayerTestCase < matlab.unittest.TestCase
             Ya = Y(ps+1:ps+pa,:,:,:,:);
             Y =  [ Ys+Ya ; Ys-Ya ]/sqrt(2);
             % Output
-            expctdZ = ipermute(Y,[4 1 2 3 5]);
+            expctdZ = Y; %ipermute(Y,[4 1 2 3 5]);
             
             % Instantiation of target class
             import saivdr.dcnn.*
@@ -150,8 +151,9 @@ classdef nsoltAtomExtension3dLayerTestCase < matlab.unittest.TestCase
             nSamples = 8;
             nChsTotal = sum(nchs);
             target = 'Upper';
-            % nRows x nCols x nLays x nChsTotal x nSamples
-            X = randn(nrows,ncols,nlays,nChsTotal,nSamples,datatype);
+            % nChsTotal x nRows x nCols x nLays x nSamples
+            %X = randn(nrows,ncols,nlays,nChsTotal,nSamples,datatype);
+            X = randn(nChsTotal,nrows,ncols,nlays,nSamples,datatype);
             
             % Expected values
             if strcmp(dir,'Right')
@@ -172,7 +174,7 @@ classdef nsoltAtomExtension3dLayerTestCase < matlab.unittest.TestCase
             % nRows x nCols x nLays x nChsTotal x nSamples
             ps = nchs(1);
             pa = nchs(2);
-            Y = permute(X,[4 1 2 3 5]); % [ch ver hor dep smpl]
+            Y = X; %permute(X,[4 1 2 3 5]); % [ch ver hor dep smpl]
             % Block butterfly
             Ys = Y(1:ps,:,:,:,:);
             Ya = Y(ps+1:ps+pa,:,:,:,:);
@@ -184,7 +186,7 @@ classdef nsoltAtomExtension3dLayerTestCase < matlab.unittest.TestCase
             Ya = Y(ps+1:ps+pa,:,:,:,:);
             Y =  [ Ys+Ya ; Ys-Ya ]/sqrt(2);
             % Output
-            expctdZ = ipermute(Y,[4 1 2 3 5]);
+            expctdZ = Y; %ipermute(Y,[4 1 2 3 5]);
             
             % Instantiation of target class
             import saivdr.dcnn.*
@@ -214,8 +216,8 @@ classdef nsoltAtomExtension3dLayerTestCase < matlab.unittest.TestCase
             nSamples = 8;
             nChsTotal = sum(nchs);
             target = 'Lower';
-            % nRows x nCols x nLays x nChsTotal x nSamples
-            dLdZ = randn(nrows,ncols,nlays, nChsTotal,nSamples,datatype);
+            % nChsTotal x nRows x nCols x nLays x nSamples
+            dLdZ = randn(nChsTotal,nrows,ncols,nlays,nSamples,datatype);
             
             % Expected values
             if strcmp(dir,'Right')
@@ -236,7 +238,7 @@ classdef nsoltAtomExtension3dLayerTestCase < matlab.unittest.TestCase
             % nRows x nCols x nLays x nChsTotal x nSamples
             ps = nchs(1);
             pa = nchs(2);
-            Y = permute(dLdZ,[4 1 2 3 5]); % [ch ver hor dep smpl]
+            Y = dLdZ; %permute(dLdZ,[4 1 2 3 5]); % [ch ver hor dep smpl]
             % Block butterfly
             Ys = Y(1:ps,:,:,:,:);
             Ya = Y(ps+1:ps+pa,:,:,:,:);
@@ -248,7 +250,7 @@ classdef nsoltAtomExtension3dLayerTestCase < matlab.unittest.TestCase
             Ya = Y(ps+1:ps+pa,:,:,:,:);
             Y =  [ Ys+Ya ; Ys-Ya ]/sqrt(2);
             % Output
-            expctddLdX = ipermute(Y,[4 1 2 3 5]);
+            expctddLdX = Y; %ipermute(Y,[4 1 2 3 5]);
             
             % Instantiation of target class
             import saivdr.dcnn.*
@@ -279,8 +281,9 @@ classdef nsoltAtomExtension3dLayerTestCase < matlab.unittest.TestCase
             nSamples = 8;
             nChsTotal = sum(nchs);
             target = 'Upper';
-            % nRows x nCols x nLays x nChsTotal x nSamples
-            dLdZ = randn(nrows,ncols,nlays,nChsTotal,nSamples,datatype);
+            % nChsTotal x nRows x nCols x nLays x nSamples
+            %dLdZ = randn(nrows,ncols,nlays,nChsTotal,nSamples,datatype);
+            dLdZ = randn(nChsTotal,nrows,ncols,nlays,nSamples,datatype);
             
             % Expected values
             if strcmp(dir,'Right')
@@ -298,10 +301,10 @@ classdef nsoltAtomExtension3dLayerTestCase < matlab.unittest.TestCase
             else
                 shift = [ 0 0 0 0 ];
             end
-            % nRows x nCols x nLays x nChsTotal x nSamples
+            % nChsTotal x nRows x nCols x nLays x nSamples
             ps = nchs(1);
             pa = nchs(2);
-            Y = permute(dLdZ,[4 1 2 3 5]); % [ch ver hor dep smpl]
+            Y = dLdZ; % permute(dLdZ,[4 1 2 3 5]); % [ch ver hor dep smpl]
             % Block butterfly
             Ys = Y(1:ps,:,:,:,:);
             Ya = Y(ps+1:ps+pa,:,:,:,:);
@@ -313,7 +316,7 @@ classdef nsoltAtomExtension3dLayerTestCase < matlab.unittest.TestCase
             Ya = Y(ps+1:ps+pa,:,:,:,:);
             Y =  [ Ys+Ya ; Ys-Ya ]/sqrt(2);
             % Output
-            expctddLdX = ipermute(Y,[4 1 2 3 5]);
+            expctddLdX = Y; %ipermute(Y,[4 1 2 3 5]);
             
             % Instantiation of target class
             import saivdr.dcnn.*

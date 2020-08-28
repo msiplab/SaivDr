@@ -107,10 +107,8 @@ classdef nsoltChannelSeparation2dLayerTestCase < matlab.unittest.TestCase
             nChsTotal = sum(nchs);
             % (nChsTotal-1) x nRows x nCols x nSamples 
             dLdZac = randn(nrows,ncols,nChsTotal-1,nSamples,datatype);
-            %dLdZ2 = randn(nChsTotal-1,nrows,ncols,nSamples,datatype);
             % 1 x nRows x nCols x nSamples
             dLdZdc = randn(nrows,ncols,1,nSamples,datatype);
-            %dLdZ1 = randn(1,nrows,ncols,nSamples,datatype);
             
             % Expected values
             % nChsTotal x nRows x nCols x nSamples
