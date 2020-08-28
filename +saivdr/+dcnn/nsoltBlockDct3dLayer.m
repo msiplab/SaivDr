@@ -110,13 +110,48 @@ classdef nsoltBlockDct3dLayer < nnet.layer.Layer
             %
             Cvhd_ = layer.Cvhd;
             %
-            nRows = size(X,1)/decV;
-            nCols = size(X,2)/decH;
-            nLays = size(X,3)/decD;
+            height = size(X,1);
+            width = size(X,2);
+            depth = size(X,3);
+            nRows = height/decV;
+            nCols = width/decH;
+            nLays = depth/decD;
             nDecs = prod(decFactor);
             nComponents = size(X,4);
             nSamples = size(X,5);
             %
+            inputComponent = zeros(height,width,depth,1,nSamples,'like',X);
+            inputSample = zeros(height,width,depth,'like',X);
+            inputLay = zeros(height,width,decD,'like',X);
+            inputCol = zeros(height,decH,decD,'like',X);
+            outputComponent = zeros(nDecs,nRows,nCols,nLays,nSamples,'like',X);
+            outputSample = zeros(nDecs,nRows,nCols,nLays,'like',X);
+            outputLay = zeros(nDecs,nRows,nCols,'like',X);
+            outputCol = zeros(nDecs,nRows,'like',X);
+            %
+            for iComponent = 1:nComponents
+                inputComponent(:,:,:,1,:) = X(:,:,:,iComponent,:);
+                for iSample = 1:nSamples
+                    inputSample(:,:,:) =  inputComponent(:,:,:,1,iSample);     
+                    for iLay = 1:nLays
+                        inputLay(:,:,:) =  inputSample(:,:,...
+                            (iLay-1)*decD+1:iLay*decD);
+                        for iCol = 1:nCols
+                            inputCol(:,:,:) = inputLay(:,...
+                                (iCol-1)*decH+1:iCol*decH,:);
+                            for iRow = 1:nRows
+                                x = inputCol((iRow-1)*decV+1:iRow*decV,:,:);
+                                outputCol(:,iRow) = Cvhd_*x(:);
+                            end
+                            outputLay(:,:,iCol) = outputCol;
+                        end
+                        outputSample(:,:,:,iLay) = outputLay;
+                    end
+                    outputComponent(:,:,:,:,iSample) = outputSample;
+                end
+                varargout{iComponent} = outputComponent; 
+            end            
+            %{
             A = zeros(nDecs,nRows,nCols,nLays,nSamples,'like',X);
             for iComponent = 1:nComponents
                 for iSample = 1:nSamples
@@ -135,6 +170,7 @@ classdef nsoltBlockDct3dLayer < nnet.layer.Layer
                 %varargout{iComponent} = permute(A,[2 3 4 1 5]);
                 varargout{iComponent} = A; 
             end
+            %}
         end
         
         function dLdX = backward(layer, varargin)
@@ -165,9 +201,7 @@ classdef nsoltBlockDct3dLayer < nnet.layer.Layer
             for iComponent = 1:nComponents
                 dLdZ = varargin{layer.NumInputs+layer.NumOutputs+iComponent};
                 if iComponent == 1
-                    %nRows = size(dLdZ,1);
-                    %nCols = size(dLdZ,2);
-                    %nLays = size(dLdZ,3);
+                    nElements = size(dLdZ,1);
                     nRows = size(dLdZ,2);
                     nCols = size(dLdZ,3);
                     nLays = size(dLdZ,4);                    
@@ -176,7 +210,36 @@ classdef nsoltBlockDct3dLayer < nnet.layer.Layer
                     depth = decD*nLays;
                     nSamples = size(dLdZ,5);
                     dLdX = zeros(height,width,depth,nComponents,nSamples,'like',dLdZ);
+                    %
+                    inputSample = zeros(nElements,nRows,nCols,nLays,'like',dLdZ);
+                    inputLay = zeros(nElements,nRows,nCols,'like',dLdZ);
+                    inputCol = zeros(nElements,nRows,'like',dLdZ);
+                    outputCol = zeros(height,decH,decD,'like',dLdZ);
+                    outputLay = zeros(height,width,decD,'like',dLdZ);
+                    outputSample = zeros(height,width,depth,'like',dLdZ);
+                    outputComponent = zeros(height,width,depth,1,nSamples,'like',dLdZ);
                 end
+                for iSample = 1:nSamples
+                    inputSample(:,:,:,:) = dLdZ(:,:,:,:,iSample);
+                    for iLay = 1:nLays
+                        inputLay(:,:,:) = inputSample(:,:,:,iLay);
+                        for iCol = 1:nCols
+                            inputCol(:,:,:)= inputLay(:,:,iCol);
+                            for iRow = 1:nRows
+                                coefs = inputCol(:,iRow);
+                                outputCol((iRow-1)*decV+1:iRow*decV,:,:) = ...
+                                    reshape(Cvhd_T*coefs,decV,decH,decD);
+                            end
+                            outputLay(:,(iCol-1)*decH+1:iCol*decH,:) = ...
+                                outputCol;
+                        end
+                        outputSample(:,:,(iLay-1)*decD+1:iLay*decD,:) = ...
+                            outputLay;
+                    end
+                    outputComponent(:,:,:,1,iSample) = outputSample;
+                end
+                dLdX(:,:,:,iComponent,:) = outputComponent;
+                %{
                 %A = permute(dLdZ,[4 1 2 3 5]);
                 A = dLdZ;
                 for iSample = 1:nSamples
@@ -193,6 +256,7 @@ classdef nsoltBlockDct3dLayer < nnet.layer.Layer
                         end
                     end
                 end
+                %}
             end
         end
     end
