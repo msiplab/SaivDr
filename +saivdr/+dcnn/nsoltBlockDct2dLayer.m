@@ -5,7 +5,7 @@ classdef nsoltBlockDct2dLayer < nnet.layer.Layer
     %      (Stride(1)xnRows) x (Stride(2)xnCols) x nComponents x nSamples
     %
     %   コンポーネント別に出力(nComponents):
-    %      nRows x nCols x nDecs x nSamples
+    %      nDecs x nRows x nCols x nSamples
     %    
     % Requirements: MATLAB R2020a
     %

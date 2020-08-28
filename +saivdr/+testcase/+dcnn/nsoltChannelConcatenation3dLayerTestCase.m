@@ -2,11 +2,11 @@ classdef nsoltChannelConcatenation3dLayerTestCase < matlab.unittest.TestCase
     %NSOLTCHANNELCONCATENATION3DLAYERTESTCASE
     %
     %   ２コンポーネント入力(nComponents=2のみサポート):
-    %      nRows x nCols x 1 x nSamples
     %      nRows x nCols x (nChsTotal-1) x nSamples
+    %      nRows x nCols x 1 x nSamples
     %
     %   １コンポーネント出力(nComponents=1のみサポート):
-    %      nRows x nCols x nChsTotal x nSamples
+    %      nChsTotal x nRows x nCols x nSamples
     %
     % Requirements: MATLAB R2020a
     %
@@ -34,7 +34,7 @@ classdef nsoltChannelConcatenation3dLayerTestCase < matlab.unittest.TestCase
             import saivdr.dcnn.*
             layer = nsoltChannelConcatenation3dLayer();
             fprintf("\n --- Check layer for 3-D images ---\n");
-            checkLayer(layer,{[8 8 8 1], [8 8 8 9]},'ObservationDimension',5)
+            checkLayer(layer,{[8 8 8 9], [8 8 8 1]},'ObservationDimension',5)
         end
     end
     
@@ -68,21 +68,22 @@ classdef nsoltChannelConcatenation3dLayerTestCase < matlab.unittest.TestCase
             % Parameters
             nSamples = 8;
             nChsTotal = sum(nchs);
-            % nRows x nCols x nLays x 1 x nSamples
-            X1 = randn(nrows,ncols,nlays,1,nSamples,datatype);
             % nRows x nCols x nLays x (nChsTotal-1) x nSamples
-            X2 = randn(nrows,ncols,nlays,nChsTotal-1,nSamples,datatype);
+            Xac = randn(nrows,ncols,nlays,nChsTotal-1,nSamples,datatype);
+            % nRows x nCols x nLays x 1 x nSamples
+            Xdc = randn(nrows,ncols,nlays,1,nSamples,datatype);
             
             % Expected values
-            % nRows x nCols x nChsTotal x nSamples
-            expctdZ = cat(4,X1,X2);
+            % nChsTotal x nRows x nCols x nSamples
+            %expctdZ = cat(4,Xdc,Xac);
+            expctdZ = permute(cat(4,Xdc,Xac),[4 1 2 3 5]);
             
             % Instantiation of target class
             import saivdr.dcnn.*
             layer = nsoltChannelConcatenation3dLayer('Name','Cn');
             
             % Actual values
-            actualZ = layer.predict(X1,X2);
+            actualZ = layer.predict(Xac,Xdc);
             
             % Evaluation
             testCase.verifyInstanceOf(actualZ,datatype);
@@ -100,29 +101,31 @@ classdef nsoltChannelConcatenation3dLayerTestCase < matlab.unittest.TestCase
             % Parameters
             nSamples = 8;
             nChsTotal = sum(nchs);
-            % nRows x nCols x nLays x nChsTotal x nSamples
-            dLdZ = randn(nrows,ncols,nlays,nChsTotal,nSamples,datatype);
+            % nChsTotal x nRows x nCols x nLays x nSamples
+            %dLdZ = randn(nrows,ncols,nlays,nChsTotal,nSamples,datatype);
+            dLdZ = randn(nChsTotal,nrows,ncols,nlays,nSamples,datatype);
             
             % Expected values
-            % nRows x nCols x nLays x 1 x nSamples
-            expctddLdX1 = dLdZ(:,:,:,1,:);
             % nRows x nCols x nLays x (nChsTotal-1) x nSamples
-            expctddLdX2 = dLdZ(:,:,:,2:end,:);
+            expctddLdXac = permute(dLdZ(2:end,:,:,:,:),[2 3 4 1 5]);
+            % nRows x nCols x nLays x 1 x nSamples
+            expctddLdXdc = permute(dLdZ(1,:,:,:,:),[2 3 4 1 5]);
+
             
             % Instantiation of target class
             import saivdr.dcnn.*
             layer = nsoltChannelConcatenation3dLayer('Name','Cn');
             
             % Actual values
-            [actualdLdX1,actualdLdX2] = layer.backward([],[],[],dLdZ,[]);
+            [actualdLdXac,actualdLdXdc] = layer.backward([],[],[],dLdZ,[]);
             
             % Evaluation
-            testCase.verifyInstanceOf(actualdLdX1,datatype);
-            testCase.verifyInstanceOf(actualdLdX2,datatype);
-            testCase.verifyThat(actualdLdX1,...
-                IsEqualTo(expctddLdX1,'Within',tolObj));
-            testCase.verifyThat(actualdLdX2,...
-                IsEqualTo(expctddLdX2,'Within',tolObj));
+            testCase.verifyInstanceOf(actualdLdXdc,datatype);
+            testCase.verifyInstanceOf(actualdLdXac,datatype);
+            testCase.verifyThat(actualdLdXdc,...
+                IsEqualTo(expctddLdXdc,'Within',tolObj));
+            testCase.verifyThat(actualdLdXac,...
+                IsEqualTo(expctddLdXac,'Within',tolObj));
             
         end
         

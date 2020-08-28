@@ -2,8 +2,8 @@ classdef nsoltSubbandSerialization2dLayerTestCase < matlab.unittest.TestCase
     %NSOLTSUBBANDSERIALIZATION2DLAYERTESTCASE
     %
     %   複数コンポーネント入力 (SSCB):（ツリーレベル数）
-    %      nRowsLv1 x nColsLv1 x (nChsT0tal-1) x nSamples
-    %      nRowsLv2 x nColsLv2 x (nChsT0tal-1) x nSamples
+    %      nRowsLv1 x nColsLv1 x (nChsTotal-1) x nSamples
+    %      nRowsLv2 x nColsLv2 x (nChsTotal-1) x nSamples
     %       :
     %      nRowsLvN x nColsLvN x (nChsTotal-1) x nSamples
     %      nRowsLvN x nColsLvN x 1 xnSamples    
@@ -201,7 +201,7 @@ classdef nsoltSubbandSerialization2dLayerTestCase < matlab.unittest.TestCase
             nChsTotal = sum(nchs);
             
             % Expected values
-            expctddLdX = cell(nlevels,1);
+            expctddLdX = cell(nlevels+1,1);
             for iLv = 1:nlevels %-1
                 subHeight = nrows * stride(1)^(nlevels-iLv);
                 subWidth = ncols * stride(2)^(nlevels-iLv);

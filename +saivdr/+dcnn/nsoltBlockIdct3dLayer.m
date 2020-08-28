@@ -111,16 +111,19 @@ classdef nsoltBlockIdct3dLayer < nnet.layer.Layer
             for iComponent = 1:nComponents
                 X = varargin{iComponent};
                 if iComponent == 1
-                    nRows = size(X,1);
-                    nCols = size(X,2);
-                    nLays = size(X,3);
+                    %nRows = size(X,1);
+                    %nCols = size(X,2);
+                    %nLays = size(X,3);
+                    nRows = size(X,2);
+                    nCols = size(X,3);
+                    nLays = size(X,4);                    
                     height = decV*nRows;
                     width = decH*nCols;
                     depth = decD*nLays;
                     nSamples = size(X,5);
                     Z = zeros(height,width,depth,nComponents,nSamples,'like',X);
                 end
-                A = permute(X,[4 1 2 3 5]);
+                A = X; % permute(X,[4 1 2 3 5]);
                 for iSample = 1:nSamples
                     for iLay = 1:nLays
                         for iCol = 1:nCols
@@ -186,7 +189,8 @@ classdef nsoltBlockIdct3dLayer < nnet.layer.Layer
                         end
                     end
                 end
-                varargout{iComponent} = permute(A,[2 3 4 1 5]);
+                %varargout{iComponent} = permute(A,[2 3 4 1 5]);
+                varargout{iComponent} = A;
             end
         end
     end

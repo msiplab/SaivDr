@@ -1,12 +1,12 @@
 classdef nsoltChannelConcatenation3dLayer < nnet.layer.Layer
     %NSOLTCHANNELSEPARATION2DLAYER
     %
-    %   １コンポーネント入力(nComponents=1のみサポート):
-    %      nRows x nCols x nLays x nChsTotal x nSamples
-    %
-    %   ２コンポーネント出力(nComponents=2のみサポート):
+    %   ２コンポーネント入力(nComponents=2のみサポート):
     %      nRows x nCols x nLays x 1 x nSamples
     %      nRows x nCols x nLays x (nChsTotal-1) x nSamples
+    %
+    %   １コンポーネント出力(nComponents=1のみサポート):
+    %      nChsTotal x nRows x nCols x nLays x nSamples
     %
     % Requirements: MATLAB R2020a
     %
@@ -40,11 +40,11 @@ classdef nsoltChannelConcatenation3dLayer < nnet.layer.Layer
             layer.Description =  "Channel concatenation";
             layer.Type = '';
             %layer.NumInputs = 2;
-            layer.InputNames = { 'dc', 'ac' };            
+            layer.InputNames = { 'ac', 'dc' };            
             
         end
         
-        function Z = predict(~, X1,X2)
+        function Z = predict(~, Xac,Xdc)
             % Forward input data through the layer at prediction time and
             % output the result.
             %
@@ -56,10 +56,11 @@ classdef nsoltChannelConcatenation3dLayer < nnet.layer.Layer
             %
             
             % Layer forward function for prediction goes here.
-            Z = cat(4,X1,X2);
+            %Z = cat(4,Xac,Xdc);
+            Z = permute(cat(4,Xdc,Xac),[4 1 2 3 5]);
         end
         
-        function [dLdX1,dLdX2] = backward(~, ~, ~, ~, dLdZ, ~)
+        function [dLdXac,dLdXdc] = backward(~, ~, ~, ~, dLdZ, ~)
             % (Optional) Backward propagate the derivative of the loss
             % function through the layer.
             %
@@ -76,8 +77,10 @@ classdef nsoltChannelConcatenation3dLayer < nnet.layer.Layer
             %                             learnable parameter
             
             % Layer forward function for prediction goes here.
-            dLdX1 = dLdZ(:,:,:,1,:);
-            dLdX2 = dLdZ(:,:,:,2:end,:);
+            %dLdXdc = dLdZ(:,:,:,1,:);
+            %dLdXac = dLdZ(:,:,:,2:end,:);
+            dLdXac = ipermute(dLdZ(2:end,:,:,:,:),[4 1 2 3 5]);            
+            dLdXdc = ipermute(dLdZ(1,:,:,:,:),[4 1 2 3 5]);            
         end
         
     end

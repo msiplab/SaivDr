@@ -2,7 +2,7 @@ classdef nsoltBlockIdct2dLayerTestCase < matlab.unittest.TestCase
     %NSOLTBLOCKIDCT2DLAYERTESTCASE
     %
     %   コンポーネント別に入力:
-    %      nRows x nCols x nDecs x nSamples
+    %      nDecs x nRows x nCols x nSamples
     %
     %   ベクトル配列をブロック配列にして出力:
     %      (Stride(1)xnRows) x (Stride(2)xnCols) x nComponents x nSamples

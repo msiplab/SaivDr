@@ -2,10 +2,11 @@ classdef nsoltSubbandSerialization3dLayer < nnet.layer.Layer
     %NSOLTSUBBANDSERIALIZATION2DLAYER
     %
     %   複数コンポーネント入力 (SSSCB):（ツリーレベル数）
-    %      nRowsLv1 x nColsLv1 x nLaysLv1 x nChsTotal x nSamples
-    %      nRowsLv2 x nColsLv2 x nLaysLv2 x (nChsTotal-1) x nSamples
+    %      (nChsTotal-1) x nRowsLv1 x nColsLv1 x nLaysLv1 x nSamples
+    %      (nChsTotal-1) x nRowsLv2 x nColsLv2 x nLaysLv2 x nSamples
     %       :
-    %      nRowsLvN x nColsLvN x nLaysLvN x (nChsTotal-1) x nSamples
+    %      (nChsTotal-1) x nRowsLvN x nColsLvN x nLaysLvN x nSamples
+    %      1 x nRowsLvN x nColsLvN x nSamples
     %
     %   １コンポーネント出力(SSSCB):
     %      nElements x 1 x 1 x 1 x nSamples
@@ -55,10 +56,12 @@ classdef nsoltSubbandSerialization3dLayer < nnet.layer.Layer
             layer.Type = '';            
 
             nLevels = layer.NumberOfLevels;            
-            inputNames = cell(1,layer.NumberOfLevels);
+            %inputNames = cell(1,layer.NumberOfLevels);
+            inputNames = cell(1,layer.NumberOfLevels+1);
             for iLv = 1:nLevels
-                inputNames{iLv} = [ 'Lv' num2str(iLv) '_SbIn' ];
+                inputNames{iLv} = [ 'Lv' num2str(iLv) '_SbAcIn' ];
             end            
+            inputNames{nLevels+1} = [ 'Lv' num2str(iLv) '_SbDcIn' ]; %
             layer.InputNames = inputNames;
 
         end
@@ -89,9 +92,11 @@ classdef nsoltSubbandSerialization3dLayer < nnet.layer.Layer
             ncols = width*stride(Direction.HORIZONTAL).^(-nLevels);     
             nlays = depth*stride(Direction.DEPTH).^(-nLevels);                 
             layer.Scales = zeros(nLevels,4);            
-            layer.Scales(1,:) = [nrows ncols nlays nChsTotal];
-            for iRevLv = 2:nLevels
-                layer.Scales(iRevLv,:) = ...
+            %layer.Scales(1,:) = [nrows ncols nlays nChsTotal];
+            layer.Scales(1,:) = [nrows ncols nlays 1];
+            for iRevLv = 1:nLevels %2:nLevels
+                %layer.Scales(iRevLv,:) = ...
+                layer.Scales(iRevLv+1,:) = ...
                     [nrows*stride(Direction.VERTICAL)^(iRevLv-1) ncols*stride(Direction.HORIZONTAL)^(iRevLv-1) nlays*stride(Direction.DEPTH)^(iRevLv-1) nChsTotal-1];
             end
             
@@ -117,8 +122,13 @@ classdef nsoltSubbandSerialization3dLayer < nnet.layer.Layer
             for iSample = 1:nSamples
                 x = zeros(nElements,1,'like',Z);
                 sidx = 0;
+                nSubElements = prod(scales(1,:));
+                a = varargin{nLevels+1}(:,:,:,:,iSample);
+                x(1:nSubElements) = a(:);
+                sidx = sidx+nSubElements;
                 for iRevLv = 1:nLevels
-                    nSubElements = prod(scales(iRevLv,:));
+                    %nSubElements = prod(scales(iRevLv,:));
+                    nSubElements = prod(scales(iRevLv+1,:));
                     a = varargin{nLevels-iRevLv+1}(:,:,:,:,iSample);
                     x(sidx+1:sidx+nSubElements) = a(:);
                     sidx = sidx+nSubElements;
@@ -138,27 +148,36 @@ classdef nsoltSubbandSerialization3dLayer < nnet.layer.Layer
             %         Z1, Z2      - Outputs of layer forward function
             %
             nLevels = layer.NumberOfLevels;
-            dLdZ = varargin{nLevels+2};            
+            %dLdZ = varargin{nLevels+2};            
+            dLdZ = varargin{nLevels+3};            
             nChsTotal = sum(layer.NumberOfChannels);
             scales = layer.Scales;
-            varargout = cell(1,nLevels);
+            %varargout = cell(1,nLevels);
+            varargout = cell(1,nLevels+1);
             sidx = 0;
+            nSubElements = prod(scales(1,:));
+            subHeight = scales(1,1);
+            subWidth = scales(1,2);
+            subDepth = scales(1,3);
+            varargout{nLevels+1} = ...
+                reshape(dLdZ(1:nSubElements,:),...
+                subHeight,subWidth,subDepth,1,[]);
+            sidx = sidx + nSubElements;
             for iRevLv = 1:nLevels
-                if iRevLv == 1
-                    wodc = 0;
-                else
-                    wodc = 1;
-                end
-                nSubElements = prod(scales(iRevLv,:));
-                subHeight = scales(iRevLv,1);
-                subWidth = scales(iRevLv,2);
-                subDepth = scales(iRevLv,3);
+                %nSubElements = prod(scales(iRevLv,:));
+                nSubElements = prod(scales(iRevLv+1,:));
+                %subHeight = scales(iRevLv,1);
+                %subWidth = scales(iRevLv,2);
+                %subDepth = scales(iRevLv,3);                
+                subHeight = scales(iRevLv+1,1);
+                subWidth = scales(iRevLv+1,2);                
+                subDepth = scales(iRevLv+1,3);
                 varargout{nLevels-iRevLv+1} = ...
                     reshape(dLdZ(sidx+1:sidx+nSubElements,:),...
-                    subHeight,subWidth,subDepth,nChsTotal-wodc,[]);
+                    subHeight,subWidth,subDepth,nChsTotal-1,[]);
                 sidx = sidx + nSubElements;
             end
-        end
+         end
     end
     
 end

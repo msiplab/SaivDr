@@ -2,10 +2,10 @@ classdef nsoltAtomExtension3dLayer < nnet.layer.Layer
     %NSOLTATOMEXTENSION3DLAYER
     %
     %   コンポーネント別に入力(nComponents=1のみサポート):
-    %      nRows x nCols x nLays x nChsTotal x nSamples
+    %      nChsTotal x nRows x nCols x nLays x nSamples
     %
     %   コンポーネント別に出力(nComponents=1のみサポート):
-    %      nRows x nCols x nLays x nChsTotal x nSamples
+    %      nChsTotal x nRows x nCols x nLays x nSamples
     %
     % Requirements: MATLAB R2020a
     %
@@ -140,7 +140,7 @@ classdef nsoltAtomExtension3dLayer < nnet.layer.Layer
             pa = layer.NumberOfChannels(2);
             target = layer.TargetChannels;
             %
-            Y = permute(X,[4 1 2 3 5]); % [ch ver hor dep smpl]
+            Y = X; % permute(X,[4 1 2 3 5]); % [ch ver hor dep smpl]
             % Block butterfly
             Ys = Y(1:ps,:,:,:,:);
             Ya = Y(ps+1:ps+pa,:,:,:,:);
@@ -160,7 +160,7 @@ classdef nsoltAtomExtension3dLayer < nnet.layer.Layer
             Ya = Y(ps+1:ps+pa,:,:,:,:);
             Y =  [ Ys+Ya ; Ys-Ya ];
             % Output
-            Z = ipermute(Y,[4 1 2 3 5])/2.0;
+            Z = Y/2.0; %ipermute(Y,[4 1 2 3 5])/2.0;
         end
         
     end

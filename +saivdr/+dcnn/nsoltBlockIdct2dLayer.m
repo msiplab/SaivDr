@@ -81,12 +81,13 @@ classdef nsoltBlockIdct2dLayer < nnet.layer.Layer
             %         X1, ..., Xn - Input data
             % Outputs:
             %         Z1, ..., Zm - Outputs of layer forward function
-            
+            import saivdr.dictionary.utility.Direction                                        
+           
             % Layer forward function for prediction goes here.
             nComponents = layer.NumInputs;
             decFactor = layer.DecimationFactor;
-            decV = decFactor(1);
-            decH = decFactor(2);
+            decV = decFactor(Direction.VERTICAL);
+            decH = decFactor(Direction.HORIZONTAL);
             Cvh_T = layer.Cvh.';
             for iComponent = 1:nComponents
                 X = varargin{iComponent};

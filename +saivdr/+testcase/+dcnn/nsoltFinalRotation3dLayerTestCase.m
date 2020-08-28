@@ -5,7 +5,7 @@ classdef nsoltFinalRotation3dLayerTestCase < matlab.unittest.TestCase
     %      nRows x nCols x nLays x nChs x nSamples
     %
     %   コンポーネント別に出力(nComponents):
-    %      nRows x nCols x nLays x nDecs x nSamples
+    %       nDecs x nRows x nCols x nLays xnSamples
     %
     % Requirements: MATLAB R2020a
     %
@@ -37,7 +37,7 @@ classdef nsoltFinalRotation3dLayerTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',[5 5],...
                 'DecimationFactor',[2 2 2]);
             fprintf("\n --- Check layer for 3-D images ---\n");
-            checkLayer(layer,[8 8 8 10],'ObservationDimension',5)
+            checkLayer(layer,[10 8 8 8],'ObservationDimension',5)
         end
     end
     
@@ -79,20 +79,22 @@ classdef nsoltFinalRotation3dLayerTestCase < matlab.unittest.TestCase
             % Parameters
             nSamples = 8;
             nDecs = prod(stride);
-            % nRows x nCols x nLays x nChs x nSamples
-            X = randn(nrows,ncols,nlays,sum(nchs),nSamples,datatype);
+            % nChs x nRows x nCols x nLays x nSamples
+            %X = randn(nrows,ncols,nlays,sum(nchs),nSamples,datatype);
+            X = randn(sum(nchs),nrows,ncols,nlays,nSamples,datatype);
             % Expected values
-            % nRows x nCols x nLays x nDecs x nSamples
+            % nDecs x nRows x nCols x nLays x nSamples
             ps = nchs(1);
             pa = nchs(2);
             W0T = eye(ps,datatype);
             U0T = eye(pa,datatype);
-            Y = permute(X,[4 1 2 3 5]);
+            Y = X; %permute(X,[4 1 2 3 5]);
             Ys = reshape(Y(1:ps,:,:,:,:),ps,nrows*ncols*nlays*nSamples);
             Ya = reshape(Y(ps+1:ps+pa,:,:,:,:),pa,nrows*ncols*nlays*nSamples);
             Zsa = [ W0T(1:ceil(nDecs/2),:)*Ys; U0T(1:floor(nDecs/2),:)*Ya ];
-            expctdZ = ipermute(reshape(Zsa,nDecs,nrows,ncols,nlays,nSamples),...
-                [4 1 2 3 5]);
+            %expctdZ = ipermute(reshape(Zsa,nDecs,nrows,ncols,nlays,nSamples),...
+            %    [4 1 2 3 5]);
+            expctdZ = reshape(Zsa,nDecs,nrows,ncols,nlays,nSamples);
             
             % Instantiation of target class
             import saivdr.dcnn.*
@@ -125,22 +127,24 @@ classdef nsoltFinalRotation3dLayerTestCase < matlab.unittest.TestCase
             nSamples = 8;
             nDecs = prod(stride);
             nChsTotal = sum(nchs);
-            % nRows x nCols x nLays x nChs x nSamples
-            X = randn(nrows,ncols,nlays,sum(nchs),nSamples,datatype);
+            % nChs x nRows x nCols x nLays x nSamples
+            %X = randn(nrows,ncols,nlays,sum(nchs),nSamples,datatype);
+            X = randn(sum(nchs),nrows,ncols,nlays,nSamples,datatype);
             angles = randn((nChsTotal-2)*nChsTotal/4,1);
             
             % Expected values
-            % nRows x nCols x nLays x nDecs x nSamples
+            % nDecs x nRows x nCols x nLays x nSamples
             ps = nchs(1);
             pa = nchs(2);
             W0T = transpose(genW.step(angles(1:length(angles)/2),1));
             U0T = transpose(genU.step(angles(length(angles)/2+1:end),1));
-            Y = permute(X,[4 1 2 3 5]);
+            Y = X; %permute(X,[4 1 2 3 5]);
             Ys = reshape(Y(1:ps,:,:,:,:),ps,nrows*ncols*nlays*nSamples);
             Ya = reshape(Y(ps+1:ps+pa,:,:,:,:),pa,nrows*ncols*nlays*nSamples);
             Zsa = [ W0T(1:ceil(nDecs/2),:)*Ys; U0T(1:floor(nDecs/2),:)*Ya ];
-            expctdZ = ipermute(reshape(Zsa,nDecs,nrows,ncols,nlays,nSamples),...
-                [4 1 2 3 5]);
+            %expctdZ = ipermute(reshape(Zsa,nDecs,nrows,ncols,nlays,nSamples),...
+            %    [4 1 2 3 5]);
+            expctdZ = reshape(Zsa,nDecs,nrows,ncols,nlays,nSamples);
             
             % Instantiation of target class
             import saivdr.dcnn.*
@@ -174,12 +178,13 @@ classdef nsoltFinalRotation3dLayerTestCase < matlab.unittest.TestCase
             nSamples = 8;
             nDecs = prod(stride);
             nChsTotal = sum(nchs);
-            % nRows x nCols x nLays x nChs x nSamples
-            X = randn(nrows,ncols,nlays,sum(nchs),nSamples,datatype);
+            % nChs x nRows x nCols x nLays x nSamples
+            %X = randn(nrows,ncols,nlays,sum(nchs),nSamples,datatype);
+            X = randn(sum(nchs),nrows,ncols,nlays,nSamples,datatype);
             angles = randn((nChsTotal-2)*nChsTotal/4,1);
             
             % Expected values
-            % nRows x nCols x nLays x nDecs x nSamples
+            % nDecs x nRows x nCols x nLays x nSamples
             ps = nchs(1);
             pa = nchs(2);
             anglesNoDc = angles;
@@ -189,12 +194,13 @@ classdef nsoltFinalRotation3dLayerTestCase < matlab.unittest.TestCase
             musU = mus*ones(pa,1);
             W0T = transpose(genW.step(anglesNoDc(1:length(angles)/2),musW));
             U0T = transpose(genU.step(anglesNoDc(length(angles)/2+1:end),musU));
-            Y = permute(X,[4 1 2 3 5]);
+            Y = X; %permute(X,[4 1 2 3 5]);
             Ys = reshape(Y(1:ps,:,:,:,:),ps,nrows*ncols*nlays*nSamples);
             Ya = reshape(Y(ps+1:ps+pa,:,:,:,:),pa,nrows*ncols*nlays*nSamples);
             Zsa = [ W0T(1:ceil(nDecs/2),:)*Ys; U0T(1:floor(nDecs/2),:)*Ya ];
-            expctdZ = ipermute(reshape(Zsa,nDecs,nrows,ncols,nlays,nSamples),...
-                [4 1 2 3 5]);
+            %expctdZ = ipermute(reshape(Zsa,nDecs,nrows,ncols,nlays,nSamples),...
+            %    [4 1 2 3 5]);
+            expctdZ = reshape(Zsa,nDecs,nrows,ncols,nlays,nSamples);
             
             % Instantiation of target class
             import saivdr.dcnn.*
@@ -237,9 +243,11 @@ classdef nsoltFinalRotation3dLayerTestCase < matlab.unittest.TestCase
             anglesU = zeros(nAnglesH,1,datatype);
             mus_ = 1;
             
-            % nRows x nCols x nLays x nDecs x nSamples
-            X = randn(nrows,ncols,nlays,sum(nchs),nSamples,datatype);
-            dLdZ = randn(nrows,ncols,nlays,nDecs,nSamples,datatype);
+            %  nDecs x nRows x nCols x nLays xnSamples
+            %X = randn(nrows,ncols,nlays,sum(nchs),nSamples,datatype);
+            %dLdZ = randn(nrows,ncols,nlays,nDecs,nSamples,datatype);
+            X = randn(sum(nchs),nrows,ncols,nlays,nSamples,datatype);
+            dLdZ = randn(nDecs,nrows,ncols,nlays,nSamples,datatype);            
             
             % Expected values
             % nRows x nCols x nChs x nSamples
@@ -249,11 +257,13 @@ classdef nsoltFinalRotation3dLayerTestCase < matlab.unittest.TestCase
             % dLdX = dZdX x dLdZ
             W0 = genW.step(anglesW,mus_,0);
             U0 = genU.step(anglesU,mus_,0);
-            expctddLdX = zeros(nrows,ncols,nlays,nChsTotal,nSamples,datatype);
+            %expctddLdX = zeros(nrows,ncols,nlays,nChsTotal,nSamples,datatype);
+            expctddLdX = zeros(nChsTotal,nrows,ncols,nlays,nSamples,datatype);
             Y  = zeros(nChsTotal,nrows,ncols,nlays,datatype);
             for iSample=1:nSamples
                 % Perumation in each block
-                Ai = permute(dLdZ(:,:,:,:,iSample),[4 1 2 3]);
+                %Ai = permute(dLdZ(:,:,:,:,iSample),[4 1 2 3]);
+                Ai = dLdZ(:,:,:,:,iSample);
                 Yi = reshape(Ai,nDecs,nrows,ncols,nlays);
                 %
                 Ys = Yi(1:ceil(nDecs/2),:);
@@ -262,19 +272,20 @@ classdef nsoltFinalRotation3dLayerTestCase < matlab.unittest.TestCase
                     reshape(W0(:,1:ceil(nDecs/2))*Ys,ps,nrows,ncols,nlays);
                 Y(ps+1:ps+pa,:,:,:) = ...
                     reshape(U0(:,1:floor(nDecs/2))*Ya,pa,nrows,ncols,nlays);
-                expctddLdX(:,:,:,:,iSample) = ipermute(Y,[4 1 2 3]);
+                %expctddLdX(:,:,:,:,iSample) = ipermute(Y,[4 1 2 3]);
+                expctddLdX(:,:,:,:,iSample) = Y;
             end
             
             % dLdWi = <dLdZ,(dVdWi)X>
             expctddLdW = zeros(2*nAnglesH,1,datatype);
-            dldz_ = permute(dLdZ,[4 1 2 3 5]);
+            dldz_ = dLdZ; % permute(dLdZ,[4 1 2 3 5]);
             dldz_upp = reshape(dldz_(1:ceil(nDecs/2),:,:,:,:),ceil(nDecs/2),nrows*ncols*nlays*nSamples);
             dldz_low = reshape(dldz_(ceil(nDecs/2)+1:nDecs,:,:,:,:),floor(nDecs/2),nrows*ncols*nlays*nSamples);
             % (dVdWi)X
             for iAngle = 1:nAnglesH
                 dW0_T = transpose(genW.step(anglesW,mus_,iAngle));
                 dU0_T = transpose(genU.step(anglesU,mus_,iAngle));
-                a_ = permute(X,[4 1 2 3 5]);
+                a_ = X; % permute(X,[4 1 2 3 5]);
                 c_upp = reshape(a_(1:ps,:,:,:,:,:),ps,nrows*ncols*nlays*nSamples);
                 c_low = reshape(a_(ps+1:ps+pa,:,:,:,:,:),pa,nrows*ncols*nlays*nSamples);
                 d_upp = dW0_T(1:ceil(nDecs/2),:)*c_upp;
@@ -326,23 +337,27 @@ classdef nsoltFinalRotation3dLayerTestCase < matlab.unittest.TestCase
             anglesU = randn(nAnglesH,1,datatype);
             mus_ = 1;
             
-            % nRows x nCols x nLays x nDecs x nSamples
-            X = randn(nrows,ncols,nlays,sum(nchs),nSamples,datatype);
-            dLdZ = randn(nrows,ncols,nlays,nDecs,nSamples,datatype);
+            % nDecs x nRows x nCols x nLays x nSamples
+            %X = randn(nrows,ncols,nlays,sum(nchs),nSamples,datatype);
+            %dLdZ = randn(nrows,ncols,nlays,nDecs,nSamples,datatype);
+            X = randn(sum(nchs),nrows,ncols,nlays,nSamples,datatype);
+            dLdZ = randn(nDecs,nrows,ncols,nlays,nSamples,datatype);            
             
             % Expected values
-            % nRows x nCols x nChs x nSamples
+            % nChs x nRows x nCols x nSamples
             ps = nchs(1);
             pa = nchs(2);
             
             % dLdX = dZdX x dLdZ
             W0 = genW.step(anglesW,mus_,0);
             U0 = genU.step(anglesU,mus_,0);
-            expctddLdX = zeros(nrows,ncols,nlays,nChsTotal,nSamples,datatype);
+            %expctddLdX = zeros(nrows,ncols,nlays,nChsTotal,nSamples,datatype);
+            expctddLdX = zeros(nChsTotal,nrows,ncols,nlays,nSamples,datatype);
             Y  = zeros(nChsTotal,nrows,ncols,nlays,datatype);
             for iSample=1:nSamples
                 % Perumation in each block
-                Ai = permute(dLdZ(:,:,:,:,iSample),[4 1 2 3]);
+                %Ai = permute(dLdZ(:,:,:,:,iSample),[4 1 2 3]);
+                Ai = dLdZ(:,:,:,:,iSample);
                 Yi = reshape(Ai,nDecs,nrows,ncols,nlays);
                 %
                 Ys = Yi(1:ceil(nDecs/2),:);
@@ -351,19 +366,19 @@ classdef nsoltFinalRotation3dLayerTestCase < matlab.unittest.TestCase
                     reshape(W0(:,1:ceil(nDecs/2))*Ys,ps,nrows,ncols,nlays);
                 Y(ps+1:ps+pa,:,:,:) = ...
                     reshape(U0(:,1:floor(nDecs/2))*Ya,pa,nrows,ncols,nlays);
-                expctddLdX(:,:,:,:,iSample) = ipermute(Y,[4 1 2 3]);
+                expctddLdX(:,:,:,:,iSample) = Y; % ipermute(Y,[4 1 2 3]);
             end
             
             % dLdWi = <dLdZ,(dVdWi)X>
             expctddLdW = zeros(2*nAnglesH,1,datatype);
-            dldz_ = permute(dLdZ,[4 1 2 3 5]);
+            dldz_ = dLdZ; %permute(dLdZ,[4 1 2 3 5]);
             dldz_upp = reshape(dldz_(1:ceil(nDecs/2),:,:,:,:),ceil(nDecs/2),nrows*ncols*nlays*nSamples);
             dldz_low = reshape(dldz_(ceil(nDecs/2)+1:nDecs,:,:,:,:),floor(nDecs/2),nrows*ncols*nlays*nSamples);
             % (dVdWi)X
             for iAngle = 1:nAnglesH
                 dW0_T = transpose(genW.step(anglesW,mus_,iAngle));
                 dU0_T = transpose(genU.step(anglesU,mus_,iAngle));
-                a_ = permute(X,[4 1 2 3 5]);
+                a_ = X; % permute(X,[4 1 2 3 5]);
                 c_upp = reshape(a_(1:ps,:,:,:,:),ps,nrows*ncols*nlays*nSamples);
                 c_low = reshape(a_(ps+1:ps+pa,:,:,:,:),pa,nrows*ncols*nlays*nSamples);
                 d_upp = dW0_T(1:ceil(nDecs/2),:)*c_upp;
@@ -415,12 +430,14 @@ classdef nsoltFinalRotation3dLayerTestCase < matlab.unittest.TestCase
             anglesW = randn(nAnglesH,1,datatype);
             anglesU = randn(nAnglesH,1,datatype);
             
-            % nRows x nCols x nLays x nDecs x nSamples
-            X = randn(nrows,ncols,nlays,sum(nchs),nSamples,datatype);
-            dLdZ = randn(nrows,ncols,nlays,nDecs,nSamples,datatype);
+            % nDecs x nRows x nCols x nLays x nSamples
+            %X = randn(nrows,ncols,nlays,sum(nchs),nSamples,datatype);
+            %dLdZ = randn(nrows,ncols,nlays,nDecs,nSamples,datatype);
+            X = randn(sum(nchs),nrows,ncols,nlays,nSamples,datatype);
+            dLdZ = randn(nDecs,nrows,ncols,nlays,nSamples,datatype);            
             
             % Expected values
-            % nRows x nCols x nChs x nSamples
+            % nChs x nRows x nCols x nChs x nSamples
             ps = nchs(1);
             pa = nchs(2);
             
@@ -432,11 +449,13 @@ classdef nsoltFinalRotation3dLayerTestCase < matlab.unittest.TestCase
             musU = mus*ones(pa,1);
             W0 = genW.step(anglesW_NoDc,musW,0);
             U0 = genU.step(anglesU,musU,0);
-            expctddLdX = zeros(nrows,ncols,nlays,nChsTotal,nSamples,datatype);
+            %expctddLdX = zeros(nrows,ncols,nlays,nChsTotal,nSamples,datatype);
+            expctddLdX = zeros(nChsTotal,nrows,ncols,nlays,nSamples,datatype);
             Y  = zeros(nChsTotal,nrows,ncols,nlays,datatype);
             for iSample=1:nSamples
                 % Perumation in each block
-                Ai = permute(dLdZ(:,:,:,:,iSample),[4 1 2 3]);
+                %Ai = permute(dLdZ(:,:,:,:,iSample),[4 1 2 3]);
+                Ai = dLdZ(:,:,:,:,iSample);
                 Yi = reshape(Ai,nDecs,nrows,ncols,nlays);
                 %
                 Ys = Yi(1:ceil(nDecs/2),:);
@@ -445,19 +464,19 @@ classdef nsoltFinalRotation3dLayerTestCase < matlab.unittest.TestCase
                     reshape(W0(:,1:ceil(nDecs/2))*Ys,ps,nrows,ncols,nlays);
                 Y(ps+1:ps+pa,:,:,:) = ...
                     reshape(U0(:,1:floor(nDecs/2))*Ya,pa,nrows,ncols,nlays);
-                expctddLdX(:,:,:,:,iSample) = ipermute(Y,[4 1 2 3]);
+                expctddLdX(:,:,:,:,iSample) = Y; % ipermute(Y,[4 1 2 3]);
             end
             
             % dLdWi = <dLdZ,(dVdWi)X>
             expctddLdW = zeros(2*nAnglesH,1,datatype);
-            dldz_ = permute(dLdZ,[4 1 2 3 5]);
+            dldz_ = dLdZ; % permute(dLdZ,[4 1 2 3 5]);
             dldz_upp = reshape(dldz_(1:ceil(nDecs/2),:,:,:,:),ceil(nDecs/2),nrows*ncols*nlays*nSamples);
             dldz_low = reshape(dldz_(ceil(nDecs/2)+1:nDecs,:,:,:,:),floor(nDecs/2),nrows*ncols*nlays*nSamples);
             % (dVdWi)X
             for iAngle = 1:nAnglesH
                 dW0_T = transpose(genW.step(anglesW_NoDc,musW,iAngle));
                 dU0_T = transpose(genU.step(anglesU,musU,iAngle));
-                a_ = permute(X,[4 1 2 3 5]);
+                a_ = X; %permute(X,[4 1 2 3 5]);
                 c_upp = reshape(a_(1:ps,:,:,:,:),ps,nrows*ncols*nlays*nSamples);
                 c_low = reshape(a_(ps+1:ps+pa,:,:,:,:),pa,nrows*ncols*nlays*nSamples);
                 d_upp = dW0_T(1:ceil(nDecs/2),:)*c_upp;
