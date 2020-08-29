@@ -113,12 +113,12 @@ classdef nsoltBlockDct3dLayer < nnet.layer.Layer
             height = size(X,1);
             width = size(X,2);
             depth = size(X,3);
+            nComponents = size(X,4);
+            nSamples = size(X,5);
             nRows = height/decV;
             nCols = width/decH;
             nLays = depth/decD;
             nDecs = prod(decFactor);
-            nComponents = size(X,4);
-            nSamples = size(X,5);
             %
             inputComponent = zeros(height,width,depth,1,nSamples,'like',X);
             inputSample = zeros(height,width,depth,'like',X);
