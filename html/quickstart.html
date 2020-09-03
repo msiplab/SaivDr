@@ -67,7 +67,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>Quickstart of <b>SaivDr Package</b></h1><!--introduction--><p>A brief introduction to image restroation with <b>SaivDr Package</b></p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Summary</a></li><li><a href="#2">Add the package to search path</a></li><li><a href="#3">Read a source image</a></li><li><a href="#4">Create a degradation system object</a></li><li><a href="#5">Generate an observed image</a></li><li><a href="#6">Create an NSOLT system object</a></li><li><a href="#7">Create an analysis and synthesis system object</a></li><li><a href="#10">Create an ISTA-based image restoration system object</a></li><li><a href="#11">Create a step monitor system object</a></li><li><a href="#12">Perform ISTA-based image restoration</a></li><li><a href="#13">Extract the final evaluation</a></li><li><a href="#14">Perform Wiener filtering</a></li><li><a href="#15">Compare deblurring performances</a></li><li><a href="#16">Release notes</a></li></ul></div><h2 id="1">Summary</h2><p><b>SaivDr</b> is an abbreviation of <i>Sparsity-Aware Image and Volume Data Restoration</i>. This package is developed for</p><div><ul><li>Experiments,</li><li>Development and</li><li>Implementation</li></ul></div><p>of sparsity-aware image and volume data restoraition algorithms.</p><p>In particular, this package provides a rich set of classes related to <a href="https://sigport.org/documents/multidimensional-nonseparable-oversampled-lapped-transforms-theory-and-design">non-separable oversampled lapped transform ( <b>NSOLTs</b> )</a> , which allows for convolutional layers with</p><div><ul><li>Parseval tight</li><li>Symmetric and</li><li>Multiresolution</li></ul></div><p>properties. For some features, we have prepared custom layer classes for Deep Learning Toolbox. It is now easy to incorporate them into flexible configurations and parts of your network.</p><p><img vspace="5" hspace="5" src="latstrnsolt.png" alt=""> </p><p>Information about <b>SaivDr Package</b> is given in Contents.m. The HELP command can be used to see the contents as follows:</p><pre class="codeinput">type <span class="string">README.md</span>
+  </style></head><body><div class="content"><h1>Quickstart of <b>SaivDr Package</b></h1><!--introduction--><p>A brief introduction to image restroation with <b>SaivDr Package</b></p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Summary</a></li><li><a href="#2">Add the package to search path</a></li><li><a href="#3">Read a source image</a></li><li><a href="#4">Create a degradation system object</a></li><li><a href="#5">Generate an observed image</a></li><li><a href="#6">Create an NSOLT system object</a></li><li><a href="#7">Create an analysis and synthesis system object</a></li><li><a href="#10">Create an ISTA-based image restoration system object</a></li><li><a href="#11">Create a step monitor system object</a></li><li><a href="#12">Perform ISTA-based image restoration</a></li><li><a href="#13">Extract the final evaluation</a></li><li><a href="#14">Perform Wiener filtering</a></li><li><a href="#15">Compare deblurring performances</a></li><li><a href="#16">Release notes</a></li></ul></div><h2 id="1">Summary</h2><p><b>SaivDr</b> is an abbreviation of <i>Sparsity-Aware Image and Volume Data Restoration</i>. This package is developed for</p><div><ul><li>Experiments,</li><li>Development and</li><li>Implementation</li></ul></div><p>of sparsity-aware image and volume data restoraition algorithms.</p><p>In particular, this package provides a rich set of classes related to <a href="https://sigport.org/documents/multidimensional-nonseparable-oversampled-lapped-transforms-theory-and-design">non-separable oversampled lapped transform ( <b>NSOLTs</b> )</a> , which allows for convolutional layers with</p><div><ul><li>Parseval tight</li><li>Symmetric and</li><li>Multiresolution</li></ul></div><p>properties. For some features, we have prepared custom layer classes with Deep Learning Toolbox. It is now easy to incorporate them into flexible configurations and parts of your network.</p><p><img vspace="5" hspace="5" src="latstrnsolt.png" alt=""> </p><p>Information about <b>SaivDr Package</b> is given in Contents.m. The HELP command can be used to see the contents as follows:</p><pre class="codeinput">type <span class="string">README.md</span>
 </pre><pre class="codeoutput">
 # SaivDr Package for MATLAB/Simulink [![View SaivDr Package on File Exchange](https://www.mathworks.com/matlabcentral/images/matlab-file-exchange.svg)](https://jp.mathworks.com/matlabcentral/fileexchange/45084-saivdr-package)
 System object definitions for sparsity-aware image and volumetric data restoration
@@ -75,13 +75,24 @@ System object definitions for sparsity-aware image and volumetric data restorati
 ## Summary
 
 SaivDr is an abbreviation of Sparsity-Aware Image and Volumetric Data Restoration. 
-This package is developed in order for making
+This package is developed for
 
 * Experiments,
 * Development and
 * Implementation
 
-of sparsity-aware image and volumetric data restoraition algorithms simple.
+of sparsity-aware image and volumetric data restoraition algorithms.
+
+In particular, this package provides a rich set of classes related to 
+[non-separable oversampled lapped transform ( *NSOLTs* )](https://sigport.org/documents/multidimensional-nonseparable-oversampled-lapped-transforms-theory-and-design) , which allows for convolutional layers with
+ 
+* Parseval tight 
+* Symmetric and
+* Multiresolution 
+
+properties. For some features, we have prepared custom layer classes with 
+Deep Learning Toolbox. It is now easy to incorporate them into flexible 
+configurations and parts of your network.
 
 Information about SaivDr Package is given in Contents.m. The HELP command can 
 be used to see the contents as follows:
@@ -427,58 +438,58 @@ ista.StepMonitor = stepmonitor;
 resImg = ista.step(obsImg); <span class="comment">% STEP method of IstaImRestoration</span>
 </pre><pre class="codeoutput">
  ISTA
-(   1)  PSNR =  27.21 [dB] 
-(   2)  PSNR =  27.95 [dB] 
-(   3)  PSNR =  28.39 [dB] 
-(   4)  PSNR =  28.69 [dB] 
-(   5)  PSNR =  28.91 [dB] 
-(   6)  PSNR =  29.08 [dB] 
-(   7)  PSNR =  29.22 [dB] 
-(   8)  PSNR =  29.33 [dB] 
-(   9)  PSNR =  29.42 [dB] 
-(  10)  PSNR =  29.50 [dB] 
+(   1)  PSNR =  27.20 [dB] 
+(   2)  PSNR =  27.94 [dB] 
+(   3)  PSNR =  28.38 [dB] 
+(   4)  PSNR =  28.68 [dB] 
+(   5)  PSNR =  28.90 [dB] 
+(   6)  PSNR =  29.07 [dB] 
+(   7)  PSNR =  29.21 [dB] 
+(   8)  PSNR =  29.32 [dB] 
+(   9)  PSNR =  29.41 [dB] 
+(  10)  PSNR =  29.49 [dB] 
 (  11)  PSNR =  29.56 [dB] 
-(  12)  PSNR =  29.62 [dB] 
+(  12)  PSNR =  29.61 [dB] 
 (  13)  PSNR =  29.67 [dB] 
-(  14)  PSNR =  29.72 [dB] 
-(  15)  PSNR =  29.76 [dB] 
-(  16)  PSNR =  29.79 [dB] 
-(  17)  PSNR =  29.83 [dB] 
-(  18)  PSNR =  29.85 [dB] 
-(  19)  PSNR =  29.88 [dB] 
-(  20)  PSNR =  29.90 [dB] 
-(  21)  PSNR =  29.92 [dB] 
-(  22)  PSNR =  29.94 [dB] 
-(  23)  PSNR =  29.96 [dB] 
-(  24)  PSNR =  29.98 [dB] 
-(  25)  PSNR =  29.99 [dB] 
-(  26)  PSNR =  30.00 [dB] 
-(  27)  PSNR =  30.02 [dB] 
-(  28)  PSNR =  30.03 [dB] 
-(  29)  PSNR =  30.04 [dB] 
-(  30)  PSNR =  30.05 [dB] 
-(  31)  PSNR =  30.06 [dB] 
-(  32)  PSNR =  30.07 [dB] 
-(  33)  PSNR =  30.07 [dB] 
-(  34)  PSNR =  30.08 [dB] 
-(  35)  PSNR =  30.09 [dB] 
-(  36)  PSNR =  30.09 [dB] 
-(  37)  PSNR =  30.10 [dB] 
-(  38)  PSNR =  30.10 [dB] 
-(  39)  PSNR =  30.11 [dB] 
-(  40)  PSNR =  30.11 [dB] 
-(  41)  PSNR =  30.11 [dB] 
-(  42)  PSNR =  30.12 [dB] 
-(  43)  PSNR =  30.12 [dB] 
-(  44)  PSNR =  30.12 [dB] 
-(  45)  PSNR =  30.13 [dB] 
-(  46)  PSNR =  30.13 [dB] 
-(  47)  PSNR =  30.13 [dB] 
-(  48)  PSNR =  30.13 [dB] 
-(  49)  PSNR =  30.13 [dB] 
-(  50)  PSNR =  30.14 [dB] 
-(  51)  PSNR =  30.14 [dB] 
-(  52)  PSNR =  30.14 [dB] 
+(  14)  PSNR =  29.71 [dB] 
+(  15)  PSNR =  29.75 [dB] 
+(  16)  PSNR =  29.78 [dB] 
+(  17)  PSNR =  29.82 [dB] 
+(  18)  PSNR =  29.84 [dB] 
+(  19)  PSNR =  29.87 [dB] 
+(  20)  PSNR =  29.89 [dB] 
+(  21)  PSNR =  29.91 [dB] 
+(  22)  PSNR =  29.93 [dB] 
+(  23)  PSNR =  29.95 [dB] 
+(  24)  PSNR =  29.96 [dB] 
+(  25)  PSNR =  29.98 [dB] 
+(  26)  PSNR =  29.99 [dB] 
+(  27)  PSNR =  30.00 [dB] 
+(  28)  PSNR =  30.02 [dB] 
+(  29)  PSNR =  30.03 [dB] 
+(  30)  PSNR =  30.04 [dB] 
+(  31)  PSNR =  30.04 [dB] 
+(  32)  PSNR =  30.05 [dB] 
+(  33)  PSNR =  30.06 [dB] 
+(  34)  PSNR =  30.06 [dB] 
+(  35)  PSNR =  30.07 [dB] 
+(  36)  PSNR =  30.08 [dB] 
+(  37)  PSNR =  30.08 [dB] 
+(  38)  PSNR =  30.09 [dB] 
+(  39)  PSNR =  30.09 [dB] 
+(  40)  PSNR =  30.09 [dB] 
+(  41)  PSNR =  30.10 [dB] 
+(  42)  PSNR =  30.10 [dB] 
+(  43)  PSNR =  30.10 [dB] 
+(  44)  PSNR =  30.11 [dB] 
+(  45)  PSNR =  30.11 [dB] 
+(  46)  PSNR =  30.11 [dB] 
+(  47)  PSNR =  30.11 [dB] 
+(  48)  PSNR =  30.12 [dB] 
+(  49)  PSNR =  30.12 [dB] 
+(  50)  PSNR =  30.12 [dB] 
+(  51)  PSNR =  30.12 [dB] 
+(  52)  PSNR =  30.12 [dB] 
 </pre><img vspace="5" hspace="5" src="quickstart_02.png" alt=""> <h2 id="13">Extract the final evaluation</h2><p>The object of StepMonitoringSystem, <i>stepmonitor</i> , stores the evaluation values calculated iteratively in ISTA as a vector. The GET method of <i>stepmonitor</i>  can be used to extract the number of iterations and the sequence of PSNRs.</p><pre class="codeinput">nItr  = stepmonitor.nItr;
 psnrs = stepmonitor.PSNRs;
 psnr_ista = psnrs(nItr);
@@ -506,7 +517,7 @@ fprintf(<span class="string">'\n Wiener'</span>)
 psnr_wfdc = stepmonitor.step(wnfImg); <span class="comment">% STEP method of StepMonitoringSystem</span>
 </pre><pre class="codeoutput">
  Wiener
-(   1)  PSNR =  25.54 [dB] 
+(   1)  PSNR =  25.56 [dB] 
 </pre><h2 id="15">Compare deblurring performances</h2><p>In order to compare the deblurring performances between two methods, ISTA-based deblurring with NSOLT and Wiener filter, let us show the original, observed and two results in one figure together.</p><pre class="codeinput">hfig3 = figure(3);
 
 <span class="comment">% Original image x</span>
@@ -697,7 +708,7 @@ title([<span class="string">'{\bf u}\^ by Wiener: '</span> num2str(psnr_wfdc) <s
 % * Symmetric and
 % * Multiresolution 
 %
-% properties. For some features, we have prepared custom layer classes for 
+% properties. For some features, we have prepared custom layer classes with 
 % Deep Learning Toolbox. It is now easy to incorporate them into flexible 
 % configurations and parts of your network.
 % 

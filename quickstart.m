@@ -19,7 +19,7 @@
 % * Symmetric and
 % * Multiresolution 
 %
-% properties. For some features, we have prepared custom layer classes for 
+% properties. For some features, we have prepared custom layer classes with 
 % Deep Learning Toolbox. It is now easy to incorporate them into flexible 
 % configurations and parts of your network.
 % 
