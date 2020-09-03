@@ -1,5 +1,12 @@
 * Release notes on Sparsity-Aware Image and Volumetric Data Restoration Package
 
+- SaivDr20200903
+-- (Major) Created custom layer classes for Deep Learning Toolbox
+--- saivdr.dcnn.*
+--- examples/dcnn
+-- (Minor) Added the live script version of QUICKSTART
+--- quickstartlive.mlx
+
 - SaivDr20200229
 -- (Major) Revised to use property 'NumberOfLevels' and deprecated to set nLevels argument for STEP methods
 --- saivdr.dictionary.*
@@ -16,7 +23,7 @@
 --- saivdr.restoration.pds
 --- saivdr.restoration.metricproj
 --- saivdr.restoration.denoiser
--- (Major)Revised specification, which may affects to the backward compatibility
+-- (Major) Revised specification, which may affects to the backward compatibility
 --- saivdr.sparserep.AbstSparseApproximationSystem
 -- (Minor) Added createAnalysisSystem and createSynthesisSystem method.
 --- saivdr.dictionary.nsoltx.NsoltFactory
