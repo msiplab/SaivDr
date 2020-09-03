@@ -4,13 +4,24 @@ System object definitions for sparsity-aware image and volumetric data restorati
 ## Summary
 
 SaivDr is an abbreviation of Sparsity-Aware Image and Volumetric Data Restoration. 
-This package is developed in order for making
+This package is developed for
 
 * Experiments,
 * Development and
 * Implementation
 
-of sparsity-aware image and volumetric data restoraition algorithms simple.
+of sparsity-aware image and volumetric data restoraition algorithms.
+
+In particular, this package provides a rich set of classes related to 
+[non-separable oversampled lapped transform ( *NSOLTs* )](https://sigport.org/documents/multidimensional-nonseparable-oversampled-lapped-transforms-theory-and-design) , which allows for convolutional layers with
+ 
+* Parseval tight 
+* Symmetric and
+* Multiresolution 
+
+properties. For some features, we have prepared custom layer classes with 
+Deep Learning Toolbox. It is now easy to incorporate them into flexible 
+configurations and parts of your network.
 
 Information about SaivDr Package is given in Contents.m. The HELP command can 
 be used to see the contents as follows:
