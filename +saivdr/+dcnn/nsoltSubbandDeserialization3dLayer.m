@@ -147,23 +147,26 @@ classdef nsoltSubbandDeserialization3dLayer < nnet.layer.Layer
         end
         
        function dLdX = backward(layer, varargin)
-            % Forward input data through the layer at prediction time and
-            % output the result.
+            % (Optional) Backward propagate the derivative of the loss  
+            % function through the layer.
             %
             % Inputs:
-            %         layer       - Layer to forward propagate through
-            %         X           - Input data (1 component)
+            %         layer             - Layer to backward propagate through
+            %         X                 - Input data
+            %         Z1, ..., Zm       - Outputs of layer forward function            
+            %         dLdZ1, ..., dLdZm - Gradients propagated from the next layers
+            %         memory            - Memory value from forward function
             % Outputs:
-            %         Z1, Z2      - Outputs of layer forward function
+            %         dLdX1, ..., dLdXn - Derivatives of the loss with respect to the
+            %                             inputs
+            %         dLdW1, ..., dLdWk - Derivatives of the loss with respect to each
             %  
             
-            % Layer forward function for prediction goes here.
             nLevels = layer.NumberOfLevels;
-            %nSamples = size(varargin{nLevels+2},5);
             nSamples = size(varargin{nLevels+3},5);
             scales = layer.Scales;
             nElements = sum(prod(scales,2));
-            %dLdX = zeros(nElements,1,1,1,nSamples,'like',varargin{nLevels+2});
+
             dLdX = zeros(nElements,1,1,1,nSamples,'like',varargin{nLevels+3});
             for iSample = 1:nSamples
                 x = zeros(nElements,1,'like',dLdX);
@@ -173,7 +176,6 @@ classdef nsoltSubbandDeserialization3dLayer < nnet.layer.Layer
                 x(1:nSubElements) = a(:);
                 sidx = sidx+nSubElements;
                 for iRevLv = 1:nLevels
-                    %nSubElements = prod(scales(iRevLv,:));
                     nSubElements = prod(scales(iRevLv+1,:));
                     a = varargin{nLevels+3+nLevels-iRevLv}(:,:,:,:,iSample);
                     x(sidx+1:sidx+nSubElements) = a(:);

@@ -156,13 +156,10 @@ classdef nsoltSubbandDeserialization2dLayer < nnet.layer.Layer
             %         dLdW1, ..., dLdWk - Derivatives of the loss with respect to each
             %  
             
-            % Layer forward function for prediction goes here.
             nLevels = layer.NumberOfLevels;
-            %nSamples = size(varargin{nLevels+2},4);
             nSamples = size(varargin{nLevels+3},4);
             nElements = sum(prod(layer.Scales,2));
             scales = layer.Scales;
-            %dLdX = zeros(nElements,1,1,nSamples,'like',varargin{nLevels+2});
             dLdX = zeros(nElements,1,1,nSamples,'like',varargin{nLevels+3});
             for iSample = 1:nSamples
                 x = zeros(nElements,1,'like',dLdX);
@@ -172,7 +169,6 @@ classdef nsoltSubbandDeserialization2dLayer < nnet.layer.Layer
                 x(1:nSubElements) = a(:);
                 sidx = sidx+nSubElements;
                 for iRevLv = 1:nLevels
-                    %nSubElements = prod(scales(iRevLv,:));
                     nSubElements = prod(scales(iRevLv+1,:));
                     a = varargin{nLevels+3+nLevels-iRevLv}(:,:,:,iSample);
                     x(sidx+1:sidx+nSubElements) = a(:);
