@@ -43,7 +43,7 @@ classdef nsoltSubbandDeserialization3dLayerTestCase < matlab.unittest.TestCase
                 'DecimationFactor',[2 2 2],...
                 'NumberOfLevels',3);
             fprintf("\n --- Check layer for 3-D images ---\n");
-            checkLayer(layer,[5264 1],'ObservationDimension',5)
+            checkLayer(layer,[5264 1 1 1],'ObservationDimension',5)
         end
     end
     
