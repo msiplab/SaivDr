@@ -222,6 +222,7 @@ This work was supported by JSPS KAKENHI Grant Numbers JP23560443, JP26420347 and
 * Natsuki AIZAWA, 2013-2014
 * Kosuke FURUYA,  2013-2015
 * Naotaka YUKI,   2014-2015
+* Yuya KODAMA,    2020-
  
 ### Test contributers
 * Hidenori WATANABE, 2014-
@@ -236,5 +237,3 @@ This work was supported by JSPS KAKENHI Grant Numbers JP23560443, JP26420347 and
 * Yuhei KANEKO,      2017-
 * Nawapan LAOCHAROENSUK, 2019-
 * Yusuke ARAI,       2020-
-* Yuya KODAMA,       2020-
-
