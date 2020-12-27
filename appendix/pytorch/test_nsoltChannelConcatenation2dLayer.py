@@ -3,7 +3,7 @@ import torch
 import torch.nn as nn
 from nsoltChannelConcatenation2dLayer import NsoltChannelConcatenation2dLayer
 
-class TestNsoltAtomExtention2dLayer(unittest.TestCase):
+class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
 
     def testConstructor(self):
         target = NsoltChannelConcatenation2dLayer()

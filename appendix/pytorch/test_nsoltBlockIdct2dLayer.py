@@ -3,7 +3,7 @@ import torch
 import torch.nn as nn
 from nsoltBlockIdct2dLayer import NsoltBlockIdct2dLayer
 
-class TestNsoltAtomExtention2dLayer(unittest.TestCase):
+class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
 
     def testConstructor(self):
         target = NsoltBlockIdct2dLayer()

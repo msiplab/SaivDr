@@ -3,7 +3,7 @@ import torch
 import torch.nn as nn
 from nsoltFinalRotation2dLayer import NsoltFinalRotation2dLayer
 
-class TestNsoltAtomExtention2dLayer(unittest.TestCase):
+class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
 
     def testConstructor(self):
         target = NsoltFinalRotation2dLayer()
