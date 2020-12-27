@@ -5,21 +5,21 @@ class NsoltAtomExtension2dLayer(nn.Module):
 
     def __init__(self,
             name='',
-            numberOfChannels=[],
+            number_of_channels=[],
             direction='',
-            targetChannels=''):
+            target_channels=''):
         super(NsoltAtomExtension2dLayer, self).__init__()
-        self.numberOfChannels = numberOfChannels
+        self.number_of_channels = number_of_channels
         self.name = name
         self.direction = direction
-        self.targetChannels = targetChannels
+        self.target_channels = target_channels
         self.description = self.direction \
             + " shift " \
-            + self.targetChannels \
+            + self.target_channels \
             + " Coefs. " \
             + "(ps,pa) = (" \
-            + str(self.numberOfChannels[0]) + "," \
-            + str(self.numberOfChannels[1]) + ")"
+            + str(self.number_of_channels[0]) + "," \
+            + str(self.number_of_channels[1]) + ")"
         
         self.type = ''        
 

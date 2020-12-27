@@ -48,16 +48,16 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
         
         # Instantiation of target class
         layer = NsoltAtomExtension2dLayer(
-            numberOfChannels=nchs,
+            number_of_channels=nchs,
             name=expctdName,
             direction=expctdDirection,
-            targetChannels=expctdTargetChannels
+            target_channels=expctdTargetChannels
         )
 
         # Actual values
         actualName = layer.name 
         actualDirection = layer.direction 
-        actualTargetChannels = layer.targetChannels 
+        actualTargetChannels = layer.target_channels 
         actualDescription = layer.description 
 
         # Evaluation
