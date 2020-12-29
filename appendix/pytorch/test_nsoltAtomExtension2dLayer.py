@@ -12,9 +12,9 @@ nrows = [ 4, 8, 16 ]
 ncols = [ 4, 8, 16 ]
 dir = [ 'Right', 'Left', 'Up', 'Down' ]
 
-class NsoltAtomExtention2dLayerself(unittest.TestCase):
+class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
     """
-    NSOLTATOMEXTENSION2DLAYERself
+    NSOLTATOMEXTENSION2DLAYERTESTCASE
     
         コンポーネント別に入力(nComponents=1のみサポート):
             nChsTotal x nRows x nCols x nSamples
