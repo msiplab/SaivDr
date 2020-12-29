@@ -22,7 +22,7 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
         コンポーネント別に出力(nComponents=1のみサポート):
             nChsTotal x nRows x nCols x nSamples
     
-    Requirements: Python 3.x, PyTorch 1.7.x
+    Requirements: Python 3.7.x, PyTorch 1.7.x
 
     Copyright (c) 2020, Shogo MURAMATSU
     
@@ -68,7 +68,6 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
         self.assertEqual(actualTargetChannels,expctdTargetChannels)
         self.assertEqual(actualDescription,expctdDescription)
 
-
     @parameterized.expand(
         list(itertools.product(nchs,nrows,ncols,dir,datatype))
     )
@@ -102,22 +101,23 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
         # Block butterfly
         Ys = Y[:ps,:,:,:]
         Ya = Y[ps:,:,:,:]
-        Y =  torch.cat((Ys+Ya, Ys-Ya),dim=0)/np.sqrt(2)
+        Y =  torch.cat((Ys+Ya, Ys-Ya),dim=0)/np.sqrt(2.)
         # Block circular shift
         Y[ps:,:,:,:] = torch.roll(Y[ps:,:,:,:],shifts=shift,dims=(0,1,2,3))
         # Block butterfly
         Ys = Y[:ps,:,:,:]
         Ya = Y[ps:,:,:,:]
-        Y =  torch.cat((Ys+Ya ,Ys-Ya),dim=0)/np.sqrt(2)
+        Y =  torch.cat((Ys+Ya ,Ys-Ya),dim=0)/np.sqrt(2.)
         # Output
         expctdZ = Y 
 
         # Instantiation of target class
-        layer = NsoltAtomExtension2dLayer( \
+        layer = NsoltAtomExtension2dLayer( 
             number_of_channels=nchs, \
             name='Qn~', \
             direction=dir, \
-            target_channels=target)
+            target_channels=target
+        )
 
         # Actual values
         actualZ = layer.forward(X)
@@ -126,5 +126,63 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
         self.assertEqual(actualZ.dtype,datatype) 
         self.assertTrue(torch.isclose(actualZ,expctdZ,rtol=0.,atol=atol).all())
     
+    @parameterized.expand(
+        list(itertools.product(nchs,nrows,ncols,dir,datatype))
+    )
+    def testPredictGrayscaleShiftUpperCoefs(self, \
+                nchs, nrows, ncols, dir, datatype):
+        atol= 1e-6                
+            
+        # Parameters
+        nSamples = 8;
+        nChsTotal = sum(nchs);
+        target = 'Upper';
+        # nChsTotal x nRows x nCols x nSamples
+        X = torch.randn(nChsTotal,nrows,ncols,nSamples,dtype=datatype)        
+
+        # Expected values
+        if dir=='Right':
+            shift = ( 0, 0, 1, 0, )
+        elif dir=='Left':
+            shift = ( 0, 0, -1, 0 )
+        elif dir=='Down':
+            shift = ( 0, 1, 0, 0 )
+        elif dir=='Up':
+            shift = ( 0, -1, 0, 0 )
+        else:
+            shift = ( 0, 0, 0, 0 )
+
+        # nChsTotal x nRows x nCols x nSamples
+        ps = nchs[0]
+        pa = nchs[1]
+        Y = X
+        # Block butterfly
+        Ys = Y[:ps,:,:,:]
+        Ya = Y[ps:,:,:,:]
+        Y =  torch.cat((Ys+Ya, Ys-Ya),dim=0)/np.sqrt(2.)
+        # Block circular shift
+        Y[:ps,:,:,:] = torch.roll(Y[:ps,:,:,:],shifts=shift,dims=(0,1,2,3))
+        # Block butterfly
+        Ys = Y[:ps,:,:,:]
+        Ya = Y[ps:,:,:,:]
+        Y =  torch.cat((Ys+Ya, Ys-Ya),dim=0)/np.sqrt(2.)
+        # Output
+        expctdZ = Y
+        
+        # Instantiation of target class
+        layer = NsoltAtomExtension2dLayer( 
+            number_of_channels=nchs, \
+            name='Qn~', \
+            direction=dir, \
+            target_channels=target
+        )
+        
+        # Actual values
+        actualZ = layer.forward(X)
+            
+        # Evaluation
+        self.assertEqual(actualZ.dtype,datatype) 
+        self.assertTrue(torch.isclose(actualZ,expctdZ,rtol=0.,atol=atol).all())
+
 if __name__ == '__main__':
     unittest.main()

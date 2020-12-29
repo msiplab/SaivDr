@@ -1,27 +1,28 @@
 import torch
 import torch.nn as nn
+from nsoltLayerExceptions import InvalidDirection, InvalidTargetChannels
 
 class NsoltAtomExtension2dLayer(nn.Module):
     """
-    %NSOLTATOMEXTENSION2DLAYER
-    %   コンポーネント別に入力(nComponents=1のみサポート):
-    %      nChsTotal x nRows x nCols x nSamples
-    %
-    %   コンポーネント別に出力(nComponents=1のみサポート):
-    %      nChsTotal x nRows x nCols x nSamples
-    %
-    % Requirements: Python 3.x, PyTorch 1.7.x
-    %
-    % Copyright (c) 2020, Shogo MURAMATSU
-    %
-    % All rights reserved.
-    %
-    % Contact address: Shogo MURAMATSU,
-    %                Faculty of Engineering, Niigata University,
-    %                8050 2-no-cho Ikarashi, Nishi-ku,
-    %                Niigata, 950-2181, JAPAN
-    %
-    % http://msiplab.eng.niigata-u.ac.jp/
+    NSOLTATOMEXTENSION2DLAYER
+        コンポーネント別に入力(nComponents=1のみサポート):
+            nChsTotal x nRows x nCols x nSamples
+    
+        コンポーネント別に出力(nComponents=1のみサポート):
+            nChsTotal x nRows x nCols x nSamples
+    
+    Requirements: Python 3.7.x, PyTorch 1.7.x
+    
+    Copyright (c) 2020, Shogo MURAMATSU
+    
+    All rights reserved.
+    
+    Contact address: Shogo MURAMATSU,
+                    Faculty of Engineering, Niigata University,
+                    8050 2-no-cho Ikarashi, Nishi-ku,
+                    Niigata, 950-2181, JAPAN
+    
+    http://msiplab.eng.niigata-u.ac.jp/
     """
     def __init__(self,
             name='',
@@ -54,12 +55,12 @@ class NsoltAtomExtension2dLayer(nn.Module):
             shift = ( 0, 1, 0, 0 )
         elif dir=='Up':
             shift = ( 0, -1, 0, 0 )
-        #else
-        #    throw(MException('NsoltLayer:InvalidDirection',...
-        #        '%s : Direction should be either of Right, Left, Down or Up',...
-        #        layer.Direction))
+        else:
+            raise InvalidDirection(
+                '%s : Direction should be either of Right, Left, Down or Up'\
+                % self.direction
+            )
 
-        #
         return self.atomext_(x,shift)
 
     def atomext_(self,X,shift):
@@ -77,14 +78,16 @@ class NsoltAtomExtension2dLayer(nn.Module):
             Y[ps:,:,:,:] = torch.roll(Y[ps:,:,:,:],shifts=shift,dims=(0,1,2,3))
         elif target=='Upper':
             Y[:ps,:,:,:] = torch.roll(Y[:ps,:,:,:],shifts=shift,dims=(0,1,2,3))
-        #else:
-        #    throw(MException('NsoltLayer:InvalidTargetChannels',...
-        #        '%s : TaregetChannels should be either of Lower or Upper',...
-        #        layer.TargetChannels))
-
+        else:
+            raise InvalidTargetChannels(
+                '%s : TaregetChannels should be either of Lower or Upper'\
+                % self.target_channels
+            )
+                
         # Block butterfly
         Ys = Y[:ps,:,:,:]
         Ya = Y[ps:,:,:,:]
         Y = torch.cat((Ys+Ya, Ys-Ya),dim=0)
+        
         # Output
         return Y/2.0
