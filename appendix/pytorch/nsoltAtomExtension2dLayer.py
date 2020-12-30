@@ -6,10 +6,10 @@ class NsoltAtomExtension2dLayer(nn.Module):
     """
     NSOLTATOMEXTENSION2DLAYER
         コンポーネント別に入力(nComponents=1のみサポート):
-            nSamples x nCols x nRows x nChsTotal
+            nSamples x nRows x nCols x nChsTotal
     
         コンポーネント別に出力(nComponents=1のみサポート):
-            nSamples x nCols x nRows x nChsTotal
+            nSamples x nRows x nCols x nChsTotal
     
     Requirements: Python 3.7.x, PyTorch 1.7.x
     
