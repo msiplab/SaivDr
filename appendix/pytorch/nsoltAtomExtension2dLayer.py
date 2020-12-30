@@ -6,10 +6,10 @@ class NsoltAtomExtension2dLayer(nn.Module):
     """
     NSOLTATOMEXTENSION2DLAYER
         コンポーネント別に入力(nComponents=1のみサポート):
-            nSamples x nChsTotal x nRows x nCols 
+            nSamples x nCols x nRows x nChsTotal
     
         コンポーネント別に出力(nComponents=1のみサポート):
-            nSamples x nChsTotal x nRows x nCols 
+            nSamples x nCols x nRows x nChsTotal
     
     Requirements: Python 3.7.x, PyTorch 1.7.x
     
@@ -50,13 +50,13 @@ class NsoltAtomExtension2dLayer(nn.Module):
         dir = self.direction
         #
         if dir=='Right':
-            shift = ( 0, 0, 0, 1 )
-        elif dir=='Left':
-            shift = ( 0, 0, 0, -1 )
-        elif dir=='Down':
             shift = ( 0, 0, 1, 0 )
-        elif dir=='Up':
+        elif dir=='Left':
             shift = ( 0, 0, -1, 0 )
+        elif dir=='Down':
+            shift = ( 0, 1, 0, 0 )
+        elif dir=='Up':
+            shift = ( 0, -1, 0, 0 )
         else:
             raise InvalidDirection(
                 '%s : Direction should be either of Right, Left, Down or Up'\
@@ -71,14 +71,14 @@ class NsoltAtomExtension2dLayer(nn.Module):
         #
         Y = X
         # Block butterfly
-        Ys = Y[:,:ps,:,:]
-        Ya = Y[:,ps:,:,:]
-        Y = torch.cat((Ys+Ya,Ys-Ya),dim=1)
+        Ys = Y[:,:,:,:ps]
+        Ya = Y[:,:,:,ps:]
+        Y = torch.cat((Ys+Ya,Ys-Ya),dim=-1)
         # Block circular shift
         if target=='Lower':
-            Y[:,ps:,:,:] = torch.roll(Y[:,ps:,:,:],shifts=shift,dims=(0,1,2,3))
+            Y[:,:,:,ps:] = torch.roll(Y[:,:,:,ps:],shifts=shift,dims=(0,1,2,3))
         elif target=='Upper':
-            Y[:,:ps,:,:] = torch.roll(Y[:,:ps,:,:],shifts=shift,dims=(0,1,2,3))
+            Y[:,:,:,:ps] = torch.roll(Y[:,:,:,:ps],shifts=shift,dims=(0,1,2,3))
         else:
             raise InvalidTargetChannels(
                 '%s : TaregetChannels should be either of Lower or Upper'\
@@ -86,9 +86,9 @@ class NsoltAtomExtension2dLayer(nn.Module):
             )
                 
         # Block butterfly
-        Ys = Y[:,:ps,:,:]
-        Ya = Y[:,ps:,:,:]
-        Y = torch.cat((Ys+Ya, Ys-Ya),dim=1)
+        Ys = Y[:,:,:,:ps]
+        Ya = Y[:,:,:,ps:]
+        Y = torch.cat((Ys+Ya, Ys-Ya),dim=-1)
 
         # Output
         return Y/2.0
