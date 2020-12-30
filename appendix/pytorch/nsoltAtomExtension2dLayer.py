@@ -45,6 +45,8 @@ class NsoltAtomExtension2dLayer(nn.Module):
         self.type = ''        
 
     def forward(self,x):
+        nchs = self.number_of_channels
+        target = self.target_channels        
         dir = self.direction
         #
         if dir=='Right':
@@ -64,8 +66,7 @@ class NsoltAtomExtension2dLayer(nn.Module):
         return self.atomext_(x,shift)
 
     def atomext_(self,X,shift):
-        ps = self.number_of_channels[0]
-        pa = self.number_of_channels[1]
+        ps, pa = self.number_of_channels #[0], self.number_of_channels[1]
         target = self.target_channels
         #
         Y = X
@@ -88,6 +89,6 @@ class NsoltAtomExtension2dLayer(nn.Module):
         Ys = Y[:ps,:,:,:]
         Ya = Y[ps:,:,:,:]
         Y = torch.cat((Ys+Ya, Ys-Ya),dim=0)
-        
+
         # Output
         return Y/2.0

@@ -95,8 +95,7 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
             shift = ( 0, 0, 0, 0 )
     
         # nRows x nCols x nChsTotal x nSamples
-        ps = nchs[0]
-        pa = nchs[1]
+        ps, pa = nchs
         Y = X 
         # Block butterfly
         Ys = Y[:ps,:,:,:]
@@ -138,7 +137,7 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
         nChsTotal = sum(nchs)
         target = 'Upper'
         # nChsTotal x nRows x nCols x nSamples
-        X = torch.randn(nChsTotal,nrows,ncols,nSamples,dtype=datatype)        
+        X = torch.randn(nChsTotal,nrows,ncols,nSamples,dtype=datatype)
 
         # Expected values
         if dir=='Right':
@@ -153,8 +152,7 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
             shift = ( 0, 0, 0, 0 )
 
         # nChsTotal x nRows x nCols x nSamples
-        ps = nchs[0]
-        pa = nchs[1]
+        ps, pa = nchs
         Y = X
         # Block butterfly
         Ys = Y[:ps,:,:,:]
@@ -197,6 +195,7 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
         target = 'Lower'
 
         # nChsTotal x nRows x nCols x nSamples
+        X = torch.zeros(nChsTotal,nrows,ncols,nSamples,dtype=datatype,requires_grad=True)        
         dLdZ = torch.randn(nChsTotal,nrows,ncols,nSamples,dtype=datatype)
 
         # Expected values        
@@ -212,8 +211,7 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
             shift = ( 0, 0, 0, 0 ) # Reverse
 
         # nChsTotal x nRows x nCols x nSamples                
-        ps = nchs[0]
-        pa = nchs[1]
+        ps, pa = nchs
         Y = dLdZ
         
         # Block butterfly        
@@ -238,17 +236,77 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
             target_channels=target
         )
 
-        """
+        # Actual values
+        Z = layer.forward(X)
+        Z.backward(dLdZ)
+        actualdLdX = X.grad
+        
+        # Evaluation
+        self.assertEqual(actualdLdX.dtype,datatype) 
+        self.assertTrue(torch.isclose(actualdLdX,expctddLdX,rtol=0.,atol=atol).all())
+
+    @parameterized.expand(
+        list(itertools.product(nchs,nrows,ncols,dir,datatype))
+    )
+    def testBackwardGrayscaleShiftUpperCoefs(self, \
+                nchs, nrows, ncols, dir, datatype):
+        atol = 1e-6
+       
+        # Parameters
+        nSamples = 8
+        nChsTotal = sum(nchs)
+        target = 'Upper'
+        
+        # nChsTotal x nRows x nCols x nSamples
+        X = torch.zeros(nChsTotal,nrows,ncols,nSamples,dtype=datatype,requires_grad=True)                
+        dLdZ = torch.randn(nChsTotal,nrows,ncols,nSamples,dtype=datatype)
+
+        # Expected values
+        if dir=='Right':
+            shift = ( 0, 0, -1, 0 ) # Reverse
+        elif dir=='Left':
+            shift = ( 0, 0,  1, 0 ) # Reverse
+        elif dir=='Down':
+            shift = ( 0, -1, 0, 0 ) # Reverse
+        elif dir=='Up':
+            shift = ( 0, 1, 0, 0 ) # Reverse
+        else:
+            shift = ( 0, 0, 0, 0 )
+
+        # nChsTotal x nRows x nCols x nSamples
+        ps, pa = nchs
+        Y = dLdZ
+
+        # Block butterfly
+        Ys = Y[:ps,:,:,:]
+        Ya = Y[ps:,:,:,:]
+        Y = torch.cat((Ys+Ya, Ys-Ya),dim=0)/np.sqrt(2.)
+        # Block circular shift
+        Y[:ps,:,:,:] = torch.roll(Y[:ps,:,:,:],shifts=shift,dims=(0,1,2,3))
+        # Block butterfly
+        Ys = Y[:ps,:,:,:]
+        Ya = Y[ps:,:,:,:]
+        Y = torch.cat((Ys+Ya, Ys-Ya),dim=0)/np.sqrt(2.)
+
+        # Output
+        expctddLdX = Y
+
+        # Instantiation of target class
+        layer = NsoltAtomExtension2dLayer(
+                number_of_channels=nchs,\
+                name='Qn',\
+                direction=dir,\
+                target_channels=target
+        )
             
-            % Actual values
-            actualdLdX = layer.backward([],[],dLdZ,[]);
-            
-            % Evaluation
-            testCase.verifyInstanceOf(actualdLdX,datatype);
-            testCase.verifyThat(actualdLdX,...
-                IsEqualTo(expctddLdX,'Within',tolObj));
-            
-        """
+        # Actual values
+        Z = layer.forward(X)
+        Z.backward(dLdZ)
+        actualdLdX = X.grad
+        
+        # Evaluation
+        self.assertEqual(actualdLdX.dtype,datatype) 
+        self.assertTrue(torch.isclose(actualdLdX,expctddLdX,rtol=0.,atol=atol).all())
 
 if __name__ == '__main__':
     unittest.main()
