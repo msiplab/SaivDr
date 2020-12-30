@@ -17,10 +17,10 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
     NSOLTATOMEXTENSION2DLAYERTESTCASE
     
         コンポーネント別に入力(nComponents=1のみサポート):
-            nChsTotal x nRows x nCols x nSamples
+            nSamples x nChsTotal x nRows x nCols 
     
         コンポーネント別に出力(nComponents=1のみサポート):
-            nChsTotal x nRows x nCols x nSamples
+            nSamples x nChsTotal x nRows x nCols
     
     Requirements: Python 3.7.x, PyTorch 1.7.x
 
@@ -79,34 +79,34 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
         nSamples = 8
         nChsTotal = sum(nchs)
         target = 'Lower'
-        # nChsTotal x nRows x nCols x nSamples
-        X = torch.randn(nChsTotal,nrows,ncols,nSamples,dtype=datatype)
+        # nSamples x nChsTotal x nRows x nCols 
+        X = torch.randn(nSamples,nChsTotal,nrows,ncols,dtype=datatype)
         
         # Expected values
         if dir=='Right':
-            shift = ( 0, 0, 1, 0 )
+            shift = ( 0,0, 0, 1 )
         elif dir=='Left':
-            shift = ( 0, 0, -1, 0 )
+            shift = ( 0, 0, 0, -1 )
         elif dir=='Down':
-            shift = ( 0, 1, 0, 0 )
+            shift = ( 0, 0, 1, 0 )
         elif dir=='Up':
-            shift = ( 0, -1, 0, 0 )
+            shift = ( 0, 0, -1, 0 )
         else:
             shift = ( 0, 0, 0, 0 )
     
-        # nRows x nCols x nChsTotal x nSamples
+        # nSamples x nChsTotal x nRows x nCols  
         ps, pa = nchs
         Y = X 
         # Block butterfly
-        Ys = Y[:ps,:,:,:]
-        Ya = Y[ps:,:,:,:]
-        Y =  torch.cat((Ys+Ya, Ys-Ya),dim=0)/np.sqrt(2.)
+        Ys = Y[:,:ps,:,:]
+        Ya = Y[:,ps:,:,:]
+        Y =  torch.cat((Ys+Ya, Ys-Ya),dim=1)/np.sqrt(2.)
         # Block circular shift
-        Y[ps:,:,:,:] = torch.roll(Y[ps:,:,:,:],shifts=shift,dims=(0,1,2,3))
+        Y[:,ps:,:,:] = torch.roll(Y[:,ps:,:,:],shifts=shift,dims=(0,1,2,3))
         # Block butterfly
-        Ys = Y[:ps,:,:,:]
-        Ya = Y[ps:,:,:,:]
-        Y =  torch.cat((Ys+Ya ,Ys-Ya),dim=0)/np.sqrt(2.)
+        Ys = Y[:,:ps,:,:]
+        Ya = Y[:,ps:,:,:]
+        Y =  torch.cat((Ys+Ya ,Ys-Ya),dim=1)/np.sqrt(2.)
         # Output
         expctdZ = Y 
 
@@ -136,34 +136,34 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
         nSamples = 8
         nChsTotal = sum(nchs)
         target = 'Upper'
-        # nChsTotal x nRows x nCols x nSamples
-        X = torch.randn(nChsTotal,nrows,ncols,nSamples,dtype=datatype)
+        # nSamples x nChsTotal x nRows x nCols 
+        X = torch.randn(nSamples,nChsTotal,nrows,ncols,dtype=datatype)
 
         # Expected values
         if dir=='Right':
-            shift = ( 0, 0, 1, 0, )
+            shift = ( 0, 0, 0, 1, )
         elif dir=='Left':
-            shift = ( 0, 0, -1, 0 )
+            shift = ( 0, 0, 0, -1 )
         elif dir=='Down':
-            shift = ( 0, 1, 0, 0 )
+            shift = ( 0, 0, 1, 0 )
         elif dir=='Up':
-            shift = ( 0, -1, 0, 0 )
+            shift = ( 0, 0, -1, 0 )
         else:
             shift = ( 0, 0, 0, 0 )
 
-        # nChsTotal x nRows x nCols x nSamples
+        # nSamples x nChsTotal x nRows x nCols
         ps, pa = nchs
         Y = X
         # Block butterfly
-        Ys = Y[:ps,:,:,:]
-        Ya = Y[ps:,:,:,:]
-        Y =  torch.cat((Ys+Ya, Ys-Ya),dim=0)/np.sqrt(2.)
+        Ys = Y[:,:ps,:,:]
+        Ya = Y[:,ps:,:,:]
+        Y =  torch.cat((Ys+Ya, Ys-Ya),dim=1)/np.sqrt(2.)
         # Block circular shift
-        Y[:ps,:,:,:] = torch.roll(Y[:ps,:,:,:],shifts=shift,dims=(0,1,2,3))
+        Y[:,:ps,:,:] = torch.roll(Y[:,:ps,:,:],shifts=shift,dims=(0,1,2,3))
         # Block butterfly
-        Ys = Y[:ps,:,:,:]
-        Ya = Y[ps:,:,:,:]
-        Y =  torch.cat((Ys+Ya, Ys-Ya),dim=0)/np.sqrt(2.)
+        Ys = Y[:,:ps,:,:]
+        Ya = Y[:,ps:,:,:]
+        Y =  torch.cat((Ys+Ya, Ys-Ya),dim=1)/np.sqrt(2.)
         # Output
         expctdZ = Y
         
@@ -194,36 +194,36 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
         nChsTotal = sum(nchs)
         target = 'Lower'
 
-        # nChsTotal x nRows x nCols x nSamples
-        X = torch.zeros(nChsTotal,nrows,ncols,nSamples,dtype=datatype,requires_grad=True)        
-        dLdZ = torch.randn(nChsTotal,nrows,ncols,nSamples,dtype=datatype)
+        # nSamples x nChsTotal x nRows x nCols 
+        X = torch.zeros(nSamples,nChsTotal,nrows,ncols,dtype=datatype,requires_grad=True)        
+        dLdZ = torch.randn(nSamples,nChsTotal,nrows,ncols,dtype=datatype)
 
         # Expected values        
         if dir=='Right':
-            shift = ( 0, 0, -1, 0 ) # Reverse
+            shift = ( 0, 0, 0, -1 ) # Reverse
         elif dir=='Left':
-            shift = ( 0, 0, 1, 0, ) # Reverse
+            shift = ( 0, 0, 0, 1 ) # Reverse
         elif dir=='Down':
-            shift = ( 0, -1, 0, 0 ) # Reverse
+            shift = ( 0, 0, -1, 0 ) # Reverse
         elif dir=='Up':
-            shift = ( 0, 1, 0, 0 ) # Reverse
+            shift = ( 0, 0, 1, 0 ) # Reverse
         else:
             shift = ( 0, 0, 0, 0 ) # Reverse
 
-        # nChsTotal x nRows x nCols x nSamples                
+        # nSamples x nChsTotal x nRows x nCols
         ps, pa = nchs
         Y = dLdZ
         
         # Block butterfly        
-        Ys = Y[:ps,:,:,:]
-        Ya = Y[ps:,:,:,:]
-        Y = torch.cat((Ys+Ya,Ys-Ya),dim=0)/np.sqrt(2.)
+        Ys = Y[:,:ps,:,:]
+        Ya = Y[:,ps:,:,:]
+        Y = torch.cat((Ys+Ya,Ys-Ya),dim=1)/np.sqrt(2.)
         # Block circular shift
-        Y[ps:,:,:,:] = torch.roll(Y[ps:,:,:,:],shifts=shift,dims=(0,1,2,3))        
+        Y[:,ps:,:,:] = torch.roll(Y[:,ps:,:,:],shifts=shift,dims=(0,1,2,3))        
         # Block butterfly        
-        Ys = Y[:ps,:,:,:]
-        Ya = Y[ps:,:,:,:]
-        Y = torch.cat((Ys+Ya,Ys-Ya),dim=0)/np.sqrt(2.)
+        Ys = Y[:,:ps,:,:]
+        Ya = Y[:,ps:,:,:]
+        Y = torch.cat((Ys+Ya,Ys-Ya),dim=1)/np.sqrt(2.)
 
         # Output
         expctddLdX = Y
@@ -257,36 +257,36 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
         nChsTotal = sum(nchs)
         target = 'Upper'
         
-        # nChsTotal x nRows x nCols x nSamples
-        X = torch.zeros(nChsTotal,nrows,ncols,nSamples,dtype=datatype,requires_grad=True)                
-        dLdZ = torch.randn(nChsTotal,nrows,ncols,nSamples,dtype=datatype)
+        # nSamples x nChsTotal x nRows x nCols 
+        X = torch.zeros(nSamples,nChsTotal,nrows,ncols,dtype=datatype,requires_grad=True)                
+        dLdZ = torch.randn(nSamples,nChsTotal,nrows,ncols,dtype=datatype)
 
         # Expected values
         if dir=='Right':
-            shift = ( 0, 0, -1, 0 ) # Reverse
+            shift = ( 0, 0, 0, -1 ) # Reverse
         elif dir=='Left':
-            shift = ( 0, 0,  1, 0 ) # Reverse
+            shift = ( 0, 0, 0,  1 ) # Reverse
         elif dir=='Down':
-            shift = ( 0, -1, 0, 0 ) # Reverse
+            shift = ( 0, 0, -1, 0 ) # Reverse
         elif dir=='Up':
-            shift = ( 0, 1, 0, 0 ) # Reverse
+            shift = ( 0, 0, 1, 0 ) # Reverse
         else:
             shift = ( 0, 0, 0, 0 )
 
-        # nChsTotal x nRows x nCols x nSamples
+        # nSamples x nChsTotal x nRows x nCols 
         ps, pa = nchs
         Y = dLdZ
 
         # Block butterfly
-        Ys = Y[:ps,:,:,:]
-        Ya = Y[ps:,:,:,:]
-        Y = torch.cat((Ys+Ya, Ys-Ya),dim=0)/np.sqrt(2.)
+        Ys = Y[:,:ps,:,:]
+        Ya = Y[:,ps:,:,:]
+        Y = torch.cat((Ys+Ya, Ys-Ya),dim=1)/np.sqrt(2.)
         # Block circular shift
-        Y[:ps,:,:,:] = torch.roll(Y[:ps,:,:,:],shifts=shift,dims=(0,1,2,3))
+        Y[:,:ps,:,:] = torch.roll(Y[:,:ps,:,:],shifts=shift,dims=(0,1,2,3))
         # Block butterfly
-        Ys = Y[:ps,:,:,:]
-        Ya = Y[ps:,:,:,:]
-        Y = torch.cat((Ys+Ya, Ys-Ya),dim=0)/np.sqrt(2.)
+        Ys = Y[:,:ps,:,:]
+        Ya = Y[:,ps:,:,:]
+        Y = torch.cat((Ys+Ya, Ys-Ya),dim=1)/np.sqrt(2.)
 
         # Output
         expctddLdX = Y
