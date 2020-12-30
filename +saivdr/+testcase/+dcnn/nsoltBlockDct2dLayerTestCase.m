@@ -5,7 +5,7 @@ classdef nsoltBlockDct2dLayerTestCase < matlab.unittest.TestCase
     %      (Stride(1)xnRows) x (Stride(2)xnCols) x nComponents x nSamples
     %
     %   コンポーネント別に出力:
-    %      nDecs x nRows x nCols x nLays x nSamples
+    %      nDecs x nRows x nCols x nSamples
     %
     % Requirements: MATLAB R2020a
     %
