@@ -71,7 +71,7 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
     @parameterized.expand(
         list(itertools.product(nchs,nrows,ncols,dir,datatype))
     )
-    def testPredictGrayscaleShiftLowerCoefs(self, \
+    def testPredictGrayscaleShiftLowerCoefs(self, 
             nchs, nrows, ncols, dir, datatype):
         atol= 1e-6
             
@@ -112,9 +112,9 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
 
         # Instantiation of target class
         layer = NsoltAtomExtension2dLayer( 
-            number_of_channels=nchs, \
-            name='Qn~', \
-            direction=dir, \
+            number_of_channels=nchs, 
+            name='Qn~', 
+            direction=dir, 
             target_channels=target
         )
 
@@ -128,7 +128,7 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
     @parameterized.expand(
         list(itertools.product(nchs,nrows,ncols,dir,datatype))
     )
-    def testPredictGrayscaleShiftUpperCoefs(self, \
+    def testPredictGrayscaleShiftUpperCoefs(self, 
                 nchs, nrows, ncols, dir, datatype):
         atol= 1e-6                
             
@@ -169,9 +169,9 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
         
         # Instantiation of target class
         layer = NsoltAtomExtension2dLayer( 
-            number_of_channels=nchs, \
-            name='Qn~', \
-            direction=dir, \
+            number_of_channels=nchs, 
+            name='Qn~', 
+            direction=dir, 
             target_channels=target
         )
         
@@ -185,7 +185,7 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
     @parameterized.expand(
         list(itertools.product(nchs,nrows,ncols,dir,datatype))
     )
-    def testBackwardGrayscaleShiftLowerCoefs(self, \
+    def testBackwardGrayscaleShiftLowerCoefs(self, 
                 nchs, nrows, ncols, dir, datatype):
         atol = 1e-6
   
@@ -230,9 +230,9 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
 
         # Instantiation of target class
         layer = NsoltAtomExtension2dLayer(
-            number_of_channels=nchs,\
-            name='Qn',\
-            direction=dir,\
+            number_of_channels=nchs,
+            name='Qn',
+            direction=dir,
             target_channels=target
         )
 
@@ -248,7 +248,7 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
     @parameterized.expand(
         list(itertools.product(nchs,nrows,ncols,dir,datatype))
     )
-    def testBackwardGrayscaleShiftUpperCoefs(self, \
+    def testBackwardGrayscaleShiftUpperCoefs(self, 
                 nchs, nrows, ncols, dir, datatype):
         atol = 1e-6
        
@@ -293,9 +293,9 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
 
         # Instantiation of target class
         layer = NsoltAtomExtension2dLayer(
-                number_of_channels=nchs,\
-                name='Qn',\
-                direction=dir,\
+                number_of_channels=nchs,
+                name='Qn',
+                direction=dir,
                 target_channels=target
         )
             
