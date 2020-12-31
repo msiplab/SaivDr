@@ -1,5 +1,7 @@
 import torch
 import torch.nn as nn
+import torch_dct as dct
+import numpy as np
 from nsoltUtility import Direction
 
 class NsoltBlockDct2dLayer(nn.Module):
@@ -7,10 +9,10 @@ class NsoltBlockDct2dLayer(nn.Module):
     NSOLTBLOCKDCT2DLAYER
     
        ベクトル配列をブロック配列を入力:
-          (Stride(1)xnRows) x (Stride(2)xnCols) x nComponents x nSamples
+          nSamples x nComponents x (Stride(1)xnRows) x (Stride(2)xnCols) 
     
        コンポーネント別に出力(nComponents):
-          nDecs x nRows x nCols x nSamples
+          nSamples x nDecs x nRows x nCols 
         
     Requirements: Python 3.7.x, PyTorch 1.7.x
     
@@ -28,7 +30,8 @@ class NsoltBlockDct2dLayer(nn.Module):
 
     def __init__(self,
         name='',
-        decimation_factor=[]
+        decimation_factor=[],
+        number_of_components=1
         ):
         super(NsoltBlockDct2dLayer, self).__init__()
         self.decimation_factor = decimation_factor
@@ -36,6 +39,29 @@ class NsoltBlockDct2dLayer(nn.Module):
         self.description = "Block DCT of size " \
             + str(self.decimation_factor[Direction.VERTICAL]) + "x" \
             + str(self.decimation_factor[Direction.HORIZONTAL])
+        #self.type = '';
+        self.num_outputs = number_of_components
+        #self.num_inputs = 1
 
-    def forward(self,x):
-        return x
+    def forward(self,X):
+        #nComponents = self.num_outputs
+        nSamples = X.size(0)
+        height = X.size(2)
+        width = X.size(3)
+        stride = self.decimation_factor        
+        nrows = np.ceil(height/stride[Direction.VERTICAL]).astype(int)
+        ncols = np.ceil(width/stride[Direction.HORIZONTAL]).astype(int)
+        ndecs = np.prod(stride)
+        # Block DCT (nSamples x nComponents x nrows x ncols) x decV x decH
+        arrayshape = stride.copy()
+        arrayshape.insert(0,-1)
+        Y = dct.dct_2d(X.view(arrayshape),norm='ortho')
+        # Rearrange the DCT Coefs. (nSamples x nComponents x nrows x ncols) x (decV x decH)
+        cee = Y[:,0::2,0::2].reshape(Y.size(0),-1)
+        coo = Y[:,1::2,1::2].reshape(Y.size(0),-1)
+        coe = Y[:,1::2,0::2].reshape(Y.size(0),-1)
+        ceo = Y[:,0::2,1::2].reshape(Y.size(0),-1)
+        A = torch.cat((cee,coo,coe,ceo),dim=-1)
+        Z = A.view(nSamples,nrows,ncols,ndecs)
+
+        return Z

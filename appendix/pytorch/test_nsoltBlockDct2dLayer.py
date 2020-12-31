@@ -3,8 +3,10 @@ import unittest
 from parameterized import parameterized
 import torch
 import torch.nn as nn
+import torch_dct as dct
 import numpy as np
 from nsoltBlockDct2dLayer import NsoltBlockDct2dLayer
+from nsoltUtility import Direction
 
 stride = [ [1, 1], [2, 2], [2, 4], [4, 1], [4, 4] ]
 datatype = [ torch.float, torch.double ]
@@ -16,12 +18,12 @@ class NsoltBlockDct2dLayerTestCase(unittest.TestCase):
     NSOLTBLOCKDCT2DLAYERTESTCASE
     
        ベクトル配列をブロック配列を入力:
-          (Stride(1)xnRows) x (Stride(2)xnCols) x nComponents x nSamples
+          nSamples x nComponents x (Stride[0]xnRows) x (Stride[1]xnCols) 
     
        コンポーネント別に出力:
-          nDecs x nRows x nCols x nLays x nSamples
+          nSamples x nRows x nCols x nDecs
     
-    Requirements: Rython 3.7.x, PyTorch 1.7.x
+    Requirements: Python 3.7.x, PyTorch 1.7.x
     
     Copyright (c) 2020, Shogo MURAMATSU
     
@@ -57,6 +59,48 @@ class NsoltBlockDct2dLayerTestCase(unittest.TestCase):
         self.assertTrue(isinstance(layer, nn.Module))        
         self.assertEqual(actualName,expctdName)
         self.assertEqual(actualDescription,expctdDescription)
+
+    @parameterized.expand(
+        list(itertools.product(stride,height,width,datatype))
+    )
+    def testPredictGrayScale(self,
+            stride, height, width, datatype):
+        atol = 1e-6
+
+        # Parameters
+        nSamples = 8
+        nComponents = 1
+        # Source (nSamples x nComponents x (Stride[0]xnRows) x (Stride[1]xnCols))
+        X = torch.rand(nSamples,nComponents,height,width,dtype=datatype)
+
+        # Expected values
+        nrows = np.ceil(height/stride[Direction.VERTICAL]).astype(int)
+        ncols = np.ceil(width/stride[Direction.HORIZONTAL]).astype(int)
+        ndecs = np.prod(stride)
+        # Block DCT (nSamples x nComponents x nrows x ncols) x decV x decH
+        arrayshape = stride.copy()
+        arrayshape.insert(0,-1)
+        Y = dct.dct_2d(X.view(arrayshape),norm='ortho')
+        # Rearrange the DCT Coefs. (nSamples x nComponents x nrows x ncols) x (decV x decH)
+        cee = Y[:,0::2,0::2].reshape(Y.size(0),-1)
+        coo = Y[:,1::2,1::2].reshape(Y.size(0),-1)
+        coe = Y[:,1::2,0::2].reshape(Y.size(0),-1)
+        ceo = Y[:,0::2,1::2].reshape(Y.size(0),-1)
+        A = torch.cat((cee,coo,coe,ceo),dim=-1)
+        expctdZ = A.view(nSamples,nrows,ncols,ndecs)
+
+        # Instantiation of target class
+        layer = NsoltBlockDct2dLayer(
+                decimation_factor=stride,
+                name='E0'
+            )
+            
+        # Actual values
+        actualZ = layer.forward(X)
+
+        # Evaluation
+        self.assertEqual(actualZ.dtype,datatype)         
+        self.assertTrue(torch.isclose(actualZ,expctdZ,rtol=0.,atol=atol).all())
 
 if __name__ == '__main__':
     unittest.main()
