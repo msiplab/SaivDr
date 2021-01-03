@@ -223,6 +223,100 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
         self.assertTrue(torch.isclose(actualZ,expctdZ,rtol=0.,atol=atol).all())
         self.assertTrue(actualZ.requires_grad)    
 
+    @parameterized.expand(
+        list(itertools.product(stride,height,width,datatype))
+    )
+    def testBackwardGrayScale(self,
+        stride, height, width, datatype):
+        atol=1e-6
+
+        # Parameters
+        nSamples = 8
+        nrows = np.ceil(height/stride[Direction.VERTICAL]).astype(int)
+        ncols = np.ceil(width/stride[Direction.HORIZONTAL]).astype(int)
+        nDecs = np.prod(stride)
+        nComponents = 1
+        # Source (nSamples x nRows x nCols x nDecs)
+        X = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype,requires_grad=True)        
+        # nSamples x nComponents x (Stride[0]xnRows) x (Stride[1]xnCols)
+        dLdZ = torch.rand(nSamples,nComponents,height,width,dtype=datatype)
+    
+        # Expected values
+        arrayshape = stride.copy()
+        arrayshape.insert(0,-1)
+        Y = dct.dct_2d(dLdZ.view(arrayshape),norm='ortho')
+        A = permuteDctCoefs_(Y)
+        # Rearrange the DCT Coefs. (nSamples x nComponents x nrows x ncols) x (decV x decH)
+        expctddLdX = A.view(nSamples,nrows,ncols,nDecs)
+
+        # Instantiation of target class
+        layer = NsoltBlockIdct2dLayer(
+                decimation_factor=stride,
+                name='E0~'
+            )
+
+        # Actual values
+        Z = layer.forward(X)
+        Z.backward(dLdZ)
+        actualdLdX = X.grad
+
+        # Evaluation
+        self.assertEqual(actualdLdX.dtype,datatype)
+        self.assertTrue(torch.isclose(actualdLdX,expctddLdX,rtol=0.,atol=atol).all())
+        self.assertTrue(Z.requires_grad)
+
+    @parameterized.expand(
+        list(itertools.product(stride,height,width,datatype))
+    )
+    def testBackwardRgbColor(self,
+        stride, height, width, datatype):
+        atol=1e-6
+
+        # Parameters
+        nSamples = 8
+        nrows = np.ceil(height/stride[Direction.VERTICAL]).astype(int)
+        ncols = np.ceil(width/stride[Direction.HORIZONTAL]).astype(int)
+        nDecs = np.prod(stride)
+        nComponents = 3 # RGB
+        # Source (nSamples x nRows x nCols x nDecs)
+        Xr = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype,requires_grad=True)     
+        Xg = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype,requires_grad=True)
+        Xb = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype,requires_grad=True)               
+        # nSamples x nComponents x (Stride[0]xnRows) x (Stride[1]xnCols)
+        dLdZ = torch.rand(nSamples,nComponents,height,width,dtype=datatype)
+
+        # Expected values
+        arrayshape = stride.copy()
+        arrayshape.insert(0,-1)
+        Y = dct.dct_2d(dLdZ.view(arrayshape),norm='ortho')
+        A = permuteDctCoefs_(Y)
+        # Rearrange the DCT Coefs. (nSamples x nRows x nCols x nDecs)
+        Z = A.view(nSamples,nComponents,nrows,ncols,nDecs) 
+        expctddLdXr,expctddLdXg,expctddLdXb = map(lambda x: torch.squeeze(x,dim=1),torch.chunk(Z,nComponents,dim=1))
+
+        # Instantiation of target class
+        layer = NsoltBlockIdct2dLayer(
+                decimation_factor=stride,
+                number_of_components=nComponents,
+                name='E0~'
+            )
+
+        # Actual values
+        Z = layer.forward(Xr,Xg,Xb)
+        Z.backward(dLdZ)
+        actualdLdXr = Xr.grad
+        actualdLdXg = Xg.grad
+        actualdLdXb = Xb.grad
+
+        # Evaluation
+        self.assertEqual(actualdLdXr.dtype,datatype)
+        self.assertEqual(actualdLdXg.dtype,datatype)
+        self.assertEqual(actualdLdXb.dtype,datatype)                
+        self.assertTrue(torch.isclose(actualdLdXr,expctddLdXr,rtol=0.,atol=atol).all())
+        self.assertTrue(torch.isclose(actualdLdXg,expctddLdXg,rtol=0.,atol=atol).all())        
+        self.assertTrue(torch.isclose(actualdLdXb,expctddLdXb,rtol=0.,atol=atol).all())        
+        self.assertTrue(Z.requires_grad)
+
 def permuteDctCoefs_(x):
     cee = x[:,0::2,0::2].reshape(x.size(0),-1)
     coo = x[:,1::2,1::2].reshape(x.size(0),-1)
