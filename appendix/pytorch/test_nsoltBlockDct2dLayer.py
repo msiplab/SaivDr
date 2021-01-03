@@ -280,76 +280,59 @@ class NsoltBlockDct2dLayerTestCase(unittest.TestCase):
         self.assertTrue(torch.isclose(actualdLdX,expctddLdX,rtol=0.,atol=atol).all())
         self.assertTrue(Z.requires_grad)
 
-    """
-function testBackwardRgbColor(testCase, ...
-                stride, height, width, datatype)
-            import saivdr.dictionary.utility.Direction
-            import matlab.unittest.constraints.IsEqualTo
-            import matlab.unittest.constraints.AbsoluteTolerance
-            tolObj = AbsoluteTolerance(1e-6,single(1e-6));
+    @parameterized.expand(
+        list(itertools.product(stride,height,width,datatype))
+    )
+    def testBackwardRgbColor(self,
+        stride, height, width, datatype):
+        atol = 1e-6
+
+        # Parameters
+        nSamples = 8
+        nrows = np.ceil(height/stride[Direction.VERTICAL]).astype(int)
+        ncols = np.ceil(width/stride[Direction.HORIZONTAL]).astype(int)
+        nDecs = np.prod(stride)
+        nComponents = 3 # RGB
+
+        # Source (nSamples x nComponents x (Stride[0]xnRows) x (Stride[1]xnCols))
+        X = torch.rand(nSamples,nComponents,height,width,dtype=datatype,requires_grad=True)        
+        # nSamples x nRows x nCols x nDecs
+        dLdZr = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype)
+        dLdZg = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype)
+        dLdZb = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype) 
+    
+        # Expected values
+        Ar = permuteIdctCoefs_(dLdZr,stride)
+        Ag = permuteIdctCoefs_(dLdZg,stride)        
+        Ab = permuteIdctCoefs_(dLdZb,stride)                
+        Yr = dct.idct_2d(Ar,norm='ortho')
+        Yg = dct.idct_2d(Ag,norm='ortho')
+        Yb = dct.idct_2d(Ab,norm='ortho')
+        expctddLdX = torch.cat((
+            Yr.reshape(nSamples,1,height,width),
+            Yg.reshape(nSamples,1,height,width),
+            Yb.reshape(nSamples,1,height,width)),dim=1)
+        
+        # Instantiation of target class
+        layer = NsoltBlockDct2dLayer(
+                decimation_factor=stride,
+                number_of_components=nComponents,                
+                name='E0'
+            )
             
-            % Parameters
-            nSamples = 8;
-            nrows = ceil(height/stride(Direction.VERTICAL));
-            ncols = ceil(width/stride(Direction.HORIZONTAL));
-            nDecs = prod(stride);
-            nComponents = 3; % RGB
-            %dLdZr = rand(nrows,ncols,nDecs,nSamples,datatype);
-            %dLdZg = rand(nrows,ncols,nDecs,nSamples,datatype);
-            %dLdZb = rand(nrows,ncols,nDecs,nSamples,datatype);
-            dLdZr = rand(nDecs,nrows,ncols,nSamples,datatype);
-            dLdZg = rand(nDecs,nrows,ncols,nSamples,datatype);
-            dLdZb = rand(nDecs,nrows,ncols,nSamples,datatype);            
-            
-            % Expected values
-            expctddLdX = zeros(height,width,nComponents,datatype);
-            for iSample = 1:nSamples
-                %Ar = reshape(permute(dLdZr(:,:,:,iSample),[3 1 2]),...
-                %    nDecs*nrows,ncols);
-                %Ag = reshape(permute(dLdZg(:,:,:,iSample),[3 1 2]),...
-                %    nDecs*nrows,ncols);
-                %Ab = reshape(permute(dLdZb(:,:,:,iSample),[3 1 2]),...
-                %    nDecs*nrows,ncols);
-                Ar = reshape(dLdZr(:,:,:,iSample),nDecs*nrows,ncols);
-                Ag = reshape(dLdZg(:,:,:,iSample),nDecs*nrows,ncols);
-                Ab = reshape(dLdZb(:,:,:,iSample),nDecs*nrows,ncols);                
-                Yr = blockproc(Ar,[nDecs 1],...
-                    @(x) testCase.permuteIdctCoefs_(x.data,stride));
-                Yg = blockproc(Ag,[nDecs 1],...
-                    @(x) testCase.permuteIdctCoefs_(x.data,stride));
-                Yb = blockproc(Ab,[nDecs 1],...
-                    @(x) testCase.permuteIdctCoefs_(x.data,stride));
-                expctddLdX(:,:,1,iSample) = ...
-                    blockproc(Yr,...
-                    stride,...
-                    @(x) idct2(x.data));
-                expctddLdX(:,:,2,iSample) = ...
-                    blockproc(Yg,...
-                    stride,...
-                    @(x) idct2(x.data));
-                expctddLdX(:,:,3,iSample) = ...
-                    blockproc(Yb,...
-                    stride,...
-                    @(x) idct2(x.data));
-            end
-            
-            % Instantiation of target class
-            import saivdr.dcnn.*
-            layer = nsoltBlockDct2dLayer(...
-                'DecimationFactor',stride,...
-                'NumberOfComponents',nComponents,...
-                'Name','E0');
-            
-            % Actual values
-            actualdLdX = layer.backward([],[],[],[],dLdZr,dLdZg,dLdZb,[]);
-            
-            % Evaluation
-            testCase.verifyInstanceOf(actualdLdX,datatype);
-            testCase.verifyThat(actualdLdX,...
-                IsEqualTo(expctddLdX,'Within',tolObj));
-            
-        end
-    """
+        # Actual values
+        Zr,Zg,Zb = layer.forward(X)
+        Zr.backward(dLdZr,retain_graph=True)
+        Zg.backward(dLdZg,retain_graph=True)
+        Zb.backward(dLdZb,retain_graph=False)
+        actualdLdX = X.grad
+
+        # Evaluation
+        self.assertEqual(actualdLdX.dtype,datatype)
+        self.assertTrue(torch.isclose(actualdLdX,expctddLdX,rtol=0.,atol=atol).all())
+        self.assertTrue(Zr.requires_grad)
+        self.assertTrue(Zg.requires_grad)
+        self.assertTrue(Zb.requires_grad)
 
 def permuteDctCoefs_(x):
     cee = x[:,0::2,0::2].reshape(x.size(0),-1)
