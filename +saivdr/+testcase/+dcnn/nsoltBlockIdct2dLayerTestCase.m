@@ -428,9 +428,10 @@ classdef nsoltBlockIdct2dLayerTestCase < matlab.unittest.TestCase
             value = [ cee(:) ; coo(:) ; coe(:) ; ceo(:) ];
         end
         function value = permuteIdctCoefs_(x,blockSize)
+            import saivdr.dictionary.utility.Direction
             coefs = x;
-            decY_ = blockSize(1);
-            decX_ = blockSize(2);
+            decY_ = blockSize(Direction.VERTICAL);
+            decX_ = blockSize(Direction.HORIZONTAL);
             nQDecsee = ceil(decY_/2)*ceil(decX_/2);
             nQDecsoo = floor(decY_/2)*floor(decX_/2);
             nQDecsoe = floor(decY_/2)*ceil(decX_/2);
