@@ -321,7 +321,7 @@ classdef nsoltBlockDct2dLayerTestCase < matlab.unittest.TestCase
             dLdZ = rand(nDecs,nrows,ncols,nSamples,datatype);
             
             % Expected values
-            expctddLdX = zeros(height,width,datatype);
+            expctddLdX = zeros(height,width,nComponents,nSamples,datatype);
             for iSample = 1:nSamples
                 %A = reshape(permute(dLdZ(:,:,:,iSample),[3 1 2]),...
                 %    nDecs*nrows,ncols);
@@ -371,7 +371,7 @@ classdef nsoltBlockDct2dLayerTestCase < matlab.unittest.TestCase
             dLdZb = rand(nDecs,nrows,ncols,nSamples,datatype);            
             
             % Expected values
-            expctddLdX = zeros(height,width,nComponents,datatype);
+            expctddLdX = zeros(height,width,nComponents,nSamples,datatype);
             for iSample = 1:nSamples
                 %Ar = reshape(permute(dLdZr(:,:,:,iSample),[3 1 2]),...
                 %    nDecs*nrows,ncols);
