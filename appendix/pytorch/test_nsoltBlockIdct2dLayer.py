@@ -131,6 +131,98 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
         self.assertTrue(torch.isclose(actualZ,expctdZ,rtol=0.,atol=atol).all())
         self.assertTrue(actualZ.requires_grad)
 
+    @parameterized.expand(
+        list(itertools.product(stride,height,width,datatype))
+    )
+    def testPredictRgbColor(self,
+        stride, height, width, datatype):
+        atol=1e-6
+
+        # Parameters
+        nSamples = 8
+        nrows = np.ceil(height/stride[Direction.VERTICAL]).astype(int)
+        ncols = np.ceil(width/stride[Direction.HORIZONTAL]).astype(int)
+        nDecs = np.prod(stride)
+        nComponents = 3 # RGB
+        # nSamples x nRows x nCols x nDecs         
+        Xr = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype,requires_grad=True)
+        Xg = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype,requires_grad=True)
+        Xb = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype,requires_grad=True)
+
+        # Expected values
+        Ar = permuteIdctCoefs_(Xr,stride)
+        Ag = permuteIdctCoefs_(Xg,stride)
+        Ab = permuteIdctCoefs_(Xb,stride)                
+        Yr = dct.idct_2d(Ar,norm='ortho')
+        Yg = dct.idct_2d(Ag,norm='ortho')
+        Yb = dct.idct_2d(Ab,norm='ortho')
+        expctdZ = torch.cat((
+            Yr.reshape(nSamples,1,height,width),
+            Yg.reshape(nSamples,1,height,width),
+            Yb.reshape(nSamples,1,height,width)),dim=1)
+
+            
+        # Instantiation of target class
+        layer = NsoltBlockIdct2dLayer(
+                decimation_factor=stride,
+                number_of_components=nComponents,
+                name='E0~'
+            )
+
+        # Actual values
+        with torch.no_grad():
+            actualZ = layer.forward(Xr,Xg,Xb)
+
+        # Evaluation
+        self.assertEqual(actualZ.dtype,datatype)
+        self.assertTrue(torch.isclose(actualZ,expctdZ,rtol=0.,atol=atol).all())
+        self.assertFalse(actualZ.requires_grad)
+
+    @parameterized.expand(
+        list(itertools.product(stride,height,width,datatype))
+    )
+    def testForwardRgbColor(self,
+        stride, height, width, datatype):
+        atol=1e-6
+
+        # Parameters
+        nSamples = 8
+        nrows = np.ceil(height/stride[Direction.VERTICAL]).astype(int)
+        ncols = np.ceil(width/stride[Direction.HORIZONTAL]).astype(int)
+        nDecs = np.prod(stride)
+        nComponents = 3 # RGB
+        # nSamples x nRows x nCols x nDecs         
+        Xr = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype,requires_grad=True)
+        Xg = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype,requires_grad=True)
+        Xb = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype,requires_grad=True)
+
+        # Expected values
+        Ar = permuteIdctCoefs_(Xr,stride)
+        Ag = permuteIdctCoefs_(Xg,stride)
+        Ab = permuteIdctCoefs_(Xb,stride)                
+        Yr = dct.idct_2d(Ar,norm='ortho')
+        Yg = dct.idct_2d(Ag,norm='ortho')
+        Yb = dct.idct_2d(Ab,norm='ortho')
+        expctdZ = torch.cat((
+            Yr.reshape(nSamples,1,height,width),
+            Yg.reshape(nSamples,1,height,width),
+            Yb.reshape(nSamples,1,height,width)),dim=1)
+            
+        # Instantiation of target class
+        layer = NsoltBlockIdct2dLayer(
+                decimation_factor=stride,
+                number_of_components=nComponents,
+                name='E0~'
+            )
+
+        # Actual values
+        actualZ = layer.forward(Xr,Xg,Xb)
+
+        # Evaluation
+        self.assertEqual(actualZ.dtype,datatype)
+        self.assertTrue(torch.isclose(actualZ,expctdZ,rtol=0.,atol=atol).all())
+        self.assertTrue(actualZ.requires_grad)    
+
 def permuteDctCoefs_(x):
     cee = x[:,0::2,0::2].reshape(x.size(0),-1)
     coo = x[:,1::2,1::2].reshape(x.size(0),-1)

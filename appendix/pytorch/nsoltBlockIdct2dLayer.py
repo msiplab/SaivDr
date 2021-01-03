@@ -41,35 +41,45 @@ class NsoltBlockIdct2dLayer(nn.Module):
         #self.type = ''
         self.num_inputs = number_of_components
 
-    def forward(self,x):
+    def forward(self,*args):
         block_size = self.decimation_factor
-        nsamples = x.size(0)
-        nrows = x.size(1)
-        ncols = x.size(2)
-        # Permute IDCT coefficients
-        coefs = x.view(-1,np.prod(block_size))
-        decY_ = block_size[Direction.VERTICAL]
-        decX_ = block_size[Direction.HORIZONTAL]
-        chDecY = np.ceil(decY_/2.).astype(int)
-        chDecX = np.ceil(decX_/2.).astype(int)
-        fhDecY = np.floor(decY_/2.).astype(int)
-        fhDecX = np.floor(decX_/2.).astype(int)
-        nQDecsee = chDecY*chDecX
-        nQDecsoo = fhDecY*fhDecX
-        nQDecsoe = fhDecY*chDecX
-        cee = coefs[:,:nQDecsee]
-        coo = coefs[:,nQDecsee:nQDecsee+nQDecsoo]
-        coe = coefs[:,nQDecsee+nQDecsoo:nQDecsee+nQDecsoo+nQDecsoe]
-        ceo = coefs[:,nQDecsee+nQDecsoo+nQDecsoe:]
-        nBlocks = coefs.size(0)
-        value = torch.zeros(nBlocks,decY_,decX_,dtype=x.dtype)
-        value[:,0::2,0::2] = cee.view(nBlocks,chDecY,chDecX)
-        value[:,1::2,1::2] = coo.view(nBlocks,fhDecY,fhDecX)
-        value[:,1::2,0::2] = coe.view(nBlocks,fhDecY,chDecX)
-        value[:,0::2,1::2] = ceo.view(nBlocks,chDecY,fhDecX)
-        # 2D IDCT
-        y = dct.idct_2d(value,norm='ortho')
-        # Reshape and return
-        height = nrows * decY_ 
-        width = ncols * decX_
-        return y.reshape(nsamples,1,height,width)
+        for iComponent in range(self.num_inputs):
+            x = args[iComponent]
+            nsamples = x.size(0)
+            nrows = x.size(1)
+            ncols = x.size(2)
+            # Permute IDCT coefficients
+            value = permuteIdctCoefs_(x,block_size)
+            # 2D IDCT
+            y = dct.idct_2d(value,norm='ortho')
+            # Reshape and return
+            height = nrows * block_size[Direction.VERTICAL] 
+            width = ncols * block_size[Direction.HORIZONTAL] 
+            if iComponent<1:
+                z = y.reshape(nsamples,1,height,width)
+            else:
+                z = torch.cat((z,y.reshape(nsamples,1,height,width)),dim=1)
+        return z
+
+def permuteIdctCoefs_(x,block_size):
+    coefs = x.view(-1,np.prod(block_size))
+    decY_ = block_size[Direction.VERTICAL]
+    decX_ = block_size[Direction.HORIZONTAL]
+    chDecY = np.ceil(decY_/2.).astype(int)
+    chDecX = np.ceil(decX_/2.).astype(int)
+    fhDecY = np.floor(decY_/2.).astype(int)
+    fhDecX = np.floor(decX_/2.).astype(int)
+    nQDecsee = chDecY*chDecX
+    nQDecsoo = fhDecY*fhDecX
+    nQDecsoe = fhDecY*chDecX
+    cee = coefs[:,:nQDecsee]
+    coo = coefs[:,nQDecsee:nQDecsee+nQDecsoo]
+    coe = coefs[:,nQDecsee+nQDecsoo:nQDecsee+nQDecsoo+nQDecsoe]
+    ceo = coefs[:,nQDecsee+nQDecsoo+nQDecsoe:]
+    nBlocks = coefs.size(0)
+    value = torch.zeros(nBlocks,decY_,decX_,dtype=x.dtype)
+    value[:,0::2,0::2] = cee.view(nBlocks,chDecY,chDecX)
+    value[:,1::2,1::2] = coo.view(nBlocks,fhDecY,fhDecX)
+    value[:,1::2,0::2] = coe.view(nBlocks,fhDecY,chDecX)
+    value[:,0::2,1::2] = ceo.view(nBlocks,chDecY,fhDecX)
+    return value
