@@ -71,7 +71,51 @@ class NsoltBlockDct2dLayerTestCase(unittest.TestCase):
         nSamples = 8
         nComponents = 1
         # Source (nSamples x nComponents x (Stride[0]xnRows) x (Stride[1]xnCols))
-        X = torch.rand(nSamples,nComponents,height,width,dtype=datatype)
+        X = torch.rand(nSamples,nComponents,height,width,dtype=datatype,requires_grad=True)
+
+        # Expected values
+        nrows = np.ceil(height/stride[Direction.VERTICAL]).astype(int)
+        ncols = np.ceil(width/stride[Direction.HORIZONTAL]).astype(int)
+        ndecs = np.prod(stride)
+        # Block DCT (nSamples x nComponents x nrows x ncols) x decV x decH
+        arrayshape = stride.copy()
+        arrayshape.insert(0,-1)
+        Y = dct.dct_2d(X.view(arrayshape),norm='ortho')
+        # Rearrange the DCT Coefs. (nSamples x nComponents x nrows x ncols) x (decV x decH)
+        cee = Y[:,0::2,0::2].reshape(Y.size(0),-1)
+        coo = Y[:,1::2,1::2].reshape(Y.size(0),-1)
+        coe = Y[:,1::2,0::2].reshape(Y.size(0),-1)
+        ceo = Y[:,0::2,1::2].reshape(Y.size(0),-1)
+        A = torch.cat((cee,coo,coe,ceo),dim=-1)
+        expctdZ = A.view(nSamples,nrows,ncols,ndecs)
+
+        # Instantiation of target class
+        layer = NsoltBlockDct2dLayer(
+                decimation_factor=stride,
+                name='E0'
+            )
+            
+        # Actual values
+        with torch.no_grad():
+            actualZ = layer.forward(X)
+
+        # Evaluation
+        self.assertEqual(actualZ.dtype,datatype)         
+        self.assertTrue(torch.isclose(actualZ,expctdZ,rtol=0.,atol=atol).all())
+        self.assertFalse(actualZ.requires_grad)
+
+    @parameterized.expand(
+        list(itertools.product(stride,height,width,datatype))
+    )
+    def testForwardGrayScale(self,
+        stride, height, width, datatype):
+        atol=1e-6
+            
+        # Parameters
+        nSamples = 8
+        nComponents = 1
+        # Source (nSamples x nComponents x (Stride[0]xnRows) x (Stride[1]xnCols))
+        X = torch.rand(nSamples,nComponents,height,width,dtype=datatype,requires_grad=True)
 
         # Expected values
         nrows = np.ceil(height/stride[Direction.VERTICAL]).astype(int)
@@ -101,6 +145,116 @@ class NsoltBlockDct2dLayerTestCase(unittest.TestCase):
         # Evaluation
         self.assertEqual(actualZ.dtype,datatype)         
         self.assertTrue(torch.isclose(actualZ,expctdZ,rtol=0.,atol=atol).all())
+        self.assertTrue(actualZ.requires_grad)
+
+    @parameterized.expand(
+        list(itertools.product(stride,height,width,datatype))
+    )
+    def testPredictRgbColor(self,
+        stride, height, width, datatype):
+        atol=1e-6
+
+        # Parameters
+        nSamples = 8
+        nComponents = 3 # RGB
+        # Source (nSamples x nComponents x (Stride[0]xnRows) x (Stride[1]xnCols))
+        X = torch.rand(nSamples,nComponents,height,width,dtype=datatype,requires_grad=True)
+
+        # Expected values
+        nrows = np.ceil(height/stride[Direction.VERTICAL]).astype(int)
+        ncols = np.ceil(width/stride[Direction.HORIZONTAL]).astype(int)
+        ndecs = np.prod(stride)
+
+        # Block DCT (nSamples x nComponents x nrows x ncols) x decV x decH
+        arrayshape = stride.copy()
+        arrayshape.insert(0,-1)
+        Y = dct.dct_2d(X.view(arrayshape),norm='ortho')
+        # Rearrange the DCT Coefs. (nSamples x nComponents x nrows x ncols) x (decV x decH)
+        cee = Y[:,0::2,0::2].reshape(Y.size(0),-1)
+        coo = Y[:,1::2,1::2].reshape(Y.size(0),-1)
+        coe = Y[:,1::2,0::2].reshape(Y.size(0),-1)
+        ceo = Y[:,0::2,1::2].reshape(Y.size(0),-1)
+        A = torch.cat((cee,coo,coe,ceo),dim=-1)
+        Z = A.view(nSamples,nComponents,nrows,ncols,ndecs)
+        expctdZr = Z[:,0,:,:,:]
+        expctdZg = Z[:,1,:,:,:]
+        expctdZb = Z[:,2,:,:,:]
+
+        # Instantiation of target class
+        layer = NsoltBlockDct2dLayer(
+                decimation_factor=stride,
+                number_of_components=nComponents,
+                name='E0'
+            )
+            
+        # Actual values
+        with torch.no_grad():        
+            actualZr,actualZg,actualZb = layer.forward(X)
+
+        # Evaluation
+        self.assertEqual(actualZr.dtype,datatype)         
+        self.assertEqual(actualZg.dtype,datatype)         
+        self.assertEqual(actualZb.dtype,datatype)                 
+        self.assertTrue(torch.isclose(actualZr,expctdZr,rtol=0.,atol=atol).all())
+        self.assertTrue(torch.isclose(actualZg,expctdZg,rtol=0.,atol=atol).all())
+        self.assertTrue(torch.isclose(actualZb,expctdZb,rtol=0.,atol=atol).all())                
+        self.assertFalse(actualZr.requires_grad)
+        self.assertFalse(actualZg.requires_grad)
+        self.assertFalse(actualZb.requires_grad)
+
+    @parameterized.expand(
+        list(itertools.product(stride,height,width,datatype))
+    )
+    def testForwardRgbColor(self,
+        stride, height, width, datatype):
+        atol=1e-6
+
+        # Parameters
+        nSamples = 8
+        nComponents = 3 # RGB
+        # Source (nSamples x nComponents x (Stride[0]xnRows) x (Stride[1]xnCols))
+        X = torch.rand(nSamples,nComponents,height,width,dtype=datatype,requires_grad=True)
+
+        # Expected values
+        nrows = np.ceil(height/stride[Direction.VERTICAL]).astype(int)
+        ncols = np.ceil(width/stride[Direction.HORIZONTAL]).astype(int)
+        ndecs = np.prod(stride)
+
+        # Block DCT (nSamples x nComponents x nrows x ncols) x decV x decH
+        arrayshape = stride.copy()
+        arrayshape.insert(0,-1)
+        Y = dct.dct_2d(X.view(arrayshape),norm='ortho')
+        # Rearrange the DCT Coefs. (nSamples x nComponents x nrows x ncols) x (decV x decH)
+        cee = Y[:,0::2,0::2].reshape(Y.size(0),-1)
+        coo = Y[:,1::2,1::2].reshape(Y.size(0),-1)
+        coe = Y[:,1::2,0::2].reshape(Y.size(0),-1)
+        ceo = Y[:,0::2,1::2].reshape(Y.size(0),-1)
+        A = torch.cat((cee,coo,coe,ceo),dim=-1)
+        Z = A.view(nSamples,nComponents,nrows,ncols,ndecs)
+        expctdZr = Z[:,0,:,:,:]
+        expctdZg = Z[:,1,:,:,:]
+        expctdZb = Z[:,2,:,:,:]
+
+        # Instantiation of target class
+        layer = NsoltBlockDct2dLayer(
+                decimation_factor=stride,
+                number_of_components=nComponents,
+                name='E0'
+            )
+            
+        # Actual values
+        actualZr,actualZg,actualZb = layer.forward(X)
+
+        # Evaluation
+        self.assertEqual(actualZr.dtype,datatype)         
+        self.assertEqual(actualZg.dtype,datatype)         
+        self.assertEqual(actualZb.dtype,datatype)                 
+        self.assertTrue(torch.isclose(actualZr,expctdZr,rtol=0.,atol=atol).all())
+        self.assertTrue(torch.isclose(actualZg,expctdZg,rtol=0.,atol=atol).all())
+        self.assertTrue(torch.isclose(actualZb,expctdZb,rtol=0.,atol=atol).all())                
+        self.assertTrue(actualZr.requires_grad)
+        self.assertTrue(actualZg.requires_grad)
+        self.assertTrue(actualZb.requires_grad)    
 
 if __name__ == '__main__':
     unittest.main()

@@ -44,7 +44,7 @@ class NsoltBlockDct2dLayer(nn.Module):
         #self.num_inputs = 1
 
     def forward(self,X):
-        #nComponents = self.num_outputs
+        nComponents = self.num_outputs
         nSamples = X.size(0)
         height = X.size(2)
         width = X.size(3)
@@ -62,6 +62,9 @@ class NsoltBlockDct2dLayer(nn.Module):
         coe = Y[:,1::2,0::2].reshape(Y.size(0),-1)
         ceo = Y[:,0::2,1::2].reshape(Y.size(0),-1)
         A = torch.cat((cee,coo,coe,ceo),dim=-1)
-        Z = A.view(nSamples,nrows,ncols,ndecs)
+        Z = A.view(nSamples,nComponents,nrows,ncols,ndecs) 
 
-        return Z
+        if nComponents<2:
+            return torch.squeeze(Z,dim=1)
+        else:
+            return map(lambda x: torch.squeeze(x,dim=1),torch.chunk(Z,nComponents,dim=1))
