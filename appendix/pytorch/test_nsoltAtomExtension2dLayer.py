@@ -24,7 +24,7 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
     
     Requirements: Python 3.7.x, PyTorch 1.7.x
 
-    Copyright (c) 2020, Shogo MURAMATSU
+    Copyright (c) 2020-2021, Shogo MURAMATSU
     
     All rights reserved.
     

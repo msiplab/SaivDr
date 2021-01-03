@@ -16,7 +16,7 @@ class NsoltBlockDct2dLayer(nn.Module):
         
     Requirements: Python 3.7.x, PyTorch 1.7.x
     
-    Copyright (c) 2020, Shogo MURAMATSU
+    Copyright (c) 2020-2021, Shogo MURAMATSU
     
     All rights reserved.
     
@@ -25,7 +25,7 @@ class NsoltBlockDct2dLayer(nn.Module):
         8050 2-no-cho Ikarashi, Nishi-ku,
         Niigata, 950-2181, JAPAN
     
-    http://msiplab.eng.niigata-u.ac.jp/
+        http://msiplab.eng.niigata-u.ac.jp/
     """
 
     def __init__(self,
@@ -39,7 +39,7 @@ class NsoltBlockDct2dLayer(nn.Module):
         self.description = "Block DCT of size " \
             + str(self.decimation_factor[Direction.VERTICAL]) + "x" \
             + str(self.decimation_factor[Direction.HORIZONTAL])
-        #self.type = '';
+        #self.type = ''
         self.num_outputs = number_of_components
         #self.num_inputs = 1
 

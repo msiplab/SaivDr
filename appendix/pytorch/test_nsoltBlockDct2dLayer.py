@@ -25,7 +25,7 @@ class NsoltBlockDct2dLayerTestCase(unittest.TestCase):
     
     Requirements: Python 3.7.x, PyTorch 1.7.x
     
-    Copyright (c) 2020, Shogo MURAMATSU
+    Copyright (c) 2020-2021, Shogo MURAMATSU
     
     All rights reserved.
     
@@ -43,7 +43,8 @@ class NsoltBlockDct2dLayerTestCase(unittest.TestCase):
         # Expected values
         expctdName = 'E0'
         expctdDescription = "Block DCT of size " \
-            + str(stride[0]) + "x" + str(stride[1])
+            + str(stride[Direction.VERTICAL]) + "x" \
+            + str(stride[Direction.HORIZONTAL])
 
         # Instantiation of target class
         layer = NsoltBlockDct2dLayer(
