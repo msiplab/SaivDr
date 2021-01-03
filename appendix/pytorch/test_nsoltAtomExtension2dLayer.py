@@ -80,7 +80,7 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
         nChsTotal = sum(nchs)
         target = 'Lower'
         # nSamples x nRows x nCols x nChsTotal  
-        X = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype)
+        X = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype,requires_grad=True)
         
         # Expected values
         if dir=='Right':
@@ -119,12 +119,14 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
         )
 
         # Actual values
-        actualZ = layer.forward(X)
+        with torch.no_grad():
+            actualZ = layer.forward(X)
         
         # Evaluation
         self.assertEqual(actualZ.dtype,datatype) 
         self.assertTrue(torch.isclose(actualZ,expctdZ,rtol=0.,atol=atol).all())
-    
+        self.assertFalse(actualZ.requires_grad)
+
     @parameterized.expand(
         list(itertools.product(nchs,nrows,ncols,dir,datatype))
     )
@@ -137,7 +139,7 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
         nChsTotal = sum(nchs)
         target = 'Upper'
         # nSamples x nRows x nCols x nChsTotal 
-        X = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype)
+        X = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype,requires_grad=True)
 
         # Expected values
         if dir=='Right':
@@ -176,11 +178,13 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
         )
         
         # Actual values
-        actualZ = layer.forward(X)
+        with torch.no_grad():
+            actualZ = layer.forward(X)
             
         # Evaluation
         self.assertEqual(actualZ.dtype,datatype) 
         self.assertTrue(torch.isclose(actualZ,expctdZ,rtol=0.,atol=atol).all())
+        self.assertFalse(actualZ.requires_grad)
 
     @parameterized.expand(
         list(itertools.product(nchs,nrows,ncols,dir,datatype))
@@ -244,6 +248,7 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
         # Evaluation
         self.assertEqual(actualdLdX.dtype,datatype) 
         self.assertTrue(torch.isclose(actualdLdX,expctddLdX,rtol=0.,atol=atol).all())
+        self.assertTrue(Z.requires_grad)
 
     @parameterized.expand(
         list(itertools.product(nchs,nrows,ncols,dir,datatype))
@@ -307,6 +312,7 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
         # Evaluation
         self.assertEqual(actualdLdX.dtype,datatype) 
         self.assertTrue(torch.isclose(actualdLdX,expctddLdX,rtol=0.,atol=atol).all())
-
+        self.assertTrue(Z.requires_grad)
+        
 if __name__ == '__main__':
     unittest.main()
