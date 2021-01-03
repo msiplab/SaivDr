@@ -174,7 +174,7 @@ classdef nsoltBlockDct3dLayerTestCase < matlab.unittest.TestCase
             dLdZ = rand(nDecs,nrows,ncols,nlays,nSamples,datatype);
             
             % Expected values
-            expctddLdX = zeros(height,width,depth,datatype);
+            expctddLdX = zeros(height,width,depth,1,nSamples,datatype);
             E0_T = transpose(testCase.getMatrixE0_(stride));
             for iSample = 1:nSamples
                 % Rearrange the DCT coefs
