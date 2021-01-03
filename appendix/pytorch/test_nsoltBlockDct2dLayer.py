@@ -82,11 +82,7 @@ class NsoltBlockDct2dLayerTestCase(unittest.TestCase):
         arrayshape.insert(0,-1)
         Y = dct.dct_2d(X.view(arrayshape),norm='ortho')
         # Rearrange the DCT Coefs. (nSamples x nComponents x nrows x ncols) x (decV x decH)
-        cee = Y[:,0::2,0::2].reshape(Y.size(0),-1)
-        coo = Y[:,1::2,1::2].reshape(Y.size(0),-1)
-        coe = Y[:,1::2,0::2].reshape(Y.size(0),-1)
-        ceo = Y[:,0::2,1::2].reshape(Y.size(0),-1)
-        A = torch.cat((cee,coo,coe,ceo),dim=-1)
+        A = permuteDctCoefs_(Y)
         expctdZ = A.view(nSamples,nrows,ncols,ndecs)
 
         # Instantiation of target class
@@ -126,11 +122,7 @@ class NsoltBlockDct2dLayerTestCase(unittest.TestCase):
         arrayshape.insert(0,-1)
         Y = dct.dct_2d(X.view(arrayshape),norm='ortho')
         # Rearrange the DCT Coefs. (nSamples x nComponents x nrows x ncols) x (decV x decH)
-        cee = Y[:,0::2,0::2].reshape(Y.size(0),-1)
-        coo = Y[:,1::2,1::2].reshape(Y.size(0),-1)
-        coe = Y[:,1::2,0::2].reshape(Y.size(0),-1)
-        ceo = Y[:,0::2,1::2].reshape(Y.size(0),-1)
-        A = torch.cat((cee,coo,coe,ceo),dim=-1)
+        A = permuteDctCoefs_(Y)
         expctdZ = A.view(nSamples,nrows,ncols,ndecs)
 
         # Instantiation of target class
@@ -170,11 +162,7 @@ class NsoltBlockDct2dLayerTestCase(unittest.TestCase):
         arrayshape.insert(0,-1)
         Y = dct.dct_2d(X.view(arrayshape),norm='ortho')
         # Rearrange the DCT Coefs. (nSamples x nComponents x nrows x ncols) x (decV x decH)
-        cee = Y[:,0::2,0::2].reshape(Y.size(0),-1)
-        coo = Y[:,1::2,1::2].reshape(Y.size(0),-1)
-        coe = Y[:,1::2,0::2].reshape(Y.size(0),-1)
-        ceo = Y[:,0::2,1::2].reshape(Y.size(0),-1)
-        A = torch.cat((cee,coo,coe,ceo),dim=-1)
+        A = permuteDctCoefs_(Y)
         Z = A.view(nSamples,nComponents,nrows,ncols,ndecs)
         expctdZr = Z[:,0,:,:,:]
         expctdZg = Z[:,1,:,:,:]
@@ -225,11 +213,7 @@ class NsoltBlockDct2dLayerTestCase(unittest.TestCase):
         arrayshape.insert(0,-1)
         Y = dct.dct_2d(X.view(arrayshape),norm='ortho')
         # Rearrange the DCT Coefs. (nSamples x nComponents x nrows x ncols) x (decV x decH)
-        cee = Y[:,0::2,0::2].reshape(Y.size(0),-1)
-        coo = Y[:,1::2,1::2].reshape(Y.size(0),-1)
-        coe = Y[:,1::2,0::2].reshape(Y.size(0),-1)
-        ceo = Y[:,0::2,1::2].reshape(Y.size(0),-1)
-        A = torch.cat((cee,coo,coe,ceo),dim=-1)
+        A = permuteDctCoefs_(Y)
         Z = A.view(nSamples,nComponents,nrows,ncols,ndecs)
         expctdZr = Z[:,0,:,:,:]
         expctdZg = Z[:,1,:,:,:]
@@ -255,6 +239,147 @@ class NsoltBlockDct2dLayerTestCase(unittest.TestCase):
         self.assertTrue(actualZr.requires_grad)
         self.assertTrue(actualZg.requires_grad)
         self.assertTrue(actualZb.requires_grad)    
+
+    @parameterized.expand(
+        list(itertools.product(stride,height,width,datatype))
+    )
+    def testBackwardGrayScale(self,
+        stride, height, width, datatype):
+        atol = 1e-6
+
+        # Parameters
+        nSamples = 8
+        nrows = np.ceil(height/stride[Direction.VERTICAL]).astype(int)
+        ncols = np.ceil(width/stride[Direction.HORIZONTAL]).astype(int)
+        nDecs = np.prod(stride)
+        nComponents = 1
+
+        # Source (nSamples x nComponents x (Stride[0]xnRows) x (Stride[1]xnCols))
+        X = torch.rand(nSamples,nComponents,height,width,dtype=datatype,requires_grad=True)        
+        # nSamples x nRows x nCols x nDecs
+        dLdZ = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype)
+
+        # Expected values
+        A = permuteIdctCoefs_(dLdZ,stride)
+        Y = dct.idct_2d(A,norm='ortho')
+        expctddLdX = Y.reshape(nSamples,nComponents,height,width)
+        
+        # Instantiation of target class
+        layer = NsoltBlockDct2dLayer(
+                decimation_factor=stride,
+                name='E0'
+            )
+            
+        # Actual values
+        Z = layer.forward(X)
+        Z.backward(dLdZ)
+        actualdLdX = X.grad
+
+        # Evaluation
+        self.assertEqual(actualdLdX.dtype,datatype)
+        self.assertTrue(torch.isclose(actualdLdX,expctddLdX,rtol=0.,atol=atol).all())
+        self.assertTrue(Z.requires_grad)
+
+    """
+function testBackwardRgbColor(testCase, ...
+                stride, height, width, datatype)
+            import saivdr.dictionary.utility.Direction
+            import matlab.unittest.constraints.IsEqualTo
+            import matlab.unittest.constraints.AbsoluteTolerance
+            tolObj = AbsoluteTolerance(1e-6,single(1e-6));
+            
+            % Parameters
+            nSamples = 8;
+            nrows = ceil(height/stride(Direction.VERTICAL));
+            ncols = ceil(width/stride(Direction.HORIZONTAL));
+            nDecs = prod(stride);
+            nComponents = 3; % RGB
+            %dLdZr = rand(nrows,ncols,nDecs,nSamples,datatype);
+            %dLdZg = rand(nrows,ncols,nDecs,nSamples,datatype);
+            %dLdZb = rand(nrows,ncols,nDecs,nSamples,datatype);
+            dLdZr = rand(nDecs,nrows,ncols,nSamples,datatype);
+            dLdZg = rand(nDecs,nrows,ncols,nSamples,datatype);
+            dLdZb = rand(nDecs,nrows,ncols,nSamples,datatype);            
+            
+            % Expected values
+            expctddLdX = zeros(height,width,nComponents,datatype);
+            for iSample = 1:nSamples
+                %Ar = reshape(permute(dLdZr(:,:,:,iSample),[3 1 2]),...
+                %    nDecs*nrows,ncols);
+                %Ag = reshape(permute(dLdZg(:,:,:,iSample),[3 1 2]),...
+                %    nDecs*nrows,ncols);
+                %Ab = reshape(permute(dLdZb(:,:,:,iSample),[3 1 2]),...
+                %    nDecs*nrows,ncols);
+                Ar = reshape(dLdZr(:,:,:,iSample),nDecs*nrows,ncols);
+                Ag = reshape(dLdZg(:,:,:,iSample),nDecs*nrows,ncols);
+                Ab = reshape(dLdZb(:,:,:,iSample),nDecs*nrows,ncols);                
+                Yr = blockproc(Ar,[nDecs 1],...
+                    @(x) testCase.permuteIdctCoefs_(x.data,stride));
+                Yg = blockproc(Ag,[nDecs 1],...
+                    @(x) testCase.permuteIdctCoefs_(x.data,stride));
+                Yb = blockproc(Ab,[nDecs 1],...
+                    @(x) testCase.permuteIdctCoefs_(x.data,stride));
+                expctddLdX(:,:,1,iSample) = ...
+                    blockproc(Yr,...
+                    stride,...
+                    @(x) idct2(x.data));
+                expctddLdX(:,:,2,iSample) = ...
+                    blockproc(Yg,...
+                    stride,...
+                    @(x) idct2(x.data));
+                expctddLdX(:,:,3,iSample) = ...
+                    blockproc(Yb,...
+                    stride,...
+                    @(x) idct2(x.data));
+            end
+            
+            % Instantiation of target class
+            import saivdr.dcnn.*
+            layer = nsoltBlockDct2dLayer(...
+                'DecimationFactor',stride,...
+                'NumberOfComponents',nComponents,...
+                'Name','E0');
+            
+            % Actual values
+            actualdLdX = layer.backward([],[],[],[],dLdZr,dLdZg,dLdZb,[]);
+            
+            % Evaluation
+            testCase.verifyInstanceOf(actualdLdX,datatype);
+            testCase.verifyThat(actualdLdX,...
+                IsEqualTo(expctddLdX,'Within',tolObj));
+            
+        end
+    """
+
+def permuteDctCoefs_(x):
+    cee = x[:,0::2,0::2].reshape(x.size(0),-1)
+    coo = x[:,1::2,1::2].reshape(x.size(0),-1)
+    coe = x[:,1::2,0::2].reshape(x.size(0),-1)
+    ceo = x[:,0::2,1::2].reshape(x.size(0),-1)
+    return torch.cat((cee,coo,coe,ceo),dim=-1)
+
+def permuteIdctCoefs_(x,block_size):
+    coefs = x.view(-1,np.prod(block_size))
+    decY_ = block_size[Direction.VERTICAL]
+    decX_ = block_size[Direction.HORIZONTAL]
+    chDecY = np.ceil(decY_/2.).astype(int)
+    chDecX = np.ceil(decX_/2.).astype(int)
+    fhDecY = np.floor(decY_/2.).astype(int)
+    fhDecX = np.floor(decX_/2.).astype(int)
+    nQDecsee = chDecY*chDecX
+    nQDecsoo = fhDecY*fhDecX
+    nQDecsoe = fhDecY*chDecX
+    cee = coefs[:,:nQDecsee]
+    coo = coefs[:,nQDecsee:nQDecsee+nQDecsoo]
+    coe = coefs[:,nQDecsee+nQDecsoo:nQDecsee+nQDecsoo+nQDecsoe]
+    ceo = coefs[:,nQDecsee+nQDecsoo+nQDecsoe:]
+    nBlocks = coefs.size(0)
+    value = torch.zeros(nBlocks,decY_,decX_,dtype=x.dtype)
+    value[:,0::2,0::2] = cee.view(nBlocks,chDecY,chDecX)
+    value[:,1::2,1::2] = coo.view(nBlocks,fhDecY,fhDecX)
+    value[:,1::2,0::2] = coe.view(nBlocks,fhDecY,chDecX)
+    value[:,0::2,1::2] = ceo.view(nBlocks,chDecY,fhDecX)
+    return value
 
 if __name__ == '__main__':
     unittest.main()
