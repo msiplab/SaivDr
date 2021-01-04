@@ -36,10 +36,7 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
         http://msiplab.eng.niigata-u.ac.jp/
     """
 
-    def testConstructor(self):
-        #target = NsoltChannelConcatenation2dLayer()
-        #self.assertTrue(isinstance(target, nn.Module))
-        
+    def testConstructor(self):        
         # Expected values
         expctdName = 'Cn'
         expctdDescription = "Channel concatenation"
