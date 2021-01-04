@@ -6,6 +6,11 @@ import torch.nn as nn
 import numpy as np
 from nsoltChannelConcatenation2dLayer import NsoltChannelConcatenation2dLayer
 
+nchs = [ [3, 3], [4, 4] ]
+datatype = [ torch.float, torch.double ]
+nrows = [ 4, 8, 16 ]
+ncols = [ 4, 8, 16 ]
+
 class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
     """
     NSOLTCHANNELCONCATENATION2DLAYERTESTCASE
@@ -30,11 +35,6 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
     
         http://msiplab.eng.niigata-u.ac.jp/
     """
-
-    nchs = [ [3, 3], [4, 4] ]
-    datatype = [ torch.float, torch.double ]
-    nrows = [ 4, 8, 16 ]
-    ncols = [ 4, 8, 16 ]
 
     def testConstructor(self):
         #target = NsoltChannelConcatenation2dLayer()
