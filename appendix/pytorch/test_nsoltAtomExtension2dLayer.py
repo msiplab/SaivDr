@@ -35,6 +35,7 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
     
         http://msiplab.eng.niigata-u.ac.jp/
     """
+
     @parameterized.expand(
         list(itertools.product(nchs))
     )
