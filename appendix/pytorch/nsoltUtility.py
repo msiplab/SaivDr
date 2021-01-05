@@ -1,5 +1,5 @@
 import torch
-#import numpy as np
+import numpy as np
 
 class Direction:
     VERTICAL = 0
@@ -24,9 +24,50 @@ class OrthonormalMatrixGenerationSystem:
         http://msiplab.eng.niigata-u.ac.jp/    
     """
 
-    def __init__(self):
+    def __init__(self,
+        dtype=torch.get_default_dtype()):
         super(OrthonormalMatrixGenerationSystem, self).__init__()
+        self.dtype = dtype
 
-    def __call__(self,x):
-        return x
+    def __call__(self,
+        angles=0,mus=1):
+        
+        # Number of angles
+        if np.isscalar(angles):
+            angles = np.array([angles])
+        nAngles = len(angles)
+
+        # Number of dimensions
+        nDims = ((1+np.sqrt(1+8*nAngles))/2).astype(int)
+
+        # Setup of mus
+        if np.isscalar(mus):
+            mus = mus * np.eye(nDims)
+        else:
+            mus = np.diag(mus)
+
+        matrix = np.eye(nDims)
+        iAng = 0
+        for iTop in range(nDims-1):
+            vt = matrix[iTop,:]
+            for iBtm in range(iTop+1,nDims):
+                angle = angles[iAng]
+                #if iAng == pdAng:
+                #    angle = angle + np.pi/2
+                c = np.cos(angle)
+                s = np.sin(angle)
+                vb = matrix[iBtm,:]
+                #
+                u  = s*(vt + vb)
+                vt = (c + s)*vt
+                vb = (c - s)*vb
+                vt = vt - u
+                #if iAng == pdAng:
+                #    matrix = np.zeros_like(matrix)
+                matrix[iBtm,:] = vb + u
+                iAng = iAng + 1
+            matrix[iTop,:] = vt
+        matrix = mus.dot(matrix)
+
+        return torch.tensor(matrix,dtype=self.dtype)
 
