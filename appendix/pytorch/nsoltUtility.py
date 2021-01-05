@@ -25,12 +25,16 @@ class OrthonormalMatrixGenerationSystem:
     """
 
     def __init__(self,
-        dtype=torch.get_default_dtype()):
+        dtype=torch.get_default_dtype(),
+        partial_difference=False):
         super(OrthonormalMatrixGenerationSystem, self).__init__()
         self.dtype = dtype
+        self.partial_difference = partial_difference
 
     def __call__(self,
-        angles=0,mus=1):
+        angles=0,
+        mus=1,
+        index_pd_angle=None):
         
         # Number of angles
         if np.isscalar(angles):
@@ -52,8 +56,8 @@ class OrthonormalMatrixGenerationSystem:
             vt = matrix[iTop,:]
             for iBtm in range(iTop+1,nDims):
                 angle = angles[iAng]
-                #if iAng == pdAng:
-                #    angle = angle + np.pi/2
+                if iAng == index_pd_angle:
+                    angle = angle + np.pi/2.
                 c = np.cos(angle)
                 s = np.sin(angle)
                 vb = matrix[iBtm,:]
@@ -62,8 +66,8 @@ class OrthonormalMatrixGenerationSystem:
                 vt = (c + s)*vt
                 vb = (c - s)*vb
                 vt = vt - u
-                #if iAng == pdAng:
-                #    matrix = np.zeros_like(matrix)
+                if iAng == index_pd_angle:
+                    matrix = np.zeros_like(matrix)
                 matrix[iBtm,:] = vb + u
                 iAng = iAng + 1
             matrix[iTop,:] = vt
