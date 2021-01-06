@@ -35,4 +35,7 @@ class OrthonormalTransform(nn.Module):
             [ c, -s ],
             [ s,  c ] ],
             dtype=X.dtype)
+        for irow in range(R.size(0)):
+            R[irow,:] *= self.mus[irow]
+            
         return R @ X

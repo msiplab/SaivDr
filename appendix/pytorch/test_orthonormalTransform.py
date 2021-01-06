@@ -76,61 +76,68 @@ class OrthonormalTransformTestCase(unittest.TestCase):
         # Evaluation
         self.assertTrue(torch.isclose(actualZ,expctdZ,rtol=0.,atol=atol).all())        
 
+    @parameterized.expand(
+        list(itertools.product(datatype,ncols))
+    )
+    def testCallWithAnglesAndMus(self,datatype,ncols):
+        atol=1e-6
+
+        # Expected values
+        X = torch.randn(2,ncols,dtype=datatype)        
+        R = torch.tensor([
+            [ np.cos(np.pi/4), -np.sin(np.pi/4) ],
+            [ -np.sin(np.pi/4), -np.cos(np.pi/4) ] ],
+            dtype=datatype)
+        expctdZ = R @ X
+
+        # Instantiation of target class
+        target = OrthonormalTransform()
+        target.angles.data = torch.tensor([np.pi/4])
+        target.mus = torch.tensor([1, -1])        
+
+        # Actual values
+        with torch.no_grad():
+            actualZ = target.forward(X)
+
+        # Evaluation
+        self.assertTrue(torch.isclose(actualZ,expctdZ,rtol=0.,atol=atol).all())        
+
+    @parameterized.expand(
+        list(itertools.product(datatype,ncols))
+    )
+    def testSetAngles(self,datatype,ncols):
+        atol=1e-6
+    
+        # Expected values
+        X = torch.randn(2,ncols,dtype=datatype)  
+        R = torch.eye(2,dtype=datatype)
+        expctdZ = R @ X
+
+        # Instantiation of target class
+        target = OrthonormalTransform()
+
+        # Actual values
+        with torch.no_grad():        
+            actualZ = target.forward(X)
+
+        # Evaluation
+        self.assertTrue(torch.isclose(actualZ,expctdZ,rtol=0.,atol=atol).all())        
+
+        # Expcted values
+        R = torch.tensor([
+            [ np.cos(np.pi/4), -np.sin(np.pi/4) ],
+            [ np.sin(np.pi/4), np.cos(np.pi/4) ] ],
+            dtype=datatype)
+        expctdZ = R @ X
+
+        # Actual values
+        target.angles.data = torch.tensor([np.pi/4])
+        actualZ = target.forward(X)
+
+        # Evaluation
+        self.assertTrue(torch.isclose(actualZ,expctdZ,rtol=0.,atol=atol).all())        
+
     """
-    @parameterized.expand(
-        list(itertools.product(datatype))
-    )
-    def testCallWithAnglesAndMus(self,datatype):
-        atol=1e-10
-
-        # Expected values
-        expctdM = torch.tensor([
-            [ np.cos(np.pi/4), -np.sin(np.pi/4)],
-            [-np.sin(np.pi/4), -np.cos(np.pi/4)] ],
-            dtype=datatype)
-            
-        # Instantiation of target class
-        omgs = OrthonormalMatrixGenerationSystem(
-            dtype=datatype
-        )
-            
-        # Actual values
-        actualM = omgs(angles=np.pi/4, mus=[ 1, -1] )
-
-        # Evaluation
-        self.assertTrue(torch.isclose(actualM,expctdM,rtol=0.,atol=atol).all())        
-
-    @parameterized.expand(
-        list(itertools.product(datatype))
-    )
-    def testSetAngles(self,datatype):
-        atol=1e-10
-        
-        # Expected values
-        expctdM = torch.eye(2,dtype=datatype)
-
-        # Instantiation of target class
-        omgs = OrthonormalMatrixGenerationSystem(
-            dtype=datatype
-        )
-
-        # Actual values
-        actualM = omgs(angles=0,mus=1)
-
-        # Evaluation
-        self.assertTrue(torch.isclose(actualM,expctdM,rtol=0.,atol=atol).all())        
-
-        # Expected values
-        expctdM = torch.tensor([
-            [np.cos(np.pi/4), -np.sin(np.pi/4)],
-            [np.sin(np.pi/4),  np.cos(np.pi/4)] ],
-            dtype=datatype)
-
-        actualM = omgs(angles=np.pi/4,mus=1)
-
-        # Evaluation
-        self.assertTrue(torch.isclose(actualM,expctdM,rtol=0.,atol=atol).all())        
-
     @parameterized.expand(
         list(itertools.product(datatype))
     )
