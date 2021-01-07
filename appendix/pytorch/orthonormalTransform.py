@@ -20,22 +20,37 @@ class OrthonormalTransform(nn.Module):
         http://msiplab.eng.niigata-u.ac.jp/    
     """
     def __init__(self,
-        dimension=2,
-        in_features=None,
-        out_features=None):
+        n=2):
         super(OrthonormalTransform, self).__init__()
-        nAngs = int(dimension*(dimension-1)/2)
+        nAngs = int(n*(n-1)/2)
+        self.nPoints = n
         self.angles = nn.Parameter(torch.zeros(nAngs))
-        self.mus = torch.ones(dimension)
+        self.mus = torch.ones(self.nPoints)
 
     def forward(self,X):
-        c = torch.cos(self.angles[0])
-        s = torch.sin(self.angles[0])
-        R = torch.tensor([
-            [ c, -s ],
-            [ s,  c ] ],
-            dtype=X.dtype)
-        for irow in range(R.size(0)):
-            R[irow,:] *= self.mus[irow]
+        nPoints = self.nPoints
+        angles = self.angles
+        if X.ndim == 1:
+            Y = X.unsqueeze(1)
+        else:
+            Y = X
+        iAng = 0
+        for iTop in range(nPoints-1):
+            vt = Y[iTop,:]
+            for iBtm in range(iTop+1,nPoints):
+                angle = angles[iAng]
+                c = torch.cos(angle)
+                s = torch.sin(angle)
+                vb = Y[iBtm,:]
+                #
+                u = s*(vt + vb)
+                vt = (c + s)*vt
+                vb = (c - s)*vb
+                vt -= u
+                Y[iBtm,:] = vb + u
+                iAng += 1
+            Y[iTop,:] = vt
+        for irow in range(Y.size(0)):
+            Y[irow,:] *= self.mus[irow]
             
-        return R @ X
+        return Y

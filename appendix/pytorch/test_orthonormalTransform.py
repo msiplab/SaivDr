@@ -137,104 +137,107 @@ class OrthonormalTransformTestCase(unittest.TestCase):
         # Evaluation
         self.assertTrue(torch.isclose(actualZ,expctdZ,rtol=0.,atol=atol).all())        
 
-    """
     @parameterized.expand(
-        list(itertools.product(datatype))
+        list(itertools.product(datatype,ncols))
     )
-    def test4x4(self,datatype):
+    def test4x4(self,datatype,ncols):
         atol=1e-6
         
         # Expected values
         expctdNorm = 1.
 
         # Instantiation of target class
-        ang = 2*np.pi*rand(6)
-        omgs = OrthonormalMatrixGenerationSystem(
-            dtype=datatype
-        )
+        target = OrthonormalTransform(n=4)
+        target.angles.data = torch.randn(6,dtype=datatype)
 
         # Actual values
-        unitvec = torch.randn(4,dtype=datatype)
+        unitvec = torch.randn(4,ncols,dtype=datatype)
         unitvec /= unitvec.norm()
-        actualNorm = omgs(angles=ang,mus=1).mv(unitvec).norm().numpy()
+        with torch.no_grad():        
+            actualNorm = target.forward(unitvec).norm().numpy()
 
         # Evaluation
         message = "actualNorm=%s differs from %s" % ( str(actualNorm), str(expctdNorm) )
         self.assertTrue(np.isclose(actualNorm,expctdNorm,rtol=0.,atol=atol),message)        
 
     @parameterized.expand(
-        list(itertools.product(datatype))
+        list(itertools.product(datatype,ncols))
     )
-    def test8x8(self,datatype):
+    def test8x8(self,datatype,ncols):
         atol=1e-6
         
         # Expected values
         expctdNorm = 1.
 
         # Instantiation of target class
-        ang = 2*np.pi*rand(28)
-        omgs = OrthonormalMatrixGenerationSystem(
-            dtype=datatype
-        )
+        target = OrthonormalTransform(n=8)
+        target.angles.data = torch.randn(28,dtype=datatype)
 
         # Actual values
-        unitvec = torch.randn(8,dtype=datatype)
+        unitvec = torch.randn(8,ncols,dtype=datatype)
         unitvec /= unitvec.norm()
-        actualNorm = omgs(angles=ang,mus=1).mv(unitvec).norm().numpy()
+        with torch.no_grad():        
+            actualNorm = target.forward(unitvec).norm().numpy()
 
         # Evaluation
         message = "actualNorm=%s differs from %s" % ( str(actualNorm), str(expctdNorm) )
         self.assertTrue(np.isclose(actualNorm,expctdNorm,rtol=0.,atol=atol),message)        
 
     @parameterized.expand(
-        list(itertools.product(datatype))
+        list(itertools.product(datatype,ncols))
     )
-    def test4x4red(self,datatype):
+    def test4x4red(self,datatype,ncols):
         atol=1e-6
+        
+        # Configuration
+        nPoints = 4
+        nAngles = int(nPoints*(nPoints-1)/2)
 
         # Expected values
         expctdLeftTop = 1.
 
         # Instantiation of target class
-        ang = 2*np.pi*rand(6)
-        nSize = 4
-        ang[:nSize-1] = np.zeros(nSize-1)
-        omgs = OrthonormalMatrixGenerationSystem(
-            dtype=datatype
-        )
+        target = OrthonormalTransform(n=nPoints)
+        target.angles.data = 2*np.pi*torch.rand(nAngles,dtype=datatype)
+        target.angles.data[:nPoints-1] = torch.zeros(nPoints-1)
 
         # Actual values
-        matrix = omgs(angles=ang,mus=1)
-        actualLeftTop = matrix[0,0]
-
+        with torch.no_grad():       
+            matrix = target.forward(torch.eye(nPoints,dtype=datatype))
+        actualLeftTop = matrix[0,0].numpy()
+        
         # Evaluation
         message = "actualLeftTop=%s differs from %s" % ( str(actualLeftTop), str(expctdLeftTop) )        
         self.assertTrue(np.isclose(actualLeftTop,expctdLeftTop,rtol=0.,atol=atol),message)        
 
     @parameterized.expand(
-        list(itertools.product(datatype))
+        list(itertools.product(datatype,ncols))
     )
-    def test8x8red(self,datatype):
+    def test8x8red(self,datatype,ncols):
         atol=1e-6
+        
+        # Configuration
+        nPoints = 8
+        nAngles = int(nPoints*(nPoints-1)/2)
 
         # Expected values
         expctdLeftTop = 1.
 
         # Instantiation of target class
-        ang = 2*np.pi*rand(28)
-        nSize = 8
-        ang[:nSize-1] = np.zeros(nSize-1)
-        omgs = OrthonormalMatrixGenerationSystem(
-            dtype=datatype
-        )
+        target = OrthonormalTransform(n=nPoints)
+        target.angles.data = 2*np.pi*torch.rand(nAngles,dtype=datatype)
+        target.angles.data[:nPoints-1] = torch.zeros(nPoints-1)
 
         # Actual values
-        matrix = omgs(angles=ang,mus=1)
-        actualLeftTop = matrix[0,0]
-
+        with torch.no_grad():       
+            matrix = target.forward(torch.eye(nPoints,dtype=datatype))
+        actualLeftTop = matrix[0,0].numpy()
+        
         # Evaluation
         message = "actualLeftTop=%s differs from %s" % ( str(actualLeftTop), str(expctdLeftTop) )        
         self.assertTrue(np.isclose(actualLeftTop,expctdLeftTop,rtol=0.,atol=atol),message)        
+
+"""
 
     @parameterized.expand(
         list(itertools.product(datatype))
