@@ -23,11 +23,13 @@ class OrthonormalTransform(nn.Module):
     """
     def __init__(self,
         n=2,
+        mode='Analysis',
         dtype=torch.get_default_dtype()):
         super(OrthonormalTransform, self).__init__()
         nAngs = int(n*(n-1)/2)
         self.dtype = dtype
         self.nPoints = n
+        self.mode = ModuleNotFoundError
         self.angles = nn.Parameter(torch.zeros(nAngs,dtype=self.dtype))
         self.mus = torch.ones(self.nPoints)
 
