@@ -322,7 +322,44 @@ class OrthonormalTransformTestCase(unittest.TestCase):
     
         # Evaluation
         self.assertTrue(torch.isclose(actualdLdX,expctddLdX,rtol=0.,atol=atol).all())                
+        self.assertTrue(torch.isclose(actualdLdW,expctddLdW,rtol=0.,atol=atol).all())       
+
+        
+    @parameterized.expand(
+        list(itertools.product(datatype,ncols))
+    )
+    def testPartialDifferenceMultiColumn(self,datatype,ncols):
+        atol=1e-6
+
+        # Configuration
+        nPoints = 2
+
+        # Expected values
+        X = torch.randn(nPoints,ncols,dtype=datatype,requires_grad=True)        
+        dLdZ = torch.randn(nPoints,ncols,dtype=datatype)
+        R = torch.eye(nPoints,dtype=datatype)
+        dRdW = torch.tensor([
+            [ 0., -1.],
+            [ 1., 0.] ],
+            dtype=datatype)
+        expctddLdX = R.T @ dLdZ # = dZdX @ dLdZ
+        expctddLdW = torch.sum(expctddLdX * (dRdW @ X))
+
+        # Instantiation of target class
+        target = OrthonormalTransform(n=nPoints,dtype=datatype)
+
+        # Actual values
+        torch.autograd.set_detect_anomaly(True)        
+        Z = target.forward(X)
+        Z.backward(dLdZ)
+        actualdLdX = X.grad
+        actualdLdW = target.angles.grad
+    
+        # Evaluation
+        self.assertTrue(torch.isclose(actualdLdX,expctddLdX,rtol=0.,atol=atol).all())                
         self.assertTrue(torch.isclose(actualdLdW,expctddLdW,rtol=0.,atol=atol).all())                        
+
+
 """
     @parameterized.expand(
         list(itertools.product(datatype))
