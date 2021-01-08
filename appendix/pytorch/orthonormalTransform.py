@@ -29,7 +29,7 @@ class OrthonormalTransform(nn.Module):
         nAngs = int(n*(n-1)/2)
         self.dtype = dtype
         self.nPoints = n
-        self.mode = ModuleNotFoundError
+        self.mode = mode
         self.angles = nn.Parameter(torch.zeros(nAngs,dtype=self.dtype))
         self.mus = torch.ones(self.nPoints)
 
