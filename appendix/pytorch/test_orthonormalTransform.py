@@ -8,6 +8,7 @@ from orthonormalTransform import OrthonormalTransform
 
 datatype = [ torch.float, torch.double ]
 ncols = [ 1, 2, 4 ]
+npoints = [ 1, 2, 3, 4, 5, 6 ]
 
 class OrthonormalTransformTestCase(unittest.TestCase):
     """
@@ -184,6 +185,30 @@ class OrthonormalTransformTestCase(unittest.TestCase):
         self.assertTrue(np.isclose(actualNorm,expctdNorm,rtol=0.,atol=atol),message)        
 
     @parameterized.expand(
+        list(itertools.product(datatype,ncols,npoints))
+    )
+    def testNxN(self,datatype,ncols,npoints):
+        atol=1e-6
+        
+        # Expected values
+        expctdNorm = 1.
+
+        # Instantiation of target class
+        nAngles = int(npoints*(npoints-1)/2)
+        target = OrthonormalTransform(n=npoints)
+        target.angles.data = torch.randn(nAngles,dtype=datatype)
+
+        # Actual values
+        unitvec = torch.randn(npoints,ncols,dtype=datatype)
+        unitvec /= unitvec.norm()
+        with torch.no_grad():        
+            actualNorm = target.forward(unitvec).norm().numpy()
+
+        # Evaluation
+        message = "actualNorm=%s differs from %s" % ( str(actualNorm), str(expctdNorm) )
+        self.assertTrue(np.isclose(actualNorm,expctdNorm,rtol=0.,atol=atol),message)        
+
+    @parameterized.expand(
         list(itertools.product(datatype,ncols))
     )
     def test4x4red(self,datatype,ncols):
@@ -235,9 +260,34 @@ class OrthonormalTransformTestCase(unittest.TestCase):
         
         # Evaluation
         message = "actualLeftTop=%s differs from %s" % ( str(actualLeftTop), str(expctdLeftTop) )        
-        self.assertTrue(np.isclose(actualLeftTop,expctdLeftTop,rtol=0.,atol=atol),message)        
+        self.assertTrue(np.isclose(actualLeftTop,expctdLeftTop,rtol=0.,atol=atol),message)
 
-"""
+    @parameterized.expand(
+        list(itertools.product(datatype,ncols,npoints))
+    )
+    def testNxNred(self,datatype,ncols,npoints):
+        atol=1e-6
+        
+        # Configuration
+        nAngles = int(npoints*(npoints-1)/2)
+
+        # Expected values
+        expctdLeftTop = 1.
+
+        # Instantiation of target class
+        target = OrthonormalTransform(n=npoints)
+        target.angles.data = 2*np.pi*torch.rand(nAngles,dtype=datatype)
+        target.angles.data[:npoints-1] = torch.zeros(npoints-1)
+
+        # Actual values
+        with torch.no_grad():       
+            matrix = target.forward(torch.eye(npoints,dtype=datatype))
+        actualLeftTop = matrix[0,0].numpy()
+        
+        # Evaluation
+        message = "actualLeftTop=%s differs from %s" % ( str(actualLeftTop), str(expctdLeftTop) )        
+        self.assertTrue(np.isclose(actualLeftTop,expctdLeftTop,rtol=0.,atol=atol),message)        
+    
 
     @parameterized.expand(
         list(itertools.product(datatype))
@@ -245,24 +295,35 @@ class OrthonormalTransformTestCase(unittest.TestCase):
     def testPartialDifference(self,datatype):
         atol=1e-6
 
+        # Configuration
+        ncols = 1
+        nPoints = 2
+
         # Expected values
-        expctdM = torch.tensor([
+        X = torch.randn(nPoints,ncols,dtype=datatype,requires_grad=True)        
+        dLdZ = torch.randn(nPoints,ncols,dtype=datatype)
+        R = torch.eye(nPoints,dtype=datatype)
+        dRdW = torch.tensor([
             [ 0., -1.],
             [ 1., 0.] ],
             dtype=datatype)
+        expctddLdX = R.T @ dLdZ # = dZdX @ dLdZ
+        expctddLdW = expctddLdX.T @ dRdW @ X 
 
         # Instantiation of target class
-        omgs = OrthonormalMatrixGenerationSystem(
-                dtype=datatype,
-                partial_difference=True
-            )
+        target = OrthonormalTransform(n=nPoints,dtype=datatype)
 
         # Actual values
-        actualM = omgs(angles=0,mus=1,index_pd_angle=0)
-
+        torch.autograd.set_detect_anomaly(True)        
+        Z = target.forward(X)
+        Z.backward(dLdZ)
+        actualdLdX = X.grad
+        actualdLdW = target.angles.grad
+    
         # Evaluation
-        self.assertTrue(torch.isclose(actualM,expctdM,rtol=0.,atol=atol).all())                
-
+        self.assertTrue(torch.isclose(actualdLdX,expctddLdX,rtol=0.,atol=atol).all())                
+        self.assertTrue(torch.isclose(actualdLdW,expctddLdW,rtol=0.,atol=atol).all())                        
+"""
     @parameterized.expand(
         list(itertools.product(datatype))
     )
