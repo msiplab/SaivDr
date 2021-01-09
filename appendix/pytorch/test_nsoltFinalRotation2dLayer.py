@@ -73,7 +73,7 @@ class NsoltFinalRotation2dLayerTestCase(unittest.TestCase):
     )
     def testPredictGrayscale(self,
         nchs, stride, nrows, ncols, datatype):
-        atol=1e-6
+        rtol,atol=1e-5,1e-8
 
         # Parameters
         nSamples = 8
@@ -107,7 +107,7 @@ class NsoltFinalRotation2dLayerTestCase(unittest.TestCase):
 
         # Evaluation
         self.assertEqual(actualZ.dtype,datatype)
-        self.assertTrue(torch.isclose(actualZ,expctdZ,rtol=0.,atol=atol).all())
+        self.assertTrue(torch.allclose(actualZ,expctdZ,rtol=rtol,atol=atol))
         self.assertFalse(actualZ.requires_grad)
 
 if __name__ == '__main__':

@@ -34,7 +34,7 @@ class OrthonormalTransformTestCase(unittest.TestCase):
         list(itertools.product(datatype,ncols))
     )
     def testConstructor(self,datatype,ncols):
-        atol=1e-6
+        rtol,atol = 1e-05,1e-08 
 
         # Expected values
         X = torch.randn(2,ncols,dtype=datatype)
@@ -53,7 +53,7 @@ class OrthonormalTransformTestCase(unittest.TestCase):
         
         # Evaluation
         self.assertTrue(isinstance(target,nn.Module))        
-        self.assertTrue(torch.allclose(actualZ,expctdZ,rtol=0.,atol=atol))    
+        self.assertTrue(torch.allclose(actualZ,expctdZ,rtol=rtol,atol=atol))    
         self.assertEqual(actualNParams,expctdNParams)
         self.assertEqual(actualMode,expctdMode)
 
@@ -61,7 +61,7 @@ class OrthonormalTransformTestCase(unittest.TestCase):
         list(itertools.product(datatype,ncols,mode))
     )
     def testCallWithAngles(self,datatype,ncols,mode):
-        atol=1e-6
+        rtol,atol = 1e-05,1e-08 
 
         # Expected values
         X = torch.randn(2,ncols,dtype=datatype)      
@@ -83,13 +83,13 @@ class OrthonormalTransformTestCase(unittest.TestCase):
             actualZ = target.forward(X)
 
         # Evaluation
-        self.assertTrue(torch.allclose(actualZ,expctdZ,rtol=0.,atol=atol))        
+        self.assertTrue(torch.allclose(actualZ,expctdZ,rtol=rtol,atol=atol))        
 
     @parameterized.expand(
         list(itertools.product(datatype,ncols,mode))
     )
     def testCallWithAnglesAndMus(self,datatype,ncols,mode):
-        atol=1e-6
+        rtol,atol = 1e-05,1e-08 
 
         # Expected values
         X = torch.randn(2,ncols,dtype=datatype)   
@@ -112,13 +112,13 @@ class OrthonormalTransformTestCase(unittest.TestCase):
             actualZ = target.forward(X)
 
         # Evaluation
-        self.assertTrue(torch.allclose(actualZ,expctdZ,rtol=0.,atol=atol))
+        self.assertTrue(torch.allclose(actualZ,expctdZ,rtol=rtol,atol=atol))
 
     @parameterized.expand(
         list(itertools.product(datatype,ncols,mode))
     )
     def testSetAngles(self,datatype,ncols,mode):
-        atol=1e-6
+        rtol,atol = 1e-05,1e-08 
     
         # Expected values
         X = torch.randn(2,ncols,dtype=datatype)  
@@ -133,7 +133,7 @@ class OrthonormalTransformTestCase(unittest.TestCase):
             actualZ = target.forward(X)
 
         # Evaluation
-        self.assertTrue(torch.allclose(actualZ,expctdZ,rtol=0.,atol=atol))
+        self.assertTrue(torch.allclose(actualZ,expctdZ,rtol=rtol,atol=atol))
 
         # Expcted values
         R = torch.tensor([
@@ -150,13 +150,13 @@ class OrthonormalTransformTestCase(unittest.TestCase):
         actualZ = target.forward(X)
 
         # Evaluation
-        self.assertTrue(torch.allclose(actualZ,expctdZ,rtol=0.,atol=atol))
+        self.assertTrue(torch.allclose(actualZ,expctdZ,rtol=rtol,atol=atol))
 
     @parameterized.expand(
         list(itertools.product(datatype,ncols,mode))
     )
     def test4x4(self,datatype,ncols,mode):
-        atol=1e-6
+        rtol,atol = 1e-05,1e-08 
         
         # Expected values
         expctdNorm = 1.
@@ -173,13 +173,13 @@ class OrthonormalTransformTestCase(unittest.TestCase):
 
         # Evaluation
         message = "actualNorm=%s differs from %s" % ( str(actualNorm), str(expctdNorm) )
-        self.assertTrue(np.isclose(actualNorm,expctdNorm,rtol=0.,atol=atol),message)        
+        self.assertTrue(np.isclose(actualNorm,expctdNorm,rtol=rtol,atol=atol),message)        
 
     @parameterized.expand(
         list(itertools.product(datatype,ncols,mode))
     )
     def test8x8(self,datatype,ncols,mode):
-        atol=1e-6
+        rtol,atol = 1e-05,1e-08 
         
         # Expected values
         expctdNorm = 1.
@@ -196,13 +196,13 @@ class OrthonormalTransformTestCase(unittest.TestCase):
 
         # Evaluation
         message = "actualNorm=%s differs from %s" % ( str(actualNorm), str(expctdNorm) )
-        self.assertTrue(np.isclose(actualNorm,expctdNorm,rtol=0.,atol=atol),message)        
+        self.assertTrue(np.isclose(actualNorm,expctdNorm,rtol=rtol,atol=atol),message)        
 
     @parameterized.expand(
         list(itertools.product(datatype,ncols,npoints,mode))
     )
     def testNxN(self,datatype,ncols,npoints,mode):
-        atol=1e-6
+        rtol,atol = 1e-05,1e-08 
         
         # Expected values
         expctdNorm = 1.
@@ -220,13 +220,13 @@ class OrthonormalTransformTestCase(unittest.TestCase):
 
         # Evaluation
         message = "actualNorm=%s differs from %s" % ( str(actualNorm), str(expctdNorm) )
-        self.assertTrue(np.isclose(actualNorm,expctdNorm,rtol=0.,atol=atol),message)        
+        self.assertTrue(np.isclose(actualNorm,expctdNorm,rtol=rtol,atol=atol),message)        
 
     @parameterized.expand(
         list(itertools.product(datatype,ncols,mode))
     )
     def test4x4red(self,datatype,ncols,mode):
-        atol=1e-6
+        rtol,atol = 1e-05,1e-08 
         
         # Configuration
         nPoints = 4
@@ -247,13 +247,13 @@ class OrthonormalTransformTestCase(unittest.TestCase):
         
         # Evaluation
         message = "actualLeftTop=%s differs from %s" % ( str(actualLeftTop), str(expctdLeftTop) )        
-        self.assertTrue(np.isclose(actualLeftTop,expctdLeftTop,rtol=0.,atol=atol),message)        
+        self.assertTrue(np.isclose(actualLeftTop,expctdLeftTop,rtol=rtol,atol=atol),message)        
 
     @parameterized.expand(
         list(itertools.product(datatype,ncols,mode))
     )
     def test8x8red(self,datatype,ncols,mode):
-        atol=1e-6
+        rtol,atol = 1e-05,1e-08 
         
         # Configuration
         nPoints = 8
@@ -274,13 +274,13 @@ class OrthonormalTransformTestCase(unittest.TestCase):
         
         # Evaluation
         message = "actualLeftTop=%s differs from %s" % ( str(actualLeftTop), str(expctdLeftTop) )        
-        self.assertTrue(np.isclose(actualLeftTop,expctdLeftTop,rtol=0.,atol=atol),message)
+        self.assertTrue(np.isclose(actualLeftTop,expctdLeftTop,rtol=rtol,atol=atol),message)
 
     @parameterized.expand(
         list(itertools.product(datatype,ncols,npoints,mode))
     )
     def testNxNred(self,datatype,ncols,npoints,mode):
-        atol=1e-6
+        rtol,atol = 1e-05,1e-08 
         
         # Configuration
         nAngles = int(npoints*(npoints-1)/2)
@@ -300,14 +300,14 @@ class OrthonormalTransformTestCase(unittest.TestCase):
         
         # Evaluation
         message = "actualLeftTop=%s differs from %s" % ( str(actualLeftTop), str(expctdLeftTop) )        
-        self.assertTrue(np.isclose(actualLeftTop,expctdLeftTop,rtol=0.,atol=atol),message)        
+        self.assertTrue(np.isclose(actualLeftTop,expctdLeftTop,rtol=rtol,atol=atol),message)        
     
 
     @parameterized.expand(
         list(itertools.product(datatype,mode))
     )
     def testPartialDifference(self,datatype,mode):
-        atol=1e-6
+        rtol,atol = 1e-05,1e-08 
 
         # Configuration
         ncols = 1
@@ -339,14 +339,14 @@ class OrthonormalTransformTestCase(unittest.TestCase):
         actualdLdW = target.angles.grad
     
         # Evaluation
-        self.assertTrue(torch.allclose(actualdLdX,expctddLdX,rtol=0.,atol=atol))
-        self.assertTrue(torch.allclose(actualdLdW,expctddLdW,rtol=0.,atol=atol))
+        self.assertTrue(torch.allclose(actualdLdX,expctddLdX,rtol=rtol,atol=atol))
+        self.assertTrue(torch.allclose(actualdLdW,expctddLdW,rtol=rtol,atol=atol))
         
     @parameterized.expand(
         list(itertools.product(datatype,ncols,mode))
     )
     def testPartialDifferenceMultiColumns(self,datatype,ncols,mode):
-        atol=1e-6
+        rtol,atol = 1e-05,1e-08 
 
         # Configuration
         nPoints = 2
@@ -377,14 +377,14 @@ class OrthonormalTransformTestCase(unittest.TestCase):
         actualdLdW = target.angles.grad
     
         # Evaluation
-        self.assertTrue(torch.allclose(actualdLdX,expctddLdX,rtol=0.,atol=atol))
-        self.assertTrue(torch.allclose(actualdLdW,expctddLdW,rtol=0.,atol=atol))
+        self.assertTrue(torch.allclose(actualdLdX,expctddLdX,rtol=rtol,atol=atol))
+        self.assertTrue(torch.allclose(actualdLdW,expctddLdW,rtol=rtol,atol=atol))
 
     @parameterized.expand(
         list(itertools.product(datatype,ncols,mode))
     )
     def testPartialDifferenceMultiColumnsAngs(self,datatype,ncols,mode):
-        atol=1e-6
+        rtol,atol = 1e-05,1e-08 
 
         # Configuration
         nPoints = 2
@@ -418,19 +418,20 @@ class OrthonormalTransformTestCase(unittest.TestCase):
         actualdLdW = target.angles.grad
     
         # Evaluation
-        self.assertTrue(torch.allclose(actualdLdX,expctddLdX,rtol=0.,atol=atol))
-        self.assertTrue(torch.allclose(actualdLdW,expctddLdW,rtol=0.,atol=atol))
+        self.assertTrue(torch.allclose(actualdLdX,expctddLdX,rtol=rtol,atol=atol))
+        self.assertTrue(torch.allclose(actualdLdW,expctddLdW,rtol=rtol,atol=atol))
 
     @parameterized.expand(
-        list(itertools.product(datatype))
+        list(itertools.product(datatype,mode))
     )
-    def testPartialDifferenceAngsAndMus(self,datatype):
-        atol=1e-6
+    def testPartialDifferenceAngsAndMus(self,datatype,mode):
+        rtol,atol = 1e-05,1e-08 
 
         # Configuration
-        mode = 'Analysis'
+        #mode = 'Analysis'
         nPoints = 2
         ncols = 1
+        mus = [1,-1]
 
         # Expected values
         X = torch.randn(nPoints,ncols,dtype=datatype,requires_grad=True)        
@@ -452,7 +453,7 @@ class OrthonormalTransformTestCase(unittest.TestCase):
         # Instantiation of target class
         target = OrthonormalTransform(n=nPoints,dtype=datatype,mode=mode)
         target.angles.data = torch.tensor(angle,dtype=datatype)
-        target.mus = torch.tensor([1,-1],dtype=datatype)
+        target.mus = torch.tensor(mus,dtype=datatype)
 
         # Actual values
         torch.autograd.set_detect_anomaly(True)        
@@ -462,15 +463,15 @@ class OrthonormalTransformTestCase(unittest.TestCase):
         actualdLdW = target.angles.grad 
   
         # Evaluation
-        self.assertTrue(torch.allclose(actualdLdX,expctddLdX,rtol=0.,atol=atol))
-        self.assertTrue(torch.allclose(actualdLdW,expctddLdW,rtol=0.,atol=atol))
+        self.assertTrue(torch.allclose(actualdLdX,expctddLdX,rtol=rtol,atol=atol))
+        self.assertTrue(torch.allclose(actualdLdW,expctddLdW,rtol=rtol,atol=atol))
 
     """
     @parameterized.expand(
         list(itertools.product(datatype))
     )
     def testPartialDifferenceSetAngles(self,datatype):
-        atol=1e-6
+        rtol,atol = 1e-05,1e-08 
 
         # Expected values
         expctdM = torch.tensor([
@@ -488,7 +489,7 @@ class OrthonormalTransformTestCase(unittest.TestCase):
         actualM = omgs(angles=0,mus=1,index_pd_angle=0)
 
         # Evaluation
-        self.assertTrue(torch.isclose(actualM,expctdM,rtol=0.,atol=atol).all())                
+        self.assertTrue(torch.isclose(actualM,expctdM,rtol=rtol,atol=atol).all())                
 
         # Expected values
         expctdM = torch.tensor([
@@ -500,13 +501,13 @@ class OrthonormalTransformTestCase(unittest.TestCase):
         actualM = omgs(angles=np.pi/4,mus=1,index_pd_angle=0)
 
         # Evaluation
-        self.assertTrue(torch.isclose(actualM,expctdM,rtol=0.,atol=atol).all())                
+        self.assertTrue(torch.isclose(actualM,expctdM,rtol=rtol,atol=atol).all())                
 
     @parameterized.expand(
         list(itertools.product(datatype))
     )
     def test4x4RandAngs(self,datatype):
-        atol=1e-6
+        rtol,atol = 1e-05,1e-08 
 
         # Expcted values
         mus = [ -1, 1, -1, 1 ]
@@ -554,13 +555,13 @@ class OrthonormalTransformTestCase(unittest.TestCase):
         actualM = omgs(angles=angs,mus=mus)
 
         # Evaluation
-        self.assertTrue(torch.isclose(actualM,expctdM,rtol=0.,atol=atol).all())
+        self.assertTrue(torch.isclose(actualM,expctdM,rtol=rtol,atol=atol).all())
 
     @parameterized.expand(
         list(itertools.product(datatype))
     )
     def testPartialDifference4x4RandAngPdAng2(self,datatype):
-        atol=1e-6
+        rtol,atol = 1e-05,1e-08 
 
         # Expcted values
         mus = [ -1, 1, -1, 1 ]
@@ -610,13 +611,13 @@ class OrthonormalTransformTestCase(unittest.TestCase):
         actualM = omgs(angles=angs,mus=mus,index_pd_angle=pdAng)
 
         # Evaluation
-        self.assertTrue(torch.isclose(actualM,expctdM,rtol=0.,atol=atol).all())
+        self.assertTrue(torch.isclose(actualM,expctdM,rtol=rtol,atol=atol).all())
 
     @parameterized.expand(
         list(itertools.product(datatype))
     )
     def testPartialDifference4x4RandAngPdAng5(self,datatype):
-        atol=1e-6
+        rtol,atol = 1e-05,1e-08 
 
         # Expcted values
         mus = [ 1, 1, -1, -1 ]
@@ -666,13 +667,13 @@ class OrthonormalTransformTestCase(unittest.TestCase):
         actualM = omgs(angles=angs,mus=mus,index_pd_angle=pdAng)
 
         # Evaluation
-        self.assertTrue(torch.isclose(actualM,expctdM,rtol=0.,atol=atol).all())    
+        self.assertTrue(torch.isclose(actualM,expctdM,rtol=rtol,atol=atol).all())    
 
     @parameterized.expand(
         list(itertools.product(datatype))
     )
     def testPartialDifference4x4RandAngPdAng1(self,datatype):
-        atol=1e-6
+        rtol,atol = 1e-05,1e-08 
 
         # Expcted values
         mus = [ -1, -1, -1, -1 ]
@@ -728,7 +729,7 @@ class OrthonormalTransformTestCase(unittest.TestCase):
         actualM = omgs(angles=angs,mus=mus,index_pd_angle=pdAng)
 
         # Evaluation
-        self.assertTrue(torch.isclose(actualM,expctdM,rtol=0.,atol=atol).all())    
+        self.assertTrue(torch.isclose(actualM,expctdM,rtol=rtol,atol=atol).all())    
 
     @parameterized.expand(
         list(itertools.product(datatype))
@@ -757,7 +758,7 @@ class OrthonormalTransformTestCase(unittest.TestCase):
         actualM = omgs(angles=angs0,mus=1,index_pd_angle=pdAng)
 
         # Evaluation
-        self.assertTrue(torch.isclose(actualM,expctdM,rtol=0.,atol=atol).all())    
+        self.assertTrue(torch.isclose(actualM,expctdM,rtol=rtol,atol=atol).all())    
     """
 
 if __name__ == '__main__':

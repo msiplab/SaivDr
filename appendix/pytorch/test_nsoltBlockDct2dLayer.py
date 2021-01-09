@@ -66,7 +66,7 @@ class NsoltBlockDct2dLayerTestCase(unittest.TestCase):
     )
     def testPredictGrayScale(self,
             stride, height, width, datatype):
-        atol = 1e-6
+        rtol,atol = 1e-5,1e-8
 
         # Parameters
         nSamples = 8
@@ -98,7 +98,7 @@ class NsoltBlockDct2dLayerTestCase(unittest.TestCase):
 
         # Evaluation
         self.assertEqual(actualZ.dtype,datatype)         
-        self.assertTrue(torch.isclose(actualZ,expctdZ,rtol=0.,atol=atol).all())
+        self.assertTrue(torch.allclose(actualZ,expctdZ,rtol=rtol,atol=atol))
         self.assertFalse(actualZ.requires_grad)
 
     @parameterized.expand(
@@ -106,7 +106,7 @@ class NsoltBlockDct2dLayerTestCase(unittest.TestCase):
     )
     def testForwardGrayScale(self,
         stride, height, width, datatype):
-        atol=1e-6
+        rtol,atol=1e-5,1e-8
             
         # Parameters
         nSamples = 8
@@ -137,7 +137,7 @@ class NsoltBlockDct2dLayerTestCase(unittest.TestCase):
 
         # Evaluation
         self.assertEqual(actualZ.dtype,datatype)         
-        self.assertTrue(torch.isclose(actualZ,expctdZ,rtol=0.,atol=atol).all())
+        self.assertTrue(torch.allclose(actualZ,expctdZ,rtol=rtol,atol=atol))
         self.assertTrue(actualZ.requires_grad)
 
     @parameterized.expand(
@@ -145,7 +145,7 @@ class NsoltBlockDct2dLayerTestCase(unittest.TestCase):
     )
     def testPredictRgbColor(self,
         stride, height, width, datatype):
-        atol=1e-6
+        rtol,atol=1e-5,1e-8
 
         # Parameters
         nSamples = 8
@@ -184,9 +184,9 @@ class NsoltBlockDct2dLayerTestCase(unittest.TestCase):
         self.assertEqual(actualZr.dtype,datatype)         
         self.assertEqual(actualZg.dtype,datatype)         
         self.assertEqual(actualZb.dtype,datatype)                 
-        self.assertTrue(torch.isclose(actualZr,expctdZr,rtol=0.,atol=atol).all())
-        self.assertTrue(torch.isclose(actualZg,expctdZg,rtol=0.,atol=atol).all())
-        self.assertTrue(torch.isclose(actualZb,expctdZb,rtol=0.,atol=atol).all())                
+        self.assertTrue(torch.allclose(actualZr,expctdZr,rtol=rtol,atol=atol))
+        self.assertTrue(torch.allclose(actualZg,expctdZg,rtol=rtol,atol=atol))
+        self.assertTrue(torch.allclose(actualZb,expctdZb,rtol=rtol,atol=atol))
         self.assertFalse(actualZr.requires_grad)
         self.assertFalse(actualZg.requires_grad)
         self.assertFalse(actualZb.requires_grad)
@@ -196,7 +196,7 @@ class NsoltBlockDct2dLayerTestCase(unittest.TestCase):
     )
     def testForwardRgbColor(self,
         stride, height, width, datatype):
-        atol=1e-6
+        rtol,atol=1e-5,1e-8
 
         # Parameters
         nSamples = 8
@@ -234,9 +234,9 @@ class NsoltBlockDct2dLayerTestCase(unittest.TestCase):
         self.assertEqual(actualZr.dtype,datatype)         
         self.assertEqual(actualZg.dtype,datatype)         
         self.assertEqual(actualZb.dtype,datatype)                 
-        self.assertTrue(torch.isclose(actualZr,expctdZr,rtol=0.,atol=atol).all())
-        self.assertTrue(torch.isclose(actualZg,expctdZg,rtol=0.,atol=atol).all())
-        self.assertTrue(torch.isclose(actualZb,expctdZb,rtol=0.,atol=atol).all())                
+        self.assertTrue(torch.allclose(actualZr,expctdZr,rtol=rtol,atol=atol))
+        self.assertTrue(torch.allclose(actualZg,expctdZg,rtol=rtol,atol=atol))
+        self.assertTrue(torch.allclose(actualZb,expctdZb,rtol=rtol,atol=atol))
         self.assertTrue(actualZr.requires_grad)
         self.assertTrue(actualZg.requires_grad)
         self.assertTrue(actualZb.requires_grad)    
@@ -246,7 +246,7 @@ class NsoltBlockDct2dLayerTestCase(unittest.TestCase):
     )
     def testBackwardGrayScale(self,
         stride, height, width, datatype):
-        atol = 1e-6
+        rtol,atol = 1e-3,1e-6
 
         # Parameters
         nSamples = 8
@@ -278,7 +278,7 @@ class NsoltBlockDct2dLayerTestCase(unittest.TestCase):
 
         # Evaluation
         self.assertEqual(actualdLdX.dtype,datatype)
-        self.assertTrue(torch.isclose(actualdLdX,expctddLdX,rtol=0.,atol=atol).all())
+        self.assertTrue(torch.allclose(actualdLdX,expctddLdX,rtol=rtol,atol=atol))
         self.assertTrue(Z.requires_grad)
 
     @parameterized.expand(
@@ -286,7 +286,7 @@ class NsoltBlockDct2dLayerTestCase(unittest.TestCase):
     )
     def testBackwardRgbColor(self,
         stride, height, width, datatype):
-        atol = 1e-6
+        rtol,atol = 1e-3,1e-6
 
         # Parameters
         nSamples = 8
@@ -330,7 +330,7 @@ class NsoltBlockDct2dLayerTestCase(unittest.TestCase):
 
         # Evaluation
         self.assertEqual(actualdLdX.dtype,datatype)
-        self.assertTrue(torch.isclose(actualdLdX,expctddLdX,rtol=0.,atol=atol).all())
+        self.assertTrue(torch.allclose(actualdLdX,expctddLdX,rtol=rtol,atol=atol))
         self.assertTrue(Zr.requires_grad)
         self.assertTrue(Zg.requires_grad)
         self.assertTrue(Zb.requires_grad)

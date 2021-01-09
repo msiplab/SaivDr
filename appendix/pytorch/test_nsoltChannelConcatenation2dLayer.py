@@ -60,7 +60,7 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
     )
     def testPredict(self,
         nchs,nrows,ncols,datatype):
-        atol=1e-6
+        rtol,atol=1e-5,1e-8
 
         # Parameters
         nSamples = 8
@@ -86,7 +86,7 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
 
         # Evaluation
         self.assertEqual(actualZ.dtype,datatype)
-        self.assertTrue(torch.isclose(actualZ,expctdZ,rtol=0.,atol=atol).all())
+        self.assertTrue(torch.allclose(actualZ,expctdZ,rtol=rtol,atol=atol))
         self.assertFalse(actualZ.requires_grad)
 
     @parameterized.expand(
@@ -94,7 +94,7 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
     )
     def testBackward(self,
         nchs,nrows,ncols,datatype):
-        atol=1e-6
+        rtol,atol=1e-5,1e-8
     
         # Parameters
         nSamples = 8
@@ -126,8 +126,8 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
         # Evaluation
         self.assertEqual(actualdLdXdc.dtype,datatype)
         self.assertEqual(actualdLdXac.dtype,datatype)    
-        self.assertTrue(torch.isclose(actualdLdXdc,expctddLdXdc,rtol=0.,atol=atol).all())
-        self.assertTrue(torch.isclose(actualdLdXac,expctddLdXac,rtol=0.,atol=atol).all())        
+        self.assertTrue(torch.allclose(actualdLdXdc,expctddLdXdc,rtol=rtol,atol=atol))
+        self.assertTrue(torch.allclose(actualdLdXac,expctddLdXac,rtol=rtol,atol=atol))
         self.assertTrue(Z.requires_grad)
 
 if __name__ == '__main__':

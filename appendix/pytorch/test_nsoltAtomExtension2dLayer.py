@@ -74,7 +74,7 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
     )
     def testPredictGrayscaleShiftLowerCoefs(self, 
             nchs, nrows, ncols, dir, datatype):
-        atol= 1e-6
+        rtol,atol=  0,1e-8
             
         # Parameters
         nSamples = 8
@@ -101,15 +101,15 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
         # Block butterfly
         Ys = Y[:,:,:,:ps]
         Ya = Y[:,:,:,ps:]
-        Y =  torch.cat((Ys+Ya, Ys-Ya),dim=-1)/np.sqrt(2.)
+        Y =  torch.cat((Ys+Ya, Ys-Ya),dim=-1)
         # Block circular shift
         Y[:,:,:,ps:] = torch.roll(Y[:,:,:,ps:],shifts=shift,dims=(0,1,2,3))
         # Block butterfly
         Ys = Y[:,:,:,:ps]
         Ya = Y[:,:,:,ps:]
-        Y =  torch.cat((Ys+Ya ,Ys-Ya),dim=-1)/np.sqrt(2.)
+        Y =  torch.cat((Ys+Ya ,Ys-Ya),dim=-1)
         # Output
-        expctdZ = Y 
+        expctdZ = Y/2. 
 
         # Instantiation of target class
         layer = NsoltAtomExtension2dLayer( 
@@ -125,7 +125,7 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
         
         # Evaluation
         self.assertEqual(actualZ.dtype,datatype) 
-        self.assertTrue(torch.isclose(actualZ,expctdZ,rtol=0.,atol=atol).all())
+        self.assertTrue(torch.allclose(actualZ,expctdZ,rtol=rtol,atol=atol))
         self.assertFalse(actualZ.requires_grad)
 
     @parameterized.expand(
@@ -133,7 +133,7 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
     )
     def testPredictGrayscaleShiftUpperCoefs(self, 
                 nchs, nrows, ncols, dir, datatype):
-        atol= 1e-6                
+        rtol, atol= 1e-5, 1e-8
             
         # Parameters
         nSamples = 8
@@ -160,15 +160,15 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
         # Block butterfly
         Ys = Y[:,:,:,:ps]
         Ya = Y[:,:,:,ps:]
-        Y =  torch.cat((Ys+Ya, Ys-Ya),dim=-1)/np.sqrt(2.)
+        Y =  torch.cat((Ys+Ya, Ys-Ya),dim=-1)
         # Block circular shift
         Y[:,:,:,:ps] = torch.roll(Y[:,:,:,:ps],shifts=shift,dims=(0,1,2,3))
         # Block butterfly
         Ys = Y[:,:,:,:ps]
         Ya = Y[:,:,:,ps:]
-        Y =  torch.cat((Ys+Ya, Ys-Ya),dim=-1)/np.sqrt(2.)
+        Y =  torch.cat((Ys+Ya, Ys-Ya),dim=-1)
         # Output
-        expctdZ = Y
+        expctdZ = Y/2.
         
         # Instantiation of target class
         layer = NsoltAtomExtension2dLayer( 
@@ -184,7 +184,7 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
             
         # Evaluation
         self.assertEqual(actualZ.dtype,datatype) 
-        self.assertTrue(torch.isclose(actualZ,expctdZ,rtol=0.,atol=atol).all())
+        self.assertTrue(torch.allclose(actualZ,expctdZ,rtol=rtol,atol=atol))
         self.assertFalse(actualZ.requires_grad)
 
     @parameterized.expand(
@@ -192,7 +192,7 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
     )
     def testBackwardGrayscaleShiftLowerCoefs(self, 
                 nchs, nrows, ncols, dir, datatype):
-        atol = 1e-6
+        rtol,atol = 1e-5,1e-8
   
         # Parameters
         nSamples = 8
@@ -222,16 +222,16 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
         # Block butterfly        
         Ys = Y[:,:,:,:ps]
         Ya = Y[:,:,:,ps:]
-        Y = torch.cat((Ys+Ya,Ys-Ya),dim=-1)/np.sqrt(2.)
+        Y = torch.cat((Ys+Ya,Ys-Ya),dim=-1)
         # Block circular shift
         Y[:,:,:,ps:] = torch.roll(Y[:,:,:,ps:],shifts=shift,dims=(0,1,2,3))        
         # Block butterfly        
         Ys = Y[:,:,:,:ps]
         Ya = Y[:,:,:,ps:]
-        Y = torch.cat((Ys+Ya,Ys-Ya),dim=-1)/np.sqrt(2.)
+        Y = torch.cat((Ys+Ya,Ys-Ya),dim=-1)
 
         # Output
-        expctddLdX = Y
+        expctddLdX = Y/2.
 
         # Instantiation of target class
         layer = NsoltAtomExtension2dLayer(
@@ -248,7 +248,7 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
         
         # Evaluation
         self.assertEqual(actualdLdX.dtype,datatype) 
-        self.assertTrue(torch.isclose(actualdLdX,expctddLdX,rtol=0.,atol=atol).all())
+        self.assertTrue(torch.allclose(actualdLdX,expctddLdX,rtol=rtol,atol=atol))
         self.assertTrue(Z.requires_grad)
 
     @parameterized.expand(
@@ -256,7 +256,7 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
     )
     def testBackwardGrayscaleShiftUpperCoefs(self, 
                 nchs, nrows, ncols, dir, datatype):
-        atol = 1e-6
+        rtol,atol = 1e-5,1e-8
        
         # Parameters
         nSamples = 8
@@ -286,16 +286,16 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
         # Block butterfly
         Ys = Y[:,:,:,:ps]
         Ya = Y[:,:,:,ps:]
-        Y = torch.cat((Ys+Ya, Ys-Ya),dim=-1)/np.sqrt(2.)
+        Y = torch.cat((Ys+Ya, Ys-Ya),dim=-1)
         # Block circular shift
         Y[:,:,:,:ps] = torch.roll(Y[:,:,:,:ps],shifts=shift,dims=(0,1,2,3))
         # Block butterfly
         Ys = Y[:,:,:,:ps]
         Ya = Y[:,:,:,ps:]
-        Y = torch.cat((Ys+Ya, Ys-Ya),dim=-1)/np.sqrt(2.)
+        Y = torch.cat((Ys+Ya, Ys-Ya),dim=-1)
 
         # Output
-        expctddLdX = Y
+        expctddLdX = Y/2.
 
         # Instantiation of target class
         layer = NsoltAtomExtension2dLayer(
@@ -312,7 +312,7 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
         
         # Evaluation
         self.assertEqual(actualdLdX.dtype,datatype) 
-        self.assertTrue(torch.isclose(actualdLdX,expctddLdX,rtol=0.,atol=atol).all())
+        self.assertTrue(torch.allclose(actualdLdX,expctddLdX,rtol=rtol,atol=atol))
         self.assertTrue(Z.requires_grad)
         
 if __name__ == '__main__':

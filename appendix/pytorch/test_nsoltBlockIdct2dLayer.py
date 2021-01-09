@@ -65,7 +65,7 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
     )
     def testPredictGrayScale(self,
         stride, height, width, datatype):
-        atol = 1e-6
+        rtol,atol = 1e-5,1e-8
 
         # Parameters
         nSamples = 8
@@ -93,7 +93,7 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
 
         # Evaluation
         self.assertEqual(actualZ.dtype,datatype)
-        self.assertTrue(torch.isclose(actualZ,expctdZ,rtol=0.,atol=atol).all())
+        self.assertTrue(torch.allclose(actualZ,expctdZ,rtol=rtol,atol=atol))
         self.assertFalse(actualZ.requires_grad)
 
     @parameterized.expand(
@@ -101,7 +101,7 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
     )
     def testForwardGrayScale(self,
         stride, height, width, datatype):
-        atol = 1e-6
+        rtol,atol = 1e-5,1e-8
 
         # Parameters
         nSamples = 8
@@ -128,7 +128,7 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
 
         # Evaluation
         self.assertEqual(actualZ.dtype,datatype)
-        self.assertTrue(torch.isclose(actualZ,expctdZ,rtol=0.,atol=atol).all())
+        self.assertTrue(torch.allclose(actualZ,expctdZ,rtol=rtol,atol=atol))
         self.assertTrue(actualZ.requires_grad)
 
     @parameterized.expand(
@@ -136,7 +136,7 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
     )
     def testPredictRgbColor(self,
         stride, height, width, datatype):
-        atol=1e-6
+        rtol,atol=1e-5,1e-8
 
         # Parameters
         nSamples = 8
@@ -175,7 +175,7 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
 
         # Evaluation
         self.assertEqual(actualZ.dtype,datatype)
-        self.assertTrue(torch.isclose(actualZ,expctdZ,rtol=0.,atol=atol).all())
+        self.assertTrue(torch.allclose(actualZ,expctdZ,rtol=rtol,atol=atol))
         self.assertFalse(actualZ.requires_grad)
 
     @parameterized.expand(
@@ -183,7 +183,7 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
     )
     def testForwardRgbColor(self,
         stride, height, width, datatype):
-        atol=1e-6
+        rtol,atol=1e-5,1e-8
 
         # Parameters
         nSamples = 8
@@ -220,7 +220,7 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
 
         # Evaluation
         self.assertEqual(actualZ.dtype,datatype)
-        self.assertTrue(torch.isclose(actualZ,expctdZ,rtol=0.,atol=atol).all())
+        self.assertTrue(torch.allclose(actualZ,expctdZ,rtol=rtol,atol=atol))
         self.assertTrue(actualZ.requires_grad)    
 
     @parameterized.expand(
@@ -228,7 +228,7 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
     )
     def testBackwardGrayScale(self,
         stride, height, width, datatype):
-        atol=1e-6
+        rtol,atol=1e-3,1e-6
 
         # Parameters
         nSamples = 8
@@ -262,7 +262,7 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
 
         # Evaluation
         self.assertEqual(actualdLdX.dtype,datatype)
-        self.assertTrue(torch.isclose(actualdLdX,expctddLdX,rtol=0.,atol=atol).all())
+        self.assertTrue(torch.allclose(actualdLdX,expctddLdX,rtol=rtol,atol=atol))
         self.assertTrue(Z.requires_grad)
 
     @parameterized.expand(
@@ -270,7 +270,7 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
     )
     def testBackwardRgbColor(self,
         stride, height, width, datatype):
-        atol=1e-6
+        rtol,atol=1e-3,1e-6
 
         # Parameters
         nSamples = 8
@@ -312,9 +312,9 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
         self.assertEqual(actualdLdXr.dtype,datatype)
         self.assertEqual(actualdLdXg.dtype,datatype)
         self.assertEqual(actualdLdXb.dtype,datatype)                
-        self.assertTrue(torch.isclose(actualdLdXr,expctddLdXr,rtol=0.,atol=atol).all())
-        self.assertTrue(torch.isclose(actualdLdXg,expctddLdXg,rtol=0.,atol=atol).all())        
-        self.assertTrue(torch.isclose(actualdLdXb,expctddLdXb,rtol=0.,atol=atol).all())        
+        self.assertTrue(torch.allclose(actualdLdXr,expctddLdXr,rtol=rtol,atol=atol))
+        self.assertTrue(torch.allclose(actualdLdXg,expctddLdXg,rtol=rtol,atol=atol))
+        self.assertTrue(torch.allclose(actualdLdXb,expctddLdXb,rtol=rtol,atol=atol))
         self.assertTrue(Z.requires_grad)
 
 def permuteDctCoefs_(x):
