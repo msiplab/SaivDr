@@ -22,6 +22,7 @@ class OrthonormalTransform(nn.Module):
     
         http://msiplab.eng.niigata-u.ac.jp/    
     """
+
     def __init__(self,
         n=2,
         mus=1,
@@ -33,7 +34,7 @@ class OrthonormalTransform(nn.Module):
         self.dtype = dtype
         self.nPoints = n
         if mode in {'Analysis','Synthesis'}:
-            self.mode = mode
+            self.__mode = mode
         else:
             raise InvalidMode(
                 '%s : Mode should be either of Analysis or Synthesis'\
@@ -41,31 +42,60 @@ class OrthonormalTransform(nn.Module):
             )
         self.angles = nn.Parameter(torch.zeros(nAngs,dtype=self.dtype))
         if torch.is_tensor(mus):
-            self.mus = mus
+            self.__mus = mus
         elif mus == 1:
-            self.mus = torch.ones(self.nPoints,dtype=self.dtype)
+            self.__mus = torch.ones(self.nPoints,dtype=self.dtype)
         elif mus == -1:
-            self.mus = -torch.ones(self.nPoints,dtype=self.dtype)
+            self.__mus = -torch.ones(self.nPoints,dtype=self.dtype)
         else:
-            raise InvalidMus(
-                '%s : Mus should be either of 1 or -1'\
-                % str(mus)
-            )
-        # TODO: Check if mus in {-1,1}^n
+            self.__mus = torch.tensor(mus,dtype=self.dtype)
 
     def forward(self,X):
         angles = self.angles
-        mus = self.mus
-        if self.mode=='Analysis':
+        mus = self.__mus
+        mode = self.__mode
+        if mode=='Analysis':
             givensrots = GivensRotations4Analyzer.apply
-        elif self.mode=='Synthesis':
+        else:
             givensrots = GivensRotations4Synthesizer.apply
+        return givensrots(X,angles,mus)           
+
+    @property
+    def mode(self):
+        return self.__mode 
+
+    @mode.setter
+    def mode(self,mode):
+        if mode in {'Analysis','Synthesis'}:
+            self.__mode = mode
         else:
             raise InvalidMode(
                 '%s : Mode should be either of Analysis or Synthesis'\
                 % str(mode)
             )
-        return givensrots(X,angles,mus)            
+
+    @property 
+    def mus(self):
+        return self.__mus
+    
+    @mus.setter
+    def mus(self,mus):
+        if torch.is_tensor(mus):
+            self.__mus = mus
+        elif mus == 1:
+            self.__mus = torch.ones(self.nPoints,dtype=self.dtype)
+        elif mus == -1:
+            self.__mus = -torch.ones(self.nPoints,dtype=self.dtype)
+        else:
+            self.__mus = torch.tensor(mus,dtype=self.dtype)
+        self.checkMus()
+
+    def checkMus(self):
+        if torch.not_equal(torch.abs(self.__mus),torch.ones(self.nPoints)).any():
+            raise InvalidMus(
+                '%s : Elements in mus should be either of 1 or -1'\
+                % str(self.__mus)
+            )
 
 class GivensRotations4Analyzer(autograd.Function):
     """

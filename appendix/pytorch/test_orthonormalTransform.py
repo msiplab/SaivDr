@@ -384,7 +384,7 @@ class OrthonormalTransformTestCase(unittest.TestCase):
         list(itertools.product(datatype,ncols,mode))
     )
     def testPartialDifferenceMultiColumnsAngs(self,datatype,ncols,mode):
-        rtol,atol = 1e-05,1e-08 
+        rtol,atol = 1e-04,1e-07 
 
         # Configuration
         nPoints = 2
@@ -422,15 +422,15 @@ class OrthonormalTransformTestCase(unittest.TestCase):
         self.assertTrue(torch.allclose(actualdLdW,expctddLdW,rtol=rtol,atol=atol))
 
     @parameterized.expand(
-        list(itertools.product(datatype,mode))
+        list(itertools.product(datatype,mode,ncols))
     )
-    def testPartialDifferenceAngsAndMus(self,datatype,mode):
-        rtol,atol = 1e-05,1e-08 
+    def testPartialDifferenceAngsAndMus(self,datatype,mode,ncols):
+        rtol,atol = 1e-04,1e-07 
 
         # Configuration
         #mode = 'Analysis'
         nPoints = 2
-        ncols = 1
+        #ncols = 1
         mus = [1,-1]
 
         # Expected values
