@@ -27,6 +27,7 @@ class OrthonormalMatrixGenerationSystem:
     def __init__(self,
         dtype=torch.get_default_dtype(),
         partial_difference=False):
+        
         super(OrthonormalMatrixGenerationSystem, self).__init__()
         self.dtype = dtype
         self.partial_difference = partial_difference
