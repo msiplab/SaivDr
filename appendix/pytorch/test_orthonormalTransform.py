@@ -53,7 +53,7 @@ class OrthonormalTransformTestCase(unittest.TestCase):
         
         # Evaluation
         self.assertTrue(isinstance(target,nn.Module))        
-        self.assertTrue(torch.isclose(actualZ,expctdZ,rtol=0.,atol=atol).all())    
+        self.assertTrue(torch.allclose(actualZ,expctdZ,rtol=0.,atol=atol))    
         self.assertEqual(actualNParams,expctdNParams)
         self.assertEqual(actualMode,expctdMode)
 
@@ -83,7 +83,7 @@ class OrthonormalTransformTestCase(unittest.TestCase):
             actualZ = target.forward(X)
 
         # Evaluation
-        self.assertTrue(torch.isclose(actualZ,expctdZ,rtol=0.,atol=atol).all())        
+        self.assertTrue(torch.allclose(actualZ,expctdZ,rtol=0.,atol=atol))        
 
     @parameterized.expand(
         list(itertools.product(datatype,ncols,mode))
@@ -112,7 +112,7 @@ class OrthonormalTransformTestCase(unittest.TestCase):
             actualZ = target.forward(X)
 
         # Evaluation
-        self.assertTrue(torch.isclose(actualZ,expctdZ,rtol=0.,atol=atol).all())        
+        self.assertTrue(torch.allclose(actualZ,expctdZ,rtol=0.,atol=atol))
 
     @parameterized.expand(
         list(itertools.product(datatype,ncols,mode))
@@ -133,7 +133,7 @@ class OrthonormalTransformTestCase(unittest.TestCase):
             actualZ = target.forward(X)
 
         # Evaluation
-        self.assertTrue(torch.isclose(actualZ,expctdZ,rtol=0.,atol=atol).all())        
+        self.assertTrue(torch.allclose(actualZ,expctdZ,rtol=0.,atol=atol))
 
         # Expcted values
         R = torch.tensor([
@@ -150,7 +150,7 @@ class OrthonormalTransformTestCase(unittest.TestCase):
         actualZ = target.forward(X)
 
         # Evaluation
-        self.assertTrue(torch.isclose(actualZ,expctdZ,rtol=0.,atol=atol).all())        
+        self.assertTrue(torch.allclose(actualZ,expctdZ,rtol=0.,atol=atol))
 
     @parameterized.expand(
         list(itertools.product(datatype,ncols,mode))
@@ -339,8 +339,8 @@ class OrthonormalTransformTestCase(unittest.TestCase):
         actualdLdW = target.angles.grad
     
         # Evaluation
-        self.assertTrue(torch.isclose(actualdLdX,expctddLdX,rtol=0.,atol=atol).all())                
-        self.assertTrue(torch.isclose(actualdLdW,expctddLdW,rtol=0.,atol=atol).all())       
+        self.assertTrue(torch.allclose(actualdLdX,expctddLdX,rtol=0.,atol=atol))
+        self.assertTrue(torch.allclose(actualdLdW,expctddLdW,rtol=0.,atol=atol))
         
     @parameterized.expand(
         list(itertools.product(datatype,ncols,mode))
@@ -377,8 +377,8 @@ class OrthonormalTransformTestCase(unittest.TestCase):
         actualdLdW = target.angles.grad
     
         # Evaluation
-        self.assertTrue(torch.isclose(actualdLdX,expctddLdX,rtol=0.,atol=atol).all())                
-        self.assertTrue(torch.isclose(actualdLdW,expctddLdW,rtol=0.,atol=atol).all())                        
+        self.assertTrue(torch.allclose(actualdLdX,expctddLdX,rtol=0.,atol=atol))
+        self.assertTrue(torch.allclose(actualdLdW,expctddLdW,rtol=0.,atol=atol))
 
     @parameterized.expand(
         list(itertools.product(datatype,ncols,mode))
@@ -418,34 +418,54 @@ class OrthonormalTransformTestCase(unittest.TestCase):
         actualdLdW = target.angles.grad
     
         # Evaluation
-        self.assertTrue(torch.isclose(actualdLdX,expctddLdX,rtol=0.,atol=atol).all())                
-        self.assertTrue(torch.isclose(actualdLdW,expctddLdW,rtol=0.,atol=atol).all())                        
+        self.assertTrue(torch.allclose(actualdLdX,expctddLdX,rtol=0.,atol=atol))
+        self.assertTrue(torch.allclose(actualdLdW,expctddLdW,rtol=0.,atol=atol))
 
-"""
     @parameterized.expand(
         list(itertools.product(datatype))
     )
     def testPartialDifferenceAngsAndMus(self,datatype):
         atol=1e-6
 
+        # Configuration
+        mode = 'Analysis'
+        nPoints = 2
+        ncols = 1
+
         # Expected values
-        expctdM = torch.tensor([
-            [ np.cos(np.pi/4+np.pi/2), -np.sin(np.pi/4+np.pi/2)],
-            [ -np.sin(np.pi/4+np.pi/2),  -np.cos(np.pi/4+np.pi/2)] ],
-            dtype=datatype)
+        X = torch.randn(nPoints,ncols,dtype=datatype,requires_grad=True)        
+        dLdZ = (1/ncols)*torch.randn(nPoints,ncols,dtype=datatype)
+        angle = 2.*np.pi*randn(1)
+        R = torch.tensor([[ np.cos(angle), -np.sin(angle) ],
+            [ -np.sin(angle), -np.cos(angle)]], 
+            dtype=datatype).squeeze()
+        dRdW = torch.tensor([[ -np.sin(angle), -np.cos(angle) ],
+            [ -np.cos(angle), np.sin(angle)]], 
+            dtype=datatype).squeeze()
+        if mode!='Synthesis':
+            expctddLdX = R.T @ dLdZ # = dZdX @ dLdZ
+            expctddLdW = torch.sum(expctddLdX * (dRdW @ X))
+        else:
+            expctddLdX = R @ dLdZ # = dZdX @ dLdZ
+            expctddLdW = torch.sum(expctddLdX * (dRdW.T @ X))            
 
         # Instantiation of target class
-        omgs = OrthonormalMatrixGenerationSystem(
-                dtype=datatype,
-                partial_difference=True
-            )
+        target = OrthonormalTransform(n=nPoints,dtype=datatype,mode=mode)
+        target.angles.data = torch.tensor(angle,dtype=datatype)
+        target.mus = torch.tensor([1,-1],dtype=datatype)
 
         # Actual values
-        actualM = omgs(angles=np.pi/4,mus=[1,-1],index_pd_angle=0)
-
+        torch.autograd.set_detect_anomaly(True)        
+        Z = target.forward(X)
+        Z.backward(dLdZ)
+        actualdLdX = X.grad
+        actualdLdW = target.angles.grad 
+  
         # Evaluation
-        self.assertTrue(torch.isclose(actualM,expctdM,rtol=0.,atol=atol).all())                
+        self.assertTrue(torch.allclose(actualdLdX,expctddLdX,rtol=0.,atol=atol))
+        self.assertTrue(torch.allclose(actualdLdW,expctddLdW,rtol=0.,atol=atol))
 
+    """
     @parameterized.expand(
         list(itertools.product(datatype))
     )
