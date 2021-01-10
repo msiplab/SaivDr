@@ -7,6 +7,7 @@ import math
 from random import *
 from orthonormalTransform import OrthonormalTransform
 from nsoltLayerExceptions import InvalidMode, InvalidMus
+from nsoltUtility import OrthonormalMatrixGenerationSystem
 
 datatype = [ torch.float, torch.double ]
 ncols = [ 1, 2, 4 ]
@@ -120,7 +121,7 @@ class OrthonormalTransformTestCase(unittest.TestCase):
         list(itertools.product(datatype,ncols,mode))
     )
     def testSetAngles(self,datatype,ncols,mode):
-        rtol,atol = 1e-05,1e-08 
+        rtol,atol = 1e-04,1e-07
     
         # Expected values
         X = torch.randn(2,ncols,dtype=datatype)  
@@ -755,21 +756,59 @@ class OrthonormalTransformTestCase(unittest.TestCase):
         self.assertTrue(torch.allclose(actualdLdX,expctddLdX,rtol=rtol,atol=atol))
         self.assertTrue(torch.allclose(actualdLdW,expctddLdW,rtol=rtol,atol=atol))
     
-    """
     @parameterized.expand(
-        list(itertools.product(datatype))
+        list(itertools.product(datatype,mode,ncols))
     )
-    def testBackward4x4RandAngPdAng5(self,datatype):
+    def testBackward4x4RandAngPdAng5(self,datatype,mode,ncols):
         rtol,atol=1e-4,1e-7
 
-        # Expcted values
+        # Configuration
+        #mode = 'Synthesis'
+        nPoints = 4
+        #ncols = 2
         mus = [ 1, 1, -1, -1 ]
         angs = 2*math.pi*torch.rand(6,dtype=datatype)
         pdAng = 5
 
-        expctdM = torch.as_tensor(
+        # Expcted values
+        X = torch.randn(nPoints,ncols,dtype=datatype,requires_grad=True)
+        dLdZ = (1/ncols)*torch.randn(nPoints,ncols,dtype=datatype)        
+        R = torch.as_tensor(
             torch.tensor(mus).view(-1,1) * \
-            torch.tensor( # Partial Diff.
+            torch.tensor(
+                [ [1, 0, 0, 0. ],
+                 [0, 1, 0, 0. ],
+                 [0, 0, math.cos(angs[5]), -math.sin(angs[5]) ],
+                 [0, 0, math.sin(angs[5]), math.cos(angs[5]) ] ]
+            ) @ torch.tensor(
+                [ [1, 0, 0, 0 ],
+                 [0, math.cos(angs[4]), 0, -math.sin(angs[4]) ],
+                 [0, 0, 1, 0 ],
+                 [0, math.sin(angs[4]), 0, math.cos(angs[4]) ] ]
+            ) @ torch.tensor(
+                [ [1, 0, 0, 0 ],
+                 [0, math.cos(angs[3]), -math.sin(angs[3]), 0 ],
+                 [0, math.sin(angs[3]), math.cos(angs[3]), 0 ],
+                 [0, 0, 0, 1 ] ]
+            ) @ torch.tensor(
+                [ [ math.cos(angs[2]), 0, 0, -math.sin(angs[2]) ],
+                 [0, 1, 0, 0 ],
+                 [0, 0, 1, 0 ],
+                 [ math.sin(angs[2]), 0, 0, math.cos(angs[2]) ] ]
+            ) @ torch.tensor(
+               [ [math.cos(angs[1]), 0, -math.sin(angs[1]), 0 ],
+                 [0, 1, 0, 0 ],
+                 [math.sin(angs[1]), 0, math.cos(angs[1]), 0 ],
+                 [0, 0, 0, 1 ] ]
+            ) @ torch.tensor(
+               [ [ math.cos(angs[0]), -math.sin(angs[0]), 0, 0 ],
+                 [ math.sin(angs[0]), math.cos(angs[0]), 0, 0 ],
+                 [ 0, 0, 1, 0 ],
+                 [ 0, 0, 0, 1 ] ]
+            ),dtype=datatype)
+        dRdW = torch.as_tensor(
+            torch.tensor(mus).view(-1,1) * \
+            torch.tensor( # Partial Diff. pdAng = 5
                 [ [0, 0, 0, 0. ],
                  [0, 0, 0., 0. ],
                  [0, 0, math.cos(angs[5]+math.pi/2), -math.sin(angs[5]+math.pi/2) ],
@@ -800,32 +839,82 @@ class OrthonormalTransformTestCase(unittest.TestCase):
                  [ 0, 0, 1, 0 ],
                  [ 0, 0, 0, 1 ] ]
             ),dtype=datatype)
-        
-        # Instantiation of target class
-        omgs = OrthonormalMatrixGenerationSystem(
-                dtype=datatype,
-                partial_difference=True
-            )
+        if mode!='Synthesis':
+            expctddLdX = R.T @ dLdZ # = dZdX @ dLdZ
+            expctddLdW = torch.sum(expctddLdX * (dRdW @ X)) 
+        else:
+            expctddLdX = R @ dLdZ # = dZdX @ dLdZ
+            expctddLdW = torch.sum(expctddLdX * (dRdW.T @ X))    
+
+         # Instantiation of target class
+        target = OrthonormalTransform(n=nPoints,dtype=datatype,mode=mode)
+        target.angles.data = angs
+        target.mus = mus
 
         # Actual values
-        actualM = omgs(angles=angs,mus=mus,index_pd_angle=pdAng)
-
+        torch.autograd.set_detect_anomaly(True)        
+        Z = target.forward(X)
+        target.zero_grad()
+        Z.backward(dLdZ)
+        actualdLdX = X.grad
+        actualdLdW = target.angles.grad[pdAng]
+        
         # Evaluation
-        self.assertTrue(torch.allclose(actualM,expctdM,rtol=rtol,atol=atol))    
-
+        self.assertTrue(torch.allclose(actualdLdX,expctddLdX,rtol=rtol,atol=atol))
+        self.assertTrue(torch.allclose(actualdLdW,expctddLdW,rtol=rtol,atol=atol))
+    
     @parameterized.expand(
-        list(itertools.product(datatype))
+        list(itertools.product(datatype,mode,ncols))
     )
-    def testPartialDifference4x4RandAngPdAng1(self,datatype):
+    def testBackward4x4RandAngPdAng1(self,datatype,mode,ncols):
         rtol,atol=1e-1,1e-3
 
-        # Expcted values
+        # Configuration
+        #mode = 'Synthesis'
+        nPoints = 4
+        #ncols = 2
         mus = [ -1, -1, -1, -1 ]
-        angs = 2*math.pi*torch.rand(6)
+        angs = 2*math.pi*torch.rand(6,dtype=datatype)
         pdAng = 1
         delta = 1e-3
 
-        expctdM = torch.as_tensor(
+        # Expcted values
+        X = torch.randn(nPoints,ncols,dtype=datatype,requires_grad=True)
+        dLdZ = (1/ncols)*torch.randn(nPoints,ncols,dtype=datatype)        
+        R = torch.as_tensor(
+            torch.tensor(mus).view(-1,1) * \
+            torch.tensor(
+                [ [1, 0, 0, 0. ],
+                 [0, 1, 0, 0. ],
+                 [0, 0, math.cos(angs[5]), -math.sin(angs[5]) ],
+                 [0, 0, math.sin(angs[5]), math.cos(angs[5]) ] ]
+            ) @ torch.tensor(
+                [ [1, 0, 0, 0 ],
+                 [0, math.cos(angs[4]), 0, -math.sin(angs[4]) ],
+                 [0, 0, 1, 0 ],
+                 [0, math.sin(angs[4]), 0, math.cos(angs[4]) ] ]
+            ) @ torch.tensor(
+                [ [1, 0, 0, 0 ],
+                 [0, math.cos(angs[3]), -math.sin(angs[3]), 0 ],
+                 [0, math.sin(angs[3]), math.cos(angs[3]), 0 ],
+                 [0, 0, 0, 1 ] ]
+            ) @ torch.tensor(
+                [ [ math.cos(angs[2]), 0, 0, -math.sin(angs[2]) ],
+                 [0, 1, 0, 0 ],
+                 [0, 0, 1, 0 ],
+                 [ math.sin(angs[2]), 0, 0, math.cos(angs[2]) ] ]
+            ) @ torch.tensor(
+               [ [math.cos(angs[1]), 0, -math.sin(angs[1]), 0 ],
+                 [0, 1, 0, 0 ],
+                 [math.sin(angs[1]), 0, math.cos(angs[1]), 0 ],
+                 [0, 0, 0, 1 ] ]
+            ) @ torch.tensor(
+               [ [ math.cos(angs[0]), -math.sin(angs[0]), 0, 0 ],
+                 [ math.sin(angs[0]), math.cos(angs[0]), 0, 0 ],
+                 [ 0, 0, 1, 0 ],
+                 [ 0, 0, 0, 1 ] ]
+            ),dtype=datatype)
+        dRdW = torch.as_tensor(
             (1/delta)*torch.tensor(mus).view(-1,1) * \
             torch.tensor( 
                 [ [1, 0, 0, 0. ],
@@ -864,48 +953,217 @@ class OrthonormalTransformTestCase(unittest.TestCase):
                  [ 0, 0, 1, 0 ],
                  [ 0, 0, 0, 1 ] ]
             ),dtype=datatype)
-        
-        # Instantiation of target class
-        omgs = OrthonormalMatrixGenerationSystem(
-                dtype=datatype,
-                partial_difference=True
-            )
+        if mode!='Synthesis':
+            expctddLdX = R.T @ dLdZ # = dZdX @ dLdZ
+            expctddLdW = torch.sum(expctddLdX * (dRdW @ X)) 
+        else:
+            expctddLdX = R @ dLdZ # = dZdX @ dLdZ
+            expctddLdW = torch.sum(expctddLdX * (dRdW.T @ X))    
+
+         # Instantiation of target class
+        target = OrthonormalTransform(n=nPoints,dtype=datatype,mode=mode)
+        target.angles.data = angs
+        target.mus = mus
 
         # Actual values
-        actualM = omgs(angles=angs,mus=mus,index_pd_angle=pdAng)
-
+        torch.autograd.set_detect_anomaly(True)        
+        Z = target.forward(X)
+        target.zero_grad()
+        Z.backward(dLdZ)
+        actualdLdX = X.grad
+        actualdLdW = target.angles.grad[pdAng]
+        
         # Evaluation
-        self.assertTrue(torch.allclose(actualM,expctdM,rtol=rtol,atol=atol))    
-
+        self.assertTrue(torch.allclose(actualdLdX,expctddLdX,rtol=rtol,atol=atol))
+        self.assertTrue(torch.allclose(actualdLdW,expctddLdW,rtol=rtol,atol=atol))
+    
     @parameterized.expand(
-        list(itertools.product(datatype))
+        list(itertools.product(datatype,mode,ncols))
     )
-    def testPartialDifference8x8RandAngPdAng13(self,datatype):
+    def testBackward8x8RandAngPdAng4(self,datatype,mode,ncols):
         rtol,atol=1e-1,1e-3
 
-        # Expcted values
-        pdAng = 13
-        delta = 1e-3
-        angs0 = 2*math.pi*torch.rand(28)
+        # Configuration
+        #mode = 'Synthesis'
+        nPoints = 8
+        #ncols = 2
+        angs0 = 2*math.pi*torch.rand(28,dtype=datatype)
         angs1 = angs0.clone()
         angs2 = angs0.clone()
-        angs1[pdAng] = angs0[pdAng]-delta/2
-        angs2[pdAng] = angs0[pdAng]+delta/2
+        pdAng = 4
+        delta = 1e-3
+        angs1[pdAng] = angs0[pdAng]-delta/2.
+        angs2[pdAng] = angs0[pdAng]+delta/2.
 
-        # Instantiation of target class
+        # Expcted values
+        X = torch.randn(nPoints,ncols,dtype=datatype,requires_grad=True)
+        dLdZ = (1/ncols)*torch.randn(nPoints,ncols,dtype=datatype)        
         omgs = OrthonormalMatrixGenerationSystem(
                 dtype=datatype,
                 partial_difference=False
             )
-        expctdM = ( omgs(angles=angs2,mus=1) - omgs(angles=angs1,mus=1) )/delta
-        
+        R = omgs(angles=angs0,mus=1)
+        dRdW = ( omgs(angles=angs2,mus=1) - omgs(angles=angs1,mus=1) )/delta
+        if mode!='Synthesis':
+            expctddLdX = R.T @ dLdZ # = dZdX @ dLdZ
+            expctddLdW = torch.sum(expctddLdX * (dRdW @ X)) 
+        else:
+            expctddLdX = R @ dLdZ # = dZdX @ dLdZ
+            expctddLdW = torch.sum(expctddLdX * (dRdW.T @ X))    
+
         # Instantiation of target class
-        omgs.partial_difference=True
-        actualM = omgs(angles=angs0,mus=1,index_pd_angle=pdAng)
+        target = OrthonormalTransform(n=nPoints,dtype=datatype,mode=mode)
+        target.angles.data = angs0
+
+        # Actual values
+        torch.autograd.set_detect_anomaly(True)        
+        Z = target.forward(X)
+        target.zero_grad()
+        Z.backward(dLdZ)
+        actualdLdX = X.grad
+        actualdLdW = target.angles.grad[pdAng]
+        
+        # Evaluation
+        self.assertTrue(torch.allclose(actualdLdX,expctddLdX,rtol=rtol,atol=atol))
+        self.assertTrue(torch.allclose(actualdLdW,expctddLdW,rtol=rtol,atol=atol))
+
+    @parameterized.expand(
+        list(itertools.product(datatype,mode,ncols))
+    )
+    def testBackward8x8RandAngMusPdAng13(self,datatype,mode,ncols):
+        rtol,atol=1e-1,1e-3
+
+        # Configuration
+        #mode = 'Synthesis'
+        nPoints = 8
+        #ncols = 2
+        mus = [ 1,1,1,1,-1,-1,-1,-1 ]
+        angs0 = 2*math.pi*torch.rand(28,dtype=datatype)
+        angs1 = angs0.clone()
+        angs2 = angs0.clone()
+        pdAng = 13
+        delta = 1e-3
+        angs1[pdAng] = angs0[pdAng]-delta/2.
+        angs2[pdAng] = angs0[pdAng]+delta/2.
+
+        # Expcted values
+        X = torch.randn(nPoints,ncols,dtype=datatype,requires_grad=True)
+        dLdZ = (1/ncols)*torch.randn(nPoints,ncols,dtype=datatype)        
+        omgs = OrthonormalMatrixGenerationSystem(
+                dtype=datatype,
+                partial_difference=False
+            )
+        R = omgs(angles=angs0,mus=mus)
+        dRdW = ( omgs(angles=angs2,mus=mus) - omgs(angles=angs1,mus=mus) )/delta
+        if mode!='Synthesis':
+            expctddLdX = R.T @ dLdZ # = dZdX @ dLdZ
+            expctddLdW = torch.sum(expctddLdX * (dRdW @ X)) 
+        else:
+            expctddLdX = R @ dLdZ # = dZdX @ dLdZ
+            expctddLdW = torch.sum(expctddLdX * (dRdW.T @ X))    
+
+        # Instantiation of target class
+        target = OrthonormalTransform(n=nPoints,dtype=datatype,mode=mode)
+        target.angles.data = angs0
+        target.mus = mus
+
+        # Actual values
+        torch.autograd.set_detect_anomaly(True)        
+        Z = target.forward(X)
+        target.zero_grad()
+        Z.backward(dLdZ)
+        actualdLdX = X.grad
+        actualdLdW = target.angles.grad[pdAng]
+        
+        # Evaluation
+        self.assertTrue(torch.allclose(actualdLdX,expctddLdX,rtol=rtol,atol=atol))
+        self.assertTrue(torch.allclose(actualdLdW,expctddLdW,rtol=rtol,atol=atol))
+
+    @parameterized.expand(
+        list(itertools.product(datatype,mode,ncols))
+    )
+    def testBackword8x8RandAngMusPdAng7(self,datatype,mode,ncols):
+        rtol,atol=1e-1,1e-3
+
+        # Configuration
+        #mode = 'Synthesis'
+        nPoints = 8
+        #ncols = 2
+        mus = [ 1,-1,1,-1,1,-1,1,-1 ]
+        angs0 = 2*math.pi*torch.rand(28,dtype=datatype)
+        angs1 = angs0.clone()
+        angs2 = angs0.clone()
+        pdAng = 7
+        delta = 1e-3
+        angs1[pdAng] = angs0[pdAng]-delta/2.
+        angs2[pdAng] = angs0[pdAng]+delta/2.
+
+        # Expcted values
+        X = torch.randn(nPoints,ncols,dtype=datatype,requires_grad=False)
+        dLdZ = (1/ncols)*torch.randn(nPoints,ncols,dtype=datatype)   
+
+        # Instantiation of target class
+        target0 = OrthonormalTransform(n=nPoints,dtype=datatype,mode=mode)
+        target0.angles.data = angs0
+        target0.mus = mus
+        target1 = OrthonormalTransform(n=nPoints,dtype=datatype,mode=mode)
+        target1.angles.data = angs1
+        target1.mus = mus
+        target2 = OrthonormalTransform(n=nPoints,dtype=datatype,mode=mode)
+        target2.angles.data = angs2
+        target2.mus = mus    
+
+        # Expctd values
+        if mode=='Analysis':
+            bwmode='Synthesis'
+        else:
+            bwmode='Analysis'
+        backprop = OrthonormalTransform(n=nPoints,dtype=datatype,mode=bwmode)
+        backprop.angles.data = angs0
+        backprop.mus = mus
+        torch.autograd.set_detect_anomaly(True)                
+        dZdW = (target2.forward(X) - target1.forward(X))/delta # ~ d(R*X)/dW
+        expctddLdW = torch.sum(backprop.forward(dLdZ) * dZdW) # ~ dLdW
+
+        # Actual values
+        X.detach()
+        X.requires_grad = True
+        Z = target0.forward(X)
+        target0.zero_grad()
+        #print(torch.autograd.gradcheck(target0,(X,angs0)))
+        Z.backward(dLdZ)
+        actualdLdW = target0.angles.grad[pdAng]
 
         # Evaluation
-        self.assertTrue(torch.allclose(actualM,expctdM,rtol=rtol,atol=atol))    
-    """
+        self.assertTrue(torch.allclose(actualdLdW,expctddLdW,rtol=rtol,atol=atol))
+
+    @parameterized.expand(
+        list(itertools.product(mode,ncols,npoints))
+    )
+    def testGradCheckNxNRandAngMus(self,mode,ncols,npoints):
+        rtol,atol=1e-1,1e-3
+
+        # Configuration
+        datatype = torch.double
+        nPoints = npoints
+        nAngs = int(nPoints*(nPoints-1)/2.)
+        mus = (-1)**torch.randint(high=2,size=(nPoints,))
+        angs = 2*math.pi*torch.rand(nAngs,dtype=datatype)
+
+        # Expcted values
+        X = torch.randn(nPoints,ncols,dtype=datatype,requires_grad=True)
+        dLdZ = (1/ncols)*torch.randn(nPoints,ncols,dtype=datatype)   
+
+        # Instantiation of target class
+        target = OrthonormalTransform(n=nPoints,dtype=datatype,mode=mode)
+        target.angles.data = angs
+        target.mus = mus
+        torch.autograd.set_detect_anomaly(True)                
+        Z = target.forward(X)
+        target.zero_grad()
+
+        # Evaluation        
+        self.assertTrue(torch.autograd.gradcheck(target,(X,)))
 
 if __name__ == '__main__':
     unittest.main()
