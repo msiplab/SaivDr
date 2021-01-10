@@ -4,7 +4,7 @@ from parameterized import parameterized
 import torch
 import torch.nn as nn
 import torch_dct as dct
-import numpy as np 
+import math
 from nsoltBlockIdct2dLayer import NsoltBlockIdct2dLayer
 from nsoltUtility import Direction
 
@@ -69,9 +69,9 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
 
         # Parameters
         nSamples = 8
-        nrows = np.ceil(height/stride[Direction.VERTICAL]).astype(int)
-        ncols = np.ceil(width/stride[Direction.HORIZONTAL]).astype(int)
-        nDecs = np.prod(stride)
+        nrows = int(math.ceil(height/stride[Direction.VERTICAL]))
+        ncols = int(math.ceil(width/stride[Direction.HORIZONTAL]))
+        nDecs = stride[0]*stride[1] # math.prod(stride)
         nComponents = 1
         # nSamples x nRows x nCols x nDecs         
         X = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype,requires_grad=True)
@@ -105,9 +105,9 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
 
         # Parameters
         nSamples = 8
-        nrows = np.ceil(height/stride[Direction.VERTICAL]).astype(int)
-        ncols = np.ceil(width/stride[Direction.HORIZONTAL]).astype(int)
-        nDecs = np.prod(stride)
+        nrows = int(math.ceil(height/stride[Direction.VERTICAL]))
+        ncols = int(math.ceil(width/stride[Direction.HORIZONTAL]))
+        nDecs = stride[0]*stride[1] # math.prod(stride)
         nComponents = 1
         # nSamples x nRows x nCols x nDecs         
         X = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype,requires_grad=True)
@@ -140,9 +140,9 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
 
         # Parameters
         nSamples = 8
-        nrows = np.ceil(height/stride[Direction.VERTICAL]).astype(int)
-        ncols = np.ceil(width/stride[Direction.HORIZONTAL]).astype(int)
-        nDecs = np.prod(stride)
+        nrows = int(math.ceil(height/stride[Direction.VERTICAL]))
+        ncols = int(math.ceil(width/stride[Direction.HORIZONTAL]))
+        nDecs = stride[0]*stride[1] # math.prod(stride)
         nComponents = 3 # RGB
         # nSamples x nRows x nCols x nDecs         
         Xr = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype,requires_grad=True)
@@ -187,9 +187,9 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
 
         # Parameters
         nSamples = 8
-        nrows = np.ceil(height/stride[Direction.VERTICAL]).astype(int)
-        ncols = np.ceil(width/stride[Direction.HORIZONTAL]).astype(int)
-        nDecs = np.prod(stride)
+        nrows = int(math.ceil(height/stride[Direction.VERTICAL]))
+        ncols = int(math.ceil(width/stride[Direction.HORIZONTAL]))
+        nDecs = stride[0]*stride[1] # math.prod(stride)
         nComponents = 3 # RGB
         # nSamples x nRows x nCols x nDecs         
         Xr = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype,requires_grad=True)
@@ -232,9 +232,9 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
 
         # Parameters
         nSamples = 8
-        nrows = np.ceil(height/stride[Direction.VERTICAL]).astype(int)
-        ncols = np.ceil(width/stride[Direction.HORIZONTAL]).astype(int)
-        nDecs = np.prod(stride)
+        nrows = int(math.ceil(height/stride[Direction.VERTICAL]))
+        ncols = int(math.ceil(width/stride[Direction.HORIZONTAL]))
+        nDecs = stride[0]*stride[1] # math.prod(stride)
         nComponents = 1
         # Source (nSamples x nRows x nCols x nDecs)
         X = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype,requires_grad=True)        
@@ -274,9 +274,9 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
 
         # Parameters
         nSamples = 8
-        nrows = np.ceil(height/stride[Direction.VERTICAL]).astype(int)
-        ncols = np.ceil(width/stride[Direction.HORIZONTAL]).astype(int)
-        nDecs = np.prod(stride)
+        nrows = int(math.ceil(height/stride[Direction.VERTICAL]))
+        ncols = int(math.ceil(width/stride[Direction.HORIZONTAL]))
+        nDecs = stride[0]*stride[1] # math.prod(stride)
         nComponents = 3 # RGB
         # Source (nSamples x nRows x nCols x nDecs)
         Xr = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype,requires_grad=True)     
@@ -325,13 +325,13 @@ def permuteDctCoefs_(x):
     return torch.cat((cee,coo,coe,ceo),dim=-1)
 
 def permuteIdctCoefs_(x,block_size):
-    coefs = x.view(-1,np.prod(block_size))
+    coefs = x.view(-1,block_size[0]*block_size[1]) # x.view(-1,math.prod(block_size))
     decY_ = block_size[Direction.VERTICAL]
     decX_ = block_size[Direction.HORIZONTAL]
-    chDecY = np.ceil(decY_/2.).astype(int)
-    chDecX = np.ceil(decX_/2.).astype(int)
-    fhDecY = np.floor(decY_/2.).astype(int)
-    fhDecX = np.floor(decX_/2.).astype(int)
+    chDecY = int(math.ceil(decY_/2.))
+    chDecX = int(math.ceil(decX_/2.))
+    fhDecY = int(math.floor(decY_/2.))
+    fhDecX = int(math.floor(decX_/2.))
     nQDecsee = chDecY*chDecX
     nQDecsoo = fhDecY*fhDecX
     nQDecsoe = fhDecY*chDecX

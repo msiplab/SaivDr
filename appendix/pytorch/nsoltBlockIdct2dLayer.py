@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import torch_dct as dct
-import numpy as np 
+import math
 from nsoltUtility import Direction
 
 class NsoltBlockIdct2dLayer(nn.Module):
@@ -65,10 +65,10 @@ def permuteIdctCoefs_(x,block_size):
     coefs = x.view(-1,np.prod(block_size))
     decY_ = block_size[Direction.VERTICAL]
     decX_ = block_size[Direction.HORIZONTAL]
-    chDecY = np.ceil(decY_/2.).astype(int)
-    chDecX = np.ceil(decX_/2.).astype(int)
-    fhDecY = np.floor(decY_/2.).astype(int)
-    fhDecX = np.floor(decX_/2.).astype(int)
+    chDecY = int(math.ceil(decY_/2.))
+    chDecX = int(math.ceil(decX_/2.))
+    fhDecY = int(math.floor(decY_/2.))
+    fhDecX = int(math.floor(decX_/2.))
     nQDecsee = chDecY*chDecX
     nQDecsoo = fhDecY*fhDecX
     nQDecsoe = fhDecY*chDecX

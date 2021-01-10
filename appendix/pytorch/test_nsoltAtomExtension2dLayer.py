@@ -3,7 +3,6 @@ import unittest
 from parameterized import parameterized
 import torch
 import torch.nn as nn
-import numpy as np 
 from nsoltAtomExtension2dLayer import NsoltAtomExtension2dLayer
 
 nchs = [ [3,3], [4,4] ]

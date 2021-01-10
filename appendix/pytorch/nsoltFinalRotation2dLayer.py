@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 from nsoltUtility import Direction
-import numpy as np
+import math
 
 class NsoltFinalRotation2dLayer(nn.Module):
     """
@@ -49,7 +49,7 @@ class NsoltFinalRotation2dLayer(nn.Module):
         ncols = X.size(dim=2)
         ps, pa = self.number_of_channels
         stride = self.decimation_factor
-        nDecs = np.prod(stride)
+        nDecs = stride[0]*stride[1] # math.prod(stride)
 
         W0T = torch.eye(ps,dtype=X.dtype)
         U0T = torch.eye(pa,dtype=X.dtype)
@@ -58,8 +58,8 @@ class NsoltFinalRotation2dLayer(nn.Module):
         Ys = Y[:,:,:,:ps].view(-1,ps).T
         Ya = Y[:,:,:,ps:].view(-1,pa).T 
         Zsa = torch.cat(        
-            ( W0T[:np.ceil(nDecs/2.).astype(int),:].mm(Ys),
-             U0T[:np.floor(nDecs/2.).astype(int),:].mm(Ya) ),
+            ( W0T[:int(math.ceil(nDecs/2.)),:].mm(Ys),
+             U0T[:int(math.floor(nDecs/2.)),:].mm(Ya) ),
              dim=0 )
         return Zsa.T.view(nSamples,nrows,ncols,nDecs)
         """

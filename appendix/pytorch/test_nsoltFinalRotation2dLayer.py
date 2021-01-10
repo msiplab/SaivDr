@@ -1,9 +1,10 @@
 import itertools
 import unittest
 from parameterized import parameterized
+import math
 import torch
 import torch.nn as nn
-import numpy as np
+
 from nsoltFinalRotation2dLayer import NsoltFinalRotation2dLayer
 from nsoltUtility import Direction
 
@@ -77,7 +78,7 @@ class NsoltFinalRotation2dLayerTestCase(unittest.TestCase):
 
         # Parameters
         nSamples = 8
-        nDecs = np.prod(stride)
+        nDecs = stride[0]*stride[1] # math.prod(stride)
         # nSamples x nRows x nCols x nChs
         X = torch.randn(nSamples,nrows,ncols,sum(nchs),dtype=datatype,requires_grad=True)
         
@@ -90,8 +91,8 @@ class NsoltFinalRotation2dLayerTestCase(unittest.TestCase):
         Ys = Y[:,:,:,:ps].view(-1,ps).T
         Ya = Y[:,:,:,ps:].view(-1,pa).T
         Zsa = torch.cat(
-                ( W0T[:np.ceil(nDecs/2.).astype(int),:].mm(Ys), 
-                  U0T[:np.floor(nDecs/2.).astype(int),:].mm(Ya) ),dim=0)
+                ( W0T[:int(math.ceil(nDecs/2.)),:].mm(Ys), 
+                  U0T[:int(math.floor(nDecs/2.)),:].mm(Ya) ),dim=0)
         expctdZ = Zsa.T.view(nSamples,nrows,ncols,nDecs)
 
         # Instantiation of target class

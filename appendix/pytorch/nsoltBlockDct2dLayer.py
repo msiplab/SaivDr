@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import torch_dct as dct
-import numpy as np
+import math
 from nsoltUtility import Direction
 
 class NsoltBlockDct2dLayer(nn.Module):
@@ -49,9 +49,9 @@ class NsoltBlockDct2dLayer(nn.Module):
         height = X.size(2)
         width = X.size(3)
         stride = self.decimation_factor        
-        nrows = np.ceil(height/stride[Direction.VERTICAL]).astype(int)
-        ncols = np.ceil(width/stride[Direction.HORIZONTAL]).astype(int)
-        ndecs = np.prod(stride)
+        nrows = int(math.ceil(height/stride[Direction.VERTICAL]))
+        ncols = int(math.ceil(width/stride[Direction.HORIZONTAL]))
+        ndecs = stride[0]*stride[1] #math.prod(stride)
         # Block DCT (nSamples x nComponents x nrows x ncols) x decV x decH
         arrayshape = stride.copy()
         arrayshape.insert(0,-1)

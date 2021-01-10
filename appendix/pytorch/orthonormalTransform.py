@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.autograd as autograd
-import numpy as np
+#import numpy as np
 from nsoltUtility import OrthonormalMatrixGenerationSystem
 from nsoltLayerExceptions import InvalidMode, InvalidMus
 
@@ -50,7 +50,7 @@ class OrthonormalTransform(nn.Module):
         else:
             self.__mus = torch.tensor(mus,dtype=self.dtype)
         self.checkMus()
-        
+
     def forward(self,X):
         angles = self.angles
         mus = self.__mus
@@ -132,7 +132,7 @@ class GivensRotations4Analyzer(autograd.Function):
         grad_input = R.T @ grad_output # dLdX = dZdX @ dLdZ
         if ctx.needs_input_grad[1]:
             omgs.partial_difference=True
-            grad_angles = torch.empty_like(angles,dtype=input.dtype)
+            grad_angles = torch.zeros_like(angles,dtype=input.dtype)
             for iAngle in range(len(grad_angles)):
                 dRi = omgs(angles,mus,index_pd_angle=iAngle)
                 grad_angles[iAngle] = torch.sum(grad_input * (dRi @ input))
@@ -173,7 +173,7 @@ class GivensRotations4Synthesizer(autograd.Function):
         grad_input = R @ grad_output # dLdX = dZdX @ dLdZ
         if ctx.needs_input_grad[1]:
             omgs.partial_difference=True
-            grad_angles = torch.empty_like(angles,dtype=input.dtype)
+            grad_angles = torch.zeros_like(angles,dtype=input.dtype)
             for iAngle in range(len(grad_angles)):
                 dRi = omgs(angles,mus,index_pd_angle=iAngle)
                 grad_angles[iAngle] = torch.sum(grad_input * (dRi.T @ input))

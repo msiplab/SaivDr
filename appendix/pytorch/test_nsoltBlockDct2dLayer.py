@@ -4,7 +4,7 @@ from parameterized import parameterized
 import torch
 import torch.nn as nn
 import torch_dct as dct
-import numpy as np
+import math
 from nsoltBlockDct2dLayer import NsoltBlockDct2dLayer
 from nsoltUtility import Direction
 
@@ -75,9 +75,9 @@ class NsoltBlockDct2dLayerTestCase(unittest.TestCase):
         X = torch.rand(nSamples,nComponents,height,width,dtype=datatype,requires_grad=True)
 
         # Expected values
-        nrows = np.ceil(height/stride[Direction.VERTICAL]).astype(int)
-        ncols = np.ceil(width/stride[Direction.HORIZONTAL]).astype(int)
-        ndecs = np.prod(stride)
+        nrows = int(math.ceil(height/stride[Direction.VERTICAL])) #.astype(int)
+        ncols = int(math.ceil(width/stride[Direction.HORIZONTAL])) #.astype(int)
+        ndecs =  stride[0]*stride[1] # math.prod(stride)
         # Block DCT (nSamples x nComponents x nrows x ncols) x decV x decH
         arrayshape = stride.copy()
         arrayshape.insert(0,-1)
@@ -115,9 +115,9 @@ class NsoltBlockDct2dLayerTestCase(unittest.TestCase):
         X = torch.rand(nSamples,nComponents,height,width,dtype=datatype,requires_grad=True)
 
         # Expected values
-        nrows = np.ceil(height/stride[Direction.VERTICAL]).astype(int)
-        ncols = np.ceil(width/stride[Direction.HORIZONTAL]).astype(int)
-        ndecs = np.prod(stride)
+        nrows = int(math.ceil(height/stride[Direction.VERTICAL])) #.astype(int)
+        ncols = int(math.ceil(width/stride[Direction.HORIZONTAL])) #.astype(int)
+        ndecs = stride[0]*stride[1] # math.prod(stride)
         # Block DCT (nSamples x nComponents x nrows x ncols) x decV x decH
         arrayshape = stride.copy()
         arrayshape.insert(0,-1)
@@ -154,9 +154,9 @@ class NsoltBlockDct2dLayerTestCase(unittest.TestCase):
         X = torch.rand(nSamples,nComponents,height,width,dtype=datatype,requires_grad=True)
 
         # Expected values
-        nrows = np.ceil(height/stride[Direction.VERTICAL]).astype(int)
-        ncols = np.ceil(width/stride[Direction.HORIZONTAL]).astype(int)
-        ndecs = np.prod(stride)
+        nrows = int(math.ceil(height/stride[Direction.VERTICAL])) #.astype(int)
+        ncols = int(math.ceil(width/stride[Direction.HORIZONTAL])) #.astype(int)
+        ndecs = stride[0]*stride[1] # math.prod(stride)
 
         # Block DCT (nSamples x nComponents x nrows x ncols) x decV x decH
         arrayshape = stride.copy()
@@ -205,9 +205,9 @@ class NsoltBlockDct2dLayerTestCase(unittest.TestCase):
         X = torch.rand(nSamples,nComponents,height,width,dtype=datatype,requires_grad=True)
 
         # Expected values
-        nrows = np.ceil(height/stride[Direction.VERTICAL]).astype(int)
-        ncols = np.ceil(width/stride[Direction.HORIZONTAL]).astype(int)
-        ndecs = np.prod(stride)
+        nrows = int(math.ceil(height/stride[Direction.VERTICAL])) #.astype(int)
+        ncols = int(math.ceil(width/stride[Direction.HORIZONTAL])) #.astype(int)
+        ndecs = stride[0]*stride[1] # math.prod(stride)
 
         # Block DCT (nSamples x nComponents x nrows x ncols) x decV x decH
         arrayshape = stride.copy()
@@ -250,9 +250,9 @@ class NsoltBlockDct2dLayerTestCase(unittest.TestCase):
 
         # Parameters
         nSamples = 8
-        nrows = np.ceil(height/stride[Direction.VERTICAL]).astype(int)
-        ncols = np.ceil(width/stride[Direction.HORIZONTAL]).astype(int)
-        nDecs = np.prod(stride)
+        nrows = int(math.ceil(height/stride[Direction.VERTICAL])) #.astype(int)
+        ncols = int(math.ceil(width/stride[Direction.HORIZONTAL])) #.astype(int)
+        nDecs = stride[0]*stride[1] # math.prod(stride)
         nComponents = 1
 
         # Source (nSamples x nComponents x (Stride[0]xnRows) x (Stride[1]xnCols))
@@ -290,9 +290,9 @@ class NsoltBlockDct2dLayerTestCase(unittest.TestCase):
 
         # Parameters
         nSamples = 8
-        nrows = np.ceil(height/stride[Direction.VERTICAL]).astype(int)
-        ncols = np.ceil(width/stride[Direction.HORIZONTAL]).astype(int)
-        nDecs = np.prod(stride)
+        nrows = int(math.ceil(height/stride[Direction.VERTICAL])) #.astype(int)
+        ncols = int(math.ceil(width/stride[Direction.HORIZONTAL])) #.astype(int)
+        nDecs = stride[0]*stride[1] # math.prod(stride)
         nComponents = 3 # RGB
 
         # Source (nSamples x nComponents x (Stride[0]xnRows) x (Stride[1]xnCols))
@@ -343,13 +343,13 @@ def permuteDctCoefs_(x):
     return torch.cat((cee,coo,coe,ceo),dim=-1)
 
 def permuteIdctCoefs_(x,block_size):
-    coefs = x.view(-1,np.prod(block_size))
+    coefs = x.view(-1,block_size[0]*block_size[1]) # x.view(-1,math.prod(block_size)) 
     decY_ = block_size[Direction.VERTICAL]
     decX_ = block_size[Direction.HORIZONTAL]
-    chDecY = np.ceil(decY_/2.).astype(int)
-    chDecX = np.ceil(decX_/2.).astype(int)
-    fhDecY = np.floor(decY_/2.).astype(int)
-    fhDecX = np.floor(decX_/2.).astype(int)
+    chDecY = int(math.ceil(decY_/2.)) #.astype(int)
+    chDecX = int(math.ceil(decX_/2.)) #.astype(int)
+    fhDecY = int(math.floor(decY_/2.)) #.astype(int)
+    fhDecX = int(math.floor(decX_/2.)) #.astype(int)
     nQDecsee = chDecY*chDecX
     nQDecsoo = fhDecY*fhDecX
     nQDecsoe = fhDecY*chDecX
