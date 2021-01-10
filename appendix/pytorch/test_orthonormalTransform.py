@@ -78,7 +78,7 @@ class OrthonormalTransformTestCase(unittest.TestCase):
         # Instantiation of target class
         target = OrthonormalTransform(mode=mode)
         #target.angles.data = torch.tensor([math.pi/4])
-        target.angles = nn.init.constant_(target.angles,math.pi/4)
+        target.angles = nn.init.constant_(target.angles,val=math.pi/4)
 
         # Actual values
         with torch.no_grad():
@@ -106,7 +106,7 @@ class OrthonormalTransformTestCase(unittest.TestCase):
 
         # Instantiation of target class
         target = OrthonormalTransform(mode=mode)
-        target.angles = nn.init.constant_(target.angles,math.pi/4)
+        target.angles = nn.init.constant_(target.angles,val=math.pi/4)
         target.mus = torch.tensor([1, -1])        
 
         # Actual values
@@ -346,6 +346,7 @@ class OrthonormalTransformTestCase(unittest.TestCase):
         # Actual values
         torch.autograd.set_detect_anomaly(True)        
         Z = target.forward(X)
+        target.zero_grad()
         Z.backward(dLdZ)
         actualdLdX = X.grad
         actualdLdW = target.angles.grad
@@ -384,6 +385,7 @@ class OrthonormalTransformTestCase(unittest.TestCase):
         # Actual values
         torch.autograd.set_detect_anomaly(True)        
         Z = target.forward(X)
+        target.zero_grad()        
         Z.backward(dLdZ)
         actualdLdX = X.grad
         actualdLdW = target.angles.grad
@@ -422,11 +424,12 @@ class OrthonormalTransformTestCase(unittest.TestCase):
         # Instantiation of target class
         target = OrthonormalTransform(n=nPoints,dtype=datatype,mode=mode)
         #target.angles.data = torch.tensor(angle,dtype=datatype)
-        target.angles = nn.init.constant_(target.angles,angle)
+        target.angles = nn.init.constant_(target.angles,val=angle)
 
         # Actual values
         torch.autograd.set_detect_anomaly(True)        
         Z = target.forward(X)
+        target.zero_grad()        
         Z.backward(dLdZ)
         actualdLdX = X.grad
         actualdLdW = target.angles.grad
@@ -439,7 +442,7 @@ class OrthonormalTransformTestCase(unittest.TestCase):
         list(itertools.product(datatype,mode,ncols))
     )
     def testBackwardAngsAndMus(self,datatype,mode,ncols):
-        rtol,atol = 1e-04,1e-07 
+        rtol,atol = 1e-03,1e-05
 
         # Configuration
         #mode = 'Analysis'
@@ -467,12 +470,13 @@ class OrthonormalTransformTestCase(unittest.TestCase):
 
         # Instantiation of target class
         target = OrthonormalTransform(n=nPoints,dtype=datatype,mode=mode)
-        target.angles = nn.init.constant_(target.angles,angle)
+        target.angles = nn.init.constant_(target.angles,val=angle)
         target.mus = torch.tensor(mus,dtype=datatype)
 
         # Actual values
         torch.autograd.set_detect_anomaly(True)        
         Z = target.forward(X)
+        target.zero_grad()        
         Z.backward(dLdZ)
         actualdLdX = X.grad
         actualdLdW = target.angles.grad 
@@ -505,20 +509,19 @@ class OrthonormalTransformTestCase(unittest.TestCase):
             target = OrthonormalTransform()
             target.mus = mus
 
-    """
     @parameterized.expand(
-        list(itertools.product(datatype))
+        list(itertools.product(datatype,mode,ncols))
     )
-    def testBackwardSetAngles(self,datatype):
-        rtol,atol = 1e-05,1e-08 
+    def testBackwardSetAngles(self,datatype,mode,ncols):
+        rtol,atol = 1e-03,1e-05
 
         # Configuration
-        mode='Analysis'
+        #mode='Synthesis'
         nPoints=2
-        ncols=1
+        #ncols=1
 
         # Expected values
-        X = torch.randn(nPoints,ncols,dtype=datatype,requires_grad=True)        
+        X = torch.randn(nPoints,ncols,dtype=datatype,requires_grad=True)   
         dLdZ = (1/ncols)*torch.randn(nPoints,ncols,dtype=datatype)        
         R = torch.eye(nPoints,dtype=datatype)
         dRdW = torch.tensor([
@@ -532,13 +535,14 @@ class OrthonormalTransformTestCase(unittest.TestCase):
             expctddLdX = R @ dLdZ # = dZdX @ dLdZ
             expctddLdW = torch.sum(expctddLdX * (dRdW.T @ X))            
 
-         # Instantiation of target class
+        # Instantiation of target class
         target = OrthonormalTransform(n=nPoints,dtype=datatype,mode=mode)
         target.angles = nn.init.zeros_(target.angles)
 
         # Actual values
         torch.autograd.set_detect_anomaly(True)        
         Z = target.forward(X)
+        target.zero_grad()        
         Z.backward(dLdZ)
         actualdLdX = X.grad
         actualdLdW = target.angles.grad 
@@ -548,13 +552,14 @@ class OrthonormalTransformTestCase(unittest.TestCase):
         self.assertTrue(torch.allclose(actualdLdW,expctddLdW,rtol=rtol,atol=atol))
 
         # Expected values
-        #angle = 2.*math.pi*randn(1)
+        X = X.detach()
+        X.requires_grad = True
         angle = 2.*math.pi*gauss(mu=0.,sigma=1.)
         R = torch.tensor([[ math.cos(angle), -math.sin(angle) ],
-            [ -math.sin(angle), -math.cos(angle)]], 
+            [ math.sin(angle), math.cos(angle)]], 
             dtype=datatype) #.squeeze()
         dRdW = torch.tensor([[ -math.sin(angle), -math.cos(angle) ],
-            [ -math.cos(angle), math.sin(angle)]], 
+            [ math.cos(angle), -math.sin(angle)]], 
             dtype=datatype) #.squeeze()
         if mode!='Synthesis':
             expctddLdX = R.T @ dLdZ # = dZdX @ dLdZ
@@ -564,11 +569,12 @@ class OrthonormalTransformTestCase(unittest.TestCase):
             expctddLdW = torch.sum(expctddLdX * (dRdW.T @ X))            
 
         # Set angles
-        target.angles.data = torch.tensor(angle,dtype=datatype)
-        
+        target.angles = nn.init.constant_(target.angles,val=angle)
+                 
         # Actual values
-        torch.autograd.set_detect_anomaly(True)        
+        torch.autograd.set_detect_anomaly(True)   
         Z = target.forward(X)
+        target.zero_grad()        
         Z.backward(dLdZ)
         actualdLdX = X.grad
         actualdLdW = target.angles.grad 
@@ -576,7 +582,6 @@ class OrthonormalTransformTestCase(unittest.TestCase):
         # Evaluation
         self.assertTrue(torch.allclose(actualdLdX,expctddLdX,rtol=rtol,atol=atol))
         self.assertTrue(torch.allclose(actualdLdW,expctddLdW,rtol=rtol,atol=atol))
-        """
 
     """
     @parameterized.expand(
