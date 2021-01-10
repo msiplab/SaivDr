@@ -1,5 +1,5 @@
 import torch
-import numpy as np
+import math
 
 class Direction:
     VERTICAL = 0
@@ -38,29 +38,29 @@ class OrthonormalMatrixGenerationSystem:
         index_pd_angle=None):
         
         # Number of angles
-        if np.isscalar(angles):
-            angles = np.array([angles])
+        if isinstance(angles, int) or isinstance(angles, float):
+            angles = torch.tensor([angles])
         nAngles = len(angles)
 
         # Number of dimensions
-        nDims = ((1+np.sqrt(1+8*nAngles))/2).astype(int)
+        nDims = int((1+math.sqrt(1+8*nAngles))/2)
 
         # Setup of mus
-        if np.isscalar(mus):
-            mus = mus * np.eye(nDims)
-        else:
-            mus = np.diag(mus)
+        if isinstance(mus, int) or isinstance(mus, float):
+            mus = mus * torch.ones(nDims,dtype=self.dtype)
+        elif isinstance(mus, list):
+            mus = torch.tensor(mus,dtype=self.dtype)
 
-        matrix = np.eye(nDims)
+        matrix = torch.eye(nDims,dtype=self.dtype)
         iAng = 0
         for iTop in range(nDims-1):
             vt = matrix[iTop,:]
             for iBtm in range(iTop+1,nDims):
                 angle = angles[iAng]
                 if iAng == index_pd_angle:
-                    angle = angle + np.pi/2.
-                c = np.cos(angle)
-                s = np.sin(angle)
+                    angle = angle + math.pi/2.
+                c = math.cos(angle)
+                s = math.sin(angle)
                 vb = matrix[iBtm,:]
                 #
                 u  = s*(vt + vb)
@@ -68,11 +68,11 @@ class OrthonormalMatrixGenerationSystem:
                 vb = (c - s)*vb
                 vt = vt - u
                 if iAng == index_pd_angle:
-                    matrix = np.zeros_like(matrix)
+                    matrix = torch.zeros_like(matrix)
                 matrix[iBtm,:] = vb + u
                 iAng = iAng + 1
             matrix[iTop,:] = vt
-        matrix = mus.dot(matrix)
+        matrix = mus.view(-1,1) * matrix
 
-        return torch.tensor(matrix,dtype=self.dtype)
+        return matrix.clone()
 

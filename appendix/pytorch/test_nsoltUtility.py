@@ -2,10 +2,7 @@ import itertools
 import unittest
 from parameterized import parameterized
 import torch
-#import torch.nn as nn
-import numpy as np
-from numpy.random import rand
-#from numpy.linalg import norm
+import math
 from nsoltUtility import OrthonormalMatrixGenerationSystem
 
 datatype = [ torch.float, torch.double ]
@@ -32,7 +29,7 @@ class OrthonormalMatrixGenerationSystemTestCase(unittest.TestCase):
         list(itertools.product(datatype))
     )
     def testConstructor(self,datatype):
-        atol=1e-10
+        rtol,atol=1e-5,1e-8
 
         # Expected values
         expctdM = torch.eye(2,dtype=datatype)
@@ -48,18 +45,18 @@ class OrthonormalMatrixGenerationSystemTestCase(unittest.TestCase):
         actualM = omgs(angles=angles,mus=mus)
 
         # Evaluation
-        self.assertTrue(torch.isclose(actualM,expctdM,rtol=0.,atol=atol).all())        
+        self.assertTrue(torch.allclose(actualM,expctdM,rtol=rtol,atol=atol))        
 
     @parameterized.expand(
         list(itertools.product(datatype))
     )
     def testCallWithAngles(self,datatype):
-        atol=1e-10
+        rtol,atol=1e-5,1e-8
 
         # Expected values
         expctdM = torch.tensor([
-            [np.cos(np.pi/4), -np.sin(np.pi/4)],
-            [np.sin(np.pi/4),  np.cos(np.pi/4)] ],
+            [math.cos(math.pi/4), -math.sin(math.pi/4)],
+            [math.sin(math.pi/4),  math.cos(math.pi/4)] ],
             dtype=datatype)
             
         # Instantiation of target class
@@ -68,21 +65,21 @@ class OrthonormalMatrixGenerationSystemTestCase(unittest.TestCase):
         )
             
         # Actual values
-        actualM = omgs(angles=np.pi/4,mus=1)
+        actualM = omgs(angles=math.pi/4,mus=1)
 
         # Evaluation
-        self.assertTrue(torch.isclose(actualM,expctdM,rtol=0.,atol=atol).all())        
+        self.assertTrue(torch.allclose(actualM,expctdM,rtol=rtol,atol=atol))        
 
     @parameterized.expand(
         list(itertools.product(datatype))
     )
     def testCallWithAnglesAndMus(self,datatype):
-        atol=1e-10
+        rtol,atol=1e-5,1e-8
 
         # Expected values
         expctdM = torch.tensor([
-            [ np.cos(np.pi/4), -np.sin(np.pi/4)],
-            [-np.sin(np.pi/4), -np.cos(np.pi/4)] ],
+            [ math.cos(math.pi/4), -math.sin(math.pi/4)],
+            [-math.sin(math.pi/4), -math.cos(math.pi/4)] ],
             dtype=datatype)
             
         # Instantiation of target class
@@ -91,16 +88,16 @@ class OrthonormalMatrixGenerationSystemTestCase(unittest.TestCase):
         )
             
         # Actual values
-        actualM = omgs(angles=np.pi/4, mus=[ 1, -1] )
+        actualM = omgs(angles=math.pi/4, mus=[ 1, -1] )
 
         # Evaluation
-        self.assertTrue(torch.isclose(actualM,expctdM,rtol=0.,atol=atol).all())        
+        self.assertTrue(torch.allclose(actualM,expctdM,rtol=rtol,atol=atol))        
 
     @parameterized.expand(
         list(itertools.product(datatype))
     )
     def testSetAngles(self,datatype):
-        atol=1e-10
+        rtol,atol=1e-5,1e-8
         
         # Expected values
         expctdM = torch.eye(2,dtype=datatype)
@@ -114,30 +111,30 @@ class OrthonormalMatrixGenerationSystemTestCase(unittest.TestCase):
         actualM = omgs(angles=0,mus=1)
 
         # Evaluation
-        self.assertTrue(torch.isclose(actualM,expctdM,rtol=0.,atol=atol).all())        
+        self.assertTrue(torch.allclose(actualM,expctdM,rtol=rtol,atol=atol))        
 
         # Expected values
         expctdM = torch.tensor([
-            [np.cos(np.pi/4), -np.sin(np.pi/4)],
-            [np.sin(np.pi/4),  np.cos(np.pi/4)] ],
+            [math.cos(math.pi/4), -math.sin(math.pi/4)],
+            [math.sin(math.pi/4),  math.cos(math.pi/4)] ],
             dtype=datatype)
 
-        actualM = omgs(angles=np.pi/4,mus=1)
+        actualM = omgs(angles=math.pi/4,mus=1)
 
         # Evaluation
-        self.assertTrue(torch.isclose(actualM,expctdM,rtol=0.,atol=atol).all())        
+        self.assertTrue(torch.allclose(actualM,expctdM,rtol=rtol,atol=atol))        
 
     @parameterized.expand(
         list(itertools.product(datatype))
     )
     def test4x4(self,datatype):
-        atol=1e-6
+        rtol,atol=1e-5,1e-8
         
         # Expected values
-        expctdNorm = 1.
+        expctdNorm = torch.tensor(1.,dtype=datatype)
 
         # Instantiation of target class
-        ang = 2*np.pi*rand(6)
+        ang = 2*math.pi*torch.rand(6)
         omgs = OrthonormalMatrixGenerationSystem(
             dtype=datatype
         )
@@ -145,23 +142,23 @@ class OrthonormalMatrixGenerationSystemTestCase(unittest.TestCase):
         # Actual values
         unitvec = torch.randn(4,dtype=datatype)
         unitvec /= unitvec.norm()
-        actualNorm = omgs(angles=ang,mus=1).mv(unitvec).norm().numpy()
+        actualNorm = omgs(angles=ang,mus=1).mv(unitvec).norm() #.numpy()
 
         # Evaluation
         message = "actualNorm=%s differs from %s" % ( str(actualNorm), str(expctdNorm) )
-        self.assertTrue(np.isclose(actualNorm,expctdNorm,rtol=0.,atol=atol),message)        
+        self.assertTrue(torch.isclose(actualNorm,expctdNorm,rtol=rtol,atol=atol),message)        
 
     @parameterized.expand(
         list(itertools.product(datatype))
     )
     def test8x8(self,datatype):
-        atol=1e-6
+        rtol,atol=1e-5,1e-8
         
         # Expected values
-        expctdNorm = 1.
+        expctdNorm = torch.tensor(1.,dtype=datatype)
 
         # Instantiation of target class
-        ang = 2*np.pi*rand(28)
+        ang = 2*math.pi*torch.rand(28)
         omgs = OrthonormalMatrixGenerationSystem(
             dtype=datatype
         )
@@ -169,25 +166,25 @@ class OrthonormalMatrixGenerationSystemTestCase(unittest.TestCase):
         # Actual values
         unitvec = torch.randn(8,dtype=datatype)
         unitvec /= unitvec.norm()
-        actualNorm = omgs(angles=ang,mus=1).mv(unitvec).norm().numpy()
+        actualNorm = omgs(angles=ang,mus=1).mv(unitvec).norm() #.numpy()
 
         # Evaluation
         message = "actualNorm=%s differs from %s" % ( str(actualNorm), str(expctdNorm) )
-        self.assertTrue(np.isclose(actualNorm,expctdNorm,rtol=0.,atol=atol),message)        
+        self.assertTrue(torch.isclose(actualNorm,expctdNorm,rtol=rtol,atol=atol),message)        
 
     @parameterized.expand(
         list(itertools.product(datatype))
     )
     def test4x4red(self,datatype):
-        atol=1e-6
+        rtol,atol=1e-5,1e-8
 
         # Expected values
-        expctdLeftTop = 1.
+        expctdLeftTop = torch.tensor(1.,dtype=datatype)
 
         # Instantiation of target class
-        ang = 2*np.pi*rand(6)
+        ang = 2*math.pi*torch.rand(6)
         nSize = 4
-        ang[:nSize-1] = np.zeros(nSize-1)
+        ang[:nSize-1] = torch.zeros(nSize-1)
         omgs = OrthonormalMatrixGenerationSystem(
             dtype=datatype
         )
@@ -198,21 +195,21 @@ class OrthonormalMatrixGenerationSystemTestCase(unittest.TestCase):
 
         # Evaluation
         message = "actualLeftTop=%s differs from %s" % ( str(actualLeftTop), str(expctdLeftTop) )        
-        self.assertTrue(np.isclose(actualLeftTop,expctdLeftTop,rtol=0.,atol=atol),message)        
+        self.assertTrue(torch.isclose(actualLeftTop,expctdLeftTop,rtol=rtol,atol=atol),message)        
 
     @parameterized.expand(
         list(itertools.product(datatype))
     )
     def test8x8red(self,datatype):
-        atol=1e-6
+        rtol,atol=1e-5,1e-8
 
         # Expected values
-        expctdLeftTop = 1.
+        expctdLeftTop = torch.tensor(1.,dtype=datatype)
 
         # Instantiation of target class
-        ang = 2*np.pi*rand(28)
+        ang = 2*math.pi*torch.rand(28)
         nSize = 8
-        ang[:nSize-1] = np.zeros(nSize-1)
+        ang[:nSize-1] = torch.zeros(nSize-1)
         omgs = OrthonormalMatrixGenerationSystem(
             dtype=datatype
         )
@@ -223,13 +220,13 @@ class OrthonormalMatrixGenerationSystemTestCase(unittest.TestCase):
 
         # Evaluation
         message = "actualLeftTop=%s differs from %s" % ( str(actualLeftTop), str(expctdLeftTop) )        
-        self.assertTrue(np.isclose(actualLeftTop,expctdLeftTop,rtol=0.,atol=atol),message)        
+        self.assertTrue(torch.isclose(actualLeftTop,expctdLeftTop,rtol=rtol,atol=atol),message)        
 
     @parameterized.expand(
         list(itertools.product(datatype))
     )
     def testPartialDifference(self,datatype):
-        atol=1e-6
+        rtol,atol=1e-4,1e-7
 
         # Expected values
         expctdM = torch.tensor([
@@ -247,18 +244,18 @@ class OrthonormalMatrixGenerationSystemTestCase(unittest.TestCase):
         actualM = omgs(angles=0,mus=1,index_pd_angle=0)
 
         # Evaluation
-        self.assertTrue(torch.isclose(actualM,expctdM,rtol=0.,atol=atol).all())                
+        self.assertTrue(torch.allclose(actualM,expctdM,rtol=rtol,atol=atol))                
 
     @parameterized.expand(
         list(itertools.product(datatype))
     )
     def testPartialDifferenceAngs(self,datatype):
-        atol=1e-6
+        rtol,atol=1e-4,1e-7
 
         # Expected values
         expctdM = torch.tensor([
-            [ np.cos(np.pi/4+np.pi/2), -np.sin(np.pi/4+np.pi/2)],
-            [ np.sin(np.pi/4+np.pi/2),  np.cos(np.pi/4+np.pi/2)] ],
+            [ math.cos(math.pi/4+math.pi/2), -math.sin(math.pi/4+math.pi/2)],
+            [ math.sin(math.pi/4+math.pi/2),  math.cos(math.pi/4+math.pi/2)] ],
             dtype=datatype)
 
         # Instantiation of target class
@@ -268,21 +265,21 @@ class OrthonormalMatrixGenerationSystemTestCase(unittest.TestCase):
             )
 
         # Actual values
-        actualM = omgs(angles=np.pi/4,mus=1,index_pd_angle=0)
+        actualM = omgs(angles=math.pi/4,mus=1,index_pd_angle=0)
             
         # Evaluation
-        self.assertTrue(torch.isclose(actualM,expctdM,rtol=0.,atol=atol).all())                
+        self.assertTrue(torch.allclose(actualM,expctdM,rtol=rtol,atol=atol))                
 
     @parameterized.expand(
         list(itertools.product(datatype))
     )
     def testPartialDifferenceAngsAndMus(self,datatype):
-        atol=1e-6
+        rtol,atol=1e-4,1e-7
 
         # Expected values
         expctdM = torch.tensor([
-            [ np.cos(np.pi/4+np.pi/2), -np.sin(np.pi/4+np.pi/2)],
-            [ -np.sin(np.pi/4+np.pi/2),  -np.cos(np.pi/4+np.pi/2)] ],
+            [ math.cos(math.pi/4+math.pi/2), -math.sin(math.pi/4+math.pi/2)],
+            [ -math.sin(math.pi/4+math.pi/2),  -math.cos(math.pi/4+math.pi/2)] ],
             dtype=datatype)
 
         # Instantiation of target class
@@ -292,16 +289,16 @@ class OrthonormalMatrixGenerationSystemTestCase(unittest.TestCase):
             )
 
         # Actual values
-        actualM = omgs(angles=np.pi/4,mus=[1,-1],index_pd_angle=0)
+        actualM = omgs(angles=math.pi/4,mus=[1,-1],index_pd_angle=0)
 
         # Evaluation
-        self.assertTrue(torch.isclose(actualM,expctdM,rtol=0.,atol=atol).all())                
+        self.assertTrue(torch.allclose(actualM,expctdM,rtol=rtol,atol=atol))                
 
     @parameterized.expand(
         list(itertools.product(datatype))
     )
     def testPartialDifferenceSetAngles(self,datatype):
-        atol=1e-6
+        rtol,atol=1e-4,1e-7
 
         # Expected values
         expctdM = torch.tensor([
@@ -319,62 +316,63 @@ class OrthonormalMatrixGenerationSystemTestCase(unittest.TestCase):
         actualM = omgs(angles=0,mus=1,index_pd_angle=0)
 
         # Evaluation
-        self.assertTrue(torch.isclose(actualM,expctdM,rtol=0.,atol=atol).all())                
+        self.assertTrue(torch.allclose(actualM,expctdM,rtol=rtol,atol=atol))                
 
         # Expected values
         expctdM = torch.tensor([
-            [ np.cos(np.pi/4+np.pi/2), -np.sin(np.pi/4+np.pi/2)],
-            [ np.sin(np.pi/4+np.pi/2),  np.cos(np.pi/4+np.pi/2)] ],
+            [ math.cos(math.pi/4+math.pi/2), -math.sin(math.pi/4+math.pi/2)],
+            [ math.sin(math.pi/4+math.pi/2),  math.cos(math.pi/4+math.pi/2)] ],
             dtype=datatype)
 
         # Actual values
-        actualM = omgs(angles=np.pi/4,mus=1,index_pd_angle=0)
+        actualM = omgs(angles=math.pi/4,mus=1,index_pd_angle=0)
 
         # Evaluation
-        self.assertTrue(torch.isclose(actualM,expctdM,rtol=0.,atol=atol).all())                
+        self.assertTrue(torch.allclose(actualM,expctdM,rtol=rtol,atol=atol))                
 
     @parameterized.expand(
         list(itertools.product(datatype))
     )
     def test4x4RandAngs(self,datatype):
-        atol=1e-6
+        rtol,atol=1e-4,1e-7
 
         # Expcted values
         mus = [ -1, 1, -1, 1 ]
-        angs = 2*np.pi*rand(6)
+        angs = 2*math.pi*torch.rand(6)
 
-        expctdM = torch.tensor(
-            np.diag(mus).dot(np.array(
+        expctdM = torch.as_tensor(
+            torch.tensor(mus).view(-1,1) * \
+            torch.tensor(
                 [ [1, 0, 0, 0. ],
                  [0, 1, 0, 0. ],
-                 [0, 0, np.cos(angs[5]), -np.sin(angs[5]) ],
-                 [0, 0, np.sin(angs[5]), np.cos(angs[5]) ] ]
-            )).dot(np.array(
+                 [0, 0, math.cos(angs[5]), -math.sin(angs[5]) ],
+                 [0, 0, math.sin(angs[5]), math.cos(angs[5]) ] ]
+            ) @ torch.tensor(
                 [ [1, 0, 0, 0 ],
-                 [0, np.cos(angs[4]), 0, -np.sin(angs[4]) ],
+                 [0, math.cos(angs[4]), 0, -math.sin(angs[4]) ],
                  [0, 0, 1, 0 ],
-                 [0, np.sin(angs[4]), 0, np.cos(angs[4]) ] ]
-            )).dot(np.array(
+                 [0, math.sin(angs[4]), 0, math.cos(angs[4]) ] ]
+            ) @ torch.tensor(
                 [ [1, 0, 0, 0 ],
-                 [0, np.cos(angs[3]), -np.sin(angs[3]), 0 ],
-                 [0, np.sin(angs[3]), np.cos(angs[3]), 0 ],
+                 [0, math.cos(angs[3]), -math.sin(angs[3]), 0 ],
+                 [0, math.sin(angs[3]), math.cos(angs[3]), 0 ],
                  [0, 0, 0, 1 ] ]
-            )).dot(np.array(
-                [ [ np.cos(angs[2]), 0, 0, -np.sin(angs[2]) ],
+            ) @ torch.tensor(
+                [ [ math.cos(angs[2]), 0, 0, -math.sin(angs[2]) ],
                  [0, 1, 0, 0 ],
                  [0, 0, 1, 0 ],
-                 [ np.sin(angs[2]), 0, 0, np.cos(angs[2]) ] ]
-            )).dot(np.array(
-               [ [np.cos(angs[1]), 0, -np.sin(angs[1]), 0 ],
+                 [ math.sin(angs[2]), 0, 0, math.cos(angs[2]) ] ]
+            ) @ torch.tensor(
+               [ [math.cos(angs[1]), 0, -math.sin(angs[1]), 0 ],
                  [0, 1, 0, 0 ],
-                 [np.sin(angs[1]), 0, np.cos(angs[1]), 0 ],
+                 [math.sin(angs[1]), 0, math.cos(angs[1]), 0 ],
                  [0, 0, 0, 1 ] ]
-            )).dot(np.array(
-               [ [ np.cos(angs[0]), -np.sin(angs[0]), 0, 0 ],
-                 [ np.sin(angs[0]), np.cos(angs[0]), 0, 0 ],
+            ) @ torch.tensor(
+               [ [ math.cos(angs[0]), -math.sin(angs[0]), 0, 0 ],
+                 [ math.sin(angs[0]), math.cos(angs[0]), 0, 0 ],
                  [ 0, 0, 1, 0 ],
                  [ 0, 0, 0, 1 ] ]
-            )),dtype=datatype)
+            ),dtype=datatype)
         
         # Instantiation of target class
         omgs = OrthonormalMatrixGenerationSystem(
@@ -385,51 +383,52 @@ class OrthonormalMatrixGenerationSystemTestCase(unittest.TestCase):
         actualM = omgs(angles=angs,mus=mus)
 
         # Evaluation
-        self.assertTrue(torch.isclose(actualM,expctdM,rtol=0.,atol=atol).all())
+        self.assertTrue(torch.allclose(actualM,expctdM,rtol=rtol,atol=atol))
 
     @parameterized.expand(
         list(itertools.product(datatype))
     )
     def testPartialDifference4x4RandAngPdAng2(self,datatype):
-        atol=1e-6
+        rtol,atol=1e-4,1e-7
 
         # Expcted values
         mus = [ -1, 1, -1, 1 ]
-        angs = 2*np.pi*rand(6)
+        angs = 2*math.pi*torch.rand(6)
         pdAng = 2
 
-        expctdM = torch.tensor(
-            np.diag(mus).dot(np.array(
+        expctdM = torch.as_tensor(
+            torch.tensor(mus).view(-1,1) * \
+            torch.tensor(
                 [ [1, 0, 0, 0. ],
                  [0, 1, 0, 0. ],
-                 [0, 0, np.cos(angs[5]), -np.sin(angs[5]) ],
-                 [0, 0, np.sin(angs[5]), np.cos(angs[5]) ] ]
-            )).dot(np.array(
+                 [0, 0, math.cos(angs[5]), -math.sin(angs[5]) ],
+                 [0, 0, math.sin(angs[5]), math.cos(angs[5]) ] ]
+            ) @ torch.tensor(
                 [ [1, 0, 0, 0 ],
-                 [0, np.cos(angs[4]), 0, -np.sin(angs[4]) ],
+                 [0, math.cos(angs[4]), 0, -math.sin(angs[4]) ],
                  [0, 0, 1, 0 ],
-                 [0, np.sin(angs[4]), 0, np.cos(angs[4]) ] ]
-            )).dot(np.array( 
+                 [0, math.sin(angs[4]), 0, math.cos(angs[4]) ] ]
+            ) @ torch.tensor( 
                 [ [1, 0, 0, 0 ], 
-                 [0, np.cos(angs[3]), -np.sin(angs[3]), 0 ],
-                 [0, np.sin(angs[3]), np.cos(angs[3]), 0 ],
+                 [0, math.cos(angs[3]), -math.sin(angs[3]), 0 ],
+                 [0, math.sin(angs[3]), math.cos(angs[3]), 0 ],
                  [0, 0, 0, 1 ] ]
-            )).dot(np.array( # Partial Diff.
-                [ [ np.cos(angs[2]+np.pi/2), 0, 0, -np.sin(angs[2]+np.pi/2) ],
+            ) @ torch.tensor( # Partial Diff.
+                [ [ math.cos(angs[2]+math.pi/2), 0, 0, -math.sin(angs[2]+math.pi/2) ],
                  [0, 0, 0, 0 ],
                  [0, 0, 0, 0 ],
-                 [ np.sin(angs[2]+np.pi/2), 0, 0, np.cos(angs[2]+np.pi/2) ] ]
-            )).dot(np.array(
-               [ [np.cos(angs[1]), 0, -np.sin(angs[1]), 0 ],
+                 [ math.sin(angs[2]+math.pi/2), 0, 0, math.cos(angs[2]+math.pi/2) ] ]
+            ) @ torch.tensor(
+               [ [math.cos(angs[1]), 0, -math.sin(angs[1]), 0 ],
                  [0, 1, 0, 0 ],
-                 [np.sin(angs[1]), 0, np.cos(angs[1]), 0 ],
+                 [math.sin(angs[1]), 0, math.cos(angs[1]), 0 ],
                  [0, 0, 0, 1 ] ]
-            )).dot(np.array(
-               [ [ np.cos(angs[0]), -np.sin(angs[0]), 0, 0 ],
-                 [ np.sin(angs[0]), np.cos(angs[0]), 0, 0 ],
+            ) @ torch.tensor(
+               [ [ math.cos(angs[0]), -math.sin(angs[0]), 0, 0 ],
+                 [ math.sin(angs[0]), math.cos(angs[0]), 0, 0 ],
                  [ 0, 0, 1, 0 ],
                  [ 0, 0, 0, 1 ] ]
-            )),dtype=datatype)
+            ),dtype=datatype)
         
         # Instantiation of target class
         omgs = OrthonormalMatrixGenerationSystem(
@@ -441,51 +440,52 @@ class OrthonormalMatrixGenerationSystemTestCase(unittest.TestCase):
         actualM = omgs(angles=angs,mus=mus,index_pd_angle=pdAng)
 
         # Evaluation
-        self.assertTrue(torch.isclose(actualM,expctdM,rtol=0.,atol=atol).all())
+        self.assertTrue(torch.allclose(actualM,expctdM,rtol=rtol,atol=atol))
 
     @parameterized.expand(
         list(itertools.product(datatype))
     )
     def testPartialDifference4x4RandAngPdAng5(self,datatype):
-        atol=1e-6
+        rtol,atol=1e-4,1e-7
 
         # Expcted values
         mus = [ 1, 1, -1, -1 ]
-        angs = 2*np.pi*rand(6)
+        angs = 2*math.pi*torch.rand(6)
         pdAng = 5
 
-        expctdM = torch.tensor(
-            np.diag(mus).dot(np.array( # Partial Diff.
+        expctdM = torch.as_tensor(
+            torch.tensor(mus).view(-1,1) * \
+            torch.tensor( # Partial Diff.
                 [ [0, 0, 0, 0. ],
                  [0, 0, 0., 0. ],
-                 [0, 0, np.cos(angs[5]+np.pi/2), -np.sin(angs[5]+np.pi/2) ],
-                 [0., 0, np.sin(angs[5]+np.pi/2), np.cos(angs[5]+np.pi/2) ] ]
-            )).dot(np.array(
+                 [0, 0, math.cos(angs[5]+math.pi/2), -math.sin(angs[5]+math.pi/2) ],
+                 [0., 0, math.sin(angs[5]+math.pi/2), math.cos(angs[5]+math.pi/2) ] ]
+            ) @ torch.tensor(
                 [ [1, 0, 0, 0 ],
-                 [0, np.cos(angs[4]), 0, -np.sin(angs[4]) ],
+                 [0, math.cos(angs[4]), 0, -math.sin(angs[4]) ],
                  [0, 0, 1, 0 ],
-                 [0, np.sin(angs[4]), 0, np.cos(angs[4]) ] ]
-            )).dot(np.array( 
+                 [0, math.sin(angs[4]), 0, math.cos(angs[4]) ] ]
+            ) @ torch.tensor( 
                 [ [1, 0, 0, 0 ], 
-                 [0, np.cos(angs[3]), -np.sin(angs[3]), 0 ],
-                 [0, np.sin(angs[3]), np.cos(angs[3]), 0 ],
+                 [0, math.cos(angs[3]), -math.sin(angs[3]), 0 ],
+                 [0, math.sin(angs[3]), math.cos(angs[3]), 0 ],
                  [0, 0, 0, 1 ] ]
-            )).dot(np.array( 
-                [ [ np.cos(angs[2]), 0, 0, -np.sin(angs[2]) ],
+            ) @ torch.tensor( 
+                [ [ math.cos(angs[2]), 0, 0, -math.sin(angs[2]) ],
                  [0, 1, 0, 0 ],
                  [0, 0, 1, 0 ],
-                 [ np.sin(angs[2]), 0, 0, np.cos(angs[2]) ] ]
-            )).dot(np.array(
-               [ [np.cos(angs[1]), 0, -np.sin(angs[1]), 0 ],
+                 [ math.sin(angs[2]), 0, 0, math.cos(angs[2]) ] ]
+            ) @ torch.tensor(
+               [ [math.cos(angs[1]), 0, -math.sin(angs[1]), 0 ],
                  [0, 1, 0, 0 ],
-                 [np.sin(angs[1]), 0, np.cos(angs[1]), 0 ],
+                 [math.sin(angs[1]), 0, math.cos(angs[1]), 0 ],
                  [0, 0, 0, 1 ] ]
-            )).dot(np.array(
-               [ [ np.cos(angs[0]), -np.sin(angs[0]), 0, 0 ],
-                 [ np.sin(angs[0]), np.cos(angs[0]), 0, 0 ],
+            ) @ torch.tensor(
+               [ [ math.cos(angs[0]), -math.sin(angs[0]), 0, 0 ],
+                 [ math.sin(angs[0]), math.cos(angs[0]), 0, 0 ],
                  [ 0, 0, 1, 0 ],
                  [ 0, 0, 0, 1 ] ]
-            )),dtype=datatype)
+            ),dtype=datatype)
         
         # Instantiation of target class
         omgs = OrthonormalMatrixGenerationSystem(
@@ -497,57 +497,59 @@ class OrthonormalMatrixGenerationSystemTestCase(unittest.TestCase):
         actualM = omgs(angles=angs,mus=mus,index_pd_angle=pdAng)
 
         # Evaluation
-        self.assertTrue(torch.isclose(actualM,expctdM,rtol=0.,atol=atol).all())    
+        self.assertTrue(torch.allclose(actualM,expctdM,rtol=rtol,atol=atol))    
 
     @parameterized.expand(
         list(itertools.product(datatype))
     )
     def testPartialDifference4x4RandAngPdAng1(self,datatype):
-        atol=1e-6
+        rtol,atol=1e-1,1e-3
 
         # Expcted values
         mus = [ -1, -1, -1, -1 ]
-        angs = 2*np.pi*rand(6)
+        angs = 2*math.pi*torch.rand(6)
         pdAng = 1
-        delta = 1e-10
+        delta = 1e-3
 
-        expctdM = torch.tensor(
-            (1/delta)*np.diag(mus).dot(np.array( 
+        expctdM = torch.as_tensor(
+            (1/delta)*torch.tensor(mus).view(-1,1) * \
+            torch.tensor( 
                 [ [1, 0, 0, 0. ],
                  [0, 1, 0., 0. ],
-                 [0, 0, np.cos(angs[5]), -np.sin(angs[5]) ],
-                 [0., 0, np.sin(angs[5]), np.cos(angs[5]) ] ]
-            )).dot(np.array(
+                 [0, 0, math.cos(angs[5]), -math.sin(angs[5]) ],
+                 [0., 0, math.sin(angs[5]), math.cos(angs[5]) ] ]
+            ) @ torch.tensor(
                 [ [1, 0, 0, 0 ],
-                 [0, np.cos(angs[4]), 0, -np.sin(angs[4]) ],
+                 [0, math.cos(angs[4]), 0, -math.sin(angs[4]) ],
                  [0, 0, 1, 0 ],
-                 [0, np.sin(angs[4]), 0, np.cos(angs[4]) ] ]
-            )).dot(np.array( 
+                 [0, math.sin(angs[4]), 0, math.cos(angs[4]) ] ]
+            ) @ torch.tensor( 
                 [ [1, 0, 0, 0 ], 
-                 [0, np.cos(angs[3]), -np.sin(angs[3]), 0 ],
-                 [0, np.sin(angs[3]), np.cos(angs[3]), 0 ],
+                 [0, math.cos(angs[3]), -math.sin(angs[3]), 0 ],
+                 [0, math.sin(angs[3]), math.cos(angs[3]), 0 ],
                  [0, 0, 0, 1 ] ]
-            )).dot(np.array( 
-                [ [ np.cos(angs[2]), 0, 0, -np.sin(angs[2]) ],
+            ) @ torch.tensor( 
+                [ [ math.cos(angs[2]), 0, 0, -math.sin(angs[2]) ],
                  [0, 1, 0, 0 ],
                  [0, 0, 1, 0 ],
-                 [ np.sin(angs[2]), 0, 0, np.cos(angs[2]) ] ]
-            )).dot(np.array( 
-               [ [np.cos(angs[1]+delta/2), 0, -np.sin(angs[1]+delta/2), 0 ],
+                 [ math.sin(angs[2]), 0, 0, math.cos(angs[2]) ] ]
+            ) @ ( 
+                torch.tensor( 
+               [ [math.cos(angs[1]+delta/2), 0, -math.sin(angs[1]+delta/2), 0 ],
                  [0, 1, 0, 0 ],
-                 [np.sin(angs[1]+delta/2), 0, np.cos(angs[1]+delta/2), 0 ],
-                 [0, 0, 0, 1 ] ]
-            ) - np.array( 
-               [ [np.cos(angs[1]-delta/2), 0, -np.sin(angs[1]-delta/2), 0 ],
+                 [math.sin(angs[1]+delta/2), 0, math.cos(angs[1]+delta/2), 0 ],
+                 [0, 0, 0, 1 ] ] ) - \
+                torch.tensor( 
+               [ [math.cos(angs[1]-delta/2), 0, -math.sin(angs[1]-delta/2), 0 ],
                  [0, 1, 0, 0 ],
-                 [np.sin(angs[1]-delta/2), 0, np.cos(angs[1]-delta/2), 0 ],
-                 [0, 0, 0, 1 ] ]
-            )).dot(np.array(
-               [ [ np.cos(angs[0]), -np.sin(angs[0]), 0, 0 ],
-                 [ np.sin(angs[0]), np.cos(angs[0]), 0, 0 ],
+                 [math.sin(angs[1]-delta/2), 0, math.cos(angs[1]-delta/2), 0 ],
+                 [0, 0, 0, 1 ] ] )
+            ) @ torch.tensor(
+               [ [ math.cos(angs[0]), -math.sin(angs[0]), 0, 0 ],
+                 [ math.sin(angs[0]), math.cos(angs[0]), 0, 0 ],
                  [ 0, 0, 1, 0 ],
                  [ 0, 0, 0, 1 ] ]
-            )),dtype=datatype)
+            ),dtype=datatype)
         
         # Instantiation of target class
         omgs = OrthonormalMatrixGenerationSystem(
@@ -559,20 +561,20 @@ class OrthonormalMatrixGenerationSystemTestCase(unittest.TestCase):
         actualM = omgs(angles=angs,mus=mus,index_pd_angle=pdAng)
 
         # Evaluation
-        self.assertTrue(torch.isclose(actualM,expctdM,rtol=0.,atol=atol).all())    
+        self.assertTrue(torch.allclose(actualM,expctdM,rtol=rtol,atol=atol))    
 
     @parameterized.expand(
         list(itertools.product(datatype))
     )
     def testPartialDifference8x8RandAngPdAng13(self,datatype):
-        atol=1e-2
+        rtol,atol=1e-1,1e-3
 
         # Expcted values
         pdAng = 13
-        delta = 1e-5
-        angs0 = 2*np.pi*rand(28)
-        angs1 = angs0.copy()
-        angs2 = angs0.copy()
+        delta = 1e-3
+        angs0 = 2*math.pi*torch.rand(28)
+        angs1 = angs0.clone()
+        angs2 = angs0.clone()
         angs1[pdAng] = angs0[pdAng]-delta/2
         angs2[pdAng] = angs0[pdAng]+delta/2
 
@@ -588,7 +590,7 @@ class OrthonormalMatrixGenerationSystemTestCase(unittest.TestCase):
         actualM = omgs(angles=angs0,mus=1,index_pd_angle=pdAng)
 
         # Evaluation
-        self.assertTrue(torch.isclose(actualM,expctdM,rtol=0.,atol=atol).all())    
+        self.assertTrue(torch.allclose(actualM,expctdM,rtol=rtol,atol=atol))    
 
 if __name__ == '__main__':
     unittest.main()
