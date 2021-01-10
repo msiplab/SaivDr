@@ -6,6 +6,7 @@ import torch.nn as nn
 import numpy as np
 from numpy.random import *
 from orthonormalTransform import OrthonormalTransform
+from nsoltLayerExceptions import InvalidMode, InvalidMus
 
 datatype = [ torch.float, torch.double ]
 ncols = [ 1, 2, 4 ]
@@ -465,6 +466,30 @@ class OrthonormalTransformTestCase(unittest.TestCase):
         # Evaluation
         self.assertTrue(torch.allclose(actualdLdX,expctddLdX,rtol=rtol,atol=atol))
         self.assertTrue(torch.allclose(actualdLdW,expctddLdW,rtol=rtol,atol=atol))
+
+    def testInstantiationWithInvalidMode(self):
+        mode = 'Invalid'
+
+        # Instantiation of target class
+        with self.assertRaises(InvalidMode):
+            target = OrthonormalTransform(mode=mode)
+        
+    def testSetInvalidMode(self):
+        mode = 'Invalid'        
+        with self.assertRaises(InvalidMode):
+            target = OrthonormalTransform()
+            target.mode = 'InvalidMode'
+
+    def testInstantiationWithInvalidMus(self):
+        mus = 2
+        with self.assertRaises(InvalidMus):
+            target = OrthonormalTransform(mus=mus)
+        
+    def testSetInvalidMus(self):        
+        mus = 2        
+        with self.assertRaises(InvalidMus):
+            target = OrthonormalTransform()
+            target.mus = mus
 
     """
     @parameterized.expand(

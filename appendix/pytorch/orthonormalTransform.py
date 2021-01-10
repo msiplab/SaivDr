@@ -49,7 +49,8 @@ class OrthonormalTransform(nn.Module):
             self.__mus = -torch.ones(self.nPoints,dtype=self.dtype)
         else:
             self.__mus = torch.tensor(mus,dtype=self.dtype)
-
+        self.checkMus()
+        
     def forward(self,X):
         angles = self.angles
         mus = self.__mus
