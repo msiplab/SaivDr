@@ -62,7 +62,7 @@ class NsoltBlockIdct2dLayer(nn.Module):
         return z
 
 def permuteIdctCoefs_(x,block_size):
-    coefs = x.view(-1,np.prod(block_size))
+    coefs = x.view(-1,block_size[Direction.VERTICAL]*block_size[Direction.HORIZONTAL]) # math.prod(block_size)
     decY_ = block_size[Direction.VERTICAL]
     decX_ = block_size[Direction.HORIZONTAL]
     chDecY = int(math.ceil(decY_/2.))

@@ -343,7 +343,7 @@ def permuteDctCoefs_(x):
     return torch.cat((cee,coo,coe,ceo),dim=-1)
 
 def permuteIdctCoefs_(x,block_size):
-    coefs = x.view(-1,block_size[0]*block_size[1]) # x.view(-1,math.prod(block_size)) 
+    coefs = x.view(-1,block_size[Direction.VERTICAL]*block_size[Direction.HORIZONTAL]) # x.view(-1,math.prod(block_size)) 
     decY_ = block_size[Direction.VERTICAL]
     decX_ = block_size[Direction.HORIZONTAL]
     chDecY = int(math.ceil(decY_/2.)) #.astype(int)
