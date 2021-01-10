@@ -1141,7 +1141,6 @@ class OrthonormalTransformTestCase(unittest.TestCase):
         list(itertools.product(mode,ncols,npoints))
     )
     def testGradCheckNxNRandAngMus(self,mode,ncols,npoints):
-        rtol,atol=1e-1,1e-3
 
         # Configuration
         datatype = torch.double
