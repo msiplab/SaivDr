@@ -31,6 +31,7 @@ class NsoltFinalRotation2dLayer(nn.Module):
     def __init__(self,
         number_of_channels=[],
         decimation_factor=[],
+        no_dc_leakage=False,
         name=''):
         super(NsoltFinalRotation2dLayer, self).__init__()
         self.name = name
@@ -51,6 +52,9 @@ class NsoltFinalRotation2dLayer(nn.Module):
         self.orthTransU0T = OrthonormalTransform(n=pa,mode='Synthesis')
         self.orthTransU0T.angles = nn.init.zeros_(self.orthTransU0T.angles)                
 
+        # No DC leakage
+        self.no_dc_leakage = no_dc_leakage
+
     def forward(self,X):
         nSamples = X.size(dim=0)
         nrows = X.size(dim=1)
@@ -59,6 +63,12 @@ class NsoltFinalRotation2dLayer(nn.Module):
         stride = self.decimation_factor
         nDecs = stride[0]*stride[1] # math.prod(stride)
 
+        # No DC leackage
+        if self.no_dc_leakage:
+            self.orthTransW0T.mus[0] = 1
+            self.orthTransW0T.angles[:ps-1] = nn.init.zeros_(self.orthTransW0T.angles[:ps-1])
+
+        # Process
         Y = X
         Ys = Y[:,:,:,:ps].view(-1,ps).T
         Ya = Y[:,:,:,ps:].view(-1,pa).T 
@@ -67,33 +77,3 @@ class NsoltFinalRotation2dLayer(nn.Module):
               self.orthTransU0T.forward(Ya)[:int(math.floor(nDecs/2.)),:]),
              dim=0 )
         return Zsa.T.view(nSamples,nrows,ncols,nDecs)
-        """
-            import saivdr.dcnn.fcn_orthmtxgen
-            
-            % Layer forward function for prediction goes here.
-            if isempty(layer.Mus)
-                layer.Mus = ones(ps+pa,1);
-            elseif isscalar(layer.Mus)
-                layer.Mus = layer.Mus*ones(ps+pa,1);
-            end
-            if layer.NoDcLeakage
-                layer.Mus(1) = 1;
-                layer.Angles(1:ps-1) = ...
-                    zeros(ps-1,1,'like',layer.Angles);
-            end            
-            muW = layer.Mus(1:ps);
-            muU = layer.Mus(ps+1:end);
-            anglesW = layer.Angles(1:length(layer.Angles)/2);
-            anglesU = layer.Angles(length(layer.Angles)/2+1:end);
-            W0T = transpose(fcn_orthmtxgen(anglesW,muW));
-            U0T = transpose(fcn_orthmtxgen(anglesU,muU));
-
-            Y = X; %permute(X,[3 1 2 4]);
-            Ys = reshape(Y(1:ps,:,:,:),ps,nrows*ncols*nSamples);
-            Ya = reshape(Y(ps+1:ps+pa,:,:,:),pa,nrows*ncols*nSamples);
-            Zsa = [ W0T(1:ceil(nDecs/2),:)*Ys; U0T(1:floor(nDecs/2),:)*Ya ];
-            %Z = ipermute(reshape(Zsa,nDecs,nrows,ncols,nSamples),...
-            %    [3 1 2 4]);
-            Z = reshape(Zsa,nDecs,nrows,ncols,nSamples);
-        """
-        return X

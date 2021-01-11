@@ -165,65 +165,64 @@ class NsoltFinalRotation2dLayerTestCase(unittest.TestCase):
         self.assertTrue(torch.allclose(actualZ,expctdZ,rtol=rtol,atol=atol))
         self.assertFalse(actualZ.requires_grad)
 
-        """
-        function testPredictGrayscaleWithRandomAnglesNoDcLeackage(testCase, ...
-                nchs, stride, nrows, ncols, mus, datatype)
-            
-            import matlab.unittest.constraints.IsEqualTo
-            import matlab.unittest.constraints.AbsoluteTolerance
-            tolObj = AbsoluteTolerance(1e-6,single(1e-6));
-            import saivdr.dictionary.utility.*
-            genW = OrthonormalMatrixGenerationSystem();
-            genU = OrthonormalMatrixGenerationSystem();
-            
-            % Parameters
-            nSamples = 8;
-            nDecs = prod(stride);
-            nChsTotal = sum(nchs);
-            % nChs x nRows x nCols x nSamples
-            %X = randn(nrows,ncols,sum(nchs),nSamples,datatype);
-            X = randn(sum(nchs),nrows,ncols,nSamples,datatype);
-            angles = randn((nChsTotal-2)*nChsTotal/4,1);
-            
-            % Expected values
-            % nDecs x nRows x nCols x nSamples
-            ps = nchs(1);
-            pa = nchs(2);
-            anglesNoDc = angles;
-            anglesNoDc(1:ps-1,1)=zeros(ps-1,1);
-            musW = mus*ones(ps,1);
-            musW(1,1) = 1;
-            musU = mus*ones(pa,1);
-            W0T = transpose(genW.step(anglesNoDc(1:length(angles)/2),musW));
-            U0T = transpose(genU.step(anglesNoDc(length(angles)/2+1:end),musU));
-            Y = X; %permute(X,[3 1 2 4]);
-            Ys = reshape(Y(1:ps,:,:,:),ps,nrows*ncols*nSamples);
-            Ya = reshape(Y(ps+1:ps+pa,:,:,:),pa,nrows*ncols*nSamples);
-            Zsa = [ W0T(1:ceil(nDecs/2),:)*Ys; U0T(1:floor(nDecs/2),:)*Ya ];
-            %expctdZ = ipermute(reshape(Zsa,nDecs,nrows,ncols,nSamples),...
-            %    [3 1 2 4]);
-            expctdZ = reshape(Zsa,nDecs,nrows,ncols,nSamples);
-            
-            % Instantiation of target class
-            import saivdr.dcnn.*
-            layer = nsoltFinalRotation2dLayer(...
-                'NumberOfChannels',nchs,...
-                'DecimationFactor',stride,...
-                'NoDcLeakage',true,...
-                'Name','V0~');
-            
-            % Actual values
-            layer.Mus = mus;
-            layer.Angles = angles;
-            actualZ = layer.predict(X);
-            
-            % Evaluation
-            testCase.verifyInstanceOf(actualZ,datatype);
-            testCase.verifyThat(actualZ,...
-                IsEqualTo(expctdZ,'Within',tolObj));
-            
-        end
-        
+    @parameterized.expand(
+        list(itertools.product(datatype,nchs,stride,nrows,ncols))
+    )
+    def testPredictGrayscaleWithRandomAnglesNoDcLeackage(self,
+        datatype,nchs,stride,nrows,ncols):
+        rtol,atol=1e-4,1e-7
+        gen = OrthonormalMatrixGenerationSystem(dtype=datatype)
+
+        # Parameters
+        #nchs = [4,4]
+        #stride = [2,2]
+        #nrows = 4
+        #ncols = 6
+        nSamples = 8
+        nDecs = stride[0]*stride[1] # math.prod(stride)
+        nChsTotal = sum(nchs)
+        # nSamples x nRows x nCols x nChs
+        X = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype)
+        angles = torch.randn(int((nChsTotal-2)*nChsTotal/4),dtype=datatype)
+
+        # Expected values
+        ps, pa = nchs
+        nAngsW = int(len(angles)/2) 
+        angsW,angsU = angles[:nAngsW],angles[nAngsW:]
+        angsWNoDc = angsW.clone()
+        angsWNoDc[:ps-1]=torch.zeros(ps-1,dtype=angles.dtype)
+        musW,musU = torch.ones(ps,dtype=datatype),torch.ones(pa,dtype=datatype)
+        W0T,U0T = gen(angsWNoDc,musW).T,gen(angsU,musU).T        
+        Y = X
+        Ys = Y[:,:,:,:ps].view(-1,ps).T
+        Ya = Y[:,:,:,ps:].view(-1,pa).T
+        Zsa = torch.cat(
+                ( W0T[:int(math.ceil(nDecs/2.)),:] @ Ys, 
+                  U0T[:int(math.floor(nDecs/2.)),:] @ Ya ),dim=0)
+        expctdZ = Zsa.T.view(nSamples,nrows,ncols,nDecs)
+
+        # Instantiation of target class
+        layer = NsoltFinalRotation2dLayer(
+                number_of_channels=nchs,
+                decimation_factor=stride,
+                no_dc_leakage=True,
+                name='V0~'
+            )
+        layer.orthTransW0T.angles.data = angsW
+        layer.orthTransW0T.mus = musW
+        layer.orthTransU0T.angles.data = angsU
+        layer.orthTransU0T.mus = musU
+
+        # Actual values
+        with torch.no_grad():
+            actualZ = layer.forward(X)
+
+        # Evaluation
+        self.assertEqual(actualZ.dtype,datatype)
+        self.assertTrue(torch.allclose(actualZ,expctdZ,rtol=rtol,atol=atol))
+        self.assertFalse(actualZ.requires_grad)
+
+    """
         function testBackwardGrayscale(testCase, ...
                 nchs, stride, nrows, ncols, datatype)
             
