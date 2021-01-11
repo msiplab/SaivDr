@@ -1,7 +1,8 @@
 import torch
 import torch.nn as nn
-from nsoltUtility import Direction
 import math
+from nsoltUtility import Direction
+from orthonormalTransform import OrthonormalTransform
 
 class NsoltFinalRotation2dLayer(nn.Module):
     """
@@ -43,6 +44,13 @@ class NsoltFinalRotation2dLayer(nn.Module):
                 + str(self.decimation_factor[Direction.VERTICAL]) + "," \
                 + str(self.decimation_factor[Direction.HORIZONTAL]) + ")"
 
+        # Instantiation of orthormal transforms
+        ps,pa = self.number_of_channels
+        self.orthTransW0T = OrthonormalTransform(n=ps,mode='Synthesis')
+        self.orthTransW0T.angles = nn.init.zeros_(self.orthTransW0T.angles)        
+        self.orthTransU0T = OrthonormalTransform(n=pa,mode='Synthesis')
+        self.orthTransU0T.angles = nn.init.zeros_(self.orthTransU0T.angles)                
+
     def forward(self,X):
         nSamples = X.size(dim=0)
         nrows = X.size(dim=1)
@@ -51,15 +59,12 @@ class NsoltFinalRotation2dLayer(nn.Module):
         stride = self.decimation_factor
         nDecs = stride[0]*stride[1] # math.prod(stride)
 
-        W0T = torch.eye(ps,dtype=X.dtype)
-        U0T = torch.eye(pa,dtype=X.dtype)
-
         Y = X
         Ys = Y[:,:,:,:ps].view(-1,ps).T
         Ya = Y[:,:,:,ps:].view(-1,pa).T 
-        Zsa = torch.cat(        
-            ( W0T[:int(math.ceil(nDecs/2.)),:].mm(Ys),
-             U0T[:int(math.floor(nDecs/2.)),:].mm(Ya) ),
+        Zsa = torch.cat( 
+            ( self.orthTransW0T.forward(Ys)[:int(math.ceil(nDecs/2.)),:],
+              self.orthTransU0T.forward(Ya)[:int(math.floor(nDecs/2.)),:]),
              dim=0 )
         return Zsa.T.view(nSamples,nrows,ncols,nDecs)
         """
