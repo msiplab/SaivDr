@@ -44,22 +44,22 @@ class NsoltBlockIdct2dLayer(nn.Module):
     def forward(self,*args):
         block_size = self.decimation_factor
         for iComponent in range(self.num_inputs):
-            x = args[iComponent]
-            nsamples = x.size(0)
-            nrows = x.size(1)
-            ncols = x.size(2)
+            X = args[iComponent]
+            nsamples = X.size(0)
+            nrows = X.size(1)
+            ncols = X.size(2)
             # Permute IDCT coefficients
-            value = permuteIdctCoefs_(x,block_size)
+            V = permuteIdctCoefs_(X,block_size)
             # 2D IDCT
-            y = dct.idct_2d(value,norm='ortho')
+            Y = dct.idct_2d(V,norm='ortho')
             # Reshape and return
             height = nrows * block_size[Direction.VERTICAL] 
             width = ncols * block_size[Direction.HORIZONTAL] 
             if iComponent<1:
-                z = y.reshape(nsamples,1,height,width)
+                Z = Y.reshape(nsamples,1,height,width)
             else:
-                z = torch.cat((z,y.reshape(nsamples,1,height,width)),dim=1)
-        return z
+                Z = torch.cat((Z,Y.reshape(nsamples,1,height,width)),dim=1)
+        return Z
 
 def permuteIdctCoefs_(x,block_size):
     coefs = x.view(-1,block_size[Direction.VERTICAL]*block_size[Direction.HORIZONTAL]) # math.prod(block_size)
@@ -77,7 +77,7 @@ def permuteIdctCoefs_(x,block_size):
     coe = coefs[:,nQDecsee+nQDecsoo:nQDecsee+nQDecsoo+nQDecsoe]
     ceo = coefs[:,nQDecsee+nQDecsoo+nQDecsoe:]
     nBlocks = coefs.size(0)
-    value = torch.zeros(nBlocks,decY_,decX_,dtype=x.dtype)
+    value = torch.empty(nBlocks,decY_,decX_,dtype=x.dtype)
     value[:,0::2,0::2] = cee.view(nBlocks,chDecY,chDecX)
     value[:,1::2,1::2] = coo.view(nBlocks,fhDecY,fhDecX)
     value[:,1::2,0::2] = coe.view(nBlocks,fhDecY,chDecX)

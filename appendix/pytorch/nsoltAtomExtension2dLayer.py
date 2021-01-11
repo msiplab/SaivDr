@@ -69,26 +69,22 @@ class NsoltAtomExtension2dLayer(nn.Module):
         ps, pa = self.number_of_channels #[0], self.number_of_channels[1]
         target = self.target_channels
         #
-        Y = X
         # Block butterfly
-        Ys = Y[:,:,:,:ps]
-        Ya = Y[:,:,:,ps:]
-        Y = torch.cat((Ys+Ya,Ys-Ya),dim=-1)
+        Xs = X[:,:,:,:ps]
+        Xa = X[:,:,:,ps:]
+        Y = torch.cat((Xs+Xa,Xs-Xa),dim=-1)
         # Block circular shift
+        Z = Y.clone()
         if target=='Lower':
-            Y[:,:,:,ps:] = torch.roll(Y[:,:,:,ps:],shifts=shift,dims=(0,1,2,3))
+            Z[:,:,:,ps:] = torch.roll(Y[:,:,:,ps:],shifts=shift,dims=(0,1,2,3))
         elif target=='Upper':
-            Y[:,:,:,:ps] = torch.roll(Y[:,:,:,:ps],shifts=shift,dims=(0,1,2,3))
+            Z[:,:,:,:ps] = torch.roll(Y[:,:,:,:ps],shifts=shift,dims=(0,1,2,3))
         else:
             raise InvalidTargetChannels(
                 '%s : TaregetChannels should be either of Lower or Upper'\
                 % self.target_channels
             )
-                
         # Block butterfly
-        Ys = Y[:,:,:,:ps]
-        Ya = Y[:,:,:,ps:]
-        Y = torch.cat((Ys+Ya, Ys-Ya),dim=-1)
-
-        # Output
-        return Y/2.0
+        Zs = Z[:,:,:,:ps]
+        Za = Z[:,:,:,ps:]
+        return torch.cat((Zs+Za, Zs-Za),dim=-1)/2.

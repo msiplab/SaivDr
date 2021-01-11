@@ -69,9 +69,8 @@ class NsoltFinalRotation2dLayer(nn.Module):
             self.orthTransW0T.angles[:ps-1] = nn.init.zeros_(self.orthTransW0T.angles[:ps-1])
 
         # Process
-        Y = X
-        Ys = Y[:,:,:,:ps].view(-1,ps).T
-        Ya = Y[:,:,:,ps:].view(-1,pa).T 
+        Ys = X[:,:,:,:ps].view(-1,ps).T
+        Ya = X[:,:,:,ps:].view(-1,pa).T 
         Zsa = torch.cat( 
             ( self.orthTransW0T.forward(Ys)[:int(math.ceil(nDecs/2.)),:],
               self.orthTransU0T.forward(Ya)[:int(math.floor(nDecs/2.)),:]),
