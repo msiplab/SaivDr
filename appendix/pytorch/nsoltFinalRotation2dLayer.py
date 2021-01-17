@@ -66,7 +66,8 @@ class NsoltFinalRotation2dLayer(nn.Module):
         # No DC leackage
         if self.no_dc_leakage:
             self.orthTransW0T.mus[0] = 1
-            self.orthTransW0T.angles[:ps-1] = nn.init.zeros_(self.orthTransW0T.angles[:ps-1])
+            self.orthTransW0T.angles.data[:ps-1] = \
+                torch.zeros(ps-1,dtype=self.orthTransW0T.angles.data.dtype)
 
         # Process
         Ys = X[:,:,:,:ps].view(-1,ps).T
