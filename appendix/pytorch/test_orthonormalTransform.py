@@ -336,11 +336,9 @@ class OrthonormalTransformTestCase(unittest.TestCase):
             dtype=datatype)
         if mode!='Synthesis':
             expctddLdX = R.T @ dLdZ # = dZdX @ dLdZ
-            #expctddLdW = expctddLdX.T @ dRdW @ X 
             expctddLdW = dLdZ.T @ dRdW @ X 
         else:
             expctddLdX = R @ dLdZ # = dZdX @ dLdZ
-            #expctddLdW = expctddLdX.T @ dRdW.T @ X             
             expctddLdW = dLdZ.T @ dRdW.T @ X             
 
         # Instantiation of target class
@@ -362,7 +360,7 @@ class OrthonormalTransformTestCase(unittest.TestCase):
         list(itertools.product(datatype,ncols,mode))
     )
     def testBackwardMultiColumns(self,datatype,ncols,mode):
-        rtol,atol = 1e-5,1e-8
+        rtol,atol = 1e-4,1e-7
 
         # Configuration
         nPoints = 2
@@ -377,11 +375,9 @@ class OrthonormalTransformTestCase(unittest.TestCase):
             dtype=datatype)
         if mode!='Synthesis':
             expctddLdX = R.T @ dLdZ # = dZdX @ dLdZ
-            #expctddLdW = torch.sum(expctddLdX * (dRdW @ X))
             expctddLdW = torch.sum(dLdZ * (dRdW @ X))
         else:
             expctddLdX = R @ dLdZ # = dZdX @ dLdZ
-            #expctddLdW = torch.sum(expctddLdX * (dRdW.T @ X))
             expctddLdW = torch.sum(dLdZ * (dRdW.T @ X))
 
         # Instantiation of target class
@@ -421,11 +417,9 @@ class OrthonormalTransformTestCase(unittest.TestCase):
             dtype=datatype) #.squeeze()
         if mode!='Synthesis':
             expctddLdX = R.T @ dLdZ # = dZdX @ dLdZ
-            #expctddLdW = torch.sum(expctddLdX * (dRdW @ X))
             expctddLdW = torch.sum(dLdZ * (dRdW @ X))
         else:
             expctddLdX = R @ dLdZ # = dZdX @ dLdZ
-            #expctddLdW = torch.sum(expctddLdX * (dRdW.T @ X))            
             expctddLdW = torch.sum(dLdZ * (dRdW.T @ X))            
 
         # Instantiation of target class
@@ -470,11 +464,9 @@ class OrthonormalTransformTestCase(unittest.TestCase):
             dtype=datatype) #.squeeze()
         if mode!='Synthesis':
             expctddLdX = R.T @ dLdZ # = dZdX @ dLdZ
-            #expctddLdW = torch.sum(expctddLdX * (dRdW @ X))
             expctddLdW = torch.sum(dLdZ * (dRdW @ X))
         else:
             expctddLdX = R @ dLdZ # = dZdX @ dLdZ
-            #expctddLdW = torch.sum(expctddLdX * (dRdW.T @ X))            
             expctddLdW = torch.sum(dLdZ * (dRdW.T @ X))            
 
         # Instantiation of target class
@@ -539,11 +531,9 @@ class OrthonormalTransformTestCase(unittest.TestCase):
             dtype=datatype)
         if mode!='Synthesis':
             expctddLdX = R.T @ dLdZ # = dZdX @ dLdZ
-            #expctddLdW = torch.sum(expctddLdX * (dRdW @ X))
             expctddLdW = torch.sum(dLdZ * (dRdW @ X))
         else:
             expctddLdX = R @ dLdZ # = dZdX @ dLdZ
-            #expctddLdW = torch.sum(expctddLdX * (dRdW.T @ X))            
             expctddLdW = torch.sum(dLdZ * (dRdW.T @ X))            
 
         # Instantiation of target class
@@ -574,11 +564,9 @@ class OrthonormalTransformTestCase(unittest.TestCase):
             dtype=datatype) #.squeeze()
         if mode!='Synthesis':
             expctddLdX = R.T @ dLdZ # = dZdX @ dLdZ
-            #expctddLdW = torch.sum(expctddLdX * (dRdW @ X))
             expctddLdW = torch.sum(dLdZ * (dRdW @ X))
         else:
             expctddLdX = R @ dLdZ # = dZdX @ dLdZ
-            #expctddLdW = torch.sum(expctddLdX * (dRdW.T @ X))            
             expctddLdW = torch.sum(dLdZ * (dRdW.T @ X))            
 
         # Set angles
@@ -665,7 +653,7 @@ class OrthonormalTransformTestCase(unittest.TestCase):
         list(itertools.product(datatype,mode,ncols))
     )
     def testBackward4x4RandAngPdAng2(self,datatype,mode,ncols):
-        rtol,atol=1e-4,1e-7
+        rtol,atol=1e-3,1e-6
 
         # Configuration
         #mode = 'Synthesis'
@@ -729,10 +717,10 @@ class OrthonormalTransformTestCase(unittest.TestCase):
                  [0, math.sin(angs[3]), math.cos(angs[3]), 0 ],
                  [0, 0, 0, 1 ] ]
             ) @ torch.tensor( # Partial Diff. pdAng = 2
-                [ [ math.cos(angs[2]+math.pi/2), 0, 0, -math.sin(angs[2]+math.pi/2) ],
+                [ [ math.cos(angs[2]+math.pi/2.), 0, 0, -math.sin(angs[2]+math.pi/2.) ],
                  [0, 0, 0, 0 ],
                  [0, 0, 0, 0 ],
-                 [ math.sin(angs[2]+math.pi/2), 0, 0, math.cos(angs[2]+math.pi/2) ] ]
+                 [ math.sin(angs[2]+math.pi/2.), 0, 0, math.cos(angs[2]+math.pi/2.) ] ]
             ) @ torch.tensor(
                [ [math.cos(angs[1]), 0, -math.sin(angs[1]), 0 ],
                  [0, 1, 0, 0 ],
@@ -746,11 +734,9 @@ class OrthonormalTransformTestCase(unittest.TestCase):
             ),dtype=datatype)
         if mode!='Synthesis':
             expctddLdX = R.T @ dLdZ # = dZdX @ dLdZ
-            #expctddLdW = torch.sum(expctddLdX * (dRdW @ X)) 
             expctddLdW = torch.sum(dLdZ * (dRdW @ X)) 
         else:
             expctddLdX = R @ dLdZ # = dZdX @ dLdZ
-            #expctddLdW = torch.sum(expctddLdX * (dRdW.T @ X))    
             expctddLdW = torch.sum(dLdZ * (dRdW.T @ X))    
 
          # Instantiation of target class
@@ -855,11 +841,9 @@ class OrthonormalTransformTestCase(unittest.TestCase):
             ),dtype=datatype)
         if mode!='Synthesis':
             expctddLdX = R.T @ dLdZ # = dZdX @ dLdZ
-            #expctddLdW = torch.sum(expctddLdX * (dRdW @ X)) 
             expctddLdW = torch.sum(dLdZ * (dRdW @ X)) 
         else:
             expctddLdX = R @ dLdZ # = dZdX @ dLdZ
-            #expctddLdW = torch.sum(expctddLdX * (dRdW.T @ X))    
             expctddLdW = torch.sum(dLdZ * (dRdW.T @ X))    
 
          # Instantiation of target class
@@ -893,7 +877,7 @@ class OrthonormalTransformTestCase(unittest.TestCase):
         mus = [ -1, -1, -1, -1 ]
         angs = 2.*math.pi*torch.randn(6,dtype=datatype)
         pdAng = 1
-        delta = 1e-5
+        delta = 1e-4
 
         # Expcted values
         X = torch.randn(nPoints,ncols,dtype=datatype,requires_grad=True)
@@ -972,11 +956,9 @@ class OrthonormalTransformTestCase(unittest.TestCase):
             ),dtype=datatype)
         if mode!='Synthesis':
             expctddLdX = R.T @ dLdZ # = dZdX @ dLdZ
-            #expctddLdW = torch.sum(expctddLdX * (dRdW @ X)) 
             expctddLdW = torch.sum(dLdZ * (dRdW @ X)) 
         else:
             expctddLdX = R @ dLdZ # = dZdX @ dLdZ
-            #expctddLdW = torch.sum(expctddLdX * (dRdW.T @ X))    
             expctddLdW = torch.sum(dLdZ * (dRdW.T @ X))    
 
          # Instantiation of target class
@@ -1011,7 +993,7 @@ class OrthonormalTransformTestCase(unittest.TestCase):
         angs1 = angs0.clone()
         angs2 = angs0.clone()
         pdAng = 4
-        delta = 1e-5
+        delta = 1e-4
         angs1[pdAng] = angs0[pdAng]-delta/2.
         angs2[pdAng] = angs0[pdAng]+delta/2.
 
@@ -1026,11 +1008,9 @@ class OrthonormalTransformTestCase(unittest.TestCase):
         dRdW = ( omgs(angles=angs2,mus=1) - omgs(angles=angs1,mus=1) )/delta
         if mode!='Synthesis':
             expctddLdX = R.T @ dLdZ # = dZdX @ dLdZ
-            #expctddLdW = torch.sum(expctddLdX * (dRdW @ X)) 
             expctddLdW = torch.sum(dLdZ * (dRdW @ X)) 
         else:
             expctddLdX = R @ dLdZ # = dZdX @ dLdZ
-            #expctddLdW = torch.sum(expctddLdX * (dRdW.T @ X))    
             expctddLdW = torch.sum(dLdZ * (dRdW.T @ X))    
 
         # Instantiation of target class
@@ -1065,7 +1045,7 @@ class OrthonormalTransformTestCase(unittest.TestCase):
         angs1 = angs0.clone()
         angs2 = angs0.clone()
         pdAng = 13
-        delta = 1e-5
+        delta = 1e-4
         angs1[pdAng] = angs0[pdAng]-delta/2.
         angs2[pdAng] = angs0[pdAng]+delta/2.
 
@@ -1080,11 +1060,9 @@ class OrthonormalTransformTestCase(unittest.TestCase):
         dRdW = ( omgs(angles=angs2,mus=mus) - omgs(angles=angs1,mus=mus) )/delta
         if mode!='Synthesis':
             expctddLdX = R.T @ dLdZ # = dZdX @ dLdZ
-            #expctddLdW = torch.sum(expctddLdX * (dRdW @ X)) 
             expctddLdW = torch.sum(dLdZ * (dRdW @ X)) 
         else:
             expctddLdX = R @ dLdZ # = dZdX @ dLdZ
-            #expctddLdW = torch.sum(expctddLdX * (dRdW.T @ X))    
             expctddLdW = torch.sum(dLdZ * (dRdW.T @ X))    
 
         # Instantiation of target class
@@ -1120,7 +1098,7 @@ class OrthonormalTransformTestCase(unittest.TestCase):
         angs1 = angs0.clone()
         angs2 = angs0.clone()
         pdAng = 7
-        delta = 1e-5
+        delta = 1e-4
         angs1[pdAng] = angs0[pdAng]-delta/2.
         angs2[pdAng] = angs0[pdAng]+delta/2.
 
@@ -1149,7 +1127,6 @@ class OrthonormalTransformTestCase(unittest.TestCase):
         backprop.mus = mus
         torch.autograd.set_detect_anomaly(True)                
         dZdW = (target2.forward(X) - target1.forward(X))/delta # ~ d(R*X)/dW
-        #expctddLdW = torch.sum(backprop.forward(dLdZ) * dZdW) # ~ dLdW
         expctddLdW = torch.sum(dLdZ * dZdW) # ~ dLdW
 
         # Actual values
