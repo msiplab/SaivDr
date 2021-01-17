@@ -126,7 +126,7 @@ class GivensRotations4Analyzer(autograd.Function):
     def forward(ctx, input, angles, mus):
         ctx.mark_non_differentiable(mus)
         ctx.save_for_backward(input,angles,mus)
-        omgs = OrthonormalMatrixGenerationSystem(dtype=input.dtype)
+        omgs = OrthonormalMatrixGenerationSystem(dtype=input.dtype,partial_difference=False)
         R = omgs(angles,mus)
         return R @ input
     
@@ -135,7 +135,7 @@ class GivensRotations4Analyzer(autograd.Function):
         input, angles, mus = ctx.saved_tensors
         grad_input = grad_angles = grad_mus = None
         if ctx.needs_input_grad[0] or ctx.needs_input_grad[1]:        
-            omgs = OrthonormalMatrixGenerationSystem(dtype=input.dtype)
+            omgs = OrthonormalMatrixGenerationSystem(dtype=input.dtype,partial_difference=False)
             R = omgs(angles,mus)
             dLdX = R.T @ grad_output # dLdX = dZdX @ dLdZ
         # 
@@ -146,7 +146,8 @@ class GivensRotations4Analyzer(autograd.Function):
             grad_angles = torch.zeros_like(angles,dtype=input.dtype)
             for iAngle in range(len(grad_angles)):
                 dRi = omgs(angles,mus,index_pd_angle=iAngle)
-                grad_angles[iAngle] = torch.sum(grad_input * (dRi @ input))
+                #grad_angles[iAngle] = torch.sum(dLdX * (dRi @ input))
+                grad_angles[iAngle] = torch.sum(grad_output * (dRi @ input))
         if ctx.needs_input_grad[2]:
             grad_mus = torch.zeros_like(mus,dtype=input.dtype)                
         return grad_input, grad_angles, grad_mus
@@ -173,7 +174,7 @@ class GivensRotations4Synthesizer(autograd.Function):
     def forward(ctx, input, angles, mus):
         ctx.mark_non_differentiable(mus)        
         ctx.save_for_backward(input,angles,mus)
-        omgs = OrthonormalMatrixGenerationSystem(dtype=input.dtype)
+        omgs = OrthonormalMatrixGenerationSystem(dtype=input.dtype,partial_difference=False)
         R = omgs(angles,mus)
         return R.T @ input
     
@@ -182,7 +183,7 @@ class GivensRotations4Synthesizer(autograd.Function):
         input, angles, mus = ctx.saved_tensors
         grad_input = grad_angles = grad_mus = None
         if ctx.needs_input_grad[0] or ctx.needs_input_grad[1]:
-            omgs = OrthonormalMatrixGenerationSystem(dtype=input.dtype)
+            omgs = OrthonormalMatrixGenerationSystem(dtype=input.dtype,partial_difference=False)
             R = omgs(angles,mus)
             dLdX = R @ grad_output # dLdX = dZdX @ dLdZ
         #            
@@ -193,7 +194,8 @@ class GivensRotations4Synthesizer(autograd.Function):
             grad_angles = torch.zeros_like(angles,dtype=input.dtype)
             for iAngle in range(len(grad_angles)):
                 dRi = omgs(angles,mus,index_pd_angle=iAngle)
-                grad_angles[iAngle] = torch.sum(dLdX * (dRi.T @ input))
+                #grad_angles[iAngle] = torch.sum(dLdX * (dRi.T @ input))
+                grad_angles[iAngle] = torch.sum(grad_output * (dRi.T @ input))
         if ctx.needs_input_grad[2]:
             grad_mus = torch.zeros_like(mus,dtype=input.dtype)
         return grad_input, grad_angles, grad_mus

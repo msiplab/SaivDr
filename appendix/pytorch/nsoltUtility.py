@@ -57,7 +57,7 @@ class OrthonormalMatrixGenerationSystem:
             vt = matrix[iTop,:]
             for iBtm in range(iTop+1,nDims):
                 angle = angles[iAng]
-                if iAng == index_pd_angle:
+                if self.partial_difference and iAng == index_pd_angle:
                     angle = angle + math.pi/2.
                 c = math.cos(angle)
                 s = math.sin(angle)
@@ -67,7 +67,7 @@ class OrthonormalMatrixGenerationSystem:
                 vt = (c + s)*vt
                 vb = (c - s)*vb
                 vt = vt - u
-                if iAng == index_pd_angle:
+                if self.partial_difference and iAng == index_pd_angle:
                     matrix = torch.zeros_like(matrix)
                 matrix[iBtm,:] = vb + u
                 iAng = iAng + 1
