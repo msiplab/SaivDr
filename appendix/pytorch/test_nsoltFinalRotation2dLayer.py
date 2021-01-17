@@ -4,7 +4,6 @@ from parameterized import parameterized
 import math
 import torch
 import torch.nn as nn
-
 from nsoltFinalRotation2dLayer import NsoltFinalRotation2dLayer
 from nsoltUtility import Direction, OrthonormalMatrixGenerationSystem
 
@@ -303,10 +302,10 @@ class NsoltFinalRotation2dLayerTestCase(unittest.TestCase):
         self.assertTrue(Z.requires_grad)
 
     @parameterized.expand(
-        list(itertools.product(datatype,nchs,stride,nrows,ncols)) 
+        list(itertools.product(datatype,nchs,stride,nrows,ncols,mus)) 
     )
     def testBackwardGayscaleWithRandomAngles(self,
-        datatype,nchs,stride,nrows,ncols): 
+        datatype,nchs,stride,nrows,ncols,mus): 
         rtol,atol=1e-3,1e-6
         omgs = OrthonormalMatrixGenerationSystem(dtype=datatype,partial_difference=False)
 
@@ -315,13 +314,13 @@ class NsoltFinalRotation2dLayerTestCase(unittest.TestCase):
         #stride = [2,2]
         #nrows = 4
         #ncols = 6
+        #mus = 1
         nSamples = 8
         nDecs = stride[0]*stride[1] # math.prod(stride)
         nChsTotal = sum(nchs)
         nAnglesH = int((nChsTotal-2)*nChsTotal/8)
         anglesW = torch.randn(nAnglesH,dtype=datatype) 
         anglesU = torch.randn(nAnglesH,dtype=datatype)        
-        mus = 1
         # nSamples x nRows x nCols x nChs
         X = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype,requires_grad=True)
         dLdZ = torch.randn(nSamples,nrows,ncols,nDecs,dtype=datatype)
@@ -383,10 +382,10 @@ class NsoltFinalRotation2dLayerTestCase(unittest.TestCase):
         self.assertTrue(Z.requires_grad)
 
     @parameterized.expand(
-        list(itertools.product(datatype,nchs,stride,nrows,ncols)) 
+        list(itertools.product(datatype,nchs,stride,nrows,ncols,mus)) 
     )
     def testBackwardWithRandomAnglesNoDcLeackage(self,
-        datatype,nchs,stride,nrows,ncols): 
+        datatype,nchs,stride,nrows,ncols,mus): 
         rtol,atol=1e-3,1e-6
         omgs = OrthonormalMatrixGenerationSystem(dtype=datatype,partial_difference=False)
 
@@ -395,13 +394,13 @@ class NsoltFinalRotation2dLayerTestCase(unittest.TestCase):
         #stride = [2,2]
         #nrows = 4
         #ncols = 6
+        #mus = 1
         nSamples = 8
         nDecs = stride[0]*stride[1] # math.prod(stride)
         nChsTotal = sum(nchs)
         nAnglesH = int((nChsTotal-2)*nChsTotal/8)
         anglesW = torch.randn(nAnglesH,dtype=datatype) 
         anglesU = torch.randn(nAnglesH,dtype=datatype)        
-        mus = 1
         # nSamples x nRows x nCols x nChs
         X = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype,requires_grad=True)
         dLdZ = torch.randn(nSamples,nrows,ncols,nDecs,dtype=datatype)
@@ -476,9 +475,9 @@ class NsoltFinalRotation2dLayerTestCase(unittest.TestCase):
 
         # Configuration
         ps, pa = nchs
-        nrows = 4
-        ncols = 6
-        nSamples = 4
+        nrows = 2
+        ncols = 3
+        nSamples = 2
         nDecs = stride[0]*stride[1] # math.prod(stride)
         nChsTotal = sum(nchs)
         nAnglesW = int((ps-1)*ps/2)
@@ -520,9 +519,9 @@ class NsoltFinalRotation2dLayerTestCase(unittest.TestCase):
 
         # Configuration
         ps, pa = nchs
-        nrows = 4
-        ncols = 6
-        nSamples = 4
+        nrows = 2
+        ncols = 3
+        nSamples = 2
         nDecs = stride[0]*stride[1] # math.prod(stride)
         nChsTotal = sum(nchs)
         nAnglesW = int((ps-1)*ps/2)
