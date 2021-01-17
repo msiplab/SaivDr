@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+import torch.autograd as autograd
 from nsoltLayerExceptions import InvalidDirection, InvalidTargetChannels
 
 class NsoltAtomExtension2dLayer(nn.Module):
@@ -32,59 +33,106 @@ class NsoltAtomExtension2dLayer(nn.Module):
         super(NsoltAtomExtension2dLayer, self).__init__()
         self.number_of_channels = number_of_channels
         self.name = name
-        self.direction = direction
-        self.target_channels = target_channels
-        self.description = self.direction \
-            + " shift " \
-            + self.target_channels \
-            + " Coefs. " \
-            + "(ps,pa) = (" \
-            + str(self.number_of_channels[0]) + "," \
-            + str(self.number_of_channels[1]) + ")"
-        
-        self.type = ''        
 
-    def forward(self,X):
-        nchs = self.number_of_channels
-        target = self.target_channels        
-        dir = self.direction
-        #
-        if dir=='Right':
-            shift = ( 0, 0, 1, 0 )
-        elif dir=='Left':
-            shift = ( 0, 0, -1, 0 )
-        elif dir=='Down':
-            shift = ( 0, 1, 0, 0 )
-        elif dir=='Up':
-            shift = ( 0, -1, 0, 0 )
+        # Target channels
+        if target_channels in { 'Lower', 'Upper' }:
+            self.target_channels = target_channels
         else:
-            raise InvalidDirection(
+            raise InvalidTargetChannels(
+                '%s : Target should be either of Lower or Upper'\
+                % self.direction
+            )
+
+        # Shift direction
+        if direction in { 'Right', 'Left', 'Down', 'Up' }:
+            self.direction = direction        
+        else:
+           raise InvalidDirection(
                 '%s : Direction should be either of Right, Left, Down or Up'\
                 % self.direction
             )
 
-        return self.atomext_(X,shift)
+        # Description
+        self.description = direction \
+            + " shift " \
+            + target_channels \
+            + " Coefs. " \
+            + "(ps,pa) = (" \
+            + str(number_of_channels[0]) + "," \
+            + str(number_of_channels[1]) + ")"
+        self.type = ''        
 
-    def atomext_(self,X,shift):
-        ps, pa = self.number_of_channels #[0], self.number_of_channels[1]
-        target = self.target_channels
-        #
-        # Block butterfly
-        Xs = X[:,:,:,:ps]
-        Xa = X[:,:,:,ps:]
-        Y = torch.cat((Xs+Xa,Xs-Xa),dim=-1)
-        # Block circular shift
-        Z = Y.clone()
-        if target=='Lower':
-            Z[:,:,:,ps:] = torch.roll(Y[:,:,:,ps:],shifts=shift,dims=(0,1,2,3))
-        elif target=='Upper':
-            Z[:,:,:,:ps] = torch.roll(Y[:,:,:,:ps],shifts=shift,dims=(0,1,2,3))
+    def forward(self,X):
+        # Number of channels
+        nchs = torch.tensor(self.number_of_channels,dtype=torch.int)
+
+        # Target channels
+        if self.target_channels == 'Lower':
+            target = torch.tensor((0,))
         else:
-            raise InvalidTargetChannels(
-                '%s : TaregetChannels should be either of Lower or Upper'\
-                % self.target_channels
-            )
-        # Block butterfly
-        Zs = Z[:,:,:,:ps]
-        Za = Z[:,:,:,ps:]
-        return torch.cat((Zs+Za, Zs-Za),dim=-1)/2.
+            target = torch.tensor((1,))
+        # Shift direction
+        if self.direction == 'Right':
+            shift = torch.tensor(( 0, 0, 1, 0 ))
+        elif self.direction == 'Left':
+            shift = torch.tensor(( 0, 0, -1, 0 ))
+        elif self.direction == 'Down':
+            shift = torch.tensor(( 0, 1, 0, 0 ))
+        else:
+            shift = torch.tensor(( 0, -1, 0, 0 ))
+        # Atom extension function
+        atomext = AtomExtension2d.apply
+
+        return atomext(X,nchs,target,shift)
+
+class AtomExtension2d(autograd.Function):
+    @staticmethod
+    def forward(ctx, input, nchs, target, shift):
+        ctx.mark_non_differentiable(nchs,target,shift)
+        ctx.save_for_backward(nchs,target,shift)
+        # Block butterfly 
+        X = block_butterfly(input,nchs)
+        # Block shift
+        X = block_shift(X,nchs,target,shift)        
+        # Block butterfly 
+        return block_butterfly(X,nchs)/2.
+
+    @staticmethod
+    def backward(ctx, grad_output):
+        nchs,target,shift = ctx.saved_tensors
+        grad_input = grad_nchs = grad_target = grad_shift = None
+        if ctx.needs_input_grad[0]:
+            # Block butterfly 
+            X = block_butterfly(grad_output,nchs)
+            # Block shift
+            X = block_shift(X,nchs,target,-shift)
+            # Block butterfly 
+            grad_input = block_butterfly(X,nchs)/2.
+        if ctx.needs_input_grad[1]:
+            grad_nchs = torch.zeros_like(nchs)
+        if ctx.needs_input_grad[2]:
+            grad_target = torch.zeros_like(target)
+        if ctx.needs_input_grad[3]:
+            grad_shift = torch.zeros_like(shift)
+               
+        return grad_input, grad_nchs, grad_target, grad_shift
+
+def block_butterfly(X,nchs):
+    """
+    Block butterfly
+    """
+    ps = nchs[0]
+    Xs = X[:,:,:,:ps]
+    Xa = X[:,:,:,ps:]
+    return torch.cat((Xs+Xa,Xs-Xa),dim=-1)
+
+def block_shift(X,nchs,target,shift):
+    """
+    Block shift
+    """
+    ps = nchs[0]
+    if target == 0:
+        X[:,:,:,ps:] = torch.roll(X[:,:,:,ps:],shifts=tuple(shift.tolist()),dims=(0,1,2,3))
+    else:
+        X[:,:,:,:ps] = torch.roll(X[:,:,:,:ps],shifts=tuple(shift.tolist()),dims=(0,1,2,3))
+    return X
