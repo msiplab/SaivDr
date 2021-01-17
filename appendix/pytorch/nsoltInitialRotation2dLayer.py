@@ -45,5 +45,41 @@ class NsoltInitialRotation2dLayer(nn.Module):
                 + str(self.decimation_factor[Direction.VERTICAL]) + "," \
                 + str(self.decimation_factor[Direction.HORIZONTAL]) + ")"
 
-    def forward(self,x):
-        return x
+        # Instantiation of orthormal transforms
+        ps,pa = self.number_of_channels
+        self.orthTransW0 = OrthonormalTransform(n=ps,mode='Analysis')
+        self.orthTransW0.angles = nn.init.zeros_(self.orthTransW0.angles)        
+        self.orthTransU0 = OrthonormalTransform(n=pa,mode='Analysis')
+        self.orthTransU0.angles = nn.init.zeros_(self.orthTransU0.angles)                
+
+        # No DC leakage
+        self.no_dc_leakage = no_dc_leakage
+
+    def forward(self,X):
+        nSamples = X.size(dim=0)
+        nrows = X.size(dim=1)
+        ncols = X.size(dim=2)
+        ps, pa = self.number_of_channels
+        stride = self.decimation_factor
+        nDecs = stride[0]*stride[1] # math.prod(stride)
+
+        # No DC leackage
+        """
+        if self.no_dc_leakage:
+            self.orthTransW0.mus[0] = 1
+            self.orthTransW0.angles.data[:ps-1] = \
+                torch.zeros(ps-1,dtype=self.orthTransW0T.angles.data.dtype)
+        """
+
+        # Process
+        ms = int(math.ceil(nDecs/2.))
+        ma = int(math.floor(nDecs/2.)) 
+        Ys = torch.zeros(ps,nrows*ncols*nSamples,dtype=X.dtype)                       
+        Ya = torch.zeros(pa,nrows*ncols*nSamples,dtype=X.dtype)                       
+        Ys[:ms,:] = X[:,:,:,:ms].view(-1,ms).T
+        if ma > 0:
+            Ya[:ma,:] = X[:,:,:,ms:].view(-1,ma).T 
+        Zsa = torch.cat(
+            ( self.orthTransW0.forward(Ys),
+              self.orthTransU0.forward(Ya)),dim=0)
+        return Zsa.T.view(nSamples,nrows,ncols,ps+pa)

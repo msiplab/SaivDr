@@ -68,62 +68,52 @@ class NsoltInitialRotation2dLayerTestCase(unittest.TestCase):
         self.assertEqual(actualName,expctdName)
         self.assertEqual(actualDescription,expctdDescription)
 
-    """
-        function testPredictGrayscale(testCase, ...
-                nchs, stride, nrows, ncols, datatype)
-            
-            import matlab.unittest.constraints.IsEqualTo
-            import matlab.unittest.constraints.AbsoluteTolerance
-            tolObj = AbsoluteTolerance(1e-6,single(1e-6));
-            
-            % Parameters
-            nSamples = 8;
-            nDecs = prod(stride);
-            nChsTotal = sum(nchs);
-            % nDecs x nRows x nCols x nSamples
-            %X = randn(nrows,ncols,nDecs,nSamples,datatype);
-            X = randn(nDecs,nrows,ncols,nSamples,datatype);
-            
-            % Expected values
-            % nChs x nRows x nCols x nSamples
-            ps = nchs(1);
-            pa = nchs(2);
-            W0 = eye(ps,datatype);
-            U0 = eye(pa,datatype);
-            %expctdZ = zeros(nrows,ncols,nChsTotal,nSamples,datatype);
-            expctdZ = zeros(nChsTotal,nrows,ncols,nSamples,datatype);
-            Y  = zeros(nChsTotal,nrows,ncols,datatype);
-            for iSample=1:nSamples
-                % Perumation in each block
-                Ai = X(:,:,:,iSample); %permute(X(:,:,:,iSample),[3 1 2]);
-                Yi = reshape(Ai,nDecs,nrows,ncols);
-                %
-                Ys = Yi(1:ceil(nDecs/2),:);
-                Ya = Yi(ceil(nDecs/2)+1:end,:);
-                Y(1:ps,:,:) = ...
-                    reshape(W0(:,1:ceil(nDecs/2))*Ys,ps,nrows,ncols);
-                Y(ps+1:ps+pa,:,:) = ...
-                    reshape(U0(:,1:floor(nDecs/2))*Ya,pa,nrows,ncols);
-                expctdZ(:,:,:,iSample) = Y; %ipermute(Y,[3 1 2]);
-            end
-            
-            % Instantiation of target class
-            import saivdr.dcnn.*
-            layer = nsoltInitialRotation2dLayer(...
-                'NumberOfChannels',nchs,...
-                'DecimationFactor',stride,...
-                'Name','V0');
-            
-            % Actual values
-            actualZ = layer.predict(X);
-            
-            % Evaluation
-            testCase.verifyInstanceOf(actualZ,datatype);
-            testCase.verifyThat(actualZ,...
-                IsEqualTo(expctdZ,'Within',tolObj));
-            
-        end
+    @parameterized.expand(
+        list(itertools.product(nchs,stride,nrows,ncols,datatype))
+    )
+    def testPredictGrayscale(self,
+        nchs, stride, nrows, ncols, datatype):
+        rtol,atol=1e-5,1e-8
         
+        # Parameters
+        nSamples = 8
+        nDecs = stride[0]*stride[1] # math.prod(stride)
+        nChsTotal = sum(nchs)
+        # nSamples x nRows x nCols x nDecs
+        X = torch.randn(nSamples,nrows,ncols,nDecs,dtype=datatype)
+
+        # Expected values
+        # nSamplex x nRows x nCols x nChs
+        ps, pa = nchs
+        W0 = torch.eye(ps,dtype=datatype)
+        U0 = torch.eye(pa,dtype=datatype)
+        ms = int(math.ceil(nDecs/2.))        
+        ma = int(math.floor(nDecs/2.))        
+        Zsa = torch.zeros(nChsTotal,nrows*ncols*nSamples,dtype=datatype)        
+        Ys = X[:,:,:,:ms].view(-1,ms).T
+        Zsa[:ps,:] = W0[:,:ms] @ Ys        
+        if ma > 0:
+            Ya = X[:,:,:,ms:].view(-1,ma).T
+            Zsa[ps:,:] = U0[:,:ma] @ Ya
+        expctdZ = Zsa.T.view(nSamples,nrows,ncols,nChsTotal)
+
+        # Instantiation of target class
+        layer = NsoltInitialRotation2dLayer(
+                number_of_channels=nchs,
+                decimation_factor=stride,
+                name='V0'
+            )
+            
+        # Actual values
+        with torch.no_grad():
+            actualZ = layer.forward(X)
+
+        # Evaluation
+        self.assertEqual(actualZ.dtype,datatype)
+        self.assertTrue(torch.allclose(actualZ,expctdZ,rtol=rtol,atol=atol))
+        self.assertFalse(actualZ.requires_grad)
+
+    """
         function testPredictGrayscaleWithRandomAngles(testCase, ...
                 nchs, stride, nrows, ncols, datatype)
             
