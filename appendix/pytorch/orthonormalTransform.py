@@ -193,7 +193,7 @@ class GivensRotations4Synthesizer(autograd.Function):
             grad_angles = torch.zeros_like(angles,dtype=input.dtype)
             for iAngle in range(len(grad_angles)):
                 dRi = omgs(angles,mus,index_pd_angle=iAngle)
-                grad_angles[iAngle] = torch.sum(grad_input * (dRi.T @ input))
+                grad_angles[iAngle] = torch.sum(dLdX * (dRi.T @ input))
         if ctx.needs_input_grad[2]:
             grad_mus = torch.zeros_like(mus,dtype=input.dtype)
         return grad_input, grad_angles, grad_mus
