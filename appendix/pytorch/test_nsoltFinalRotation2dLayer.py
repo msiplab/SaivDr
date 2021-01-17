@@ -86,12 +86,13 @@ class NsoltFinalRotation2dLayerTestCase(unittest.TestCase):
         ps, pa = nchs
         W0T = torch.eye(ps,dtype=datatype)
         U0T = torch.eye(pa,dtype=datatype)
-        Y = X
-        Ys = Y[:,:,:,:ps].view(-1,ps).T
-        Ya = Y[:,:,:,ps:].view(-1,pa).T
+        Ys = X[:,:,:,:ps].view(-1,ps).T
+        Ya = X[:,:,:,ps:].view(-1,pa).T
+        ms = int(math.ceil(nDecs/2.))        
+        ma = int(math.floor(nDecs/2.))        
         Zsa = torch.cat(
-                ( W0T[:int(math.ceil(nDecs/2.)),:] @ Ys, 
-                  U0T[:int(math.floor(nDecs/2.)),:] @ Ya ),dim=0)
+                ( W0T[:ms,:] @ Ys, 
+                  U0T[:ma,:] @ Ya ),dim=0)
         expctdZ = Zsa.T.view(nSamples,nrows,ncols,nDecs)
 
         # Instantiation of target class
@@ -139,9 +140,11 @@ class NsoltFinalRotation2dLayerTestCase(unittest.TestCase):
         Y = X
         Ys = Y[:,:,:,:ps].view(-1,ps).T
         Ya = Y[:,:,:,ps:].view(-1,pa).T
+        ms = int(math.ceil(nDecs/2.))
+        ma = int(math.floor(nDecs/2.))
         Zsa = torch.cat(
-                ( W0T[:int(math.ceil(nDecs/2.)),:] @ Ys, 
-                  U0T[:int(math.floor(nDecs/2.)),:] @ Ya ),dim=0)
+                ( W0T[:ms,:] @ Ys, 
+                  U0T[:ma,:] @ Ya ),dim=0)
         expctdZ = Zsa.T.view(nSamples,nrows,ncols,nDecs)
 
         # Instantiation of target class
@@ -250,13 +253,13 @@ class NsoltFinalRotation2dLayerTestCase(unittest.TestCase):
         W0 = omgs(anglesW,mus)
         U0 = omgs(anglesU,mus)
         # dLdX = dZdX x dLdZ        
-        nDecsS = int(math.ceil(nDecs/2.))
-        nDecsA = int(math.floor(nDecs/2.))
-        Ys = dLdZ[:,:,:,:nDecsS].view(nSamples*nrows*ncols,nDecsS).T # ms x n
-        Ya = dLdZ[:,:,:,nDecsS:].view(nSamples*nrows*ncols,nDecsA).T # ma x n
+        ms = int(math.ceil(nDecs/2.))
+        ma = int(math.floor(nDecs/2.))
+        Ys = dLdZ[:,:,:,:ms].view(nSamples*nrows*ncols,ms).T # ms x n
+        Ya = dLdZ[:,:,:,ms:].view(nSamples*nrows*ncols,ma).T # ma x n
         Y = torch.cat(
-                ( W0[:,:nDecsS] @ Ys,           # ps x ms @ ms x n
-                  U0[:,:nDecsA] @ Ya ),dim=0)   # pa x ma @ ma x n
+                ( W0[:,:ms] @ Ys,           # ps x ms @ ms x n
+                  U0[:,:ma] @ Ya ),dim=0)   # pa x ma @ ma x n
         expctddLdX = Y.T.view(nSamples,nrows,ncols,nChsTotal) # n x (ps+pa) -> N x R x C X P
         # dLdWi = <dLdZ,(dVdWi)X>   
         expctddLdW_W = torch.zeros(nAnglesH,dtype=datatype)
@@ -267,10 +270,10 @@ class NsoltFinalRotation2dLayerTestCase(unittest.TestCase):
             dU0_T = omgs(anglesU,mus,index_pd_angle=iAngle).T
             Xs = X[:,:,:,:ps].view(-1,ps).T 
             Xa = X[:,:,:,ps:].view(-1,pa).T
-            Zs = dW0_T[:nDecsS,:] @ Xs # ms x n
-            Za = dU0_T[:nDecsA,:] @ Xa # ma x n 
-            expctddLdW_W[iAngle] = torch.sum(Ys[:nDecsS,:] * Zs)
-            expctddLdW_U[iAngle] = torch.sum(Ya[:nDecsA,:] * Za)
+            Zs = dW0_T[:ms,:] @ Xs # ms x n
+            Za = dU0_T[:ma,:] @ Xa # ma x n 
+            expctddLdW_W[iAngle] = torch.sum(Ys[:ms,:] * Zs)
+            expctddLdW_U[iAngle] = torch.sum(Ya[:ma,:] * Za)
 
         # Instantiation of target class
         layer = NsoltFinalRotation2dLayer(
@@ -330,13 +333,13 @@ class NsoltFinalRotation2dLayerTestCase(unittest.TestCase):
         W0 = omgs(anglesW,mus)
         U0 = omgs(anglesU,mus)
         # dLdX = dZdX x dLdZ        
-        nDecsS = int(math.ceil(nDecs/2.))
-        nDecsA = int(math.floor(nDecs/2.))
-        Ys = dLdZ[:,:,:,:nDecsS].view(nSamples*nrows*ncols,nDecsS).T # ms x n
-        Ya = dLdZ[:,:,:,nDecsS:].view(nSamples*nrows*ncols,nDecsA).T # ma x n
+        ms = int(math.ceil(nDecs/2.))
+        ma = int(math.floor(nDecs/2.))
+        Ys = dLdZ[:,:,:,:ms].view(nSamples*nrows*ncols,ms).T # ms x n
+        Ya = dLdZ[:,:,:,ms:].view(nSamples*nrows*ncols,ma).T # ma x n
         Y = torch.cat(
-                ( W0[:,:nDecsS] @ Ys,           # ps x ms @ ms x n
-                  U0[:,:nDecsA] @ Ya ),dim=0)   # pa x ma @ ma x n
+                ( W0[:,:ms] @ Ys,           # ps x ms @ ms x n
+                  U0[:,:ma] @ Ya ),dim=0)   # pa x ma @ ma x n
         expctddLdX = Y.T.view(nSamples,nrows,ncols,nChsTotal) # n x (ps+pa) -> N x R x C X P
         # dLdWi = <dLdZ,(dVdWi)X>   
         expctddLdW_W = torch.zeros(nAnglesH,dtype=datatype)
@@ -347,10 +350,10 @@ class NsoltFinalRotation2dLayerTestCase(unittest.TestCase):
             dU0_T = omgs(anglesU,mus,index_pd_angle=iAngle).T
             Xs = X[:,:,:,:ps].view(-1,ps).T 
             Xa = X[:,:,:,ps:].view(-1,pa).T
-            Zs = dW0_T[:nDecsS,:] @ Xs # ms x n
-            Za = dU0_T[:nDecsA,:] @ Xa # ma x n 
-            expctddLdW_W[iAngle] = torch.sum(Ys[:nDecsS,:] * Zs)
-            expctddLdW_U[iAngle] = torch.sum(Ya[:nDecsA,:] * Za)
+            Zs = dW0_T[:ms,:] @ Xs # ms x n
+            Za = dU0_T[:ma,:] @ Xa # ma x n 
+            expctddLdW_W[iAngle] = torch.sum(Ys[:ms,:] * Zs)
+            expctddLdW_U[iAngle] = torch.sum(Ya[:ma,:] * Za)
 
         # Instantiation of target class
         layer = NsoltFinalRotation2dLayer(
@@ -415,13 +418,13 @@ class NsoltFinalRotation2dLayerTestCase(unittest.TestCase):
         W0 = omgs(anglesWNoDc,musW)
         U0 = omgs(anglesU,musU)
         # dLdX = dZdX x dLdZ        
-        nDecsS = int(math.ceil(nDecs/2.))
-        nDecsA = int(math.floor(nDecs/2.))
-        Ys = dLdZ[:,:,:,:nDecsS].view(nSamples*nrows*ncols,nDecsS).T # ms x n
-        Ya = dLdZ[:,:,:,nDecsS:].view(nSamples*nrows*ncols,nDecsA).T # ma x n
+        ms = int(math.ceil(nDecs/2.))
+        ma = int(math.floor(nDecs/2.))
+        Ys = dLdZ[:,:,:,:ms].view(nSamples*nrows*ncols,ms).T # ms x n
+        Ya = dLdZ[:,:,:,ms:].view(nSamples*nrows*ncols,ma).T # ma x n
         Y = torch.cat(
-                ( W0[:,:nDecsS] @ Ys,           # ps x ms @ ms x n
-                  U0[:,:nDecsA] @ Ya ),dim=0)   # pa x ma @ ma x n
+                ( W0[:,:ms] @ Ys,           # ps x ms @ ms x n
+                  U0[:,:ma] @ Ya ),dim=0)   # pa x ma @ ma x n
         expctddLdX = Y.T.view(nSamples,nrows,ncols,nChsTotal) # n x (ps+pa) -> N x R x C X P
         # dLdWi = <dLdZ,(dVdWi)X>   
         expctddLdW_W = torch.zeros(nAnglesH,dtype=datatype)
@@ -432,10 +435,10 @@ class NsoltFinalRotation2dLayerTestCase(unittest.TestCase):
             dU0_T = omgs(anglesU,musU,index_pd_angle=iAngle).T
             Xs = X[:,:,:,:ps].view(-1,ps).T 
             Xa = X[:,:,:,ps:].view(-1,pa).T
-            Zs = dW0_T[:nDecsS,:] @ Xs # ms x n
-            Za = dU0_T[:nDecsA,:] @ Xa # ma x n 
-            expctddLdW_W[iAngle] = torch.sum(Ys[:nDecsS,:] * Zs)
-            expctddLdW_U[iAngle] = torch.sum(Ya[:nDecsA,:] * Za)
+            Zs = dW0_T[:ms,:] @ Xs # ms x n
+            Za = dU0_T[:ma,:] @ Xa # ma x n 
+            expctddLdW_W[iAngle] = torch.sum(Ys[:ms,:] * Zs)
+            expctddLdW_U[iAngle] = torch.sum(Ya[:ma,:] * Za)
 
         # Instantiation of target class
         layer = NsoltFinalRotation2dLayer(
