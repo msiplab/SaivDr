@@ -35,8 +35,7 @@ class NsoltIntermediateRotation2dLayer(nn.Module):
         super(NsoltIntermediateRotation2dLayer, self).__init__()
         self.name = name
         self.number_of_channels = number_of_channels
-        self.mode = mode
-        self.description = self.mode \
+        self.description = mode \
                 + " NSOLT intermediate rotation " \
                 + "(ps,pa) = (" \
                 + str(self.number_of_channels[0]) + "," \
@@ -44,7 +43,7 @@ class NsoltIntermediateRotation2dLayer(nn.Module):
 
         # Instantiation of orthormal transforms
         ps,pa = self.number_of_channels                
-        self.orthTransUn = OrthonormalTransform(n=pa,mode='Analysis')
+        self.orthTransUn = OrthonormalTransform(n=pa,mode=mode)
         self.orthTransUn.angles = nn.init.zeros_(self.orthTransUn.angles)
 
     def forward(self,X):
@@ -64,7 +63,10 @@ class NsoltIntermediateRotation2dLayer(nn.Module):
         # Process
         Z = X.clone()
         Ya = X[:,:,:,ps:].view(-1,pa).T 
-        self.orthTransUn.mode = 'Synthesis'
         Za = self.orthTransUn.forward(Ya)
         Z[:,:,:,ps:] = Za.T.view(nSamples,nrows,ncols,pa)
         return Z
+
+    @property
+    def mode(self):
+        return self.orthTransUn.mode
