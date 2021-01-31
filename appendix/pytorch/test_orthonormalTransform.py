@@ -121,7 +121,7 @@ class OrthonormalTransformTestCase(unittest.TestCase):
         list(itertools.product(datatype,ncols,mode))
     )
     def testSetAngles(self,datatype,ncols,mode):
-        rtol,atol = 1e-5,1e-8
+        rtol,atol = 1e-4,1e-7
     
         # Expected values
         X = torch.randn(2,ncols,dtype=datatype)  
