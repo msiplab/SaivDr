@@ -43,8 +43,8 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
         # Expctd values
         expctdName = 'Qn'
         expctdDirection = 'Right'
-        expctdTargetChannels = 'Lower'
-        expctdDescription = "Right shift Lower Coefs. " \
+        expctdTargetChannels = 'Symmetric'
+        expctdDescription = "Right shift the symmetric channel Coefs. " \
             + "(ps,pa) = (" + str(nchs[0]) + "," + str(nchs[1]) + ")"
         
         # Instantiation of target class
@@ -78,7 +78,7 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
         # Parameters
         nSamples = 8
         nChsTotal = sum(nchs)
-        target = 'Lower'
+        target = 'Symmetric'
         # nSamples x nRows x nCols x nChsTotal  
         X = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype,requires_grad=True)
         
@@ -137,7 +137,7 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
         # Parameters
         nSamples = 8
         nChsTotal = sum(nchs)
-        target = 'Upper'
+        target = 'Antisymmetric'
         # nSamples x nRows x nCols x nChsTotal 
         X = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype,requires_grad=True)
 
@@ -196,7 +196,7 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
         # Parameters
         nSamples = 8
         nChsTotal = sum(nchs)
-        target = 'Lower'
+        target = 'Symmetric'
 
         # nSamples x nRows x nCols x nChsTotal
         X = torch.zeros(nSamples,nrows,ncols,nChsTotal,dtype=datatype,requires_grad=True)        
@@ -260,7 +260,7 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
         # Parameters
         nSamples = 8
         nChsTotal = sum(nchs)
-        target = 'Upper'
+        target = 'Antisymmetric'
         
         # nSamples x nRows x nCols x nChsTotal
         X = torch.zeros(nSamples,nrows,ncols,nChsTotal,dtype=datatype,requires_grad=True)                

@@ -35,11 +35,11 @@ class NsoltAtomExtension2dLayer(nn.Module):
         self.name = name
 
         # Target channels
-        if target_channels in { 'Lower', 'Upper' }:
+        if target_channels in { 'Symmetric', 'Antisymmetric' }:
             self.target_channels = target_channels
         else:
             raise InvalidTargetChannels(
-                '%s : Target should be either of Lower or Upper'\
+                '%s : Target should be either of Symmetric or Antisymmetric'\
                 % self.direction
             )
 
@@ -54,9 +54,9 @@ class NsoltAtomExtension2dLayer(nn.Module):
 
         # Description
         self.description = direction \
-            + " shift " \
-            + target_channels \
-            + " Coefs. " \
+            + " shift the " \
+            + target_channels.lower() \
+            + " channel Coefs. " \
             + "(ps,pa) = (" \
             + str(number_of_channels[0]) + "," \
             + str(number_of_channels[1]) + ")"
@@ -67,7 +67,7 @@ class NsoltAtomExtension2dLayer(nn.Module):
         nchs = torch.tensor(self.number_of_channels,dtype=torch.int)
 
         # Target channels
-        if self.target_channels == 'Lower':
+        if self.target_channels == 'Symmetric':
             target = torch.tensor((0,))
         else:
             target = torch.tensor((1,))
