@@ -7,9 +7,9 @@ classdef nsoltAtomExtension2dLayerTestCase < matlab.unittest.TestCase
     %   コンポーネント別に出力(nComponents=1のみサポート):
     %      nChsTotal x nRows x nCols x nSamples
     %
-    % Requirements: MATLAB R2020a
+    % Requirements: MATLAB R2020b
     %
-    % Copyright (c) 2020, Shogo MURAMATSU
+    % Copyright (c) 2020-2021, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -26,6 +26,7 @@ classdef nsoltAtomExtension2dLayerTestCase < matlab.unittest.TestCase
         nrows = struct('small', 4,'medium', 8, 'large', 16);
         ncols = struct('small', 4,'medium', 8, 'large', 16);
         dir = { 'Right', 'Left', 'Up', 'Down' };
+        target = { 'Sum', 'Difference' }
     end
     
     methods (TestClassTeardown)
@@ -34,21 +35,25 @@ classdef nsoltAtomExtension2dLayerTestCase < matlab.unittest.TestCase
             layer = nsoltAtomExtension2dLayer(...
                 'NumberOfChannels',[3 3],...
                 'Direction','Right',...
-                'TargetChannels','Lower');
+                'TargetChannels','Difference');
             fprintf("\n --- Check layer for 2-D images ---\n");
-            checkLayer(layer,[6 8 8],'ObservationDimension',4)
+            checkLayer(layer,[6 8 8],...
+                'ObservationDimension',4,...
+                'CheckCodegenCompatibility',true)
         end
     end
     
     methods (Test)
         
-        function testConstructor(testCase, nchs)
+        function testConstructor(testCase, nchs, target)
             
             % Expected values
             expctdName = 'Qn';
             expctdDirection = 'Right';
-            expctdTargetChannels = 'Lower';
-            expctdDescription = "Right shift Lower Coefs. " ...
+            expctdTargetChannels = target;
+            expctdDescription = "Right shift the " ...
+                + lower(target) ...
+                + "-channel Coefs. " ...
                 + "(ps,pa) = (" ...
                 + nchs(1) + "," + nchs(2) + ")";
             
@@ -73,7 +78,7 @@ classdef nsoltAtomExtension2dLayerTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(actualDescription,expctdDescription);
         end
         
-        function testPredictGrayscaleShiftLowerCoefs(testCase, ...
+        function testPredictGrayscaleShiftDifferenceCoefs(testCase, ...
                 nchs, nrows, ncols, dir, datatype)
             
             import matlab.unittest.constraints.IsEqualTo
@@ -83,7 +88,7 @@ classdef nsoltAtomExtension2dLayerTestCase < matlab.unittest.TestCase
             % Parameters
             nSamples = 8;
             nChsTotal = sum(nchs);
-            target = 'Lower';
+            target_ = 'Difference';
             % nChsTotal x nRows x nCols x nSamples
             %X = randn(nrows,ncols,nChsTotal,nSamples,datatype);
             X = randn(nChsTotal,nrows,ncols,nSamples,datatype);
@@ -103,10 +108,9 @@ classdef nsoltAtomExtension2dLayerTestCase < matlab.unittest.TestCase
             % nRows x nCols x nChsTotal x nSamples
             ps = nchs(1);
             pa = nchs(2);
-            Y = X; %permute(X,[3 1 2 4]); % [ch ver hor smpl]
             % Block butterfly
-            Ys = Y(1:ps,:,:,:);
-            Ya = Y(ps+1:ps+pa,:,:,:);
+            Ys = X(1:ps,:,:,:);
+            Ya = X(ps+1:ps+pa,:,:,:);
             Y =  [ Ys+Ya ; Ys-Ya ]/sqrt(2);
             % Block circular shift
             Y(ps+1:ps+pa,:,:,:) = circshift(Y(ps+1:ps+pa,:,:,:),shift);
@@ -123,7 +127,7 @@ classdef nsoltAtomExtension2dLayerTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',nchs,...
                 'Name','Qn~',...
                 'Direction',dir,...
-                'TargetChannels',target);
+                'TargetChannels',target_);
             
             % Actual values
             actualZ = layer.predict(X);
@@ -135,7 +139,7 @@ classdef nsoltAtomExtension2dLayerTestCase < matlab.unittest.TestCase
             
         end
         
-        function testPredictGrayscaleShiftUpperCoefs(testCase, ...
+        function testPredictGrayscaleShiftSumCoefs(testCase, ...
                 nchs, nrows, ncols, dir, datatype)
             
             import matlab.unittest.constraints.IsEqualTo
@@ -145,7 +149,7 @@ classdef nsoltAtomExtension2dLayerTestCase < matlab.unittest.TestCase
             % Parameters
             nSamples = 8;
             nChsTotal = sum(nchs);
-            target = 'Upper';
+            target_ = 'Sum';
             % nChsTotal x nRows x nCols x nSamples
             %X = randn(nrows,ncols,nChsTotal,nSamples,datatype);
             X = randn(nChsTotal,nrows,ncols,nSamples,datatype);
@@ -165,10 +169,9 @@ classdef nsoltAtomExtension2dLayerTestCase < matlab.unittest.TestCase
             % nChsTotal x nRows x nCols x nSamples
             ps = nchs(1);
             pa = nchs(2);
-            Y = X; %permute(X,[3 1 2 4]); % [ch ver hor smpl]
             % Block butterfly
-            Ys = Y(1:ps,:,:,:);
-            Ya = Y(ps+1:ps+pa,:,:,:);
+            Ys = X(1:ps,:,:,:);
+            Ya = X(ps+1:ps+pa,:,:,:);
             Y =  [ Ys+Ya ; Ys-Ya ]/sqrt(2);
             % Block circular shift
             Y(1:ps,:,:,:) = circshift(Y(1:ps,:,:,:),shift);
@@ -185,7 +188,7 @@ classdef nsoltAtomExtension2dLayerTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',nchs,...
                 'Name','Qn~',...
                 'Direction',dir,...
-                'TargetChannels',target);
+                'TargetChannels',target_);
             
             % Actual values
             actualZ = layer.predict(X);
@@ -197,7 +200,7 @@ classdef nsoltAtomExtension2dLayerTestCase < matlab.unittest.TestCase
             
         end
         
-        function testBackwardGrayscaleShiftLowerCoefs(testCase, ...
+        function testBackwardGrayscaleShiftDifferenceCoefs(testCase, ...
                 nchs, nrows, ncols, dir, datatype)
             
             import matlab.unittest.constraints.IsEqualTo
@@ -207,7 +210,7 @@ classdef nsoltAtomExtension2dLayerTestCase < matlab.unittest.TestCase
             % Parameters
             nSamples = 8;
             nChsTotal = sum(nchs);
-            target = 'Lower';
+            target_ = 'Difference';
             % nChsTotal x nRows x nCols x nSamples
             %dLdZ = randn(nrows,ncols,nChsTotal,nSamples,datatype);
             dLdZ = randn(nChsTotal,nrows,ncols,nSamples,datatype);
@@ -247,7 +250,7 @@ classdef nsoltAtomExtension2dLayerTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',nchs,...
                 'Name','Qn',...
                 'Direction',dir,...
-                'TargetChannels',target);
+                'TargetChannels',target_);
             
             % Actual values
             actualdLdX = layer.backward([],[],dLdZ,[]);
@@ -259,7 +262,7 @@ classdef nsoltAtomExtension2dLayerTestCase < matlab.unittest.TestCase
             
         end
         
-        function testBackwardGrayscaleShiftUpperCoefs(testCase, ...
+        function testBackwardGrayscaleShiftSumCoefs(testCase, ...
                 nchs, nrows, ncols, dir, datatype)
             
             import matlab.unittest.constraints.IsEqualTo
@@ -269,7 +272,7 @@ classdef nsoltAtomExtension2dLayerTestCase < matlab.unittest.TestCase
             % Parameters
             nSamples = 8;
             nChsTotal = sum(nchs);
-            target = 'Upper';
+            target_ = 'Sum';
             % nChsTotal x nRows x nCols x nSamples
             %dLdZ = randn(nrows,ncols,nChsTotal,nSamples,datatype);
             dLdZ = randn(nChsTotal,nrows,ncols,nSamples,datatype);
@@ -309,7 +312,7 @@ classdef nsoltAtomExtension2dLayerTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',nchs,...
                 'Name','Qn',...
                 'Direction',dir,...
-                'TargetChannels',target);
+                'TargetChannels',target_);
             
             % Actual values
             actualdLdX = layer.backward([],[],dLdZ,[]);
