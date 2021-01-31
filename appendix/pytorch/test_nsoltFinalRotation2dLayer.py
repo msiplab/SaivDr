@@ -236,12 +236,11 @@ class NsoltFinalRotation2dLayerTestCase(unittest.TestCase):
         dLdZ = torch.randn(nSamples,nrows,ncols,nDecs,dtype=datatype)
 
         # Expected values
-        ps, pa = nchs
+        ps,pa = nchs
         W0 = omgs(anglesW,mus)
         U0 = omgs(anglesU,mus)
         # dLdX = dZdX x dLdZ        
-        ms = int(math.ceil(nDecs/2.))
-        ma = int(math.floor(nDecs/2.))
+        ms,ma = int(math.ceil(nDecs/2.)),int(math.floor(nDecs/2.))
         Ys = dLdZ[:,:,:,:ms].view(nSamples*nrows*ncols,ms).T # ms x n
         Ya = dLdZ[:,:,:,ms:].view(nSamples*nrows*ncols,ma).T # ma x n
         Y = torch.cat(
