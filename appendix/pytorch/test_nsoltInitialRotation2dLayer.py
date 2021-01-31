@@ -449,9 +449,93 @@ class NsoltInitialRotation2dLayerTestCase(unittest.TestCase):
         self.assertTrue(torch.allclose(actualdLdW_U,expctddLdW_U,rtol=rtol,atol=atol))
         self.assertTrue(Z.requires_grad)
 
-    """
-    TODO: Grad check
-    """
+    @parameterized.expand(
+        list(itertools.product(nchs,stride)) 
+    )
+    def testGradCheck(self,nchs,stride):
+        datatype = torch.double
 
+        # Configuration
+        ps, pa = nchs
+        nrows = 2
+        ncols = 3
+        nSamples = 2
+        nDecs = stride[0]*stride[1] # math.prod(stride)
+        nChsTotal = sum(nchs)
+        nAnglesW = int((ps-1)*ps/2)
+        anglesW = torch.randn(nAnglesW,dtype=datatype) 
+        musW = (-1)**torch.randint(high=2,size=(ps,))                
+        nAnglesU = int((pa-1)*pa/2)        
+        anglesU = torch.randn(nAnglesU,dtype=datatype)        
+        musU = (-1)**torch.randint(high=2,size=(pa,))        
+        
+        # nSamples x nRows x nCols x nDecs
+        X = torch.randn(nSamples,nrows,ncols,nDecs,dtype=datatype,requires_grad=True)
+        dLdZ = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype)
+
+        # Instantiation of target class
+        layer = NsoltInitialRotation2dLayer(
+                number_of_channels=nchs,
+                decimation_factor=stride,
+                no_dc_leakage=False,
+                name='V0'
+            )
+        layer.orthTransW0.angles.data = anglesW
+        layer.orthTransW0.mus = musW
+        layer.orthTransU0.angles.data = anglesU
+        layer.orthTransU0.mus = musU
+
+        # Forward
+        torch.autograd.set_detect_anomaly(True)                
+        Z = layer.forward(X)
+        layer.zero_grad()
+
+        # Evaluation        
+        self.assertTrue(torch.autograd.gradcheck(layer,(X,)))
+
+    @parameterized.expand(
+        list(itertools.product(nchs,stride)) 
+    )
+    def testGradCheckNoDcLeakage(self,nchs,stride):
+        datatype = torch.double
+
+        # Configuration
+        ps, pa = nchs
+        nrows = 2
+        ncols = 3
+        nSamples = 2
+        nDecs = stride[0]*stride[1] # math.prod(stride)
+        nChsTotal = sum(nchs)
+        nAnglesW = int((ps-1)*ps/2)
+        anglesW = torch.randn(nAnglesW,dtype=datatype) 
+        musW = (-1)**torch.randint(high=2,size=(ps,))                
+        nAnglesU = int((pa-1)*pa/2)        
+        anglesU = torch.randn(nAnglesU,dtype=datatype)        
+        musU = (-1)**torch.randint(high=2,size=(pa,))        
+        
+        # nSamples x nRows x nCols x nDecs
+        X = torch.randn(nSamples,nrows,ncols,nDecs,dtype=datatype,requires_grad=True)
+        dLdZ = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype)
+
+        # Instantiation of target class
+        layer = NsoltInitialRotation2dLayer(
+                number_of_channels=nchs,
+                decimation_factor=stride,
+                no_dc_leakage=True,
+                name='V0'
+            )
+        layer.orthTransW0.angles.data = anglesW
+        layer.orthTransW0.mus = musW
+        layer.orthTransU0.angles.data = anglesU
+        layer.orthTransU0.mus = musU
+
+        # Forward
+        torch.autograd.set_detect_anomaly(True)                
+        Z = layer.forward(X)
+        layer.zero_grad()
+
+        # Evaluation        
+        self.assertTrue(torch.autograd.gradcheck(layer,(X,)))
+    
 if __name__ == '__main__':
     unittest.main()
