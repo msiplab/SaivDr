@@ -52,14 +52,6 @@ class NsoltIntermediateRotation2dLayer(nn.Module):
         ncols = X.size(dim=2)
         ps,pa = self.number_of_channels
 
-        # No DC leackage
-        """
-        if self.no_dc_leakage:
-            self.orthTransW0T.mus[0] = 1
-            self.orthTransW0T.angles.data[:ps-1] = \
-                torch.zeros(ps-1,dtype=self.orthTransW0T.angles.data.dtype)
-        """
-
         # Process
         Z = X.clone()
         Ya = X[:,:,:,ps:].view(-1,pa).T 
