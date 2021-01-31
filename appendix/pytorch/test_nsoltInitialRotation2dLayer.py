@@ -162,74 +162,62 @@ class NsoltInitialRotation2dLayerTestCase(unittest.TestCase):
         self.assertTrue(torch.allclose(actualZ,expctdZ,rtol=rtol,atol=atol))
         self.assertFalse(actualZ.requires_grad)
 
-    """
-        function testPredictGrayscaleWithRandomAnglesNoDcLeackage(testCase, ...
-                nchs, stride, nrows, ncols, mus,datatype)
-            
-            import matlab.unittest.constraints.IsEqualTo
-            import matlab.unittest.constraints.AbsoluteTolerance
-            tolObj = AbsoluteTolerance(1e-6,single(1e-6));
-            import saivdr.dictionary.utility.*
-            genW = OrthonormalMatrixGenerationSystem();
-            genU = OrthonormalMatrixGenerationSystem();
-            
-            % Parameters
-            nSamples = 8;
-            nDecs = prod(stride);
-            nChsTotal = sum(nchs);
-            % nDecs x nRows x nCols x nDecs x nSamples
-            %X = randn(nrows,ncols,nDecs,nSamples,datatype);
-            X = randn(nDecs,nrows,ncols,nSamples,datatype);
-            angles = randn((nChsTotal-2)*nChsTotal/4,1);
-            
-            % Expected values
-            % nChs x nRows x nCols x nSamples
-            ps = nchs(1);
-            pa = nchs(2);
-            anglesNoDc = angles;
-            anglesNoDc(1:ps-1,1)=zeros(ps-1,1);
-            musW = mus*ones(ps,1);
-            musW(1,1) = 1;
-            musU = mus*ones(pa,1);
-            W0 = genW.step(anglesNoDc(1:length(angles)/2),musW);
-            U0 = genU.step(anglesNoDc(length(angles)/2+1:end),musU);
-            %expctdZ = zeros(nrows,ncols,nChsTotal,nSamples,datatype);
-            expctdZ = zeros(nChsTotal,nrows,ncols,nSamples,datatype);
-            Y  = zeros(nChsTotal,nrows,ncols,datatype);
-            for iSample=1:nSamples
-                % Perumation in each block
-                Ai = X(:,:,:,iSample); %permute(X(:,:,:,iSample),[3 1 2]);
-                Yi = reshape(Ai,nDecs,nrows,ncols);
-                %
-                Ys = Yi(1:ceil(nDecs/2),:);
-                Ya = Yi(ceil(nDecs/2)+1:end,:);
-                Y(1:ps,:,:) = ...
-                    reshape(W0(:,1:ceil(nDecs/2))*Ys,ps,nrows,ncols);
-                Y(ps+1:ps+pa,:,:) = ...
-                    reshape(U0(:,1:floor(nDecs/2))*Ya,pa,nrows,ncols);
-                expctdZ(:,:,:,iSample) = Y; %ipermute(Y,[3 1 2]);
-            end
-            
-            % Instantiation of target class
-            import saivdr.dcnn.*
-            layer = nsoltInitialRotation2dLayer(...
-                'NumberOfChannels',nchs,...
-                'DecimationFactor',stride,...
-                'NoDcLeakage',true,...
-                'Name','V0');
-            
-            % Actual values
-            layer.Mus = mus;
-            layer.Angles = angles;
-            actualZ = layer.predict(X);
-            
-            % Evaluation
-            testCase.verifyInstanceOf(actualZ,datatype);
-            testCase.verifyThat(actualZ,...
-                IsEqualTo(expctdZ,'Within',tolObj));
-            
-        end
+    @parameterized.expand(
+        list(itertools.product(nchs,stride,nrows,ncols,datatype,mus))
+    )
+    def testPredictGrayscaleWithRandomAnglesNoDcLeackage(self,
+        nchs, stride, nrows, ncols, datatype,mus):
+        rtol,atol=1e-5,1e-8
+        gen = OrthonormalMatrixGenerationSystem(dtype=datatype)
         
+        # Parameters
+        nSamples = 8
+        nDecs = stride[0]*stride[1] # math.prod(stride)
+        nChsTotal = sum(nchs)
+        # nSamples x nRows x nCols x nDecs
+        X = torch.randn(nSamples,nrows,ncols,nDecs,dtype=datatype)
+        angles = torch.randn(int((nChsTotal-2)*nChsTotal/4),dtype=datatype)
+
+        # Expected values
+        # nSamples x nRows x nCols x nChs
+        ps,pa = nchs
+        nAngsW = int(len(angles)/2)
+        angsW,angsU = angles[:nAngsW],angles[nAngsW:]
+        angsWNoDcLeak = angsW.clone()
+        angsWNoDcLeak[:ps-1] = torch.zeros(ps-1,dtype=angles.dtype)
+        musW,musU = mus*torch.ones(ps,dtype=datatype),mus*torch.ones(pa,dtype=datatype)
+        musW[0] = 1
+        W0,U0 = gen(angsWNoDcLeak,musW),gen(angsU,musU)
+        ms,ma = int(math.ceil(nDecs/2.)), int(math.floor(nDecs/2.))                
+        Zsa = torch.zeros(nChsTotal,nrows*ncols*nSamples,dtype=datatype)
+        Ys = X[:,:,:,:ms].view(-1,ms).T 
+        Zsa[:ps,:] = W0[:,:ms] @ Ys
+        if ma > 0:
+            Ya = X[:,:,:,ms:].view(-1,ma).T 
+            Zsa[ps:,:] = U0[:,:ma] @ Ya
+        expctdZ = Zsa.T.view(nSamples,nrows,ncols,nChsTotal)
+
+        # Instantiation of target class
+        layer = NsoltInitialRotation2dLayer(
+            number_of_channels=nchs,
+            decimation_factor=stride,
+            no_dc_leakage=True,
+            name='V0')
+        layer.orthTransW0.angles.data = angsW
+        layer.orthTransW0.mus = musW
+        layer.orthTransU0.angles.data = angsU
+        layer.orthTransU0.mus = musU
+
+        # Actual values
+        with torch.no_grad():
+            actualZ = layer.forward(X)
+        
+        # Evaluation
+        self.assertEqual(actualZ.dtype,datatype)
+        self.assertTrue(torch.allclose(actualZ,expctdZ,rtol=rtol,atol=atol))
+        self.assertFalse(actualZ.requires_grad)
+
+    """        
         function testBackwardGrayscale(testCase, ...
                 nchs, stride, nrows, ncols, datatype)
             

@@ -64,12 +64,10 @@ class NsoltInitialRotation2dLayer(nn.Module):
         nDecs = stride[0]*stride[1] # math.prod(stride)
 
         # No DC leackage
-        """
         if self.no_dc_leakage:
             self.orthTransW0.mus[0] = 1
             self.orthTransW0.angles.data[:ps-1] = \
-                torch.zeros(ps-1,dtype=self.orthTransW0T.angles.data.dtype)
-        """
+                torch.zeros(ps-1,dtype=self.orthTransW0.angles.data.dtype)
 
         # Process
         ms = int(math.ceil(nDecs/2.))
