@@ -83,7 +83,7 @@ class NsoltFinalRotation2dLayerTestCase(unittest.TestCase):
         
         # Expected values        
         # nSamples x nRows x nCols x nDecs
-        ps, pa = nchs
+        ps,pa = nchs
         W0T = torch.eye(ps,dtype=datatype)
         U0T = torch.eye(pa,dtype=datatype)
         Ys = X[:,:,:,:ps].view(-1,ps).T
