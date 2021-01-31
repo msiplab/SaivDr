@@ -68,52 +68,44 @@ class NsoltIntermediateRotation2dLayerTestCase(unittest.TestCase):
         self.assertEqual(actualMode,expctdMode)
         self.assertEqual(actualDescription,expctdDescription)
 
-"""
-    methods (Test)
-        
-        
-        function testPredictGrayscale(testCase, ...
-                nchs, nrows, ncols, mus, datatype)
-            
-            import matlab.unittest.constraints.IsEqualTo
-            import matlab.unittest.constraints.AbsoluteTolerance
-            tolObj = AbsoluteTolerance(1e-6,single(1e-6));
-            
-            % Parameters
-            nSamples = 8;
-            nChsTotal = sum(nchs);
-            % nChsTotal x nRows x nCols xnSamples
-            %X = randn(nrows,ncols,nChsTotal,nSamples,datatype);
-            X = randn(nChsTotal,nrows,ncols,nSamples,datatype);
-            
-            % Expected values
-            % nChsTotal x nRows x nCols x nSamples
-            ps = nchs(1);
-            pa = nchs(2);
-            UnT = mus*eye(pa,datatype);
-            Y = X; %permute(X,[3 1 2 4]);
-            Ya = reshape(Y(ps+1:ps+pa,:,:,:),pa,nrows*ncols*nSamples);
-            Za = UnT*Ya;
-            Y(ps+1:ps+pa,:,:,:) = reshape(Za,pa,nrows,ncols,nSamples);
-            expctdZ = Y; %ipermute(Y,[3 1 2 4]);
-            
-            % Instantiation of target class
-            import saivdr.dcnn.*
-            layer = nsoltIntermediateRotation2dLayer(...
-                'NumberOfChannels',nchs,...
-                'Name','Vn~');
-            
-            % Actual values
-            layer.Mus = mus;
-            actualZ = layer.predict(X);
-            
-            % Evaluation
-            testCase.verifyInstanceOf(actualZ,datatype);
-            testCase.verifyThat(actualZ,...
-                IsEqualTo(expctdZ,'Within',tolObj));
-            
-        end
-        
+    @parameterized.expand(
+        list(itertools.product(nchs,stride,nrows,ncols,mus,datatype))
+    )
+    def testPredictGrayscale(self,
+        nchs, stride, nrows, ncols, mus, datatype):
+        rtol,atol=1e-5,1e-8
+
+        # Parameters
+        nSamples = 8
+        nChsTotal = sum(nchs)
+        # nSamples x nRows x nCols x nChsTotal
+        X = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype,requires_grad=True)
+
+        # Expected values
+        # nSamples x nRows x nCols x nChsTotal
+        ps,pa = nchs
+        UnT = mus*torch.eye(pa,dtype=datatype)
+        expctdZ = X.clone()
+        Ya = X[:,:,:,ps:].view(-1,pa).T
+        Za = UnT @ Ya
+        expctdZ[:,:,:,ps:] = Za.T.view(nSamples,nrows,ncols,pa)
+
+        # Instantiation of target class
+        layer = NsoltIntermediateRotation2dLayer(
+            number_of_channels=nchs,
+            name='Vn~')
+        layer.orthTransUn.mus = mus
+
+        # Actual values
+        with torch.no_grad():
+            actualZ = layer.forward(X)
+
+        # Evaluation
+        self.assertEqual(actualZ.dtype,datatype)
+        self.assertTrue(torch.allclose(actualZ,expctdZ,rtol=rtol,atol=atol))
+        self.assertFalse(actualZ.requires_grad)
+
+    """        
         function testPredictGrayscaleWithRandomAngles(testCase, ...
                 nchs, nrows, ncols, mus, datatype)
             
