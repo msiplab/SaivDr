@@ -88,8 +88,7 @@ class NsoltFinalRotation2dLayerTestCase(unittest.TestCase):
         U0T = torch.eye(pa,dtype=datatype)
         Ys = X[:,:,:,:ps].view(-1,ps).T
         Ya = X[:,:,:,ps:].view(-1,pa).T
-        ms = int(math.ceil(nDecs/2.))        
-        ma = int(math.floor(nDecs/2.))        
+        ms,ma = int(math.ceil(nDecs/2.)),int(math.floor(nDecs/2.))        
         Zsa = torch.cat(
                 ( W0T[:ms,:] @ Ys, 
                   U0T[:ma,:] @ Ya ),dim=0)
@@ -135,8 +134,7 @@ class NsoltFinalRotation2dLayerTestCase(unittest.TestCase):
         W0T,U0T = gen(angsW).T,gen(angsU).T
         Ys = X[:,:,:,:ps].view(-1,ps).T
         Ya = X[:,:,:,ps:].view(-1,pa).T
-        ms = int(math.ceil(nDecs/2.))
-        ma = int(math.floor(nDecs/2.))
+        ms,ma = int(math.ceil(nDecs/2.)),int(math.floor(nDecs/2.))
         Zsa = torch.cat(
                 ( W0T[:ms,:] @ Ys, 
                   U0T[:ma,:] @ Ya ),dim=0)
