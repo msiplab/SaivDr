@@ -98,8 +98,7 @@ class NsoltFinalRotation2dLayerTestCase(unittest.TestCase):
         layer = NsoltFinalRotation2dLayer(
                 number_of_channels=nchs,
                 decimation_factor=stride,
-                name='V0~'
-            )
+                name='V0~')
 
         # Actual values
         with torch.no_grad():
@@ -144,8 +143,7 @@ class NsoltFinalRotation2dLayerTestCase(unittest.TestCase):
         layer = NsoltFinalRotation2dLayer(
                 number_of_channels=nchs,
                 decimation_factor=stride,
-                name='V0~'
-            )
+                name='V0~')
         layer.orthTransW0T.angles.data = angsW
         layer.orthTransW0T.mus = 1
         layer.orthTransU0T.angles.data = angsU
@@ -197,8 +195,7 @@ class NsoltFinalRotation2dLayerTestCase(unittest.TestCase):
                 number_of_channels=nchs,
                 decimation_factor=stride,
                 no_dc_leakage=True,
-                name='V0~'
-            )
+                name='V0~')
         layer.orthTransW0T.angles.data = angsW
         layer.orthTransW0T.mus = musW
         layer.orthTransU0T.angles.data = angsU
@@ -263,8 +260,7 @@ class NsoltFinalRotation2dLayerTestCase(unittest.TestCase):
         layer = NsoltFinalRotation2dLayer(
                 number_of_channels=nchs,
                 decimation_factor=stride,
-                name='V0~'
-            )
+                name='V0~')
         layer.orthTransW0T.angles.data = anglesW
         layer.orthTransW0T.mus = mus
         layer.orthTransU0T.angles.data = anglesU
@@ -308,12 +304,11 @@ class NsoltFinalRotation2dLayerTestCase(unittest.TestCase):
         dLdZ = torch.randn(nSamples,nrows,ncols,nDecs,dtype=datatype)
 
         # Expected values
-        ps, pa = nchs
+        ps,pa = nchs
         W0 = omgs(anglesW,mus)
         U0 = omgs(anglesU,mus)
         # dLdX = dZdX x dLdZ        
-        ms = int(math.ceil(nDecs/2.))
-        ma = int(math.floor(nDecs/2.))
+        ms,ma = int(math.ceil(nDecs/2.)),int(math.floor(nDecs/2.))
         Ys = dLdZ[:,:,:,:ms].view(nSamples*nrows*ncols,ms).T # ms x n
         Ya = dLdZ[:,:,:,ms:].view(nSamples*nrows*ncols,ma).T # ma x n
         Y = torch.cat(
@@ -338,8 +333,7 @@ class NsoltFinalRotation2dLayerTestCase(unittest.TestCase):
         layer = NsoltFinalRotation2dLayer(
                 number_of_channels=nchs,
                 decimation_factor=stride,
-                name='V0~'
-            )
+                name='V0~')
         layer.orthTransW0T.angles.data = anglesW
         layer.orthTransW0T.mus = mus
         layer.orthTransU0T.angles.data = anglesU
@@ -385,15 +379,14 @@ class NsoltFinalRotation2dLayerTestCase(unittest.TestCase):
         # Expected values
         ps, pa = nchs
         # dLdX = dZdX x dLdZ                
-        anglesWNoDc = anglesW.clone()
-        anglesWNoDc[:ps-1]=torch.zeros(ps-1,dtype=datatype)
+        anglesWNoDcLeak = anglesW.clone()
+        anglesWNoDcLeak[:ps-1] = torch.zeros(ps-1,dtype=datatype)
         musW,musU = mus*torch.ones(ps,dtype=datatype),mus*torch.ones(pa,dtype=datatype)
         musW[0] = 1
-        W0 = omgs(anglesWNoDc,musW)
+        W0 = omgs(anglesWNoDcLeak,musW)
         U0 = omgs(anglesU,musU)
         # dLdX = dZdX x dLdZ        
-        ms = int(math.ceil(nDecs/2.))
-        ma = int(math.floor(nDecs/2.))
+        ms,ma = int(math.ceil(nDecs/2.)),int(math.floor(nDecs/2.))
         Ys = dLdZ[:,:,:,:ms].view(nSamples*nrows*ncols,ms).T # ms x n
         Ya = dLdZ[:,:,:,ms:].view(nSamples*nrows*ncols,ma).T # ma x n
         Y = torch.cat(
@@ -405,7 +398,7 @@ class NsoltFinalRotation2dLayerTestCase(unittest.TestCase):
         expctddLdW_U = torch.zeros(nAnglesH,dtype=datatype)
         omgs.partial_difference = True
         for iAngle in range(nAnglesH):
-            dW0_T = omgs(anglesWNoDc,musW,index_pd_angle=iAngle).T
+            dW0_T = omgs(anglesWNoDcLeak,musW,index_pd_angle=iAngle).T
             dU0_T = omgs(anglesU,musU,index_pd_angle=iAngle).T
             Xs = X[:,:,:,:ps].view(-1,ps).T 
             Xa = X[:,:,:,ps:].view(-1,pa).T
