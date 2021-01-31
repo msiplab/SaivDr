@@ -120,10 +120,6 @@ class NsoltFinalRotation2dLayerTestCase(unittest.TestCase):
         gen = OrthonormalMatrixGenerationSystem(dtype=datatype)
 
         # Parameters
-        #nchs = [2,2]
-        #stride = [2,2]
-        #nrows = 4
-        #ncols = 6
         nSamples = 8
         nDecs = stride[0]*stride[1] # math.prod(stride)
         nChsTotal = sum(nchs)
@@ -137,9 +133,8 @@ class NsoltFinalRotation2dLayerTestCase(unittest.TestCase):
         nAngsW = int(len(angles)/2) 
         angsW,angsU = angles[:nAngsW],angles[nAngsW:]
         W0T,U0T = gen(angsW).T,gen(angsU).T
-        Y = X
-        Ys = Y[:,:,:,:ps].view(-1,ps).T
-        Ya = Y[:,:,:,ps:].view(-1,pa).T
+        Ys = X[:,:,:,:ps].view(-1,ps).T
+        Ya = X[:,:,:,ps:].view(-1,pa).T
         ms = int(math.ceil(nDecs/2.))
         ma = int(math.floor(nDecs/2.))
         Zsa = torch.cat(
@@ -168,18 +163,14 @@ class NsoltFinalRotation2dLayerTestCase(unittest.TestCase):
         self.assertFalse(actualZ.requires_grad)
 
     @parameterized.expand(
-        list(itertools.product(datatype,nchs,stride,nrows,ncols))
+        list(itertools.product(datatype,nchs,stride,nrows,ncols,mus))
     )
     def testPredictGrayscaleWithRandomAnglesNoDcLeackage(self,
-        datatype,nchs,stride,nrows,ncols):
+        datatype,nchs,stride,nrows,ncols,mus):
         rtol,atol=1e-4,1e-7
         gen = OrthonormalMatrixGenerationSystem(dtype=datatype)
 
         # Parameters
-        #nchs = [4,4]
-        #stride = [2,2]
-        #nrows = 4
-        #ncols = 6
         nSamples = 8
         nDecs = stride[0]*stride[1] # math.prod(stride)
         nChsTotal = sum(nchs)
@@ -191,13 +182,13 @@ class NsoltFinalRotation2dLayerTestCase(unittest.TestCase):
         ps, pa = nchs
         nAngsW = int(len(angles)/2) 
         angsW,angsU = angles[:nAngsW],angles[nAngsW:]
-        angsWNoDc = angsW.clone()
-        angsWNoDc[:ps-1]=torch.zeros(ps-1,dtype=angles.dtype)
-        musW,musU = torch.ones(ps,dtype=datatype),torch.ones(pa,dtype=datatype)
-        W0T,U0T = gen(angsWNoDc,musW).T,gen(angsU,musU).T        
-        Y = X
-        Ys = Y[:,:,:,:ps].view(-1,ps).T
-        Ya = Y[:,:,:,ps:].view(-1,pa).T
+        angsWNoDcLeak = angsW.clone()
+        angsWNoDcLeak[:ps-1] = torch.zeros(ps-1,dtype=angles.dtype)
+        musW,musU = mus*torch.ones(ps,dtype=datatype),mus*torch.ones(pa,dtype=datatype)
+        musW[0] = 1
+        W0T,U0T = gen(angsWNoDcLeak,musW).T,gen(angsU,musU).T        
+        Ys = X[:,:,:,:ps].view(-1,ps).T
+        Ya = X[:,:,:,ps:].view(-1,pa).T
         Zsa = torch.cat(
                 ( W0T[:int(math.ceil(nDecs/2.)),:] @ Ys, 
                   U0T[:int(math.floor(nDecs/2.)),:] @ Ya ),dim=0)
@@ -233,10 +224,6 @@ class NsoltFinalRotation2dLayerTestCase(unittest.TestCase):
         omgs = OrthonormalMatrixGenerationSystem(dtype=datatype,partial_difference=False)
 
         # Parameters
-        #nchs = [4,4]
-        #stride = [1,1]
-        #nrows = 4
-        #ncols = 6
         nSamples = 8
         nDecs = stride[0]*stride[1] # math.prod(stride)
         nChsTotal = sum(nchs)
@@ -313,11 +300,6 @@ class NsoltFinalRotation2dLayerTestCase(unittest.TestCase):
         omgs = OrthonormalMatrixGenerationSystem(dtype=datatype,partial_difference=False)
 
         # Parameters
-        #nchs = [4,4]
-        #stride = [2,2]
-        #nrows = 4
-        #ncols = 6
-        #mus = 1
         nSamples = 8
         nDecs = stride[0]*stride[1] # math.prod(stride)
         nChsTotal = sum(nchs)
@@ -389,15 +371,10 @@ class NsoltFinalRotation2dLayerTestCase(unittest.TestCase):
     )
     def testBackwardWithRandomAnglesNoDcLeackage(self,
         datatype,nchs,stride,nrows,ncols,mus): 
-        rtol,atol=1e-3,1e-6
+        rtol,atol=1e-2,1e-5
         omgs = OrthonormalMatrixGenerationSystem(dtype=datatype,partial_difference=False)
 
         # Parameters
-        #nchs = [4,4]
-        #stride = [2,2]
-        #nrows = 4
-        #ncols = 6
-        #mus = 1
         nSamples = 8
         nDecs = stride[0]*stride[1] # math.prod(stride)
         nChsTotal = sum(nchs)
