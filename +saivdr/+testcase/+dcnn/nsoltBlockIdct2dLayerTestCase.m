@@ -7,9 +7,9 @@ classdef nsoltBlockIdct2dLayerTestCase < matlab.unittest.TestCase
     %   ベクトル配列をブロック配列にして出力:
     %      (Stride(1)xnRows) x (Stride(2)xnCols) x nComponents x nSamples
     %
-    % Requirements: MATLAB R2020a
+    % Requirements: MATLAB R2020b
     %
-    % Copyright (c) 2020, Shogo MURAMATSU
+    % Copyright (c) 2020-2021, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -34,13 +34,16 @@ classdef nsoltBlockIdct2dLayerTestCase < matlab.unittest.TestCase
             % Grayscale
             layer = nsoltBlockIdct2dLayer(...
                 'DecimationFactor',[2 2]);
-            checkLayer(layer,[4 4 4],'ObservationDimension',4)
+            checkLayer(layer,[4 4 4],...
+                'ObservationDimension',4,...
+                'CheckCodegenCompatibility',true)
             % RGB color
             layer = nsoltBlockIdct2dLayer(...
                 'NumberOfComponents',3,...
                 'DecimationFactor',[2 2]);
             checkLayer(layer,{[4 4 4],[4 4 4],[4 4 4]},...
-                'ObservationDimension',4)
+                'ObservationDimension',4,...
+                'CheckCodegenCompatibility',true)
         end
     end
     

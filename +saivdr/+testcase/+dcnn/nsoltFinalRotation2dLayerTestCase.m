@@ -7,9 +7,9 @@ classdef nsoltFinalRotation2dLayerTestCase < matlab.unittest.TestCase
     %   コンポーネント別に出力(nComponents):
     %      nDecs x nRows x nCols x nSamples
     %
-    % Requirements: MATLAB R2020a
+    % Requirements: MATLAB R2020b
     %
-    % Copyright (c) 2020, Shogo MURAMATSU
+    % Copyright (c) 2020-2021, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -36,7 +36,9 @@ classdef nsoltFinalRotation2dLayerTestCase < matlab.unittest.TestCase
                 'NumberOfChannels',[3 3],...
                 'DecimationFactor',[2 2]);
             fprintf("\n --- Check layer for 2-D images ---\n");
-            checkLayer(layer,[6 8 8],'ObservationDimension',4)
+            checkLayer(layer,[6 8 8],...
+                'ObservationDimension',4,...                
+                'CheckCodegenCompatibility',true)
         end
     end
     

@@ -8,9 +8,9 @@ classdef nsoltChannelConcatenation2dLayerTestCase < matlab.unittest.TestCase
     %   １コンポーネント出力(nComponents=1のみサポート):
     %       nChsTotal x nRows x nCols xnSamples
     %
-    % Requirements: MATLAB R2020a
+    % Requirements: MATLAB R2020b
     %
-    % Copyright (c) 2020, Shogo MURAMATSU
+    % Copyright (c) 2020-2021, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -33,7 +33,9 @@ classdef nsoltChannelConcatenation2dLayerTestCase < matlab.unittest.TestCase
             import saivdr.dcnn.*
             layer = nsoltChannelConcatenation2dLayer();
             fprintf("\n --- Check layer for 2-D images ---\n");
-            checkLayer(layer,{[8 8 5], [8 8 1]},'ObservationDimension',4)
+            checkLayer(layer,{[8 8 5], [8 8 1]},...
+                'ObservationDimension',4,...
+                'CheckCodegenCompatibility',true)
         end
     end
     

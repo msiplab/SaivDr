@@ -1,4 +1,4 @@
-classdef nsoltSubbandDeserialization2dLayer < nnet.layer.Layer
+classdef nsoltSubbandDeserialization2dLayer < nnet.layer.Layer %#codegen
     %NSOLTSUBBANDSERIALIZATION2DLAYER
     %
     %   １コンポーネント入力(SSCB):
@@ -11,9 +11,9 @@ classdef nsoltSubbandDeserialization2dLayer < nnet.layer.Layer
     %      nRowsLvN x nColsLvN x (nChsTotal-1) x nSamples
     %      nRowsLvN x nColsLvN x 1 x nSamples    
     %
-    % Requirements: MATLAB R2020a
+    % Requirements: MATLAB R2020b
     %
-    % Copyright (c) 2020, Shogo MURAMATSU
+    % Copyright (c) 2020-2021, Shogo MURAMATSU
     %
     % All rights reserved.
     %

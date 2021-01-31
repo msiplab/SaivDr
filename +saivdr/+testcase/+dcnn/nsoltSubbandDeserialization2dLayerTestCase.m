@@ -42,7 +42,9 @@ classdef nsoltSubbandDeserialization2dLayerTestCase < matlab.unittest.TestCase
                 'DecimationFactor',[2 2],...
                 'NumberOfLevels',3);
             fprintf("\n --- Check layer for 2-D images ---\n");
-            checkLayer(layer,[424 1 1],'ObservationDimension',4)
+            checkLayer(layer,[424 1 1],...
+                'ObservationDimension',4,...
+                'CheckCodegenCompatibility',true)
         end
     end
     

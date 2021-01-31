@@ -1,4 +1,4 @@
-classdef nsoltSubbandSerialization2dLayer < nnet.layer.Layer
+classdef nsoltSubbandSerialization2dLayer < nnet.layer.Layer %#codegen
     %NSOLTSUBBANDSERIALIZATION2DLAYER
     %
     %   複数コンポーネント入力 (SSCB):（ツリーレベル数）
@@ -11,9 +11,9 @@ classdef nsoltSubbandSerialization2dLayer < nnet.layer.Layer
     %   １コンポーネント出力(SSCB):
     %      nElements x 1 x 1 x nSamples
     %
-    % Requirements: MATLAB R2020a
+    % Requirements: MATLAB R2020b
     %
-    % Copyright (c) 2020, Shogo MURAMATSU
+    % Copyright (c) 2020-2021, Shogo MURAMATSU
     %
     % All rights reserved.
     %

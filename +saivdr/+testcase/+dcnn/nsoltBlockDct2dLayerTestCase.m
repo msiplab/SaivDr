@@ -7,9 +7,9 @@ classdef nsoltBlockDct2dLayerTestCase < matlab.unittest.TestCase
     %   コンポーネント別に出力:
     %      nDecs x nRows x nCols x nLays x nSamples
     %
-    % Requirements: MATLAB R2020a
+    % Requirements: MATLAB R2020b
     %
-    % Copyright (c) 2020, Shogo MURAMATSU
+    % Copyright (c) 2020-2021, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -34,12 +34,14 @@ classdef nsoltBlockDct2dLayerTestCase < matlab.unittest.TestCase
             % Grayscale
             layer = nsoltBlockDct2dLayer(...
                 'DecimationFactor',[2 2]);
-            checkLayer(layer,[8 8 1],'ObservationDimension',4)
+            checkLayer(layer,[8 8 1],'ObservationDimension',4,...
+                'CheckCodegenCompatibility',true)
             % RGB color
             layer = nsoltBlockDct2dLayer(...
                 'NumberOfComponents',3,...
                 'DecimationFactor',[2 2]);            
-            checkLayer(layer,[8 8 3],'ObservationDimension',4)
+            checkLayer(layer,[8 8 3],'ObservationDimension',4,...
+                'CheckCodegenCompatibility',true)
         end
     end
     

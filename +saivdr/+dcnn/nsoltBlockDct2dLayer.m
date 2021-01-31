@@ -1,4 +1,4 @@
-classdef nsoltBlockDct2dLayer < nnet.layer.Layer
+classdef nsoltBlockDct2dLayer < nnet.layer.Layer %#codegen
     %NSOLTBLOCKDCT2DLAYER
     %
     %   ベクトル配列をブロック配列を入力:
@@ -7,9 +7,9 @@ classdef nsoltBlockDct2dLayer < nnet.layer.Layer
     %   コンポーネント別に出力(nComponents):
     %      nDecs x nRows x nCols x nSamples
     %    
-    % Requirements: MATLAB R2020a
+    % Requirements: MATLAB R2020b
     %
-    % Copyright (c) 2020, Shogo MURAMATSU
+    % Copyright (c) 2020-2021, Shogo MURAMATSU
     %
     % All rights reserved.
     %

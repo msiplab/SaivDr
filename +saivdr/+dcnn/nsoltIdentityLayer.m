@@ -1,13 +1,13 @@
-classdef nsoltIdentityLayer < nnet.layer.Layer
+classdef nsoltIdentityLayer < nnet.layer.Layer %#codegen
     %NSOLTIDENTITYLAYER
     %
     % Exported and modified from SaivDr package
     %
     %    https://github.com/msiplab/SaivDr    
     %    
-    % Requirements: MATLAB R2020a
+    % Requirements: MATLAB R2020b
     %
-    % Copyright (c) 2020, Shogo MURAMATSU
+    % Copyright (c) 2020-2021, Shogo MURAMATSU
     %
     % All rights reserved.
     %
