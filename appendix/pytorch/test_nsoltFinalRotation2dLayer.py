@@ -378,7 +378,6 @@ class NsoltFinalRotation2dLayerTestCase(unittest.TestCase):
 
         # Expected values
         ps, pa = nchs
-        # dLdX = dZdX x dLdZ                
         anglesWNoDcLeak = anglesW.clone()
         anglesWNoDcLeak[:ps-1] = torch.zeros(ps-1,dtype=datatype)
         musW,musU = mus*torch.ones(ps,dtype=datatype),mus*torch.ones(pa,dtype=datatype)
