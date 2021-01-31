@@ -10,6 +10,7 @@ datatype = [ torch.float, torch.double ]
 nrows = [ 4, 8, 16 ]
 ncols = [ 4, 8, 16 ]
 dir = [ 'Right', 'Left', 'Up', 'Down' ]
+target = [ 'Sum', 'Difference' ]
 
 class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
     """
@@ -36,15 +37,17 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
     """
 
     @parameterized.expand(
-        list(itertools.product(nchs))
+        list(itertools.product(nchs,target))
     )
-    def testConstructor(self,nchs):
+    def testConstructor(self,nchs,target):
 
         # Expctd values
         expctdName = 'Qn'
         expctdDirection = 'Right'
-        expctdTargetChannels = 'Symmetric'
-        expctdDescription = "Right shift the symmetric channel Coefs. " \
+        expctdTargetChannels = target
+        expctdDescription = "Right shift the " \
+            + target.lower() \
+            + "-channel Coefs. " \
             + "(ps,pa) = (" + str(nchs[0]) + "," + str(nchs[1]) + ")"
         
         # Instantiation of target class
@@ -71,14 +74,14 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
     @parameterized.expand(
         list(itertools.product(nchs,nrows,ncols,dir,datatype))
     )
-    def testPredictGrayscaleShiftLowerCoefs(self, 
+    def testPredictGrayscaleShiftDifferenceCoefs(self, 
             nchs, nrows, ncols, dir, datatype):
         rtol,atol=  0,1e-8
             
         # Parameters
         nSamples = 8
         nChsTotal = sum(nchs)
-        target = 'Symmetric'
+        target = 'Difference'
         # nSamples x nRows x nCols x nChsTotal  
         X = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype,requires_grad=True)
         
@@ -130,14 +133,14 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
     @parameterized.expand(
         list(itertools.product(nchs,nrows,ncols,dir,datatype))
     )
-    def testPredictGrayscaleShiftUpperCoefs(self, 
+    def testPredictGrayscaleShiftSumCoefs(self, 
                 nchs, nrows, ncols, dir, datatype):
         rtol, atol= 1e-5, 1e-8
             
         # Parameters
         nSamples = 8
         nChsTotal = sum(nchs)
-        target = 'Antisymmetric'
+        target = 'Sum'
         # nSamples x nRows x nCols x nChsTotal 
         X = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype,requires_grad=True)
 
@@ -189,14 +192,14 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
     @parameterized.expand(
         list(itertools.product(nchs,nrows,ncols,dir,datatype))
     )
-    def testBackwardGrayscaleShiftLowerCoefs(self, 
+    def testBackwardGrayscaleShiftDifferenceCoefs(self, 
                 nchs, nrows, ncols, dir, datatype):
         rtol,atol = 1e-5,1e-8
   
         # Parameters
         nSamples = 8
         nChsTotal = sum(nchs)
-        target = 'Symmetric'
+        target = 'Difference'
 
         # nSamples x nRows x nCols x nChsTotal
         X = torch.zeros(nSamples,nrows,ncols,nChsTotal,dtype=datatype,requires_grad=True)        
@@ -253,14 +256,14 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
     @parameterized.expand(
         list(itertools.product(nchs,nrows,ncols,dir,datatype))
     )
-    def testBackwardGrayscaleShiftUpperCoefs(self, 
+    def testBackwardGrayscaleShiftSumCoefs(self, 
                 nchs, nrows, ncols, dir, datatype):
         rtol,atol = 1e-5,1e-8
        
         # Parameters
         nSamples = 8
         nChsTotal = sum(nchs)
-        target = 'Antisymmetric'
+        target = 'Sum'
         
         # nSamples x nRows x nCols x nChsTotal
         X = torch.zeros(nSamples,nrows,ncols,nChsTotal,dtype=datatype,requires_grad=True)                

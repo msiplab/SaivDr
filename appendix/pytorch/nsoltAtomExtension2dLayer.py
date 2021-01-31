@@ -35,11 +35,11 @@ class NsoltAtomExtension2dLayer(nn.Module):
         self.name = name
 
         # Target channels
-        if target_channels in { 'Symmetric', 'Antisymmetric' }:
+        if target_channels in { 'Sum', 'Difference' }:
             self.target_channels = target_channels
         else:
             raise InvalidTargetChannels(
-                '%s : Target should be either of Symmetric or Antisymmetric'\
+                '%s : Target should be either of Sum or Difference'\
                 % self.direction
             )
 
@@ -56,7 +56,7 @@ class NsoltAtomExtension2dLayer(nn.Module):
         self.description = direction \
             + " shift the " \
             + target_channels.lower() \
-            + " channel Coefs. " \
+            + "-channel Coefs. " \
             + "(ps,pa) = (" \
             + str(number_of_channels[0]) + "," \
             + str(number_of_channels[1]) + ")"
@@ -67,7 +67,7 @@ class NsoltAtomExtension2dLayer(nn.Module):
         nchs = torch.tensor(self.number_of_channels,dtype=torch.int)
 
         # Target channels
-        if self.target_channels == 'Symmetric':
+        if self.target_channels == 'Difference':
             target = torch.tensor((0,))
         else:
             target = torch.tensor((1,))
@@ -131,8 +131,8 @@ def block_shift(X,nchs,target,shift):
     Block shift
     """
     ps = nchs[0]
-    if target == 0:
+    if target == 0: # Difference channel
         X[:,:,:,ps:] = torch.roll(X[:,:,:,ps:],shifts=tuple(shift.tolist()),dims=(0,1,2,3))
-    else:
+    else: # Sum channel
         X[:,:,:,:ps] = torch.roll(X[:,:,:,:ps],shifts=tuple(shift.tolist()),dims=(0,1,2,3))
     return X
