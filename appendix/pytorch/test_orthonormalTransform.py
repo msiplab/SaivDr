@@ -399,7 +399,7 @@ class OrthonormalTransformTestCase(unittest.TestCase):
         list(itertools.product(datatype,ncols,mode))
     )
     def testBackwardMultiColumnsAngs(self,datatype,ncols,mode):
-        rtol,atol = 1e-4,1e-7 
+        rtol,atol = 1e-3,1e-6 
 
         # Configuration
         nPoints = 2

@@ -1,4 +1,4 @@
-classdef nsoltAtomExtension3dLayer < nnet.layer.Layer
+classdef nsoltAtomExtension3dLayer < nnet.layer.Layer 
     %NSOLTATOMEXTENSION3DLAYER
     %
     %   コンポーネント別に入力(nComponents=1のみサポート):
@@ -9,7 +9,7 @@ classdef nsoltAtomExtension3dLayer < nnet.layer.Layer
     %
     % Requirements: MATLAB R2020a
     %
-    % Copyright (c) 2020, Shogo MURAMATSU
+    % Copyright (c) 2020-2021, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -46,9 +46,9 @@ classdef nsoltAtomExtension3dLayer < nnet.layer.Layer
             layer.Direction = p.Results.Direction;
             layer.TargetChannels = p.Results.TargetChannels;
             layer.Description =  layer.Direction ...
-                + " shift " ...
-                + layer.TargetChannels ...
-                + " Coefs. " ...
+                + " shift the " ...
+                + lower(layer.TargetChannels) ...
+                + "-channel Coefs. " ...
                 + "(ps,pa) = (" ...
                 + layer.NumberOfChannels(1) + "," ...
                 + layer.NumberOfChannels(2) + ")";
@@ -140,19 +140,18 @@ classdef nsoltAtomExtension3dLayer < nnet.layer.Layer
             pa = layer.NumberOfChannels(2);
             target = layer.TargetChannels;
             %
-            Y = X; % permute(X,[4 1 2 3 5]); % [ch ver hor dep smpl]
             % Block butterfly
-            Ys = Y(1:ps,:,:,:,:);
-            Ya = Y(ps+1:ps+pa,:,:,:,:);
+            Ys = X(1:ps,:,:,:,:);
+            Ya = X(ps+1:ps+pa,:,:,:,:);
             Y =  [ Ys+Ya ; Ys-Ya ];
             % Block circular shift
-            if strcmp(target,'Lower')
+            if strcmp(target,'Difference')
                 Y(ps+1:ps+pa,:,:,:,:) = circshift(Y(ps+1:ps+pa,:,:,:,:),shift);
-            elseif strcmp(target,'Upper')
+            elseif strcmp(target,'Sum')
                 Y(1:ps,:,:,:,:) = circshift(Y(1:ps,:,:,:,:),shift);
             else
                 throw(MException('NsoltLayer:InvalidTargetChannels',...
-                    '%s : TaregetChannels should be either of Lower or Upper',...
+                    '%s : TaregetChannels should be either of Sum or Difference',...
                     layer.TargetChannels))
             end
             % Block butterfly

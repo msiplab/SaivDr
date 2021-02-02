@@ -1,4 +1,4 @@
-classdef nsoltBlockIdct2dLayer < nnet.layer.Layer
+classdef nsoltBlockIdct2dLayer < nnet.layer.Layer %#codegen
     %NSOLTBLOCKIDCT2DLAYER
     %
     %   コンポーネント別に入力(nComponents):
@@ -7,9 +7,9 @@ classdef nsoltBlockIdct2dLayer < nnet.layer.Layer
     %   ベクトル配列をブロック配列にして出力:
     %      (Stride(1)xnRows) x (Stride(2)xnCols) x nComponents x nSamples
     %
-    % Requirements: MATLAB R2020a
+    % Requirements: MATLAB R2020b
     %
-    % Copyright (c) 2020, Shogo MURAMATSU
+    % Copyright (c) 2020-2021, Shogo MURAMATSU
     %
     % All rights reserved.
     %

@@ -1,4 +1,4 @@
-classdef nsoltInitialRotation2dLayer < nnet.layer.Layer
+classdef nsoltInitialRotation2dLayer < nnet.layer.Layer %#codegen
     %NSOLTINITIALROTATION2DLAYER
     %
     %   コンポーネント別に入力(nComponents):
@@ -7,9 +7,9 @@ classdef nsoltInitialRotation2dLayer < nnet.layer.Layer
     %   コンポーネント別に出力(nComponents):
     %      nChs x nRows x nCols x nSamples
     %
-    % Requirements: MATLAB R2020a
+    % Requirements: MATLAB R2020b
     %
-    % Copyright (c) 2020, Shogo MURAMATSU
+    % Copyright (c) 2020-2021, Shogo MURAMATSU
     %
     % All rights reserved.
     %

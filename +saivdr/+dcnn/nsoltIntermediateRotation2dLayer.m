@@ -1,9 +1,9 @@
-classdef nsoltIntermediateRotation2dLayer < nnet.layer.Layer
+classdef nsoltIntermediateRotation2dLayer < nnet.layer.Layer %#codegen
     %NSOLTINTERMEDIATEROTATION2DLAYER
     %
-    % Requirements: MATLAB R2020a
+    % Requirements: MATLAB R2020b
     %
-    % Copyright (c) 2020, Shogo MURAMATSU
+    % Copyright (c) 2020-2021, Shogo MURAMATSU
     %
     % All rights reserved.
     %

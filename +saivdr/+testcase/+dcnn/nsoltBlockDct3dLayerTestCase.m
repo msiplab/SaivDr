@@ -5,7 +5,7 @@ classdef nsoltBlockDct3dLayerTestCase < matlab.unittest.TestCase
     %      (Stride(1)xnRows) x (Stride(2)xnCols) x nComponents x nSamples
     %
     %   コンポーネント別に出力(nComponents=1のみサポート):
-    %      nDecs x nRows x nCols x nSamples
+    %      nDecs x nRows x nCols x nLays x nSamples
     %
     % Requirements: MATLAB R2020a
     %
@@ -174,7 +174,7 @@ classdef nsoltBlockDct3dLayerTestCase < matlab.unittest.TestCase
             dLdZ = rand(nDecs,nrows,ncols,nlays,nSamples,datatype);
             
             % Expected values
-            expctddLdX = zeros(height,width,depth,1,nSamples,datatype);
+            expctddLdX = zeros(height,width,depth,datatype);
             E0_T = transpose(testCase.getMatrixE0_(stride));
             for iSample = 1:nSamples
                 % Rearrange the DCT coefs

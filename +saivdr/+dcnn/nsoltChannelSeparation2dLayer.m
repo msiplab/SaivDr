@@ -1,4 +1,4 @@
-classdef nsoltChannelSeparation2dLayer < nnet.layer.Layer
+classdef nsoltChannelSeparation2dLayer < nnet.layer.Layer %#codegen
     %NSOLTCHANNELSEPARATION2DLAYER
     %
     %   １コンポーネント入力(nComponents=1のみサポート):
@@ -8,9 +8,9 @@ classdef nsoltChannelSeparation2dLayer < nnet.layer.Layer
     %      nRows x nCols x (nChsTotal-1) x nSamples    
     %      nRows x nCols x 1 x nSamples
     %
-    % Requirements: MATLAB R2020a
+    % Requirements: MATLAB R2020b
     %
-    % Copyright (c) 2020, Shogo MURAMATSU
+    % Copyright (c) 2020-2021, Shogo MURAMATSU
     %
     % All rights reserved.
     %

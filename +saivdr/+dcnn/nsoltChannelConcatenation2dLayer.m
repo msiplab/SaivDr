@@ -1,4 +1,4 @@
-classdef nsoltChannelConcatenation2dLayer < nnet.layer.Layer
+classdef nsoltChannelConcatenation2dLayer < nnet.layer.Layer %#codegen
     %NSOLTCHANNELCONCATENATION2DLAYER
     %
     %   ２コンポーネント入力(nComponents=2のみサポート):
@@ -8,9 +8,9 @@ classdef nsoltChannelConcatenation2dLayer < nnet.layer.Layer
     %   １コンポーネント出力(nComponents=1のみサポート):
     %      nChsTotal x nRows x nCols x nSamples
     %
-    % Requirements: MATLAB R2020a
+    % Requirements: MATLAB R2020b
     %
-    % Copyright (c) 2020, Shogo MURAMATSU
+    % Copyright (c) 2020-2021, Shogo MURAMATSU
     %
     % All rights reserved.
     %

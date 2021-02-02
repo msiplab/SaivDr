@@ -7,9 +7,9 @@ classdef nsoltBlockDct2dLayerTestCase < matlab.unittest.TestCase
     %   コンポーネント別に出力:
     %      nDecs x nRows x nCols x nSamples
     %
-    % Requirements: MATLAB R2020a
+    % Requirements: MATLAB R2020b
     %
-    % Copyright (c) 2020, Shogo MURAMATSU
+    % Copyright (c) 2020-2021, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -34,12 +34,14 @@ classdef nsoltBlockDct2dLayerTestCase < matlab.unittest.TestCase
             % Grayscale
             layer = nsoltBlockDct2dLayer(...
                 'DecimationFactor',[2 2]);
-            checkLayer(layer,[8 8 1],'ObservationDimension',4)
+            checkLayer(layer,[8 8 1],'ObservationDimension',4,...
+                'CheckCodegenCompatibility',true)
             % RGB color
             layer = nsoltBlockDct2dLayer(...
                 'NumberOfComponents',3,...
                 'DecimationFactor',[2 2]);            
-            checkLayer(layer,[8 8 3],'ObservationDimension',4)
+            checkLayer(layer,[8 8 3],'ObservationDimension',4,...
+                'CheckCodegenCompatibility',true)
         end
     end
     
@@ -321,7 +323,7 @@ classdef nsoltBlockDct2dLayerTestCase < matlab.unittest.TestCase
             dLdZ = rand(nDecs,nrows,ncols,nSamples,datatype);
             
             % Expected values
-            expctddLdX = zeros(height,width,nComponents,nSamples,datatype);
+            expctddLdX = zeros(height,width,datatype);
             for iSample = 1:nSamples
                 %A = reshape(permute(dLdZ(:,:,:,iSample),[3 1 2]),...
                 %    nDecs*nrows,ncols);
@@ -371,7 +373,7 @@ classdef nsoltBlockDct2dLayerTestCase < matlab.unittest.TestCase
             dLdZb = rand(nDecs,nrows,ncols,nSamples,datatype);            
             
             % Expected values
-            expctddLdX = zeros(height,width,nComponents,nSamples,datatype);
+            expctddLdX = zeros(height,width,nComponents,datatype);
             for iSample = 1:nSamples
                 %Ar = reshape(permute(dLdZr(:,:,:,iSample),[3 1 2]),...
                 %    nDecs*nrows,ncols);
@@ -432,9 +434,10 @@ classdef nsoltBlockDct2dLayerTestCase < matlab.unittest.TestCase
             value = [ cee(:) ; coo(:) ; coe(:) ; ceo(:) ];
         end
         function value = permuteIdctCoefs_(x,blockSize)
+            import saivdr.dictionary.utility.Direction
             coefs = x;
-            decY_ = blockSize(1);
-            decX_ = blockSize(2);
+            decY_ = blockSize(Direction.VERTICAL);
+            decX_ = blockSize(Direction.HORIZONTAL);
             nQDecsee = ceil(decY_/2)*ceil(decX_/2);
             nQDecsoo = floor(decY_/2)*floor(decX_/2);
             nQDecsoe = floor(decY_/2)*ceil(decX_/2);
