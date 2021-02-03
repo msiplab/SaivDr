@@ -55,15 +55,12 @@ classdef Synthesis1dSystemTestCase < matlab.unittest.TestCase
             testCase.assertEqual(boundaryOperationActual,boundaryOperationExpctd);                
         end
         
-        %{
         % Test
         function testSynthesisFilters(testCase)
             
             % Expected values
-            synthesisFiltersExpctd(:,:,1) = randn(2,2);
-            synthesisFiltersExpctd(:,:,2) = randn(2,2);
-            synthesisFiltersExpctd(:,:,3) = randn(2,2);
-            synthesisFiltersExpctd(:,:,4) = randn(2,2);
+            synthesisFiltersExpctd(:,1) = randn(2,1);
+            synthesisFiltersExpctd(:,2) = randn(2,1);
             
             % Instantiation
             import saivdr.dictionary.generalfb.*
@@ -74,14 +71,14 @@ classdef Synthesis1dSystemTestCase < matlab.unittest.TestCase
             synthesisFiltersActual = get(testCase.synthesizer,'SynthesisFilters');
             
             % Evaluation
-            nChs = size(synthesisFiltersExpctd,3);
+            nChs = size(synthesisFiltersExpctd,2);
             for iCh = 1:nChs
-                testCase.assertEqual(synthesisFiltersActual(:,:,iCh),...
-                    synthesisFiltersExpctd(:,:,iCh));
+                testCase.assertEqual(synthesisFiltersActual(:,iCh),...
+                    synthesisFiltersExpctd(:,iCh));
             end
             
         end
-        
+       %{
         % Test
         function testStepDec22Ch22Ord00Level1(testCase)
             

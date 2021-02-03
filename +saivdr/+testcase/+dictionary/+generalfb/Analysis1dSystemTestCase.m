@@ -53,15 +53,12 @@ classdef Analysis1dSystemTestCase < matlab.unittest.TestCase
             
         end
 
-        %{
         % Test
         function testAnalysisFilters(testCase)
             
             % Expected values
-            analysisFiltersExpctd(:,:,1) = randn(2,2);
-            analysisFiltersExpctd(:,:,2) = randn(2,2);
-            analysisFiltersExpctd(:,:,3) = randn(2,2);
-            analysisFiltersExpctd(:,:,4) = randn(2,2);
+            analysisFiltersExpctd(:,1) = randn(2,1);
+            analysisFiltersExpctd(:,2) = randn(2,1);
                         
             % Instantiation
             import saivdr.dictionary.generalfb.*
@@ -72,14 +69,15 @@ classdef Analysis1dSystemTestCase < matlab.unittest.TestCase
             analysisFiltersActual = get(testCase.analyzer,'AnalysisFilters');
             
             % Evaluation
-            nChs = size(analysisFiltersExpctd,3);
+            nChs = size(analysisFiltersExpctd,2);
             for iCh = 1:nChs
-                testCase.assertEqual(analysisFiltersActual(:,:,iCh),...
-                    analysisFiltersExpctd(:,:,iCh));
+                testCase.assertEqual(analysisFiltersActual(:,iCh),...
+                    analysisFiltersExpctd(:,iCh));
             end
             
         end        
 
+        %{
         % Test
         function testStepDec22Ch22Ord00Level1(testCase)
 
