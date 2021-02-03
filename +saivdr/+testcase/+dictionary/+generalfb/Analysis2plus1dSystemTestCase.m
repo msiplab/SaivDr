@@ -1,9 +1,9 @@
 classdef Analysis2plus1dSystemTestCase < matlab.unittest.TestCase
-    %ANALYSIS3DSYSTEMTESTCASE Test case for Analysis3dSystem
+    %ANALYSIS2PLUS1DSYSTEMTESTCASE Test case for Analysis2plus1dSystem
     %
-    % Requirements: MATLAB R2015b
+    % Requirements: MATLAB R2020b
     %
-    % Copyright (c) 2015-2020, Shogo MURAMATSU
+    % Copyright (c) 2021, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -14,6 +14,15 @@ classdef Analysis2plus1dSystemTestCase < matlab.unittest.TestCase
     %
     % http://msiplab.eng.niigata-u.ac.jp/   
     %
+    
+    properties (TestParameter)
+        %nchs = { [3 3], [4 4] };
+        %datatype = { 'single', 'double' };
+        %nrows = struct('small', 4,'medium', 8, 'large', 16);
+        %ncols = struct('small', 4,'medium', 8, 'large', 16);
+        %dir = { 'Right', 'Left', 'Up', 'Down' };
+    end
+    
     properties
         analyzer
     end
@@ -31,8 +40,9 @@ classdef Analysis2plus1dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             import saivdr.dictionary.generalfb.*
-            analysisFiltersExpctd = [];
-            decimationFactorExpctd =  [ 2 2 1 ];
+            analysisFiltersInXYExpctd = 1;
+            analysisFiltersInZExpctd = 1;
+            decimationFactorExpctd =  [ 2 2 2 ];
             filterDomainExpctd = 'Spatial';
             boundaryOperationExpctd = 'Circular';
             
@@ -40,13 +50,15 @@ classdef Analysis2plus1dSystemTestCase < matlab.unittest.TestCase
             testCase.analyzer = Analysis2plus1dSystem();
             
             % Actual value
-            analysisFiltersActual = get(testCase.analyzer,'AnalysisFilters');
+            analysisFiltersInXYActual = get(testCase.analyzer,'AnalysisFiltersInXY');
+            analysisFiltersInZActual = get(testCase.analyzer,'AnalysisFiltersInZ');
             decimationFactorActual = get(testCase.analyzer,'DecimationFactor');
             filterDomainActual = get(testCase.analyzer,'FilterDomain');
             boundaryOperationActual = get(testCase.analyzer,'BoundaryOperation');            
             
             % Evaluation
-            testCase.assertEqual(analysisFiltersActual,analysisFiltersExpctd);
+            testCase.assertEqual(analysisFiltersInXYActual,analysisFiltersInXYExpctd);
+            testCase.assertEqual(analysisFiltersInZActual,analysisFiltersInZExpctd);
             testCase.assertEqual(decimationFactorActual,decimationFactorExpctd);
             testCase.assertEqual(filterDomainActual,filterDomainExpctd);
             testCase.assertEqual(boundaryOperationActual,boundaryOperationExpctd);  
@@ -57,32 +69,37 @@ classdef Analysis2plus1dSystemTestCase < matlab.unittest.TestCase
         function testAnalysisFilters(testCase)
             
             % Expected values
-            analysisFiltersExpctd(:,:,1) = randn(2,2);
-            analysisFiltersExpctd(:,:,2) = randn(2,2);
-            analysisFiltersExpctd(:,:,3) = randn(2,2);
-            analysisFiltersExpctd(:,:,4) = randn(2,2);
-            analysisFiltersExpctd(:,:,5) = randn(2,2);
-            analysisFiltersExpctd(:,:,6) = randn(2,2);
-            analysisFiltersExpctd(:,:,7) = randn(2,2);
-            analysisFiltersExpctd(:,:,8) = randn(2,2);
+            analysisFiltersInXYExpctd(:,:,1) = randn(2,2);
+            analysisFiltersInXYExpctd(:,:,2) = randn(2,2);
+            analysisFiltersInXYExpctd(:,:,3) = randn(2,2);
+            analysisFiltersInXYExpctd(:,:,4) = randn(2,2);
+            analysisFiltersInZExpctd(:,1) = randn(2,1);
+            analysisFiltersInZExpctd(:,2) = randn(2,1);
                         
             % Instantiation
             import saivdr.dictionary.generalfb.*
             testCase.analyzer = Analysis2plus1dSystem(...
-                'AnalysisFilters',analysisFiltersExpctd);
+                'AnalysisFiltersInXY',analysisFiltersInXYExpctd,...
+                'AnalysisFiltersInZ', analysisFiltersInZExpctd);
             
             % Actual value
-            analysisFiltersActual = get(testCase.analyzer,'AnalysisFilters');
+            analysisFiltersXYActual = get(testCase.analyzer,'AnalysisFiltersInXY');
+            analysisFiltersZActual = get(testCase.analyzer,'AnalysisFiltersInZ');
             
             % Evaluation
-            nChs = size(analysisFiltersExpctd,3);
-            for iCh = 1:nChs
-                testCase.assertEqual(analysisFiltersActual(:,:,iCh),...
-                    analysisFiltersExpctd(:,:,iCh));
+            nChsXY = size(analysisFiltersInXYExpctd,3);
+            for iCh = 1:nChsXY
+                testCase.assertEqual(analysisFiltersXYActual(:,:,iCh),...
+                    analysisFiltersInXYExpctd(:,:,iCh));
             end
-            
+            nChsZ = size(analysisFiltersInZExpctd,2);
+            for iCh = 1:nChsZ
+                testCase.assertEqual(analysisFiltersZActual(:,iCh),...
+                    analysisFiltersInZExpctd(:,iCh));
+            end
         end
         
+        %{
         % Test
         function testStepDec221Ch44Ord000Level1(testCase)
 
@@ -2233,6 +2250,7 @@ classdef Analysis2plus1dSystemTestCase < matlab.unittest.TestCase
                 sprintf('%g',diff));
             
         end       
+        %}
     end
     
 end

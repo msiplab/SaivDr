@@ -9,7 +9,7 @@ classdef Analysis2plus1dSystem < saivdr.dictionary.AbstAnalysisSystem
     %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2015-2020, Shogo MURAMATSU
+    % Copyright (c) 2015-2021, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -25,8 +25,9 @@ classdef Analysis2plus1dSystem < saivdr.dictionary.AbstAnalysisSystem
     end
 
     properties (Nontunable)
-        AnalysisFilters
-        DecimationFactor = [2 2 1]
+        AnalysisFiltersInXY = 1
+        AnalysisFiltersInZ = 1
+        DecimationFactor = [2 2 2]
         BoundaryOperation = 'Circular'
         FilterDomain = 'Spatial'
     end
@@ -61,12 +62,12 @@ classdef Analysis2plus1dSystem < saivdr.dictionary.AbstAnalysisSystem
         % Constractor
         function obj = Analysis2plus1dSystem(varargin)
             setProperties(obj,nargin,varargin{:})
-            obj.nChs = size(obj.AnalysisFilters,3);
+            obj.nChs = size(obj.AnalysisFiltersInXY,3) * size(obj.AnalysisFiltersInZ,2);
         end
     end
 
     methods (Access = protected)
-
+        %{
         function s = saveObjectImpl(obj)
             s = saveObjectImpl@saivdr.dictionary.AbstAnalysisSystem(obj);
             s.nChs = obj.nChs;
@@ -110,7 +111,7 @@ classdef Analysis2plus1dSystem < saivdr.dictionary.AbstAnalysisSystem
             end
 
         end
-
+        
         function setupImpl(obj,srcImg)
             nLevels = obj.NumberOfLevels;
             nChs_ = obj.nChs;
@@ -187,23 +188,23 @@ classdef Analysis2plus1dSystem < saivdr.dictionary.AbstAnalysisSystem
             end
 
         end
-
+        %}
         function [coefs,scales] = stepImpl(obj,srcImg)
             if strcmp(obj.FilterDomain,'Spatial')
-                [coefs,scales] = analyzeSpatial_(obj,srcImg);
+                %[coefs,scales] = analyzeSpatial_(obj,srcImg);
             elseif obj.UseGpu
                  srcImg = gpuArray(srcImg);
-                [coefs,scales] = analyzeFrequency_(obj,srcImg);
+                %[coefs,scales] = analyzeFrequency_(obj,srcImg);
                 coefs  = gather(coefs);
                 scales = gather(scales);
             else
-                [coefs,scales] = analyzeFrequencyOrg_(obj,srcImg);
+                %[coefs,scales] = analyzeFrequencyOrg_(obj,srcImg);
             end
 
         end
 
     end
-
+        %{
     methods (Access = private)
 
         function [coefs,scales] = analyzeFrequencyOrg_(obj,srcImg)
@@ -460,5 +461,5 @@ classdef Analysis2plus1dSystem < saivdr.dictionary.AbstAnalysisSystem
                 shiftdim(upsample(x,d(1),p(1)),1),d(2),p(2)),1);
         end
     end
-
+    %}
 end

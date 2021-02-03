@@ -9,7 +9,7 @@ classdef Synthesis2plus1dSystem < saivdr.dictionary.AbstSynthesisSystem
     %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2015-2020, Shogo MURAMATSU
+    % Copyright (c) 2015-2021, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -21,8 +21,9 @@ classdef Synthesis2plus1dSystem < saivdr.dictionary.AbstSynthesisSystem
     % http://msiplab.eng.niigata-u.ac.jp/
     %
     properties (Nontunable)
-        SynthesisFilters
-        DecimationFactor = [2 2 1]
+        SynthesisFiltersInXY = 1
+        SynthesisFiltersInZ = 1
+        DecimationFactor = [2 2 2]
         BoundaryOperation = 'Circular'
         FilterDomain = 'Spatial'
     end
@@ -47,7 +48,7 @@ classdef Synthesis2plus1dSystem < saivdr.dictionary.AbstSynthesisSystem
         % Constractor
         function obj = Synthesis2plus1dSystem(varargin)
             setProperties(obj,nargin,varargin{:})
-            obj.nChs = size(obj.SynthesisFilters,3);
+            obj.nChs = size(obj.SynthesisFiltersInXY,3) * size(obj.SynthesisFiltersInZ,2);
         end
 
         function setFrameBound(obj,frameBound)
@@ -55,9 +56,10 @@ classdef Synthesis2plus1dSystem < saivdr.dictionary.AbstSynthesisSystem
         end
 
     end
-
+    
+    
     methods (Access = protected)
-
+        %{
         function s = saveObjectImpl(obj)
             s = saveObjectImpl@saivdr.dictionary.AbstSynthesisSystem(obj);
             s.nChs = obj.nChs;
@@ -133,22 +135,24 @@ classdef Synthesis2plus1dSystem < saivdr.dictionary.AbstSynthesisSystem
                 obj.freqRes = freqRes_;
             end
         end
-
+        %}
+            
         function recImg = stepImpl(obj,coefs,scales)
             if strcmp(obj.FilterDomain,'Spatial')
-                recImg = synthesizeSpatial_(obj,coefs,scales);
+                %recImg = synthesizeSpatial_(obj,coefs,scales);
             elseif obj.UseGpu
                 coefs  = gpuArray(coefs);
                 scales = gpuArray(scales);
-                recImg = synthesizeFrequency_(obj,coefs,scales);
+                %recImg = synthesizeFrequency_(obj,coefs,scales);
                 recImg = gather(recImg);
             else
-                recImg = synthesizeFrequencyOrg_(obj,coefs,scales);
+                %recImg = synthesizeFrequencyOrg_(obj,coefs,scales);
             end
         end
-
+        
     end
-
+    
+    %{
     methods (Access = private)
 
         function recImg = synthesizeFrequencyOrg_(obj,coefs,scales)
@@ -285,5 +289,5 @@ classdef Synthesis2plus1dSystem < saivdr.dictionary.AbstSynthesisSystem
                 d(1),p(1)),1),d(2),p(2)),1),d(3),p(3)),1);
         end
     end
-
+    %}
 end

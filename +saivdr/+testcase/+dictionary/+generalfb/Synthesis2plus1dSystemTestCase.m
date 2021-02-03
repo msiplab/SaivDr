@@ -1,9 +1,9 @@
 classdef Synthesis2plus1dSystemTestCase < matlab.unittest.TestCase
-    %SYNTHESIS3DSYSTEMTESTCASE Test case for Synthesis3dSystem
+    %SYNTHESIS2PLUS1DSYSTEMTESTCASE Test case for Synthesis2plus1dSystem
     %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2015-2017, Shogo MURAMATSU
+    % Copyright (c) 2021, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -14,6 +14,15 @@ classdef Synthesis2plus1dSystemTestCase < matlab.unittest.TestCase
     %
     % http://msiplab.eng.niigata-u.ac.jp/
     %
+    
+    properties (TestParameter)
+        %nchs = { [3 3], [4 4] };
+        %datatype = { 'single', 'double' };
+        %nrows = struct('small', 4,'medium', 8, 'large', 16);
+        %ncols = struct('small', 4,'medium', 8, 'large', 16);
+        %dir = { 'Right', 'Left', 'Up', 'Down' };
+    end
+    
     properties
         synthesizer
     end
@@ -31,8 +40,9 @@ classdef Synthesis2plus1dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             import saivdr.dictionary.generalfb.*
-            synthesisFiltersExpctd = [];
-            decimationFactorExpctd = [ 2 2 1 ];
+            synthesisFiltersInXYExpctd = 1;
+            synthesisFiltersInZExpctd = 1;
+            decimationFactorExpctd = [ 2 2 2 ];
             frmbdExpctd  = [];
             filterDomainExpctd = 'Spatial';
             boundaryOperationExpctd = 'Circular';
@@ -41,50 +51,58 @@ classdef Synthesis2plus1dSystemTestCase < matlab.unittest.TestCase
             testCase.synthesizer = Synthesis2plus1dSystem();
             
             % Actual value
-            synthesisFiltersActual = get(testCase.synthesizer,'SynthesisFilters');
+            synthesisFiltersInXYActual = get(testCase.synthesizer,'SynthesisFiltersInXY');
+            synthesisFiltersInZActual = get(testCase.synthesizer,'SynthesisFiltersInZ');
             decimationFactorActual = get(testCase.synthesizer,'DecimationFactor');
             frmbdActual  = get(testCase.synthesizer,'FrameBound');
             filterDomainActual = get(testCase.synthesizer,'FilterDomain');
             boundaryOperationActual = get(testCase.synthesizer,'BoundaryOperation');  
             
             % Evaluation
-            testCase.assertEqual(synthesisFiltersActual,synthesisFiltersExpctd);
+            testCase.assertEqual(synthesisFiltersInXYActual,synthesisFiltersInXYExpctd);
+            testCase.assertEqual(synthesisFiltersInZActual,synthesisFiltersInZExpctd);
             testCase.assertEqual(decimationFactorActual,decimationFactorExpctd);
             testCase.assertEqual(frmbdActual,frmbdExpctd);
             testCase.assertEqual(filterDomainActual,filterDomainExpctd);
             testCase.assertEqual(boundaryOperationActual,boundaryOperationExpctd);            
         end
-                
+       
         % Test
         function testSynthesisFilters(testCase)
             
             % Expected values
-            synthesisFiltersExpctd(:,:,1) = randn(2,2);
-            synthesisFiltersExpctd(:,:,2) = randn(2,2);
-            synthesisFiltersExpctd(:,:,3) = randn(2,2);
-            synthesisFiltersExpctd(:,:,4) = randn(2,2);
-            synthesisFiltersExpctd(:,:,5) = randn(2,2);
-            synthesisFiltersExpctd(:,:,6) = randn(2,2);
-            synthesisFiltersExpctd(:,:,7) = randn(2,2);
-            synthesisFiltersExpctd(:,:,8) = randn(2,2);
+            synthesisFiltersInXYExpctd(:,:,1) = randn(2,2);
+            synthesisFiltersInXYExpctd(:,:,2) = randn(2,2);
+            synthesisFiltersInXYExpctd(:,:,3) = randn(2,2);
+            synthesisFiltersInXYExpctd(:,:,4) = randn(2,2);
+            synthesisFiltersInZExpctd(:,1) = randn(2,1);
+            synthesisFiltersInZExpctd(:,2) = randn(2,1);
             
             % Instantiation
             import saivdr.dictionary.generalfb.*
             testCase.synthesizer = Synthesis2plus1dSystem(...
-                'SynthesisFilters',synthesisFiltersExpctd);
+                'SynthesisFiltersInXY',synthesisFiltersInXYExpctd,...
+                'SynthesisFiltersInZ',synthesisFiltersInZExpctd);
             
             % Actual value
-            synthesisFiltersActual = get(testCase.synthesizer,'SynthesisFilters');
+            synthesisFiltersInXYActual = get(testCase.synthesizer,'SynthesisFiltersInXY');
+            synthesisFiltersInZActual = get(testCase.synthesizer,'SynthesisFiltersInZ');
             
             % Evaluation
-            nChs = size(synthesisFiltersExpctd,3);
-            for iCh = 1:nChs
-                testCase.assertEqual(synthesisFiltersActual(:,:,iCh),...
-                    synthesisFiltersExpctd(:,:,iCh));
+            nChsXY = size(synthesisFiltersInXYExpctd,3);
+            for iCh = 1:nChsXY
+                testCase.assertEqual(synthesisFiltersInXYActual(:,:,iCh),...
+                    synthesisFiltersInXYExpctd(:,:,iCh));
+            end
+            nChsZ = size(synthesisFiltersInZExpctd,2);
+            for iCh = 1:nChsZ
+                testCase.assertEqual(synthesisFiltersInZActual(:,iCh),...
+                    synthesisFiltersInZExpctd(:,iCh));
             end
             
         end
         
+        %{
         % Test
         function testStepDec221Ch44Ord000Level1(testCase)
             
@@ -688,7 +706,7 @@ classdef Synthesis2plus1dSystemTestCase < matlab.unittest.TestCase
             diff = max(abs(imgExpctd(:) - imgActual(:)));
             testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-10,sprintf('%g',diff));
         end
-        
+        %}
 %         % Test
 %         function testStepDec222Ch44Ord000Level1Freq(testCase)
 %             
@@ -1217,6 +1235,7 @@ classdef Synthesis2plus1dSystemTestCase < matlab.unittest.TestCase
 %             testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-10,sprintf('%g',diff));
 %         end
 % 
+    %{      
         function testStepDec234Ch1414Ord222Level1(testCase)
             
             % Parameters
@@ -1397,7 +1416,7 @@ classdef Synthesis2plus1dSystemTestCase < matlab.unittest.TestCase
             diff = max(abs(imgExpctd(:) - imgActual(:)));
             testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-10,sprintf('%g',diff));
         end
-
+%}
 %         %Test
 %         function testStepDec234Ch1414Ord222Level2Freq(testCase)
 %             
