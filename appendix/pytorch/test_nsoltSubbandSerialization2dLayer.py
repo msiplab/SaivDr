@@ -3,7 +3,7 @@ import torch
 import torch.nn as nn
 from nsoltSubbandSerialization2dLayer import NsoltSubbandSerialization2dLayer
 
-class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
+class NsoltSubbandSerialization2dLayerTestCase(unittest.TestCase):
 
     def testConstructor(self):
         target = NsoltSubbandSerialization2dLayer()

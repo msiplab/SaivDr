@@ -13,7 +13,7 @@ datatype = [ torch.float, torch.double ]
 height = [ 8, 16, 32 ]
 width = [ 8, 16, 32 ]
 
-class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
+class NsoltBlockIdct2dLayerTestCase(unittest.TestCase):
     """
     NSOLTBLOCKIDCT2DLAYERTESTCASE  
     
