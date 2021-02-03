@@ -34,31 +34,30 @@ classdef Analysis2plus1dSystem < saivdr.dictionary.AbstAnalysisSystem
     
     properties (Nontunable, PositiveInteger)
         NumberOfLevelsInXY = 1
-
     end
     
     properties (Access = private, Nontunable)
         analysis2dSystemInXY
         analysis1dSystemInZ
-
     end
 
     methods
         % Constractor
         function obj = Analysis2plus1dSystem(varargin)
             setProperties(obj,nargin,varargin{:})
-            %obj.nChs = size(obj.AnalysisFiltersInXY,3) * size(obj.AnalysisFiltersInZ,2);
 
             import saivdr.dictionary.generalfb.Analysis3dSystem
+            import saivdr.dictionary.utility.Direction                        
             % Instantiation of Analysis3dSystem for XY
-            nDecsInXY = [ obj.DecimationFactor(1:2) 1 ]; 
+            nDecsInXY = ...
+                [ obj.DecimationFactor(Direction.VERTICAL:Direction.HORIZONTAL) 1 ]; 
             analysisFiltersInXY = permute(obj.AnalysisFiltersInXY,[1,2,4,3]);     
             obj.analysis2dSystemInXY = Analysis3dSystem(...
                 'DecimationFactor',nDecsInXY,...
                 'AnalysisFilters',analysisFiltersInXY,...
                 'NumberOfLevels',obj.NumberOfLevelsInXY);
             % Instantiation of Analysis3dSystem for Z            
-            nDecsInZ = [ 1 1 obj.DecimationFactor(3) ]; 
+            nDecsInZ = [ 1 1 obj.DecimationFactor(Direction.DEPTH) ]; 
             analysisFiltersInZ = permute(obj.AnalysisFiltersInZ,[3,4,1,2]);
             obj.analysis1dSystemInZ = Analysis3dSystem(...
                 'DecimationFactor',nDecsInZ,...
@@ -69,20 +68,16 @@ classdef Analysis2plus1dSystem < saivdr.dictionary.AbstAnalysisSystem
     end
 
     methods (Access = protected)
-        function setupImpl(obj,srcImg)
-            % Setup for the 1-D analysis system in Z
-            obj.analysis1dSystemInZ.setupImpl(srcImg);
-            % Setup for the 2-D analysis system in XY
-            nDecsInZ = obj.DecimationFactor(3);
-            subImgZ = ipermute(downsample(permute(...
-                srcImg,[3,1,2]),nDecsInZ),[3,1,2]);
-            obj.analysis2dSystemInXY.setupImpl(subImgZ);
-
+        
+        function setupImpl(~,~)
         end
 
         function [coefs,scales] = stepImpl(obj,srcImg)
-            [coefsInZ,scalesInZ] = obj.analysis1dSystemInZ.stepImpl(srcImg); 
-            nChsInZ = size(scalesInZ,1);
+            nChsInZ = size(obj.AnalysisFiltersInZ,2);
+            % Analyze in Z
+            [coefsInZ,scalesInZ] = ...
+                obj.analysis1dSystemInZ.step(srcImg); 
+            % Initialization
             scales = [];
             coefs = [];
             sidx = 1;            
@@ -94,7 +89,7 @@ classdef Analysis2plus1dSystem < saivdr.dictionary.AbstAnalysisSystem
                 subImgInZ = reshape(coefsInZ(sidx:eidx),shape);
                 % Analyze in XY
                 [subCoefs,subScales] = ...
-                    obj.analysis2dSystemInXY.stepImpl(subImgInZ);      
+                    obj.analysis2dSystemInXY.step(subImgInZ);      
                 %
                 coefs = [ coefs subCoefs ];
                 scales = [ scales; subScales ];

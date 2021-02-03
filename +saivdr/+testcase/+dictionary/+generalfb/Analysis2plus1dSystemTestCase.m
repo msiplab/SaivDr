@@ -100,7 +100,7 @@ classdef Analysis2plus1dSystemTestCase < matlab.unittest.TestCase
         end
 
         % Test
-        function testStepDec222Ch44Ord000Level11(testCase)
+        function testStepDec222Ch44Ord000Level1(testCase)
 
             % Parameters
             height = 48;
@@ -130,7 +130,7 @@ classdef Analysis2plus1dSystemTestCase < matlab.unittest.TestCase
                 shiftdim(downsample(...
                 shiftdim(downsample(x,d(1)),1),d(2)),1),1);
             %
-            iSubband = 1;
+            iCh = 1;
             for iSubbandZ = 1:nChsZ
                 % Decimation in Z
                 hz = analysisFiltersInZ(:,iSubbandZ);                
@@ -144,13 +144,13 @@ classdef Analysis2plus1dSystemTestCase < matlab.unittest.TestCase
                     hxy = analysisFiltersInXY(:,:,iSubbandXY);                    
                     % Filter in XY
                     subImgXYZ = imfilter(subImgZ,hxy,'conv','circ');
-                    %
+                    % Downsample in XY
                     subCoef = downsample2_(...
                         subImgXYZ,nDecs(Direction.VERTICAL:Direction.HORIZONTAL));
-                    coefsExpctd((iSubband-1)*nSubCoefs+1:iSubband*nSubCoefs) = ...
+                    coefsExpctd((iCh-1)*nSubCoefs+1:iCh*nSubCoefs) = ...
                     subCoef(:).';
                     %
-                    iSubband = iSubband + 1;
+                    iCh = iCh + 1;
                 end
             end
             scalesExpctd = repmat(size(srcImg)./nDecs,nChs,1);
@@ -163,7 +163,7 @@ classdef Analysis2plus1dSystemTestCase < matlab.unittest.TestCase
                 'NumberOfLevelsInXY',nLevelsXY);
             
             % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg);
+            [coefsActual, scalesActual] = testCase.analyzer.step(srcImg);
             
             % Evaluation
             testCase.verifySize(scalesActual,size(scalesExpctd));
