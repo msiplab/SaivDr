@@ -22,7 +22,7 @@ classdef Synthesis2plus1dSystemTestCase < matlab.unittest.TestCase
         nlays = struct('small', 4,'medium', 8, 'large', 16);      
         ndecsX = { 1, 2 };
         ndecsY = { 1, 2 };
-        ndecsZ = { 1, 4 };
+        ndecsZ = { 2, 4 };
         pordXY = { 0, 4 };
         pordZ = { 0, 2 };
         redundancy = { 1, 2 } ;
