@@ -102,11 +102,9 @@ classdef Analysis2plus1dSystem < saivdr.dictionary.AbstAnalysisSystem
     end
 
     methods (Access = private)
-
     end
 
     methods (Access = private, Static = true)
-
     end
 
 end

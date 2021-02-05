@@ -1,5 +1,5 @@
 classdef Synthesis2plus1dSystem < saivdr.dictionary.AbstSynthesisSystem
-    %SYNTHESIS2plus1DSYSTEM (2+1)-D synthesis system
+    %SYNTHESIS2PLUS1DSYSTEM (2+1)-D synthesis system
     %
     % Reference:
     %   Shogo Muramatsu and Hitoshi Kiya,
@@ -95,4 +95,9 @@ classdef Synthesis2plus1dSystem < saivdr.dictionary.AbstSynthesisSystem
         
     end
     
+    methods (Access = private)
+    end
+
+    methods (Access = private, Static = true)
+    end
 end

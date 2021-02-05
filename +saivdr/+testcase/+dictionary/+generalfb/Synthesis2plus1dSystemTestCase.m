@@ -16,11 +16,16 @@ classdef Synthesis2plus1dSystemTestCase < matlab.unittest.TestCase
     %
     
     properties (TestParameter)
-        %nchs = { [3 3], [4 4] };
         %datatype = { 'single', 'double' };
-        %nrows = struct('small', 4,'medium', 8, 'large', 16);
-        %ncols = struct('small', 4,'medium', 8, 'large', 16);
-        %dir = { 'Right', 'Left', 'Up', 'Down' };
+        nrows = struct('small', 4,'medium', 8, 'large', 16);
+        ncols = struct('small', 4,'medium', 8, 'large', 16);
+        nlays = struct('small', 4,'medium', 8, 'large', 16);      
+        ndecsX = { 1, 2 };
+        ndecsY = { 1, 2 };
+        ndecsZ = { 2, 4 };
+        pordXY = { 0, 2, 4 };
+        pordZ = { 0, 2 };
+        %nlevels = { 1, 2, 3 };
     end
     
     properties
@@ -103,23 +108,34 @@ classdef Synthesis2plus1dSystemTestCase < matlab.unittest.TestCase
         end
         
         % Test
-        function testStepDec222Ch44Ord000Level1(testCase)
+        function testStepLevel1(testCase,...
+                nrows,ncols,nlays,ndecsX,ndecsY,ndecsZ,pordXY,pordZ)
             
             % Parameters
-            height = 48;
-            width = 64;
-            depth = 32;
-            nDecs = [ 2 2 2 ];
-            synthesisFiltersInXY(:,:,1) = randn(2,2);
-            synthesisFiltersInXY(:,:,2) = randn(2,2);
-            synthesisFiltersInXY(:,:,3) = randn(2,2);
-            synthesisFiltersInXY(:,:,4) = randn(2,2);
-            synthesisFiltersInZ(:,1) = randn(2,1);
-            synthesisFiltersInZ(:,2) = randn(2,1);     
+            import saivdr.dictionary.utility.Direction
+            nDecs = [ ndecsY ndecsX ndecsZ ];
+            height = nrows * ndecsY;
+            width = ncols * ndecsX;
+            depth = nlays + ndecsZ;
+
+            % Filters in XY
+            nChsInXY = ndecsY*ndecsX;
+            lenY = (pordXY+1)*ndecsY;
+            lenX = (pordXY+1)*ndecsX;
+            synthesisFiltersInXY = zeros(lenY,lenX,nChsInXY);
+            for iChInXY = 1:nChsInXY
+                synthesisFiltersInXY(:,:,iChInXY) = randn(lenY,lenX);
+            end
+            % Filters in Z
+            nChsInZ = ndecsZ;
+            lenZ = (pordZ+1)*ndecsZ;                
+            synthesisFiltersInZ = zeros(lenZ,nChsInZ);
+            for iChInZ = 1:nChsInZ
+                synthesisFiltersInZ(:,iChInZ) = randn(lenZ,1);
+            end            
             %nLevels = 1;
             
             % Expected values
-            import saivdr.dictionary.utility.Direction
             import saivdr.dictionary.generalfb.*            
             nChsXY = size(synthesisFiltersInXY,3);
             nChsZ = size(synthesisFiltersInZ,2);
@@ -138,7 +154,7 @@ classdef Synthesis2plus1dSystemTestCase < matlab.unittest.TestCase
                 shiftdim(...
                 shiftdim(upsample(...
                 shiftdim(upsample(x,d(1),p(1)),1),d(2),p(2)),1),1);
-            phase = [1,1,1]; % for phase adjustment required experimentaly
+            phase = 1-mod(nDecs,2); % for phase adjustment required experimentaly
             %
             imgExpctd = 0;
             iCh = 1;

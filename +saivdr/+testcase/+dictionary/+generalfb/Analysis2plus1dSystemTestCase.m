@@ -16,11 +16,16 @@ classdef Analysis2plus1dSystemTestCase < matlab.unittest.TestCase
     %
     
     properties (TestParameter)
-        %nchs = { [3 3], [4 4] };
         %datatype = { 'single', 'double' };
-        %nrows = struct('small', 4,'medium', 8, 'large', 16);
-        %ncols = struct('small', 4,'medium', 8, 'large', 16);
-        %dir = { 'Right', 'Left', 'Up', 'Down' };
+        nrows = struct('small', 4,'medium', 8, 'large', 16);
+        ncols = struct('small', 4,'medium', 8, 'large', 16);
+        nlays = struct('small', 4,'medium', 8, 'large', 16);    
+        ndecsX = { 1, 2 };
+        ndecsY = { 1, 2 };
+        ndecsZ = { 2, 4 };
+        pordXY = { 0, 2, 4 };
+        pordZ = { 0, 2 };
+        %nlevels = { 1, 2, 3 };
     end
     
     properties
@@ -100,20 +105,33 @@ classdef Analysis2plus1dSystemTestCase < matlab.unittest.TestCase
         end
 
         % Test
-        function testStepDec222Ch44Ord000Level1(testCase)
+        function testStepLevel1(testCase,...
+                nrows,ncols,nlays,ndecsX,ndecsY,ndecsZ,pordXY,pordZ)            
 
             % Parameters
-            height = 48;
-            width = 64;
-            depth = 32;
+            import saivdr.dictionary.utility.Direction
+            nDecs = [ ndecsY ndecsX ndecsZ ];                        
+            height = nrows * ndecsY;
+            width = ncols * ndecsX;
+            depth = nlays + ndecsZ;
             srcImg = rand(height,width,depth);
-            nDecs = [ 2 2 2 ]; 
-            analysisFiltersInXY(:,:,1) = randn(2,2);
-            analysisFiltersInXY(:,:,2) = randn(2,2);
-            analysisFiltersInXY(:,:,3) = randn(2,2);
-            analysisFiltersInXY(:,:,4) = randn(2,2);
-            analysisFiltersInZ(:,1) = randn(2,1);
-            analysisFiltersInZ(:,2) = randn(2,1);
+
+            % Filters in XY
+            nChsInXY = ndecsY*ndecsX;
+            lenY = (pordXY+1)*ndecsY;
+            lenX = (pordXY+1)*ndecsX;
+            analysisFiltersInXY = zeros(lenY,lenX,nChsInXY);
+            for iChInXY = 1:nChsInXY
+                analysisFiltersInXY(:,:,iChInXY) = randn(lenY,lenX);
+            end
+            % Filters in Z
+            nChsInZ = ndecsZ;
+            lenZ = (pordZ+1)*ndecsZ;                                        
+            analysisFiltersInZ = zeros(lenZ,nChsInZ);
+            for iChInZ = 1:nChsInZ
+                analysisFiltersInZ(:,iChInZ) = randn(lenZ,1);
+            end          
+            % Tree level
             nLevelsXY = 1;
             
             % Expected values
