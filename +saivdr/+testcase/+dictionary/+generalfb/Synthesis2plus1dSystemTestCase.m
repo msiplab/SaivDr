@@ -102,76 +102,79 @@ classdef Synthesis2plus1dSystemTestCase < matlab.unittest.TestCase
             
         end
         
-        %{
         % Test
-        function testStepDec221Ch44Ord000Level1(testCase)
+        function testStepDec222Ch44Ord000Level1(testCase)
             
             % Parameters
             height = 48;
             width = 64;
             depth = 32;
-            nDecs = [ 2 2 1 ];
-            synthesisFilters(:,:,1) = randn(2,2);
-            synthesisFilters(:,:,2) = randn(2,2);
-            synthesisFilters(:,:,3) = randn(2,2);
-            synthesisFilters(:,:,4) = randn(2,2);
-            synthesisFilters(:,:,5) = randn(2,2);
-            synthesisFilters(:,:,6) = randn(2,2);
-            synthesisFilters(:,:,7) = randn(2,2);
-            synthesisFilters(:,:,8) = randn(2,2);            
+            nDecs = [ 2 2 2 ];
+            synthesisFiltersInXY(:,:,1) = randn(2,2);
+            synthesisFiltersInXY(:,:,2) = randn(2,2);
+            synthesisFiltersInXY(:,:,3) = randn(2,2);
+            synthesisFiltersInXY(:,:,4) = randn(2,2);
+            synthesisFiltersInZ(:,1) = randn(2,1);
+            synthesisFiltersInZ(:,2) = randn(2,1);     
             %nLevels = 1;
             
             % Expected values
             import saivdr.dictionary.utility.Direction
-            decY = nDecs(Direction.VERTICAL);
-            decX = nDecs(Direction.HORIZONTAL);
-            decZ = nDecs(Direction.DEPTH);
-            nChs = size(synthesisFilters,3);
+            import saivdr.dictionary.generalfb.*            
+            nChsXY = size(synthesisFiltersInXY,3);
+            nChsZ = size(synthesisFiltersInZ,2);
+            nChs = nChsXY * nChsZ;
+            %
             subCoefs = cell(nChs,1);
-            coefs = zeros(1,height*width*depth);
-            scales = zeros(prod(nDecs),3);
-            sIdx = 1;
+            subScales = [height, width, depth ]./nDecs;
             for iCh = 1:nChs
-                subImg = rand(height/decY,width/decX,depth/decZ);
-                subCoefs{iCh} = subImg;
-                eIdx = sIdx + numel(subImg) - 1;
-                coefs(sIdx:eIdx) = subImg(:).';
-                scales(iCh,:) = size(subImg);
-                sIdx = eIdx + 1;
+                subCoefs{iCh} = randn(subScales);
             end
-            imgExpctd = zeros(height,width,depth);
-            upsample3_ = @(x,d,p) ...
+            coefs = cell2mat(...
+                cellfun(@(x) x(:),subCoefs,'UniformOutput',false)).';
+            scales = repmat(subScales,nChs,1);  
+            %
+            upsample2_ = @(x,d,p) ...
+                shiftdim(...
                 shiftdim(upsample(...
-                shiftdim(upsample(...
-                shiftdim(upsample(x,d(1),p(1)),1),d(2),p(2)),1),d(3),p(3)),1);
-            phase = [1 1 0]; % for phase adjustment required experimentaly
-            subbandDctImg = zeros(height,width,depth);
-            dctImg = zeros(height,width,depth);
-            % X-Y filtering
-            for iCh = 1:nChs
-                f = synthesisFilters(:,:,iCh);
-                updImg = upsample3_(subCoefs{iCh},nDecs,phase);
-                for iLay = 1:depth
-                    subbandDctImg(:,:,iLay) = imfilter(updImg(:,:,iLay),f,...
-                        'conv','circ');
+                shiftdim(upsample(x,d(1),p(1)),1),d(2),p(2)),1),1);
+            phase = [1,1,1]; % for phase adjustment required experimentaly
+            %
+            imgExpctd = 0;
+            iCh = 1;
+            for iSubbandZ = 1:nChsZ
+                subImgInZ = 0;
+                % Interpolation in XY
+                for iSubbandXY = 1:nChsXY
+                    subImgInXY = subCoefs{iCh};
+                    fxy = synthesisFiltersInXY(:,:,iSubbandXY);
+                    % Upsample in XY
+                    tmpImg = upsample2_(subImgInXY,...
+                        nDecs(Direction.VERTICAL:Direction.HORIZONTAL),...
+                        phase(Direction.VERTICAL:Direction.HORIZONTAL));
+                    % Filter in XY
+                    subImgInZ = subImgInZ ...
+                        + imfilter(tmpImg,fxy,'circ','conv');
+                    %
+                    iCh = iCh + 1;
                 end
-                dctImg = dctImg + subbandDctImg;
+                fz = synthesisFiltersInZ(:,iSubbandZ);
+                % Interpolation in Z
+                tmpImg = upsample(permute(subImgInZ,[3,1,2]),...
+                    nDecs(Direction.DEPTH),phase(Direction.DEPTH));
+                subImgInZ = imfilter(tmpImg,fz,'circ','conv');
+                imgExpctd = imgExpctd + ipermute(subImgInZ,[3,1,2]);
             end
-            % IDCT for Z direction
-            for iCol = 1:width
-                for iRow = 1:height
-                    imgExpctd(iRow,iCol,:) = idct(dctImg(iRow,iCol,:));
-                end
-            end
-            
+
             % Instantiation of target class
-            import saivdr.dictionary.generalfb.*
             testCase.synthesizer = Synthesis2plus1dSystem(...
-                'SynthesisFilters',synthesisFilters);
+                'DecimationFactor',nDecs,...
+                'SynthesisFiltersInXY',synthesisFiltersInXY,...
+                'SynthesisFiltersInZ',synthesisFiltersInZ);
             
             % Actual values
             imgActual = ...
-                step(testCase.synthesizer,coefs,scales);
+                testCase.synthesizer.step(coefs,scales);
             
             % Evaluation
             testCase.verifySize(imgActual,size(imgExpctd),...
@@ -180,6 +183,7 @@ classdef Synthesis2plus1dSystemTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-10,sprintf('%g',diff));
         end
         
+        %{
         % Test
         function testStepDec222Ch54Ord000Level1(testCase)
             
@@ -707,6 +711,7 @@ classdef Synthesis2plus1dSystemTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-10,sprintf('%g',diff));
         end
         %}
+        %{
 %         % Test
 %         function testStepDec222Ch44Ord000Level1Freq(testCase)
 %             
@@ -1234,8 +1239,8 @@ classdef Synthesis2plus1dSystemTestCase < matlab.unittest.TestCase
 %             diff = max(abs(imgExpctd(:) - imgActual(:)));
 %             testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-10,sprintf('%g',diff));
 %         end
-% 
-    %{      
+%}
+    %{
         function testStepDec234Ch1414Ord222Level1(testCase)
             
             % Parameters
@@ -1417,6 +1422,7 @@ classdef Synthesis2plus1dSystemTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-10,sprintf('%g',diff));
         end
 %}
+        %{
 %         %Test
 %         function testStepDec234Ch1414Ord222Level2Freq(testCase)
 %             
@@ -1671,6 +1677,7 @@ classdef Synthesis2plus1dSystemTestCase < matlab.unittest.TestCase
 %             testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-10,sprintf('%g',diff));
 %         end        
     end
-    
+    %}
+    end
 end
 
