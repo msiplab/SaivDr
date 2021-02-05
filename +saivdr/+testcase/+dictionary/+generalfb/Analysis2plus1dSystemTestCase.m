@@ -23,8 +23,9 @@ classdef Analysis2plus1dSystemTestCase < matlab.unittest.TestCase
         ndecsX = { 1, 2 };
         ndecsY = { 1, 2 };
         ndecsZ = { 2, 4 };
-        pordXY = { 0, 2, 4 };
+        pordXY = { 0, 4 };
         pordZ = { 0, 2 };
+        redundancy = { 1, 2 };        
         %nlevels = { 1, 2, 3 };
     end
     
@@ -106,7 +107,7 @@ classdef Analysis2plus1dSystemTestCase < matlab.unittest.TestCase
 
         % Test
         function testStepLevel1(testCase,...
-                nrows,ncols,nlays,ndecsX,ndecsY,ndecsZ,pordXY,pordZ)            
+                nrows,ncols,nlays,ndecsX,ndecsY,ndecsZ,pordXY,pordZ,redundancy)            
 
             % Parameters
             import saivdr.dictionary.utility.Direction
@@ -117,7 +118,7 @@ classdef Analysis2plus1dSystemTestCase < matlab.unittest.TestCase
             srcImg = rand(height,width,depth);
 
             % Filters in XY
-            nChsInXY = ndecsY*ndecsX;
+            nChsInXY = redundancy*ndecsY*ndecsX;
             lenY = (pordXY+1)*ndecsY;
             lenX = (pordXY+1)*ndecsX;
             analysisFiltersInXY = zeros(lenY,lenX,nChsInXY);

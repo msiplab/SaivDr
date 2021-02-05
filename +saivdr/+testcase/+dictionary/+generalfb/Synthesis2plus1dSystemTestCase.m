@@ -22,9 +22,10 @@ classdef Synthesis2plus1dSystemTestCase < matlab.unittest.TestCase
         nlays = struct('small', 4,'medium', 8, 'large', 16);      
         ndecsX = { 1, 2 };
         ndecsY = { 1, 2 };
-        ndecsZ = { 2, 4 };
-        pordXY = { 0, 2, 4 };
+        ndecsZ = { 1, 4 };
+        pordXY = { 0, 4 };
         pordZ = { 0, 2 };
+        redundancy = { 1, 2 } ;
         %nlevels = { 1, 2, 3 };
     end
     
@@ -109,7 +110,7 @@ classdef Synthesis2plus1dSystemTestCase < matlab.unittest.TestCase
         
         % Test
         function testStepLevel1(testCase,...
-                nrows,ncols,nlays,ndecsX,ndecsY,ndecsZ,pordXY,pordZ)
+                nrows,ncols,nlays,ndecsX,ndecsY,ndecsZ,pordXY,pordZ,redundancy)
             
             % Parameters
             import saivdr.dictionary.utility.Direction
@@ -119,7 +120,7 @@ classdef Synthesis2plus1dSystemTestCase < matlab.unittest.TestCase
             depth = nlays + ndecsZ;
 
             % Filters in XY
-            nChsInXY = ndecsY*ndecsX;
+            nChsInXY = redundancy*ndecsY*ndecsX;
             lenY = (pordXY+1)*ndecsY;
             lenX = (pordXY+1)*ndecsX;
             synthesisFiltersInXY = zeros(lenY,lenX,nChsInXY);
