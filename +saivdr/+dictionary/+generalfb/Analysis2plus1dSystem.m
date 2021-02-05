@@ -77,7 +77,7 @@ classdef Analysis2plus1dSystem < saivdr.dictionary.AbstAnalysisSystem
             % Analyze in Z
             [coefsInZ,scalesInZ] = ...
                 obj.analysis1dSystemInZ.step(srcImg); 
-            % Initialization
+            % Analyze in XY
             scales = [];
             coefs = [];
             sidx = 1;            
