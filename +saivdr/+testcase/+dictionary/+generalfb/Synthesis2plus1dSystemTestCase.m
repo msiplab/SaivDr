@@ -17,9 +17,9 @@ classdef Synthesis2plus1dSystemTestCase < matlab.unittest.TestCase
     
     properties (TestParameter)
         %datatype = { 'single', 'double' };
-        nrows = struct('small', 4,'medium', 8, 'large', 16);
-        ncols = struct('small', 4,'medium', 8, 'large', 16);
-        nlays = struct('small', 4,'medium', 8, 'large', 16);      
+        nsubrows = struct('small', 4,'medium', 8, 'large', 16);
+        nsubcols = struct('small', 4,'medium', 8, 'large', 16);
+        nsublays = { 1, 2 };
         ndecsX = { 1, 2 };
         ndecsY = { 1, 2 };
         ndecsZ = { 2, 4 };
@@ -110,40 +110,38 @@ classdef Synthesis2plus1dSystemTestCase < matlab.unittest.TestCase
         
         % Test
         function testStepLevel1(testCase,...
-                nrows,ncols,nlays,ndecsX,ndecsY,ndecsZ,pordXY,pordZ,redundancy)
+                nsubrows,nsubcols,nsublays,ndecsX,ndecsY,ndecsZ,pordXY,pordZ,redundancy)
             
             % Parameters
             import saivdr.dictionary.utility.Direction
             nDecs = [ ndecsY ndecsX ndecsZ ];
-            height = nrows * ndecsY;
-            width = ncols * ndecsX;
-            depth = nlays + ndecsZ;
+            %height = nsubrows * ndecsY;
+            %width = nsubcols * ndecsX;
+            %depth = nsublays * ndecsZ;
 
             % Filters in XY
-            nChsInXY = redundancy*ndecsY*ndecsX;
+            nChsXY = redundancy*ndecsY*ndecsX;
             lenY = (pordXY+1)*ndecsY;
             lenX = (pordXY+1)*ndecsX;
-            synthesisFiltersInXY = zeros(lenY,lenX,nChsInXY);
-            for iChInXY = 1:nChsInXY
-                synthesisFiltersInXY(:,:,iChInXY) = randn(lenY,lenX);
+            synthesisFiltersInXY = zeros(lenY,lenX,nChsXY);
+            for iChXY = 1:nChsXY
+                synthesisFiltersInXY(:,:,iChXY) = randn(lenY,lenX);
             end
             % Filters in Z
-            nChsInZ = ndecsZ;
+            nChsZ = ndecsZ;
             lenZ = (pordZ+1)*ndecsZ;                
-            synthesisFiltersInZ = zeros(lenZ,nChsInZ);
-            for iChInZ = 1:nChsInZ
+            synthesisFiltersInZ = zeros(lenZ,nChsZ);
+            for iChInZ = 1:nChsZ
                 synthesisFiltersInZ(:,iChInZ) = randn(lenZ,1);
             end            
             %nLevels = 1;
             
             % Expected values
             import saivdr.dictionary.generalfb.*            
-            nChsXY = size(synthesisFiltersInXY,3);
-            nChsZ = size(synthesisFiltersInZ,2);
             nChs = nChsXY * nChsZ;
             %
             subCoefs = cell(nChs,1);
-            subScales = [height, width, depth ]./nDecs;
+            subScales = [nsubrows, nsubcols, nsublays];
             for iCh = 1:nChs
                 subCoefs{iCh} = randn(subScales);
             end
@@ -152,9 +150,10 @@ classdef Synthesis2plus1dSystemTestCase < matlab.unittest.TestCase
             scales = repmat(subScales,nChs,1);  
             %
             upsample2_ = @(x,d,p) ...
-                shiftdim(...
-                shiftdim(upsample(...
-                shiftdim(upsample(x,d(1),p(1)),1),d(2),p(2)),1),1);
+                ipermute(upsample(...
+                permute(upsample(x,...
+                d(1),p(1)),[2,1,3]),...
+                d(2),p(2)),[2,1,3]);
             phase = 1-mod(nDecs,2); % for phase adjustment required experimentaly
             %
             imgExpctd = 0;
@@ -177,8 +176,15 @@ classdef Synthesis2plus1dSystemTestCase < matlab.unittest.TestCase
                 end
                 fz = synthesisFiltersInZ(:,iSubbandZ);
                 % Interpolation in Z
-                tmpImg = upsample(permute(subImgInZ,[3,1,2]),...
-                    nDecs(Direction.DEPTH),phase(Direction.DEPTH));
+                if ismatrix(subImgInZ)
+                    % Upsample in Z and permute
+                    tmpImg = permute(circshift(cat(3,subImgInZ,zeros(size(subImgInZ,1),size(subImgInZ,2),...
+                        nDecs(Direction.DEPTH)-1)),[0 0 phase(Direction.DEPTH)]),[3,1,2]);
+                else
+                    % Upsample in Z and permute                    
+                    tmpImg = upsample(permute(subImgInZ,[3,1,2]),...
+                        nDecs(Direction.DEPTH),phase(Direction.DEPTH));
+                end
                 subImgInZ = imfilter(tmpImg,fz,'circ','conv');
                 imgExpctd = imgExpctd + ipermute(subImgInZ,[3,1,2]);
             end

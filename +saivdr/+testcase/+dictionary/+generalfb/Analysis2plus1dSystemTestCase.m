@@ -17,9 +17,9 @@ classdef Analysis2plus1dSystemTestCase < matlab.unittest.TestCase
     
     properties (TestParameter)
         %datatype = { 'single', 'double' };
-        nrows = struct('small', 4,'medium', 8, 'large', 16);
-        ncols = struct('small', 4,'medium', 8, 'large', 16);
-        nlays = struct('small', 4,'medium', 8, 'large', 16);    
+        nsubrows = struct('small', 4,'medium', 8, 'large', 16);
+        nsubcols = struct('small', 4,'medium', 8, 'large', 16);
+        nsublays = { 1, 2 };
         ndecsX = { 1, 2 };
         ndecsY = { 1, 2 };
         ndecsZ = { 2, 4 };
@@ -106,15 +106,15 @@ classdef Analysis2plus1dSystemTestCase < matlab.unittest.TestCase
         end
 
         % Test
-        function testStepLevel1(testCase,...
-                nrows,ncols,nlays,ndecsX,ndecsY,ndecsZ,pordXY,pordZ,redundancy)            
+        function testStepDecXYLevel1(testCase,...
+                nsubrows,nsubcols,nsublays,ndecsX,ndecsY,ndecsZ,pordXY,pordZ,redundancy)            
 
             % Parameters
             import saivdr.dictionary.utility.Direction
             nDecs = [ ndecsY ndecsX ndecsZ ];                        
-            height = nrows * ndecsY;
-            width = ncols * ndecsX;
-            depth = nlays + ndecsZ;
+            height = nsubrows * ndecsY;
+            width = nsubcols * ndecsX;
+            depth = nsublays * ndecsZ;
             srcImg = rand(height,width,depth);
 
             % Filters in XY
@@ -164,10 +164,98 @@ classdef Analysis2plus1dSystemTestCase < matlab.unittest.TestCase
                     % Filter in XY
                     subImgXYZ = imfilter(subImgZ,hxy,'conv','circ');
                     % Downsample in XY
-                    subCoef = downsample2_(...
+                    subCoefs = downsample2_(...
                         subImgXYZ,nDecs(Direction.VERTICAL:Direction.HORIZONTAL));
                     coefsExpctd((iCh-1)*nSubCoefs+1:iCh*nSubCoefs) = ...
-                    subCoef(:).';
+                    subCoefs(:).';
+                    %
+                    iCh = iCh + 1;
+                end
+            end
+            scalesExpctd = repmat(size(srcImg)./nDecs,nChs,1);
+
+            % Instantiation of target class
+            testCase.analyzer = Analysis2plus1dSystem(...
+                'DecimationFactor',nDecs,...
+                'AnalysisFiltersInXY',analysisFiltersInXY,...
+                'AnalysisFiltersInZ',analysisFiltersInZ,...
+                'NumberOfLevelsInXY',nLevelsXY);
+            
+            % Actual values
+            [coefsActual, scalesActual] = testCase.analyzer.step(srcImg);
+            
+            % Evaluation
+            testCase.verifySize(scalesActual,size(scalesExpctd));
+            testCase.verifyEqual(scalesActual,scalesExpctd);
+            testCase.verifySize(coefsActual,size(coefsExpctd));
+            diff = max(abs(coefsExpctd - coefsActual));
+            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-8,...
+                sprintf('%g',diff));
+
+        end
+        
+        % Test
+        function testStepLevel2(testCase,...
+                nsubrows,nsubcols,nsublays,ndecsX,ndecsY,ndecsZ,pordXY,pordZ,redundancy)            
+
+            % Parameters
+            import saivdr.dictionary.utility.Direction
+            nDecs = [ ndecsY ndecsX ndecsZ ];                        
+            height = nsubrows * ndecsY;
+            width = nsubcols * ndecsX;
+            depth = nsublays * ndecsZ;
+            srcImg = rand(height,width,depth);
+
+            % Filters in XY
+            nChsInXY = redundancy*ndecsY*ndecsX;
+            lenY = (pordXY+1)*ndecsY;
+            lenX = (pordXY+1)*ndecsX;
+            analysisFiltersInXY = zeros(lenY,lenX,nChsInXY);
+            for iChInXY = 1:nChsInXY
+                analysisFiltersInXY(:,:,iChInXY) = randn(lenY,lenX);
+            end
+            % Filters in Z
+            nChsInZ = ndecsZ;
+            lenZ = (pordZ+1)*ndecsZ;                                        
+            analysisFiltersInZ = zeros(lenZ,nChsInZ);
+            for iChInZ = 1:nChsInZ
+                analysisFiltersInZ(:,iChInZ) = randn(lenZ,1);
+            end          
+            % Tree level
+            nLevelsXY = 1;
+            
+            % Expected values
+            import saivdr.dictionary.utility.Direction
+            import saivdr.dictionary.generalfb.*
+            nChsXY = size(analysisFiltersInXY,3);
+            nChsZ = size(analysisFiltersInZ,2);
+            nChs = nChsXY * nChsZ;
+            %nSubCoefs = numel(srcImg)/prod(nDecs);
+            coefsExpctd = [];
+            %
+            downsample2_ = @(x,d) ... % XY downsampling for 3-D data
+                shiftdim(...
+                shiftdim(downsample(...
+                shiftdim(downsample(x,d(1)),1),d(2)),1),1);
+            %
+            iCh = 1;
+            for iSubbandZ = 1:nChsZ
+                % Decimation in Z
+                hz = analysisFiltersInZ(:,iSubbandZ);                
+                tmpImg = permute(srcImg,[3,1,2]);
+                subImgZ = downsample(...
+                    imfilter(tmpImg,hz,'conv','circ'),...
+                    nDecs(Direction.DEPTH));
+                subImgZ = ipermute(subImgZ,[3,1,2]);
+                % Decimation in X-Y
+                for iSubbandXY = 1:nChsXY
+                    hxy = analysisFiltersInXY(:,:,iSubbandXY);                    
+                    % Filter in XY
+                    subImgXYZ = imfilter(subImgZ,hxy,'conv','circ');
+                    % Downsample in XY
+                    subCoefs = downsample2_(...
+                        subImgXYZ,nDecs(Direction.VERTICAL:Direction.HORIZONTAL));
+                    coefsExpctd = [coefsExpctd subCoefs(:).'];
                     %
                     iCh = iCh + 1;
                 end
@@ -2278,5 +2366,5 @@ classdef Analysis2plus1dSystemTestCase < matlab.unittest.TestCase
         end       
         %}
     end
-    
+
 end
