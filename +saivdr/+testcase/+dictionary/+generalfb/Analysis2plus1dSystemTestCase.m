@@ -26,7 +26,7 @@ classdef Analysis2plus1dSystemTestCase < matlab.unittest.TestCase
         pordXY = { 0, 4 };
         pordZ = { 0, 2 };
         redundancy = { 1, 2 };        
-        %nlevels = { 1, 2, 3 };
+        nlevels = { 1, 3, 5 };
     end
     
     properties
@@ -317,6 +317,125 @@ classdef Analysis2plus1dSystemTestCase < matlab.unittest.TestCase
 
         end
 
+         % Test
+        function testStepLevelN(testCase,ndecsX,ndecsY,ndecsZ,nlevels)            
+
+            redundancy_ = 2;
+            nsubrows_ = 4;
+            nsubcols_ = 2;
+            nsublays_ = 1;
+            pordXY_ = 4;
+            pordZ_ = 0;
+            
+            % Parameters
+            import saivdr.dictionary.utility.Direction
+            nLevelsXY = nlevels;
+            nDecs = [ ndecsY ndecsX ndecsZ ];                        
+            height = nsubrows_ * (ndecsY^nLevelsXY);
+            width = nsubcols_ * (ndecsX^nLevelsXY);
+            depth = nsublays_ * ndecsZ;
+            srcImg = rand(height,width,depth);
+
+            % Filters in XY
+            nChsXY = redundancy_*ndecsY*ndecsX;
+            lenY = (pordXY_+1)*ndecsY;
+            lenX = (pordXY_+1)*ndecsX;
+            analysisFiltersInXY = zeros(lenY,lenX,nChsXY);
+            for iChXY = 1:nChsXY
+                analysisFiltersInXY(:,:,iChXY) = randn(lenY,lenX);
+            end
+            % Filters in Z
+            nChsZ = ndecsZ;
+            lenZ = (pordZ_+1)*ndecsZ;                                        
+            analysisFiltersInZ = zeros(lenZ,nChsZ);
+            for iChInZ = 1:nChsZ
+                analysisFiltersInZ(:,iChInZ) = randn(lenZ,1);
+            end          
+            
+            % Expected values
+            import saivdr.dictionary.generalfb.*
+            downsample2_ = @(x,d) ... % XY downsampling for 3-D data
+                ipermute(downsample(...
+                permute(downsample(x,d(1)),[2,1,3]),d(2)),[2,1,3]);
+            %
+            subCoefs = cell(nChsXY,nLevelsXY,nChsZ);
+            for iSubbandZ = 1:nChsZ
+                % Decimation in Z
+                hz = analysisFiltersInZ(:,iSubbandZ);                
+                tmpImg = permute(srcImg,[3,1,2]);                
+                if ismatrix(srcImg)
+                    subImgZ = imfilter(tmpImg,hz,'conv','circ');
+                else
+                    subImgZ = downsample(...
+                        imfilter(tmpImg,hz,'conv','circ'),...
+                        nDecs(Direction.DEPTH));
+                end
+                subImgZ = ipermute(subImgZ,[3,1,2]);                    
+                % Decimation in X-Y
+                for iLvXY = 1:nLevelsXY
+                    for iSubbandXY = 1:nChsXY
+                        hxy = analysisFiltersInXY(:,:,iSubbandXY);
+                        % Filter in XY
+                        subImgXYZ = imfilter(subImgZ,hxy,'conv','circ');
+                        % Downsample in XY
+                        subCoefs{iSubbandXY,iLvXY,iSubbandZ} = downsample2_(...
+                            subImgXYZ,nDecs(Direction.VERTICAL:Direction.HORIZONTAL));
+                        %
+                         
+                    end
+                    subImgZ = subCoefs{1,iLvXY,iSubbandZ};
+                end
+            end
+            % Coefs.& scales
+            iCh = 1;
+            for iSubbandZ = 1:nChsZ
+                for iSubbandXY = 1:nChsXY
+                    coefs{iCh} = subCoefs{iSubbandXY,nLevelsXY,iSubbandZ};
+                    iCh = iCh + 1;
+                end                
+                for iLvXY = nLevelsXY-1:-1:1
+                    for iSubbandXY = 2:nChsXY
+                        coefs{iCh} = subCoefs{iSubbandXY,iLvXY,iSubbandZ};
+                        iCh = iCh + 1;
+                    end
+                end
+            end
+            nSubbands = length(coefs);
+            scalesExpctd = zeros(nSubbands,3);
+            sIdx = 1;
+            for iSubband = 1:nSubbands
+                tmpCoefs = coefs{iSubband};
+                if ismatrix(tmpCoefs)
+                    scalesExpctd(iSubband,:) = [ size(tmpCoefs) 1 ];
+                else
+                    scalesExpctd(iSubband,:) = size(tmpCoefs);
+                end
+                eIdx = sIdx + prod(scalesExpctd(iSubband,:))-1;
+                coefsExpctd(sIdx:eIdx) = coefs{iSubband}(:).';
+                sIdx = eIdx + 1;
+            end
+
+             % Instantiation of target class
+            testCase.analyzer = Analysis2plus1dSystem(...
+                'DecimationFactor',nDecs,...
+                'AnalysisFiltersInXY',analysisFiltersInXY,...
+                'AnalysisFiltersInZ',analysisFiltersInZ,...
+                'NumberOfLevelsInXY',nLevelsXY);
+            
+            % Actual values
+            [coefsActual, scalesActual] = testCase.analyzer.step(srcImg);
+            
+            % Evaluation
+            testCase.verifySize(scalesActual,size(scalesExpctd));
+            testCase.verifyEqual(scalesActual,scalesExpctd);
+            testCase.verifySize(coefsActual,size(coefsExpctd));
+            diff = max(abs(coefsExpctd - coefsActual));
+            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-8,...
+                sprintf('%g',diff));
+
+        end
+
+        
         %{
         % Test
         function testStepDec221Ch54Ord000Level1(testCase)
