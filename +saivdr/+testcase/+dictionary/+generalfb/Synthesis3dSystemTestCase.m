@@ -16,8 +16,10 @@ classdef Synthesis3dSystemTestCase < matlab.unittest.TestCase
     %
     
     properties (TestParameter)
+        nsubrows = { 2, 4 };
+        nsubcols = { 2, 4 };
         nsublays = { 1, 2 };
-        filterdom = { 'Spatial', 'Frequency' };
+        %filterdom = { 'Spatial', 'Frequency' };
     end
     
     properties
@@ -1549,10 +1551,9 @@ classdef Synthesis3dSystemTestCase < matlab.unittest.TestCase
         
 
         % Test
-        function testStepLevel1(testCase,nsublays,filterdom)
+        function testStepLevel1(testCase,nsubrows,nsubcols,nsublays)
             
-            nsubrows = 4;
-            nsubcols = 8;
+            filterdom = 'Spatial'; % TODO: 'Frequency'
             pordXY = 2;
             pordZ = 0;
             redundancy = 2;
@@ -1568,9 +1569,9 @@ classdef Synthesis3dSystemTestCase < matlab.unittest.TestCase
             %depth = nsublays * ndecsZ;
 
             % Filters in XY
-            nChsInXY = redundancy*ndecsY*ndecsX;
-            nChsInZ = ndecsZ;
-            nChs = nChsInXY * nChsInZ;
+            nChsXY = redundancy*ndecsY*ndecsX;
+            nChsZ = ndecsZ;
+            nChs = nChsXY * nChsZ;
             lenY = (pordXY+1)*ndecsY;
             lenX = (pordXY+1)*ndecsX;
             lenZ = (pordZ+1)*ndecsZ;                            
@@ -1592,14 +1593,6 @@ classdef Synthesis3dSystemTestCase < matlab.unittest.TestCase
                 cellfun(@(x) x(:),subCoefs,'UniformOutput',false)).';
             scales = repmat(subScales,nChs,1);  
             %
-            upsample3_ = @(x,d,p) ...
-                shiftdim(upsample(...
-                shiftdim(upsample(...
-                shiftdim(upsample(...
-                x,...
-                d(1),p(1)),1),...
-                d(2),p(2)),1),...
-                d(3),p(3)),1);
             phase = 1-mod(nDecs,2); % for phase adjustment required experimentaly
             %
             imgExpctd = 0;
@@ -1607,16 +1600,31 @@ classdef Synthesis3dSystemTestCase < matlab.unittest.TestCase
                 subImg = subCoefs{iCh};
                 % Interpolation filter
                 f = synthesisFilters(:,:,:,iCh);
-                % Upsample 
-                if ismatrix(subImg)
-                    u = shiftdim(upsample(...
-                        shiftdim(upsample(subImg,...
-                        nDecs(1),phase(1)),1),...
-                        nDecs(2),phase(2)),1);
-                    tmpImg = circshift(cat(3,u,zeros(size(u,1),size(u,2),...
-                        nDecs(3)-1)),[0 0 phase(3)]);                    
+                % Upsample in Z
+                if size(subImg,3) == 1
+                    u = cat(3,subImg,...
+                        zeros(size(subImg,1),size(subImg,2),nDecs(3)-1));
+                    v = circshift(u,[0 0 phase(3)]);                    
                 else
-                    tmpImg = upsample3_(subImg,nDecs,phase);
+                    v = ipermute(upsample(permute(subImg,...
+                        [3,1,2]),nDecs(3),phase(3)),[3,1,2]);
+                end
+                % Upsample in X
+                if size(v,2) == 1
+                    u = cat(2,v,...
+                        zeros(size(v,1),nDecs(2)-1,size(v,3)));
+                    v = circshift(u,[0 phase(2) 0]);                                        
+                else
+                    v = ipermute(upsample(permute(v,...
+                        [2,1,3]),nDecs(2),phase(2)),[2,1,3]);
+                end
+                % Upsample in Y
+                if size(v,1) == 1
+                    u = cat(1,v,...
+                        zeros(nDecs(1)-1,size(v,2),size(v,3)));
+                    tmpImg = circshift(u,[phase(1) 0 0]);                                                            
+                else
+                    tmpImg = upsample(v,nDecs(1),phase(1));
                 end
                 % Synthesize
                 imgExpctd = imgExpctd + imfilter(tmpImg,f,'circ','conv');

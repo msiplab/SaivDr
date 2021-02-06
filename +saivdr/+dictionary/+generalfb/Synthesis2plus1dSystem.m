@@ -27,7 +27,12 @@ classdef Synthesis2plus1dSystem < saivdr.dictionary.AbstSynthesisSystem
         BoundaryOperation = 'Circular'
         FilterDomain = 'Spatial'
     end
-
+    
+    properties (Hidden, Transient)
+        FilterDomainSet = ...
+            matlab.system.StringSet({'Spatial'}); % 'Frequency' is not yet supported
+    end
+    
     properties (Access = private, Nontunable)
         synthesis2dSystemInXY
         synthesis1dSystemInZ

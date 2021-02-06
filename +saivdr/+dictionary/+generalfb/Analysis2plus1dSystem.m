@@ -32,6 +32,11 @@ classdef Analysis2plus1dSystem < saivdr.dictionary.AbstAnalysisSystem
         FilterDomain = 'Spatial'
     end
     
+    properties (Hidden, Transient)
+        FilterDomainSet = ...
+            matlab.system.StringSet({'Spatial'}); % 'Frequency' is not yet supported
+    end
+    
     properties (Nontunable, PositiveInteger)
         NumberOfLevelsInXY = 1
     end

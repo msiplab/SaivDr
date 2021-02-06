@@ -9,7 +9,7 @@ classdef Synthesis3dSystem < saivdr.dictionary.AbstSynthesisSystem
     %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2015-2020, Shogo MURAMATSU
+    % Copyright (c) 2015-2021, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -32,6 +32,10 @@ classdef Synthesis3dSystem < saivdr.dictionary.AbstSynthesisSystem
             matlab.system.StringSet({'Circular'});
         FilterDomainSet = ...
             matlab.system.StringSet({'Spatial','Frequency'});
+    end
+
+    properties(DiscreteState)
+        State
     end
     
     properties (Access = private, Nontunable, PositiveInteger)
@@ -259,30 +263,46 @@ classdef Synthesis3dSystem < saivdr.dictionary.AbstSynthesisSystem
     
     methods (Access = private, Static = true)
         
+        %{
         function y = downsample3_(x,d)
-            if ismatrix(x)
-                y = shiftdim(downsample(...
-                    shiftdim(downsample(x,...
-                    d(1)),1),d(2)),1);
+            if size(x,3) > 1
+                v = ipermute(downsample(permute(x,...
+                    [3,1,2]),d(3)),[3,1,2]);
             else
-                y = shiftdim(downsample(...
-                    shiftdim(downsample(...
-                    shiftdim(downsample(x,...
-                    d(1)),1),d(2)),1),d(3)),1);
+                v = x;
+            end
+            if size(v,2) > 1
+                v = ipermute(downsample(permute(v,...
+                    [2,1,3]),d(2)),[2,1,3]);
+            end
+            if size(v,1) > 1
+                y = downsample(v,d(1));
+            else
+                y = v;
             end
         end
+        %}
         
         function y = upsample3_(x,d,p)
-            if ismatrix(x)
-                u = shiftdim(upsample(...
-                    shiftdim(upsample(x,...
-                    d(1),p(1)),1),d(2),p(2)),1);
-                y = circshift(cat(3,u,zeros(size(u,1),size(u,2),d(3)-1)),[0 0 p(3)]);
+            if size(x,3) > 1
+                v = ipermute(upsample(permute(x,...
+                    [3,1,2]),d(3),p(3)),[3,1,2]);
             else
-                y = shiftdim(upsample(...
-                    shiftdim(upsample(...
-                    shiftdim(upsample(x,...
-                    d(1),p(1)),1),d(2),p(2)),1),d(3),p(3)),1);
+                u = cat(3,x,zeros(size(x,1),size(x,2),d(3)-1));
+                v = circshift(u,[0 0 p(3)]);
+            end
+            if size(v,2) > 1
+                v = ipermute(upsample(permute(v,...
+                    [2,1,3]),d(2),p(2)),[2,1,3]);
+            else
+                u = cat(2,v,zeros(size(v,1),d(2)-1,size(v,3)));
+                v = circshift(u,[0 p(2) 0]);                
+            end
+            if size(v,1) > 1
+                y = upsample(v,d(1),p(1));
+            else
+                u = cat(1,x,zeros(d(1)-1,size(v,2),size(v,3)));
+                y = circshift(u,[p(1) 0 0]);                                
             end
         end
     end

@@ -14,6 +14,14 @@ classdef Analysis3dSystemTestCase < matlab.unittest.TestCase
     %
     % http://msiplab.eng.niigata-u.ac.jp/   
     %
+    
+    properties (TestParameter)
+        nsubrows = { 2, 4 };
+        nsubcols = { 2, 4 };        
+        nsublays = { 1, 2 };
+        %filterdom = { 'Spatial', 'Frequency' };
+    end
+    
     properties
         analyzer
     end
@@ -1986,6 +1994,91 @@ classdef Analysis3dSystemTestCase < matlab.unittest.TestCase
                 sprintf('%g',diff));
             
         end       
+        
+        % Test
+        function testStepLevel1(testCase,nsubrows,nsubcols,nsublays)            
+            
+            filterdom = 'Spatial'; % TODO: 'Frequency'
+            pordXY = 2;
+            pordZ = 0;
+            redundancy = 2;
+            ndecsX = 2;
+            ndecsY = 2;
+            ndecsZ = 2;
+            
+            % Parameters
+            import saivdr.dictionary.utility.Direction
+            nDecs = [ ndecsY ndecsX ndecsZ ];
+            height = nsubrows * ndecsY;
+            width = nsubcols * ndecsX;
+            depth = nsublays * ndecsZ;
+            srcImg = rand(height,width,depth);
+            
+            % Filters in XY
+            nChsXY = redundancy*ndecsY*ndecsX;
+            nChsZ = ndecsZ;
+            nChs = nChsXY * nChsZ;
+            lenY = (pordXY+1)*ndecsY;
+            lenX = (pordXY+1)*ndecsX;
+            lenZ = (pordZ+1)*ndecsZ;
+            analysisFilters = zeros(lenY,lenX,lenZ,nChs);
+            for iCh = 1:nChs
+                analysisFilters(:,:,:,iCh) = randn(lenY,lenX,lenZ);
+            end
+            nLevels = 1;
+            
+            % Expected values
+            import saivdr.dictionary.generalfb.*
+            %
+            nSubCoefs = numel(srcImg)/prod(nDecs);
+            coefsExpctd = zeros(1,nChs*nSubCoefs);
+            %
+            for iCh = 1:nChs
+                % Decimation filter
+                h = analysisFilters(:,:,:,iCh);
+                % Filtering
+                subImg = imfilter(srcImg,h,'conv','circ');
+                % Downsampling 
+                if size(subImg,3) > 1
+                    v = ipermute(downsample(permute(subImg,...
+                        [3,1,2]),ndecsZ),[3,1,2]);
+                else
+                    v = subImg;
+                end
+                if size(v,2) > 1
+                    v = ipermute(downsample(permute(v,...
+                        [2,1,3]),ndecsX),[2,1,3]);
+                end
+                if size(v,1) > 1
+                    subCoefs = downsample(v,ndecsY);
+                else
+                    subCoefs = v;
+                end
+                coefsExpctd((iCh-1)*nSubCoefs+1:iCh*nSubCoefs) = ...
+                    subCoefs(:).';
+            end
+            scalesExpctd = repmat(size(srcImg)./nDecs,nChs,1);
+
+            % Instantiation of target class
+            testCase.analyzer = Analysis3dSystem(...
+                'DecimationFactor',nDecs,...
+                'AnalysisFilters',analysisFilters,...
+                'NumberOfLevels',nLevels,...
+                'FilterDomain',filterdom);
+            
+            % Actual values
+            [coefsActual, scalesActual] = testCase.analyzer.step(srcImg);
+            
+            % Evaluation
+            testCase.verifySize(scalesActual,size(scalesExpctd));
+            testCase.verifyEqual(scalesActual,scalesExpctd);
+            testCase.verifySize(coefsActual,size(coefsExpctd));
+            diff = max(abs(coefsExpctd - coefsActual));
+            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-8,...
+                sprintf('%g',diff));
+
+        end
+        
     end
     
 end

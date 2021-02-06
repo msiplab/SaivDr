@@ -19,7 +19,7 @@ classdef Analysis2plus1dSystemTestCase < matlab.unittest.TestCase
         %datatype = { 'single', 'double' };
         nsubrows = struct('small', 4,'medium', 8, 'large', 16);
         nsubcols = struct('small', 4,'medium', 8, 'large', 16);
-        nsublays = { 1, 2 };
+        nsublays = { 1, 2 }; 
         ndecsX = { 1, 2 };
         ndecsY = { 1, 2 };
         ndecsZ = { 2, 4 };
@@ -107,7 +107,7 @@ classdef Analysis2plus1dSystemTestCase < matlab.unittest.TestCase
 
         % Test
         function testStepDecXYLevel1(testCase,...
-                nsubrows,nsubcols,nsublays,ndecsX,ndecsY,ndecsZ,pordXY,pordZ,redundancy)            
+                nsubrows,nsubcols,nsublays,ndecsX,ndecsY,ndecsZ,pordXY,pordZ,redundancy) 
 
             % Parameters
             import saivdr.dictionary.utility.Direction
@@ -118,56 +118,60 @@ classdef Analysis2plus1dSystemTestCase < matlab.unittest.TestCase
             srcImg = rand(height,width,depth);
 
             % Filters in XY
-            nChsInXY = redundancy*ndecsY*ndecsX;
+            nChsXY = redundancy*ndecsY*ndecsX;
             lenY = (pordXY+1)*ndecsY;
             lenX = (pordXY+1)*ndecsX;
-            analysisFiltersInXY = zeros(lenY,lenX,nChsInXY);
-            for iChInXY = 1:nChsInXY
-                analysisFiltersInXY(:,:,iChInXY) = randn(lenY,lenX);
+            analysisFiltersInXY = zeros(lenY,lenX,nChsXY);
+            for iChXY = 1:nChsXY
+                analysisFiltersInXY(:,:,iChXY) = randn(lenY,lenX);
             end
             % Filters in Z
-            nChsInZ = ndecsZ;
+            nChsZ = ndecsZ;
             lenZ = (pordZ+1)*ndecsZ;                                        
-            analysisFiltersInZ = zeros(lenZ,nChsInZ);
-            for iChInZ = 1:nChsInZ
+            analysisFiltersInZ = zeros(lenZ,nChsZ);
+            for iChInZ = 1:nChsZ
                 analysisFiltersInZ(:,iChInZ) = randn(lenZ,1);
             end          
             % Tree level
             nLevelsXY = 1;
             
             % Expected values
-            import saivdr.dictionary.utility.Direction
             import saivdr.dictionary.generalfb.*
-            nChsXY = size(analysisFiltersInXY,3);
-            nChsZ = size(analysisFiltersInZ,2);
             nChs = nChsXY * nChsZ;
             nSubCoefs = numel(srcImg)/prod(nDecs);
             coefsExpctd = zeros(1,nChs*nSubCoefs);
-            %
-            downsample2_ = @(x,d) ... % XY downsampling for 3-D data
-                shiftdim(...
-                shiftdim(downsample(...
-                shiftdim(downsample(x,d(1)),1),d(2)),1),1);
             %
             iCh = 1;
             for iSubbandZ = 1:nChsZ
                 % Decimation in Z
                 hz = analysisFiltersInZ(:,iSubbandZ);                
                 tmpImg = permute(srcImg,[3,1,2]);
-                subImgZ = downsample(...
-                    imfilter(tmpImg,hz,'conv','circ'),...
-                    nDecs(Direction.DEPTH));
+                if size(tmpImg,1) == 1
+                    subImgZ = imfilter(tmpImg,hz,'conv','circ');
+                else
+                    subImgZ = downsample(imfilter(tmpImg,hz,'conv','circ'),...
+                        nDecs(Direction.DEPTH));
+                end
                 subImgZ = ipermute(subImgZ,[3,1,2]);
                 % Decimation in X-Y
                 for iSubbandXY = 1:nChsXY
                     hxy = analysisFiltersInXY(:,:,iSubbandXY);                    
                     % Filter in XY
                     subImgXYZ = imfilter(subImgZ,hxy,'conv','circ');
-                    % Downsample in XY
-                    subCoefs = downsample2_(...
-                        subImgXYZ,nDecs(Direction.VERTICAL:Direction.HORIZONTAL));
+                    % Downsample in Y
+                    if size(subImgXYZ,1) > 1
+                        u = downsample(subImgXYZ,...
+                            nDecs(Direction.VERTICAL));
+                    else
+                        u = subImgXYZ;
+                    end
+                    % Downsample in X                    
+                    if size(u,2) > 1
+                        subCoefs = ipermute(downsample(permute(u,...
+                            [2,1,3]),nDecs(Direction.HORIZONTAL)),[2,1,3]);
+                    end
                     coefsExpctd((iCh-1)*nSubCoefs+1:iCh*nSubCoefs) = ...
-                    subCoefs(:).';
+                        subCoefs(:).';
                     %
                     iCh = iCh + 1;
                 end
@@ -194,75 +198,109 @@ classdef Analysis2plus1dSystemTestCase < matlab.unittest.TestCase
 
         end
         
+        %{
         % Test
         function testStepLevel2(testCase,...
                 nsubrows,nsubcols,nsublays,ndecsX,ndecsY,ndecsZ,pordXY,pordZ,redundancy)            
 
             % Parameters
             import saivdr.dictionary.utility.Direction
+            nLevelsXY = 2;
             nDecs = [ ndecsY ndecsX ndecsZ ];                        
-            height = nsubrows * ndecsY;
-            width = nsubcols * ndecsX;
+            height = nsubrows * (ndecsY^nLevelsXY);
+            width = nsubcols * (ndecsX^nLevelsXY);
             depth = nsublays * ndecsZ;
             srcImg = rand(height,width,depth);
 
             % Filters in XY
-            nChsInXY = redundancy*ndecsY*ndecsX;
+            nChsXY = redundancy*ndecsY*ndecsX;
             lenY = (pordXY+1)*ndecsY;
             lenX = (pordXY+1)*ndecsX;
-            analysisFiltersInXY = zeros(lenY,lenX,nChsInXY);
-            for iChInXY = 1:nChsInXY
-                analysisFiltersInXY(:,:,iChInXY) = randn(lenY,lenX);
+            analysisFiltersInXY = zeros(lenY,lenX,nChsXY);
+            for iChXY = 1:nChsXY
+                analysisFiltersInXY(:,:,iChXY) = randn(lenY,lenX);
             end
             % Filters in Z
-            nChsInZ = ndecsZ;
+            nChsZ = ndecsZ;
             lenZ = (pordZ+1)*ndecsZ;                                        
-            analysisFiltersInZ = zeros(lenZ,nChsInZ);
-            for iChInZ = 1:nChsInZ
+            analysisFiltersInZ = zeros(lenZ,nChsZ);
+            for iChInZ = 1:nChsZ
                 analysisFiltersInZ(:,iChInZ) = randn(lenZ,1);
             end          
-            % Tree level
-            nLevelsXY = 1;
             
             % Expected values
-            import saivdr.dictionary.utility.Direction
             import saivdr.dictionary.generalfb.*
-            nChsXY = size(analysisFiltersInXY,3);
-            nChsZ = size(analysisFiltersInZ,2);
-            nChs = nChsXY * nChsZ;
+            %nChs = nChsXY * nChsZ;
             %nSubCoefs = numel(srcImg)/prod(nDecs);
-            coefsExpctd = [];
-            %
             downsample2_ = @(x,d) ... % XY downsampling for 3-D data
-                shiftdim(...
-                shiftdim(downsample(...
-                shiftdim(downsample(x,d(1)),1),d(2)),1),1);
+                ipermute(downsample(...
+                permute(downsample(x,d(1)),[2,1,3]),d(2)),[2,1,3]);
             %
-            iCh = 1;
+            subCoefs = cell(nChsXY,nLevelsXY,nChsZ);
             for iSubbandZ = 1:nChsZ
                 % Decimation in Z
                 hz = analysisFiltersInZ(:,iSubbandZ);                
-                tmpImg = permute(srcImg,[3,1,2]);
-                subImgZ = downsample(...
-                    imfilter(tmpImg,hz,'conv','circ'),...
-                    nDecs(Direction.DEPTH));
-                subImgZ = ipermute(subImgZ,[3,1,2]);
+                tmpImg = permute(srcImg,[3,1,2]);                
+                if ismatrix(srcImg)
+                    subImgZ = imfilter(tmpImg,hz,'conv','circ');
+                else
+                    subImgZ = downsample(...
+                        imfilter(tmpImg,hz,'conv','circ'),...
+                        nDecs(Direction.DEPTH));
+                end
+                subImgZ = ipermute(subImgZ,[3,1,2]);                    
                 % Decimation in X-Y
+                iLvXY = 1;
                 for iSubbandXY = 1:nChsXY
                     hxy = analysisFiltersInXY(:,:,iSubbandXY);                    
                     % Filter in XY
                     subImgXYZ = imfilter(subImgZ,hxy,'conv','circ');
                     % Downsample in XY
-                    subCoefs = downsample2_(...
+                    subCoefs{iSubbandXY,iLvXY,iSubbandZ} = downsample2_(...
                         subImgXYZ,nDecs(Direction.VERTICAL:Direction.HORIZONTAL));
-                    coefsExpctd = [coefsExpctd subCoefs(:).'];
                     %
-                    iCh = iCh + 1;
+                end
+                iLvXY = iLvXY + 1;
+                for iSubbandXY = 1:nChsXY
+                    hxy = analysisFiltersInXY(:,:,iSubbandXY);                    
+                    % Filter in XY
+                    subImgXYZ = imfilter(subCoefs{1,iLvXY-1,iSubbandZ},hxy,'conv','circ');
+                    % Downsample in XY
+                    subCoefs{iSubbandXY,iLvXY,iSubbandZ} = downsample2_(...
+                        subImgXYZ,nDecs(Direction.VERTICAL:Direction.HORIZONTAL));
+                    %                    
                 end
             end
-            scalesExpctd = repmat(size(srcImg)./nDecs,nChs,1);
+            % Coefs.& scales
+            iCh = 1;
+            for iSubbandZ = 1:nChsZ
+                for iSubbandXY = 1:nChsXY
+                    coefs{iCh} = subCoefs{iSubbandXY,nLevelsXY,iSubbandZ};
+                    iCh = iCh + 1;
+                end                
+                for iLvXY = nLevelsXY-1:-1:1
+                    for iSubbandXY = 2:nChsXY
+                        coefs{iCh} = subCoefs{iSubbandXY,iLvXY,iSubbandZ};
+                        iCh = iCh + 1;
+                    end
+                end
+            end
+            nSubbands = length(coefs);
+            scalesExpctd = zeros(nSubbands,3);
+            sIdx = 1;
+            for iSubband = 1:nSubbands
+                tmpCoefs = coefs{iSubband};
+                if ismatrix(tmpCoefs)
+                    scalesExpctd(iSubband,:) = [ size(tmpCoefs) 1 ];
+                else
+                    scalesExpctd(iSubband,:) = size(tmpCoefs);
+                end
+                eIdx = sIdx + prod(scalesExpctd(iSubband,:))-1;
+                coefsExpctd(sIdx:eIdx) = coefs{iSubband}(:).';
+                sIdx = eIdx + 1;
+            end
 
-            % Instantiation of target class
+             % Instantiation of target class
             testCase.analyzer = Analysis2plus1dSystem(...
                 'DecimationFactor',nDecs,...
                 'AnalysisFiltersInXY',analysisFiltersInXY,...
@@ -281,6 +319,7 @@ classdef Analysis2plus1dSystemTestCase < matlab.unittest.TestCase
                 sprintf('%g',diff));
 
         end
+        %}
 
         %{
         % Test
