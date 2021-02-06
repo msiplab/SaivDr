@@ -198,7 +198,6 @@ classdef Analysis2plus1dSystemTestCase < matlab.unittest.TestCase
 
         end
         
-        %{
         % Test
         function testStepLevel2(testCase,...
                 nsubrows,nsubcols,nsublays,ndecsX,ndecsY,ndecsZ,pordXY,pordZ,redundancy)            
@@ -230,8 +229,6 @@ classdef Analysis2plus1dSystemTestCase < matlab.unittest.TestCase
             
             % Expected values
             import saivdr.dictionary.generalfb.*
-            %nChs = nChsXY * nChsZ;
-            %nSubCoefs = numel(srcImg)/prod(nDecs);
             downsample2_ = @(x,d) ... % XY downsampling for 3-D data
                 ipermute(downsample(...
                 permute(downsample(x,d(1)),[2,1,3]),d(2)),[2,1,3]);
@@ -319,7 +316,6 @@ classdef Analysis2plus1dSystemTestCase < matlab.unittest.TestCase
                 sprintf('%g',diff));
 
         end
-        %}
 
         %{
         % Test
