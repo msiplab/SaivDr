@@ -547,8 +547,6 @@ classdef Synthesis2plus1dSystemTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-10,sprintf('%g',diff));
         end
    
-        
-        
         %{
         % Test
         function testStepDec222Ch54Ord000Level1(testCase)
