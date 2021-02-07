@@ -1551,7 +1551,7 @@ classdef Synthesis3dSystemTestCase < matlab.unittest.TestCase
         
 
         % Test
-        function testStepLevel1(testCase,nsubrows,nsubcols,nsublays)
+        function testStepDec222Level1(testCase,nsubrows,nsubcols,nsublays)
             
             filterdom = 'Spatial'; % TODO: 'Frequency'
             pordXY = 2;
@@ -1647,6 +1647,104 @@ classdef Synthesis3dSystemTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-10,sprintf('%g',diff));
         end
 
+        % Test
+        function testStepDec112Level1(testCase,nsubrows,nsubcols,nsublays)
+            
+            filterdom = 'Spatial'; % TODO: 'Frequency'
+            pordXY = 2;
+            pordZ = 0;
+            redundancy = 1;
+            ndecsX = 1;
+            ndecsY = 1;
+            ndecsZ = 2;
+            
+            % Parameters
+            import saivdr.dictionary.utility.Direction
+            nDecs = [ ndecsY ndecsX ndecsZ ];
+            %height = nsubrows * ndecsY;
+            %width = nsubcols * ndecsX;
+            %depth = nsublays * ndecsZ;
+
+            % Filters in XY
+            nChsXY = redundancy*ndecsY*ndecsX;
+            nChsZ = ndecsZ;
+            nChs = nChsXY * nChsZ;
+            lenY = (pordXY+1)*ndecsY;
+            lenX = (pordXY+1)*ndecsX;
+            lenZ = (pordZ+1)*ndecsZ;                            
+            synthesisFilters = zeros(lenY,lenX,lenZ,nChs);
+            for iCh = 1:nChs
+                synthesisFilters(:,:,:,iCh) = randn(lenY,lenX,lenZ);
+            end
+            %nLevels = 1;
+            
+            % Expected values
+            import saivdr.dictionary.generalfb.*            
+            %
+            subCoefs = cell(nChs,1);
+            subScales = [nsubrows, nsubcols, nsublays];
+            for iCh = 1:nChs
+                subCoefs{iCh} = randn(subScales);
+            end
+            coefs = cell2mat(...
+                cellfun(@(x) x(:),subCoefs,'UniformOutput',false)).';
+            scales = repmat(subScales,nChs,1);  
+            %
+            phase = 1-mod(nDecs,2); % for phase adjustment required experimentaly
+            %
+            imgExpctd = 0;
+            for iCh = 1:nChs
+                subImg = subCoefs{iCh};
+                % Interpolation filter
+                f = synthesisFilters(:,:,:,iCh);
+                % Upsample in Z
+                if size(subImg,3) == 1
+                    u = cat(3,subImg,...
+                        zeros(size(subImg,1),size(subImg,2),nDecs(3)-1));
+                    v = circshift(u,[0 0 phase(3)]);                    
+                else
+                    v = ipermute(upsample(permute(subImg,...
+                        [3,1,2]),nDecs(3),phase(3)),[3,1,2]);
+                end
+                % Upsample in X
+                if size(v,2) == 1
+                    u = cat(2,v,...
+                        zeros(size(v,1),nDecs(2)-1,size(v,3)));
+                    v = circshift(u,[0 phase(2) 0]);                                        
+                else
+                    v = ipermute(upsample(permute(v,...
+                        [2,1,3]),nDecs(2),phase(2)),[2,1,3]);
+                end
+                % Upsample in Y
+                if size(v,1) == 1
+                    u = cat(1,v,...
+                        zeros(nDecs(1)-1,size(v,2),size(v,3)));
+                    tmpImg = circshift(u,[phase(1) 0 0]);                                                            
+                else
+                    tmpImg = upsample(v,nDecs(1),phase(1));
+                end
+                % Synthesize
+                imgExpctd = imgExpctd + imfilter(tmpImg,f,'circ','conv');
+            end
+
+            % Instantiation of target class
+            testCase.synthesizer = Synthesis3dSystem(...
+                'DecimationFactor',nDecs,...
+                'SynthesisFilters',synthesisFilters,...
+                'FilterDomain',filterdom);
+            
+            % Actual values
+            imgActual = ...
+                testCase.synthesizer.step(coefs,scales);
+            
+            % Evaluation
+            testCase.verifySize(imgActual,size(imgExpctd),...
+                'Actual image size is different from the expected one.');
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-10,sprintf('%g',diff));
+        end
+
+        
     end
     
 end

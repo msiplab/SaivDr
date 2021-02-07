@@ -66,7 +66,7 @@ classdef Synthesis2plus1dSystem < saivdr.dictionary.AbstSynthesisSystem
         end
 
     end
-    
+
     
     methods (Access = protected)
         
@@ -74,21 +74,26 @@ classdef Synthesis2plus1dSystem < saivdr.dictionary.AbstSynthesisSystem
         end
             
         function recImg = stepImpl(obj,coefs,scales)
-            nChsInZ = size(obj.SynthesisFiltersInZ,2);
-            nChsInXY = size(obj.SynthesisFiltersInXY,3); % TODO: extension to multilevel
+            nChsZ = size(obj.SynthesisFiltersInZ,2);
+            %nChsXY = size(obj.SynthesisFiltersInXY,3); % TODO: extension to multilevel
+            nChsXY = size(scales,1)/nChsZ;
             % Synthesize in XY
             sidx = 1;
             scalesInZ = [];
             coefsInZ = [];
-            for iChInZ = 1:nChsInZ
+            for iChZ = 1:nChsZ
                 % Get Coefs. and scales
-                subScales = scales((iChInZ-1)*nChsInXY+1:iChInZ*nChsInXY,:); 
+                subScales = scales((iChZ-1)*nChsXY+1:iChZ*nChsXY,:); 
                 eidx = sidx + sum(prod(subScales,2))-1;
                 subCoefs = coefs(sidx:eidx);
                 subImgInZ = ...
                     obj.synthesis2dSystemInXY.step(subCoefs,subScales);      
                 % Prepare Coefs. and scales for synthesizing in Z
-                scalesInZ = [ scalesInZ; size(subImgInZ) ];
+                if size(subImgInZ,3)==1
+                    scalesInZ = [ scalesInZ; [size(subImgInZ) 1] ];
+                else
+                    scalesInZ = [ scalesInZ; size(subImgInZ) ];
+                end
                 coefsInZ = [ coefsInZ subImgInZ(:).' ];
                 %
                 sidx = eidx + 1;
