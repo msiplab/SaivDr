@@ -392,6 +392,162 @@ classdef Synthesis2plus1dSystemTestCase < matlab.unittest.TestCase
             diff = max(abs(imgExpctd(:) - imgActual(:)));
             testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-10,sprintf('%g',diff));
         end
+    
+        % Test
+        function testStepLevelN(testCase,ndecsX,ndecsY,ndecsZ,nlevels)
+            
+            redundancy_ = 2;
+            nsubrows_ = 4;
+            nsubcols_ = 2;
+            nsublays_ = 1;
+            pordXY_ = 4;
+            pordZ_ = 0;
+            
+            % Parameters
+            import saivdr.dictionary.utility.Direction
+            nLevelsXY = nlevels;
+            nDecs = [ ndecsY ndecsX ndecsZ ];
+            
+            % Filters in XY
+            nChsXY = redundancy_*ndecsY*ndecsX;
+            lenY = (pordXY_+1)*ndecsY;
+            lenX = (pordXY_+1)*ndecsX;
+            synthesisFiltersInXY = zeros(lenY,lenX,nChsXY);
+            for iChXY = 1:nChsXY
+                synthesisFiltersInXY(:,:,iChXY) = randn(lenY,lenX);
+            end
+            % Filters in Z
+            nChsZ = ndecsZ;
+            lenZ = (pordZ_+1)*ndecsZ;                
+            synthesisFiltersInZ = zeros(lenZ,nChsZ);
+            for iChInZ = 1:nChsZ
+                synthesisFiltersInZ(:,iChInZ) = randn(lenZ,1);
+            end            
+            
+            % Expected values
+            import saivdr.dictionary.generalfb.*      
+            %
+            subCoefs = [];
+            scales = [];
+            for iChZ = 1:nChsZ
+                subScales = [nsubrows_, nsubcols_, nsublays_];
+                for iLvXY = nLevelsXY:-1:1
+                    for iChXY = 1:nChsXY
+                        if (iChXY ~= 1 || iLvXY == nLevelsXY)
+                            subCoefs{iChXY,iLvXY,iChZ} = ...
+                                randn(subScales);
+                            scales = cat(1,scales,subScales);
+                        end
+                    end
+                    subScales = subScales.*[ ndecsY ndecsX 1 ]; 
+                end
+            end
+            % Coefs.& scales
+            nSubbands = nChsZ*( nChsXY + (nLevelsXY-1)*(nChsXY-1) );
+            iSubband = 1;
+            coefsZ = cell(nSubbands,1);
+            for iChZ = 1:nChsZ
+                for iChXY = 1:nChsXY
+                    coefsZ{iSubband} = subCoefs{iChXY,nLevelsXY,iChZ};
+                    iSubband = iSubband + 1;
+                end                
+                for iLvXY = nLevelsXY-1:-1:1
+                    for iChXY = 2:nChsXY
+                        coefsZ{iSubband} = subCoefs{iChXY,iLvXY,iChZ};
+                        iSubband = iSubband + 1;
+                    end
+                end
+            end
+            coefs = cell2mat(...
+                cellfun(@(x) x(:),coefsZ,'UniformOutput',false)).';
+            %
+            phase = 1-mod(nDecs,2); % for phase adjustment required experimentaly
+            %
+            imgExpctd = 0;
+            for iChZ = 1:nChsZ
+                subImgInZ = 0;
+                for iLvXY = nLevelsXY:-1:1
+                    % Interpolation in XY
+                    for iChXY = 1:nChsXY
+                        if iChXY == 1 && iLvXY ~= nLevelsXY
+                            subImgInXY = subImgInZ;
+                            subImgInZ = 0;
+                        else
+                            subImgInXY = subCoefs{iChXY,iLvXY,iChZ};
+                        end
+                        fxy = synthesisFiltersInXY(:,:,iChXY);
+                        % Upsample in Y
+                        if nDecs(Direction.VERTICAL) > 1 && ...
+                                size(subImgInXY,1) == 1
+                            tmpImg = cat(1,subImgInXY,...
+                                zeros(...
+                                nDecs(Direction.VERTICAL)-1,...
+                                size(subImgInXY,2),...
+                                size(subImgInXY,3)));
+                            tmpImg = circshift(tmpImg,phase.*[1 0 0]);
+                        else
+                            tmpImg = upsample(subImgInXY,...
+                                nDecs(Direction.VERTICAL),...
+                                phase(Direction.VERTICAL));
+                        end
+                        % Upsample in X
+                        if nDecs(Direction.HORIZONTAL) > 1 && ...
+                                size(tmpImg,2) == 1
+                            tmpImg = cat(2,tmpImg,...
+                                zeros(...
+                                size(tmpImg,1),...
+                                nDecs(Direction.HORIZONTAL)-1,...
+                                size(tmpImg,3)));
+                            tmpImg = circshift(tmpImg,phase.*[0 1 0]);
+                        else
+                            tmpImg = ipermute(upsample(permute(tmpImg,[2,1,3]),...
+                                nDecs(Direction.HORIZONTAL),...
+                                phase(Direction.HORIZONTAL)),[2,1,3]);
+                        end
+                        % Filter in XY
+                        subImgInZ = subImgInZ ...
+                            + imfilter(tmpImg,fxy,'circ','conv');
+                    end
+                end
+                fz = synthesisFiltersInZ(:,iChZ);
+                % Interpolation in Z
+                if nDecs(Direction.DEPTH) > 1 && ...
+                        size(subImgInZ,3)==1
+                    % Upsample in Z and permute
+                    tmpImg = cat(3,subImgInZ,...
+                        zeros(...
+                        size(subImgInZ,1),...
+                        size(subImgInZ,2),...
+                        nDecs(Direction.DEPTH)-1));
+                    tmpImg = circshift(tmpImg,phase.*[0 0 1]);
+                    tmpImg = permute(tmpImg,[3,1,2]);
+                else
+                    % Upsample in Z and permute
+                    tmpImg = upsample(permute(subImgInZ,[3,1,2]),...
+                        nDecs(Direction.DEPTH),phase(Direction.DEPTH));
+                end
+                imgExpctd = imgExpctd ...
+                    + ipermute(imfilter(tmpImg,fz,'circ','conv'),[3,1,2]);
+            end
+            
+            % Instantiation of target class
+            testCase.synthesizer = Synthesis2plus1dSystem(...
+                'DecimationFactor',nDecs,...
+                'SynthesisFiltersInXY',synthesisFiltersInXY,...
+                'SynthesisFiltersInZ',synthesisFiltersInZ);
+            
+            % Actual values
+            imgActual = ...
+                testCase.synthesizer.step(coefs,scales);
+            
+            % Evaluation
+            testCase.verifySize(imgActual,size(imgExpctd),...
+                'Actual image size is different from the expected one.');
+            diff = max(abs(imgExpctd(:) - imgActual(:)));
+            testCase.verifyEqual(imgActual,imgExpctd,'AbsTol',1e-10,sprintf('%g',diff));
+        end
+   
+        
         
         %{
         % Test
