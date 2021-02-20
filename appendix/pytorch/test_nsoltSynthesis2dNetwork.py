@@ -1,7 +1,12 @@
 import unittest
+from parameterized import parameterized
+import itertools
 import torch
 import torch.nn as nn
 from nsoltSynthesis2dNetwork import NsoltSynthesis2dNetwork
+
+nchs = [ [2, 2], [3, 3], [4, 4] ]
+stride = [ [1, 1], [1, 2], [2, 2] ]
 
 class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
     """
@@ -20,7 +25,7 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
     
         http://msiplab.eng.niigata-u.ac.jp/
     """
-    parameterized.expand(
+    @parameterized.expand(
         list(itertools.product(nchs,stride))
     )
     def testConstructor(self,
@@ -51,6 +56,7 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
         valueExpctd = 0.0
         valueActual = target.forward(x)
         self.assertEqual(valueExpctd, valueActual)
+
 
 """
         % Test
