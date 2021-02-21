@@ -416,18 +416,47 @@ classdef Analysis3dSystem < saivdr.dictionary.AbstAnalysisSystem
     
     methods (Access = private, Static = true)
         
+        
         function y = downsample3_(x,d)
-            y = shiftdim(downsample(...
-                shiftdim(downsample(...
-                shiftdim(downsample(x,...
-                d(1)),1),d(2)),1),d(3)),1);
+            if size(x,3) > 1
+                v = ipermute(downsample(permute(x,...
+                    [3,1,2]),d(3)),[3,1,2]);
+            else
+                v = x;
+            end
+            if size(v,2) > 1
+                v = ipermute(downsample(permute(v,...
+                    [2,1,3]),d(2)),[2,1,3]);
+            end
+            if size(v,1) > 1
+                y = downsample(v,d(1));
+            else
+                y = v;
+            end
         end
         
+        
         function y = upsample3_(x,d,p)
-            y = shiftdim(upsample(...
-                shiftdim(upsample(...
-                shiftdim(upsample(x,...
-                d(1),p(1)),1),d(2),p(2)),1),d(3),p(3)),1);
+            if size(x,3) > 1
+                v = ipermute(upsample(permute(x,...
+                    [3,1,2]),d(3),p(3)),[3,1,2]);
+            else
+                u = cat(3,x,zeros(size(x,1),size(x,2),d(3)-1));
+                v = circshift(u,[0 0 p(3)]);
+            end
+            if size(v,2) > 1
+                v = ipermute(upsample(permute(v,...
+                    [2,1,3]),d(2),p(2)),[2,1,3]);
+            else
+                u = cat(2,v,zeros(size(v,1),d(2)-1,size(v,3)));
+                v = circshift(u,[0 p(2) 0]);
+            end
+            if size(v,1) > 1
+                y = upsample(v,d(1),p(1));
+            else
+                u = cat(1,x,zeros(d(1)-1,size(v,2),size(v,3)));
+                y = circshift(u,[p(1) 0 0]);
+            end
         end
     end
     
