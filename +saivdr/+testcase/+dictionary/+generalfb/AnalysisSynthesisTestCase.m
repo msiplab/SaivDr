@@ -3,7 +3,7 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
     %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2015-2020, Shogo MURAMATSU
+    % Copyright (c) 2015-2021, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -14,6 +14,11 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
     %
     % http://msiplab.eng.niigata-u.ac.jp/
     %
+    
+     properties (TestParameter)       
+        nlevels = { 1, 3, 5 };
+    end
+
     properties
         analyzer
         synthesizer
@@ -3021,6 +3026,67 @@ classdef AnalysisSynthesisTestCase < matlab.unittest.TestCase
                 sprintf('diff = %g',diff));
         end
                 
+        % Test
+        function test2plus1dSystem(testCase,nlevels)
+            
+            nsubrows_ = 32;
+            nsubcols_ = 16;
+            nsublays_ = 1;
+            ndecsY = 2;
+            ndecsX = 2;
+            ndecsZ = 4;
+            
+             % Parameters
+            import saivdr.dictionary.utility.Direction
+            nLevelsXY = nlevels;
+            nDecs = [ ndecsY ndecsX ndecsZ ];                        
+            height = nsubrows_ * (ndecsY^nLevelsXY);
+            width = nsubcols_ * (ndecsX^nLevelsXY);
+            depth = nsublays_ * ndecsZ;
+            srcImg = rand(height,width,depth);
+
+            % Analysis filters in XY
+            analysisFiltersInXY(:,:,1) = [ 1 1; 1 1 ]/2;
+            analysisFiltersInXY(:,:,2) = [ 1 -1; 1 -1 ]/2;
+            analysisFiltersInXY(:,:,3) = [ 1 1; -1 -1 ]/2;
+            analysisFiltersInXY(:,:,4) = [ 1 -1; -1 1 ]/2;
+            % Synthesis filters in XY
+            synthesisFiltersInXY(:,:,1) = [ 1 1; 1 1 ]/2;
+            synthesisFiltersInXY(:,:,2) = [ -1 1; -1 1 ]/2;
+            synthesisFiltersInXY(:,:,3) = [ -1 -1; 1 1 ]/2;
+            synthesisFiltersInXY(:,:,4) = [ 1 -1; -1 1 ]/2;
+            
+            % Analysis filters in Z
+            analysisFiltersInZ = flipud(dctmtx(ndecsZ).');
+            % Synthesis filters in Z
+            synthesisFiltersInZ = dctmtx(ndecsZ).';
+
+            % Instantiation of targets
+            import saivdr.dictionary.generalfb.*
+            testCase.analyzer = Analysis2plus1dSystem(...
+                'DecimationFactor',nDecs,...
+                'AnalysisFiltersInXY',analysisFiltersInXY,...
+                'AnalysisFiltersInZ',analysisFiltersInZ,...
+                'NumberOfLevelsInXY',nLevelsXY);
+            testCase.synthesizer = Synthesis2plus1dSystem(...
+                'DecimationFactor',nDecs,...
+                'SynthesisFiltersInXY',synthesisFiltersInXY,...
+                'SynthesisFiltersInZ',synthesisFiltersInZ);
+  
+            % Step
+            [ coefs, scales ] = step(testCase.analyzer,srcImg);
+            recImg = step(testCase.synthesizer,coefs,scales);
+            
+            % Evaluation
+            diff = abs(norm(coefs(:))-norm(srcImg(:)));
+            testCase.verifyEqual(norm(coefs(:)),norm(srcImg(:)),...
+                'AbsTol',1e-10,sprintf('diff = %g',diff));
+            testCase.verifySize(recImg,[ height width depth ]);
+            diff = max(abs(recImg(:)-srcImg(:)));
+            testCase.verifyEqual(recImg,srcImg,'AbsTol',1e-14,...
+                sprintf('diff = %g',diff));
+        end
+        
     end
     
 end

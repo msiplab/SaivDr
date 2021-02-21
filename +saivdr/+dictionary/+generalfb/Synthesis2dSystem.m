@@ -84,7 +84,9 @@ classdef Synthesis2dSystem < saivdr.dictionary.AbstSynthesisSystem
         
         function setupImpl(obj,~,scales)
             import saivdr.dictionary.utility.Direction
-            
+            if obj.nChs < 2
+                error('SaivDr: # of channels should be greater than 1.');
+            end
             % Set up for frequency domain filtering
             isFrequency_ = strcmp(obj.FilterDomain,'Frequency');
             if obj.UseGpu && isFrequency_
