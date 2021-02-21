@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 from nsoltBlockDct2dLayer import NsoltBlockDct2dLayer 
 from nsoltInitialRotation2dLayer import NsoltInitialRotation2dLayer 
+from nsoltLayerExceptions import InvalidNumberOfChannels, InvalidPolyPhaseOrder
 
 class NsoltAnalysis2dNetwork(nn.Module):
     """
@@ -22,10 +23,27 @@ class NsoltAnalysis2dNetwork(nn.Module):
     """
     def __init__(self,
         number_of_channels=[],
-        decimation_factor=[]):
+        decimation_factor=[],
+        polyphase_order=[0,0]):
         super(NsoltAnalysis2dNetwork, self).__init__()
+
+        # Check and set parameters
+        # # of channels
+        if number_of_channels[0] != number_of_channels[1]:
+            raise InvalidNumberOfChannels(
+            '[%d %d] : Currently, Type-I NSOLT is only suported, where the symmetric and antisymmetric channel numbers should be the same.'\
+            % (number_of_channels[0], number_of_channels[1]))
         self.number_of_channels = number_of_channels
+
+        # Decimaton factor
         self.decimation_factor = decimation_factor
+
+        # Polyphase order
+        if any(torch.tensor(polyphase_order)%2):
+            raise InvalidPolyPhaseOrder(
+            '%d + %d :  Currently, even polyphase orders are only supported.'\
+            % (polyphase_order[0], polyphase_order[1]))
+        self.polyphase_order = polyphase_order
 
         # Instantiation of layers
         self.layerE0 = NsoltBlockDct2dLayer(

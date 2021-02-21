@@ -13,3 +13,11 @@ class InvalidMode(Exception):
 class InvalidMus(Exception):
     def __init__(self,msg):
         super().__init__(self,msg)
+
+class InvalidNumberOfChannels(Exception):
+    def __init__(self,msg):
+        super().__init__(self,msg)
+
+class InvalidPolyPhaseOrder(Exception):
+    def __init__(self,msg):
+        super().__init__(self,msg)

@@ -6,10 +6,12 @@ import torch
 import torch.nn as nn
 import torch_dct as dct
 from nsoltAnalysis2dNetwork import NsoltAnalysis2dNetwork
+from nsoltLayerExceptions import InvalidNumberOfChannels, InvalidPolyPhaseOrder
 from nsoltUtility import Direction
 
 nchs = [ [2, 2], [3, 3], [4, 4] ]
 stride = [ [1, 1], [1, 2], [2, 2] ]
+ppord = [ [0,0], [2,2] ]
 datatype = [ torch.float, torch.double ]
 height = [ 8, 16, 32 ]
 width = [ 8, 16, 32 ]
@@ -109,6 +111,50 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
         self.assertEqual(actualZ.dtype,datatype)         
         self.assertTrue(torch.allclose(actualZ,expctdZ,rtol=rtol,atol=atol))
         self.assertFalse(actualZ.requires_grad)
+
+    @parameterized.expand(
+        list(itertools.product(nchs,stride))
+    )
+    def testNumberOfChannelsException(self,
+        nchs,stride):
+        ps,pa = nchs
+        with self.assertRaises(InvalidNumberOfChannels):
+            NsoltAnalysis2dNetwork(
+                number_of_channels = [ps,ps+1],
+                decimation_factor = stride
+            )
+
+        with self.assertRaises(InvalidNumberOfChannels):
+            NsoltAnalysis2dNetwork(
+                number_of_channels = [pa+1,pa],
+                decimation_factor = stride
+            )
+
+    @parameterized.expand(
+        list(itertools.product(nchs,stride,ppord))
+    )
+    def testNumberOfPolyPhaseOrderException(self,
+        nchs,stride,ppord):
+        with self.assertRaises(InvalidPolyPhaseOrder):
+            NsoltAnalysis2dNetwork(
+                polyphase_order = [ ppord[0]+1, ppord[1] ],
+                number_of_channels = nchs,
+                decimation_factor = stride
+            )
+
+        with self.assertRaises(InvalidPolyPhaseOrder):
+            NsoltAnalysis2dNetwork(
+                polyphase_order = [ ppord[0], ppord[1]+1 ],
+                number_of_channels = nchs,
+                decimation_factor = stride
+            )
+
+        with self.assertRaises(InvalidPolyPhaseOrder):
+            NsoltAnalysis2dNetwork(
+                polyphase_order = [ ppord[0]+1, ppord[1]+1 ],
+                number_of_channels = nchs,
+                decimation_factor = stride
+            )
 
 """
         % Test
