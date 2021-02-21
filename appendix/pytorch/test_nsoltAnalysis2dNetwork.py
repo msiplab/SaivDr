@@ -6,7 +6,7 @@ import torch
 import torch.nn as nn
 import torch_dct as dct
 from nsoltAnalysis2dNetwork import NsoltAnalysis2dNetwork
-from nsoltLayerExceptions import InvalidNumberOfChannels, InvalidPolyPhaseOrder
+from nsoltLayerExceptions import InvalidNumberOfChannels, InvalidPolyPhaseOrder, InvalidNumberOfVanishingMoments
 from nsoltUtility import Direction
 
 nchs = [ [2, 2], [3, 3], [4, 4] ]
@@ -43,6 +43,8 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
         # Expcted values
         expctdNchs = nchs
         expctdStride = stride
+        expctdPpord = [0,0]
+        expctdNvms = 1        
 
         # Instantiation of target class
         network = NsoltAnalysis2dNetwork(
@@ -53,11 +55,15 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
         # Actual values
         actualNchs = network.number_of_channels
         actualStride = network.decimation_factor
+        actualPpord = network.polyphase_order
+        actualNvms = network.number_of_vanishing_moments        
 
         # Evaluation
         self.assertTrue(isinstance(network, nn.Module))
         self.assertEqual(actualNchs,expctdNchs)
         self.assertEqual(actualStride,expctdStride)
+        self.assertEqual(actualPpord,expctdPpord)
+        self.assertEqual(actualNvms,expctdNvms)                
 
     @parameterized.expand(
         list(itertools.product(nchs,stride,height,width,datatype))
@@ -156,49 +162,30 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
                 decimation_factor = stride
             )
 
-"""
-        % Test
-        function testDefaultConstructionTypeI(testCase)
-            
-            % Expected values
-            import saivdr.dictionary.nsoltx.*
-            lppufbExpctd = OvsdLpPuFb2dTypeIVm1System(...
-                'OutputMode','ParameterMatrixSet');
-            
-            % Instantiation
-            testCase.analyzer = NsoltAnalysis2dSystem();
-            
-            % Actual value
-            lppufbActual = get(testCase.analyzer,'LpPuFb2d');
-            
-            % Evaluation
-            testCase.assertEqual(lppufbActual,lppufbExpctd);
-        end
+    @parameterized.expand(
+        list(itertools.product(nchs,stride,ppord))
+    )
+    def testNumberOfVanishingMomentsException(self,
+        nchs,stride,ppord):
+        nVm = -1
+        with self.assertRaises(InvalidNumberOfVanishingMoments):
+            NsoltAnalysis2dNetwork(
+                number_of_channels = nchs,
+                decimation_factor = stride,
+                polyphase_order = ppord,
+                number_of_vanishing_moments = nVm
+            )
 
-        % Test
-        function testDefaultConstruction4plus4(testCase)
-            
-            % Preperation
-            nChs = [4 4];
-            
-            % Expected values
-            import saivdr.dictionary.nsoltx.*
-            lppufbExpctd = OvsdLpPuFb2dTypeIVm1System(...
-                'NumberOfChannels',nChs,...
-                'OutputMode','ParameterMatrixSet');
-            
-            % Instantiation
-            import saivdr.dictionary.nsoltx.ChannelGroup
-            testCase.analyzer = NsoltAnalysis2dSystem(...
-                'NumberOfSymmetricChannels',nChs(ChannelGroup.UPPER),...
-                'NumberOfAntisymmetricChannels',nChs(ChannelGroup.LOWER));
-            
-            % Actual value
-            lppufbActual = get(testCase.analyzer,'LpPuFb2d');
-            
-            % Evaluation
-            testCase.assertEqual(lppufbActual,lppufbExpctd);
-        end        
+        nVm = 2
+        with self.assertRaises(InvalidNumberOfVanishingMoments):
+            NsoltAnalysis2dNetwork(
+                number_of_channels = nchs,
+                decimation_factor = stride,
+                polyphase_order = ppord,
+                number_of_vanishing_moments = nVm
+            )
+
+"""
 
         % Test
         function testStepDec11Ch4Ord00Level1Vm0(testCase)

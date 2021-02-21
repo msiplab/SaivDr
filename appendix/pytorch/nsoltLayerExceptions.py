@@ -21,3 +21,7 @@ class InvalidNumberOfChannels(Exception):
 class InvalidPolyPhaseOrder(Exception):
     def __init__(self,msg):
         super().__init__(self,msg)
+
+class InvalidNumberOfVanishingMoments(Exception):
+    def __init__(self,msg):
+        super().__init__(self,msg)
