@@ -10,7 +10,7 @@ datatype = [ torch.float, torch.double ]
 nrows = [ 4, 8, 16 ]
 ncols = [ 4, 8, 16 ]
 
-class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
+class NsoltChannelSeparation2dLayerTestCase(unittest.TestCase):
     """
     NSOLTCHANNELSEPARATION2DLAYERTESTCASE
     

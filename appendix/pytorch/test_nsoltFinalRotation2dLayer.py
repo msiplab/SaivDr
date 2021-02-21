@@ -163,7 +163,7 @@ class NsoltFinalRotation2dLayerTestCase(unittest.TestCase):
     )
     def testPredictGrayscaleWithRandomAnglesNoDcLeackage(self,
         datatype,nchs,stride,nrows,ncols,mus):
-        rtol,atol=1e-4,1e-7
+        rtol,atol=1e-3,1e-6
         gen = OrthonormalMatrixGenerationSystem(dtype=datatype)
 
         # Parameters
