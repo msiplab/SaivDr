@@ -1,15 +1,17 @@
+import itertools
 import unittest
 from parameterized import parameterized
-import itertools
 import math
 import torch
 import torch.nn as nn
 import torch_dct as dct
 from nsoltSynthesis2dNetwork import NsoltSynthesis2dNetwork
+from nsoltLayerExceptions import InvalidNumberOfChannels, InvalidPolyPhaseOrder, InvalidNumberOfVanishingMoments
 from nsoltUtility import Direction
 
 nchs = [ [2, 2], [3, 3], [4, 4] ]
 stride = [ [1, 1], [1, 2], [2, 2] ]
+ppord = [ [0,0], [2,2] ]
 datatype = [ torch.float, torch.double ]
 height = [ 8, 16, 32 ]
 width = [ 8, 16, 32 ]
@@ -40,6 +42,8 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
         # Expcted values
         expctdNchs = nchs
         expctdStride = stride
+        expctdPpord = [0,0]        
+        expctdNvms = 1
 
         # Instantiation of target class
         network = NsoltSynthesis2dNetwork(
@@ -50,11 +54,15 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
         # Actual values
         actualNchs = network.number_of_channels
         actualStride = network.decimation_factor
+        actualPpord = network.polyphase_order        
+        actualNvms = network.number_of_vanishing_moments
 
         # Evaluation
         self.assertTrue(isinstance(network, nn.Module))
         self.assertEqual(actualNchs,expctdNchs)
         self.assertEqual(actualStride,expctdStride)
+        self.assertEqual(actualPpord,expctdPpord)        
+        self.assertEqual(actualNvms,expctdNvms)        
 
     @parameterized.expand(
         list(itertools.product(nchs,stride,height,width,datatype))
@@ -104,6 +112,73 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
         self.assertEqual(actualZ.dtype,datatype)
         self.assertTrue(torch.allclose(actualZ,expctdZ,rtol=rtol,atol=atol))
         self.assertFalse(actualZ.requires_grad)
+
+    @parameterized.expand(  
+        list(itertools.product(nchs,stride))
+    )
+    def testNumberOfChannelsException(self,
+        nchs,stride):
+        ps,pa = nchs
+        with self.assertRaises(InvalidNumberOfChannels):
+            NsoltSynthesis2dNetwork(
+                number_of_channels = [ps,ps+1],
+                decimation_factor = stride
+            )
+
+        with self.assertRaises(InvalidNumberOfChannels):
+            NsoltSynthesis2dNetwork(
+                number_of_channels = [pa+1,pa],
+                decimation_factor = stride
+            )
+
+    @parameterized.expand(
+        list(itertools.product(nchs,stride,ppord))
+    )
+    def testNumberOfPolyPhaseOrderException(self,
+        nchs,stride,ppord):
+        with self.assertRaises(InvalidPolyPhaseOrder):
+            NsoltSynthesis2dNetwork(
+                polyphase_order = [ ppord[0]+1, ppord[1] ],
+                number_of_channels = nchs,
+                decimation_factor = stride
+            )
+
+        with self.assertRaises(InvalidPolyPhaseOrder):
+            NsoltSynthesis2dNetwork(
+                polyphase_order = [ ppord[0], ppord[1]+1 ],
+                number_of_channels = nchs,
+                decimation_factor = stride
+            )
+
+        with self.assertRaises(InvalidPolyPhaseOrder):
+            NsoltSynthesis2dNetwork(
+                polyphase_order = [ ppord[0]+1, ppord[1]+1 ],
+                number_of_channels = nchs,
+                decimation_factor = stride
+            )
+
+    @parameterized.expand(
+        list(itertools.product(nchs,stride,ppord))
+    )
+    def testNumberOfVanishingMomentsException(self,
+        nchs,stride,ppord):
+        nVm = -1
+        with self.assertRaises(InvalidNumberOfVanishingMoments):
+            NsoltSynthesis2dNetwork(
+                number_of_channels = nchs,
+                decimation_factor = stride,
+                polyphase_oder = ppord,
+                number_of_vanishing_moments = nVm
+            )
+
+        nVm = 2
+        with self.assertRaises(InvalidNumberOfVanishingMoments):
+            NsoltSynthesis2dNetwork(
+                number_of_channels = nchs,
+                decimation_factor = stride,
+                polyphase_oder = ppord,
+                number_of_vanishing_moments = nVm
+            )
 
 """
         % Test
