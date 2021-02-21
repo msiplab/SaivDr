@@ -1,12 +1,18 @@
 import unittest
 from parameterized import parameterized
 import itertools
+import math
 import torch
 import torch.nn as nn
+import torch_dct as dct
 from nsoltSynthesis2dNetwork import NsoltSynthesis2dNetwork
+from nsoltUtility import Direction
 
 nchs = [ [2, 2], [3, 3], [4, 4] ]
 stride = [ [1, 1], [1, 2], [2, 2] ]
+datatype = [ torch.float, torch.double ]
+height = [ 8, 16, 32 ]
+width = [ 8, 16, 32 ]
 
 class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
     """
@@ -50,13 +56,54 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
         self.assertEqual(actualNchs,expctdNchs)
         self.assertEqual(actualStride,expctdStride)
 
-    def testDummy(self):
-        target = NsoltSynthesis2dNetwork()
-        x = 0.0
-        valueExpctd = 0.0
-        valueActual = target.forward(x)
-        self.assertEqual(valueExpctd, valueActual)
+    @parameterized.expand(
+        list(itertools.product(nchs,stride,height,width,datatype))
+    )
+    def testForwardGrayScale(self,
+            nchs,stride, height, width, datatype):
+        rtol,atol = 1e-5,1e-8
 
+        # Parameters
+        nSamples = 8
+        nrows = int(math.ceil(height/stride[Direction.VERTICAL]))
+        ncols = int(math.ceil(width/stride[Direction.HORIZONTAL]))
+        nComponents = 1
+        nDecs = stride[0]*stride[1] #math.prod(stride)
+        nChsTotal = sum(nchs)
+
+        # nSamples x nRows x nCols x nChsTotal
+        X = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype)
+        
+        # Expected values        
+        # nSamples x nRows x nCols x nDecs
+        ps,pa = nchs
+        W0T = torch.eye(ps,dtype=datatype)
+        U0T = torch.eye(pa,dtype=datatype)
+        Ys = X[:,:,:,:ps].view(-1,ps).T
+        Ya = X[:,:,:,ps:].view(-1,pa).T
+        ms,ma = int(math.ceil(nDecs/2.)),int(math.floor(nDecs/2.))        
+        Zsa = torch.cat(
+                ( W0T[:ms,:] @ Ys, 
+                  U0T[:ma,:] @ Ya ),dim=0)
+        V = Zsa.T.view(nSamples,nrows,ncols,nDecs)
+        A = permuteIdctCoefs_(V,stride)
+        Y = dct.idct_2d(A,norm='ortho')
+        expctdZ = Y.reshape(nSamples,nComponents,height,width)
+        
+        # Instantiation of target class
+        network = NsoltSynthesis2dNetwork(
+            number_of_channels=nchs,
+            decimation_factor=stride
+        )
+
+        # Actual values
+        with torch.no_grad():
+            actualZ = network.forward(X)
+
+        # Evaluation
+        self.assertEqual(actualZ.dtype,datatype)
+        self.assertTrue(torch.allclose(actualZ,expctdZ,rtol=rtol,atol=atol))
+        self.assertFalse(actualZ.requires_grad)
 
 """
         % Test
@@ -13387,6 +13434,36 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
         end
         
 """
+def permuteDctCoefs_(x):
+    cee = x[:,0::2,0::2].reshape(x.size(0),-1)
+    coo = x[:,1::2,1::2].reshape(x.size(0),-1)
+    coe = x[:,1::2,0::2].reshape(x.size(0),-1)
+    ceo = x[:,0::2,1::2].reshape(x.size(0),-1)
+    return torch.cat((cee,coo,coe,ceo),dim=-1)
+
+def permuteIdctCoefs_(x,block_size):
+    coefs = x.view(-1,block_size[Direction.VERTICAL]*block_size[Direction.HORIZONTAL]) # x.view(-1,math.prod(block_size)) 
+    decY_ = block_size[Direction.VERTICAL]
+    decX_ = block_size[Direction.HORIZONTAL]
+    chDecY = int(math.ceil(decY_/2.)) #.astype(int)
+    chDecX = int(math.ceil(decX_/2.)) #.astype(int)
+    fhDecY = int(math.floor(decY_/2.)) #.astype(int)
+    fhDecX = int(math.floor(decX_/2.)) #.astype(int)
+    nQDecsee = chDecY*chDecX
+    nQDecsoo = fhDecY*fhDecX
+    nQDecsoe = fhDecY*chDecX
+    cee = coefs[:,:nQDecsee]
+    coo = coefs[:,nQDecsee:nQDecsee+nQDecsoo]
+    coe = coefs[:,nQDecsee+nQDecsoo:nQDecsee+nQDecsoo+nQDecsoe]
+    ceo = coefs[:,nQDecsee+nQDecsoo+nQDecsoe:]
+    nBlocks = coefs.size(0)
+    value = torch.zeros(nBlocks,decY_,decX_,dtype=x.dtype)
+    value[:,0::2,0::2] = cee.view(nBlocks,chDecY,chDecX)
+    value[:,1::2,1::2] = coo.view(nBlocks,fhDecY,fhDecX)
+    value[:,1::2,0::2] = coe.view(nBlocks,fhDecY,chDecX)
+    value[:,0::2,1::2] = ceo.view(nBlocks,chDecY,fhDecX)
+    return value
+
 if __name__ == '__main__':
     unittest.main()
 
