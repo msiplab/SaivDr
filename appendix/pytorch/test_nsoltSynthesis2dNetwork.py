@@ -167,7 +167,7 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
             NsoltSynthesis2dNetwork(
                 number_of_channels = nchs,
                 decimation_factor = stride,
-                polyphase_oder = ppord,
+                polyphase_order = ppord,
                 number_of_vanishing_moments = nVm
             )
 
@@ -176,7 +176,7 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
             NsoltSynthesis2dNetwork(
                 number_of_channels = nchs,
                 decimation_factor = stride,
-                polyphase_oder = ppord,
+                polyphase_order = ppord,
                 number_of_vanishing_moments = nVm
             )
 
