@@ -2,9 +2,12 @@ import itertools
 import unittest
 from parameterized import parameterized
 import math
+import random
 import torch
 import torch.nn as nn
 import torch_dct as dct
+from orthonormalTransform import OrthonormalTransform
+from nsoltUtility import OrthonormalMatrixGenerationSystem
 from nsoltSynthesis2dNetwork import NsoltSynthesis2dNetwork
 from nsoltLayerExceptions import InvalidNumberOfChannels, InvalidPolyPhaseOrder, InvalidNumberOfVanishingMoments
 from nsoltUtility import Direction
@@ -179,6 +182,69 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
                 polyphase_order = ppord,
                 number_of_vanishing_moments = nVm
             )
+
+    @parameterized.expand(
+        list(itertools.product(nchs,stride,height,width,datatype))
+    )
+    def testForwardGrayScaleWithInitialization(self,
+            nchs,stride, height, width, datatype):
+        rtol,atol = 1e-3,1e-6
+        gen = OrthonormalMatrixGenerationSystem(dtype=datatype)
+
+        # Initialization function of angle parameters
+        angle0 = 2.0*math.pi*random.random()
+        def init_angles(m):
+            if type(m) == OrthonormalTransform:
+                torch.nn.init.constant_(m.angles,angle0)
+
+        # Parameters
+        nVm = 0
+        nSamples = 8
+        nrows = int(math.ceil(height/stride[Direction.VERTICAL]))
+        ncols = int(math.ceil(width/stride[Direction.HORIZONTAL]))
+        nComponents = 1
+        nDecs = stride[0]*stride[1] #math.prod(stride)
+        nChsTotal = sum(nchs)
+
+        # nSamples x nRows x nCols x nChsTotal
+        X = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype)
+        
+        # Expected values        
+        # nSamples x nRows x nCols x nDecs
+        ps,pa = nchs
+        angles = angle0*torch.ones(int((nChsTotal-2)*nChsTotal/4),dtype=datatype)
+        nAngsW = int(len(angles)/2)
+        angsW,angsU = angles[:nAngsW],angles[nAngsW:]
+        W0T,U0T = gen(angsW).T,gen(angsU).T        
+        Ys = X[:,:,:,:ps].view(-1,ps).T
+        Ya = X[:,:,:,ps:].view(-1,pa).T
+        ms,ma = int(math.ceil(nDecs/2.)),int(math.floor(nDecs/2.))        
+        Zsa = torch.cat(
+                ( W0T[:ms,:] @ Ys, 
+                  U0T[:ma,:] @ Ya ),dim=0)
+        V = Zsa.T.view(nSamples,nrows,ncols,nDecs)
+        A = permuteIdctCoefs_(V,stride)
+        Y = dct.idct_2d(A,norm='ortho')
+        expctdZ = Y.reshape(nSamples,nComponents,height,width)
+        
+        # Instantiation of target class
+        network = NsoltSynthesis2dNetwork(
+            number_of_channels=nchs,
+            decimation_factor=stride,
+            number_of_vanishing_moments=nVm
+        )
+
+        # Initialization of angle parameters
+        network.apply(init_angles)
+
+        # Actual values
+        with torch.no_grad():
+            actualZ = network.forward(X)
+
+        # Evaluation
+        self.assertEqual(actualZ.dtype,datatype)
+        self.assertTrue(torch.allclose(actualZ,expctdZ,rtol=rtol,atol=atol))
+        self.assertFalse(actualZ.requires_grad)
 
 """
         % Test

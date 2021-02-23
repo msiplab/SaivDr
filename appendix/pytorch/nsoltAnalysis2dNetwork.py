@@ -32,7 +32,7 @@ class NsoltAnalysis2dNetwork(nn.Module):
         # # of channels
         if number_of_channels[0] != number_of_channels[1]:
             raise InvalidNumberOfChannels(
-            '[%d %d] : Currently, Type-I NSOLT is only suported, where the symmetric and antisymmetric channel numbers should be the same.'\
+            '[%d, %d] : Currently, Type-I NSOLT is only suported, where the symmetric and antisymmetric channel numbers should be the same.'\
             % (number_of_channels[0], number_of_channels[1]))
         self.number_of_channels = number_of_channels
 
