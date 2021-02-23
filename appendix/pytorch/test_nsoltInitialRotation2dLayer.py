@@ -8,7 +8,7 @@ from nsoltInitialRotation2dLayer import NsoltInitialRotation2dLayer
 from nsoltUtility import Direction, OrthonormalMatrixGenerationSystem
 
 nchs = [ [2, 2], [3, 3], [4, 4] ]
-stride = [ [1, 1], [1, 2], [2, 2] ]
+stride = [ [1, 1], [1, 2], [2, 1], [2, 2] ]
 mus = [ -1, 1 ]
 datatype = [ torch.float, torch.double ]
 nrows = [ 4, 8, 16 ]

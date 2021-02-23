@@ -13,11 +13,11 @@ from nsoltLayerExceptions import InvalidNumberOfChannels, InvalidPolyPhaseOrder,
 from nsoltUtility import Direction
 
 nchs = [ [2, 2], [3, 3], [4, 4] ]
-stride = [ [1, 1], [1, 2], [2, 2] ]
-ppord = [ [0,0], [2,2] ]
+stride = [ [1, 1], [1, 2], [2, 1], [2, 2] ]
+ppord = [ [0, 0], [0, 2], [2, 0], [2,2] ]
 datatype = [ torch.float, torch.double ]
-height = [ 8, 16, 32 ]
-width = [ 8, 16, 32 ]
+height = [ 8 , 16, 32 ]
+width = [ 8 , 16, 32 ]
 
 class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
     """
@@ -246,6 +246,209 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
         self.assertTrue(torch.allclose(actualZ,expctdZ,rtol=rtol,atol=atol))
         self.assertFalse(actualZ.requires_grad)
 
+    @parameterized.expand(
+        list(itertools.product(nchs,stride,height,width,datatype))
+    )
+    def testForwardGrayScaleOrd22(self,
+            nchs, stride, height, width, datatype):
+        rtol,atol = 1e-3,1e-6
+
+        # Parameters
+        ppOrd = [ 2, 2 ]
+        nSamples = 8
+        nrows = int(math.ceil(height/stride[Direction.VERTICAL]))
+        ncols = int(math.ceil(width/stride[Direction.HORIZONTAL]))
+        nComponents = 1
+        nDecs = stride[0]*stride[1] #math.prod(stride)
+        nChsTotal = sum(nchs)
+
+        # nSamples x nRows x nCols x nChsTotal
+        X = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype)
+
+        # Expected values        
+        # nSamples x nRows x nCols x nDecs
+        ps,pa = nchs
+        Z = X
+        # Vertical atom concatenation
+        Uv2T = -torch.eye(pa,dtype=datatype)
+        Z = intermediate_rotation(Z,nchs,Uv2T)
+        Z = block_butterfly(Z,nchs)
+        Z = block_shift(Z,nchs,1,[0,1,0,0]) # target=sum, shift=down
+        Z = block_butterfly(Z,nchs)/2.
+        Uv1T = -torch.eye(pa,dtype=datatype)
+        Z = intermediate_rotation(Z,nchs,Uv1T)
+        Z = block_butterfly(Z,nchs)
+        Z = block_shift(Z,nchs,0,[0,-1,0,0]) # target=diff, shift=up
+        Z = block_butterfly(Z,nchs)/2.
+        # Horizontal atom concatenation
+        Uh2T = -torch.eye(pa,dtype=datatype)
+        Z = intermediate_rotation(Z,nchs,Uh2T)
+        Z = block_butterfly(Z,nchs)
+        Z = block_shift(Z,nchs,1,[0,0,1,0]) # target=sum, shift=right
+        Z = block_butterfly(Z,nchs)/2.
+        Uh1T = -torch.eye(pa,dtype=datatype)
+        Z = intermediate_rotation(Z,nchs,Uh1T)
+        Z = block_butterfly(Z,nchs)
+        Z = block_shift(Z,nchs,0,[0,0,-1,0]) # target=diff, shift=left
+        Z = block_butterfly(Z,nchs)/2.
+        # Final rotation
+        W0T = torch.eye(ps,dtype=datatype)
+        U0T = torch.eye(pa,dtype=datatype)
+        Ys = Z[:,:,:,:ps].view(-1,ps).T
+        Ya = Z[:,:,:,ps:].view(-1,pa).T
+        ms,ma = int(math.ceil(nDecs/2.)),int(math.floor(nDecs/2.))        
+        Zsa = torch.cat(
+                ( W0T[:ms,:] @ Ys, 
+                  U0T[:ma,:] @ Ya ),dim=0)
+        V = Zsa.T.view(nSamples,nrows,ncols,nDecs)
+        A = permuteIdctCoefs_(V,stride)
+        Y = dct.idct_2d(A,norm='ortho')
+        expctdZ = Y.reshape(nSamples,nComponents,height,width)
+        
+        # Instantiation of target class
+        network = NsoltSynthesis2dNetwork(
+            number_of_channels=nchs,
+            decimation_factor=stride,
+            polyphase_order=ppOrd
+        )
+
+        # Actual values
+        with torch.no_grad():
+            actualZ = network.forward(X)
+
+        # Evaluation
+        self.assertEqual(actualZ.dtype,datatype)
+        self.assertTrue(torch.allclose(actualZ,expctdZ,rtol=rtol,atol=atol))
+        self.assertFalse(actualZ.requires_grad)
+
+
+    @parameterized.expand(
+        list(itertools.product(nchs,stride,height,width,datatype))
+    )
+    def testForwardGrayScaleOrd20(self,
+            nchs, stride, height, width, datatype):
+        rtol,atol = 1e-3,1e-6
+
+        # Parameters
+        ppOrd = [ 2, 0 ]
+        nSamples = 8
+        nrows = int(math.ceil(height/stride[Direction.VERTICAL]))
+        ncols = int(math.ceil(width/stride[Direction.HORIZONTAL]))
+        nComponents = 1
+        nDecs = stride[0]*stride[1] #math.prod(stride)
+        nChsTotal = sum(nchs)
+
+        # nSamples x nRows x nCols x nChsTotal
+        X = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype)
+
+        # Expected values        
+        # nSamples x nRows x nCols x nDecs
+        ps,pa = nchs
+        Z = X
+        # Vertical atom concatenation
+        Uv2T = -torch.eye(pa,dtype=datatype)
+        Z = intermediate_rotation(Z,nchs,Uv2T)
+        Z = block_butterfly(Z,nchs)
+        Z = block_shift(Z,nchs,1,[0,1,0,0]) # target=sum, shift=down
+        Z = block_butterfly(Z,nchs)/2.
+        Uv1T = -torch.eye(pa,dtype=datatype)
+        Z = intermediate_rotation(Z,nchs,Uv1T)
+        Z = block_butterfly(Z,nchs)
+        Z = block_shift(Z,nchs,0,[0,-1,0,0]) # target=diff, shift=up
+        Z = block_butterfly(Z,nchs)/2.
+        # Final rotation
+        W0T = torch.eye(ps,dtype=datatype)
+        U0T = torch.eye(pa,dtype=datatype)
+        Ys = Z[:,:,:,:ps].view(-1,ps).T
+        Ya = Z[:,:,:,ps:].view(-1,pa).T
+        ms,ma = int(math.ceil(nDecs/2.)),int(math.floor(nDecs/2.))        
+        Zsa = torch.cat(
+                ( W0T[:ms,:] @ Ys, 
+                  U0T[:ma,:] @ Ya ),dim=0)
+        V = Zsa.T.view(nSamples,nrows,ncols,nDecs)
+        A = permuteIdctCoefs_(V,stride)
+        Y = dct.idct_2d(A,norm='ortho')
+        expctdZ = Y.reshape(nSamples,nComponents,height,width)
+        
+        # Instantiation of target class
+        network = NsoltSynthesis2dNetwork(
+            number_of_channels=nchs,
+            decimation_factor=stride,
+            polyphase_order=ppOrd
+        )
+
+        # Actual values
+        with torch.no_grad():
+            actualZ = network.forward(X)
+
+        # Evaluation
+        self.assertEqual(actualZ.dtype,datatype)
+        self.assertTrue(torch.allclose(actualZ,expctdZ,rtol=rtol,atol=atol))
+        self.assertFalse(actualZ.requires_grad)
+
+    @parameterized.expand(
+        list(itertools.product(nchs,stride,height,width,datatype))
+    )
+    def testForwardGrayScaleOrd02(self,
+            nchs, stride, height, width, datatype):
+        rtol,atol = 1e-3,1e-6
+
+        # Parameters
+        ppOrd = [ 0, 2 ]
+        nSamples = 8
+        nrows = int(math.ceil(height/stride[Direction.VERTICAL]))
+        ncols = int(math.ceil(width/stride[Direction.HORIZONTAL]))
+        nComponents = 1
+        nDecs = stride[0]*stride[1] #math.prod(stride)
+        nChsTotal = sum(nchs)
+
+        # nSamples x nRows x nCols x nChsTotal
+        X = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype)
+
+        # Expected values        
+        # nSamples x nRows x nCols x nDecs
+        ps,pa = nchs
+        Z = X
+        # Horizontal atom concatenation
+        Uh2T = -torch.eye(pa,dtype=datatype)
+        Z = intermediate_rotation(Z,nchs,Uh2T)
+        Z = block_butterfly(Z,nchs)
+        Z = block_shift(Z,nchs,1,[0,0,1,0]) # target=sum, shift=right
+        Z = block_butterfly(Z,nchs)/2.
+        Uh1T = -torch.eye(pa,dtype=datatype)
+        Z = intermediate_rotation(Z,nchs,Uh1T)
+        Z = block_butterfly(Z,nchs)
+        Z = block_shift(Z,nchs,0,[0,0,-1,0]) # target=diff, shift=left
+        Z = block_butterfly(Z,nchs)/2.
+        # Final rotation
+        W0T = torch.eye(ps,dtype=datatype)
+        U0T = torch.eye(pa,dtype=datatype)
+        Ys = Z[:,:,:,:ps].view(-1,ps).T
+        Ya = Z[:,:,:,ps:].view(-1,pa).T
+        ms,ma = int(math.ceil(nDecs/2.)),int(math.floor(nDecs/2.))        
+        Zsa = torch.cat(
+                ( W0T[:ms,:] @ Ys, 
+                  U0T[:ma,:] @ Ya ),dim=0)
+        V = Zsa.T.view(nSamples,nrows,ncols,nDecs)
+        A = permuteIdctCoefs_(V,stride)
+        Y = dct.idct_2d(A,norm='ortho')
+        expctdZ = Y.reshape(nSamples,nComponents,height,width)
+        
+        # Instantiation of target class
+        network = NsoltSynthesis2dNetwork(
+            number_of_channels=nchs,
+            decimation_factor=stride,
+            polyphase_order=ppOrd
+        )
+
+        # Actual values
+        with torch.no_grad():
+            actualZ = network.forward(X)
+
+        # Evaluation
+        self.assertEqual(actualZ.dtype,datatype)
+        self.assertTrue(torch.allclose(actualZ,expctdZ,rtol=rtol,atol=atol))
+        self.assertFalse(actualZ.requires_grad)
 """
         % Test
         function testDefaultConstruction(testCase)
@@ -13605,6 +13808,38 @@ def permuteIdctCoefs_(x,block_size):
     value[:,0::2,1::2] = ceo.view(nBlocks,chDecY,fhDecX)
     return value
 
+def block_butterfly(X,nchs):
+    """
+    Block butterfly
+    """
+    ps = nchs[0]
+    Xs = X[:,:,:,:ps]
+    Xa = X[:,:,:,ps:]
+    return torch.cat((Xs+Xa,Xs-Xa),dim=-1)
+
+def block_shift(X,nchs,target,shift):
+    """
+    Block shift
+    """
+    ps = nchs[0]
+    if target == 0: # Difference channel
+        X[:,:,:,ps:] = torch.roll(X[:,:,:,ps:],shifts=tuple(shift),dims=(0,1,2,3))
+    else: # Sum channel
+        X[:,:,:,:ps] = torch.roll(X[:,:,:,:ps],shifts=tuple(shift),dims=(0,1,2,3))
+    return X
+
+def intermediate_rotation(X,nchs,R):
+    """
+    Intermediate rotation
+    """
+    Y = X.clone()
+    ps,pa = nchs
+    nSamples = X.size(0)
+    nrows = X.size(1)
+    ncols = X.size(2)
+    Za = R @ X[:,:,:,ps:].view(-1,pa).T 
+    Y[:,:,:,ps:] = Za.T.view(nSamples,nrows,ncols,pa)
+    return Y
+
 if __name__ == '__main__':
     unittest.main()
-

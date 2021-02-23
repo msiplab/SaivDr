@@ -8,7 +8,6 @@ from nsoltIntermediateRotation2dLayer import NsoltIntermediateRotation2dLayer
 from nsoltUtility import Direction, OrthonormalMatrixGenerationSystem
 
 nchs = [ [2, 2], [3, 3], [4, 4] ]
-stride = [ [1, 1], [1, 2], [2, 2] ]
 mus = [ -1, 1 ]
 datatype = [ torch.float, torch.double ]
 nrows = [ 4, 8, 16 ]
@@ -39,10 +38,10 @@ class NsoltIntermediateRotation2dLayerTestCase(unittest.TestCase):
     """
 
     @parameterized.expand(
-        list(itertools.product(nchs,stride))
+        list(itertools.product(nchs))
     )
     def testConstructor(self,
-        nchs, stride):
+        nchs):
 
         # Expected values
         expctdName = 'Vn~'
@@ -69,10 +68,10 @@ class NsoltIntermediateRotation2dLayerTestCase(unittest.TestCase):
         self.assertEqual(actualDescription,expctdDescription)
 
     @parameterized.expand(
-        list(itertools.product(nchs,stride,nrows,ncols,mus,datatype))
+        list(itertools.product(nchs,nrows,ncols,mus,datatype))
     )
     def testPredictGrayscale(self,
-        nchs, stride, nrows, ncols, mus, datatype):
+        nchs, nrows, ncols, mus, datatype):
         rtol,atol=1e-5,1e-8
 
         # Parameters
@@ -106,10 +105,10 @@ class NsoltIntermediateRotation2dLayerTestCase(unittest.TestCase):
         self.assertFalse(actualZ.requires_grad)
 
     @parameterized.expand(
-        list(itertools.product(nchs,stride,nrows,ncols,mus,datatype))
+        list(itertools.product(nchs,nrows,ncols,mus,datatype))
     )
     def testPredictGrayscaleWithRandomAngles(self,
-        nchs, stride, nrows, ncols, mus, datatype):
+        nchs, nrows, ncols, mus, datatype):
         rtol,atol=1e-5,1e-8
         gen = OrthonormalMatrixGenerationSystem(dtype=datatype)
 
@@ -146,10 +145,10 @@ class NsoltIntermediateRotation2dLayerTestCase(unittest.TestCase):
         self.assertFalse(actualZ.requires_grad)
 
     @parameterized.expand(
-        list(itertools.product(nchs,stride,nrows,ncols,mus,datatype))
+        list(itertools.product(nchs,nrows,ncols,mus,datatype))
     )
     def testPredictGrayscaleAnalysisMode(self,
-        nchs, stride, nrows, ncols, mus, datatype):
+        nchs, nrows, ncols, mus, datatype):
         rtol,atol=1e-5,1e-8
         gen = OrthonormalMatrixGenerationSystem(dtype=datatype)
 
