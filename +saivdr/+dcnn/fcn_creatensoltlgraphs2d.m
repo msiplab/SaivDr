@@ -4,7 +4,7 @@ function [analysisNsoltLgraph,synthesisNsoltLgraph] = ...
 %
 % Requirements: MATLAB R2020a
 %
-% Copyright (c) 2020-2021, Shogo MURAMATSU
+% Copyright (c) 2020, Shogo MURAMATSU
 %
 % All rights reserved.
 %
@@ -60,29 +60,7 @@ for iLv = 1:nLevels
         'NumberOfChannels',nChannels,'DecimationFactor',decFactor,...
         'NoDcLeakage',noDcLeakage)
         ];
-    % Atom extension in vertical
-    for iOrderV = 2:2:ppOrder(1)
-        analysisLayers = [ analysisLayers
-            nsoltAtomExtension2dLayer('Name',[strLv 'Qv' num2str(iOrderV-1) 'dl'],...
-            'NumberOfChannels',nChannels,'Direction','Down','TargetChannels','Difference')
-            nsoltIntermediateRotation2dLayer('Name',[strLv 'Vv' num2str(iOrderV-1)],...
-            'NumberOfChannels',nChannels,'Mode','Analysis','Mus',-1)
-            nsoltAtomExtension2dLayer('Name',[strLv 'Qv' num2str(iOrderV) 'uu'],...
-            'NumberOfChannels',nChannels,'Direction','Up','TargetChannels','Sum')
-            nsoltIntermediateRotation2dLayer('Name',[strLv 'Vv' num2str(iOrderV)],...
-            'NumberOfChannels',nChannels,'Mode','Analysis')
-            ];
-        synthesisLayers = [ synthesisLayers
-            nsoltAtomExtension2dLayer('Name',[strLv 'Qv' num2str(iOrderV-1) 'dl~'],...
-            'NumberOfChannels',nChannels,'Direction','Up','TargetChannels','Difference')
-            nsoltIntermediateRotation2dLayer('Name',[strLv 'Vv' num2str(iOrderV-1) '~'],...
-            'NumberOfChannels',nChannels,'Mode','Synthesis','Mus',-1)
-            nsoltAtomExtension2dLayer('Name',[strLv 'Qv' num2str(iOrderV) 'uu~'],...
-            'NumberOfChannels',nChannels,'Direction','Down','TargetChannels','Sum')
-            nsoltIntermediateRotation2dLayer('Name',[strLv 'Vv' num2str(iOrderV) '~'],...
-            'NumberOfChannels',nChannels,'Mode','Synthesis')
-            ];
-    end
+    
     % Atom extension in horizontal
     for iOrderH = 2:2:ppOrder(2)
         analysisLayers = [ analysisLayers
@@ -103,6 +81,29 @@ for iLv = 1:nLevels
             nsoltAtomExtension2dLayer('Name',[strLv 'Qh' num2str(iOrderH) 'lu~'],...
             'NumberOfChannels',nChannels,'Direction','Right','TargetChannels','Sum')
             nsoltIntermediateRotation2dLayer('Name',[strLv 'Vh' num2str(iOrderH) '~'],...
+            'NumberOfChannels',nChannels,'Mode','Synthesis')
+            ];
+    end
+    % Atom extension in vertical
+    for iOrderV = 2:2:ppOrder(1)
+        analysisLayers = [ analysisLayers
+            nsoltAtomExtension2dLayer('Name',[strLv 'Qv' num2str(iOrderV-1) 'dl'],...
+            'NumberOfChannels',nChannels,'Direction','Down','TargetChannels','Difference')
+            nsoltIntermediateRotation2dLayer('Name',[strLv 'Vv' num2str(iOrderV-1)],...
+            'NumberOfChannels',nChannels,'Mode','Analysis','Mus',-1)
+            nsoltAtomExtension2dLayer('Name',[strLv 'Qv' num2str(iOrderV) 'uu'],...
+            'NumberOfChannels',nChannels,'Direction','Up','TargetChannels','Sum')
+            nsoltIntermediateRotation2dLayer('Name',[strLv 'Vv' num2str(iOrderV)],...
+            'NumberOfChannels',nChannels,'Mode','Analysis')
+            ];
+        synthesisLayers = [ synthesisLayers
+            nsoltAtomExtension2dLayer('Name',[strLv 'Qv' num2str(iOrderV-1) 'dl~'],...
+            'NumberOfChannels',nChannels,'Direction','Up','TargetChannels','Difference')
+            nsoltIntermediateRotation2dLayer('Name',[strLv 'Vv' num2str(iOrderV-1) '~'],...
+            'NumberOfChannels',nChannels,'Mode','Synthesis','Mus',-1)
+            nsoltAtomExtension2dLayer('Name',[strLv 'Qv' num2str(iOrderV) 'uu~'],...
+            'NumberOfChannels',nChannels,'Direction','Down','TargetChannels','Sum')
+            nsoltIntermediateRotation2dLayer('Name',[strLv 'Vv' num2str(iOrderV) '~'],...
             'NumberOfChannels',nChannels,'Mode','Synthesis')
             ];
     end
