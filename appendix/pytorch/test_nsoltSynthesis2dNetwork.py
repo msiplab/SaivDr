@@ -560,35 +560,35 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
         # Expected values        
         # nSamples x nRows x nCols x nDecs
         ps,pa = nchs
+        angles = angle0*torch.ones(int((nChsTotal-2)*nChsTotal/4),dtype=datatype)
+        nAngsW = int(len(angles)/2)
+        angsW,angsU = angles[:nAngsW],angles[nAngsW:]
         Z = X
         # Vertical atom concatenation
         for ordV in range(int(ppOrd[Direction.VERTICAL]/2)):
-            Uv2T = -torch.eye(pa,dtype=datatype)
+            Uv2T = -gen(angsU).T
             Z = intermediate_rotation(Z,nchs,Uv2T)
             Z = block_butterfly(Z,nchs)
             Z = block_shift(Z,nchs,1,[0,1,0,0]) # target=sum, shift=down
             Z = block_butterfly(Z,nchs)/2.
-            Uv1T = -torch.eye(pa,dtype=datatype)
+            Uv1T = -gen(angsU).T
             Z = intermediate_rotation(Z,nchs,Uv1T)
             Z = block_butterfly(Z,nchs)
             Z = block_shift(Z,nchs,0,[0,-1,0,0]) # target=diff, shift=up
             Z = block_butterfly(Z,nchs)/2.
         # Horizontal atom concatenation
         for ordH in range(int(ppOrd[Direction.HORIZONTAL])):
-            Uh2T = -torch.eye(pa,dtype=datatype)
+            Uh2T = -gen(angsU).T
             Z = intermediate_rotation(Z,nchs,Uh2T)
             Z = block_butterfly(Z,nchs)
             Z = block_shift(Z,nchs,1,[0,0,1,0]) # target=sum, shift=right
             Z = block_butterfly(Z,nchs)/2.
-            Uh1T = -torch.eye(pa,dtype=datatype)
+            Uh1T = -gen(angsU).T
             Z = intermediate_rotation(Z,nchs,Uh1T)
             Z = block_butterfly(Z,nchs)
             Z = block_shift(Z,nchs,0,[0,0,-1,0]) # target=diff, shift=left
             Z = block_butterfly(Z,nchs)/2.
         # Final rotation
-        angles = angle0*torch.ones(int((nChsTotal-2)*nChsTotal/4),dtype=datatype)
-        nAngsW = int(len(angles)/2)
-        angsW,angsU = angles[:nAngsW],angles[nAngsW:]
         W0T,U0T = gen(angsW).T,gen(angsU).T        
         Ys = Z[:,:,:,:ps].view(-1,ps).T
         Ya = Z[:,:,:,ps:].view(-1,pa).T

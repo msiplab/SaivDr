@@ -6,6 +6,7 @@ import torch
 import torch.nn as nn
 from nsoltIntermediateRotation2dLayer import NsoltIntermediateRotation2dLayer
 from nsoltUtility import Direction, OrthonormalMatrixGenerationSystem
+from nsoltLayerExceptions import InvalidMode, InvalidMus
 
 nchs = [ [2, 2], [3, 3], [4, 4] ]
 mus = [ -1, 1 ]
@@ -353,6 +354,57 @@ class NsoltIntermediateRotation2dLayerTestCase(unittest.TestCase):
         self.assertTrue(torch.allclose(actualdLdX,expctddLdX,rtol=rtol,atol=atol))
         self.assertTrue(torch.allclose(actualdLdW_U,expctddLdW_U,rtol=rtol,atol=atol))
         self.assertTrue(Z.requires_grad)
-   
+    
+    def testInvalidModeException(self):
+        nchs = [2,2]
+        with self.assertRaises(InvalidMode):
+            NsoltIntermediateRotation2dLayer(
+                number_of_channels=nchs,
+                mode='Dummy')
+
+    def testInvalidMusException(self):
+        nchs = [2,2]
+        with self.assertRaises(InvalidMus):
+            NsoltIntermediateRotation2dLayer(
+                number_of_channels=nchs,
+                mus=2)
+
+    @parameterized.expand(
+        list(itertools.product(nchs,nrows,ncols,mus,datatype))
+    )
+    def testConstructionWithMus(self,
+        nchs, nrows, ncols, mus, datatype):
+        rtol,atol=1e-5,1e-8
+
+        # Parameters
+        nSamples = 8
+        nChsTotal = sum(nchs)
+        # nSamples x nRows x nCols x nChsTotal
+        X = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype,requires_grad=True)
+
+        # Expected values
+        # nSamples x nRows x nCols x nChsTotal
+        ps,pa = nchs
+        UnT = mus*torch.eye(pa,dtype=datatype)
+        expctdZ = X.clone()
+        Ya = X[:,:,:,ps:].view(-1,pa).T
+        Za = UnT @ Ya
+        expctdZ[:,:,:,ps:] = Za.T.view(nSamples,nrows,ncols,pa)
+
+        # Instantiation of target class
+        layer = NsoltIntermediateRotation2dLayer(
+            number_of_channels=nchs,
+            name='Vn~',
+            mus = mus)
+
+        # Actual values
+        with torch.no_grad():
+            actualZ = layer.forward(X)
+
+        # Evaluation
+        self.assertEqual(actualZ.dtype,datatype)
+        self.assertTrue(torch.allclose(actualZ,expctdZ,rtol=rtol,atol=atol))
+        self.assertFalse(actualZ.requires_grad)
+
 if __name__ == '__main__':
     unittest.main()

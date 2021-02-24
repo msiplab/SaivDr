@@ -609,24 +609,24 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
             Z = block_butterfly(Z,nchs)
             Z = block_shift(Z,nchs,0,[0,0,1,0]) # target=diff, shift=right
             Z = block_butterfly(Z,nchs)/2.
-            Uh1 = -torch.eye(pa,dtype=datatype)
+            Uh1 = -gen(angsU)
             Z = intermediate_rotation(Z,nchs,Uh1)
             Z = block_butterfly(Z,nchs)
             Z = block_shift(Z,nchs,1,[0,0,-1,0]) # target=sum, shift=left
             Z = block_butterfly(Z,nchs)/2.
-            Uh2 = -torch.eye(pa,dtype=datatype)
+            Uh2 = -gen(angsU)
             Z = intermediate_rotation(Z,nchs,Uh2)
         # Vertical atom extention
         for ordV in range(int(ppOrd[Direction.VERTICAL]/2)):
             Z = block_butterfly(Z,nchs)
             Z = block_shift(Z,nchs,0,[0,1,0,0]) # target=diff, shift=down
             Z = block_butterfly(Z,nchs)/2.
-            Uv1 = -torch.eye(pa,dtype=datatype)
+            Uv1 = -gen(angsU)
             Z = intermediate_rotation(Z,nchs,Uv1)
             Z = block_butterfly(Z,nchs)
             Z = block_shift(Z,nchs,1,[0,-1,0,0]) # target=sum, shift=up
             Z = block_butterfly(Z,nchs)/2.
-            Uv2 = -torch.eye(pa,dtype=datatype)
+            Uv2 = -gen(angsU)
             Z = intermediate_rotation(Z,nchs,Uv2)
         expctdZ = Z
 
