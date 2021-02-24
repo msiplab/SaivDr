@@ -14,7 +14,7 @@ from nsoltUtility import Direction
 
 nchs = [ [2, 2], [3, 3], [4, 4] ]
 stride = [ [1, 1], [1, 2], [2, 1], [2, 2] ]
-ppord = [ [0, 0], [0, 2], [2, 0], [2,2] ]
+ppord = [ [0, 0], [0, 2], [2, 0], [2, 2], [4, 4] ]
 datatype = [ torch.float, torch.double ]
 height = [ 8, 16, 32 ]
 width = [ 8, 16, 32 ]
@@ -469,6 +469,90 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
         self.assertEqual(actualZ.dtype,datatype)         
         self.assertTrue(torch.allclose(actualZ,expctdZ,rtol=rtol,atol=atol))
         self.assertFalse(actualZ.requires_grad)
+
+    @parameterized.expand(
+        list(itertools.product(nchs,stride,ppord,datatype))
+    )
+    def testForwardGrayScaleOverlapping(self,
+            nchs, stride, ppord, datatype):
+        rtol,atol = 1e-3,1e-6
+
+        # Parameters
+        height = 8
+        width = 16
+        ppOrd = ppord
+        nSamples = 8
+        nComponents = 1
+        nDecs = stride[0]*stride[1] #math.prod(stride)
+        nChsTotal = sum(nchs)
+        # Source (nSamples x nComponents x (Stride[0]xnRows) x (Stride[1]xnCols))
+        X = torch.rand(nSamples,nComponents,height,width,dtype=datatype,requires_grad=True)
+
+        # Expected values
+        nrows = int(math.ceil(height/stride[Direction.VERTICAL])) #.astype(int)
+        ncols = int(math.ceil(width/stride[Direction.HORIZONTAL])) #.astype(int)
+        # Block DCT (nSamples x nComponents x nrows x ncols) x decV x decH
+        arrayshape = stride.copy()
+        arrayshape.insert(0,-1)
+        Y = dct.dct_2d(X.view(arrayshape),norm='ortho')
+        # Rearrange the DCT Coefs. (nSamples x nComponents x nrows x ncols) x (decV x decH)
+        A = permuteDctCoefs_(Y)
+        V = A.view(nSamples,nrows,ncols,nDecs)
+        # nSamplex x nRows x nCols x nChs
+        ps, pa = nchs
+        # Initial rotation
+        W0 = torch.eye(ps,dtype=datatype)
+        U0 = torch.eye(pa,dtype=datatype)
+        ms,ma = int(math.ceil(nDecs/2.)), int(math.floor(nDecs/2.))        
+        Zsa = torch.zeros(nChsTotal,nrows*ncols*nSamples,dtype=datatype)        
+        Ys = V[:,:,:,:ms].view(-1,ms).T
+        Zsa[:ps,:] = W0[:,:ms] @ Ys
+        if ma > 0:
+            Ya = V[:,:,:,ms:].view(-1,ma).T
+            Zsa[ps:,:] = U0[:,:ma] @ Ya
+        Z = Zsa.T.view(nSamples,nrows,ncols,nChsTotal)
+        # Horizontal atom extention
+        for ordH in range(int(ppOrd[Direction.HORIZONTAL]/2)):
+            Z = block_butterfly(Z,nchs)
+            Z = block_shift(Z,nchs,0,[0,0,1,0]) # target=diff, shift=right
+            Z = block_butterfly(Z,nchs)/2.
+            Uh1 = -torch.eye(pa,dtype=datatype)
+            Z = intermediate_rotation(Z,nchs,Uh1)
+            Z = block_butterfly(Z,nchs)
+            Z = block_shift(Z,nchs,1,[0,0,-1,0]) # target=sum, shift=left
+            Z = block_butterfly(Z,nchs)/2.
+            Uh2 = -torch.eye(pa,dtype=datatype)
+            Z = intermediate_rotation(Z,nchs,Uh2)
+        # Vertical atom extention
+        for ordV in range(int(ppOrd[Direction.VERTICAL]/2)):
+            Z = block_butterfly(Z,nchs)
+            Z = block_shift(Z,nchs,0,[0,1,0,0]) # target=diff, shift=down
+            Z = block_butterfly(Z,nchs)/2.
+            Uv1 = -torch.eye(pa,dtype=datatype)
+            Z = intermediate_rotation(Z,nchs,Uv1)
+            Z = block_butterfly(Z,nchs)
+            Z = block_shift(Z,nchs,1,[0,-1,0,0]) # target=sum, shift=up
+            Z = block_butterfly(Z,nchs)/2.
+            Uv2 = -torch.eye(pa,dtype=datatype)
+            Z = intermediate_rotation(Z,nchs,Uv2)
+        expctdZ = Z
+
+        # Instantiation of target class
+        network = NsoltAnalysis2dNetwork(
+                number_of_channels=nchs,
+                decimation_factor=stride,
+                polyphase_order=ppOrd
+            )
+            
+        # Actual values
+        with torch.no_grad():
+            actualZ = network.forward(X)
+
+        # Evaluation
+        self.assertEqual(actualZ.dtype,datatype)         
+        self.assertTrue(torch.allclose(actualZ,expctdZ,rtol=rtol,atol=atol))
+        self.assertFalse(actualZ.requires_grad)
+
 
 """
 
