@@ -2,7 +2,10 @@ import torch
 import torch.nn as nn
 from nsoltBlockIdct2dLayer import NsoltBlockIdct2dLayer 
 from nsoltFinalRotation2dLayer import NsoltFinalRotation2dLayer 
+from nsoltAtomExtension2dLayer import NsoltAtomExtension2dLayer
+from nsoltIntermediateRotation2dLayer import NsoltIntermediateRotation2dLayer
 from nsoltLayerExceptions import InvalidNumberOfChannels, InvalidPolyPhaseOrder, InvalidNumberOfVanishingMoments
+from nsoltUtility import Direction
 
 class NsoltSynthesis2dNetwork(nn.Module):
 
@@ -41,17 +44,52 @@ class NsoltSynthesis2dNetwork(nn.Module):
         
         
         # Instantiation of layers
-        self.layerV0T = NsoltFinalRotation2dLayer(
+        self.layers = nn.Sequential()
+        
+        # Vertical concatenation
+        for iOrderV in range(2,polyphase_order[Direction.VERTICAL]+1,2):            
+            self.layers.add_module('Vv~%d'%(iOrderV-1),NsoltIntermediateRotation2dLayer(
+                number_of_channels=number_of_channels,
+                mode='Synthesis',
+                mus=-1))
+            self.layers.add_module('Qv~%dus'%(iOrderV-1),NsoltAtomExtension2dLayer(
+                number_of_channels=number_of_channels,
+                direction='Down',
+                target_channels='Sum'))
+            self.layers.add_module('Vv~%d'%(iOrderV),NsoltIntermediateRotation2dLayer(
+                number_of_channels=number_of_channels,
+                mode='Synthesis',
+                mus=-1))
+            self.layers.add_module('Qv~%ddd'%iOrderV,NsoltAtomExtension2dLayer(
+                number_of_channels=number_of_channels,
+                direction='Up',
+                target_channels='Difference'))
+        
+        # Horizontal concatenation
+        for iOrderH in range(2,polyphase_order[Direction.HORIZONTAL]+1,2):
+            
+            self.layers.add_module('Vh~%d'%(iOrderH-1),NsoltIntermediateRotation2dLayer(
+                number_of_channels=number_of_channels,
+                mode='Synthesis',
+                mus=-1))
+            self.layers.add_module('Qh~%dls'%(iOrderH-1),NsoltAtomExtension2dLayer(
+                number_of_channels=number_of_channels,
+                direction='Right',
+                target_channels='Sum'))
+            self.layers.add_module('Vh~%d'%iOrderH,NsoltIntermediateRotation2dLayer(
+                number_of_channels=number_of_channels,
+                mode='Synthesis',
+                mus=-1))
+            self.layers.add_module('Qh~%drd'%iOrderH,NsoltAtomExtension2dLayer(
+                number_of_channels=number_of_channels,
+                direction='Left',
+                target_channels='Difference'))
+            
+        self.layers.add_module('V0~',NsoltFinalRotation2dLayer(
             number_of_channels=number_of_channels,
-            decimation_factor=decimation_factor,
-            name='V0~'
-        )
-        self.layerE0T = NsoltBlockIdct2dLayer(
-            decimation_factor=decimation_factor,
-            name='E0~'
-        )
-
+            decimation_factor=decimation_factor))
+        self.layers.add_module('E0~',NsoltBlockIdct2dLayer(
+            decimation_factor=decimation_factor))    
+            
     def forward(self,x):
-        u = self.layerV0T.forward(x)
-        y = self.layerE0T.forward(u) 
-        return y
+        return self.layers.forward(x)
