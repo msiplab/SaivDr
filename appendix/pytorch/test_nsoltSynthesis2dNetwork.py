@@ -212,7 +212,7 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
         # Expected values        
         # nSamples x nRows x nCols x nDecs
         ps,pa = nchs
-        angles = angle0*torch.ones(int((nChsTotal-2)*nChsTotal/4),dtype=datatype)
+        angles = angle0*torch.ones(int((nChsTotal-2)*nChsTotal/4)) #,dtype=datatype)
         nAngsW = int(len(angles)/2)
         angsW,angsU = angles[:nAngsW],angles[nAngsW:]
         W0T,U0T = gen(angsW).T,gen(angsU).T        
@@ -560,7 +560,7 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
         # Expected values        
         # nSamples x nRows x nCols x nDecs
         ps,pa = nchs
-        angles = angle0*torch.ones(int((nChsTotal-2)*nChsTotal/4),dtype=datatype)
+        angles = angle0*torch.ones(int((nChsTotal-2)*nChsTotal/4)) #,dtype=datatype)
         nAngsW = int(len(angles)/2)
         angsW,angsU = angles[:nAngsW],angles[nAngsW:]
         Z = X

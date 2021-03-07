@@ -223,7 +223,7 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
         V = A.view(nSamples,nrows,ncols,nDecs)
         # nSamplex x nRows x nCols x nChs
         ps, pa = nchs
-        angles = angle0*torch.ones(int((nChsTotal-2)*nChsTotal/4),dtype=datatype)
+        angles = angle0*torch.ones(int((nChsTotal-2)*nChsTotal/4)) #,dtype=datatype)
         nAngsW = int(len(angles)/2)
         angsW,angsU = angles[:nAngsW],angles[nAngsW:]
         W0,U0 = gen(angsW),gen(angsU)        
@@ -592,7 +592,7 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
         # nSamplex x nRows x nCols x nChs
         ps, pa = nchs
         # Initial rotation
-        angles = angle0*torch.ones(int((nChsTotal-2)*nChsTotal/4),dtype=datatype)
+        angles = angle0*torch.ones(int((nChsTotal-2)*nChsTotal/4)) #,dtype=datatype)
         nAngsW = int(len(angles)/2)
         angsW,angsU = angles[:nAngsW],angles[nAngsW:]
         W0,U0 = gen(angsW),gen(angsU)        
