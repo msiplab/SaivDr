@@ -43,7 +43,7 @@ class OrthonormalMatrixGenerationSystem:
         elif not torch.is_tensor(angles):
             angles = torch.tensor(angles,dtype=self.dtype)
         else:
-            angles.to(dtype=self.dtype)
+            angles = angles.to(dtype=self.dtype)
         nAngles = len(angles)
 
         # Number of dimensions
@@ -52,8 +52,10 @@ class OrthonormalMatrixGenerationSystem:
         # Setup of mus
         if isinstance(mus, int) or isinstance(mus, float):
             mus = mus * torch.ones(nDims,dtype=self.dtype)
-        elif isinstance(mus, list):
+        elif not torch.is_tensor(mus): #isinstance(mus, list):
             mus = torch.tensor(mus,dtype=self.dtype)
+        else:
+            mus = mus.to(dtype=self.dtype)
 
         matrix = torch.eye(nDims,dtype=self.dtype)
         iAng = 0

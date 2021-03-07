@@ -16,8 +16,8 @@ nchs = [ [2, 2], [3, 3], [4, 4] ]
 stride = [ [1, 1], [1, 2], [2, 1], [2, 2] ]
 ppord = [ [0, 0], [0, 2], [2, 0], [2, 2], [4, 4] ]
 datatype = [ torch.float, torch.double ]
-height = [ 8 , 16, 32 ]
-width = [ 8 , 16, 32 ]
+height = [ 8, 16, 32 ]
+width = [ 8, 16, 32 ]
 
 class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
     """
@@ -620,6 +620,7 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
         self.assertEqual(actualZ.dtype,datatype)
         self.assertTrue(torch.allclose(actualZ,expctdZ,rtol=rtol,atol=atol))
         self.assertFalse(actualZ.requires_grad)
+        
 """
         % Test
         function testDefaultConstruction(testCase)
