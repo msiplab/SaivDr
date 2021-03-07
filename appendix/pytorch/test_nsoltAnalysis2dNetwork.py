@@ -221,7 +221,7 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
         # Rearrange the DCT Coefs. (nSamples x nComponents x nrows x ncols) x (decV x decH)
         A = permuteDctCoefs_(Y)
         V = A.view(nSamples,nrows,ncols,nDecs)
-        # nSamplex x nRows x nCols x nChs
+        # nSamples x nRows x nCols x nChs
         ps, pa = nchs
         angles = angle0*torch.ones(int((nChsTotal-2)*nChsTotal/4)) #,dtype=datatype)
         nAngsW = int(len(angles)/2)
@@ -281,7 +281,7 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
         # Rearrange the DCT Coefs. (nSamples x nComponents x nrows x ncols) x (decV x decH)
         A = permuteDctCoefs_(Y)
         V = A.view(nSamples,nrows,ncols,nDecs)
-        # nSamplex x nRows x nCols x nChs
+        # nSamples x nRows x nCols x nChs
         ps, pa = nchs
         # Initial rotation
         W0 = torch.eye(ps,dtype=datatype)
@@ -360,7 +360,7 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
         # Rearrange the DCT Coefs. (nSamples x nComponents x nrows x ncols) x (decV x decH)
         A = permuteDctCoefs_(Y)
         V = A.view(nSamples,nrows,ncols,nDecs)
-        # nSamplex x nRows x nCols x nChs
+        # nSamples x nRows x nCols x nChs
         ps, pa = nchs
         # Initial rotation
         W0 = torch.eye(ps,dtype=datatype)
@@ -428,7 +428,7 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
         # Rearrange the DCT Coefs. (nSamples x nComponents x nrows x ncols) x (decV x decH)
         A = permuteDctCoefs_(Y)
         V = A.view(nSamples,nrows,ncols,nDecs)
-        # nSamplex x nRows x nCols x nChs
+        # nSamples x nRows x nCols x nChs
         ps, pa = nchs
         # Initial rotation
         W0 = torch.eye(ps,dtype=datatype)
@@ -498,7 +498,7 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
         # Rearrange the DCT Coefs. (nSamples x nComponents x nrows x ncols) x (decV x decH)
         A = permuteDctCoefs_(Y)
         V = A.view(nSamples,nrows,ncols,nDecs)
-        # nSamplex x nRows x nCols x nChs
+        # nSamples x nRows x nCols x nChs
         ps, pa = nchs
         # Initial rotation
         W0 = torch.eye(ps,dtype=datatype)
@@ -589,7 +589,7 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
         # Rearrange the DCT Coefs. (nSamples x nComponents x nrows x ncols) x (decV x decH)
         A = permuteDctCoefs_(Y)
         V = A.view(nSamples,nrows,ncols,nDecs)
-        # nSamplex x nRows x nCols x nChs
+        # nSamples x nRows x nCols x nChs
         ps, pa = nchs
         # Initial rotation
         angles = angle0*torch.ones(int((nChsTotal-2)*nChsTotal/4)) #,dtype=datatype)
@@ -649,6 +649,61 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
         self.assertEqual(actualZ.dtype,datatype)         
         self.assertTrue(torch.allclose(actualZ,expctdZ,rtol=rtol,atol=atol))
         self.assertFalse(actualZ.requires_grad)
+
+    @parameterized.expand(
+        list(itertools.product(nchs,stride,ppord,datatype))
+    )
+    def testForwardGrayScaleOverlappingWithNoDcLeakange(self,
+            nchs, stride, ppord, datatype):
+        rtol,atol = 1e-3,1e-6
+        gen = OrthonormalMatrixGenerationSystem(dtype=datatype)
+
+        # Initialization function of angle parameters
+        def init_angles(m):
+            if type(m) == OrthonormalTransform:
+                torch.nn.init.normal_(m.angles)
+
+        # Parameters
+        nVm = 1
+        height = 8
+        width = 16
+        ppOrd = ppord
+        nSamples = 8
+        nComponents = 1
+        nDecs = stride[0]*stride[1] #math.prod(stride)
+        nChsTotal = sum(nchs)
+        # Source (nSamples x nComponents x (Stride[0]xnRows) x (Stride[1]xnCols))
+        X = torch.ones(nSamples,nComponents,height,width,dtype=datatype,requires_grad=True)
+
+        # Expected values
+        nrows = int(math.ceil(height/stride[Direction.VERTICAL])) #.astype(int)
+        ncols = int(math.ceil(width/stride[Direction.HORIZONTAL])) #.astype(int)
+        # nSamples x nRows x nCols x nChs
+        expctdZ = math.sqrt(nDecs)*torch.cat(
+                    [torch.ones(nSamples,nrows,ncols,1,dtype=datatype),
+                    torch.zeros(nSamples,nrows,ncols,nChsTotal-1,dtype=datatype)],
+                    dim=3)
+
+        # Instantiation of target class
+        network = NsoltAnalysis2dNetwork(
+                number_of_channels=nchs,
+                decimation_factor=stride,
+                polyphase_order=ppOrd,
+                number_of_vanishing_moments=nVm
+            )
+            
+        # Initialization of angle parameters
+        network.apply(init_angles)
+
+        # Actual values
+        with torch.no_grad():
+            actualZ = network.forward(X)
+
+        # Evaluation
+        self.assertEqual(actualZ.dtype,datatype)         
+        self.assertTrue(torch.allclose(actualZ,expctdZ,rtol=rtol,atol=atol))
+        self.assertFalse(actualZ.requires_grad)
+
 
 """
 

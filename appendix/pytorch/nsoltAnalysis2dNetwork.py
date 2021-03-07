@@ -63,7 +63,8 @@ class NsoltAnalysis2dNetwork(nn.Module):
             decimation_factor=decimation_factor))
         self.layers.add_module('V0',NsoltInitialRotation2dLayer(
             number_of_channels=number_of_channels,
-            decimation_factor=decimation_factor))
+            decimation_factor=decimation_factor,
+            no_dc_leakage=(self.number_of_vanishing_moments==1)))
 
         # Horizontal extension
         for iOrderH in range(2,polyphase_order[Direction.HORIZONTAL]+1,2):
