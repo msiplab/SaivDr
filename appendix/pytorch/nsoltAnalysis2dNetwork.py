@@ -64,6 +64,7 @@ class NsoltAnalysis2dNetwork(nn.Module):
         self.layers.add_module('V0',NsoltInitialRotation2dLayer(
             number_of_channels=number_of_channels,
             decimation_factor=decimation_factor))
+
         # Horizontal extension
         for iOrderH in range(2,polyphase_order[Direction.HORIZONTAL]+1,2):
             self.layers.add_module('Qh%drd'%(iOrderH-1),NsoltAtomExtension2dLayer(
@@ -82,6 +83,7 @@ class NsoltAnalysis2dNetwork(nn.Module):
                 number_of_channels=number_of_channels,
                 mode='Analysis',
                 mus=-1))
+                
         # Vertical extension
         for iOrderV in range(2,polyphase_order[Direction.VERTICAL]+1,2):            
             self.layers.add_module('Qv%ddd'%(iOrderV-1),NsoltAtomExtension2dLayer(

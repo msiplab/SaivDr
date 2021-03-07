@@ -487,7 +487,7 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
             Z = block_shift(Z,nchs,0,[0,-1,0,0]) # target=diff, shift=up
             Z = block_butterfly(Z,nchs)/2.
         # Horizontal atom concatenation
-        for ordH in range(int(ppOrd[Direction.HORIZONTAL])):
+        for ordH in range(int(ppOrd[Direction.HORIZONTAL]/2)):
             Uh2T = -torch.eye(pa,dtype=datatype)
             Z = intermediate_rotation(Z,nchs,Uh2T)
             Z = block_butterfly(Z,nchs)
@@ -577,7 +577,7 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
             Z = block_shift(Z,nchs,0,[0,-1,0,0]) # target=diff, shift=up
             Z = block_butterfly(Z,nchs)/2.
         # Horizontal atom concatenation
-        for ordH in range(int(ppOrd[Direction.HORIZONTAL])):
+        for ordH in range(int(ppOrd[Direction.HORIZONTAL]/2)):
             Uh2T = -gen(angsU).T
             Z = intermediate_rotation(Z,nchs,Uh2T)
             Z = block_butterfly(Z,nchs)

@@ -48,7 +48,7 @@ class OrthonormalTransform(nn.Module):
 
         # Mus
         if torch.is_tensor(mus):
-            self.__mus = mus
+            self.__mus = mus.to(dtype=self.dtype)
         elif mus == 1:
             self.__mus = torch.ones(self.nPoints,dtype=self.dtype)
         elif mus == -1:
@@ -88,7 +88,7 @@ class OrthonormalTransform(nn.Module):
     @mus.setter
     def mus(self,mus):
         if torch.is_tensor(mus):
-            self.__mus = mus
+            self.__mus = mus.to(dtype=self.dtype)
         elif mus == 1:
             self.__mus = torch.ones(self.nPoints,dtype=self.dtype)
         elif mus == -1:

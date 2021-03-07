@@ -39,7 +39,11 @@ class OrthonormalMatrixGenerationSystem:
         
         # Number of angles
         if isinstance(angles, int) or isinstance(angles, float):
-            angles = torch.tensor([angles])
+            angles = torch.tensor([angles],dtype=self.dtype)
+        elif not torch.is_tensor(angles):
+            angles = torch.tensor(angles,dtype=self.dtype)
+        else:
+            angles.to(dtype=self.dtype)
         nAngles = len(angles)
 
         # Number of dimensions
@@ -59,8 +63,8 @@ class OrthonormalMatrixGenerationSystem:
                 angle = angles[iAng]
                 if self.partial_difference and iAng == index_pd_angle:
                     angle = angle + math.pi/2.
-                c = math.cos(angle)
-                s = math.sin(angle)
+                c = torch.cos(angle)
+                s = torch.sin(angle)
                 vb = matrix[iBtm,:]
                 #
                 u  = s*(vt + vb)
@@ -68,7 +72,7 @@ class OrthonormalMatrixGenerationSystem:
                 vb = (c - s)*vb
                 vt = vt - u
                 if self.partial_difference and iAng == index_pd_angle:
-                    matrix = torch.zeros_like(matrix)
+                    matrix = torch.zeros_like(matrix,dtype=self.dtype)
                 matrix[iBtm,:] = vb + u
                 iAng = iAng + 1
             matrix[iTop,:] = vt
