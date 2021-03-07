@@ -207,7 +207,7 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
         nChsTotal = sum(nchs)
 
         # nSamples x nRows x nCols x nChsTotal
-        X = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype)
+        X = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype,requires_grad=True)
         
         # Expected values        
         # nSamples x nRows x nCols x nDecs
@@ -263,7 +263,7 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
         nChsTotal = sum(nchs)
 
         # nSamples x nRows x nCols x nChsTotal
-        X = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype)
+        X = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype,requires_grad=True)
 
         # Expected values        
         # nSamples x nRows x nCols x nDecs
@@ -338,7 +338,7 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
         nChsTotal = sum(nchs)
 
         # nSamples x nRows x nCols x nChsTotal
-        X = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype)
+        X = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype,requires_grad=True)
 
         # Expected values        
         # nSamples x nRows x nCols x nDecs
@@ -402,7 +402,7 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
         nChsTotal = sum(nchs)
 
         # nSamples x nRows x nCols x nChsTotal
-        X = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype)
+        X = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype,requires_grad=True)
 
         # Expected values        
         # nSamples x nRows x nCols x nDecs
@@ -468,7 +468,7 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
         nChsTotal = sum(nchs)
 
         # nSamples x nRows x nCols x nChsTotal
-        X = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype)
+        X = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype,requires_grad=True)
 
         # Expected values        
         # nSamples x nRows x nCols x nDecs
@@ -555,7 +555,7 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
         nChsTotal = sum(nchs)
 
         # nSamples x nRows x nCols x nChsTotal
-        X = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype)
+        X = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype,requires_grad=True)
 
         # Expected values        
         # nSamples x nRows x nCols x nDecs
@@ -620,6 +620,61 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
         self.assertEqual(actualZ.dtype,datatype)
         self.assertTrue(torch.allclose(actualZ,expctdZ,rtol=rtol,atol=atol))
         self.assertFalse(actualZ.requires_grad)
+
+    @parameterized.expand(
+        list(itertools.product(nchs,stride,ppord,datatype))
+    )
+    def testForwardGrayScaleOverlappingWithNoDcLeackage(self,
+            nchs, stride, ppord, datatype):
+        rtol,atol = 1e-3,1e-6
+        gen = OrthonormalMatrixGenerationSystem(dtype=datatype)
+
+        # Initialization function of angle parameters
+        def init_angles(m):
+            if type(m) == OrthonormalTransform:
+                torch.nn.init.normal_(m.angles)
+
+        # Parameters
+        nVm = 1
+        height = 8
+        width = 16
+        ppOrd = ppord
+        nSamples = 8
+        nrows = int(math.ceil(height/stride[Direction.VERTICAL]))
+        ncols = int(math.ceil(width/stride[Direction.HORIZONTAL]))
+        nComponents = 1
+        nDecs = stride[0]*stride[1] #math.prod(stride)
+        nChsTotal = sum(nchs)
+
+        # nSamples x nRows x nCols x nChsTotal
+        X = torch.cat(
+            [math.sqrt(nDecs)*torch.ones(nSamples,nrows,ncols,1,dtype=datatype,requires_grad=True),
+            torch.zeros(nSamples,nrows,ncols,nChsTotal-1,dtype=datatype,requires_grad=True)],
+            dim=3)
+
+        # Expected values        
+        # nSamples x nRows x nCols x nDecs
+        expctdZ = torch.ones(nSamples,nComponents,height,width,dtype=datatype)
+        
+        # Instantiation of target class
+        network = NsoltSynthesis2dNetwork(
+            number_of_channels=nchs,
+            decimation_factor=stride,
+            polyphase_order=ppOrd,
+            number_of_vanishing_moments=nVm
+        )
+
+        # Initialization of angle parameters
+        network.apply(init_angles)
+
+        # Actual values
+        with torch.no_grad():
+            actualZ = network.forward(X)
+
+        # Evaluation
+        self.assertEqual(actualZ.dtype,datatype)
+        self.assertTrue(torch.allclose(actualZ,expctdZ,rtol=rtol,atol=atol))
+        self.assertFalse(actualZ.requires_grad)    
         
 """
         % Test

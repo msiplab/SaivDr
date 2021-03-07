@@ -653,7 +653,7 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
     @parameterized.expand(
         list(itertools.product(nchs,stride,ppord,datatype))
     )
-    def testForwardGrayScaleOverlappingWithNoDcLeakange(self,
+    def testForwardGrayScaleOverlappingWithNoDcLeakage(self,
             nchs, stride, ppord, datatype):
         rtol,atol = 1e-3,1e-6
         gen = OrthonormalMatrixGenerationSystem(dtype=datatype)
@@ -679,8 +679,8 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
         nrows = int(math.ceil(height/stride[Direction.VERTICAL])) #.astype(int)
         ncols = int(math.ceil(width/stride[Direction.HORIZONTAL])) #.astype(int)
         # nSamples x nRows x nCols x nChs
-        expctdZ = math.sqrt(nDecs)*torch.cat(
-                    [torch.ones(nSamples,nrows,ncols,1,dtype=datatype),
+        expctdZ = torch.cat(
+                    [math.sqrt(nDecs)*torch.ones(nSamples,nrows,ncols,1,dtype=datatype),
                     torch.zeros(nSamples,nrows,ncols,nChsTotal-1,dtype=datatype)],
                     dim=3)
 
