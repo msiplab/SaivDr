@@ -100,7 +100,8 @@ class NsoltSynthesis2dNetwork(nn.Module):
             
         self.layers.add_module('V0~',NsoltFinalRotation2dLayer(
             number_of_channels=number_of_channels,
-            decimation_factor=decimation_factor))
+            decimation_factor=decimation_factor,
+            no_dc_leakage=(self.number_of_vanishing_moments==1)))
         self.layers.add_module('E0~',NsoltBlockIdct2dLayer(
             decimation_factor=decimation_factor))    
             
