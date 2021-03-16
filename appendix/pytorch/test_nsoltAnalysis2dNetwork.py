@@ -18,6 +18,8 @@ ppord = [ [0, 0], [0, 2], [2, 0], [2, 2], [4, 4] ]
 datatype = [ torch.float, torch.double ]
 height = [ 8, 16, 32 ]
 width = [ 8, 16, 32 ]
+nvm = [ 0, 1 ]
+nlevels = [ 1, 2, 3 ]
 
 class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
     """
@@ -704,69 +706,112 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
         self.assertTrue(torch.allclose(actualZ,expctdZ,rtol=rtol,atol=atol))
         self.assertFalse(actualZ.requires_grad)
 
+    @parameterized.expand(
+        list(itertools.product(nchs,stride,nvm,datatype))
+    )
+    def testForwardGrayScaleLevel2(self,
+            nchs, stride, nvm, datatype):
+        rtol,atol = 1e-3,1e-6
+        gen = OrthonormalMatrixGenerationSystem(dtype=datatype)
+
+        # Initialization function of angle parameters
+        angle0 = 2.0*math.pi*random.random()
+        def init_angles(m):
+            if type(m) == OrthonormalTransform:
+                torch.nn.init.constant_(m.angles,angle0)
+
+        nlevels = 1
+
+        # Parameters
+        nVm = nvm
+        height = 8
+        width = 16
+        ppOrd = [ 2, 2 ]
+        nSamples = 8
+        nComponents = 1
+        nDecs = stride[0]*stride[1] #math.prod(stride)
+        nChsTotal = sum(nchs)
+
+        # Source (nSamples x nComponents x ((Stride[0]**nlevels) x nRows) x ((Stride[1]**nlevels) x nCols))
+        X = torch.randn(nSamples,nComponents,height,width,dtype=datatype,requires_grad=True)
+
+        # Expected values
+        nrows = int(math.ceil(height/(stride[Direction.VERTICAL]**nlevels))) #.astype(int)
+        ncols = int(math.ceil(width/(stride[Direction.HORIZONTAL]**nlevels))) #.astype(int)
+        # Block DCT (nSamples x nComponents x nrows x ncols) x decV x decH
+        arrayshape = stride.copy()
+        arrayshape.insert(0,-1)
+        # Multi-level decomposition
+        for iLevel in range(nlevels):
+            Y = dct.dct_2d(X.view(arrayshape),norm='ortho')
+            # Rearrange the DCT Coefs. (nSamples x nComponents x nrows x ncols) x (decV x decH)
+            A = permuteDctCoefs_(Y)
+            V = A.view(nSamples,nrows,ncols,nDecs)
+            # nSamples x nRows x nCols x nChs
+            ps, pa = nchs
+            # Initial rotation
+            angles = angle0*torch.ones(int((nChsTotal-2)*nChsTotal/4)) #,dtype=datatype)
+            nAngsW = int(len(angles)/2)
+            angsW,angsU = angles[:nAngsW],angles[nAngsW:]
+            if nVm > 0:
+                angsW[:(ps-1)] = torch.zeros_like(angsW[:(ps-1)])
+            W0,U0 = gen(angsW),gen(angsU)        
+            ms,ma = int(math.ceil(nDecs/2.)), int(math.floor(nDecs/2.))        
+            Zsa = torch.zeros(nChsTotal,nrows*ncols*nSamples,dtype=datatype)        
+            Ys = V[:,:,:,:ms].view(-1,ms).T
+            Zsa[:ps,:] = W0[:,:ms] @ Ys
+            if ma > 0:
+                Ya = V[:,:,:,ms:].view(-1,ma).T
+                Zsa[ps:,:] = U0[:,:ma] @ Ya
+            Z = Zsa.T.view(nSamples,nrows,ncols,nChsTotal)
+            # Horizontal atom extention
+            for ordH in range(int(ppOrd[Direction.HORIZONTAL]/2)):
+                Z = block_butterfly(Z,nchs)
+                Z = block_shift(Z,nchs,0,[0,0,1,0]) # target=diff, shift=right
+                Z = block_butterfly(Z,nchs)/2.
+                Uh1 = -gen(angsU)
+                Z = intermediate_rotation(Z,nchs,Uh1)
+                Z = block_butterfly(Z,nchs)
+                Z = block_shift(Z,nchs,1,[0,0,-1,0]) # target=sum, shift=left
+                Z = block_butterfly(Z,nchs)/2.
+                Uh2 = -gen(angsU)
+                Z = intermediate_rotation(Z,nchs,Uh2)
+            # Vertical atom extention
+            for ordV in range(int(ppOrd[Direction.VERTICAL]/2)):
+                Z = block_butterfly(Z,nchs)
+                Z = block_shift(Z,nchs,0,[0,1,0,0]) # target=diff, shift=down
+                Z = block_butterfly(Z,nchs)/2.
+                Uv1 = -gen(angsU)
+                Z = intermediate_rotation(Z,nchs,Uv1)
+                Z = block_butterfly(Z,nchs)
+                Z = block_shift(Z,nchs,1,[0,-1,0,0]) # target=sum, shift=up
+                Z = block_butterfly(Z,nchs)/2.
+                Uv2 = -gen(angsU)
+                Z = intermediate_rotation(Z,nchs,Uv2)
+            expctdZ = Z
+
+        # Instantiation of target class
+        network = NsoltAnalysis2dNetwork(
+                number_of_channels=nchs,
+                decimation_factor=stride,
+                polyphase_order=ppOrd,
+                number_of_vanishing_moments=nVm
+            )
+            
+        # Initialization of angle parameters
+        network.apply(init_angles)
+
+        # Actual values
+        with torch.no_grad():
+            actualZ = network.forward(X)
+
+        # Evaluation
+        self.assertEqual(actualZ.dtype,datatype)         
+        self.assertTrue(torch.allclose(actualZ,expctdZ,rtol=rtol,atol=atol))
+        self.assertFalse(actualZ.requires_grad)
 
 """
-
-        % Test
-        function testStepDec11Ch4Ord00Level1Vm1(testCase)
-            
-            dec = 1;
-            nChs = [ 2 2 ];
-            ch = sum(nChs);
-            ord = 0;
-            height = 32;
-            width = 32;
-            srcImg = rand(height,width);
-            nLevels = 1;
-            
-            % Preparation
-            import saivdr.dictionary.nsoltx.*
-            lppufb = NsoltFactory.createOvsdLpPuFb2dSystem(...
-                'DecimationFactor',[dec dec],...
-                'NumberOfChannels',nChs,...
-                'PolyPhaseOrder',[ord ord],...
-                'NumberOfVanishingMoments',1);
-            angs = get(lppufb,'Angles');
-            angs = randn(size(angs));
-            set(lppufb,'Angles',angs);
-            
-            % Expected values
-            release(lppufb);
-            set(lppufb,'OutputMode','AnalysisFilterAt');
-            nSubCoefs = numel(srcImg)/(dec*dec);
-            coefsExpctd = zeros(1,ch*nSubCoefs);
-            for iSubband = 1:ch
-                subCoef = downsample(...
-                    downsample(...
-                    imfilter(srcImg,...
-                    step(lppufb,[],[],iSubband),...
-                    'conv','circ').',dec).',dec);
-                coefsExpctd((iSubband-1)*nSubCoefs+1:iSubband*nSubCoefs) = ...
-                    subCoef(:).';
-            end
-            scalesExpctd = repmat(size(srcImg)./[dec dec],ch,1);
-
-            % Instantiation of target class
-            release(lppufb)
-            set(lppufb,'OutputMode','ParameterMatrixSet');
-            testCase.analyzer = NsoltAnalysis2dSystem(...
-                'LpPuFb2d',lppufb,...
-                'NumberOfLevels',nLevels,...                
-                'NumberOfSymmetricChannels',nChs(1),...
-                'NumberOfAntisymmetricChannels',nChs(2),...
-                'BoundaryOperation','Circular');
-            
-            % Actual values
-            [coefsActual, scalesActual] = step(testCase.analyzer,srcImg);
-            
-            % Evaluation
-            testCase.verifyEqual(scalesActual,scalesExpctd);
-            diff = max(abs(coefsExpctd - coefsActual));
-            testCase.verifyEqual(coefsActual,coefsExpctd,'AbsTol',1e-13,...
-                sprintf('%g',diff));
-
-        end
-                 
+                
         % Test
         function testStepDec11Ch4Ord00Level2PeriodicExtVm0(testCase)
             
