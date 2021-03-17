@@ -59,7 +59,7 @@ class NsoltAnalysis2dNetwork(nn.Module):
             % number_of_vanishing_moments)
         self.number_of_vanishing_moments = number_of_vanishing_moments
 
-        # # of vanishing moments
+        # # of levels
         if number_of_levels < 1:
             raise InvalidNumberOfLevels(
             '%d : The number of levels must be greater than 0.'\

@@ -9,7 +9,7 @@ import torch_dct as dct
 from orthonormalTransform import OrthonormalTransform
 from nsoltUtility import OrthonormalMatrixGenerationSystem
 from nsoltSynthesis2dNetwork import NsoltSynthesis2dNetwork
-from nsoltLayerExceptions import InvalidNumberOfChannels, InvalidPolyPhaseOrder, InvalidNumberOfVanishingMoments
+from nsoltLayerExceptions import InvalidNumberOfChannels, InvalidPolyPhaseOrder, InvalidNumberOfVanishingMoments, InvalidNumberOfLevels
 from nsoltUtility import Direction
 
 nchs = [ [2, 2], [3, 3], [4, 4] ]
@@ -183,6 +183,29 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
                 decimation_factor = stride,
                 polyphase_order = ppord,
                 number_of_vanishing_moments = nVm
+            )
+
+    @parameterized.expand(
+        list(itertools.product(nchs,stride,ppord))
+    )
+    def testNumberOfLevelsException(self,
+        nchs,stride,ppord):
+        nlevels = -1
+        with self.assertRaises(InvalidNumberOfLevels):
+            NsoltSynthesis2dNetwork(
+                number_of_channels = nchs,
+                decimation_factor = stride,
+                polyphase_order = ppord,
+                number_of_levels = nlevels
+            )
+
+        nlevels = 0
+        with self.assertRaises(InvalidNumberOfLevels):
+            NsoltSynthesis2dNetwork(
+                number_of_channels = nchs,
+                decimation_factor = stride,
+                polyphase_order = ppord,
+                number_of_levels = nlevels
             )
 
     @parameterized.expand(
@@ -679,10 +702,10 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
         self.assertFalse(actualZ.requires_grad)    
         
     @parameterized.expand(
-        list(itertools.product(nchs,stride,nvm,datatype))
+        list(itertools.product(nchs,stride,nvm,nlevels,datatype))
     )
     def testForwardGrayScaleLevel2WithNoDcLeackage(self,
-            nchs, stride, nvm, datatype):
+            nchs, stride, nvm, nlevels, datatype):
         rtol,atol = 1e-3,1e-6
         gen = OrthonormalMatrixGenerationSystem(dtype=datatype)
 
@@ -691,8 +714,6 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
         def init_angles(m):
             if type(m) == OrthonormalTransform:
                 torch.nn.init.constant_(m.angles,angle0)
-
-        nlevels = 1
 
         # Parameters
         nVm = nvm
@@ -707,7 +728,20 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
         nChsTotal = sum(nchs)
 
         # nSamples x nRows x nCols x nChsTotal
-        X = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype,requires_grad=True)
+        nrows_ = nrows
+        ncols_ = ncols
+        if nlevels == 1:
+            X = torch.randn(nSamples,nrows_,ncols_,nChsTotal,dtype=datatype,requires_grad=True) 
+        else:
+            X = []
+            for iLevel in range(1,nlevels+1):
+                if iLevel == 1:
+                    X.append(torch.randn(nSamples,nrows_,ncols_,nChsTotal,dtype=datatype,requires_grad=True)) 
+                else:
+                    X.append(torch.randn(nSamples,nrows_,ncols_,nChsTotal-1,dtype=datatype,requires_grad=True))     
+                nrows_ *= stride[Direction.VERTICAL]
+                ncols_ *= stride[Direction.HORIZONTAL]
+            X = tuple(X)
 
         # Expected values        
         # nSamples x nRows x nCols x nDecs
@@ -720,7 +754,14 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
             angsW,angsU = angles[:nAngsW],angles[nAngsW:]
             if nVm > 0:
                 angsW[:(ps-1)] = torch.zeros_like(angsW[:(ps-1)])
-            Z = X
+            # Extract scale channel
+            if nlevels == 1:
+                Z = X
+            elif iLevel == nlevels:
+                Z = X[0]
+            else:
+                Xac = X[nlevels-iLevel]
+                Z = torch.cat((Xdc.unsqueeze(dim=3),Xac),dim=3)
             # Vertical atom concatenation
             for ordV in range(int(ppOrd[Direction.VERTICAL]/2)):
                 Uv2T = -gen(angsU).T
@@ -756,20 +797,19 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
             V = Zsa.T.view(nSamples,nrows,ncols,nDecs)
             A = permuteIdctCoefs_(V,stride)
             Y = dct.idct_2d(A,norm='ortho')
-            # Concatenate multi-scale channels
-            # Split into multi-scale channels
-            if iLevel < nlevels:
-                # Split
-                pass
-            else:
-                expctdZ = Y.reshape(nSamples,nComponents,height,width)
+            # Update
+            nrows *= stride[Direction.VERTICAL]
+            ncols *= stride[Direction.HORIZONTAL]            
+            Xdc = Y.reshape(nSamples,nrows,ncols,1)
+        expctdZ = Xdc.view(nSamples,nComponents,height,width)
         
         # Instantiation of target class
         network = NsoltSynthesis2dNetwork(
             number_of_channels=nchs,
             decimation_factor=stride,
             polyphase_order=ppOrd,
-            number_of_vanishing_moments=nVm
+            number_of_vanishing_moments=nVm,
+            number_of_levels=nlevels
         )
 
         # Initialization of angle parameters
