@@ -713,7 +713,7 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
         # nSamples x nRows x nCols x nDecs
         ps,pa = nchs
         # Multi-level reconstruction
-        for iLevel in range(nlevels):
+        for iLevel in range(nlevels,0,-1):
             angles = angle0*torch.ones(int((nChsTotal-2)*nChsTotal/4)) #,dtype=datatype)
             nAngsW = int(len(angles)/2)
             angsW,angsU = angles[:nAngsW],angles[nAngsW:]
@@ -756,7 +756,13 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
             V = Zsa.T.view(nSamples,nrows,ncols,nDecs)
             A = permuteIdctCoefs_(V,stride)
             Y = dct.idct_2d(A,norm='ortho')
-            expctdZ = Y.reshape(nSamples,nComponents,height,width)
+            # Concatenate multi-scale channels
+            # Split into multi-scale channels
+            if iLevel < nlevels:
+                # Split
+                pass
+            else:
+                expctdZ = Y.reshape(nSamples,nComponents,height,width)
         
         # Instantiation of target class
         network = NsoltSynthesis2dNetwork(

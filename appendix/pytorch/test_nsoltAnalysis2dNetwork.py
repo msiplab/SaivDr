@@ -742,7 +742,7 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
         arrayshape = stride.copy()
         arrayshape.insert(0,-1)
         # Multi-level decomposition
-        for iLevel in range(nlevels):
+        for iLevel in range(1,nlevels+1):
             Y = dct.dct_2d(X.view(arrayshape),norm='ortho')
             # Rearrange the DCT Coefs. (nSamples x nComponents x nrows x ncols) x (decV x decH)
             A = permuteDctCoefs_(Y)
@@ -788,7 +788,12 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
                 Z = block_butterfly(Z,nchs)/2.
                 Uv2 = -gen(angsU)
                 Z = intermediate_rotation(Z,nchs,Uv2)
-            expctdZ = Z
+            # Split into multi-scale channels
+            if iLevel < nlevels:
+                # Split
+                pass
+            else:
+                expctdZ = Z
 
         # Instantiation of target class
         network = NsoltAnalysis2dNetwork(
