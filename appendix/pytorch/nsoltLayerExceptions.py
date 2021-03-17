@@ -25,3 +25,7 @@ class InvalidPolyPhaseOrder(Exception):
 class InvalidNumberOfVanishingMoments(Exception):
     def __init__(self,msg):
         super().__init__(self,msg)
+
+class InvalidNumberOfLevels(Exception):
+    def __init__(self,msg):
+        super().__init__(self,msg)

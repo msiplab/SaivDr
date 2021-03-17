@@ -9,7 +9,7 @@ import torch_dct as dct
 from orthonormalTransform import OrthonormalTransform
 from nsoltUtility import OrthonormalMatrixGenerationSystem
 from nsoltAnalysis2dNetwork import NsoltAnalysis2dNetwork
-from nsoltLayerExceptions import InvalidNumberOfChannels, InvalidPolyPhaseOrder, InvalidNumberOfVanishingMoments
+from nsoltLayerExceptions import InvalidNumberOfChannels, InvalidPolyPhaseOrder, InvalidNumberOfVanishingMoments, InvalidNumberOfLevels
 from nsoltUtility import Direction
 
 nchs = [ [2, 2], [3, 3], [4, 4] ]
@@ -189,6 +189,30 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
                 polyphase_order = ppord,
                 number_of_vanishing_moments = nVm
             )
+
+    @parameterized.expand(
+        list(itertools.product(nchs,stride,ppord))
+    )
+    def testNumberOfLevelsException(self,
+        nchs,stride,ppord):
+        nlevels = -1
+        with self.assertRaises(InvalidNumberOfLevels):
+            NsoltAnalysis2dNetwork(
+                number_of_channels = nchs,
+                decimation_factor = stride,
+                polyphase_order = ppord,
+                number_of_levels = nlevels
+            )
+
+        nlevels = 0
+        with self.assertRaises(InvalidNumberOfLevels):
+            NsoltAnalysis2dNetwork(
+                number_of_channels = nchs,
+                decimation_factor = stride,
+                polyphase_order = ppord,
+                number_of_levels = nlevels
+            )
+
 
     @parameterized.expand(
         list(itertools.product(nchs,stride,height,width,datatype))
@@ -707,10 +731,10 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
         self.assertFalse(actualZ.requires_grad)
 
     @parameterized.expand(
-        list(itertools.product(nchs,stride,nvm,datatype))
+        list(itertools.product(nchs,stride,nvm,nlevels,datatype))
     )
     def testForwardGrayScaleLevel2(self,
-            nchs, stride, nvm, datatype):
+            nchs, stride, nvm, nlevels, datatype):
         rtol,atol = 1e-3,1e-6
         gen = OrthonormalMatrixGenerationSystem(dtype=datatype)
 
@@ -720,11 +744,9 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
             if type(m) == OrthonormalTransform:
                 torch.nn.init.constant_(m.angles,angle0)
 
-        nlevels = 1
-
         # Parameters
         nVm = nvm
-        height = 8
+        height = 8 
         width = 16
         ppOrd = [ 2, 2 ]
         nSamples = 8
@@ -736,14 +758,17 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
         X = torch.randn(nSamples,nComponents,height,width,dtype=datatype,requires_grad=True)
 
         # Expected values
-        nrows = int(math.ceil(height/(stride[Direction.VERTICAL]**nlevels))) #.astype(int)
-        ncols = int(math.ceil(width/(stride[Direction.HORIZONTAL]**nlevels))) #.astype(int)
+        nrows = int(math.ceil(height/(stride[Direction.VERTICAL]))) #.astype(int)
+        ncols = int(math.ceil(width/(stride[Direction.HORIZONTAL]))) #.astype(int)
         # Block DCT (nSamples x nComponents x nrows x ncols) x decV x decH
-        arrayshape = stride.copy()
+        arrayshape = stride.copy() 
         arrayshape.insert(0,-1)
         # Multi-level decomposition
-        for iLevel in range(1,nlevels+1):
-            Y = dct.dct_2d(X.view(arrayshape),norm='ortho')
+        coefs = []
+        X_ = X
+        for iStage in range(nlevels):
+            iLevel = iStage+1
+            Y = dct.dct_2d(X_.view(arrayshape),norm='ortho')
             # Rearrange the DCT Coefs. (nSamples x nComponents x nrows x ncols) x (decV x decH)
             A = permuteDctCoefs_(Y)
             V = A.view(nSamples,nrows,ncols,nDecs)
@@ -789,20 +814,27 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
                 Uv2 = -gen(angsU)
                 Z = intermediate_rotation(Z,nchs,Uv2)
             # Split into multi-scale channels
-            if iLevel < nlevels:
-                # Split
-                pass
-            else:
+            if nlevels == 1: # Flat structure (#Lv=1)
                 expctdZ = Z
+            elif iLevel < nlevels: # Intermediate layers in tree structure (#Lv>1)
+                # Split into DC and ACs
+                X_ = Z[:,:,:,0].view(nSamples,nComponents,nrows,ncols)
+                coefs.insert(0,Z[:,:,:,1:])
+                nrows = int(nrows/stride[Direction.VERTICAL])
+                ncols = int(ncols/stride[Direction.HORIZONTAL])
+            else: # Deepest layer in tree structure (#Lv)
+                coefs.insert(0,Z)
+                expctdZ = tuple(coefs)
 
         # Instantiation of target class
         network = NsoltAnalysis2dNetwork(
                 number_of_channels=nchs,
                 decimation_factor=stride,
                 polyphase_order=ppOrd,
-                number_of_vanishing_moments=nVm
+                number_of_vanishing_moments=nVm,
+                number_of_levels=nlevels
             )
-            
+
         # Initialization of angle parameters
         network.apply(init_angles)
 
@@ -811,9 +843,15 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
             actualZ = network.forward(X)
 
         # Evaluation
-        self.assertEqual(actualZ.dtype,datatype)         
-        self.assertTrue(torch.allclose(actualZ,expctdZ,rtol=rtol,atol=atol))
-        self.assertFalse(actualZ.requires_grad)
+        if nlevels == 1:
+            self.assertEqual(actualZ.dtype,datatype)         
+            self.assertTrue(torch.allclose(actualZ,expctdZ,rtol=rtol,atol=atol))
+            self.assertFalse(actualZ.requires_grad)
+        else:
+            for iStage in range(nlevels):
+                self.assertEqual(actualZ[iStage].dtype,datatype)         
+                self.assertTrue(torch.allclose(actualZ[iStage],expctdZ[iStage],rtol=rtol,atol=atol))
+                self.assertFalse(actualZ[iStage].requires_grad) 
 
 """
                 
