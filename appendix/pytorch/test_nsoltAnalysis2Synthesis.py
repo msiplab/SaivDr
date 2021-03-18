@@ -1,0 +1,131 @@
+import itertools
+import unittest
+from parameterized import parameterized
+import random
+import torch
+from nsoltSynthesis2dNetwork import NsoltSynthesis2dNetwork
+from nsoltAnalysis2dNetwork import NsoltAnalysis2dNetwork
+from orthonormalTransform import OrthonormalTransform
+
+nchs = [ [2, 2], [3, 3], [4, 4] ]
+stride = [ [1, 1], [1, 2], [2, 1], [2, 2] ]
+ppord = [ [0, 0], [0, 2], [2, 0], [2, 2], [4, 4] ]
+datatype = [ torch.float, torch.double ]
+height = [ 8, 16, 32 ]
+width = [ 8, 16, 32 ]
+nvm = [ 0, 1 ]
+nlevels = [ 1, 2, 3 ]
+
+class NsoltAnalysis2SynthesisTestCase(unittest.TestCase):
+    """
+    NSOLTANALYSIS2SYNTHESISTESTCASE Test cases for Nsolt{Analysis,Synthesis}2dNetwork
+    
+    Requirements: Python 3.7.x, PyTorch 1.7.x
+    
+    Copyright (c) 2021, Yasas Dulanjaya and Shogo MURAMATSU
+    
+    All rights reserved.
+    
+    Contact address: Shogo MURAMATSU,
+        Faculty of Engineering, Niigata University,
+        8050 2-no-cho Ikarashi, Nishi-ku,
+        Niigata, 950-2181, JAPAN
+    
+        http://msiplab.eng.niigata-u.ac.jp/
+    """
+    @parameterized.expand(
+        list(itertools.product(height,width,nchs,stride,ppord,nvm,datatype))
+    )
+    def testAdjointOfAnalyzer2dNetwork(self,
+        height,width,nchs,stride,ppord,nvm,datatype):
+        rtol,atol = 1e-3,1e-6
+        
+        # Initialization function of angle parameters
+        def init_angles(m):
+            if type(m) == OrthonormalTransform:
+                torch.nn.init.zeros_(m.angles)
+
+        # Parameters
+        nSamples = 8
+        nComponents = 1
+        nDecs = stride[0]*stride[1] #math.prod(stride)
+        nChsTotal = sum(nchs)
+        # Source (nSamples x nComponents x (Stride[0]xnRows) x (Stride[1]xnCols))
+        X = torch.rand(nSamples,nComponents,height,width,dtype=datatype,requires_grad=True)
+
+        # Expected values
+        expctdY = X
+
+        # Instantiation of target class
+        analyzer = NsoltAnalysis2dNetwork(
+            number_of_channels=nchs,
+            decimation_factor=stride,
+            polyphase_order=ppord,
+            number_of_vanishing_moments=nvm,
+            #number_of_levels=self.number_of_levels                        
+        )
+
+        # Initialization of angle parameters
+        analyzer.apply(init_angles)
+
+        # Adjoint 
+        synthesizer = analyzer.T
+
+        # Actual values
+        with torch.no_grad():
+            actualY = synthesizer.forward(analyzer.forward(X))
+
+        # Evaluation
+        self.assertTrue(isinstance(synthesizer, NsoltSynthesis2dNetwork))
+        self.assertTrue(torch.allclose(actualY,expctdY,rtol=rtol,atol=atol))
+        self.assertFalse(actualY.requires_grad)
+
+    @parameterized.expand(
+        list(itertools.product(height,width,nchs,stride,ppord,nvm,datatype))
+    )
+    def testAdjointOfAnalyzer2dNetworkRandomInitialization(self,
+        height,width,nchs,stride,ppord,nvm,datatype):
+        rtol,atol = 1e-3,1e-6
+        
+        # Initialization function of angle parameters
+        def init_angles(m):
+            if type(m) == OrthonormalTransform:
+                torch.nn.init.normal_(m.angles)
+
+        # Parameters
+        nSamples = 8
+        nComponents = 1
+        nDecs = stride[0]*stride[1] #math.prod(stride)
+        nChsTotal = sum(nchs)
+        # Source (nSamples x nComponents x (Stride[0]xnRows) x (Stride[1]xnCols))
+        X = torch.rand(nSamples,nComponents,height,width,dtype=datatype,requires_grad=True)
+
+        # Expected values
+        expctdY = X
+
+        # Instantiation of target class
+        analyzer = NsoltAnalysis2dNetwork(
+            number_of_channels=nchs,
+            decimation_factor=stride,
+            polyphase_order=ppord,
+            number_of_vanishing_moments=nvm,
+            #number_of_levels=self.number_of_levels                        
+        )
+
+        # Initialization of angle parameters
+        analyzer.apply(init_angles)
+
+        # Adjoint 
+        synthesizer = analyzer.T
+
+        # Actual values
+        with torch.no_grad():
+            actualY = synthesizer.forward(analyzer.forward(X))
+
+        # Evaluation
+        self.assertTrue(isinstance(synthesizer, NsoltSynthesis2dNetwork))
+        self.assertTrue(torch.allclose(actualY,expctdY,rtol=rtol,atol=atol))
+        self.assertFalse(actualY.requires_grad)  
+
+if __name__ == '__main__':
+    unittest.main()

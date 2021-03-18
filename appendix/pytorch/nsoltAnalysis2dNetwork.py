@@ -7,6 +7,8 @@ from nsoltIntermediateRotation2dLayer import NsoltIntermediateRotation2dLayer
 from nsoltChannelSeparation2dLayer import NsoltChannelSeparation2dLayer
 from nsoltLayerExceptions import InvalidNumberOfChannels, InvalidPolyPhaseOrder, InvalidNumberOfVanishingMoments, InvalidNumberOfLevels
 from nsoltUtility import Direction
+from nsoltSynthesis2dNetwork import NsoltSynthesis2dNetwork
+from orthonormalTransform import OrthonormalTransform
 
 class NsoltAnalysis2dNetwork(nn.Module):
     """
@@ -149,3 +151,28 @@ class NsoltAnalysis2dNetwork(nn.Module):
                     yacdc = m.forward(x)
                     y.insert(0,yacdc)
             return tuple(y)
+    
+    @property
+    def T(self):
+        # Create synthesizer as the adjoint of SELF
+        synthesizer = NsoltSynthesis2dNetwork(
+            number_of_channels=self.number_of_channels,
+            decimation_factor=self.decimation_factor,
+            polyphase_order=self.polyphase_order,
+            number_of_vanishing_moments=self.number_of_vanishing_moments,
+            #number_of_levels=self.number_of_levels            
+        )
+
+        # Copy state dictionary
+        ana_state_dict = self.state_dict()
+        syn_state_dict = synthesizer.state_dict()
+        for key in syn_state_dict.keys():
+            # TODO: Revise after the multi-level synthesizer is available
+            angs = ana_state_dict[key.replace('~','').replace('T.angles','.angles').replace('layers.','layers.0.Lv1_')] 
+            syn_state_dict[key] = angs
+        
+        # Load state dictionary
+        synthesizer.load_state_dict(syn_state_dict)
+
+        # Return adjoint
+        return synthesizer 
