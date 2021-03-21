@@ -17,20 +17,5 @@ __all__ = [
     'nsoltUtility',
     'orthonormalTransform'
 ]
-from nsoltAnalysis2dNetwork import *
-from nsoltAtomExtension2dLayer import *
-from nsoltBlockDct2dLayer import *
-from nsoltBlockDct3dLayer import *
-from nsoltBlockIdct2dLayer import *
-from nsoltBlockIdct3dLayer import *
-from nsoltChannelConcatenation2dLayer import *
-from nsoltChannelSeparation2dLayer import *
-from nsoltFinalRotation2dLayer import *
-from nsoltInitialRotation2dLayer import *
-from nsoltIntermediateRotation2dLayer import *
-from nsoltLayerExceptions import *
-from nsoltSubbandDeserialization2dLayer import *
-from nsoltSubbandSerialization2dLayer import *
-from nsoltSynthesis2dNetwork import *
-from nsoltUtility import *
-from orthonormalTransform import *
+from nsoltAnalysis2dNetwork import NsoltAnalysis2dNetwork
+from nsoltSynthesis2dNetwork import NsoltSynthesis2dNetwork
