@@ -5,12 +5,12 @@ import math
 import random
 import torch
 import torch.nn as nn
-import torch_dct as dct
+#import torch_dct as dct
 from orthonormalTransform import OrthonormalTransform
 from nsoltUtility import OrthonormalMatrixGenerationSystem
 from nsoltAnalysis2dNetwork import NsoltAnalysis2dNetwork
 from nsoltLayerExceptions import InvalidNumberOfChannels, InvalidPolyPhaseOrder, InvalidNumberOfVanishingMoments, InvalidNumberOfLevels
-from nsoltUtility import Direction
+from nsoltUtility import Direction, dct_2d
 
 nchs = [ [2, 2], [3, 3], [4, 4] ]
 stride = [ [1, 1], [1, 2], [2, 1], [2, 2] ]
@@ -91,7 +91,7 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
         # Block DCT (nSamples x nComponents x nrows x ncols) x decV x decH
         arrayshape = stride.copy()
         arrayshape.insert(0,-1)
-        Y = dct.dct_2d(X.view(arrayshape),norm='ortho')
+        Y = dct_2d(X.view(arrayshape))
         # Rearrange the DCT Coefs. (nSamples x nComponents x nrows x ncols) x (decV x decH)
         A = permuteDctCoefs_(Y)
         V = A.view(nSamples,nrows,ncols,nDecs)
@@ -243,7 +243,7 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
         # Block DCT (nSamples x nComponents x nrows x ncols) x decV x decH
         arrayshape = stride.copy()
         arrayshape.insert(0,-1)
-        Y = dct.dct_2d(X.view(arrayshape),norm='ortho')
+        Y = dct_2d(X.view(arrayshape))
         # Rearrange the DCT Coefs. (nSamples x nComponents x nrows x ncols) x (decV x decH)
         A = permuteDctCoefs_(Y)
         V = A.view(nSamples,nrows,ncols,nDecs)
@@ -303,7 +303,7 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
         # Block DCT (nSamples x nComponents x nrows x ncols) x decV x decH
         arrayshape = stride.copy()
         arrayshape.insert(0,-1)
-        Y = dct.dct_2d(X.view(arrayshape),norm='ortho')
+        Y = dct_2d(X.view(arrayshape))
         # Rearrange the DCT Coefs. (nSamples x nComponents x nrows x ncols) x (decV x decH)
         A = permuteDctCoefs_(Y)
         V = A.view(nSamples,nrows,ncols,nDecs)
@@ -382,7 +382,7 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
         # Block DCT (nSamples x nComponents x nrows x ncols) x decV x decH
         arrayshape = stride.copy()
         arrayshape.insert(0,-1)
-        Y = dct.dct_2d(X.view(arrayshape),norm='ortho')
+        Y = dct_2d(X.view(arrayshape))
         # Rearrange the DCT Coefs. (nSamples x nComponents x nrows x ncols) x (decV x decH)
         A = permuteDctCoefs_(Y)
         V = A.view(nSamples,nrows,ncols,nDecs)
@@ -450,7 +450,7 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
         # Block DCT (nSamples x nComponents x nrows x ncols) x decV x decH
         arrayshape = stride.copy()
         arrayshape.insert(0,-1)
-        Y = dct.dct_2d(X.view(arrayshape),norm='ortho')
+        Y = dct_2d(X.view(arrayshape))
         # Rearrange the DCT Coefs. (nSamples x nComponents x nrows x ncols) x (decV x decH)
         A = permuteDctCoefs_(Y)
         V = A.view(nSamples,nrows,ncols,nDecs)
@@ -520,7 +520,7 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
         # Block DCT (nSamples x nComponents x nrows x ncols) x decV x decH
         arrayshape = stride.copy()
         arrayshape.insert(0,-1)
-        Y = dct.dct_2d(X.view(arrayshape),norm='ortho')
+        Y = dct_2d(X.view(arrayshape))
         # Rearrange the DCT Coefs. (nSamples x nComponents x nrows x ncols) x (decV x decH)
         A = permuteDctCoefs_(Y)
         V = A.view(nSamples,nrows,ncols,nDecs)
@@ -611,7 +611,7 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
         # Block DCT (nSamples x nComponents x nrows x ncols) x decV x decH
         arrayshape = stride.copy()
         arrayshape.insert(0,-1)
-        Y = dct.dct_2d(X.view(arrayshape),norm='ortho')
+        Y = dct_2d(X.view(arrayshape))
         # Rearrange the DCT Coefs. (nSamples x nComponents x nrows x ncols) x (decV x decH)
         A = permuteDctCoefs_(Y)
         V = A.view(nSamples,nrows,ncols,nDecs)
@@ -768,7 +768,7 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
         X_ = X
         for iStage in range(nlevels):
             iLevel = iStage+1
-            Y = dct.dct_2d(X_.view(arrayshape),norm='ortho')
+            Y = dct_2d(X_.view(arrayshape))
             # Rearrange the DCT Coefs. (nSamples x nComponents x nrows x ncols) x (decV x decH)
             A = permuteDctCoefs_(Y)
             V = A.view(nSamples,nrows,ncols,nDecs)
