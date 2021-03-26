@@ -100,7 +100,7 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
                   U0T[:ma,:] @ Ya ),dim=0)
         V = Zsa.T.view(nSamples,nrows,ncols,nDecs)
         A = permuteIdctCoefs_(V,stride)
-         Y = idct_2d(A)
+        Y = idct_2d(A)
         expctdZ = Y.reshape(nSamples,nComponents,height,width)
         
         # Instantiation of target class
@@ -249,7 +249,7 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
                   U0T[:ma,:] @ Ya ),dim=0)
         V = Zsa.T.view(nSamples,nrows,ncols,nDecs)
         A = permuteIdctCoefs_(V,stride)
-         Y = idct_2d(A)
+        Y = idct_2d(A)
         expctdZ = Y.reshape(nSamples,nComponents,height,width)
         
         # Instantiation of target class
@@ -327,7 +327,7 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
                   U0T[:ma,:] @ Ya ),dim=0)
         V = Zsa.T.view(nSamples,nrows,ncols,nDecs)
         A = permuteIdctCoefs_(V,stride)
-         Y = idct_2d(A)
+        Y = idct_2d(A)
         expctdZ = Y.reshape(nSamples,nComponents,height,width)
         
         # Instantiation of target class
@@ -391,7 +391,7 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
                   U0T[:ma,:] @ Ya ),dim=0)
         V = Zsa.T.view(nSamples,nrows,ncols,nDecs)
         A = permuteIdctCoefs_(V,stride)
-         Y = idct_2d(A)
+        Y = idct_2d(A)
         expctdZ = Y.reshape(nSamples,nComponents,height,width)
         
         # Instantiation of target class
@@ -455,7 +455,7 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
                   U0T[:ma,:] @ Ya ),dim=0)
         V = Zsa.T.view(nSamples,nrows,ncols,nDecs)
         A = permuteIdctCoefs_(V,stride)
-         Y = idct_2d(A)
+        Y = idct_2d(A)
         expctdZ = Y.reshape(nSamples,nComponents,height,width)
         
         # Instantiation of target class
@@ -534,7 +534,7 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
                   U0T[:ma,:] @ Ya ),dim=0)
         V = Zsa.T.view(nSamples,nrows,ncols,nDecs)
         A = permuteIdctCoefs_(V,stride)
-         Y = idct_2d(A)
+        Y = idct_2d(A)
         expctdZ = Y.reshape(nSamples,nComponents,height,width)
         
         # Instantiation of target class
@@ -623,7 +623,7 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
                   U0T[:ma,:] @ Ya ),dim=0)
         V = Zsa.T.view(nSamples,nrows,ncols,nDecs)
         A = permuteIdctCoefs_(V,stride)
-         Y = idct_2d(A)
+        Y = idct_2d(A)
         expctdZ = Y.reshape(nSamples,nComponents,height,width)
         
         # Instantiation of target class
@@ -796,7 +796,7 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
                       U0T[:ma,:] @ Ya ),dim=0)
             V = Zsa.T.view(nSamples,nrows,ncols,nDecs)
             A = permuteIdctCoefs_(V,stride)
-             Y = idct_2d(A)
+            Y = idct_2d(A)
             # Update
             nrows *= stride[Direction.VERTICAL]
             ncols *= stride[Direction.HORIZONTAL]            
