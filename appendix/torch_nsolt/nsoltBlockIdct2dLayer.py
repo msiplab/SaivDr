@@ -14,7 +14,7 @@ class NsoltBlockIdct2dLayer(nn.Module):
        ベクトル配列をブロック配列にして出力:
           nSamples x nComponents x (Stride(1)xnRows) x (Stride(2)xnCols) 
         
-    Requirements: Python 3.7.x, PyTorch 1.7.x
+    Requirements: Python 3.7.x, PyTorch 1.7.x/1.8.x
     
     Copyright (c) 2020-2021, Shogo MURAMATSU
     

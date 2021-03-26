@@ -14,7 +14,7 @@ class NsoltBlockDct2dLayer(nn.Module):
        コンポーネント別に出力(nComponents):
           nSamples x nDecs x nRows x nCols 
         
-    Requirements: Python 3.7.x, PyTorch 1.7.x
+    Requirements: Python 3.7.x, PyTorch 1.7.x/1.8.x
     
     Copyright (c) 2020-2021, Shogo MURAMATSU
     

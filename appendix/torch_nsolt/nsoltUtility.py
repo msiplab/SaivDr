@@ -14,13 +14,16 @@ def dct(x):
     if torch.__version__[:3] == '1.7': 
         Vc = torch.rfft(v, 1, onesided=False)
     else:
-        Vc = torch.fft.rfft(v, 1, onesided=False)
-    
+        Vc = torch.fft.fft(v,dim=1)
+        
     k = - torch.arange(N, dtype=x.dtype, device=x.device)[None, :] * math.pi / (2 * N)
     W_r = torch.cos(k)
     W_i = torch.sin(k)
 
-    V = Vc[:, :, 0] * W_r - Vc[:, :, 1] * W_i
+    if torch.__version__[:3] == '1.7':
+        V = Vc[:, :, 0] * W_r - Vc[:, :, 1] * W_i
+    else:
+        V = Vc.real * W_r - Vc.imag * W_i
 
     # Normalization
     V[:, 0] /= math.sqrt(N) * 2
@@ -53,12 +56,12 @@ def idct(X):
     V_r = V_t_r * W_r - V_t_i * W_i
     V_i = V_t_r * W_i + V_t_i * W_r
 
-    V = torch.cat([V_r.unsqueeze(2), V_i.unsqueeze(2)], dim=2)
-    
     if torch.__version__[:3] == '1.7':
+        V = torch.cat([V_r.unsqueeze(2), V_i.unsqueeze(2)], dim=2)
         v = torch.irfft(V, 1, onesided=False)
     else:
-        v = torch.fft.irfft(V, 1, onesided=False)
+        V = V_r.unsqueeze(2) + 1j*V_i.unsqueeze(2)
+        v = torch.fft.ifft(V, dim=1).real
 
     x = v.new_zeros(v.shape)
     x[:, ::2] += v[:, :N - (N // 2)]

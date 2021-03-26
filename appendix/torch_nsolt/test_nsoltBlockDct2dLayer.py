@@ -25,7 +25,7 @@ class NsoltBlockDct2dLayerTestCase(unittest.TestCase):
        コンポーネント別に出力:
           nSamples x nRows x nCols x nDecs
     
-    Requirements: Python 3.7.x, PyTorch 1.7.x
+    Requirements: Python 3.7.x, PyTorch 1.7.x/1.8.x
     
     Copyright (c) 2020-2021, Shogo MURAMATSU
     
