@@ -11,7 +11,7 @@ class NsoltSynthesis2dNetwork(nn.Module):
     """
     NSOLTSYNTHESIS2DNETWORK
     
-    Requirements: Python 3.7.x, PyTorch 1.7.x
+    Requirements: Python 3.7.x, PyTorch 1.7.x/1.8.x
     
     Copyright (c) 2021, Yasas Dulanjaya, Shogo MURAMATSU
     
@@ -28,7 +28,8 @@ class NsoltSynthesis2dNetwork(nn.Module):
         number_of_channels=[],
         decimation_factor=[],
         polyphase_order=[0,0],
-        number_of_vanishing_moments=1):
+        number_of_vanishing_moments=1,
+        number_of_levels=0):
         super(NsoltSynthesis2dNetwork, self).__init__()
         
         # Check and set parameters
@@ -58,8 +59,11 @@ class NsoltSynthesis2dNetwork(nn.Module):
         self.number_of_vanishing_moments = number_of_vanishing_moments
         
         # Instantiation of layers
+        #if self.number_of_levels == 0:
+        #    nlevels = 1
+        #else:
+        #    nlevels = self.number_of_levels
         self.layers = nn.Sequential()
-        
         # Vertical concatenation
         for iOrderV in range(polyphase_order[Direction.VERTICAL],1,-2):            
             self.layers.add_module('Vv~%d'%(iOrderV),NsoltIntermediateRotation2dLayer(

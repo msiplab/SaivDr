@@ -10,7 +10,7 @@ from orthonormalTransform import OrthonormalTransform
 from nsoltUtility import OrthonormalMatrixGenerationSystem
 from nsoltSynthesis2dNetwork import NsoltSynthesis2dNetwork
 from nsoltLayerExceptions import InvalidNumberOfChannels, InvalidPolyPhaseOrder, InvalidNumberOfVanishingMoments, InvalidNumberOfLevels
-from nsoltUtility import Direction
+from nsoltUtility import Direction, idct_2d
 
 nchs = [ [2, 2], [3, 3], [4, 4] ]
 stride = [ [1, 1], [1, 2], [2, 1], [2, 2] ]
@@ -160,7 +160,7 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
                 polyphase_order = [ ppord[0]+1, ppord[1]+1 ],
                 number_of_channels = nchs,
                 decimation_factor = stride
-            )
+            )   
 
     @parameterized.expand(
         list(itertools.product(nchs,stride,ppord))
@@ -704,7 +704,7 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
     @parameterized.expand(
         list(itertools.product(nchs,stride,nvm,nlevels,datatype))
     )
-    def testForwardGrayScaleLevel2WithNoDcLeackage(self,
+    def testForwardGrayScaleMultiLevels(self,
             nchs, stride, nvm, nlevels, datatype):
         rtol,atol = 1e-3,1e-6
         gen = OrthonormalMatrixGenerationSystem(dtype=datatype)
@@ -730,18 +730,14 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
         # nSamples x nRows x nCols x nChsTotal
         nrows_ = nrows
         ncols_ = ncols
-        if nlevels == 1:
-            X = torch.randn(nSamples,nrows_,ncols_,nChsTotal,dtype=datatype,requires_grad=True) 
-        else:
-            X = []
-            for iLevel in range(1,nlevels+1):
-                if iLevel == 1:
-                    X.append(torch.randn(nSamples,nrows_,ncols_,nChsTotal,dtype=datatype,requires_grad=True)) 
-                else:
-                    X.append(torch.randn(nSamples,nrows_,ncols_,nChsTotal-1,dtype=datatype,requires_grad=True))     
-                nrows_ *= stride[Direction.VERTICAL]
-                ncols_ *= stride[Direction.HORIZONTAL]
-            X = tuple(X)
+        X = []
+        for iLevel in range(1,nlevels+1):
+            if iLevel == 1:
+                X.append(torch.randn(nSamples,nrows_,ncols_,1,dtype=datatype,requires_grad=True)) 
+            X.append(torch.randn(nSamples,nrows_,ncols_,nChsTotal-1,dtype=datatype,requires_grad=True))     
+            nrows_ *= stride[Direction.VERTICAL]
+            ncols_ *= stride[Direction.HORIZONTAL]
+        X = tuple(X)
 
         # Expected values        
         # nSamples x nRows x nCols x nDecs
@@ -755,13 +751,10 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
             if nVm > 0:
                 angsW[:(ps-1)] = torch.zeros_like(angsW[:(ps-1)])
             # Extract scale channel
-            if nlevels == 1:
-                Z = X
-            elif iLevel == nlevels:
-                Z = X[0]
-            else:
-                Xac = X[nlevels-iLevel]
-                Z = torch.cat((Xdc.unsqueeze(dim=3),Xac),dim=3)
+            if iLevel == nlevels:
+                Xdc = X[0]
+            Xac = X[nlevels-iLevel+1]
+            Z = torch.cat((Xdc,Xac),dim=3)
             # Vertical atom concatenation
             for ordV in range(int(ppOrd[Direction.VERTICAL]/2)):
                 Uv2T = -gen(angsU).T
@@ -823,6 +816,7 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
         self.assertEqual(actualZ.dtype,datatype)
         self.assertTrue(torch.allclose(actualZ,expctdZ,rtol=rtol,atol=atol))
         self.assertFalse(actualZ.requires_grad)
+
 """
         
         %Dec11Ch4Ord00Level2

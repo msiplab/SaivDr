@@ -14,7 +14,7 @@ class NsoltAnalysis2dNetwork(nn.Module):
     """
     NSOLTANALYSIS2DNETWORK
     
-    Requirements: Python 3.7.x, PyTorch 1.7.x
+    Requirements: Python 3.7.x, PyTorch 1.7.x/1.8.x
     
     Copyright (c) 2021, Yasas Dulanjaya, Shogo MURAMATSU
     
@@ -32,7 +32,7 @@ class NsoltAnalysis2dNetwork(nn.Module):
         decimation_factor=[],
         polyphase_order=[0,0],
         number_of_vanishing_moments=1,
-        number_of_levels=1):
+        number_of_levels=0):
         super(NsoltAnalysis2dNetwork, self).__init__()
 
         # Check and set parameters
@@ -62,14 +62,22 @@ class NsoltAnalysis2dNetwork(nn.Module):
         self.number_of_vanishing_moments = number_of_vanishing_moments
 
         # # of levels
-        if number_of_levels < 1:
+        if not isinstance(number_of_levels, int):
             raise InvalidNumberOfLevels(
-            '%d : The number of levels must be greater than 0.'\
+            '%f : The number of levels must be integer.'\
+            % number_of_levels)   
+        if number_of_levels < 0:
+            raise InvalidNumberOfLevels(
+            '%d : The number of levels must be greater than or equal to 0.'\
             % number_of_levels)
         self.number_of_levels = number_of_levels
 
         # Instantiation of layers
-        stages = [ nn.Sequential() for iStage in range(self.number_of_levels) ]
+        if self.number_of_levels == 0:
+            nlevels = 1
+        else:
+            nlevels = self.number_of_levels
+        stages = [ nn.Sequential() for iStage in range(nlevels) ]
         for iStage in range(len(stages)):
             iLevel = iStage+1
             strLv = 'Lv%0d_'%iLevel
@@ -120,14 +128,14 @@ class NsoltAnalysis2dNetwork(nn.Module):
                     mode='Analysis',
                     mus=-1))
             # Channel Separation for intermediate stages
-            if (self.number_of_levels > 1) and (iLevel < self.number_of_levels):
+            if self.number_of_levels > 0:
                 stages[iStage].add_module(strLv+'Sp',NsoltChannelSeparation2dLayer())
 
         # Stack modules as a list
         self.layers = nn.ModuleList(stages)
         
     def forward(self,x):
-        if self.number_of_levels == 1: # Flat structure
+        if self.number_of_levels == 0: # Flat structure
             for m in self.layers:
                 y = m.forward(x) 
             return y
@@ -138,18 +146,18 @@ class NsoltAnalysis2dNetwork(nn.Module):
             nrows = int(x.size(2)/stride[Direction.VERTICAL])
             ncols = int(x.size(3)/stride[Direction.HORIZONTAL])
             y = []
-            iLevel = 1
+            iLevel = 1                   
             for m in self.layers:
-                if iLevel != self.number_of_levels: # Intermediate stages
-                    yac, ydc = m.forward(x)
+                yac, ydc = m.forward(x)
+                y.insert(0,yac)
+                if iLevel < self.number_of_levels:
                     x = ydc.view(nSamples,nComponents,nrows,ncols)
-                    y.insert(0,yac)
                     nrows = int(nrows/stride[Direction.VERTICAL])
-                    ncols = int(ncols/stride[Direction.HORIZONTAL])
-                    iLevel += 1                    
-                else: # The deepest stage
-                    yacdc = m.forward(x)
-                    y.insert(0,yacdc)
+                    ncols = int(ncols/stride[Direction.HORIZONTAL])     
+                    iLevel += 1             
+                else:
+                    y.insert(0,ydc)
+        
             return tuple(y)
     
     @property

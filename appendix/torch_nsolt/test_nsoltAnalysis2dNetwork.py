@@ -204,7 +204,7 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
                 number_of_levels = nlevels
             )
 
-        nlevels = 0
+        nlevels = 0.5
         with self.assertRaises(InvalidNumberOfLevels):
             NsoltAnalysis2dNetwork(
                 number_of_channels = nchs,
@@ -733,7 +733,7 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
     @parameterized.expand(
         list(itertools.product(nchs,stride,nvm,nlevels,datatype))
     )
-    def testForwardGrayScaleLevel2(self,
+    def testForwardGrayScaleMultiLevels(self,
             nchs, stride, nvm, nlevels, datatype):
         rtol,atol = 1e-3,1e-6
         gen = OrthonormalMatrixGenerationSystem(dtype=datatype)
@@ -813,18 +813,15 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
                 Z = block_butterfly(Z,nchs)/2.
                 Uv2 = -gen(angsU)
                 Z = intermediate_rotation(Z,nchs,Uv2)
-            # Split into multi-scale channels
-            if nlevels == 1: # Flat structure (#Lv=1)
-                expctdZ = Z
-            elif iLevel < nlevels: # Intermediate layers in tree structure (#Lv>1)
-                # Split into DC and ACs
+            # Xac
+            coefs.insert(0,Z[:,:,:,1:])
+            if iLevel < nlevels:
                 X_ = Z[:,:,:,0].view(nSamples,nComponents,nrows,ncols)
-                coefs.insert(0,Z[:,:,:,1:])
                 nrows = int(nrows/stride[Direction.VERTICAL])
-                ncols = int(ncols/stride[Direction.HORIZONTAL])
-            else: # Deepest layer in tree structure (#Lv)
-                coefs.insert(0,Z)
-                expctdZ = tuple(coefs)
+                ncols = int(ncols/stride[Direction.HORIZONTAL])            
+            else: # Xdc
+                coefs.insert(0,Z[:,:,:,0])
+        expctdZ = tuple(coefs)
 
         # Instantiation of target class
         network = NsoltAnalysis2dNetwork(
@@ -843,15 +840,10 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
             actualZ = network.forward(X)
 
         # Evaluation
-        if nlevels == 1:
-            self.assertEqual(actualZ.dtype,datatype)         
-            self.assertTrue(torch.allclose(actualZ,expctdZ,rtol=rtol,atol=atol))
-            self.assertFalse(actualZ.requires_grad)
-        else:
-            for iStage in range(nlevels):
-                self.assertEqual(actualZ[iStage].dtype,datatype)         
-                self.assertTrue(torch.allclose(actualZ[iStage],expctdZ[iStage],rtol=rtol,atol=atol))
-                self.assertFalse(actualZ[iStage].requires_grad) 
+        for iStage in range(nlevels+1):
+            self.assertEqual(actualZ[iStage].dtype,datatype)         
+            self.assertTrue(torch.allclose(actualZ[iStage],expctdZ[iStage],rtol=rtol,atol=atol))
+            self.assertFalse(actualZ[iStage].requires_grad) 
 
 """
                 
