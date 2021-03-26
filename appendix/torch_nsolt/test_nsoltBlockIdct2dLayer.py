@@ -3,7 +3,8 @@ import unittest
 from parameterized import parameterized
 import torch
 import torch.nn as nn
-import torch_dct as dct
+#import torch_dct as dct
+import scipy.fftpack as fftpack
 import math
 from nsoltBlockIdct2dLayer import NsoltBlockIdct2dLayer
 from nsoltUtility import Direction
@@ -65,7 +66,7 @@ class NsoltBlockIdct2dLayerTestCase(unittest.TestCase):
     )
     def testPredictGrayScale(self,
         stride, height, width, datatype):
-        rtol,atol = 1e-5,1e-8
+        rtol,atol = 1e-3,1e-6
 
         # Parameters
         nSamples = 8
@@ -78,7 +79,8 @@ class NsoltBlockIdct2dLayerTestCase(unittest.TestCase):
 
         # Expected values
         A = permuteIdctCoefs_(X,stride)
-        Y = dct.idct_2d(A,norm='ortho')
+        #Y = dct.idct_2d(A,norm='ortho')
+        Y = torch.tensor(fftpack.idct(fftpack.idct(A.detach().numpy(),axis=1,type=2,norm='ortho'),axis=2,type=2,norm='ortho'),dtype=datatype)
         expctdZ = Y.reshape(nSamples,nComponents,height,width)
 
         # Instantiation of target class
@@ -101,7 +103,7 @@ class NsoltBlockIdct2dLayerTestCase(unittest.TestCase):
     )
     def testForwardGrayScale(self,
         stride, height, width, datatype):
-        rtol,atol = 1e-5,1e-8
+        rtol,atol = 1e-3,1e-6
 
         # Parameters
         nSamples = 8
@@ -114,7 +116,8 @@ class NsoltBlockIdct2dLayerTestCase(unittest.TestCase):
 
         # Expected values
         A = permuteIdctCoefs_(X,stride)
-        Y = dct.idct_2d(A,norm='ortho')
+        #Y = dct.idct_2d(A,norm='ortho')
+        Y = torch.tensor(fftpack.idct(fftpack.idct(A.detach().numpy(),axis=1,type=2,norm='ortho'),axis=2,type=2,norm='ortho'),dtype=datatype)
         expctdZ = Y.reshape(nSamples,nComponents,height,width)
 
         # Instantiation of target class
@@ -136,7 +139,7 @@ class NsoltBlockIdct2dLayerTestCase(unittest.TestCase):
     )
     def testPredictRgbColor(self,
         stride, height, width, datatype):
-        rtol,atol=1e-5,1e-8
+        rtol,atol=1e-3,1e-6
 
         # Parameters
         nSamples = 8
@@ -153,9 +156,12 @@ class NsoltBlockIdct2dLayerTestCase(unittest.TestCase):
         Ar = permuteIdctCoefs_(Xr,stride)
         Ag = permuteIdctCoefs_(Xg,stride)
         Ab = permuteIdctCoefs_(Xb,stride)                
-        Yr = dct.idct_2d(Ar,norm='ortho')
-        Yg = dct.idct_2d(Ag,norm='ortho')
-        Yb = dct.idct_2d(Ab,norm='ortho')
+        #Yr = dct.idct_2d(Ar,norm='ortho')
+        Yr = torch.tensor(fftpack.idct(fftpack.idct(Ar.detach().numpy(),axis=1,type=2,norm='ortho'),axis=2,type=2,norm='ortho'),dtype=datatype)
+        #Yg = dct.idct_2d(Ag,norm='ortho')
+        Yg = torch.tensor(fftpack.idct(fftpack.idct(Ag.detach().numpy(),axis=1,type=2,norm='ortho'),axis=2,type=2,norm='ortho'),dtype=datatype)
+        #Yb = dct.idct_2d(Ab,norm='ortho')
+        Yb = torch.tensor(fftpack.idct(fftpack.idct(Ab.detach().numpy(),axis=1,type=2,norm='ortho'),axis=2,type=2,norm='ortho'),dtype=datatype)
         expctdZ = torch.cat((
             Yr.reshape(nSamples,1,height,width),
             Yg.reshape(nSamples,1,height,width),
@@ -183,7 +189,7 @@ class NsoltBlockIdct2dLayerTestCase(unittest.TestCase):
     )
     def testForwardRgbColor(self,
         stride, height, width, datatype):
-        rtol,atol=1e-5,1e-8
+        rtol,atol=1e-3,1e-6
 
         # Parameters
         nSamples = 8
@@ -200,9 +206,12 @@ class NsoltBlockIdct2dLayerTestCase(unittest.TestCase):
         Ar = permuteIdctCoefs_(Xr,stride)
         Ag = permuteIdctCoefs_(Xg,stride)
         Ab = permuteIdctCoefs_(Xb,stride)                
-        Yr = dct.idct_2d(Ar,norm='ortho')
-        Yg = dct.idct_2d(Ag,norm='ortho')
-        Yb = dct.idct_2d(Ab,norm='ortho')
+        #Yr = dct.idct_2d(Ar,norm='ortho')
+        Yr = torch.tensor(fftpack.idct(fftpack.idct(Ar.detach().numpy(),axis=1,type=2,norm='ortho'),axis=2,type=2,norm='ortho'),dtype=datatype)
+        #Yg = dct.idct_2d(Ag,norm='ortho')
+        Yg = torch.tensor(fftpack.idct(fftpack.idct(Ag.detach().numpy(),axis=1,type=2,norm='ortho'),axis=2,type=2,norm='ortho'),dtype=datatype)
+        #Yb = dct.idct_2d(Ab,norm='ortho')
+        Yb = torch.tensor(fftpack.idct(fftpack.idct(Ab.detach().numpy(),axis=1,type=2,norm='ortho'),axis=2,type=2,norm='ortho'),dtype=datatype)
         expctdZ = torch.cat((
             Yr.reshape(nSamples,1,height,width),
             Yg.reshape(nSamples,1,height,width),
@@ -244,7 +253,9 @@ class NsoltBlockIdct2dLayerTestCase(unittest.TestCase):
         # Expected values
         arrayshape = stride.copy()
         arrayshape.insert(0,-1)
-        Y = dct.dct_2d(dLdZ.view(arrayshape),norm='ortho')
+        #Y = dct.dct_2d(dLdZ.view(arrayshape),norm='ortho')
+        Y = torch.tensor(fftpack.dct(fftpack.dct(dLdZ.view(arrayshape).detach().numpy(),axis=2,type=2,norm='ortho'),axis=1,type=2,norm='ortho'),dtype=datatype)
+        
         A = permuteDctCoefs_(Y)
         # Rearrange the DCT Coefs. (nSamples x nComponents x nrows x ncols) x (decV x decH)
         expctddLdX = A.view(nSamples,nrows,ncols,nDecs)
@@ -288,7 +299,9 @@ class NsoltBlockIdct2dLayerTestCase(unittest.TestCase):
         # Expected values
         arrayshape = stride.copy()
         arrayshape.insert(0,-1)
-        Y = dct.dct_2d(dLdZ.view(arrayshape),norm='ortho')
+        #Y = dct.dct_2d(dLdZ.view(arrayshape),norm='ortho')
+        Y = torch.tensor(fftpack.dct(fftpack.dct(dLdZ.view(arrayshape).detach().numpy(),axis=2,type=2,norm='ortho'),axis=1,type=2,norm='ortho'),dtype=datatype)
+        
         A = permuteDctCoefs_(Y)
         # Rearrange the DCT Coefs. (nSamples x nRows x nCols x nDecs)
         Z = A.view(nSamples,nComponents,nrows,ncols,nDecs) 

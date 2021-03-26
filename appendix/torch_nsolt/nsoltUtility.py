@@ -1,6 +1,81 @@
 import torch
 import math
 
+def dct(x): 
+    """ 
+        Revised torch_dct.dct for PyTorch 1.8.x 
+    """
+    x_shape = x.shape
+    N = x_shape[-1]
+    x = x.contiguous().view(-1, N)
+
+    v = torch.cat([x[:, ::2], x[:, 1::2].flip([1])], dim=1)
+
+    if torch.__version__[:3] == '1.7': 
+        Vc = torch.rfft(v, 1, onesided=False)
+    else:
+        Vc = torch.fft.rfft(v, 1, onesided=False)
+    
+    k = - torch.arange(N, dtype=x.dtype, device=x.device)[None, :] * math.pi / (2 * N)
+    W_r = torch.cos(k)
+    W_i = torch.sin(k)
+
+    V = Vc[:, :, 0] * W_r - Vc[:, :, 1] * W_i
+
+    # Normalization
+    V[:, 0] /= math.sqrt(N) * 2
+    V[:, 1:] /= math.sqrt(N / 2) * 2
+
+    V = 2 * V.view(*x_shape)
+
+    return V
+
+def idct(X):
+    """ 
+        Revised torch_dct.idct for PyTorch 1.8.x
+    """
+    x_shape = X.shape
+    N = x_shape[-1]
+
+    X_v = X.contiguous().view(-1, x_shape[-1]) / 2
+
+    # Normalization
+    X_v[:, 0] *= math.sqrt(N) * 2
+    X_v[:, 1:] *= math.sqrt(N / 2) * 2
+
+    k = torch.arange(x_shape[-1], dtype=X.dtype, device=X.device)[None, :] * math.pi / (2 * N)
+    W_r = torch.cos(k)
+    W_i = torch.sin(k)
+
+    V_t_r = X_v
+    V_t_i = torch.cat([X_v[:, :1] * 0, -X_v.flip([1])[:, :-1]], dim=1)
+
+    V_r = V_t_r * W_r - V_t_i * W_i
+    V_i = V_t_r * W_i + V_t_i * W_r
+
+    V = torch.cat([V_r.unsqueeze(2), V_i.unsqueeze(2)], dim=2)
+    
+    if torch.__version__[:3] == '1.7':
+        v = torch.irfft(V, 1, onesided=False)
+    else:
+        v = torch.fft.irfft(V, 1, onesided=False)
+
+    x = v.new_zeros(v.shape)
+    x[:, ::2] += v[:, :N - (N // 2)]
+    x[:, 1::2] += v.flip([1])[:, :N // 2]
+
+    return x.view(*x_shape) 
+
+def dct_2d(x):
+    X1 = dct(x)
+    X2 = dct(X1.transpose(-1, -2))
+    return X2.transpose(-1, -2)
+
+def idct_2d(X):
+    x1 = idct(X)
+    x2 = idct(x1.transpose(-1, -2))
+    return x2.transpose(-1, -2)
+
 class Direction:
     VERTICAL = 0
     HORIZONTAL = 1

@@ -1,8 +1,8 @@
 import torch
 import torch.nn as nn
-import torch_dct as dct
+#import torch_dct as dct
 import math
-from nsoltUtility import Direction
+from nsoltUtility import Direction, dct_2d
 
 class NsoltBlockDct2dLayer(nn.Module):
     """
@@ -55,7 +55,7 @@ class NsoltBlockDct2dLayer(nn.Module):
         # Block DCT (nSamples x nComponents x nrows x ncols) x decV x decH
         arrayshape = stride.copy()
         arrayshape.insert(0,-1)
-        Y = dct.dct_2d(X.view(arrayshape),norm='ortho')
+        Y = dct_2d(X.view(arrayshape))
         # Rearrange the DCT Coefs. (nSamples x nComponents x nrows x ncols) x (decV x decH)
         cee = Y[:,0::2,0::2].reshape(Y.size(0),-1)
         coo = Y[:,1::2,1::2].reshape(Y.size(0),-1)

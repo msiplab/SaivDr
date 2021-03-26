@@ -1,8 +1,8 @@
 import torch
 import torch.nn as nn
-import torch_dct as dct
+#import torch_dct as dct
 import math
-from nsoltUtility import Direction
+from nsoltUtility import Direction, idct_2d
 
 class NsoltBlockIdct2dLayer(nn.Module):
     """
@@ -51,7 +51,7 @@ class NsoltBlockIdct2dLayer(nn.Module):
             # Permute IDCT coefficients
             V = permuteIdctCoefs_(X,block_size)
             # 2D IDCT
-            Y = dct.idct_2d(V,norm='ortho')
+            Y = idct_2d(V)
             # Reshape and return
             height = nrows * block_size[Direction.VERTICAL] 
             width = ncols * block_size[Direction.HORIZONTAL] 
