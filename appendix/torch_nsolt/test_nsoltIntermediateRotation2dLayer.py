@@ -74,12 +74,14 @@ class NsoltIntermediateRotation2dLayerTestCase(unittest.TestCase):
     def testPredictGrayscale(self,
         nchs, nrows, ncols, mus, datatype):
         rtol,atol=1e-5,1e-8
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")        
 
         # Parameters
         nSamples = 8
         nChsTotal = sum(nchs)
         # nSamples x nRows x nCols x nChsTotal
         X = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype,requires_grad=True)
+        X.to(device)
 
         # Expected values
         # nSamples x nRows x nCols x nChsTotal
@@ -111,6 +113,7 @@ class NsoltIntermediateRotation2dLayerTestCase(unittest.TestCase):
     def testPredictGrayscaleWithRandomAngles(self,
         nchs, nrows, ncols, mus, datatype):
         rtol,atol=1e-5,1e-8
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")        
         gen = OrthonormalMatrixGenerationSystem(dtype=datatype)
 
         # Parameters
@@ -118,6 +121,7 @@ class NsoltIntermediateRotation2dLayerTestCase(unittest.TestCase):
         nChsTotal = sum(nchs)
         # nSamples x nRows x nCols x nChsTotal
         X = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype,requires_grad=True)
+        X.to(device)
         angles = torch.randn(int((nChsTotal-2)*nChsTotal/8),dtype=datatype)
 
         # Expected values
@@ -151,6 +155,7 @@ class NsoltIntermediateRotation2dLayerTestCase(unittest.TestCase):
     def testPredictGrayscaleAnalysisMode(self,
         nchs, nrows, ncols, mus, datatype):
         rtol,atol=1e-5,1e-8
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")        
         gen = OrthonormalMatrixGenerationSystem(dtype=datatype)
 
         # Parameters
@@ -158,6 +163,7 @@ class NsoltIntermediateRotation2dLayerTestCase(unittest.TestCase):
         nChsTotal = sum(nchs)
         # nSamples x nRows x nCols x nChsTotal
         X = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype,requires_grad=True)
+        X.to(device)
         angles = torch.randn(int((nChsTotal-2)*nChsTotal/8),dtype=datatype)
 
         # Expected values
@@ -192,6 +198,7 @@ class NsoltIntermediateRotation2dLayerTestCase(unittest.TestCase):
     def testBackwardGrayscale(self,
         datatype, nchs, nrows, ncols, mus):
         rtol,atol=1e-3,1e-6
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")        
         omgs = OrthonormalMatrixGenerationSystem(dtype=datatype,partial_difference=False)
 
         # Parameters
@@ -201,7 +208,9 @@ class NsoltIntermediateRotation2dLayerTestCase(unittest.TestCase):
         angles = torch.zeros(nAngles,dtype=datatype)
         # nSamples x nRows x nCols x nChsTotal
         X = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype,requires_grad=True)
-        dLdZ = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype)            
+        X.to(device)
+        dLdZ = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype)       
+        dLdZ.to(device)     
 
         # Expected values
         ps,pa = nchs
@@ -248,6 +257,7 @@ class NsoltIntermediateRotation2dLayerTestCase(unittest.TestCase):
     def testBackwardGrayscaleWithRandomAngles(self,
         datatype, nchs, nrows, ncols, mus):
         rtol,atol=1e-3,1e-6
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")        
         omgs = OrthonormalMatrixGenerationSystem(dtype=datatype,partial_difference=False)
 
         # Parameters
@@ -257,7 +267,9 @@ class NsoltIntermediateRotation2dLayerTestCase(unittest.TestCase):
         angles = torch.randn(nAngles,dtype=datatype)
         # nSamples x nRows x nCols x nChsTotal
         X = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype,requires_grad=True)
-        dLdZ = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype)            
+        X.to(device)
+        dLdZ = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype)        
+        dLdZ.to(device)    
 
         # Expected values
         ps,pa = nchs
@@ -304,6 +316,7 @@ class NsoltIntermediateRotation2dLayerTestCase(unittest.TestCase):
     def testBackwardGrayscaleAnalysisMode(self,
         datatype, nchs, nrows, ncols, mus):
         rtol,atol=1e-3,1e-6
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")        
         omgs = OrthonormalMatrixGenerationSystem(dtype=datatype,partial_difference=False)
 
         # Parameters
@@ -313,7 +326,9 @@ class NsoltIntermediateRotation2dLayerTestCase(unittest.TestCase):
         angles = torch.randn(nAngles,dtype=datatype)
         # nSamples x nRows x nCols x nChsTotal
         X = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype,requires_grad=True)
-        dLdZ = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype)            
+        X.to(device)
+        dLdZ = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype)       
+        dLdZ.to(device)     
 
         # Expected values
         ps,pa = nchs
@@ -375,12 +390,14 @@ class NsoltIntermediateRotation2dLayerTestCase(unittest.TestCase):
     def testConstructionWithMus(self,
         nchs, nrows, ncols, mus, datatype):
         rtol,atol=1e-5,1e-8
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")        
 
         # Parameters
         nSamples = 8
         nChsTotal = sum(nchs)
         # nSamples x nRows x nCols x nChsTotal
         X = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype,requires_grad=True)
+        X.to(device)
 
         # Expected values
         # nSamples x nRows x nCols x nChsTotal

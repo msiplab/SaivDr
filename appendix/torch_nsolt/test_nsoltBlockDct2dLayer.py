@@ -69,12 +69,14 @@ class NsoltBlockDct2dLayerTestCase(unittest.TestCase):
     def testPredictGrayScale(self,
             stride, height, width, datatype):
         rtol,atol = 1e-3,1e-6
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")        
 
         # Parameters
         nSamples = 8
         nComponents = 1
         # Source (nSamples x nComponents x (Stride[0]xnRows) x (Stride[1]xnCols))
         X = torch.rand(nSamples,nComponents,height,width,dtype=datatype,requires_grad=True)
+        X.to(device)
 
         # Expected values
         nrows = int(math.ceil(height/stride[Direction.VERTICAL])) #.astype(int)
@@ -110,12 +112,14 @@ class NsoltBlockDct2dLayerTestCase(unittest.TestCase):
     def testForwardGrayScale(self,
         stride, height, width, datatype):
         rtol,atol=1e-3,1e-6
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")                
             
         # Parameters
         nSamples = 8
         nComponents = 1
         # Source (nSamples x nComponents x (Stride[0]xnRows) x (Stride[1]xnCols))
         X = torch.rand(nSamples,nComponents,height,width,dtype=datatype,requires_grad=True)
+        X.to(device)
 
         # Expected values
         nrows = int(math.ceil(height/stride[Direction.VERTICAL])) #.astype(int)
@@ -150,12 +154,14 @@ class NsoltBlockDct2dLayerTestCase(unittest.TestCase):
     def testPredictRgbColor(self,
         stride, height, width, datatype):
         rtol,atol=1e-3,1e-6
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")        
 
         # Parameters
         nSamples = 8
         nComponents = 3 # RGB
         # Source (nSamples x nComponents x (Stride[0]xnRows) x (Stride[1]xnCols))
         X = torch.rand(nSamples,nComponents,height,width,dtype=datatype,requires_grad=True)
+        X.to(device)
 
         # Expected values
         nrows = int(math.ceil(height/stride[Direction.VERTICAL])) #.astype(int)
@@ -202,12 +208,14 @@ class NsoltBlockDct2dLayerTestCase(unittest.TestCase):
     def testForwardRgbColor(self,
         stride, height, width, datatype):
         rtol,atol=1e-3,1e-6
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")        
 
         # Parameters
         nSamples = 8
         nComponents = 3 # RGB
         # Source (nSamples x nComponents x (Stride[0]xnRows) x (Stride[1]xnCols))
         X = torch.rand(nSamples,nComponents,height,width,dtype=datatype,requires_grad=True)
+        X.to(device)
 
         # Expected values
         nrows = int(math.ceil(height/stride[Direction.VERTICAL])) #.astype(int)
@@ -253,6 +261,7 @@ class NsoltBlockDct2dLayerTestCase(unittest.TestCase):
     def testBackwardGrayScale(self,
         stride, height, width, datatype):
         rtol,atol = 1e-3,1e-6
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")                
 
         # Parameters
         nSamples = 8
@@ -262,9 +271,11 @@ class NsoltBlockDct2dLayerTestCase(unittest.TestCase):
         nComponents = 1
 
         # Source (nSamples x nComponents x (Stride[0]xnRows) x (Stride[1]xnCols))
-        X = torch.rand(nSamples,nComponents,height,width,dtype=datatype,requires_grad=True)        
+        X = torch.rand(nSamples,nComponents,height,width,dtype=datatype,requires_grad=True)      
+        X.to(device) 
         # nSamples x nRows x nCols x nDecs
         dLdZ = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype)
+        dLdZ.to(device)
 
         # Expected values
         A = permuteIdctCoefs_(dLdZ,stride)
@@ -294,6 +305,7 @@ class NsoltBlockDct2dLayerTestCase(unittest.TestCase):
     def testBackwardRgbColor(self,
         stride, height, width, datatype):
         rtol,atol = 1e-3,1e-6
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")                
 
         # Parameters
         nSamples = 8
@@ -303,11 +315,15 @@ class NsoltBlockDct2dLayerTestCase(unittest.TestCase):
         nComponents = 3 # RGB
 
         # Source (nSamples x nComponents x (Stride[0]xnRows) x (Stride[1]xnCols))
-        X = torch.rand(nSamples,nComponents,height,width,dtype=datatype,requires_grad=True)        
+        X = torch.rand(nSamples,nComponents,height,width,dtype=datatype,requires_grad=True)     
+        X.to(device)   
         # nSamples x nRows x nCols x nDecs
         dLdZr = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype)
+        dLdZr.to(device)
         dLdZg = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype)
+        dLdZg.to(device)
         dLdZb = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype) 
+        dLdZb.to(device)
     
         # Expected values
         Ar = permuteIdctCoefs_(dLdZr,stride)

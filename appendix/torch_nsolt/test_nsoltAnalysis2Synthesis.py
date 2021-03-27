@@ -39,7 +39,7 @@ class NsoltAnalysis2SynthesisTestCase(unittest.TestCase):
     def testAdjointOfAnalyzer2dNetwork(self,
         height,width,nchs,stride,ppord,nvm,datatype):
         rtol,atol = 1e-3,1e-6
-        
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")                
         # Initialization function of angle parameters
         def init_angles(m):
             if type(m) == OrthonormalTransform:
@@ -52,6 +52,7 @@ class NsoltAnalysis2SynthesisTestCase(unittest.TestCase):
         nChsTotal = sum(nchs)
         # Source (nSamples x nComponents x (Stride[0]xnRows) x (Stride[1]xnCols))
         X = torch.rand(nSamples,nComponents,height,width,dtype=datatype,requires_grad=True)
+        X.to(device)
 
         # Expected values
         expctdY = X
@@ -86,7 +87,8 @@ class NsoltAnalysis2SynthesisTestCase(unittest.TestCase):
     def testAdjointOfAnalyzer2dNetworkRandomInitialization(self,
         height,width,nchs,stride,ppord,nvm,datatype):
         rtol,atol = 1e-3,1e-6
-        
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")        
+
         # Initialization function of angle parameters
         def init_angles(m):
             if type(m) == OrthonormalTransform:
@@ -99,6 +101,7 @@ class NsoltAnalysis2SynthesisTestCase(unittest.TestCase):
         nChsTotal = sum(nchs)
         # Source (nSamples x nComponents x (Stride[0]xnRows) x (Stride[1]xnCols))
         X = torch.rand(nSamples,nComponents,height,width,dtype=datatype,requires_grad=True)
+        X.to(device)
 
         # Expected values
         expctdY = X

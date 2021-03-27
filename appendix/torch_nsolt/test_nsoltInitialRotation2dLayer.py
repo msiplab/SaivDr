@@ -74,6 +74,7 @@ class NsoltInitialRotation2dLayerTestCase(unittest.TestCase):
     def testPredictGrayscale(self,
         nchs, stride, nrows, ncols, datatype):
         rtol,atol=1e-5,1e-8
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")        
         
         # Parameters
         nSamples = 8
@@ -81,6 +82,7 @@ class NsoltInitialRotation2dLayerTestCase(unittest.TestCase):
         nChsTotal = sum(nchs)
         # nSamples x nRows x nCols x nDecs
         X = torch.randn(nSamples,nrows,ncols,nDecs,dtype=datatype)
+        X.to(device)
 
         # Expected values
         # nSamplex x nRows x nCols x nChs
@@ -118,6 +120,7 @@ class NsoltInitialRotation2dLayerTestCase(unittest.TestCase):
     def testPredictGrayscaleWithRandomAngles(self,
         nchs, stride, nrows, ncols, datatype):
         rtol,atol=1e-5,1e-8
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")        
         gen = OrthonormalMatrixGenerationSystem(dtype=datatype)
         
         # Parameters
@@ -126,6 +129,7 @@ class NsoltInitialRotation2dLayerTestCase(unittest.TestCase):
         nChsTotal = sum(nchs)
         # nSamples x nRows x nCols x nDecs
         X = torch.randn(nSamples,nrows,ncols,nDecs,dtype=datatype)
+        X.to(device)
         angles = torch.randn(int((nChsTotal-2)*nChsTotal/4),dtype=datatype)
 
         # Expected values
@@ -168,6 +172,7 @@ class NsoltInitialRotation2dLayerTestCase(unittest.TestCase):
     def testPredictGrayscaleWithRandomAnglesNoDcLeackage(self,
         nchs, stride, nrows, ncols, datatype,mus):
         rtol,atol=1e-5,1e-8
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")        
         gen = OrthonormalMatrixGenerationSystem(dtype=datatype)
         
         # Parameters
@@ -176,6 +181,7 @@ class NsoltInitialRotation2dLayerTestCase(unittest.TestCase):
         nChsTotal = sum(nchs)
         # nSamples x nRows x nCols x nDecs
         X = torch.randn(nSamples,nrows,ncols,nDecs,dtype=datatype)
+        X.to(device)
         angles = torch.randn(int((nChsTotal-2)*nChsTotal/4),dtype=datatype)
 
         # Expected values
@@ -223,6 +229,7 @@ class NsoltInitialRotation2dLayerTestCase(unittest.TestCase):
     def testBackwardGrayscale(self,
         nchs, stride, nrows, ncols, datatype):
         rtol,atol=1e-5,1e-8
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")        
         omgs = OrthonormalMatrixGenerationSystem(dtype=datatype,partial_difference=False)
 
         # Parameters
@@ -235,7 +242,9 @@ class NsoltInitialRotation2dLayerTestCase(unittest.TestCase):
         mus = 1
         # nSamples x nRows x nCols x nDecs
         X = torch.randn(nSamples,nrows,ncols,nDecs,dtype=datatype,requires_grad=True)
+        X.to(device)
         dLdZ = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype)
+        dLdZ.to(device)
 
         # Expected values
         # nSamples x nRows x nCols x nDecs
@@ -300,6 +309,7 @@ class NsoltInitialRotation2dLayerTestCase(unittest.TestCase):
     def testBackwardGrayscaleWithRandomAngles(self,
         nchs, stride, nrows, ncols, datatype):
         rtol,atol=1e-3,1e-6
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")        
         omgs = OrthonormalMatrixGenerationSystem(dtype=datatype,partial_difference=False)
 
         # Parameters
@@ -312,7 +322,9 @@ class NsoltInitialRotation2dLayerTestCase(unittest.TestCase):
         mus = 1
         # nSamples x nRows x nCols x nDecs
         X = torch.randn(nSamples,nrows,ncols,nDecs,dtype=datatype,requires_grad=True)
+        X.to(device)
         dLdZ = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype)
+        dLdZ.to(device)
 
         # Expected values
         ps,pa = nchs
@@ -375,6 +387,7 @@ class NsoltInitialRotation2dLayerTestCase(unittest.TestCase):
     def testBackwardGrayscaleWithRandomAnglesNoDcLeackage(self,
         nchs, stride, nrows, ncols, datatype,mus):
         rtol,atol=1e-2,1e-5
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")        
         omgs = OrthonormalMatrixGenerationSystem(dtype=datatype,partial_difference=False)
 
         # Parameters
@@ -387,7 +400,9 @@ class NsoltInitialRotation2dLayerTestCase(unittest.TestCase):
         mus = 1
         # nSamples x nRows x nCols x nDecs
         X = torch.randn(nSamples,nrows,ncols,nDecs,dtype=datatype,requires_grad=True)
+        X.to(device)
         dLdZ = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype)
+        dLdZ.to(device)
 
         # Expected values
         ps,pa = nchs
@@ -454,6 +469,7 @@ class NsoltInitialRotation2dLayerTestCase(unittest.TestCase):
     )
     def testGradCheck(self,nchs,stride):
         datatype = torch.double
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")        
 
         # Configuration
         ps, pa = nchs
@@ -471,7 +487,9 @@ class NsoltInitialRotation2dLayerTestCase(unittest.TestCase):
         
         # nSamples x nRows x nCols x nDecs
         X = torch.randn(nSamples,nrows,ncols,nDecs,dtype=datatype,requires_grad=True)
+        X.to(device)
         dLdZ = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype)
+        dLdZ.to(device)
 
         # Instantiation of target class
         layer = NsoltInitialRotation2dLayer(
@@ -498,6 +516,7 @@ class NsoltInitialRotation2dLayerTestCase(unittest.TestCase):
     )
     def testGradCheckNoDcLeakage(self,nchs,stride):
         datatype = torch.double
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")        
 
         # Configuration
         ps, pa = nchs
@@ -515,7 +534,9 @@ class NsoltInitialRotation2dLayerTestCase(unittest.TestCase):
         
         # nSamples x nRows x nCols x nDecs
         X = torch.randn(nSamples,nrows,ncols,nDecs,dtype=datatype,requires_grad=True)
+        X.to(device)
         dLdZ = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype)
+        dLdZ.to(device)
 
         # Instantiation of target class
         layer = NsoltInitialRotation2dLayer(

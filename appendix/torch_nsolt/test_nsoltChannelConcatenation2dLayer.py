@@ -60,6 +60,7 @@ class NsoltChannelConcatenation2dLayerTestCase(unittest.TestCase):
     def testPredict(self,
         nchs,nrows,ncols,datatype):
         rtol,atol=1e-5,1e-8
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")        
 
         # Parameters
         nSamples = 8
@@ -67,8 +68,10 @@ class NsoltChannelConcatenation2dLayerTestCase(unittest.TestCase):
 
         # nSamples x nRows x nCols x (nChsTotal-1)
         Xac = torch.randn(nSamples,nrows,ncols,nChsTotal-1,dtype=datatype,requires_grad=True)
+        Xac.to(device)
         # nSamples x nRows x nCols 
         Xdc = torch.randn(nSamples,nrows,ncols,dtype=datatype,requires_grad=True)
+        Xdc.to(device)
 
         # Expected values
         # nSamples x nRows x nCols x nChsTotal
@@ -94,16 +97,20 @@ class NsoltChannelConcatenation2dLayerTestCase(unittest.TestCase):
     def testBackward(self,
         nchs,nrows,ncols,datatype):
         rtol,atol=1e-5,1e-8
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")                
     
         # Parameters
         nSamples = 8
         nChsTotal = sum(nchs)
         # nSamples x nRows x nCols x (nChsTotal-1)
         Xac = torch.randn(nSamples,nrows,ncols,nChsTotal-1,dtype=datatype,requires_grad=True)
+        Xac.to(device)
         # nSamples x nRows x nCols 
         Xdc = torch.randn(nSamples,nrows,ncols,dtype=datatype,requires_grad=True)
+        Xdc.to(device)
         # nSamples x nRows x nCols x nChsTotal
         dLdZ = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype)
+        dLdZ.to(device)
     
         # Expected values
         # nSamples x nRows x nCols x (nChsTotal-1) 

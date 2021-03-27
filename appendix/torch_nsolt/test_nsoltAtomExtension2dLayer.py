@@ -77,13 +77,15 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
     def testPredictGrayscaleShiftDifferenceCoefs(self, 
             nchs, nrows, ncols, dir, datatype):
         rtol,atol=  0,1e-8
-            
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")        
+
         # Parameters
         nSamples = 8
         nChsTotal = sum(nchs)
         target = 'Difference'
         # nSamples x nRows x nCols x nChsTotal  
         X = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype,requires_grad=True)
+        X.to(device)
         
         # Expected values
         if dir=='Right':
@@ -136,13 +138,15 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
     def testPredictGrayscaleShiftSumCoefs(self, 
                 nchs, nrows, ncols, dir, datatype):
         rtol, atol= 1e-5, 1e-8
-            
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")        
+
         # Parameters
         nSamples = 8
         nChsTotal = sum(nchs)
         target = 'Sum'
         # nSamples x nRows x nCols x nChsTotal 
         X = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype,requires_grad=True)
+        X.to(device)
 
         # Expected values
         if dir=='Right':
@@ -195,15 +199,18 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
     def testBackwardGrayscaleShiftDifferenceCoefs(self, 
                 nchs, nrows, ncols, dir, datatype):
         rtol,atol = 1e-5,1e-8
-  
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")        
+
         # Parameters
         nSamples = 8
         nChsTotal = sum(nchs)
         target = 'Difference'
 
         # nSamples x nRows x nCols x nChsTotal
-        X = torch.zeros(nSamples,nrows,ncols,nChsTotal,dtype=datatype,requires_grad=True)        
+        X = torch.zeros(nSamples,nrows,ncols,nChsTotal,dtype=datatype,requires_grad=True)   
+        X.to(device)     
         dLdZ = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype)
+        dLdZ.to(device)
 
         # Expected values        
         if dir=='Right':
@@ -259,15 +266,18 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
     def testBackwardGrayscaleShiftSumCoefs(self, 
                 nchs, nrows, ncols, dir, datatype):
         rtol,atol = 1e-5,1e-8
-       
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")        
+
         # Parameters
         nSamples = 8
         nChsTotal = sum(nchs)
         target = 'Sum'
         
         # nSamples x nRows x nCols x nChsTotal
-        X = torch.zeros(nSamples,nrows,ncols,nChsTotal,dtype=datatype,requires_grad=True)                
+        X = torch.zeros(nSamples,nrows,ncols,nChsTotal,dtype=datatype,requires_grad=True)       
+        X.to(device)         
         dLdZ = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype)
+        dLdZ.to(device)
 
         # Expected values
         if dir=='Right':

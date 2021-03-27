@@ -37,9 +37,12 @@ class OrthonormalTransformTestCase(unittest.TestCase):
     )
     def testConstructor(self,datatype,ncols):
         rtol,atol = 1e-5,1e-8 
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
         # Expected values
         X = torch.randn(2,ncols,dtype=datatype)
+        X.to(device)
+
         expctdZ = X
         expctdNParams = 1
         expctdMode = 'Analysis'
@@ -64,9 +67,11 @@ class OrthonormalTransformTestCase(unittest.TestCase):
     )
     def testCallWithAngles(self,datatype,ncols,mode):
         rtol,atol = 1e-4,1e-7
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
         # Expected values
-        X = torch.randn(2,ncols,dtype=datatype)      
+        X = torch.randn(2,ncols,dtype=datatype)   
+        X.to(device)   
         R = torch.tensor([
             [ math.cos(math.pi/4), -math.sin(math.pi/4) ],
             [ math.sin(math.pi/4),  math.cos(math.pi/4) ] ],
@@ -93,9 +98,11 @@ class OrthonormalTransformTestCase(unittest.TestCase):
     )
     def testCallWithAnglesAndMus(self,datatype,ncols,mode):
         rtol,atol = 1e-4,1e-7
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
         # Expected values
         X = torch.randn(2,ncols,dtype=datatype)   
+        X.to(device)
         R = torch.tensor([
             [ math.cos(math.pi/4), -math.sin(math.pi/4) ],
             [ -math.sin(math.pi/4), -math.cos(math.pi/4) ] ],
@@ -122,9 +129,11 @@ class OrthonormalTransformTestCase(unittest.TestCase):
     )
     def testSetAngles(self,datatype,ncols,mode):
         rtol,atol = 1e-4,1e-7
-    
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
         # Expected values
         X = torch.randn(2,ncols,dtype=datatype)  
+        X.to(device)
         R = torch.eye(2,dtype=datatype)
         expctdZ = R @ X
 
@@ -160,7 +169,7 @@ class OrthonormalTransformTestCase(unittest.TestCase):
     )
     def test4x4(self,datatype,ncols,mode):
         rtol,atol = 1e-5,1e-8 
-        
+
         # Expected values
         expctdNorm = torch.tensor(1.,dtype=datatype)
 
@@ -321,14 +330,17 @@ class OrthonormalTransformTestCase(unittest.TestCase):
     )
     def testBackward(self,datatype,mode):
         rtol,atol = 1e-5,1e-8 
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
         # Configuration
         ncols = 1
         nPoints = 2
 
         # Expected values
-        X = torch.randn(nPoints,ncols,dtype=datatype,requires_grad=True)        
+        X = torch.randn(nPoints,ncols,dtype=datatype,requires_grad=True)     
+        X.to(device)   
         dLdZ = torch.randn(nPoints,ncols,dtype=datatype)
+        dLdZ.to(device)
         R = torch.eye(nPoints,dtype=datatype)
         dRdW = torch.tensor([
             [ 0., -1.],
@@ -361,13 +373,16 @@ class OrthonormalTransformTestCase(unittest.TestCase):
     )
     def testBackwardMultiColumns(self,datatype,ncols,mode):
         rtol,atol = 1e-4,1e-7
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
         # Configuration
         nPoints = 2
 
         # Expected values
-        X = torch.randn(nPoints,ncols,dtype=datatype,requires_grad=True)        
+        X = torch.randn(nPoints,ncols,dtype=datatype,requires_grad=True)     
+        X.to(device)   
         dLdZ = torch.randn(nPoints,ncols,dtype=datatype)
+        dLdZ.to(device)
         R = torch.eye(nPoints,dtype=datatype)
         dRdW = torch.tensor([
             [ 0., -1.],
@@ -400,13 +415,16 @@ class OrthonormalTransformTestCase(unittest.TestCase):
     )
     def testBackwardMultiColumnsAngs(self,datatype,ncols,mode):
         rtol,atol = 1e-3,1e-6 
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
         # Configuration
         nPoints = 2
 
         # Expected values
-        X = torch.randn(nPoints,ncols,dtype=datatype,requires_grad=True)        
+        X = torch.randn(nPoints,ncols,dtype=datatype,requires_grad=True)    
+        X.to(device)    
         dLdZ = torch.randn(nPoints,ncols,dtype=datatype)
+        dLdZ.to(device)
         #angle = 2.*math.pi*randn(1)
         angle = 2.*math.pi*gauss(mu=0.,sigma=1.) #randn(1)
         R = torch.tensor([[ math.cos(angle), -math.sin(angle) ],
@@ -444,6 +462,7 @@ class OrthonormalTransformTestCase(unittest.TestCase):
     )
     def testBackwardAngsAndMus(self,datatype,mode,ncols):
         rtol,atol = 1e-4,1e-7
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")        
 
         # Configuration
         #mode = 'Analysis'
@@ -452,8 +471,10 @@ class OrthonormalTransformTestCase(unittest.TestCase):
         mus = [1,-1]
 
         # Expected values
-        X = torch.randn(nPoints,ncols,dtype=datatype,requires_grad=True)        
+        X = torch.randn(nPoints,ncols,dtype=datatype,requires_grad=True)   
+        X.to(device)     
         dLdZ = torch.randn(nPoints,ncols,dtype=datatype)
+        dLdZ.to(device)
         # angle = 2.*math.pi*randn(1)
         angle = 2.*math.pi*gauss(mu=0.,sigma=1.) #randn(1)        
         R = torch.tensor([[ math.cos(angle), -math.sin(angle) ],
@@ -515,6 +536,7 @@ class OrthonormalTransformTestCase(unittest.TestCase):
     )
     def testBackwardSetAngles(self,datatype,mode,ncols):
         rtol,atol = 1e-3,1e-6
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")        
 
         # Configuration
         #mode='Synthesis'
@@ -522,8 +544,10 @@ class OrthonormalTransformTestCase(unittest.TestCase):
         #ncols=1
 
         # Expected values
-        X = torch.randn(nPoints,ncols,dtype=datatype,requires_grad=True)   
-        dLdZ = torch.randn(nPoints,ncols,dtype=datatype)        
+        X = torch.randn(nPoints,ncols,dtype=datatype,requires_grad=True)  
+        X.to(device) 
+        dLdZ = torch.randn(nPoints,ncols,dtype=datatype)     
+        dLdZ.to(device)   
         R = torch.eye(nPoints,dtype=datatype)
         dRdW = torch.tensor([
             [ 0., -1.],
@@ -589,6 +613,7 @@ class OrthonormalTransformTestCase(unittest.TestCase):
     )
     def testForward4x4RandAngs(self,datatype,mode,ncols):
         rtol,atol=1e-4,1e-7
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")        
 
         # Configuration
         #mode = 'Synthesis'
@@ -599,6 +624,7 @@ class OrthonormalTransformTestCase(unittest.TestCase):
 
         # Expcted values
         X = torch.randn(nPoints,ncols,dtype=datatype)
+        X.to(device)
         R = torch.as_tensor(
             torch.tensor(mus).view(-1,1) * \
             torch.tensor(
@@ -654,6 +680,7 @@ class OrthonormalTransformTestCase(unittest.TestCase):
     )
     def testBackward4x4RandAngPdAng2(self,datatype,mode,ncols):
         rtol,atol=1e-3,1e-6
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")        
 
         # Configuration
         #mode = 'Synthesis'
@@ -665,7 +692,9 @@ class OrthonormalTransformTestCase(unittest.TestCase):
 
         # Expcted values
         X = torch.randn(nPoints,ncols,dtype=datatype,requires_grad=True)
-        dLdZ = torch.randn(nPoints,ncols,dtype=datatype)        
+        X.to(device)
+        dLdZ = torch.randn(nPoints,ncols,dtype=datatype)    
+        dLdZ.to(device)    
         R = torch.as_tensor(
             torch.tensor(mus).view(-1,1) * \
             torch.tensor(
@@ -761,6 +790,7 @@ class OrthonormalTransformTestCase(unittest.TestCase):
     )
     def testBackward4x4RandAngPdAng5(self,datatype,mode,ncols):
         rtol,atol=1e-4,1e-7
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
         # Configuration
         #mode = 'Synthesis'
@@ -772,7 +802,9 @@ class OrthonormalTransformTestCase(unittest.TestCase):
 
         # Expcted values
         X = torch.randn(nPoints,ncols,dtype=datatype,requires_grad=True)
-        dLdZ = torch.randn(nPoints,ncols,dtype=datatype)        
+        X.to(device)
+        dLdZ = torch.randn(nPoints,ncols,dtype=datatype) 
+        dLdZ.to(device)       
         R = torch.as_tensor(
             torch.tensor(mus).view(-1,1) * \
             torch.tensor(
@@ -869,6 +901,7 @@ class OrthonormalTransformTestCase(unittest.TestCase):
     def testBackward4x4RandAngPdAng1(self,mode,ncols):
         datatype=torch.double
         rtol,atol = 1e-2,1e-5
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
         # Configuration
         #mode = 'Synthesis'
@@ -881,7 +914,9 @@ class OrthonormalTransformTestCase(unittest.TestCase):
 
         # Expcted values
         X = torch.randn(nPoints,ncols,dtype=datatype,requires_grad=True)
+        X.to(device)
         dLdZ = torch.randn(nPoints,ncols,dtype=datatype)        
+        dLdZ.to(device)
         R = torch.as_tensor(
             torch.tensor(mus).view(-1,1) * \
             torch.tensor(
@@ -984,6 +1019,7 @@ class OrthonormalTransformTestCase(unittest.TestCase):
     def testBackward8x8RandAngPdAng4(self,mode,ncols):
         datatype=torch.double
         rtol,atol=1e-4,1e-7
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
         # Configuration
         #mode = 'Synthesis'
@@ -999,7 +1035,9 @@ class OrthonormalTransformTestCase(unittest.TestCase):
 
         # Expcted values
         X = torch.randn(nPoints,ncols,dtype=datatype,requires_grad=True)
-        dLdZ = torch.randn(nPoints,ncols,dtype=datatype)        
+        X.to(device)
+        dLdZ = torch.randn(nPoints,ncols,dtype=datatype)   
+        dLdZ.to(device)     
         omgs = OrthonormalMatrixGenerationSystem(
                 dtype=datatype,
                 partial_difference=False
@@ -1035,6 +1073,7 @@ class OrthonormalTransformTestCase(unittest.TestCase):
     def testBackward8x8RandAngMusPdAng13(self,mode,ncols):
         datatype = torch.double
         rtol,atol=1e-4,1e-7
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
         # Configuration
         #mode = 'Synthesis'
@@ -1051,7 +1090,9 @@ class OrthonormalTransformTestCase(unittest.TestCase):
 
         # Expcted values
         X = torch.randn(nPoints,ncols,dtype=datatype,requires_grad=True)
+        X.to(device)
         dLdZ = torch.randn(nPoints,ncols,dtype=datatype)        
+        dLdZ.to(device)
         omgs = OrthonormalMatrixGenerationSystem(
                 dtype=datatype,
                 partial_difference=False
@@ -1088,6 +1129,7 @@ class OrthonormalTransformTestCase(unittest.TestCase):
     def testBackword8x8RandAngMusPdAng7(self,mode,ncols):
         datatype = torch.double
         rtol,atol=1e-4,1e-7
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
         # Configuration
         #mode = 'Synthesis'
@@ -1104,7 +1146,9 @@ class OrthonormalTransformTestCase(unittest.TestCase):
 
         # Expcted values
         X = torch.randn(nPoints,ncols,dtype=datatype,requires_grad=False)
-        dLdZ = torch.randn(nPoints,ncols,dtype=datatype)   
+        X.to(device)
+        dLdZ = torch.randn(nPoints,ncols,dtype=datatype)  
+        dLdZ.to(device) 
 
         # Instantiation of target class
         target0 = OrthonormalTransform(n=nPoints,dtype=datatype,mode=mode)
@@ -1145,6 +1189,7 @@ class OrthonormalTransformTestCase(unittest.TestCase):
         list(itertools.product(mode,ncols,npoints))
     )
     def testGradCheckNxNRandAngMus(self,mode,ncols,npoints):
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
         # Configuration
         datatype = torch.double
@@ -1155,7 +1200,9 @@ class OrthonormalTransformTestCase(unittest.TestCase):
 
         # Expcted values
         X = torch.randn(nPoints,ncols,dtype=datatype,requires_grad=True)
+        X.to(device)
         dLdZ = torch.randn(nPoints,ncols,dtype=datatype)   
+        dLdZ.to(device)
 
         # Instantiation of target class
         target = OrthonormalTransform(n=nPoints,dtype=datatype,mode=mode)
