@@ -56,12 +56,11 @@ def idct(X):
     V_r = V_t_r * W_r - V_t_i * W_i
     V_i = V_t_r * W_i + V_t_i * W_r
 
+    V = torch.cat([V_r.unsqueeze(2), V_i.unsqueeze(2)], dim=2)
     if torch.__version__[:3] == '1.7':
-        V = torch.cat([V_r.unsqueeze(2), V_i.unsqueeze(2)], dim=2)
         v = torch.irfft(V, 1, onesided=False)
     else:
-        V = V_r.unsqueeze(2) + 1j*V_i.unsqueeze(2)
-        v = torch.fft.ifft(V, dim=1).real
+        v = torch.fft.ifft(torch.view_as_complex(V), dim=1).real
 
     x = v.new_zeros(v.shape)
     x[:, ::2] += v[:, :N - (N // 2)]
