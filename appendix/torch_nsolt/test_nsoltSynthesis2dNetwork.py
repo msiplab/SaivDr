@@ -723,8 +723,8 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
     def testForwardGrayScaleMultiLevels(self,
             nchs, stride, nvm, nlevels, datatype):
         rtol,atol = 1e-3,1e-6
-        #device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")    
-        device = torch.device("cpu")
+        #device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")     # TODO: Test on GPU 
+        device = torch.device("cpu") 
         gen = OrthonormalMatrixGenerationSystem(dtype=datatype,device=device)
 
         # Initialization function of angle parameters

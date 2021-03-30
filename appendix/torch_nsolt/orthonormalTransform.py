@@ -27,11 +27,13 @@ class OrthonormalTransform(nn.Module):
         n=2,
         mus=1,
         mode='Analysis',
-        dtype=torch.get_default_dtype()):
+        dtype=torch.get_default_dtype(),
+        device=torch.device("cpu")):
 
         super(OrthonormalTransform, self).__init__()
         self.dtype = dtype
         self.nPoints = n
+        self.device = device
 
         # Mode
         if mode in {'Analysis','Synthesis'}:
@@ -44,17 +46,17 @@ class OrthonormalTransform(nn.Module):
 
         # Angles
         nAngs = int(n*(n-1)/2)
-        self.angles = nn.Parameter(torch.zeros(nAngs,dtype=self.dtype))
+        self.angles = nn.Parameter(torch.zeros(nAngs,dtype=self.dtype,device=device))
 
         # Mus
         if torch.is_tensor(mus):
-            self.__mus = mus.to(dtype=self.dtype)
+            self.__mus = mus.to(dtype=self.dtype,device=device)
         elif mus == 1:
-            self.__mus = torch.ones(self.nPoints,dtype=self.dtype)
+            self.__mus = torch.ones(self.nPoints,dtype=self.dtype,device=device)
         elif mus == -1:
-            self.__mus = -torch.ones(self.nPoints,dtype=self.dtype)
+            self.__mus = -torch.ones(self.nPoints,dtype=self.dtype,device=device)
         else:
-            self.__mus = torch.tensor(mus,dtype=self.dtype)
+            self.__mus = torch.tensor(mus,dtype=self.dtype,device=device)
         self.checkMus()
 
     def forward(self,X):
@@ -88,17 +90,17 @@ class OrthonormalTransform(nn.Module):
     @mus.setter
     def mus(self,mus):
         if torch.is_tensor(mus):
-            self.__mus = mus.to(dtype=self.dtype)
+            self.__mus = mus.to(dtype=self.dtype,device=self.device)
         elif mus == 1:
-            self.__mus = torch.ones(self.nPoints,dtype=self.dtype)
+            self.__mus = torch.ones(self.nPoints,dtype=self.dtype,device=self.device)
         elif mus == -1:
-            self.__mus = -torch.ones(self.nPoints,dtype=self.dtype)
+            self.__mus = -torch.ones(self.nPoints,dtype=self.dtype,device=self.device)
         else:
-            self.__mus = torch.tensor(mus,dtype=self.dtype)
+            self.__mus = torch.tensor(mus,dtype=self.dtype,device=self.device)
         self.checkMus()
 
     def checkMus(self):
-        if torch.not_equal(torch.abs(self.__mus),torch.ones(self.nPoints)).any():
+        if torch.not_equal(torch.abs(self.__mus),torch.ones(self.nPoints,device=self.device)).any():
             raise InvalidMus(
                 '%s : Elements in mus should be either of 1 or -1'\
                 % str(self.__mus)
