@@ -166,7 +166,7 @@ class NsoltSynthesis2dNetwork(nn.Module):
                 y = self.layers[iLevel-1][0].forward(xac,xdc) # Concatenation
                 #print(self.layers[iLevel-1][1::])                
                 y = self.layers[iLevel-1][1::].forward(y)
-                print(iLevel,y.device)
+                #print(iLevel,y.device)
                 nrows *= stride[Direction.VERTICAL]
                 ncols *= stride[Direction.HORIZONTAL]
                 xdc = y.reshape(nSamples,nrows,ncols,1)
