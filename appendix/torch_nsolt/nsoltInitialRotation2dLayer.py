@@ -32,6 +32,7 @@ class NsoltInitialRotation2dLayer(nn.Module):
         number_of_channels=[],
         decimation_factor=[],
         no_dc_leakage=False,
+        device=torch.device("cpu"),
         name=''):
         super(NsoltInitialRotation2dLayer, self).__init__()
         self.name = name
@@ -44,12 +45,13 @@ class NsoltInitialRotation2dLayer(nn.Module):
                 + "(mv,mh) = (" \
                 + str(self.decimation_factor[Direction.VERTICAL]) + "," \
                 + str(self.decimation_factor[Direction.HORIZONTAL]) + ")"
+        self.device = device
 
         # Instantiation of orthormal transforms
         ps,pa = self.number_of_channels
-        self.orthTransW0 = OrthonormalTransform(n=ps,mode='Analysis')
+        self.orthTransW0 = OrthonormalTransform(n=ps,mode='Analysis',device=self.device)
         self.orthTransW0.angles = nn.init.zeros_(self.orthTransW0.angles)        
-        self.orthTransU0 = OrthonormalTransform(n=pa,mode='Analysis')
+        self.orthTransU0 = OrthonormalTransform(n=pa,mode='Analysis',device=self.device)
         self.orthTransU0.angles = nn.init.zeros_(self.orthTransU0.angles)                
 
         # No DC leakage
@@ -67,13 +69,13 @@ class NsoltInitialRotation2dLayer(nn.Module):
         if self.no_dc_leakage:
             self.orthTransW0.mus[0] = 1
             self.orthTransW0.angles.data[:ps-1] = \
-                torch.zeros(ps-1,dtype=self.orthTransW0.angles.data.dtype)
-
+                torch.zeros(ps-1,dtype=self.orthTransW0.angles.data.dtype,device=self.orthTransW0.angles.data.device)
+        
         # Process
         ms = int(math.ceil(nDecs/2.))
         ma = int(math.floor(nDecs/2.)) 
-        Ys = torch.zeros(ps,nrows*ncols*nSamples,dtype=X.dtype)                       
-        Ya = torch.zeros(pa,nrows*ncols*nSamples,dtype=X.dtype)                       
+        Ys = torch.zeros(ps,nrows*ncols*nSamples,dtype=X.dtype,device=X.device)                       
+        Ya = torch.zeros(pa,nrows*ncols*nSamples,dtype=X.dtype,device=X.device)                       
         Ys[:ms,:] = X[:,:,:,:ms].view(-1,ms).T
         if ma > 0:
             Ya[:ma,:] = X[:,:,:,ms:].view(-1,ma).T 
