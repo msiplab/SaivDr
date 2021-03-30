@@ -201,7 +201,7 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
                 number_of_levels = nlevels
             )
 
-        nlevels = 0
+        nlevels = 0.5
         with self.assertRaises(InvalidNumberOfLevels):
             NsoltSynthesis2dNetwork(
                 number_of_channels = nchs,
@@ -723,8 +723,9 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
     def testForwardGrayScaleMultiLevels(self,
             nchs, stride, nvm, nlevels, datatype):
         rtol,atol = 1e-3,1e-6
-        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")        
-        gen = OrthonormalMatrixGenerationSystem(dtype=datatype)
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")    
+        #device = torch.device("cpu")
+        gen = OrthonormalMatrixGenerationSystem(dtype=datatype,device=device)
 
         # Initialization function of angle parameters
         angle0 = 2.0*math.pi*random.random()
@@ -761,7 +762,7 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
         ps,pa = nchs
         # Multi-level reconstruction
         for iLevel in range(nlevels,0,-1):
-            angles = angle0*torch.ones(int((nChsTotal-2)*nChsTotal/4)) #,dtype=datatype)
+            angles = angle0*torch.ones(int((nChsTotal-2)*nChsTotal/4)).to(device) #,dtype=datatype)
             nAngsW = int(len(angles)/2)
             angsW,angsU = angles[:nAngsW],angles[nAngsW:]
             angsW,angsU = angles[:nAngsW],angles[nAngsW:]
@@ -9781,7 +9782,7 @@ def permuteIdctCoefs_(x,block_size):
     coe = coefs[:,nQDecsee+nQDecsoo:nQDecsee+nQDecsoo+nQDecsoe]
     ceo = coefs[:,nQDecsee+nQDecsoo+nQDecsoe:]
     nBlocks = coefs.size(0)
-    value = torch.zeros(nBlocks,decY_,decX_,dtype=x.dtype)
+    value = torch.zeros(nBlocks,decY_,decX_,dtype=x.dtype).to(x.device)
     value[:,0::2,0::2] = cee.view(nBlocks,chDecY,chDecX)
     value[:,1::2,1::2] = coo.view(nBlocks,fhDecY,fhDecX)
     value[:,1::2,0::2] = coe.view(nBlocks,fhDecY,chDecX)

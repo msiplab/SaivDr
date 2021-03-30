@@ -103,10 +103,12 @@ class OrthonormalMatrixGenerationSystem:
 
     def __init__(self,
         dtype=torch.get_default_dtype(),
+        device=torch.device("cpu"),
         partial_difference=False):
         
         super(OrthonormalMatrixGenerationSystem, self).__init__()
         self.dtype = dtype
+        self.device = device
         self.partial_difference = partial_difference
 
     def __call__(self,
@@ -116,11 +118,11 @@ class OrthonormalMatrixGenerationSystem:
         
         # Number of angles
         if isinstance(angles, int) or isinstance(angles, float):
-            angles = torch.tensor([angles],dtype=self.dtype)
+            angles = torch.tensor([angles],dtype=self.dtype).to(self.device)
         elif not torch.is_tensor(angles):
-            angles = torch.tensor(angles,dtype=self.dtype)
+            angles = torch.tensor(angles,dtype=self.dtype).to(self.device)
         else:
-            angles = angles.to(dtype=self.dtype)
+            angles = angles.to(dtype=self.dtype) # ignore self.device
         nAngles = len(angles)
 
         # Number of dimensions
@@ -128,13 +130,13 @@ class OrthonormalMatrixGenerationSystem:
 
         # Setup of mus
         if isinstance(mus, int) or isinstance(mus, float):
-            mus = mus * torch.ones(nDims,dtype=self.dtype)
+            mus = mus * torch.ones(nDims,dtype=self.dtype).to(angles.device)
         elif not torch.is_tensor(mus): #isinstance(mus, list):
-            mus = torch.tensor(mus,dtype=self.dtype)
+            mus = torch.tensor(mus,dtype=self.dtype).to(angles.device)
         else:
-            mus = mus.to(dtype=self.dtype)
+            mus = mus.to(dtype=self.dtype,device=angles.device)
 
-        matrix = torch.eye(nDims,dtype=self.dtype)
+        matrix = torch.eye(nDims,dtype=self.dtype,device=angles.device)
         iAng = 0
         for iTop in range(nDims-1):
             vt = matrix[iTop,:]
