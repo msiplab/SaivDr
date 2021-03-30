@@ -14,7 +14,8 @@ datatype = [ torch.float, torch.double ]
 height = [ 8, 16, 32 ]
 width = [ 8, 16, 32 ]
 nvm = [ 0, 1 ]
-nlevels = [ 1, 2, 3 ]
+nlevels = [ 1 ] #, 2, 3 ] # TODO: multi-level tree test
+isdevicetest = False 
 
 class NsoltAnalysis2SynthesisTestCase(unittest.TestCase):
     """
@@ -34,12 +35,16 @@ class NsoltAnalysis2SynthesisTestCase(unittest.TestCase):
         http://msiplab.eng.niigata-u.ac.jp/
     """
     @parameterized.expand(
-        list(itertools.product(height,width,nchs,stride,ppord,nvm,datatype))
+        list(itertools.product(height,width,nchs,stride,ppord,nlevels,nvm,datatype))
     )
     def testAdjointOfAnalyzer2dNetwork(self,
-        height,width,nchs,stride,ppord,nvm,datatype):
+        height,width,nchs,stride,ppord,nlevels,nvm,datatype):
         rtol,atol = 1e-3,1e-6
-        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")                
+        if isdevicetest:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")   
+        else:
+            device = torch.device("cpu")                
+
         # Initialization function of angle parameters
         def init_angles(m):
             if type(m) == OrthonormalTransform:
@@ -51,8 +56,7 @@ class NsoltAnalysis2SynthesisTestCase(unittest.TestCase):
         nDecs = stride[0]*stride[1] #math.prod(stride)
         nChsTotal = sum(nchs)
         # Source (nSamples x nComponents x (Stride[0]xnRows) x (Stride[1]xnCols))
-        X = torch.rand(nSamples,nComponents,height,width,dtype=datatype,requires_grad=True)
-        X.to(device)
+        X = torch.rand(nSamples,nComponents,height,width,dtype=datatype,device=device,requires_grad=True)
 
         # Expected values
         expctdY = X
@@ -63,7 +67,7 @@ class NsoltAnalysis2SynthesisTestCase(unittest.TestCase):
             decimation_factor=stride,
             polyphase_order=ppord,
             number_of_vanishing_moments=nvm,
-            #number_of_levels=self.number_of_levels                        
+            number_of_levels=nlevels                        
         )
 
         # Initialization of angle parameters
@@ -82,12 +86,15 @@ class NsoltAnalysis2SynthesisTestCase(unittest.TestCase):
         self.assertFalse(actualY.requires_grad)
 
     @parameterized.expand(
-        list(itertools.product(height,width,nchs,stride,ppord,nvm,datatype))
+        list(itertools.product(height,width,nchs,stride,ppord,nlevels,nvm,datatype))
     )
     def testAdjointOfAnalyzer2dNetworkRandomInitialization(self,
-        height,width,nchs,stride,ppord,nvm,datatype):
+        height,width,nchs,stride,ppord,nlevels,nvm,datatype):
         rtol,atol = 1e-3,1e-6
-        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")        
+        if isdevicetest:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")   
+        else:
+            device = torch.device("cpu")          
 
         # Initialization function of angle parameters
         def init_angles(m):
@@ -100,9 +107,8 @@ class NsoltAnalysis2SynthesisTestCase(unittest.TestCase):
         nDecs = stride[0]*stride[1] #math.prod(stride)
         nChsTotal = sum(nchs)
         # Source (nSamples x nComponents x (Stride[0]xnRows) x (Stride[1]xnCols))
-        X = torch.rand(nSamples,nComponents,height,width,dtype=datatype,requires_grad=True)
-        X.to(device)
-
+        X = torch.rand(nSamples,nComponents,height,width,dtype=datatype,device=device,requires_grad=True)
+        
         # Expected values
         expctdY = X
 
@@ -112,7 +118,7 @@ class NsoltAnalysis2SynthesisTestCase(unittest.TestCase):
             decimation_factor=stride,
             polyphase_order=ppord,
             number_of_vanishing_moments=nvm,
-            #number_of_levels=self.number_of_levels                        
+            number_of_levels=nlevels                 
         )
 
         # Initialization of angle parameters

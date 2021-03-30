@@ -77,7 +77,7 @@ class NsoltSynthesis2dNetwork(nn.Module):
             nlevels = self.number_of_levels
         stages = [ nn.Sequential() for iStage in range(nlevels) ]
         for iStage in range(len(stages)):
-            iLevel = iStage+1
+            iLevel = nlevels - iStage
             strLv = 'Lv%0d_'%iLevel
             
             # Channel Concatanation 
@@ -86,47 +86,47 @@ class NsoltSynthesis2dNetwork(nn.Module):
             
             # Vertical concatenation
             for iOrderV in range(polyphase_order[Direction.VERTICAL],1,-2):            
-                stages[iStage].add_module('Vv~%d'%(iOrderV),NsoltIntermediateRotation2dLayer(
+                stages[iStage].add_module(strLv+'Vv~%d'%(iOrderV),NsoltIntermediateRotation2dLayer(
                     number_of_channels=number_of_channels,
                     mode='Synthesis',
                     mus=-1))
-                stages[iStage].add_module('Qv~%dus'%(iOrderV),NsoltAtomExtension2dLayer(
+                stages[iStage].add_module(strLv+'Qv~%dus'%(iOrderV),NsoltAtomExtension2dLayer(
                     number_of_channels=number_of_channels,
                     direction='Down',
                     target_channels='Sum'))
-                stages[iStage].add_module('Vv~%d'%(iOrderV-1),NsoltIntermediateRotation2dLayer(
+                stages[iStage].add_module(strLv+'Vv~%d'%(iOrderV-1),NsoltIntermediateRotation2dLayer(
                     number_of_channels=number_of_channels,
                     mode='Synthesis',
                     mus=-1))
-                stages[iStage].add_module('Qv~%ddd'%(iOrderV-1),NsoltAtomExtension2dLayer(
+                stages[iStage].add_module(strLv+'Qv~%ddd'%(iOrderV-1),NsoltAtomExtension2dLayer(
                     number_of_channels=number_of_channels,
                     direction='Up',
                     target_channels='Difference'))
             
             # Horizontal concatenation
             for iOrderH in range(polyphase_order[Direction.HORIZONTAL],1,-2):
-                stages[iStage].add_module('Vh~%d'%(iOrderH),NsoltIntermediateRotation2dLayer(
+                stages[iStage].add_module(strLv+'Vh~%d'%(iOrderH),NsoltIntermediateRotation2dLayer(
                     number_of_channels=number_of_channels,
                     mode='Synthesis',
                     mus=-1))
-                stages[iStage].add_module('Qh~%dls'%(iOrderH),NsoltAtomExtension2dLayer(
+                stages[iStage].add_module(strLv+'Qh~%dls'%(iOrderH),NsoltAtomExtension2dLayer(
                     number_of_channels=number_of_channels,
                     direction='Right',
                     target_channels='Sum'))
-                stages[iStage].add_module('Vh~%d'%(iOrderH-1),NsoltIntermediateRotation2dLayer(
+                stages[iStage].add_module(strLv+'Vh~%d'%(iOrderH-1),NsoltIntermediateRotation2dLayer(
                     number_of_channels=number_of_channels,
                     mode='Synthesis',
                     mus=-1))
-                stages[iStage].add_module('Qh~%drd'%(iOrderH-1),NsoltAtomExtension2dLayer(
+                stages[iStage].add_module(strLv+'Qh~%drd'%(iOrderH-1),NsoltAtomExtension2dLayer(
                     number_of_channels=number_of_channels,
                     direction='Left',
                     target_channels='Difference'))
                 
-            stages[iStage].add_module('V0~',NsoltFinalRotation2dLayer(
+            stages[iStage].add_module(strLv+'V0~',NsoltFinalRotation2dLayer(
                 number_of_channels=number_of_channels,
                 decimation_factor=decimation_factor,
                 no_dc_leakage=(self.number_of_vanishing_moments==1)))
-            stages[iStage].add_module('E0~',NsoltBlockIdct2dLayer(
+            stages[iStage].add_module(strLv+'E0~',NsoltBlockIdct2dLayer(
                 decimation_factor=decimation_factor))    
         
         # Stack modules as a list
@@ -149,10 +149,10 @@ class NsoltSynthesis2dNetwork(nn.Module):
             ncols = x[0].size(2)
             #height = int(nrows*(stride[Direction.VERTICAL]**self.number_of_levels))
             #width = int(ncols*(stride[Direction.HORIZONTAL]**self.number_of_levels))
-            
-            iLevel = 1
-            for idx in range(self.number_of_levels):
-                if iLevel == 1:
+            iLevel = self.number_of_levels
+            #for idx in range(self.number_of_levels):
+            for m in self.layers:
+                if iLevel == self.number_of_levels:
                     xdc = x[0]
                     #xac = x[iLevel]
                     #y = self.layers[iLevel-1][0].forward(xac,xdc)
@@ -162,15 +162,17 @@ class NsoltSynthesis2dNetwork(nn.Module):
                     #xdc = y.view(nSamples,nrows,ncols)
                     #iLevel += 1
                 #else:
-                xac = x[iLevel]
-                y = self.layers[iLevel-1][0].forward(xac,xdc) # Concatenation
-                #print(self.layers[iLevel-1][1::])                
-                y = self.layers[iLevel-1][1::].forward(y)
+                xac = x[self.number_of_levels-iLevel+1]
+                #y = self.layers[iLevel-1][0].forward(xac,xdc) # Concatenation
+                #print(self.layers[iLevel-1][1::])  
+                #y = self.layers[iLevel-1][1::].forward(y)
+                y = m[0].forward(xac,xdc)
+                y = m[1::].forward(y)
                 #print(iLevel,y.device)
                 nrows *= stride[Direction.VERTICAL]
                 ncols *= stride[Direction.HORIZONTAL]
                 xdc = y.reshape(nSamples,nrows,ncols,1)
                 #print('post', xdc.device)                
-                iLevel += 1
+                iLevel -= 1
         #Y = xdc.view(nSamples,1,nrows,ncols)#height,width) 
         return xdc.view(nSamples,1,nrows,ncols)#height,width) 

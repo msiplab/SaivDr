@@ -168,15 +168,15 @@ class NsoltAnalysis2dNetwork(nn.Module):
             decimation_factor=self.decimation_factor,
             polyphase_order=self.polyphase_order,
             number_of_vanishing_moments=self.number_of_vanishing_moments,
-            #number_of_levels=self.number_of_levels            
+            number_of_levels=self.number_of_levels            
         )
 
         # Copy state dictionary
         ana_state_dict = self.state_dict()
         syn_state_dict = synthesizer.state_dict()
         for key in syn_state_dict.keys():
-            # TODO: Revise after the multi-level synthesizer is available
-            angs = ana_state_dict[key.replace('~','').replace('T.angles','.angles').replace('layers.','layers.0.Lv1_')] 
+            #print(key)
+            angs = ana_state_dict[key.replace('~','').replace('T.angles','.angles') ] 
             syn_state_dict[key] = angs
         
         # Load state dictionary

@@ -20,6 +20,7 @@ height = [ 8, 16, 32 ]
 width = [ 8, 16, 32 ]
 nvm = [ 0, 1 ]
 nlevels = [ 1, 2, 3 ]
+isdevicetest = False
 
 class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
     """
@@ -75,7 +76,10 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
     def testForwardGrayScale(self,
             nchs,stride, height, width, datatype):
         rtol,atol = 1e-5,1e-8
-        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")        
+        if isdevicetest:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")   
+        else:
+            device = torch.device("cpu")       
 
         # Parameters
         nSamples = 8
@@ -87,7 +91,7 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
 
         # nSamples x nRows x nCols x nChsTotal
         X = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype)
-        X.to(device)
+        X = X.to(device)
         
         # Expected values        
         # nSamples x nRows x nCols x nDecs
@@ -216,7 +220,10 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
     def testForwardGrayScaleWithInitialization(self,
             nchs,stride, height, width, datatype):
         rtol,atol = 1e-3,1e-6
-        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")                
+        if isdevicetest:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")   
+        else:
+            device = torch.device("cpu")                 
         gen = OrthonormalMatrixGenerationSystem(dtype=datatype)
 
         # Initialization function of angle parameters
@@ -235,8 +242,7 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
         nChsTotal = sum(nchs)
 
         # nSamples x nRows x nCols x nChsTotal
-        X = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype,requires_grad=True)
-        X.to(device)
+        X = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype,device=device,requires_grad=True)
         
         # Expected values        
         # nSamples x nRows x nCols x nDecs
@@ -281,7 +287,10 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
     def testForwardGrayScaleOrd22(self,
             nchs, stride, height, width, datatype):
         rtol,atol = 1e-3,1e-6
-        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")        
+        if isdevicetest:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")   
+        else:
+            device = torch.device("cpu")          
 
         # Parameters
         ppOrd = [ 2, 2 ]
@@ -293,8 +302,7 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
         nChsTotal = sum(nchs)
 
         # nSamples x nRows x nCols x nChsTotal
-        X = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype,requires_grad=True)
-        X.to(device)
+        X = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype,device=device,requires_grad=True)
 
         # Expected values        
         # nSamples x nRows x nCols x nDecs
@@ -358,7 +366,10 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
     def testForwardGrayScaleOrd20(self,
             nchs, stride, height, width, datatype):
         rtol,atol = 1e-3,1e-6
-        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")        
+        if isdevicetest:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")   
+        else:
+            device = torch.device("cpu")          
 
         # Parameters
         ppOrd = [ 2, 0 ]
@@ -370,8 +381,7 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
         nChsTotal = sum(nchs)
 
         # nSamples x nRows x nCols x nChsTotal
-        X = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype,requires_grad=True)
-        X.to(device)
+        X = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype,device=device,requires_grad=True)
 
         # Expected values        
         # nSamples x nRows x nCols x nDecs
@@ -424,7 +434,10 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
     def testForwardGrayScaleOrd02(self,
             nchs, stride, height, width, datatype):
         rtol,atol = 1e-3,1e-6
-        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")        
+        if isdevicetest:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")   
+        else:
+            device = torch.device("cpu")            
 
         # Parameters
         ppOrd = [ 0, 2 ]
@@ -436,8 +449,7 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
         nChsTotal = sum(nchs)
 
         # nSamples x nRows x nCols x nChsTotal
-        X = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype,requires_grad=True)
-        X.to(device)
+        X = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype,device=device,requires_grad=True)
 
         # Expected values        
         # nSamples x nRows x nCols x nDecs
@@ -490,7 +502,10 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
     def testForwardGrayScaleOverlapping(self,
             nchs, stride, ppord, datatype):
         rtol,atol = 1e-3,1e-6
-        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")        
+        if isdevicetest:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")   
+        else:
+            device = torch.device("cpu")       
 
         # Parameters
         height = 8
@@ -504,9 +519,8 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
         nChsTotal = sum(nchs)
 
         # nSamples x nRows x nCols x nChsTotal
-        X = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype,requires_grad=True)
-        X.to(device)
-
+        X = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype,device=device,requires_grad=True)
+        
         # Expected values        
         # nSamples x nRows x nCols x nDecs
         ps,pa = nchs
@@ -571,7 +585,10 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
     def testForwardGrayScaleOverlappingWithInitalization(self,
             nchs, stride, ppord, datatype):
         rtol,atol = 1e-3,1e-6
-        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")        
+        if isdevicetest:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")   
+        else:
+            device = torch.device("cpu")           
         gen = OrthonormalMatrixGenerationSystem(dtype=datatype)
 
         # Initialization function of angle parameters
@@ -593,8 +610,7 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
         nChsTotal = sum(nchs)
 
         # nSamples x nRows x nCols x nChsTotal
-        X = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype,requires_grad=True)
-        X.to(device)
+        X = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype,device=device,requires_grad=True)
 
         # Expected values        
         # nSamples x nRows x nCols x nDecs
@@ -666,7 +682,10 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
     def testForwardGrayScaleOverlappingWithNoDcLeackage(self,
             nchs, stride, ppord, datatype):
         rtol,atol = 1e-3,1e-6
-        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")        
+        if isdevicetest:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")   
+        else:
+            device = torch.device("cpu")            
         gen = OrthonormalMatrixGenerationSystem(dtype=datatype)
 
         # Initialization function of angle parameters
@@ -688,10 +707,9 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
 
         # nSamples x nRows x nCols x nChsTotal
         X = torch.cat(
-            [math.sqrt(nDecs)*torch.ones(nSamples,nrows,ncols,1,dtype=datatype,requires_grad=True),
-            torch.zeros(nSamples,nrows,ncols,nChsTotal-1,dtype=datatype,requires_grad=True)],
+            [math.sqrt(nDecs)*torch.ones(nSamples,nrows,ncols,1,dtype=datatype,device=device,requires_grad=True),
+            torch.zeros(nSamples,nrows,ncols,nChsTotal-1,dtype=datatype,device=device,requires_grad=True)],
             dim=3)
-        X.to(device)
 
         # Expected values        
         # nSamples x nRows x nCols x nDecs
@@ -723,8 +741,10 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
     def testForwardGrayScaleMultiLevels(self,
             nchs, stride, nvm, nlevels, datatype):
         rtol,atol = 1e-3,1e-6
-        #device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")     # TODO: Test on GPU 
-        device = torch.device("cpu") 
+        if isdevicetest:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")   
+        else:
+            device = torch.device("cpu")      
         gen = OrthonormalMatrixGenerationSystem(dtype=datatype,device=device)
 
         # Initialization function of angle parameters
