@@ -67,11 +67,9 @@ class NsoltChannelConcatenation2dLayerTestCase(unittest.TestCase):
         nChsTotal = sum(nchs)
 
         # nSamples x nRows x nCols x (nChsTotal-1)
-        Xac = torch.randn(nSamples,nrows,ncols,nChsTotal-1,dtype=datatype,requires_grad=True)
-        Xac.to(device)
+        Xac = torch.randn(nSamples,nrows,ncols,nChsTotal-1,dtype=datatype,device=device,requires_grad=True)
         # nSamples x nRows x nCols 
-        Xdc = torch.randn(nSamples,nrows,ncols,dtype=datatype,requires_grad=True)
-        Xdc.to(device)
+        Xdc = torch.randn(nSamples,nrows,ncols,dtype=datatype,device=device,requires_grad=True)
 
         # Expected values
         # nSamples x nRows x nCols x nChsTotal
@@ -104,11 +102,9 @@ class NsoltChannelConcatenation2dLayerTestCase(unittest.TestCase):
         nChsTotal = sum(nchs)
 
         # nSamples x nRows x nCols x (nChsTotal-1)
-        Xac = torch.randn(nSamples,nrows,ncols,nChsTotal-1,dtype=datatype,requires_grad=True)
-        Xac.to(device)
+        Xac = torch.randn(nSamples,nrows,ncols,nChsTotal-1,dtype=datatype,device=device,requires_grad=True)
         # nSamples x nRows x nCols x 1
-        Xdc = torch.randn(nSamples,nrows,ncols,1,dtype=datatype,requires_grad=True)
-        Xdc.to(device)
+        Xdc = torch.randn(nSamples,nrows,ncols,1,dtype=datatype,device=device,requires_grad=True)
 
         # Expected values
         # nSamples x nRows x nCols x nChsTotal
@@ -140,14 +136,12 @@ class NsoltChannelConcatenation2dLayerTestCase(unittest.TestCase):
         nSamples = 8
         nChsTotal = sum(nchs)
         # nSamples x nRows x nCols x (nChsTotal-1)
-        Xac = torch.randn(nSamples,nrows,ncols,nChsTotal-1,dtype=datatype,requires_grad=True)
-        Xac.to(device)
+        Xac = torch.randn(nSamples,nrows,ncols,nChsTotal-1,dtype=datatype,device=device,requires_grad=True)
         # nSamples x nRows x nCols 
-        Xdc = torch.randn(nSamples,nrows,ncols,dtype=datatype,requires_grad=True)
-        Xdc.to(device)
+        Xdc = torch.randn(nSamples,nrows,ncols,dtype=datatype,device=device,requires_grad=True)
         # nSamples x nRows x nCols x nChsTotal
         dLdZ = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype)
-        dLdZ.to(device)
+        dLdZ = dLdZ.to(device)
     
         # Expected values
         # nSamples x nRows x nCols x (nChsTotal-1) 
@@ -185,14 +179,12 @@ class NsoltChannelConcatenation2dLayerTestCase(unittest.TestCase):
         nSamples = 8
         nChsTotal = sum(nchs)
         # nSamples x nRows x nCols x (nChsTotal-1)
-        Xac = torch.randn(nSamples,nrows,ncols,nChsTotal-1,dtype=datatype,requires_grad=True)
-        Xac.to(device)
+        Xac = torch.randn(nSamples,nrows,ncols,nChsTotal-1,dtype=datatype,device=device,requires_grad=True)
         # nSamples x nRows x nCols x 1
-        Xdc = torch.randn(nSamples,nrows,ncols,1,dtype=datatype,requires_grad=True)
-        Xdc.to(device)
+        Xdc = torch.randn(nSamples,nrows,ncols,1,dtype=datatype,device=device,requires_grad=True)
         # nSamples x nRows x nCols x nChsTotal
         dLdZ = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype)
-        dLdZ.to(device)
+        dLdZ = dLdZ.to(device)
     
         # Expected values
         # nSamples x nRows x nCols x (nChsTotal-1) 

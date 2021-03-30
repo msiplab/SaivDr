@@ -66,8 +66,7 @@ class NsoltChannelSeparation2dLayerTestCase(unittest.TestCase):
         nChsTotal = sum(nchs)
         
         # nSamples x nRows x nCols x nChsTotal 
-        X = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype,requires_grad=True)
-        X.to(device)
+        X = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype,device=device,requires_grad=True)
 
         # Expected values
         # nSamples x nRows x nCols x (nChsTotal-1)  
@@ -104,14 +103,13 @@ class NsoltChannelSeparation2dLayerTestCase(unittest.TestCase):
         nSamples = 8
         nChsTotal = sum(nchs)
         # nSamplesx nRows x nCols x nChsTotal 
-        X = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype,requires_grad=True)
-        X.to(device)
+        X = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype,device=device,requires_grad=True)
         # nSamples x nRows x nCols x (nChsTotal-1)
         dLdZac = torch.randn(nSamples,nrows,ncols,nChsTotal-1,dtype=datatype)
-        dLdZac.to(device)
+        dLdZac = dLdZac.to(device)
         # nSamples x nRows x nCols
         dLdZdc = torch.randn(nSamples,nrows,ncols,dtype=datatype)
-        dLdZdc.to(device)
+        dLdZdc = dLdZdc.to(device)
             
         # Expected values
         # nSamples x nRows x nCols x nChsTotal
