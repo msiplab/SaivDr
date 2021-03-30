@@ -84,9 +84,8 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
         nChsTotal = sum(nchs)
         target = 'Difference'
         # nSamples x nRows x nCols x nChsTotal  
-        X = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype,requires_grad=True)
-        X.to(device)
-        
+        X = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype,device=device,requires_grad=True)
+                
         # Expected values
         if dir=='Right':
             shift = ( 0, 0, 1, 0 )
@@ -145,9 +144,8 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
         nChsTotal = sum(nchs)
         target = 'Sum'
         # nSamples x nRows x nCols x nChsTotal 
-        X = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype,requires_grad=True)
-        X.to(device)
-
+        X = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype,device=device,requires_grad=True)
+        
         # Expected values
         if dir=='Right':
             shift = ( 0, 0, 1, 0 )
@@ -207,10 +205,9 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
         target = 'Difference'
 
         # nSamples x nRows x nCols x nChsTotal
-        X = torch.zeros(nSamples,nrows,ncols,nChsTotal,dtype=datatype,requires_grad=True)   
-        X.to(device)     
+        X = torch.zeros(nSamples,nrows,ncols,nChsTotal,dtype=datatype,device=device,requires_grad=True)   
         dLdZ = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype)
-        dLdZ.to(device)
+        dLdZ = dLdZ.to(device)
 
         # Expected values        
         if dir=='Right':
@@ -274,10 +271,9 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
         target = 'Sum'
         
         # nSamples x nRows x nCols x nChsTotal
-        X = torch.zeros(nSamples,nrows,ncols,nChsTotal,dtype=datatype,requires_grad=True)       
-        X.to(device)         
+        X = torch.zeros(nSamples,nrows,ncols,nChsTotal,dtype=datatype,device=device,requires_grad=True)       
         dLdZ = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype)
-        dLdZ.to(device)
+        dLdZ = dLdZ.to(device)
 
         # Expected values
         if dir=='Right':

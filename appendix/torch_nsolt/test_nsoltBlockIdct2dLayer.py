@@ -13,7 +13,7 @@ stride = [ [1, 1], [2, 2], [2, 4], [4, 1], [4, 4] ]
 datatype = [ torch.float, torch.double ]
 height = [ 8, 16, 32 ]
 width = [ 8, 16, 32 ]
-
+isdevicetest = False
 class NsoltBlockIdct2dLayerTestCase(unittest.TestCase):
     """
     NSOLTBLOCKIDCT2DLAYERTESTCASE  
@@ -67,7 +67,10 @@ class NsoltBlockIdct2dLayerTestCase(unittest.TestCase):
     def testPredictGrayScale(self,
         stride, height, width, datatype):
         rtol,atol = 1e-3,1e-6
-        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")        
+        if isdevicetest:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")   
+        else:
+            device = torch.device("cpu") 
 
         # Parameters
         nSamples = 8
@@ -76,8 +79,7 @@ class NsoltBlockIdct2dLayerTestCase(unittest.TestCase):
         nDecs = stride[0]*stride[1] # math.prod(stride)
         nComponents = 1
         # nSamples x nRows x nCols x nDecs         
-        X = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype,requires_grad=True)
-        X.to(device)
+        X = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype,device=device,requires_grad=True)
 
         # Expected values
         A = permuteIdctCoefs_(X,stride)
@@ -106,7 +108,10 @@ class NsoltBlockIdct2dLayerTestCase(unittest.TestCase):
     def testForwardGrayScale(self,
         stride, height, width, datatype):
         rtol,atol = 1e-3,1e-6
-        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")                
+        if isdevicetest:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")   
+        else:
+            device = torch.device("cpu")            
 
         # Parameters
         nSamples = 8
@@ -115,9 +120,8 @@ class NsoltBlockIdct2dLayerTestCase(unittest.TestCase):
         nDecs = stride[0]*stride[1] # math.prod(stride)
         nComponents = 1
         # nSamples x nRows x nCols x nDecs         
-        X = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype,requires_grad=True)
-        X.to(device)
-
+        X = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype,device=device,requires_grad=True)
+        
         # Expected values
         A = permuteIdctCoefs_(X,stride)
         #Y = dct.idct_2d(A,norm='ortho')
@@ -144,7 +148,10 @@ class NsoltBlockIdct2dLayerTestCase(unittest.TestCase):
     def testPredictRgbColor(self,
         stride, height, width, datatype):
         rtol,atol=1e-3,1e-6
-        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")        
+        if isdevicetest:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")   
+        else:
+            device = torch.device("cpu")      
 
         # Parameters
         nSamples = 8
@@ -153,12 +160,9 @@ class NsoltBlockIdct2dLayerTestCase(unittest.TestCase):
         nDecs = stride[0]*stride[1] # math.prod(stride)
         nComponents = 3 # RGB
         # nSamples x nRows x nCols x nDecs         
-        Xr = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype,requires_grad=True)
-        Xr.to(device)
-        Xg = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype,requires_grad=True)
-        Xg.to(device)
-        Xb = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype,requires_grad=True)
-        Xb.to(device)
+        Xr = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype,device=device,requires_grad=True)
+        Xg = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype,device=device,requires_grad=True)
+        Xb = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype,device=device,requires_grad=True)
 
         # Expected values
         Ar = permuteIdctCoefs_(Xr,stride)
@@ -198,7 +202,10 @@ class NsoltBlockIdct2dLayerTestCase(unittest.TestCase):
     def testForwardRgbColor(self,
         stride, height, width, datatype):
         rtol,atol=1e-3,1e-6
-        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")        
+        if isdevicetest:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")   
+        else:
+            device = torch.device("cpu")   
 
         # Parameters
         nSamples = 8
@@ -207,12 +214,9 @@ class NsoltBlockIdct2dLayerTestCase(unittest.TestCase):
         nDecs = stride[0]*stride[1] # math.prod(stride)
         nComponents = 3 # RGB
         # nSamples x nRows x nCols x nDecs         
-        Xr = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype,requires_grad=True)
-        Xr.to(device)
-        Xg = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype,requires_grad=True)
-        Xg.to(device)
-        Xb = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype,requires_grad=True)
-        Xb.to(device)                
+        Xr = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype,device=device,requires_grad=True)
+        Xg = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype,device=device,requires_grad=True)
+        Xb = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype,device=device,requires_grad=True)
 
         # Expected values
         Ar = permuteIdctCoefs_(Xr,stride)
@@ -250,7 +254,10 @@ class NsoltBlockIdct2dLayerTestCase(unittest.TestCase):
     def testBackwardGrayScale(self,
         stride, height, width, datatype):
         rtol,atol=1e-3,1e-6
-        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")        
+        if isdevicetest:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")   
+        else:
+            device = torch.device("cpu")     
 
         # Parameters
         nSamples = 8
@@ -259,11 +266,10 @@ class NsoltBlockIdct2dLayerTestCase(unittest.TestCase):
         nDecs = stride[0]*stride[1] # math.prod(stride)
         nComponents = 1
         # Source (nSamples x nRows x nCols x nDecs)
-        X = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype,requires_grad=True)  
-        X.to(device)     
+        X = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype,device=device,requires_grad=True)  
         # nSamples x nComponents x (Stride[0]xnRows) x (Stride[1]xnCols)
         dLdZ = torch.rand(nSamples,nComponents,height,width,dtype=datatype)
-        dLdZ.to(device)
+        dLdZ = dLdZ.to(device)
     
         # Expected values
         arrayshape = stride.copy()
@@ -297,7 +303,10 @@ class NsoltBlockIdct2dLayerTestCase(unittest.TestCase):
     def testBackwardRgbColor(self,
         stride, height, width, datatype):
         rtol,atol=1e-3,1e-6
-        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")        
+        if isdevicetest:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")   
+        else:
+            device = torch.device("cpu")    
 
         # Parameters
         nSamples = 8
@@ -306,21 +315,18 @@ class NsoltBlockIdct2dLayerTestCase(unittest.TestCase):
         nDecs = stride[0]*stride[1] # math.prod(stride)
         nComponents = 3 # RGB
         # Source (nSamples x nRows x nCols x nDecs)
-        Xr = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype,requires_grad=True)     
-        Xr.to(device)
-        Xg = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype,requires_grad=True)
-        Xg.to(device)
-        Xb = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype,requires_grad=True)          
-        Xb.to(device)     
+        Xr = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype,device=device,requires_grad=True)     
+        Xg = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype,device=device,requires_grad=True)
+        Xb = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype,device=device,requires_grad=True)          
         # nSamples x nComponents x (Stride[0]xnRows) x (Stride[1]xnCols)
         dLdZ = torch.rand(nSamples,nComponents,height,width,dtype=datatype)
-        dLdZ.to(device)
+        dLdZ = dLdZ.to(device)
 
         # Expected values
         arrayshape = stride.copy()
         arrayshape.insert(0,-1)
         #Y = dct.dct_2d(dLdZ.view(arrayshape),norm='ortho')
-        Y = torch.tensor(fftpack.dct(fftpack.dct(dLdZ.view(arrayshape).detach().numpy(),axis=2,type=2,norm='ortho'),axis=1,type=2,norm='ortho'),dtype=datatype)
+        Y = torch.tensor(fftpack.dct(fftpack.dct(dLdZ.cpu().view(arrayshape).detach().numpy(),axis=2,type=2,norm='ortho'),axis=1,type=2,norm='ortho'),dtype=datatype)
         
         A = permuteDctCoefs_(Y)
         # Rearrange the DCT Coefs. (nSamples x nRows x nCols x nDecs)
