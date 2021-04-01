@@ -103,36 +103,37 @@ class OrthonormalMatrixGenerationSystem:
 
     def __init__(self,
         dtype=torch.get_default_dtype(),
-        device=torch.device("cpu"),
         partial_difference=False):
         
         super(OrthonormalMatrixGenerationSystem, self).__init__()
         self.dtype = dtype
-        self.device = device
         self.partial_difference = partial_difference
 
     def __call__(self,
         angles=0,
         mus=1,
         index_pd_angle=None):
-        
+        """
+        The output is set on the same device with the angles
+        """
+
         # Number of angles
         if isinstance(angles, int) or isinstance(angles, float):
-            angles = torch.tensor([angles],dtype=self.dtype).to(self.device)
+            angles = torch.tensor([angles],dtype=self.dtype) 
         elif not torch.is_tensor(angles):
-            angles = torch.tensor(angles,dtype=self.dtype).to(self.device)
+            angles = torch.tensor(angles,dtype=self.dtype)
         else:
-            angles = angles.to(dtype=self.dtype) # ignore self.device
+            angles = angles.to(dtype=self.dtype) 
         nAngles = len(angles)
 
         # Number of dimensions
         nDims = int((1+math.sqrt(1+8*nAngles))/2)
 
-        # Setup of mus
+        # Setup of mus, which is send to the same device with angles
         if isinstance(mus, int) or isinstance(mus, float):
-            mus = mus * torch.ones(nDims,dtype=self.dtype).to(angles.device)
+            mus = mus * torch.ones(nDims,dtype=self.dtype,device=angles.device)
         elif not torch.is_tensor(mus): #isinstance(mus, list):
-            mus = torch.tensor(mus,dtype=self.dtype).to(angles.device)
+            mus = torch.tensor(mus,dtype=self.dtype,device=angles.device)
         else:
             mus = mus.to(dtype=self.dtype,device=angles.device)
 
