@@ -20,7 +20,7 @@ height = [ 8, 16, 32 ]
 width = [ 8, 16, 32 ]
 nvm = [ 0, 1 ]
 nlevels = [ 1, 2, 3 ]
-isdevicetest = False
+isdevicetest = True
 
 class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
     """
@@ -102,10 +102,11 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
         V = A.view(nSamples,nrows,ncols,nDecs)
         # nSamplex x nRows x nCols x nChs
         ps, pa = nchs
-        W0 = torch.eye(ps,dtype=datatype)
-        U0 = torch.eye(pa,dtype=datatype)
+        W0 = torch.eye(ps,dtype=datatype).to(device)
+        U0 = torch.eye(pa,dtype=datatype).to(device)
         ms,ma = int(math.ceil(nDecs/2.)), int(math.floor(nDecs/2.))        
-        Zsa = torch.zeros(nChsTotal,nrows*ncols*nSamples,dtype=datatype)        
+        Zsa = torch.zeros(nChsTotal,nrows*ncols*nSamples,dtype=datatype)
+        Zsa = Zsa.to(device)        
         Ys = V[:,:,:,:ms].view(-1,ms).T
         Zsa[:ps,:] = W0[:,:ms] @ Ys
         if ma > 0:
@@ -118,6 +119,7 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
                 number_of_channels=nchs,
                 decimation_factor=stride
             )
+        network = network.to(device)
             
         # Actual values
         with torch.no_grad():
@@ -258,12 +260,13 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
         V = A.view(nSamples,nrows,ncols,nDecs)
         # nSamples x nRows x nCols x nChs
         ps, pa = nchs
-        angles = angle0*torch.ones(int((nChsTotal-2)*nChsTotal/4)) #,dtype=datatype)
+        angles = angle0*torch.ones(int((nChsTotal-2)*nChsTotal/4)).to(device) #,dtype=datatype)
         nAngsW = int(len(angles)/2)
         angsW,angsU = angles[:nAngsW],angles[nAngsW:]
         W0,U0 = gen(angsW),gen(angsU)        
         ms,ma = int(math.ceil(nDecs/2.)), int(math.floor(nDecs/2.))        
-        Zsa = torch.zeros(nChsTotal,nrows*ncols*nSamples,dtype=datatype)        
+        Zsa = torch.zeros(nChsTotal,nrows*ncols*nSamples,dtype=datatype) 
+        Zsa = Zsa.to(device)       
         Ys = V[:,:,:,:ms].view(-1,ms).T
         Zsa[:ps,:] = W0[:,:ms] @ Ys
         if ma > 0:
@@ -277,6 +280,7 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
                 decimation_factor=stride,
                 number_of_vanishing_moments=nVm
             )
+        network = network.to(device)
         
         # Initialization of angle parameters
         network.apply(init_angles)
@@ -323,10 +327,11 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
         # nSamples x nRows x nCols x nChs
         ps, pa = nchs
         # Initial rotation
-        W0 = torch.eye(ps,dtype=datatype)
-        U0 = torch.eye(pa,dtype=datatype)
+        W0 = torch.eye(ps,dtype=datatype).to(device)
+        U0 = torch.eye(pa,dtype=datatype).to(device)
         ms,ma = int(math.ceil(nDecs/2.)), int(math.floor(nDecs/2.))        
-        Zsa = torch.zeros(nChsTotal,nrows*ncols*nSamples,dtype=datatype)        
+        Zsa = torch.zeros(nChsTotal,nrows*ncols*nSamples,dtype=datatype)  
+        Zsa = Zsa.to(device)      
         Ys = V[:,:,:,:ms].view(-1,ms).T
         Zsa[:ps,:] = W0[:,:ms] @ Ys
         if ma > 0:
@@ -337,23 +342,23 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
         Z = block_butterfly(Z,nchs)
         Z = block_shift(Z,nchs,0,[0,0,1,0]) # target=diff, shift=right
         Z = block_butterfly(Z,nchs)/2.
-        Uh1 = -torch.eye(pa,dtype=datatype)
+        Uh1 = -torch.eye(pa,dtype=datatype).to(device)
         Z = intermediate_rotation(Z,nchs,Uh1)
         Z = block_butterfly(Z,nchs)
         Z = block_shift(Z,nchs,1,[0,0,-1,0]) # target=sum, shift=left
         Z = block_butterfly(Z,nchs)/2.
-        Uh2 = -torch.eye(pa,dtype=datatype)
+        Uh2 = -torch.eye(pa,dtype=datatype).to(device)
         Z = intermediate_rotation(Z,nchs,Uh2)
         # Vertical atom extention
         Z = block_butterfly(Z,nchs)
         Z = block_shift(Z,nchs,0,[0,1,0,0]) # target=diff, shift=down
         Z = block_butterfly(Z,nchs)/2.
-        Uv1 = -torch.eye(pa,dtype=datatype)
+        Uv1 = -torch.eye(pa,dtype=datatype).to(device)
         Z = intermediate_rotation(Z,nchs,Uv1)
         Z = block_butterfly(Z,nchs)
         Z = block_shift(Z,nchs,1,[0,-1,0,0]) # target=sum, shift=up
         Z = block_butterfly(Z,nchs)/2.
-        Uv2 = -torch.eye(pa,dtype=datatype)
+        Uv2 = -torch.eye(pa,dtype=datatype).to(device)
         Z = intermediate_rotation(Z,nchs,Uv2)
         expctdZ = Z
 
@@ -363,6 +368,7 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
                 decimation_factor=stride,
                 polyphase_order=ppOrd
             )
+        network = network.to(device)
             
         # Actual values
         with torch.no_grad():
@@ -406,10 +412,11 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
         # nSamples x nRows x nCols x nChs
         ps, pa = nchs
         # Initial rotation
-        W0 = torch.eye(ps,dtype=datatype)
-        U0 = torch.eye(pa,dtype=datatype)
+        W0 = torch.eye(ps,dtype=datatype).to(device)
+        U0 = torch.eye(pa,dtype=datatype).to(device)
         ms,ma = int(math.ceil(nDecs/2.)), int(math.floor(nDecs/2.))        
-        Zsa = torch.zeros(nChsTotal,nrows*ncols*nSamples,dtype=datatype)        
+        Zsa = torch.zeros(nChsTotal,nrows*ncols*nSamples,dtype=datatype)    
+        Zsa = Zsa.to(device)    
         Ys = V[:,:,:,:ms].view(-1,ms).T
         Zsa[:ps,:] = W0[:,:ms] @ Ys
         if ma > 0:
@@ -420,12 +427,12 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
         Z = block_butterfly(Z,nchs)
         Z = block_shift(Z,nchs,0,[0,1,0,0]) # target=diff, shift=down
         Z = block_butterfly(Z,nchs)/2.
-        Uv1 = -torch.eye(pa,dtype=datatype)
+        Uv1 = -torch.eye(pa,dtype=datatype).to(device)
         Z = intermediate_rotation(Z,nchs,Uv1)
         Z = block_butterfly(Z,nchs)
         Z = block_shift(Z,nchs,1,[0,-1,0,0]) # target=sum, shift=up
         Z = block_butterfly(Z,nchs)/2.
-        Uv2 = -torch.eye(pa,dtype=datatype)
+        Uv2 = -torch.eye(pa,dtype=datatype).to(device)
         Z = intermediate_rotation(Z,nchs,Uv2)
         expctdZ = Z
 
@@ -435,6 +442,7 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
                 decimation_factor=stride,
                 polyphase_order=ppOrd
             )
+        network = network.to(device)
             
         # Actual values
         with torch.no_grad():
@@ -478,10 +486,11 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
         # nSamples x nRows x nCols x nChs
         ps, pa = nchs
         # Initial rotation
-        W0 = torch.eye(ps,dtype=datatype)
-        U0 = torch.eye(pa,dtype=datatype)
+        W0 = torch.eye(ps,dtype=datatype).to(device)
+        U0 = torch.eye(pa,dtype=datatype).to(device)
         ms,ma = int(math.ceil(nDecs/2.)), int(math.floor(nDecs/2.))        
         Zsa = torch.zeros(nChsTotal,nrows*ncols*nSamples,dtype=datatype)        
+        Zsa = Zsa.to(device)
         Ys = V[:,:,:,:ms].view(-1,ms).T
         Zsa[:ps,:] = W0[:,:ms] @ Ys
         if ma > 0:
@@ -492,12 +501,12 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
         Z = block_butterfly(Z,nchs)
         Z = block_shift(Z,nchs,0,[0,0,1,0]) # target=diff, shift=right
         Z = block_butterfly(Z,nchs)/2.
-        Uh1 = -torch.eye(pa,dtype=datatype)
+        Uh1 = -torch.eye(pa,dtype=datatype).to(device)
         Z = intermediate_rotation(Z,nchs,Uh1)
         Z = block_butterfly(Z,nchs)
         Z = block_shift(Z,nchs,1,[0,0,-1,0]) # target=sum, shift=left
         Z = block_butterfly(Z,nchs)/2.
-        Uh2 = -torch.eye(pa,dtype=datatype)
+        Uh2 = -torch.eye(pa,dtype=datatype).to(device)
         Z = intermediate_rotation(Z,nchs,Uh2)
         expctdZ = Z
 
@@ -507,6 +516,7 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
                 decimation_factor=stride,
                 polyphase_order=ppOrd
             )
+        network = network.to(device)
             
         # Actual values
         with torch.no_grad():
@@ -552,10 +562,11 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
         # nSamples x nRows x nCols x nChs
         ps, pa = nchs
         # Initial rotation
-        W0 = torch.eye(ps,dtype=datatype)
-        U0 = torch.eye(pa,dtype=datatype)
+        W0 = torch.eye(ps,dtype=datatype).to(device)
+        U0 = torch.eye(pa,dtype=datatype).to(device)
         ms,ma = int(math.ceil(nDecs/2.)), int(math.floor(nDecs/2.))        
-        Zsa = torch.zeros(nChsTotal,nrows*ncols*nSamples,dtype=datatype)        
+        Zsa = torch.zeros(nChsTotal,nrows*ncols*nSamples,dtype=datatype)  
+        Zsa = Zsa.to(device)      
         Ys = V[:,:,:,:ms].view(-1,ms).T
         Zsa[:ps,:] = W0[:,:ms] @ Ys
         if ma > 0:
@@ -567,24 +578,24 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
             Z = block_butterfly(Z,nchs)
             Z = block_shift(Z,nchs,0,[0,0,1,0]) # target=diff, shift=right
             Z = block_butterfly(Z,nchs)/2.
-            Uh1 = -torch.eye(pa,dtype=datatype)
+            Uh1 = -torch.eye(pa,dtype=datatype).to(device)
             Z = intermediate_rotation(Z,nchs,Uh1)
             Z = block_butterfly(Z,nchs)
             Z = block_shift(Z,nchs,1,[0,0,-1,0]) # target=sum, shift=left
             Z = block_butterfly(Z,nchs)/2.
-            Uh2 = -torch.eye(pa,dtype=datatype)
+            Uh2 = -torch.eye(pa,dtype=datatype).to(device)
             Z = intermediate_rotation(Z,nchs,Uh2)
         # Vertical atom extention
         for ordV in range(int(ppOrd[Direction.VERTICAL]/2)):
             Z = block_butterfly(Z,nchs)
             Z = block_shift(Z,nchs,0,[0,1,0,0]) # target=diff, shift=down
             Z = block_butterfly(Z,nchs)/2.
-            Uv1 = -torch.eye(pa,dtype=datatype)
+            Uv1 = -torch.eye(pa,dtype=datatype).to(device)
             Z = intermediate_rotation(Z,nchs,Uv1)
             Z = block_butterfly(Z,nchs)
             Z = block_shift(Z,nchs,1,[0,-1,0,0]) # target=sum, shift=up
             Z = block_butterfly(Z,nchs)/2.
-            Uv2 = -torch.eye(pa,dtype=datatype)
+            Uv2 = -torch.eye(pa,dtype=datatype).to(device)
             Z = intermediate_rotation(Z,nchs,Uv2)
         expctdZ = Z
 
@@ -594,6 +605,7 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
                 decimation_factor=stride,
                 polyphase_order=ppOrd
             )
+        network = network.to(device)
             
         # Actual values
         with torch.no_grad():
@@ -647,12 +659,13 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
         # nSamples x nRows x nCols x nChs
         ps, pa = nchs
         # Initial rotation
-        angles = angle0*torch.ones(int((nChsTotal-2)*nChsTotal/4)) #,dtype=datatype)
+        angles = angle0*torch.ones(int((nChsTotal-2)*nChsTotal/4)).to(device) #,dtype=datatype)
         nAngsW = int(len(angles)/2)
         angsW,angsU = angles[:nAngsW],angles[nAngsW:]
         W0,U0 = gen(angsW),gen(angsU)        
         ms,ma = int(math.ceil(nDecs/2.)), int(math.floor(nDecs/2.))        
-        Zsa = torch.zeros(nChsTotal,nrows*ncols*nSamples,dtype=datatype)        
+        Zsa = torch.zeros(nChsTotal,nrows*ncols*nSamples,dtype=datatype)
+        Zsa = Zsa.to(device)        
         Ys = V[:,:,:,:ms].view(-1,ms).T
         Zsa[:ps,:] = W0[:,:ms] @ Ys
         if ma > 0:
@@ -692,6 +705,7 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
                 polyphase_order=ppOrd,
                 number_of_vanishing_moments=nVm
             )
+        network = network.to(device)
             
         # Initialization of angle parameters
         network.apply(init_angles)
@@ -739,8 +753,8 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
         ncols = int(math.ceil(width/stride[Direction.HORIZONTAL])) #.astype(int)
         # nSamples x nRows x nCols x nChs
         expctdZ = torch.cat(
-                    [math.sqrt(nDecs)*torch.ones(nSamples,nrows,ncols,1,dtype=datatype),
-                    torch.zeros(nSamples,nrows,ncols,nChsTotal-1,dtype=datatype)],
+                    [math.sqrt(nDecs)*torch.ones(nSamples,nrows,ncols,1,dtype=datatype,device=device),
+                    torch.zeros(nSamples,nrows,ncols,nChsTotal-1,dtype=datatype,device=device)],
                     dim=3)
 
         # Instantiation of target class
@@ -750,6 +764,7 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
                 polyphase_order=ppOrd,
                 number_of_vanishing_moments=nVm
             )
+        network = network.to(device)
             
         # Initialization of angle parameters
         network.apply(init_angles)
@@ -812,7 +827,7 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
             # nSamples x nRows x nCols x nChs
             ps, pa = nchs
             # Initial rotation
-            angles = angle0*torch.ones(int((nChsTotal-2)*nChsTotal/4)) #,dtype=datatype)
+            angles = angle0*torch.ones(int((nChsTotal-2)*nChsTotal/4)).to(device) #,dtype=datatype)
             nAngsW = int(len(angles)/2)
             angsW,angsU = angles[:nAngsW],angles[nAngsW:]
             if nVm > 0:
@@ -820,6 +835,7 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
             W0,U0 = gen(angsW),gen(angsU)        
             ms,ma = int(math.ceil(nDecs/2.)), int(math.floor(nDecs/2.))        
             Zsa = torch.zeros(nChsTotal,nrows*ncols*nSamples,dtype=datatype)        
+            Zsa = Zsa.to(device)
             Ys = V[:,:,:,:ms].view(-1,ms).T
             Zsa[:ps,:] = W0[:,:ms] @ Ys
             if ma > 0:
@@ -868,6 +884,7 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
                 number_of_vanishing_moments=nVm,
                 number_of_levels=nlevels
             )
+        network = network.to(device)
 
         # Initialization of angle parameters
         network.apply(init_angles)
