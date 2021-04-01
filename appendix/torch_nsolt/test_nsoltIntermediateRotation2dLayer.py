@@ -13,7 +13,7 @@ mus = [ -1, 1 ]
 datatype = [ torch.float, torch.double ]
 nrows = [ 4, 8, 16 ]
 ncols = [ 4, 8, 16 ]
-isdevicetest = False
+isdevicetest = True
 
 class NsoltIntermediateRotation2dLayerTestCase(unittest.TestCase):
     """
@@ -89,7 +89,7 @@ class NsoltIntermediateRotation2dLayerTestCase(unittest.TestCase):
         # Expected values
         # nSamples x nRows x nCols x nChsTotal
         ps,pa = nchs
-        UnT = mus*torch.eye(pa,dtype=datatype)
+        UnT = mus*torch.eye(pa,dtype=datatype).to(device)
         expctdZ = X.clone()
         Ya = X[:,:,:,ps:].view(-1,pa).T
         Za = UnT @ Ya
@@ -100,6 +100,7 @@ class NsoltIntermediateRotation2dLayerTestCase(unittest.TestCase):
             number_of_channels=nchs,
             name='Vn~')
         layer.orthTransUn.mus = mus
+        layer = layer.to(device)
 
         # Actual values
         with torch.no_grad():
@@ -115,7 +116,7 @@ class NsoltIntermediateRotation2dLayerTestCase(unittest.TestCase):
     )
     def testPredictGrayscaleWithRandomAngles(self,
         nchs, nrows, ncols, mus, datatype):
-        rtol,atol=1e-5,1e-8
+        rtol,atol=1e-3,1e-6
         if isdevicetest:
             device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")   
         else:
@@ -132,7 +133,7 @@ class NsoltIntermediateRotation2dLayerTestCase(unittest.TestCase):
         # Expected values
         # nSamples x nRows x nCols x nChsTotal
         ps,pa = nchs
-        UnT = gen(angles,mus).T
+        UnT = gen(angles,mus).T.to(device)
         expctdZ = X.clone()
         Ya = X[:,:,:,ps:].view(-1,pa).T
         Za = UnT @ Ya
@@ -144,6 +145,7 @@ class NsoltIntermediateRotation2dLayerTestCase(unittest.TestCase):
             name='Vn~')
         layer.orthTransUn.angles.data = angles
         layer.orthTransUn.mus = mus
+        layer = layer.to(device)
 
         # Actual values
         with torch.no_grad():
@@ -159,7 +161,7 @@ class NsoltIntermediateRotation2dLayerTestCase(unittest.TestCase):
     )
     def testPredictGrayscaleAnalysisMode(self,
         nchs, nrows, ncols, mus, datatype):
-        rtol,atol=1e-5,1e-8
+        rtol,atol=1e-3,1e-6
         if isdevicetest:
             device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")   
         else:
@@ -176,7 +178,7 @@ class NsoltIntermediateRotation2dLayerTestCase(unittest.TestCase):
         # Expected values
         # nSamples x nRows x nCols x nChsTotal
         ps,pa = nchs
-        Un = gen(angles,mus)
+        Un = gen(angles,mus).to(device)
         expctdZ = X.clone()
         Ya = X[:,:,:,ps:].view(-1,pa).T
         Za = Un @ Ya
@@ -189,6 +191,7 @@ class NsoltIntermediateRotation2dLayerTestCase(unittest.TestCase):
             mode='Analysis')
         layer.orthTransUn.angles.data = angles
         layer.orthTransUn.mus = mus
+        layer = layer.to(device)
 
         # Actual values
         with torch.no_grad():
@@ -223,17 +226,17 @@ class NsoltIntermediateRotation2dLayerTestCase(unittest.TestCase):
 
         # Expected values
         ps,pa = nchs
-        Un = omgs(angles,mus)
+        Un = omgs(angles,mus).to(device)
         # dLdX = dZdX x dLdZ
         expctddLdX = dLdZ.clone()
         Ya = dLdZ[:,:,:,ps:].view(nSamples*nrows*ncols,pa).T # pa * n
         Za = Un @ Ya
         expctddLdX[:,:,:,ps:] = Za.T.view(nSamples,nrows,ncols,pa)
         # dLdWi = <dLdZ,(dVdWi)X>
-        expctddLdW_U = torch.zeros(nAngles,dtype=datatype)        
+        expctddLdW_U = torch.zeros(nAngles,dtype=datatype).to(device)        
         omgs.partial_difference = True
         for iAngle in range(nAngles):
-            dUn_T = omgs(angles,mus,index_pd_angle=iAngle).T
+            dUn_T = omgs(angles,mus,index_pd_angle=iAngle).T.to(device)
             Xa = X[:,:,:,ps:].view(-1,pa).T
             Za = dUn_T @ Xa # pa x n 
             expctddLdW_U[iAngle] = torch.sum(Ya * Za)
@@ -244,6 +247,7 @@ class NsoltIntermediateRotation2dLayerTestCase(unittest.TestCase):
             name='Vn~')
         layer.orthTransUn.angles.data = angles
         layer.orthTransUn.mus = mus
+        layer = layer.to(device)
 
         # Actual values
         torch.autograd.set_detect_anomaly(True)        
@@ -284,17 +288,17 @@ class NsoltIntermediateRotation2dLayerTestCase(unittest.TestCase):
 
         # Expected values
         ps,pa = nchs
-        Un = omgs(angles,mus)
+        Un = omgs(angles,mus).to(device)
         # dLdX = dZdX x dLdZ
         expctddLdX = dLdZ.clone()
         Ya = dLdZ[:,:,:,ps:].view(nSamples*nrows*ncols,pa).T # pa * n
         Za = Un @ Ya
         expctddLdX[:,:,:,ps:] = Za.T.view(nSamples,nrows,ncols,pa)
         # dLdWi = <dLdZ,(dVdWi)X>
-        expctddLdW_U = torch.zeros(nAngles,dtype=datatype)        
+        expctddLdW_U = torch.zeros(nAngles,dtype=datatype).to(device)     
         omgs.partial_difference = True
         for iAngle in range(nAngles):
-            dUn_T = omgs(angles,mus,index_pd_angle=iAngle).T
+            dUn_T = omgs(angles,mus,index_pd_angle=iAngle).T.to(device)
             Xa = X[:,:,:,ps:].view(-1,pa).T
             Za = dUn_T @ Xa # pa x n 
             expctddLdW_U[iAngle] = torch.sum(Ya * Za)
@@ -305,6 +309,7 @@ class NsoltIntermediateRotation2dLayerTestCase(unittest.TestCase):
             name='Vn~')
         layer.orthTransUn.angles.data = angles
         layer.orthTransUn.mus = mus
+        layer = layer.to(device)
 
         # Actual values
         torch.autograd.set_detect_anomaly(True)        
@@ -345,17 +350,17 @@ class NsoltIntermediateRotation2dLayerTestCase(unittest.TestCase):
 
         # Expected values
         ps,pa = nchs
-        UnT = omgs(angles,mus).T
+        UnT = omgs(angles,mus).T.to(device)
         # dLdX = dZdX x dLdZ
         expctddLdX = dLdZ.clone()
         Ya = dLdZ[:,:,:,ps:].view(nSamples*nrows*ncols,pa).T # pa * n
         Za = UnT @ Ya
         expctddLdX[:,:,:,ps:] = Za.T.view(nSamples,nrows,ncols,pa)
         # dLdWi = <dLdZ,(dVdWi)X>
-        expctddLdW_U = torch.zeros(nAngles,dtype=datatype)        
+        expctddLdW_U = torch.zeros(nAngles,dtype=datatype).to(device)     
         omgs.partial_difference = True
         for iAngle in range(nAngles):
-            dUn = omgs(angles,mus,index_pd_angle=iAngle)
+            dUn = omgs(angles,mus,index_pd_angle=iAngle).to(device)
             Xa = X[:,:,:,ps:].view(-1,pa).T
             Za = dUn @ Xa # pa x n 
             expctddLdW_U[iAngle] = torch.sum(Ya * Za)
@@ -367,6 +372,7 @@ class NsoltIntermediateRotation2dLayerTestCase(unittest.TestCase):
             name='Vn')
         layer.orthTransUn.angles.data = angles
         layer.orthTransUn.mus = mus
+        layer = layer.to(device)
 
         # Actual values
         torch.autograd.set_detect_anomaly(True)        
@@ -417,7 +423,7 @@ class NsoltIntermediateRotation2dLayerTestCase(unittest.TestCase):
         # Expected values
         # nSamples x nRows x nCols x nChsTotal
         ps,pa = nchs
-        UnT = mus*torch.eye(pa,dtype=datatype)
+        UnT = mus*torch.eye(pa,dtype=datatype).to(device)
         expctdZ = X.clone()
         Ya = X[:,:,:,ps:].view(-1,pa).T
         Za = UnT @ Ya
@@ -428,6 +434,7 @@ class NsoltIntermediateRotation2dLayerTestCase(unittest.TestCase):
             number_of_channels=nchs,
             name='Vn~',
             mus = mus)
+        layer = layer.to(device)
 
         # Actual values
         with torch.no_grad():
