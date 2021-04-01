@@ -134,11 +134,6 @@ class NsoltSynthesis2dNetwork(nn.Module):
             
     def forward(self,x):
         if self.number_of_levels == 0: # Flat structure
-            #nSamples = x.size(0)
-            #nrows = x.size(1)
-            #ncols = x.size(2)
-            #height = int(nrows*(stride[Direction.VERTICAL]**self.number_of_levels))
-            #width = int(ncols*(stride[Direction.HORIZONTAL]**self.number_of_levels))
             for m in self.layers:
                 xdc = m.forward(x)
             return xdc
@@ -147,32 +142,54 @@ class NsoltSynthesis2dNetwork(nn.Module):
             nSamples = x[0].size(0)
             nrows = x[0].size(1)
             ncols = x[0].size(2)
-            #height = int(nrows*(stride[Direction.VERTICAL]**self.number_of_levels))
-            #width = int(ncols*(stride[Direction.HORIZONTAL]**self.number_of_levels))
             iLevel = self.number_of_levels
-            #for idx in range(self.number_of_levels):
             for m in self.layers:
                 if iLevel == self.number_of_levels:
                     xdc = x[0]
-                    #xac = x[iLevel]
-                    #y = self.layers[iLevel-1][0].forward(xac,xdc)
-                    #y = self.layers[iLevel-1][1::].forward(y)
-                    #nrows *= stride[Direction.VERTICAL]
-                    #ncols *= stride[Direction.HORIZONTAL]
-                    #xdc = y.view(nSamples,nrows,ncols)
-                    #iLevel += 1
-                #else:
                 xac = x[self.number_of_levels-iLevel+1]
-                #y = self.layers[iLevel-1][0].forward(xac,xdc) # Concatenation
-                #print(self.layers[iLevel-1][1::])  
-                #y = self.layers[iLevel-1][1::].forward(y)
                 y = m[0].forward(xac,xdc)
                 y = m[1::].forward(y)
-                #print(iLevel,y.device)
                 nrows *= stride[Direction.VERTICAL]
                 ncols *= stride[Direction.HORIZONTAL]
-                xdc = y.reshape(nSamples,nrows,ncols,1)
-                #print('post', xdc.device)                
+                xdc = y.reshape(nSamples,nrows,ncols,1)             
                 iLevel -= 1
-        #Y = xdc.view(nSamples,1,nrows,ncols)#height,width) 
-        return xdc.view(nSamples,1,nrows,ncols)#height,width) 
+        return xdc.view(nSamples,1,nrows,ncols)
+
+    @property
+    def T(self):
+        from nsoltAnalysis2dNetwork import NsoltAnalysis2dNetwork
+        import re
+
+        # Create analyzer as the adjoint of SELF
+        analyzer = NsoltAnalysis2dNetwork(
+            number_of_channels=self.number_of_channels,
+            decimation_factor=self.decimation_factor,
+            polyphase_order=self.polyphase_order,
+            number_of_vanishing_moments=self.number_of_vanishing_moments,
+            number_of_levels=self.number_of_levels            
+        )
+
+        if self.number_of_levels == 0:
+            nlevels = 1
+        else:
+            nlevels = self.number_of_levels
+
+        # Copy state dictionary
+        syn_state_dict = self.state_dict()
+        ana_state_dict = analyzer.state_dict()
+        for key in syn_state_dict.keys():
+            istage_ana = int(re.sub('^layers\.|\.Lv\d_.+$','',key))            
+            istage_syn = (nlevels-1)-istage_ana
+            angs = syn_state_dict[key]
+            ana_state_dict[key\
+                .replace('layers.%d'%istage_ana,'layers.%d'%istage_syn)\
+                .replace('~','')\
+                .replace('T.angles','.angles') ] = angs
+        
+        # Load state dictionary
+        analyzer.load_state_dict(ana_state_dict)
+
+        # Return adjoint
+        return analyzer.to(angs.device)
+
+

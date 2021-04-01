@@ -7,9 +7,6 @@ from nsoltIntermediateRotation2dLayer import NsoltIntermediateRotation2dLayer
 from nsoltChannelSeparation2dLayer import NsoltChannelSeparation2dLayer
 from nsoltLayerExceptions import InvalidNumberOfChannels, InvalidPolyPhaseOrder, InvalidNumberOfVanishingMoments, InvalidNumberOfLevels
 from nsoltUtility import Direction
-from nsoltSynthesis2dNetwork import NsoltSynthesis2dNetwork
-from orthonormalTransform import OrthonormalTransform
-import re
 
 class NsoltAnalysis2dNetwork(nn.Module):
     """
@@ -163,6 +160,9 @@ class NsoltAnalysis2dNetwork(nn.Module):
     
     @property
     def T(self):
+        from nsoltSynthesis2dNetwork import NsoltSynthesis2dNetwork
+        import re
+
         # Create synthesizer as the adjoint of SELF
         synthesizer = NsoltSynthesis2dNetwork(
             number_of_channels=self.number_of_channels,
@@ -181,7 +181,7 @@ class NsoltAnalysis2dNetwork(nn.Module):
         ana_state_dict = self.state_dict()
         syn_state_dict = synthesizer.state_dict()
         for key in syn_state_dict.keys():
-            istage_ana = int(re.sub('^layers[\.]|[\.].*','',key))
+            istage_ana = int(re.sub('^layers\.|\.Lv\d_.+$','',key))
             istage_syn = (nlevels-1)-istage_ana
             angs = ana_state_dict[key\
                 .replace('layers.%d'%istage_ana,'layers.%d'%istage_syn)\
