@@ -9,6 +9,7 @@ from nsoltLayerExceptions import InvalidNumberOfChannels, InvalidPolyPhaseOrder,
 from nsoltUtility import Direction
 from nsoltSynthesis2dNetwork import NsoltSynthesis2dNetwork
 from orthonormalTransform import OrthonormalTransform
+import re
 
 class NsoltAnalysis2dNetwork(nn.Module):
     """
@@ -171,12 +172,21 @@ class NsoltAnalysis2dNetwork(nn.Module):
             number_of_levels=self.number_of_levels            
         )
 
+        if self.number_of_levels == 0:
+            nlevels = 1
+        else:
+            nlevels = self.number_of_levels
+
         # Copy state dictionary
         ana_state_dict = self.state_dict()
         syn_state_dict = synthesizer.state_dict()
         for key in syn_state_dict.keys():
-            #print(key)
-            angs = ana_state_dict[key.replace('~','').replace('T.angles','.angles') ] 
+            istage_ana = int(re.sub('^layers[\.]|[\.].*','',key))
+            istage_syn = (nlevels-1)-istage_ana
+            angs = ana_state_dict[key\
+                .replace('layers.%d'%istage_ana,'layers.%d'%istage_syn)\
+                .replace('~','')\
+                .replace('T.angles','.angles') ] 
             syn_state_dict[key] = angs
         
         # Load state dictionary

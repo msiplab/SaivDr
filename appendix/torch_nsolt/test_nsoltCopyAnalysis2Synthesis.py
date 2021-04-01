@@ -14,12 +14,12 @@ datatype = [ torch.float, torch.double ]
 height = [ 8, 16, 32 ]
 width = [ 8, 16, 32 ]
 nvm = [ 0, 1 ]
-nlevels = [ 1 ] #, 2, 3 ] # TODO: multi-level tree test
+nlevels = [ 1, 2, 3 ]
 isdevicetest = True
 
-class NsoltAnalysis2SynthesisTestCase(unittest.TestCase):
+class NsoltCopyAnalysis2SynthesisTestCase(unittest.TestCase):
     """
-    NSOLTANALYSIS2SYNTHESISTESTCASE Test cases for Nsolt{Analysis,Synthesis}2dNetwork
+    NSOLTCOPYANALYSIS2SYNTHESISTESTCASE Test cases for Nsolt{Analysis,Synthesis}2dNetwork
     
     Requirements: Python 3.7.x/3.8.x, PyTorch 1.7.x/1.8.x
     
@@ -34,10 +34,11 @@ class NsoltAnalysis2SynthesisTestCase(unittest.TestCase):
     
         http://msiplab.eng.niigata-u.ac.jp/
     """
+
     @parameterized.expand(
         list(itertools.product(height,width,nchs,stride,ppord,nlevels,nvm,datatype))
     )
-    def testAdjointOfAnalyzer2dNetwork(self,
+    def testAdjointOfAnalysis2dNetwork(self,
         height,width,nchs,stride,ppord,nlevels,nvm,datatype):
         rtol,atol = 1e-3,1e-6
         if isdevicetest:
@@ -88,7 +89,7 @@ class NsoltAnalysis2SynthesisTestCase(unittest.TestCase):
     @parameterized.expand(
         list(itertools.product(height,width,nchs,stride,ppord,nlevels,nvm,datatype))
     )
-    def testAdjointOfAnalyzer2dNetworkRandomInitialization(self,
+    def testAdjointOfAnalysis2dNetworkRandomInitialization(self,
         height,width,nchs,stride,ppord,nlevels,nvm,datatype):
         rtol,atol = 1e-3,1e-6
         if isdevicetest:
