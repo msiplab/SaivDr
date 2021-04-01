@@ -32,7 +32,6 @@ class NsoltInitialRotation2dLayer(nn.Module):
         number_of_channels=[],
         decimation_factor=[],
         no_dc_leakage=False,
-        device=torch.device("cpu"),
         name=''):
         super(NsoltInitialRotation2dLayer, self).__init__()
         self.name = name
@@ -45,13 +44,12 @@ class NsoltInitialRotation2dLayer(nn.Module):
                 + "(mv,mh) = (" \
                 + str(self.decimation_factor[Direction.VERTICAL]) + "," \
                 + str(self.decimation_factor[Direction.HORIZONTAL]) + ")"
-        self.device = device
 
         # Instantiation of orthormal transforms
         ps,pa = self.number_of_channels
-        self.orthTransW0 = OrthonormalTransform(n=ps,mode='Analysis',device=self.device)
+        self.orthTransW0 = OrthonormalTransform(n=ps,mode='Analysis')
         self.orthTransW0.angles = nn.init.zeros_(self.orthTransW0.angles)        
-        self.orthTransU0 = OrthonormalTransform(n=pa,mode='Analysis',device=self.device)
+        self.orthTransU0 = OrthonormalTransform(n=pa,mode='Analysis')
         self.orthTransU0.angles = nn.init.zeros_(self.orthTransU0.angles)                
 
         # No DC leakage
