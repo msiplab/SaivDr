@@ -77,7 +77,7 @@ def permuteIdctCoefs_(x,block_size):
     coe = coefs[:,nQDecsee+nQDecsoo:nQDecsee+nQDecsoo+nQDecsoe]
     ceo = coefs[:,nQDecsee+nQDecsoo+nQDecsoe:]
     nBlocks = coefs.size(0)
-    value = torch.empty(nBlocks,decY_,decX_,dtype=x.dtype)
+    value = torch.empty(nBlocks,decY_,decX_,dtype=x.dtype,device=x.device)
     value[:,0::2,0::2] = cee.view(nBlocks,chDecY,chDecX)
     value[:,1::2,1::2] = coo.view(nBlocks,fhDecY,fhDecX)
     value[:,1::2,0::2] = coe.view(nBlocks,fhDecY,chDecX)

@@ -13,7 +13,8 @@ stride = [ [1, 1], [2, 2], [2, 4], [4, 1], [4, 4] ]
 datatype = [ torch.float, torch.double ]
 height = [ 8, 16, 32 ]
 width = [ 8, 16, 32 ]
-isdevicetest = False
+isdevicetest = True
+
 class NsoltBlockIdct2dLayerTestCase(unittest.TestCase):
     """
     NSOLTBLOCKIDCT2DLAYERTESTCASE  
@@ -85,6 +86,7 @@ class NsoltBlockIdct2dLayerTestCase(unittest.TestCase):
         A = permuteIdctCoefs_(X,stride)
         #Y = dct.idct_2d(A,norm='ortho')
         Y = torch.tensor(fftpack.idct(fftpack.idct(A.detach().numpy(),axis=1,type=2,norm='ortho'),axis=2,type=2,norm='ortho'),dtype=datatype)
+        Y = Y.to(device)
         expctdZ = Y.reshape(nSamples,nComponents,height,width)
 
         # Instantiation of target class
@@ -126,6 +128,7 @@ class NsoltBlockIdct2dLayerTestCase(unittest.TestCase):
         A = permuteIdctCoefs_(X,stride)
         #Y = dct.idct_2d(A,norm='ortho')
         Y = torch.tensor(fftpack.idct(fftpack.idct(A.detach().numpy(),axis=1,type=2,norm='ortho'),axis=2,type=2,norm='ortho'),dtype=datatype)
+        Y = Y.to(device)
         expctdZ = Y.reshape(nSamples,nComponents,height,width)
 
         # Instantiation of target class
@@ -170,10 +173,13 @@ class NsoltBlockIdct2dLayerTestCase(unittest.TestCase):
         Ab = permuteIdctCoefs_(Xb,stride)                
         #Yr = dct.idct_2d(Ar,norm='ortho')
         Yr = torch.tensor(fftpack.idct(fftpack.idct(Ar.detach().numpy(),axis=1,type=2,norm='ortho'),axis=2,type=2,norm='ortho'),dtype=datatype)
+        Yr = Yr.to(device)
         #Yg = dct.idct_2d(Ag,norm='ortho')
         Yg = torch.tensor(fftpack.idct(fftpack.idct(Ag.detach().numpy(),axis=1,type=2,norm='ortho'),axis=2,type=2,norm='ortho'),dtype=datatype)
+        Yg = Yg.to(device)        
         #Yb = dct.idct_2d(Ab,norm='ortho')
         Yb = torch.tensor(fftpack.idct(fftpack.idct(Ab.detach().numpy(),axis=1,type=2,norm='ortho'),axis=2,type=2,norm='ortho'),dtype=datatype)
+        Yb = Yb.to(device)                
         expctdZ = torch.cat((
             Yr.reshape(nSamples,1,height,width),
             Yg.reshape(nSamples,1,height,width),
@@ -224,10 +230,13 @@ class NsoltBlockIdct2dLayerTestCase(unittest.TestCase):
         Ab = permuteIdctCoefs_(Xb,stride)                
         #Yr = dct.idct_2d(Ar,norm='ortho')
         Yr = torch.tensor(fftpack.idct(fftpack.idct(Ar.detach().numpy(),axis=1,type=2,norm='ortho'),axis=2,type=2,norm='ortho'),dtype=datatype)
+        Yr = Yr.to(device)
         #Yg = dct.idct_2d(Ag,norm='ortho')
         Yg = torch.tensor(fftpack.idct(fftpack.idct(Ag.detach().numpy(),axis=1,type=2,norm='ortho'),axis=2,type=2,norm='ortho'),dtype=datatype)
+        Yg = Yg.to(device)        
         #Yb = dct.idct_2d(Ab,norm='ortho')
         Yb = torch.tensor(fftpack.idct(fftpack.idct(Ab.detach().numpy(),axis=1,type=2,norm='ortho'),axis=2,type=2,norm='ortho'),dtype=datatype)
+        Yb = Yb.to(device)                
         expctdZ = torch.cat((
             Yr.reshape(nSamples,1,height,width),
             Yg.reshape(nSamples,1,height,width),
@@ -275,7 +284,8 @@ class NsoltBlockIdct2dLayerTestCase(unittest.TestCase):
         arrayshape = stride.copy()
         arrayshape.insert(0,-1)
         #Y = dct.dct_2d(dLdZ.view(arrayshape),norm='ortho')
-        Y = torch.tensor(fftpack.dct(fftpack.dct(dLdZ.view(arrayshape).detach().numpy(),axis=2,type=2,norm='ortho'),axis=1,type=2,norm='ortho'),dtype=datatype)
+        Y = torch.tensor(fftpack.dct(fftpack.dct(dLdZ.cpu().view(arrayshape).detach().numpy(),axis=2,type=2,norm='ortho'),axis=1,type=2,norm='ortho'),dtype=datatype)
+        Y = Y.to(device)
         
         A = permuteDctCoefs_(Y)
         # Rearrange the DCT Coefs. (nSamples x nComponents x nrows x ncols) x (decV x decH)
@@ -327,6 +337,7 @@ class NsoltBlockIdct2dLayerTestCase(unittest.TestCase):
         arrayshape.insert(0,-1)
         #Y = dct.dct_2d(dLdZ.view(arrayshape),norm='ortho')
         Y = torch.tensor(fftpack.dct(fftpack.dct(dLdZ.cpu().view(arrayshape).detach().numpy(),axis=2,type=2,norm='ortho'),axis=1,type=2,norm='ortho'),dtype=datatype)
+        Y = Y.to(device)
         
         A = permuteDctCoefs_(Y)
         # Rearrange the DCT Coefs. (nSamples x nRows x nCols x nDecs)
