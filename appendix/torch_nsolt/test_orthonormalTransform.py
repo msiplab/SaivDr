@@ -13,6 +13,7 @@ datatype = [ torch.float, torch.double ]
 ncols = [ 1, 2, 4 ]
 npoints = [ 1, 2, 3, 4, 5, 6 ]
 mode = [ 'Analysis', 'Synthesis' ]
+isdevicetest = True
 
 class OrthonormalTransformTestCase(unittest.TestCase):
     """
@@ -37,7 +38,43 @@ class OrthonormalTransformTestCase(unittest.TestCase):
     )
     def testConstructor(self,datatype,ncols):
         rtol,atol = 1e-5,1e-8 
-        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        if isdevicetest:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        else:
+            device = torch.device("cpu")        
+
+        # Expected values
+        X = torch.randn(2,ncols,dtype=datatype)
+        X = X.to(device)
+
+        expctdZ = X
+        expctdNParams = 1
+        expctdMode = 'Analysis'
+
+        # Instantiation of target class
+        target = OrthonormalTransform(device=device)
+
+        # Actual values
+        with torch.no_grad():
+            actualZ = target.forward(X)
+        actualNParams = len(target.parameters().__next__())
+        actualMode = target.mode
+        
+        # Evaluation
+        self.assertTrue(isinstance(target,nn.Module))        
+        self.assertTrue(torch.allclose(actualZ,expctdZ,rtol=rtol,atol=atol))    
+        self.assertEqual(actualNParams,expctdNParams)
+        self.assertEqual(actualMode,expctdMode)
+
+    @parameterized.expand(
+        list(itertools.product(datatype,ncols))
+    )
+    def testConstructorToDevice(self,datatype,ncols):
+        rtol,atol = 1e-5,1e-8 
+        if isdevicetest:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        else:
+            device = torch.device("cpu")        
 
         # Expected values
         X = torch.randn(2,ncols,dtype=datatype)
@@ -49,6 +86,7 @@ class OrthonormalTransformTestCase(unittest.TestCase):
 
         # Instantiation of target class
         target = OrthonormalTransform()
+        target = target.to(device)
 
         # Actual values
         with torch.no_grad():
@@ -67,7 +105,45 @@ class OrthonormalTransformTestCase(unittest.TestCase):
     )
     def testCallWithAngles(self,datatype,ncols,mode):
         rtol,atol = 1e-4,1e-7
-        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        if isdevicetest:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        else:
+            device = torch.device("cpu")        
+
+        # Expected values
+        X = torch.randn(2,ncols,dtype=datatype)   
+        X = X.to(device)   
+        R = torch.tensor([
+            [ math.cos(math.pi/4), -math.sin(math.pi/4) ],
+            [ math.sin(math.pi/4),  math.cos(math.pi/4) ] ],
+            dtype=datatype)
+        R = R.to(device)
+        if mode!='Synthesis':
+            expctdZ = R @ X
+        else:
+            expctdZ = R.T @ X
+
+        # Instantiation of target class
+        target = OrthonormalTransform(mode=mode,device=device)
+        #target.angles.data = torch.tensor([math.pi/4])
+        target.angles = nn.init.constant_(target.angles,val=math.pi/4)
+
+        # Actual values
+        with torch.no_grad():
+            actualZ = target.forward(X)
+
+        # Evaluation
+        self.assertTrue(torch.allclose(actualZ,expctdZ,rtol=rtol,atol=atol))        
+
+    @parameterized.expand(
+        list(itertools.product(datatype,ncols,mode))
+    )
+    def testCallWithAnglesToDevice(self,datatype,ncols,mode):
+        rtol,atol = 1e-4,1e-7
+        if isdevicetest:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        else:
+            device = torch.device("cpu")        
 
         # Expected values
         X = torch.randn(2,ncols,dtype=datatype)   
@@ -84,6 +160,7 @@ class OrthonormalTransformTestCase(unittest.TestCase):
 
         # Instantiation of target class
         target = OrthonormalTransform(mode=mode)
+        target = target.to(device)
         #target.angles.data = torch.tensor([math.pi/4])
         target.angles = nn.init.constant_(target.angles,val=math.pi/4)
 
@@ -99,7 +176,46 @@ class OrthonormalTransformTestCase(unittest.TestCase):
     )
     def testCallWithAnglesAndMus(self,datatype,ncols,mode):
         rtol,atol = 1e-4,1e-7
-        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        if isdevicetest:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        else:
+            device = torch.device("cpu")        
+
+        # Expected values
+        X = torch.randn(2,ncols,dtype=datatype)   
+        X = X.to(device)
+        R = torch.tensor([
+            [ math.cos(math.pi/4), -math.sin(math.pi/4) ],
+            [ -math.sin(math.pi/4), -math.cos(math.pi/4) ] ],
+            dtype=datatype)
+        R = R.to(device)
+        if mode!='Synthesis':
+            expctdZ = R @ X
+        else:
+            expctdZ = R.T @ X
+
+        # Instantiation of target class
+        target = OrthonormalTransform(mode=mode,device=device)
+        target.angles = nn.init.constant_(target.angles,val=math.pi/4)
+        target.mus = torch.tensor([1, -1])        
+
+        # Actual values
+        with torch.no_grad():
+            actualZ = target.forward(X)
+
+        # Evaluation
+        self.assertTrue(torch.allclose(actualZ,expctdZ,rtol=rtol,atol=atol))
+
+
+    @parameterized.expand(
+        list(itertools.product(datatype,ncols,mode))
+    )
+    def testCallWithAnglesAndMusToDevice(self,datatype,ncols,mode):
+        rtol,atol = 1e-4,1e-7
+        if isdevicetest:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        else:
+            device = torch.device("cpu")        
 
         # Expected values
         X = torch.randn(2,ncols,dtype=datatype)   
@@ -116,6 +232,7 @@ class OrthonormalTransformTestCase(unittest.TestCase):
 
         # Instantiation of target class
         target = OrthonormalTransform(mode=mode)
+        target = target.to(device)
         target.angles = nn.init.constant_(target.angles,val=math.pi/4)
         target.mus = torch.tensor([1, -1])        
 
@@ -131,7 +248,55 @@ class OrthonormalTransformTestCase(unittest.TestCase):
     )
     def testSetAngles(self,datatype,ncols,mode):
         rtol,atol = 1e-4,1e-7
-        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        if isdevicetest:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        else:
+            device = torch.device("cpu")        
+
+        # Expected values
+        X = torch.randn(2,ncols,dtype=datatype)  
+        X = X.to(device)
+        R = torch.eye(2,dtype=datatype)
+        R = R.to(device)
+        expctdZ = R @ X
+
+        # Instantiation of target class
+        target = OrthonormalTransform(mode=mode,device=device)
+
+        # Actual values
+        with torch.no_grad():        
+            actualZ = target.forward(X)
+
+        # Evaluation
+        self.assertTrue(torch.allclose(actualZ,expctdZ,rtol=rtol,atol=atol))
+
+        # Expcted values
+        R = torch.tensor([
+            [ math.cos(math.pi/4), -math.sin(math.pi/4) ],
+            [ math.sin(math.pi/4), math.cos(math.pi/4) ] ],
+            dtype=datatype)
+        R = R.to(device)
+        if mode!='Synthesis':
+            expctdZ = R @ X
+        else:
+            expctdZ = R.T @ X
+
+        # Actual values
+        target.angles.data = torch.tensor([math.pi/4]).to(device)
+        actualZ = target.forward(X)
+
+        # Evaluation
+        self.assertTrue(torch.allclose(actualZ,expctdZ,rtol=rtol,atol=atol))
+
+    @parameterized.expand(
+        list(itertools.product(datatype,ncols,mode))
+    )
+    def testSetAnglesToDevice(self,datatype,ncols,mode):
+        rtol,atol = 1e-4,1e-7
+        if isdevicetest:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        else:
+            device = torch.device("cpu")        
 
         # Expected values
         X = torch.randn(2,ncols,dtype=datatype)  
@@ -142,6 +307,7 @@ class OrthonormalTransformTestCase(unittest.TestCase):
 
         # Instantiation of target class
         target = OrthonormalTransform(mode=mode)
+        target = target.to(device)
 
         # Actual values
         with torch.no_grad():        
@@ -163,6 +329,7 @@ class OrthonormalTransformTestCase(unittest.TestCase):
 
         # Actual values
         target.angles.data = torch.tensor([math.pi/4])
+        target = target.to(device)
         actualZ = target.forward(X)
 
         # Evaluation
@@ -334,7 +501,10 @@ class OrthonormalTransformTestCase(unittest.TestCase):
     )
     def testBackward(self,datatype,mode):
         rtol,atol = 1e-5,1e-8 
-        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        if isdevicetest:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        else:
+            device = torch.device("cpu")        
 
         # Configuration
         ncols = 1
@@ -379,7 +549,10 @@ class OrthonormalTransformTestCase(unittest.TestCase):
     )
     def testBackwardMultiColumns(self,datatype,ncols,mode):
         rtol,atol = 1e-4,1e-7
-        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        if isdevicetest:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        else:
+            device = torch.device("cpu")
 
         # Configuration
         nPoints = 2
@@ -423,7 +596,10 @@ class OrthonormalTransformTestCase(unittest.TestCase):
     )
     def testBackwardMultiColumnsAngs(self,datatype,ncols,mode):
         rtol,atol = 1e-3,1e-6 
-        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        if isdevicetest:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        else:
+            device = torch.device("cpu")
 
         # Configuration
         nPoints = 2
@@ -472,7 +648,10 @@ class OrthonormalTransformTestCase(unittest.TestCase):
     )
     def testBackwardAngsAndMus(self,datatype,mode,ncols):
         rtol,atol = 1e-4,1e-7
-        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")        
+        if isdevicetest:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        else:
+            device = torch.device("cpu")
 
         # Configuration
         #mode = 'Analysis'
@@ -548,7 +727,10 @@ class OrthonormalTransformTestCase(unittest.TestCase):
     )
     def testBackwardSetAngles(self,datatype,mode,ncols):
         rtol,atol = 1e-3,1e-6
-        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")        
+        if isdevicetest:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        else:
+            device = torch.device("cpu")
 
         # Configuration
         #mode='Synthesis'
@@ -629,14 +811,17 @@ class OrthonormalTransformTestCase(unittest.TestCase):
     )
     def testForward4x4RandAngs(self,datatype,mode,ncols):
         rtol,atol=1e-4,1e-7
-        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")        
+        if isdevicetest:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        else:
+            device = torch.device("cpu")
 
         # Configuration
         #mode = 'Synthesis'
         nPoints = 4
         #ncols = 2
+        angs = 2.*math.pi*torch.randn(6,dtype=datatype).to(device)        
         mus = [ -1, 1, -1, 1 ]
-        angs = 2.*math.pi*torch.randn(6,dtype=datatype)
 
         # Expcted values
         X = torch.randn(nPoints,ncols,dtype=datatype)
@@ -695,9 +880,84 @@ class OrthonormalTransformTestCase(unittest.TestCase):
     @parameterized.expand(
         list(itertools.product(datatype,mode,ncols))
     )
+    def testForward4x4RandAngsToDevice(self,datatype,mode,ncols):
+        rtol,atol=1e-4,1e-7
+        if isdevicetest:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        else:
+            device = torch.device("cpu")
+
+        # Configuration
+        #mode = 'Synthesis'
+        nPoints = 4
+        #ncols = 2
+        mus = [ -1, 1, -1, 1 ]
+        angs = 2.*math.pi*torch.randn(6)
+
+        # Expcted values
+        X = torch.randn(nPoints,ncols,dtype=datatype)
+        X = X.to(device)
+        R = torch.as_tensor(
+            torch.tensor(mus).view(-1,1) * \
+            torch.tensor(
+                [ [1, 0, 0, 0. ],
+                 [0, 1, 0, 0. ],
+                 [0, 0, math.cos(angs[5]), -math.sin(angs[5]) ],
+                 [0, 0, math.sin(angs[5]), math.cos(angs[5]) ] ]
+            ) @ torch.tensor(
+                [ [1, 0, 0, 0 ],
+                 [0, math.cos(angs[4]), 0, -math.sin(angs[4]) ],
+                 [0, 0, 1, 0 ],
+                 [0, math.sin(angs[4]), 0, math.cos(angs[4]) ] ]
+            ) @ torch.tensor(
+                [ [1, 0, 0, 0 ],
+                 [0, math.cos(angs[3]), -math.sin(angs[3]), 0 ],
+                 [0, math.sin(angs[3]), math.cos(angs[3]), 0 ],
+                 [0, 0, 0, 1 ] ]
+            ) @ torch.tensor(
+                [ [ math.cos(angs[2]), 0, 0, -math.sin(angs[2]) ],
+                 [0, 1, 0, 0 ],
+                 [0, 0, 1, 0 ],
+                 [ math.sin(angs[2]), 0, 0, math.cos(angs[2]) ] ]
+            ) @ torch.tensor(
+               [ [math.cos(angs[1]), 0, -math.sin(angs[1]), 0 ],
+                 [0, 1, 0, 0 ],
+                 [math.sin(angs[1]), 0, math.cos(angs[1]), 0 ],
+                 [0, 0, 0, 1 ] ]
+            ) @ torch.tensor(
+               [ [ math.cos(angs[0]), -math.sin(angs[0]), 0, 0 ],
+                 [ math.sin(angs[0]), math.cos(angs[0]), 0, 0 ],
+                 [ 0, 0, 1, 0 ],
+                 [ 0, 0, 0, 1 ] ]
+            ),dtype=datatype)
+        R = R.to(device)
+        if mode!='Synthesis':
+            expctdZ = R @ X
+        else:
+            expctdZ = R.T @ X
+
+        # Instantiation of target class
+        target = OrthonormalTransform(n=nPoints,mode=mode)
+        target.angles.data = angs
+        target.mus = mus
+        target = target.to(device,dtype=datatype)        
+
+        # Actual values
+        with torch.no_grad():
+            actualZ = target.forward(X)
+
+        # Evaluation
+        self.assertTrue(torch.allclose(actualZ,expctdZ,rtol=rtol,atol=atol))
+
+    @parameterized.expand(
+        list(itertools.product(datatype,mode,ncols))
+    )
     def testBackward4x4RandAngPdAng2(self,datatype,mode,ncols):
         rtol,atol=1e-3,1e-6
-        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")        
+        if isdevicetest:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        else:
+            device = torch.device("cpu")
 
         # Configuration
         #mode = 'Synthesis'
@@ -808,8 +1068,11 @@ class OrthonormalTransformTestCase(unittest.TestCase):
         list(itertools.product(datatype,mode,ncols))
     )
     def testBackward4x4RandAngPdAng5(self,datatype,mode,ncols):
-        rtol,atol=1e-4,1e-7
-        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        rtol,atol=1e-3,1e-6
+        if isdevicetest:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        else:
+            device = torch.device("cpu")
 
         # Configuration
         #mode = 'Synthesis'
@@ -922,7 +1185,10 @@ class OrthonormalTransformTestCase(unittest.TestCase):
     def testBackward4x4RandAngPdAng1(self,mode,ncols):
         datatype=torch.double
         rtol,atol = 1e-2,1e-5
-        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        if isdevicetest:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        else:
+            device = torch.device("cpu")
 
         # Configuration
         #mode = 'Synthesis'
@@ -1042,7 +1308,10 @@ class OrthonormalTransformTestCase(unittest.TestCase):
     def testBackward8x8RandAngPdAng4(self,mode,ncols):
         datatype=torch.double
         rtol,atol=1e-4,1e-7
-        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        if isdevicetest:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        else:
+            device = torch.device("cpu")
 
         # Configuration
         #mode = 'Synthesis'
@@ -1098,7 +1367,10 @@ class OrthonormalTransformTestCase(unittest.TestCase):
     def testBackward8x8RandAngMusPdAng13(self,mode,ncols):
         datatype = torch.double
         rtol,atol=1e-4,1e-7
-        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        if isdevicetest:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        else:
+            device = torch.device("cpu")
 
         # Configuration
         #mode = 'Synthesis'
@@ -1156,7 +1428,10 @@ class OrthonormalTransformTestCase(unittest.TestCase):
     def testBackword8x8RandAngMusPdAng7(self,mode,ncols):
         datatype = torch.double
         rtol,atol=1e-4,1e-7
-        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        if isdevicetest:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        else:
+            device = torch.device("cpu")
 
         # Configuration
         #mode = 'Synthesis'
@@ -1216,8 +1491,44 @@ class OrthonormalTransformTestCase(unittest.TestCase):
         list(itertools.product(mode,ncols,npoints))
     )
     def testGradCheckNxNRandAngMus(self,mode,ncols,npoints):
-        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        if isdevicetest:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        else:
+            device = torch.device("cpu")
+            
+        # Configuration
+        datatype = torch.double
+        nPoints = npoints
+        nAngs = int(nPoints*(nPoints-1)/2.)
+        angs = 2.*math.pi*torch.randn(nAngs,dtype=datatype).to(device)
+        mus = (-1)**torch.randint(high=2,size=(nPoints,))
 
+        # Expcted values
+        X = torch.randn(nPoints,ncols,dtype=datatype,device=device,requires_grad=True)
+        #X = X.to(device)
+        dLdZ = torch.randn(nPoints,ncols,dtype=datatype)   
+        dLdZ = dLdZ.to(device)
+
+        # Instantiation of target class
+        target = OrthonormalTransform(n=nPoints,dtype=datatype,mode=mode)
+        target.angles.data = angs
+        target.mus = mus
+        torch.autograd.set_detect_anomaly(True)                
+        Z = target.forward(X)
+        target.zero_grad()
+
+        # Evaluation        
+        self.assertTrue(torch.autograd.gradcheck(target,(X,)))
+
+    @parameterized.expand(
+        list(itertools.product(mode,ncols,npoints))
+    )
+    def testGradCheckNxNRandAngMusToDevice(self,mode,ncols,npoints):
+        if isdevicetest:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        else:
+            device = torch.device("cpu")
+            
         # Configuration
         datatype = torch.double
         nPoints = npoints
@@ -1235,6 +1546,7 @@ class OrthonormalTransformTestCase(unittest.TestCase):
         target = OrthonormalTransform(n=nPoints,dtype=datatype,mode=mode)
         target.angles.data = angs
         target.mus = mus
+        target = target.to(device)
         torch.autograd.set_detect_anomaly(True)                
         Z = target.forward(X)
         target.zero_grad()
