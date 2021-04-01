@@ -15,13 +15,13 @@ height = [ 8, 16, 32 ]
 width = [ 8, 16, 32 ]
 nvm = [ 0, 1 ]
 nlevels = [ 1 ] #, 2, 3 ] # TODO: multi-level tree test
-isdevicetest = False 
+isdevicetest = True
 
 class NsoltAnalysis2SynthesisTestCase(unittest.TestCase):
     """
     NSOLTANALYSIS2SYNTHESISTESTCASE Test cases for Nsolt{Analysis,Synthesis}2dNetwork
     
-    Requirements: Python 3.7.x, PyTorch 1.7.x
+    Requirements: Python 3.7.x/3.8.x, PyTorch 1.7.x/1.8.x
     
     Copyright (c) 2021, Yasas Dulanjaya and Shogo MURAMATSU
     
@@ -59,7 +59,7 @@ class NsoltAnalysis2SynthesisTestCase(unittest.TestCase):
         X = torch.rand(nSamples,nComponents,height,width,dtype=datatype,device=device,requires_grad=True)
 
         # Expected values
-        expctdY = X
+        expctdY = X.detach()
 
         # Instantiation of target class
         analyzer = NsoltAnalysis2dNetwork(
@@ -68,7 +68,7 @@ class NsoltAnalysis2SynthesisTestCase(unittest.TestCase):
             polyphase_order=ppord,
             number_of_vanishing_moments=nvm,
             number_of_levels=nlevels                        
-        )
+        ).to(device)        
 
         # Initialization of angle parameters
         analyzer.apply(init_angles)
@@ -110,7 +110,7 @@ class NsoltAnalysis2SynthesisTestCase(unittest.TestCase):
         X = torch.rand(nSamples,nComponents,height,width,dtype=datatype,device=device,requires_grad=True)
         
         # Expected values
-        expctdY = X
+        expctdY = X.detach()
 
         # Instantiation of target class
         analyzer = NsoltAnalysis2dNetwork(
@@ -119,7 +119,7 @@ class NsoltAnalysis2SynthesisTestCase(unittest.TestCase):
             polyphase_order=ppord,
             number_of_vanishing_moments=nvm,
             number_of_levels=nlevels                 
-        )
+        ).to(device)
 
         # Initialization of angle parameters
         analyzer.apply(init_angles)

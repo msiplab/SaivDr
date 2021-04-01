@@ -183,4 +183,4 @@ class NsoltAnalysis2dNetwork(nn.Module):
         synthesizer.load_state_dict(syn_state_dict)
 
         # Return adjoint
-        return synthesizer 
+        return synthesizer.to(angs.device)
