@@ -864,6 +864,78 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
         self.assertTrue(torch.allclose(actualZ,expctdZ,rtol=rtol,atol=atol))
         self.assertFalse(actualZ.requires_grad)
 
+    @parameterized.expand(
+        list(itertools.product(nchs,stride,nvm,nlevels,datatype))        
+    )
+    def testBackwardGrayScale(self,
+        nchs,stride,nvm,nlevels,datatype):
+        rtol,atol = 1e-3,1e-6
+        if isdevicetest:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")   
+        else:
+            device = torch.device("cpu")              
+
+        # Initialization function of angle parameters
+        def init_angles(m):
+            if type(m) == OrthonormalTransform:
+                torch.nn.init.zeros_(m.angles)             
+
+        # Parameters
+        nVm = nvm
+        height = 8 
+        width = 16
+        ppOrd = [ 2, 2 ]
+        nSamples = 8
+        nrows = int(math.ceil(height/(stride[Direction.VERTICAL]**nlevels)))
+        ncols = int(math.ceil(width/(stride[Direction.HORIZONTAL]**nlevels)))        
+        nComponents = 1
+        nDecs = stride[0]*stride[1] #math.prod(stride)
+        nChsTotal = sum(nchs)
+
+        # Coefficients nSamples x nRows x nCols x nChsTotal
+        nrows_ = nrows
+        ncols_ = ncols
+        X = []
+        for iLevel in range(1,nlevels+1):
+            if iLevel == 1:
+                X.append(torch.randn(nSamples,nrows_,ncols_,dtype=datatype,device=device,requires_grad=True)) 
+            X.append(torch.randn(nSamples,nrows_,ncols_,nChsTotal-1,dtype=datatype,device=device,requires_grad=True))     
+            nrows_ *= stride[Direction.VERTICAL]
+            ncols_ *= stride[Direction.HORIZONTAL]
+        X = tuple(X)
+
+        # Source (nSamples x nComponents x ((Stride[0]**nlevels) x nRows) x ((Stride[1]**nlevels) x nCols))
+        dLdZ = torch.randn(nSamples,nComponents,height,width,dtype=datatype,device=device)
+
+        # Instantiation of target class
+        network = NsoltSynthesis2dNetwork(
+                number_of_channels=nchs,
+                decimation_factor=stride,
+                polyphase_order=ppOrd,
+                number_of_vanishing_moments=nVm,
+                number_of_levels=nlevels
+            ).to(device)
+
+        # Initialization of angle parameters
+        network.apply(init_angles)
+
+        # Expected values
+        adjoint = network.T
+        expctddLdX = adjoint(dLdZ)
+        
+        # Actual values
+        Z = network(X)
+        Z.backward(dLdZ,retain_graph=True)
+        actualdLdX = []
+        for iCh in range(len(X)):
+            actualdLdX.append(X[iCh].grad)
+
+        # Evaluation
+        for iCh in range(len(X)):
+            self.assertEqual(actualdLdX[iCh].dtype,datatype)
+            self.assertTrue(torch.allclose(actualdLdX[iCh],expctddLdX[iCh],rtol=rtol,atol=atol))
+        self.assertTrue(Z.requires_grad)
+
 """
         
         %Dec11Ch4Ord00Level2
