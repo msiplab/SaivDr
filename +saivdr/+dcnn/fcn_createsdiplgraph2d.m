@@ -1,4 +1,4 @@
-function sdipLgraph = fcn_createsdiplgraphs2d(varargin)
+function sdipLgraph = fcn_createsdiplgraph2d(varargin)
 %FCN_CREATESDIPLGRAPHS2D
 %
 % Requirements: MATLAB R2021a
@@ -153,5 +153,13 @@ end
 %
 sdipLgraph = sdipLgraph.addLayers(nsoltIdentityLayer('Name','Lv1_Out'));
 sdipLgraph = sdipLgraph.connectLayers('Lv1_E0~','Lv1_Out');
+
+% Connect analyzer and synthesizer
+strLv = sprintf('Lv%0d_',nLevels); 
+sdipLgraph = sdipLgraph.connectLayers([strLv 'DcOut'],[strLv 'DcIn']);
+for iLv = nLevels:-1:1
+    strLv = sprintf('Lv%0d_',iLv); 
+        sdipLgraph = sdipLgraph.connectLayers([strLv 'AcOut'],[strLv 'AcIn']); 
+end
 
 end
