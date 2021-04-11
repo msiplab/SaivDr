@@ -123,7 +123,8 @@ classdef nsoltBlockIdct3dLayer < nnet.layer.Layer
                     %
                     inputSample = zeros(nElements,nRows,nCols,nLays,'like',X);
                     inputLay = zeros(nElements,nRows,nCols,'like',X);
-                    inputCol = zeros(nElements,nRows,'like',X);
+                    %inputCol = zeros(nElements,nRows,'like',X);
+                    Y = zeros(nElements,nRows,'like',X);
                     outputCol = zeros(height,decH,decD,'like',X);
                     outputLay = zeros(height,width,decD,'like',X);
                     outputSample = zeros(height,width,depth,'like',X);
@@ -134,11 +135,13 @@ classdef nsoltBlockIdct3dLayer < nnet.layer.Layer
                     for iLay = 1:nLays
                         inputLay(:,:,:) = inputSample(:,:,:,iLay);
                         for iCol = 1:nCols
-                            inputCol(:,:,:)= inputLay(:,:,iCol);
+                            %inputCol(:,:,:)= inputLay(:,:,iCol);
+                            Y = Cvhd_T*inputLay(:,:,iCol);
                             for iRow = 1:nRows
-                                coefs = inputCol(:,iRow);
+                                %coefs = inputCol(:,iRow);
                                 outputCol((iRow-1)*decV+1:iRow*decV,:,:) = ...
-                                    reshape(Cvhd_T*coefs,decV,decH,decD);
+                                    ...reshape(Cvhd_T*coefs,decV,decH,decD);
+                                    reshape(Y(:,iRow),decV,decH,decD);
                             end
                             outputLay(:,(iCol-1)*decH+1:iCol*decH,:) = ...
                                 outputCol;
