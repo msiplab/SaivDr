@@ -101,23 +101,25 @@ classdef nsoltBlockDct2dLayer < nnet.layer.Layer %#codegen
             %
             inputComponent = zeros(height,width,1,nSamples,'like',X);
             inputSample = zeros(height,width,'like',X);
-            inputCol = zeros(height,decH,'like',X);      
+            %inputCol = zeros(height,decH,'like',X);      
             outputComponent = zeros(nDecs,nRows,nCols,nSamples,'like',X);
             outputSample = zeros(nDecs,nRows,nCols,'like',X);
             %outputCol = zeros(nDecs,nRows,'like',X);
-            Y = zeros(nDecs,nRows,'like',X);
+            %Y = zeros(nDecs,nRows,'like',X);
             for iComponent = 1:nComponents
                 inputComponent(:,:,1,:) = X(:,:,iComponent,:);
                 for iSample = 1:nSamples
                     inputSample(:,:) = inputComponent(:,:,1,iSample);
                     for iCol = 1:nCols
-                        inputCol(:,:) = inputSample(:,...
+                        inputCol = inputSample(:,...
                             (iCol-1)*decH+1:iCol*decH);
-                        for iRow = 1:nRows
-                            x = inputCol((iRow-1)*decV+1:iRow*decV,:);      
-                            %outputCol(:,iRow) = Cvh_*x(:); 
-                            Y(:,iRow) = x(:);
-                        end
+                        %for iRow = 1:nRows
+                        %    x = inputCol((iRow-1)*decV+1:iRow*decV,:);      
+                        %    %outputCol(:,iRow) = Cvh_*x(:); 
+                        %    Y(:,iRow) = x(:);
+                        %end
+                        Y = reshape(permute(reshape(inputCol,decV,nRows,decH),...
+                            [1 3 2]),decV*decH,nRows);
                         %outputSample(:,:,iCol) = outputCol;
                         outputSample(:,:,iCol) = Cvh_*Y;
                     end
@@ -178,7 +180,7 @@ classdef nsoltBlockDct2dLayer < nnet.layer.Layer %#codegen
                     %
                     inputSample = zeros(nElements,nRows,nCols,'like',dLdZ);
                     %inputCol = zeros(nElements,nRows,'like',dLdZ);
-                    X = zeros(nElements,nRows,'like',dLdZ);
+                    %X = zeros(nElements,nRows,'like',dLdZ);
                     outputCol = zeros(height,decH,'like',dLdZ);
                     outputSample = zeros(height,width,'like',dLdZ);
                     outputComponent = zeros(height,width,1,nSamples,'like',dLdZ);
