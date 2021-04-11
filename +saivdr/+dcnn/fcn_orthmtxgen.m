@@ -8,7 +8,7 @@ function matrix = fcn_orthmtxgen(angles,mus,pdAng)
 %
 % Requirements: MATLAB R2020a
 %
-% Copyright (c) 2020, Shogo MURAMATSU
+% Copyright (c) 2020-2021, Shogo MURAMATSU
 %
 % All rights reserved.
 %
@@ -32,14 +32,10 @@ end
 for idx = 1:nDim_
     matrix(idx,idx) = 1;
 end
-v = zeros(2,nDim_,'like',angles);
-TOP = 1;
-BTM = 2;
 if ~isempty(angles)
     iAng = 1;
     for iTop=1:nDim_-1
-        %vt = matrix(iTop,:);
-        v(TOP,:) = matrix(iTop,:);
+        vt = matrix(iTop,:);
         for iBtm=iTop+1:nDim_
             angle = angles(iAng);
             if iAng == pdAng
@@ -47,33 +43,30 @@ if ~isempty(angles)
             end
             c = cos(angle); %
             s = sin(angle); %
-            %vb = matrix(iBtm,:);
-            v(BTM,:) = matrix(iBtm,:);
-            %{
-            u  = s*(vt + vb);
-            vt = (c + s)*vt;
-            vb = (c - s)*vb;
-            vt = vt - u;
-            %}
-            v = [ c -s ; s c ] * v;
+            vb = matrix(iBtm,:);
+            %
+            u  = bsxfun(@plus,vt,vb);
+            u  = bsxfun(@times,s,u);
+            vt = bsxfun(@times,c+s,vt);
+            vb = bsxfun(@times,c-s,vb);
+            vt = bsxfun(@minus,vt,u);
             if iAng == pdAng
-                matrix = 0*matrix;
+                matrix = zeros(size(matrix),'like',matrix);
             end
-            %matrix(iBtm,:) = vb + u;
-            matrix(iBtm,:) = v(BTM,:);
+            matrix(iBtm,:) = bsxfun(@plus,vb,u);
             %
             iAng = iAng + 1;
         end
-        %matrix(iTop,:) = vt;
-        matrix(iTop,:) = v(TOP,:);
+        matrix(iTop,:) = vt;
     end
 end
 if isscalar(mus)
     matrix = mus*matrix;
 elseif ~isempty(mus)
-    for idx = 1:nDim_
-        matrix(idx,:) = mus(idx)*matrix(idx,:);
-    end
+    %for idx = 1:nDim_
+    %    matrix(idx,:) = bsxfun(@times,mus(idx),matrix(idx,:));
+    %end
+    matrix = bsxfun(@times,mus(:),matrix);    
 end
 end
 
