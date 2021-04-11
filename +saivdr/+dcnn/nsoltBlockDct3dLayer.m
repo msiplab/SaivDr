@@ -9,7 +9,7 @@ classdef nsoltBlockDct3dLayer < nnet.layer.Layer
     %
     % Requirements: MATLAB R2020a
     %
-    % Copyright (c) 2020, Shogo MURAMATSU
+    % Copyright (c) 2020-2021, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -127,8 +127,8 @@ classdef nsoltBlockDct3dLayer < nnet.layer.Layer
             outputComponent = zeros(nDecs,nRows,nCols,nLays,nSamples,'like',X);
             outputSample = zeros(nDecs,nRows,nCols,nLays,'like',X);
             outputLay = zeros(nDecs,nRows,nCols,'like',X);
-            outputCol = zeros(nDecs,nRows,'like',X);
-            %
+            %outputCol = zeros(nDecs,nRows,'like',X);
+            Y = zeros(nDecs,nRows,'like',X);
             for iComponent = 1:nComponents
                 inputComponent(:,:,:,1,:) = X(:,:,:,iComponent,:);
                 for iSample = 1:nSamples
@@ -141,9 +141,11 @@ classdef nsoltBlockDct3dLayer < nnet.layer.Layer
                                 (iCol-1)*decH+1:iCol*decH,:);
                             for iRow = 1:nRows
                                 x = inputCol((iRow-1)*decV+1:iRow*decV,:,:);
-                                outputCol(:,iRow) = Cvhd_*x(:);
+                                %outputCol(:,iRow) = Cvhd_*x(:);
+                                Y(:,iRow) = x(:);
                             end
-                            outputLay(:,:,iCol) = outputCol;
+                            %outputLay(:,:,iCol) = outputCol;
+                            outputLay(:,:,iCol) = Cvhd_*Y;
                         end
                         outputSample(:,:,:,iLay) = outputLay;
                     end

@@ -104,7 +104,8 @@ classdef nsoltBlockDct2dLayer < nnet.layer.Layer %#codegen
             inputCol = zeros(height,decH,'like',X);      
             outputComponent = zeros(nDecs,nRows,nCols,nSamples,'like',X);
             outputSample = zeros(nDecs,nRows,nCols,'like',X);
-            outputCol = zeros(nDecs,nRows,'like',X);
+            %outputCol = zeros(nDecs,nRows,'like',X);
+            Y = zeros(nDecs,nRows,'like',X);
             for iComponent = 1:nComponents
                 inputComponent(:,:,1,:) = X(:,:,iComponent,:);
                 for iSample = 1:nSamples
@@ -114,9 +115,11 @@ classdef nsoltBlockDct2dLayer < nnet.layer.Layer %#codegen
                             (iCol-1)*decH+1:iCol*decH);
                         for iRow = 1:nRows
                             x = inputCol((iRow-1)*decV+1:iRow*decV,:);      
-                            outputCol(:,iRow) = Cvh_*x(:); 
+                            %outputCol(:,iRow) = Cvh_*x(:); 
+                            Y(:,iRow) = x(:);
                         end
-                        outputSample(:,:,iCol) = outputCol;
+                        %outputSample(:,:,iCol) = outputCol;
+                        outputSample(:,:,iCol) = Cvh_*Y;
                     end
                     outputComponent(:,:,:,iSample) = outputSample;
                 end
