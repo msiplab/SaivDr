@@ -123,12 +123,12 @@ classdef nsoltBlockDct3dLayer < nnet.layer.Layer
             inputComponent = zeros(height,width,depth,1,nSamples,'like',X);
             inputSample = zeros(height,width,depth,'like',X);
             inputLay = zeros(height,width,decD,'like',X);
-            inputCol = zeros(height,decH,decD,'like',X);
+            %inputCol = zeros(height,decH,decD,'like',X);
             outputComponent = zeros(nDecs,nRows,nCols,nLays,nSamples,'like',X);
             outputSample = zeros(nDecs,nRows,nCols,nLays,'like',X);
             outputLay = zeros(nDecs,nRows,nCols,'like',X);
             %outputCol = zeros(nDecs,nRows,'like',X);
-            Y = zeros(nDecs,nRows,'like',X);
+            %Y = zeros(nDecs,nRows,'like',X);
             for iComponent = 1:nComponents
                 inputComponent(:,:,:,1,:) = X(:,:,:,iComponent,:);
                 for iSample = 1:nSamples
@@ -137,13 +137,15 @@ classdef nsoltBlockDct3dLayer < nnet.layer.Layer
                         inputLay(:,:,:) =  inputSample(:,:,...
                             (iLay-1)*decD+1:iLay*decD);
                         for iCol = 1:nCols
-                            inputCol(:,:,:) = inputLay(:,...
+                            inputCol = inputLay(:,...
                                 (iCol-1)*decH+1:iCol*decH,:);
-                            for iRow = 1:nRows
-                                x = inputCol((iRow-1)*decV+1:iRow*decV,:,:);
-                                %outputCol(:,iRow) = Cvhd_*x(:);
-                                Y(:,iRow) = x(:);
-                            end
+                            %for iRow = 1:nRows
+                            %    x = inputCol((iRow-1)*decV+1:iRow*decV,:,:);
+                            %    %outputCol(:,iRow) = Cvhd_*x(:);
+                            %    Y(:,iRow) = x(:);
+                            %end
+                            Y = reshape(permute(reshape(inputCol,decV,nRows,decH,decD),...
+                                [1 3 4 2]),decV*decH*decD,nRows);
                             %outputLay(:,:,iCol) = outputCol;
                             outputLay(:,:,iCol) = Cvhd_*Y;
                         end
@@ -216,7 +218,7 @@ classdef nsoltBlockDct3dLayer < nnet.layer.Layer
                     inputSample = zeros(nElements,nRows,nCols,nLays,'like',dLdZ);
                     inputLay = zeros(nElements,nRows,nCols,'like',dLdZ);
                     %inputCol = zeros(nElements,nRows,'like',dLdZ);
-                    X = zeros(nElements,nRows,'like',dLdZ);
+                    %X = zeros(nElements,nRows,'like',dLdZ);
                     outputCol = zeros(height,decH,decD,'like',dLdZ);
                     outputLay = zeros(height,width,decD,'like',dLdZ);
                     outputSample = zeros(height,width,depth,'like',dLdZ);
