@@ -9,7 +9,7 @@ classdef nsoltBlockIdct3dLayer < nnet.layer.Layer
     %
     % Requirements: MATLAB R2020a
     %
-    % Copyright (c) 2020, Shogo MURAMATSU
+    % Copyright (c) 2020-2021, Shogo MURAMATSU
     %
     % All rights reserved.
     %
