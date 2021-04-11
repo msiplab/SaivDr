@@ -101,7 +101,8 @@ classdef nsoltBlockIdct2dLayer < nnet.layer.Layer %#codegen
                     Z = zeros(height,width,nComponents,nSamples,'like',X);
                     %
                     inputSample = zeros(nElements,nRows,nCols,'like',X);
-                    inputCol = zeros(nElements,nRows,'like',X);
+                    %inputCol = zeros(nElements,nRows,'like',X);
+                    Y = zeros(nElements,nRows,'like',X);
                     outputCol = zeros(height,decH,'like',X);
                     outputSample = zeros(height,width,'like',X);
                     outputComponent = zeros(height,width,1,nSamples,'like',X);
@@ -109,11 +110,13 @@ classdef nsoltBlockIdct2dLayer < nnet.layer.Layer %#codegen
                 for iSample = 1:nSamples
                     inputSample(:,:,:) = X(:,:,:,iSample);
                     for iCol = 1:nCols
-                        inputCol(:,:) = inputSample(:,:,iCol);
+                        %inputCol(:,:) = inputSample(:,:,iCol);
+                        Y = Cvh_T*inputSample(:,:,iCol);
                         for iRow = 1:nRows
-                            coefs = inputCol(:,iRow);
-                            outputCol((iRow-1)*decV+1:iRow*decV,:) ...
-                                = reshape(Cvh_T*coefs,decV,decH);
+                            %coefs = inputCol(:,iRow);
+                            outputCol((iRow-1)*decV+1:iRow*decV,:) = ...
+                                ... reshape(Cvh_T*coefs,decV,decH);
+                                reshape(Y(:,iRow),decV,decH);
                         end
                         outputSample(:,(iCol-1)*decH+1:iCol*decH) = ...
                             outputCol;
