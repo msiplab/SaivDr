@@ -32,10 +32,14 @@ end
 for idx = 1:nDim_
     matrix(idx,idx) = 1;
 end
+v = zeros(2,nDim_,'like',angles);
+TOP = 1;
+BTM = 2;
 if ~isempty(angles)
     iAng = 1;
     for iTop=1:nDim_-1
-        vt = matrix(iTop,:);
+        %vt = matrix(iTop,:);
+        v(TOP,:) = matrix(iTop,:);
         for iBtm=iTop+1:nDim_
             angle = angles(iAng);
             if iAng == pdAng
@@ -43,20 +47,25 @@ if ~isempty(angles)
             end
             c = cos(angle); %
             s = sin(angle); %
-            vb = matrix(iBtm,:);
-            %
+            %vb = matrix(iBtm,:);
+            v(BTM,:) = matrix(iBtm,:);
+            %{
             u  = s*(vt + vb);
             vt = (c + s)*vt;
             vb = (c - s)*vb;
             vt = vt - u;
+            %}
+            v = [ c -s ; s c ] * v;
             if iAng == pdAng
                 matrix = 0*matrix;
             end
-            matrix(iBtm,:) = vb + u;
+            %matrix(iBtm,:) = vb + u;
+            matrix(iBtm,:) = v(BTM,:);
             %
             iAng = iAng + 1;
         end
-        matrix(iTop,:) = vt;
+        %matrix(iTop,:) = vt;
+        matrix(iTop,:) = v(TOP,:);
     end
 end
 if isscalar(mus)
