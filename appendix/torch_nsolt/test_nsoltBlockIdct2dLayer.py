@@ -3,7 +3,8 @@ import unittest
 from parameterized import parameterized
 import torch
 import torch.nn as nn
-import torch_dct as dct
+#import torch_dct as dct
+import scipy.fftpack as fftpack
 import math
 from nsoltBlockIdct2dLayer import NsoltBlockIdct2dLayer
 from nsoltUtility import Direction
@@ -12,8 +13,9 @@ stride = [ [1, 1], [2, 2], [2, 4], [4, 1], [4, 4] ]
 datatype = [ torch.float, torch.double ]
 height = [ 8, 16, 32 ]
 width = [ 8, 16, 32 ]
+isdevicetest = True
 
-class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
+class NsoltBlockIdct2dLayerTestCase(unittest.TestCase):
     """
     NSOLTBLOCKIDCT2DLAYERTESTCASE  
     
@@ -23,7 +25,7 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
        ベクトル配列をブロック配列にして出力:
           nSamples x nComponents x (Stride(1)xnRows) x (Stride(2)xnCols) 
     
-    Requirements: Python 3.7.x, PyTorch 1.7.x
+    Requirements: Python 3.7.x, PyTorch 1.7.x/1.8.x
     
     Copyright (c) 2020-2021, Shogo MURAMATSU
     
@@ -65,7 +67,11 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
     )
     def testPredictGrayScale(self,
         stride, height, width, datatype):
-        rtol,atol = 1e-5,1e-8
+        rtol,atol = 1e-3,1e-6
+        if isdevicetest:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")   
+        else:
+            device = torch.device("cpu") 
 
         # Parameters
         nSamples = 8
@@ -74,11 +80,13 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
         nDecs = stride[0]*stride[1] # math.prod(stride)
         nComponents = 1
         # nSamples x nRows x nCols x nDecs         
-        X = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype,requires_grad=True)
+        X = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype,device=device,requires_grad=True)
 
         # Expected values
         A = permuteIdctCoefs_(X,stride)
-        Y = dct.idct_2d(A,norm='ortho')
+        #Y = dct.idct_2d(A,norm='ortho')
+        Y = torch.tensor(fftpack.idct(fftpack.idct(A.detach().numpy(),axis=1,type=2,norm='ortho'),axis=2,type=2,norm='ortho'),dtype=datatype)
+        Y = Y.to(device)
         expctdZ = Y.reshape(nSamples,nComponents,height,width)
 
         # Instantiation of target class
@@ -101,7 +109,11 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
     )
     def testForwardGrayScale(self,
         stride, height, width, datatype):
-        rtol,atol = 1e-5,1e-8
+        rtol,atol = 1e-3,1e-6
+        if isdevicetest:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")   
+        else:
+            device = torch.device("cpu")            
 
         # Parameters
         nSamples = 8
@@ -110,11 +122,13 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
         nDecs = stride[0]*stride[1] # math.prod(stride)
         nComponents = 1
         # nSamples x nRows x nCols x nDecs         
-        X = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype,requires_grad=True)
-
+        X = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype,device=device,requires_grad=True)
+        
         # Expected values
         A = permuteIdctCoefs_(X,stride)
-        Y = dct.idct_2d(A,norm='ortho')
+        #Y = dct.idct_2d(A,norm='ortho')
+        Y = torch.tensor(fftpack.idct(fftpack.idct(A.detach().numpy(),axis=1,type=2,norm='ortho'),axis=2,type=2,norm='ortho'),dtype=datatype)
+        Y = Y.to(device)
         expctdZ = Y.reshape(nSamples,nComponents,height,width)
 
         # Instantiation of target class
@@ -136,7 +150,11 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
     )
     def testPredictRgbColor(self,
         stride, height, width, datatype):
-        rtol,atol=1e-5,1e-8
+        rtol,atol=1e-3,1e-6
+        if isdevicetest:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")   
+        else:
+            device = torch.device("cpu")      
 
         # Parameters
         nSamples = 8
@@ -145,17 +163,23 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
         nDecs = stride[0]*stride[1] # math.prod(stride)
         nComponents = 3 # RGB
         # nSamples x nRows x nCols x nDecs         
-        Xr = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype,requires_grad=True)
-        Xg = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype,requires_grad=True)
-        Xb = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype,requires_grad=True)
+        Xr = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype,device=device,requires_grad=True)
+        Xg = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype,device=device,requires_grad=True)
+        Xb = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype,device=device,requires_grad=True)
 
         # Expected values
         Ar = permuteIdctCoefs_(Xr,stride)
         Ag = permuteIdctCoefs_(Xg,stride)
         Ab = permuteIdctCoefs_(Xb,stride)                
-        Yr = dct.idct_2d(Ar,norm='ortho')
-        Yg = dct.idct_2d(Ag,norm='ortho')
-        Yb = dct.idct_2d(Ab,norm='ortho')
+        #Yr = dct.idct_2d(Ar,norm='ortho')
+        Yr = torch.tensor(fftpack.idct(fftpack.idct(Ar.detach().numpy(),axis=1,type=2,norm='ortho'),axis=2,type=2,norm='ortho'),dtype=datatype)
+        Yr = Yr.to(device)
+        #Yg = dct.idct_2d(Ag,norm='ortho')
+        Yg = torch.tensor(fftpack.idct(fftpack.idct(Ag.detach().numpy(),axis=1,type=2,norm='ortho'),axis=2,type=2,norm='ortho'),dtype=datatype)
+        Yg = Yg.to(device)        
+        #Yb = dct.idct_2d(Ab,norm='ortho')
+        Yb = torch.tensor(fftpack.idct(fftpack.idct(Ab.detach().numpy(),axis=1,type=2,norm='ortho'),axis=2,type=2,norm='ortho'),dtype=datatype)
+        Yb = Yb.to(device)                
         expctdZ = torch.cat((
             Yr.reshape(nSamples,1,height,width),
             Yg.reshape(nSamples,1,height,width),
@@ -183,7 +207,11 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
     )
     def testForwardRgbColor(self,
         stride, height, width, datatype):
-        rtol,atol=1e-5,1e-8
+        rtol,atol=1e-3,1e-6
+        if isdevicetest:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")   
+        else:
+            device = torch.device("cpu")   
 
         # Parameters
         nSamples = 8
@@ -192,17 +220,23 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
         nDecs = stride[0]*stride[1] # math.prod(stride)
         nComponents = 3 # RGB
         # nSamples x nRows x nCols x nDecs         
-        Xr = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype,requires_grad=True)
-        Xg = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype,requires_grad=True)
-        Xb = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype,requires_grad=True)
+        Xr = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype,device=device,requires_grad=True)
+        Xg = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype,device=device,requires_grad=True)
+        Xb = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype,device=device,requires_grad=True)
 
         # Expected values
         Ar = permuteIdctCoefs_(Xr,stride)
         Ag = permuteIdctCoefs_(Xg,stride)
         Ab = permuteIdctCoefs_(Xb,stride)                
-        Yr = dct.idct_2d(Ar,norm='ortho')
-        Yg = dct.idct_2d(Ag,norm='ortho')
-        Yb = dct.idct_2d(Ab,norm='ortho')
+        #Yr = dct.idct_2d(Ar,norm='ortho')
+        Yr = torch.tensor(fftpack.idct(fftpack.idct(Ar.detach().numpy(),axis=1,type=2,norm='ortho'),axis=2,type=2,norm='ortho'),dtype=datatype)
+        Yr = Yr.to(device)
+        #Yg = dct.idct_2d(Ag,norm='ortho')
+        Yg = torch.tensor(fftpack.idct(fftpack.idct(Ag.detach().numpy(),axis=1,type=2,norm='ortho'),axis=2,type=2,norm='ortho'),dtype=datatype)
+        Yg = Yg.to(device)        
+        #Yb = dct.idct_2d(Ab,norm='ortho')
+        Yb = torch.tensor(fftpack.idct(fftpack.idct(Ab.detach().numpy(),axis=1,type=2,norm='ortho'),axis=2,type=2,norm='ortho'),dtype=datatype)
+        Yb = Yb.to(device)                
         expctdZ = torch.cat((
             Yr.reshape(nSamples,1,height,width),
             Yg.reshape(nSamples,1,height,width),
@@ -229,6 +263,10 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
     def testBackwardGrayScale(self,
         stride, height, width, datatype):
         rtol,atol=1e-3,1e-6
+        if isdevicetest:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")   
+        else:
+            device = torch.device("cpu")     
 
         # Parameters
         nSamples = 8
@@ -237,14 +275,18 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
         nDecs = stride[0]*stride[1] # math.prod(stride)
         nComponents = 1
         # Source (nSamples x nRows x nCols x nDecs)
-        X = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype,requires_grad=True)        
+        X = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype,device=device,requires_grad=True)  
         # nSamples x nComponents x (Stride[0]xnRows) x (Stride[1]xnCols)
         dLdZ = torch.rand(nSamples,nComponents,height,width,dtype=datatype)
+        dLdZ = dLdZ.to(device)
     
         # Expected values
         arrayshape = stride.copy()
         arrayshape.insert(0,-1)
-        Y = dct.dct_2d(dLdZ.view(arrayshape),norm='ortho')
+        #Y = dct.dct_2d(dLdZ.view(arrayshape),norm='ortho')
+        Y = torch.tensor(fftpack.dct(fftpack.dct(dLdZ.cpu().view(arrayshape).detach().numpy(),axis=2,type=2,norm='ortho'),axis=1,type=2,norm='ortho'),dtype=datatype)
+        Y = Y.to(device)
+        
         A = permuteDctCoefs_(Y)
         # Rearrange the DCT Coefs. (nSamples x nComponents x nrows x ncols) x (decV x decH)
         expctddLdX = A.view(nSamples,nrows,ncols,nDecs)
@@ -271,6 +313,10 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
     def testBackwardRgbColor(self,
         stride, height, width, datatype):
         rtol,atol=1e-3,1e-6
+        if isdevicetest:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")   
+        else:
+            device = torch.device("cpu")    
 
         # Parameters
         nSamples = 8
@@ -279,16 +325,20 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
         nDecs = stride[0]*stride[1] # math.prod(stride)
         nComponents = 3 # RGB
         # Source (nSamples x nRows x nCols x nDecs)
-        Xr = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype,requires_grad=True)     
-        Xg = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype,requires_grad=True)
-        Xb = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype,requires_grad=True)               
+        Xr = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype,device=device,requires_grad=True)     
+        Xg = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype,device=device,requires_grad=True)
+        Xb = torch.rand(nSamples,nrows,ncols,nDecs,dtype=datatype,device=device,requires_grad=True)          
         # nSamples x nComponents x (Stride[0]xnRows) x (Stride[1]xnCols)
         dLdZ = torch.rand(nSamples,nComponents,height,width,dtype=datatype)
+        dLdZ = dLdZ.to(device)
 
         # Expected values
         arrayshape = stride.copy()
         arrayshape.insert(0,-1)
-        Y = dct.dct_2d(dLdZ.view(arrayshape),norm='ortho')
+        #Y = dct.dct_2d(dLdZ.view(arrayshape),norm='ortho')
+        Y = torch.tensor(fftpack.dct(fftpack.dct(dLdZ.cpu().view(arrayshape).detach().numpy(),axis=2,type=2,norm='ortho'),axis=1,type=2,norm='ortho'),dtype=datatype)
+        Y = Y.to(device)
+        
         A = permuteDctCoefs_(Y)
         # Rearrange the DCT Coefs. (nSamples x nRows x nCols x nDecs)
         Z = A.view(nSamples,nComponents,nrows,ncols,nDecs) 

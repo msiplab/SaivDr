@@ -1,6 +1,6 @@
-import torch
+#import torch
 import torch.nn as nn
-import math 
+#import math 
 from nsoltUtility import Direction
 from orthonormalTransform import OrthonormalTransform
 
@@ -31,7 +31,8 @@ class NsoltIntermediateRotation2dLayer(nn.Module):
     def __init__(self,
         number_of_channels=[],
         mode='Synthesis',
-        name=''):
+        name='',
+        mus=1):
         super(NsoltIntermediateRotation2dLayer, self).__init__()
         self.name = name
         self.number_of_channels = number_of_channels
@@ -45,6 +46,7 @@ class NsoltIntermediateRotation2dLayer(nn.Module):
         ps,pa = self.number_of_channels                
         self.orthTransUn = OrthonormalTransform(n=pa,mode=mode)
         self.orthTransUn.angles = nn.init.zeros_(self.orthTransUn.angles)
+        self.orthTransUn.mus = mus
 
     def forward(self,X):
         nSamples = X.size(dim=0)

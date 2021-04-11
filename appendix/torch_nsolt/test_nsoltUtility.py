@@ -6,6 +6,7 @@ import math
 from nsoltUtility import OrthonormalMatrixGenerationSystem
 
 datatype = [ torch.float, torch.double ]
+isdevicetest = True
 
 class OrthonormalMatrixGenerationSystemTestCase(unittest.TestCase):
     """
@@ -46,6 +47,28 @@ class OrthonormalMatrixGenerationSystemTestCase(unittest.TestCase):
 
         # Evaluation
         self.assertTrue(torch.allclose(actualM,expctdM,rtol=rtol,atol=atol))        
+
+    @parameterized.expand(
+        list(itertools.product(datatype))
+    )
+    def testConstructorWithDevice(self,datatype):
+        rtol,atol=1e-5,1e-8
+
+        # Expected values
+        expctdM = torch.eye(2,dtype=datatype)
+
+        # Instantiation of target class
+        omgs = OrthonormalMatrixGenerationSystem(
+            dtype=datatype
+        )
+
+        # Actual values
+        angles = 0
+        mus = 1
+        actualM = omgs(angles=angles,mus=mus)
+
+        # Evaluation
+        self.assertTrue(torch.allclose(actualM,expctdM,rtol=rtol,atol=atol))              
 
     @parameterized.expand(
         list(itertools.product(datatype))
@@ -98,7 +121,7 @@ class OrthonormalMatrixGenerationSystemTestCase(unittest.TestCase):
     )
     def testSetAngles(self,datatype):
         rtol,atol=1e-5,1e-8
-        
+
         # Expected values
         expctdM = torch.eye(2,dtype=datatype)
 
@@ -129,18 +152,22 @@ class OrthonormalMatrixGenerationSystemTestCase(unittest.TestCase):
     )
     def test4x4(self,datatype):
         rtol,atol=1e-5,1e-8
-        
+        if isdevicetest:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")   
+        else:
+            device = torch.device("cpu")   
+
         # Expected values
         expctdNorm = torch.tensor(1.,dtype=datatype)
 
         # Instantiation of target class
-        ang = 2*math.pi*torch.rand(6)
+        ang = 2*math.pi*torch.rand(6).to(device)
         omgs = OrthonormalMatrixGenerationSystem(
             dtype=datatype
         )
 
         # Actual values
-        unitvec = torch.randn(4,dtype=datatype)
+        unitvec = torch.randn(4,dtype=datatype).to(device)
         unitvec /= unitvec.norm()
         actualNorm = omgs(angles=ang,mus=1).mv(unitvec).norm() #.numpy()
 
@@ -153,18 +180,22 @@ class OrthonormalMatrixGenerationSystemTestCase(unittest.TestCase):
     )
     def test8x8(self,datatype):
         rtol,atol=1e-5,1e-8
-        
+        if isdevicetest:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")   
+        else:
+            device = torch.device("cpu")   
+
         # Expected values
         expctdNorm = torch.tensor(1.,dtype=datatype)
 
         # Instantiation of target class
-        ang = 2*math.pi*torch.rand(28)
+        ang = 2*math.pi*torch.rand(28).to(device)
         omgs = OrthonormalMatrixGenerationSystem(
             dtype=datatype
         )
 
         # Actual values
-        unitvec = torch.randn(8,dtype=datatype)
+        unitvec = torch.randn(8,dtype=datatype).to(device)
         unitvec /= unitvec.norm()
         actualNorm = omgs(angles=ang,mus=1).mv(unitvec).norm() #.numpy()
 
@@ -177,14 +208,18 @@ class OrthonormalMatrixGenerationSystemTestCase(unittest.TestCase):
     )
     def test4x4red(self,datatype):
         rtol,atol=1e-5,1e-8
+        if isdevicetest:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")   
+        else:
+            device = torch.device("cpu")   
 
         # Expected values
         expctdLeftTop = torch.tensor(1.,dtype=datatype)
 
         # Instantiation of target class
-        ang = 2*math.pi*torch.rand(6)
+        ang = 2*math.pi*torch.rand(6).to(device)
         nSize = 4
-        ang[:nSize-1] = torch.zeros(nSize-1)
+        ang[:nSize-1] = torch.zeros(nSize-1).to(device)
         omgs = OrthonormalMatrixGenerationSystem(
             dtype=datatype
         )
@@ -202,14 +237,18 @@ class OrthonormalMatrixGenerationSystemTestCase(unittest.TestCase):
     )
     def test8x8red(self,datatype):
         rtol,atol=1e-5,1e-8
+        if isdevicetest:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")   
+        else:
+            device = torch.device("cpu")   
 
         # Expected values
-        expctdLeftTop = torch.tensor(1.,dtype=datatype)
+        expctdLeftTop = torch.tensor(1.,dtype=datatype).to(device)
 
         # Instantiation of target class
-        ang = 2*math.pi*torch.rand(28)
+        ang = 2*math.pi*torch.rand(28).to(device)
         nSize = 8
-        ang[:nSize-1] = torch.zeros(nSize-1)
+        ang[:nSize-1] = torch.zeros(nSize-1).to(device)
         omgs = OrthonormalMatrixGenerationSystem(
             dtype=datatype
         )
@@ -335,10 +374,14 @@ class OrthonormalMatrixGenerationSystemTestCase(unittest.TestCase):
     )
     def test4x4RandAngs(self,datatype):
         rtol,atol=1e-4,1e-7
+        if isdevicetest:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")   
+        else:
+            device = torch.device("cpu")   
 
         # Expcted values
+        angs = 2*math.pi*torch.rand(6).to(device)
         mus = [ -1, 1, -1, 1 ]
-        angs = 2*math.pi*torch.rand(6)
 
         expctdM = torch.as_tensor(
             torch.tensor(mus).view(-1,1) * \
@@ -372,7 +415,7 @@ class OrthonormalMatrixGenerationSystemTestCase(unittest.TestCase):
                  [ math.sin(angs[0]), math.cos(angs[0]), 0, 0 ],
                  [ 0, 0, 1, 0 ],
                  [ 0, 0, 0, 1 ] ]
-            ),dtype=datatype)
+            ),dtype=datatype).to(device)
         
         # Instantiation of target class
         omgs = OrthonormalMatrixGenerationSystem(
@@ -390,10 +433,14 @@ class OrthonormalMatrixGenerationSystemTestCase(unittest.TestCase):
     )
     def testPartialDifference4x4RandAngPdAng2(self,datatype):
         rtol,atol=1e-4,1e-7
+        if isdevicetest:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")   
+        else:
+            device = torch.device("cpu")   
 
         # Expcted values
+        angs = 2*math.pi*torch.rand(6).to(device)
         mus = [ -1, 1, -1, 1 ]
-        angs = 2*math.pi*torch.rand(6)
         pdAng = 2
 
         expctdM = torch.as_tensor(
@@ -428,7 +475,7 @@ class OrthonormalMatrixGenerationSystemTestCase(unittest.TestCase):
                  [ math.sin(angs[0]), math.cos(angs[0]), 0, 0 ],
                  [ 0, 0, 1, 0 ],
                  [ 0, 0, 0, 1 ] ]
-            ),dtype=datatype)
+            ),dtype=datatype).to(device)
         
         # Instantiation of target class
         omgs = OrthonormalMatrixGenerationSystem(
@@ -447,10 +494,14 @@ class OrthonormalMatrixGenerationSystemTestCase(unittest.TestCase):
     )
     def testPartialDifference4x4RandAngPdAng5(self,datatype):
         rtol,atol=1e-4,1e-7
+        if isdevicetest:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")   
+        else:
+            device = torch.device("cpu")   
 
         # Expcted values
+        angs = 2*math.pi*torch.rand(6).to(device)
         mus = [ 1, 1, -1, -1 ]
-        angs = 2*math.pi*torch.rand(6)
         pdAng = 5
 
         expctdM = torch.as_tensor(
@@ -485,7 +536,7 @@ class OrthonormalMatrixGenerationSystemTestCase(unittest.TestCase):
                  [ math.sin(angs[0]), math.cos(angs[0]), 0, 0 ],
                  [ 0, 0, 1, 0 ],
                  [ 0, 0, 0, 1 ] ]
-            ),dtype=datatype)
+            ),dtype=datatype).to(device)
         
         # Instantiation of target class
         omgs = OrthonormalMatrixGenerationSystem(
@@ -504,10 +555,14 @@ class OrthonormalMatrixGenerationSystemTestCase(unittest.TestCase):
     )
     def testPartialDifference4x4RandAngPdAng1(self,datatype):
         rtol,atol=1e-1,1e-3
+        if isdevicetest:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")   
+        else:
+            device = torch.device("cpu")   
 
         # Expcted values
+        angs = 2*math.pi*torch.rand(6).to(device)
         mus = [ -1, -1, -1, -1 ]
-        angs = 2*math.pi*torch.rand(6)
         pdAng = 1
         delta = 1e-3
 
@@ -549,7 +604,7 @@ class OrthonormalMatrixGenerationSystemTestCase(unittest.TestCase):
                  [ math.sin(angs[0]), math.cos(angs[0]), 0, 0 ],
                  [ 0, 0, 1, 0 ],
                  [ 0, 0, 0, 1 ] ]
-            ),dtype=datatype)
+            ),dtype=datatype).to(device)
         
         # Instantiation of target class
         omgs = OrthonormalMatrixGenerationSystem(
@@ -568,11 +623,15 @@ class OrthonormalMatrixGenerationSystemTestCase(unittest.TestCase):
     )
     def testPartialDifference8x8RandAngPdAng13(self,datatype):
         rtol,atol=1e-1,1e-3
+        if isdevicetest:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")   
+        else:
+            device = torch.device("cpu")   
 
         # Expcted values
         pdAng = 13
         delta = 1e-3
-        angs0 = 2*math.pi*torch.rand(28)
+        angs0 = 2*math.pi*torch.rand(28).to(device)
         angs1 = angs0.clone()
         angs2 = angs0.clone()
         angs1[pdAng] = angs0[pdAng]-delta/2
@@ -584,6 +643,7 @@ class OrthonormalMatrixGenerationSystemTestCase(unittest.TestCase):
                 partial_difference=False
             )
         expctdM = ( omgs(angles=angs2,mus=1) - omgs(angles=angs1,mus=1) )/delta
+        expctdM.to(device)
         
         # Instantiation of target class
         omgs.partial_difference=True

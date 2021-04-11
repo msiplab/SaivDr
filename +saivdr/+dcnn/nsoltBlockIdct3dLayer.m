@@ -213,8 +213,8 @@ classdef nsoltBlockIdct3dLayer < nnet.layer.Layer
             outputComponent = zeros(nDecs,nRows,nCols,nLays,nSamples,'like',dLdZ);
             outputSample = zeros(nDecs,nRows,nCols,nLays,'like',dLdZ);
             outputLay = zeros(nDecs,nRows,nCols,'like',dLdZ);
-            outputCol = zeros(nDecs,nRows,'like',dLdZ);
-            %
+            %outputCol = zeros(nDecs,nRows,'like',dLdZ);
+            X = zeros(nDecs,nRows,'like',dLdZ);
             for iComponent = 1:nComponents
                 inputComponent(:,:,:,1,:) = dLdZ(:,:,:,iComponent,:);
                 for iSample = 1:nSamples
@@ -227,9 +227,11 @@ classdef nsoltBlockIdct3dLayer < nnet.layer.Layer
                                 (iCol-1)*decH+1:iCol*decH,:);
                             for iRow = 1:nRows
                                 x = inputCol((iRow-1)*decV+1:iRow*decV,:,:);
-                                outputCol(:,iRow) = Cvhd_*x(:);
+                                %outputCol(:,iRow) = Cvhd_*x(:);
+                                X(:,iRow) = x(:);
                             end
-                            outputLay(:,:,iCol) = outputCol;
+                            %outputLay(:,:,iCol) = outputCol;
+                            outputLay(:,:,iCol) = Cvhd_*X;
                         end
                         outputSample(:,:,:,iLay) = outputLay;
                     end

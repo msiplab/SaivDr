@@ -10,7 +10,7 @@ datatype = [ torch.float, torch.double ]
 nrows = [ 4, 8, 16 ]
 ncols = [ 4, 8, 16 ]
 
-class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
+class NsoltChannelSeparation2dLayerTestCase(unittest.TestCase):
     """
     NSOLTCHANNELSEPARATION2DLAYERTESTCASE
     
@@ -59,13 +59,14 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
     def testPredict(self,
         nchs,nrows,ncols,datatype):
         rtol,atol=1e-5,1e-8
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")        
 
         # Parameters
         nSamples = 8
         nChsTotal = sum(nchs)
         
         # nSamples x nRows x nCols x nChsTotal 
-        X = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype,requires_grad=True)
+        X = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype,device=device,requires_grad=True)
 
         # Expected values
         # nSamples x nRows x nCols x (nChsTotal-1)  
@@ -96,16 +97,19 @@ class NsoltAtomExtention2dLayerTestCase(unittest.TestCase):
     def testBackward(self,
         nchs,nrows,ncols,datatype):
         rtol,atol=1e-5,1e-8
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")        
 
         # Parameters
         nSamples = 8
         nChsTotal = sum(nchs)
         # nSamplesx nRows x nCols x nChsTotal 
-        X = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype,requires_grad=True)
+        X = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype,device=device,requires_grad=True)
         # nSamples x nRows x nCols x (nChsTotal-1)
         dLdZac = torch.randn(nSamples,nrows,ncols,nChsTotal-1,dtype=datatype)
+        dLdZac = dLdZac.to(device)
         # nSamples x nRows x nCols
         dLdZdc = torch.randn(nSamples,nrows,ncols,dtype=datatype)
+        dLdZdc = dLdZdc.to(device)
             
         # Expected values
         # nSamples x nRows x nCols x nChsTotal

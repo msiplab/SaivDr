@@ -27,11 +27,13 @@ class OrthonormalTransform(nn.Module):
         n=2,
         mus=1,
         mode='Analysis',
-        dtype=torch.get_default_dtype()):
+        dtype=torch.get_default_dtype(),
+        device=torch.device("cpu")):
 
         super(OrthonormalTransform, self).__init__()
         self.dtype = dtype
         self.nPoints = n
+        self.device = device
 
         # Mode
         if mode in {'Analysis','Synthesis'}:
@@ -44,17 +46,17 @@ class OrthonormalTransform(nn.Module):
 
         # Angles
         nAngs = int(n*(n-1)/2)
-        self.angles = nn.Parameter(torch.zeros(nAngs,dtype=self.dtype))
+        self.angles = nn.Parameter(torch.zeros(nAngs,dtype=self.dtype,device=self.device))
 
         # Mus
         if torch.is_tensor(mus):
-            self.__mus = mus
+            self.__mus = mus.to(dtype=self.dtype,device=self.device)
         elif mus == 1:
-            self.__mus = torch.ones(self.nPoints,dtype=self.dtype)
+            self.__mus = torch.ones(self.nPoints,dtype=self.dtype,device=self.device)
         elif mus == -1:
-            self.__mus = -torch.ones(self.nPoints,dtype=self.dtype)
+            self.__mus = -torch.ones(self.nPoints,dtype=self.dtype,device=self.device)
         else:
-            self.__mus = torch.tensor(mus,dtype=self.dtype)
+            self.__mus = torch.tensor(mus,dtype=self.dtype,device=self.device)
         self.checkMus()
 
     def forward(self,X):
@@ -88,17 +90,17 @@ class OrthonormalTransform(nn.Module):
     @mus.setter
     def mus(self,mus):
         if torch.is_tensor(mus):
-            self.__mus = mus
+            self.__mus = mus.to(dtype=self.dtype,device=self.device)
         elif mus == 1:
-            self.__mus = torch.ones(self.nPoints,dtype=self.dtype)
+            self.__mus = torch.ones(self.nPoints,dtype=self.dtype,device=self.device)
         elif mus == -1:
-            self.__mus = -torch.ones(self.nPoints,dtype=self.dtype)
+            self.__mus = -torch.ones(self.nPoints,dtype=self.dtype,device=self.device)
         else:
-            self.__mus = torch.tensor(mus,dtype=self.dtype)
+            self.__mus = torch.tensor(mus,dtype=self.dtype,device=self.device)
         self.checkMus()
 
     def checkMus(self):
-        if torch.not_equal(torch.abs(self.__mus),torch.ones(self.nPoints)).any():
+        if torch.not_equal(torch.abs(self.__mus),torch.ones(self.nPoints,device=self.device)).any():
             raise InvalidMus(
                 '%s : Elements in mus should be either of 1 or -1'\
                 % str(self.__mus)
@@ -127,7 +129,7 @@ class GivensRotations4Analyzer(autograd.Function):
         ctx.mark_non_differentiable(mus)
         ctx.save_for_backward(input,angles,mus)
         omgs = OrthonormalMatrixGenerationSystem(dtype=input.dtype,partial_difference=False)
-        R = omgs(angles,mus)
+        R = omgs(angles,mus) #.to(input.device)
         return R @ input
     
     @staticmethod
@@ -136,7 +138,7 @@ class GivensRotations4Analyzer(autograd.Function):
         grad_input = grad_angles = grad_mus = None
         if ctx.needs_input_grad[0] or ctx.needs_input_grad[1]:        
             omgs = OrthonormalMatrixGenerationSystem(dtype=input.dtype,partial_difference=False)
-            R = omgs(angles,mus)
+            R = omgs(angles,mus) #.to(input.device)
             dLdX = R.T @ grad_output # dLdX = dZdX @ dLdZ
         # 
         if ctx.needs_input_grad[0]:
@@ -145,7 +147,7 @@ class GivensRotations4Analyzer(autograd.Function):
             omgs.partial_difference=True
             grad_angles = torch.zeros_like(angles,dtype=input.dtype)
             for iAngle in range(len(grad_angles)):
-                dRi = omgs(angles,mus,index_pd_angle=iAngle)
+                dRi = omgs(angles,mus,index_pd_angle=iAngle).to(input.device)
                 #grad_angles[iAngle] = torch.sum(dLdX * (dRi @ input))
                 grad_angles[iAngle] = torch.sum(grad_output * (dRi @ input))
         if ctx.needs_input_grad[2]:
@@ -175,7 +177,7 @@ class GivensRotations4Synthesizer(autograd.Function):
         ctx.mark_non_differentiable(mus)        
         ctx.save_for_backward(input,angles,mus)
         omgs = OrthonormalMatrixGenerationSystem(dtype=input.dtype,partial_difference=False)
-        R = omgs(angles,mus)
+        R = omgs(angles,mus) #.to(input.device)
         return R.T @ input
     
     @staticmethod
@@ -184,7 +186,7 @@ class GivensRotations4Synthesizer(autograd.Function):
         grad_input = grad_angles = grad_mus = None
         if ctx.needs_input_grad[0] or ctx.needs_input_grad[1]:
             omgs = OrthonormalMatrixGenerationSystem(dtype=input.dtype,partial_difference=False)
-            R = omgs(angles,mus)
+            R = omgs(angles,mus) #.to(input.device)
             dLdX = R @ grad_output # dLdX = dZdX @ dLdZ
         #            
         if ctx.needs_input_grad[0]:
@@ -193,7 +195,7 @@ class GivensRotations4Synthesizer(autograd.Function):
             omgs.partial_difference=True
             grad_angles = torch.zeros_like(angles,dtype=input.dtype)
             for iAngle in range(len(grad_angles)):
-                dRi = omgs(angles,mus,index_pd_angle=iAngle)
+                dRi = omgs(angles,mus,index_pd_angle=iAngle) #.to(input.device)
                 #grad_angles[iAngle] = torch.sum(dLdX * (dRi.T @ input))
                 grad_angles[iAngle] = torch.sum(grad_output * (dRi.T @ input))
         if ctx.needs_input_grad[2]:

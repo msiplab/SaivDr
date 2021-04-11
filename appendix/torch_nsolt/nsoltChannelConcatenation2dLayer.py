@@ -47,4 +47,12 @@ class NsoltChannelConcatenation2dLayer(nn.Module):
         """
             
         # Layer forward function for prediction goes here.
-        return torch.cat((Xdc.unsqueeze(dim=3),Xac),dim=3)
+        if Xdc.dim() == 3:
+            Xdc_ = Xdc.unsqueeze(dim=3)
+        else:
+            Xdc_ = Xdc
+        if Xac.dim() == 3:
+            Xac_ = Xac.unsqueeze(dim=3)
+        else:
+            Xac_ = Xac
+        return torch.cat((Xdc_,Xac_),dim=3)    

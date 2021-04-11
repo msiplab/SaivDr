@@ -8,11 +8,12 @@ from nsoltInitialRotation2dLayer import NsoltInitialRotation2dLayer
 from nsoltUtility import Direction, OrthonormalMatrixGenerationSystem
 
 nchs = [ [2, 2], [3, 3], [4, 4] ]
-stride = [ [1, 1], [1, 2], [2, 2] ]
+stride = [ [1, 1], [1, 2], [2, 1], [2, 2] ]
 mus = [ -1, 1 ]
 datatype = [ torch.float, torch.double ]
 nrows = [ 4, 8, 16 ]
 ncols = [ 4, 8, 16 ]
+isdevicetest = True
 
 class NsoltInitialRotation2dLayerTestCase(unittest.TestCase):
     """
@@ -74,6 +75,10 @@ class NsoltInitialRotation2dLayerTestCase(unittest.TestCase):
     def testPredictGrayscale(self,
         nchs, stride, nrows, ncols, datatype):
         rtol,atol=1e-5,1e-8
+        if isdevicetest:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")   
+        else:
+            device = torch.device("cpu")     
         
         # Parameters
         nSamples = 8
@@ -81,14 +86,15 @@ class NsoltInitialRotation2dLayerTestCase(unittest.TestCase):
         nChsTotal = sum(nchs)
         # nSamples x nRows x nCols x nDecs
         X = torch.randn(nSamples,nrows,ncols,nDecs,dtype=datatype)
+        X = X.to(device)
 
         # Expected values
         # nSamplex x nRows x nCols x nChs
         ps, pa = nchs
-        W0 = torch.eye(ps,dtype=datatype)
-        U0 = torch.eye(pa,dtype=datatype)
+        W0 = torch.eye(ps,dtype=datatype).to(device)
+        U0 = torch.eye(pa,dtype=datatype).to(device)
         ms,ma = int(math.ceil(nDecs/2.)), int(math.floor(nDecs/2.))        
-        Zsa = torch.zeros(nChsTotal,nrows*ncols*nSamples,dtype=datatype)        
+        Zsa = torch.zeros(nChsTotal,nrows*ncols*nSamples,dtype=datatype).to(device)       
         Ys = X[:,:,:,:ms].view(-1,ms).T
         Zsa[:ps,:] = W0[:,:ms] @ Ys        
         if ma > 0:
@@ -102,7 +108,8 @@ class NsoltInitialRotation2dLayerTestCase(unittest.TestCase):
                 decimation_factor=stride,
                 name='V0'
             )
-            
+        layer = layer.to(device)
+        
         # Actual values
         with torch.no_grad():
             actualZ = layer.forward(X)
@@ -117,7 +124,11 @@ class NsoltInitialRotation2dLayerTestCase(unittest.TestCase):
     )
     def testPredictGrayscaleWithRandomAngles(self,
         nchs, stride, nrows, ncols, datatype):
-        rtol,atol=1e-5,1e-8
+        rtol,atol=1e-3,1e-6
+        if isdevicetest:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")   
+        else:
+            device = torch.device("cpu")         
         gen = OrthonormalMatrixGenerationSystem(dtype=datatype)
         
         # Parameters
@@ -126,6 +137,7 @@ class NsoltInitialRotation2dLayerTestCase(unittest.TestCase):
         nChsTotal = sum(nchs)
         # nSamples x nRows x nCols x nDecs
         X = torch.randn(nSamples,nrows,ncols,nDecs,dtype=datatype)
+        X = X.to(device)
         angles = torch.randn(int((nChsTotal-2)*nChsTotal/4),dtype=datatype)
 
         # Expected values
@@ -133,9 +145,10 @@ class NsoltInitialRotation2dLayerTestCase(unittest.TestCase):
         ps,pa = nchs
         nAngsW = int(len(angles)/2)
         angsW,angsU = angles[:nAngsW],angles[nAngsW:]
-        W0,U0 = gen(angsW),gen(angsU)
+        W0,U0 = gen(angsW).to(device),gen(angsU).to(device)
         ms,ma = int(math.ceil(nDecs/2.)), int(math.floor(nDecs/2.))                
         Zsa = torch.zeros(nChsTotal,nrows*ncols*nSamples,dtype=datatype)
+        Zsa = Zsa.to(device)
         Ys = X[:,:,:,:ms].view(-1,ms).T 
         Zsa[:ps,:] = W0[:,:ms] @ Ys
         if ma > 0:
@@ -152,6 +165,7 @@ class NsoltInitialRotation2dLayerTestCase(unittest.TestCase):
         layer.orthTransW0.mus = 1
         layer.orthTransU0.angles.data = angsU
         layer.orthTransU0.mus = 1
+        layer = layer.to(device)
 
         # Actual values
         with torch.no_grad():
@@ -167,7 +181,11 @@ class NsoltInitialRotation2dLayerTestCase(unittest.TestCase):
     )
     def testPredictGrayscaleWithRandomAnglesNoDcLeackage(self,
         nchs, stride, nrows, ncols, datatype,mus):
-        rtol,atol=1e-5,1e-8
+        rtol,atol=1e-3,1e-6
+        if isdevicetest:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")   
+        else:
+            device = torch.device("cpu")           
         gen = OrthonormalMatrixGenerationSystem(dtype=datatype)
         
         # Parameters
@@ -176,6 +194,7 @@ class NsoltInitialRotation2dLayerTestCase(unittest.TestCase):
         nChsTotal = sum(nchs)
         # nSamples x nRows x nCols x nDecs
         X = torch.randn(nSamples,nrows,ncols,nDecs,dtype=datatype)
+        X = X.to(device)
         angles = torch.randn(int((nChsTotal-2)*nChsTotal/4),dtype=datatype)
 
         # Expected values
@@ -187,9 +206,9 @@ class NsoltInitialRotation2dLayerTestCase(unittest.TestCase):
         angsWNoDcLeak[:ps-1] = torch.zeros(ps-1,dtype=angles.dtype)
         musW,musU = mus*torch.ones(ps,dtype=datatype),mus*torch.ones(pa,dtype=datatype)
         musW[0] = 1
-        W0,U0 = gen(angsWNoDcLeak,musW),gen(angsU,musU)
+        W0,U0 = gen(angsWNoDcLeak,musW).to(device),gen(angsU,musU).to(device)
         ms,ma = int(math.ceil(nDecs/2.)), int(math.floor(nDecs/2.))                
-        Zsa = torch.zeros(nChsTotal,nrows*ncols*nSamples,dtype=datatype)
+        Zsa = torch.zeros(nChsTotal,nrows*ncols*nSamples,dtype=datatype).to(device)
         Ys = X[:,:,:,:ms].view(-1,ms).T 
         Zsa[:ps,:] = W0[:,:ms] @ Ys
         if ma > 0:
@@ -207,6 +226,7 @@ class NsoltInitialRotation2dLayerTestCase(unittest.TestCase):
         layer.orthTransW0.mus = musW
         layer.orthTransU0.angles.data = angsU
         layer.orthTransU0.mus = musU
+        layer = layer.to(device)
 
         # Actual values
         with torch.no_grad():
@@ -223,6 +243,10 @@ class NsoltInitialRotation2dLayerTestCase(unittest.TestCase):
     def testBackwardGrayscale(self,
         nchs, stride, nrows, ncols, datatype):
         rtol,atol=1e-5,1e-8
+        if isdevicetest:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")   
+        else:
+            device = torch.device("cpu")            
         omgs = OrthonormalMatrixGenerationSystem(dtype=datatype,partial_difference=False)
 
         # Parameters
@@ -234,14 +258,15 @@ class NsoltInitialRotation2dLayerTestCase(unittest.TestCase):
         anglesU = torch.zeros(nAnglesH,dtype=datatype)
         mus = 1
         # nSamples x nRows x nCols x nDecs
-        X = torch.randn(nSamples,nrows,ncols,nDecs,dtype=datatype,requires_grad=True)
+        X = torch.randn(nSamples,nrows,ncols,nDecs,dtype=datatype,device=device,requires_grad=True)
         dLdZ = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype)
+        dLdZ = dLdZ.to(device)
 
         # Expected values
         # nSamples x nRows x nCols x nDecs
         ps,pa = nchs
-        W0T = omgs(anglesW,mus).T
-        U0T = omgs(anglesU,mus).T
+        W0T = omgs(anglesW,mus).T.to(device)
+        U0T = omgs(anglesU,mus).T.to(device)
         # dLdX = dZdX x dLdZ
         ms,ma = int(math.ceil(nDecs/2.)),int(math.floor(nDecs/2.))
         Ys = dLdZ[:,:,:,:ps].view(nSamples*nrows*ncols,ps).T # ps * n
@@ -251,16 +276,16 @@ class NsoltInitialRotation2dLayerTestCase(unittest.TestCase):
               U0T[:ma,:] @ Ya ), dim=0) # ma x pa @ pa x n
         expctddLdX = Y.T.view(nSamples,nrows,ncols,nDecs) # n x (ms+ma)
         # dLdWi = <dLdZ,(dVdWi)X>
-        expctddLdW_W = torch.zeros(nAnglesH,dtype=datatype)
-        expctddLdW_U = torch.zeros(nAnglesH,dtype=datatype)
+        expctddLdW_W = torch.zeros(nAnglesH,dtype=datatype).to(device)
+        expctddLdW_U = torch.zeros(nAnglesH,dtype=datatype).to(device)
         omgs.partial_difference = True
         for iAngle in range(nAnglesH):
-            dW0 = omgs(anglesW,mus,index_pd_angle=iAngle)
+            dW0 = omgs(anglesW,mus,index_pd_angle=iAngle).to(device)
             Xs = X[:,:,:,:ms].view(-1,ms).T 
             Zs = dW0[:,:ms] @ Xs # ps x n
             expctddLdW_W[iAngle] = torch.sum(Ys * Zs) # ps x n
             if ma>0:
-                dU0 = omgs(anglesU,mus,index_pd_angle=iAngle)
+                dU0 = omgs(anglesU,mus,index_pd_angle=iAngle).to(device)
                 Xa = X[:,:,:,ms:].view(-1,ma).T
                 Za = dU0[:,:ma] @ Xa # pa x n            
                 expctddLdW_U[iAngle] = torch.sum(Ya * Za) # pa x n
@@ -274,6 +299,7 @@ class NsoltInitialRotation2dLayerTestCase(unittest.TestCase):
         layer.orthTransW0.mus = mus
         layer.orthTransU0.angles.data = anglesU
         layer.orthTransU0.mus = mus
+        layer = layer.to(device)
 
         # Actual values
         torch.autograd.set_detect_anomaly(True)
@@ -300,6 +326,10 @@ class NsoltInitialRotation2dLayerTestCase(unittest.TestCase):
     def testBackwardGrayscaleWithRandomAngles(self,
         nchs, stride, nrows, ncols, datatype):
         rtol,atol=1e-3,1e-6
+        if isdevicetest:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")   
+        else:
+            device = torch.device("cpu")          
         omgs = OrthonormalMatrixGenerationSystem(dtype=datatype,partial_difference=False)
 
         # Parameters
@@ -311,13 +341,14 @@ class NsoltInitialRotation2dLayerTestCase(unittest.TestCase):
         anglesU = torch.randn(nAnglesH,dtype=datatype)
         mus = 1
         # nSamples x nRows x nCols x nDecs
-        X = torch.randn(nSamples,nrows,ncols,nDecs,dtype=datatype,requires_grad=True)
+        X = torch.randn(nSamples,nrows,ncols,nDecs,dtype=datatype,device=device,requires_grad=True)
         dLdZ = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype)
+        dLdZ = dLdZ.to(device)
 
         # Expected values
         ps,pa = nchs
-        W0T = omgs(anglesW,mus).T
-        U0T = omgs(anglesU,mus).T
+        W0T = omgs(anglesW,mus).T.to(device)
+        U0T = omgs(anglesU,mus).T.to(device)
         # dLdX = dZdX x dLdZ
         ms,ma = int(math.ceil(nDecs/2.)),int(math.floor(nDecs/2.))
         Ys = dLdZ[:,:,:,:ps].view(nSamples*nrows*ncols,ps).T # ps * n
@@ -327,16 +358,16 @@ class NsoltInitialRotation2dLayerTestCase(unittest.TestCase):
               U0T[:ma,:] @ Ya ), dim=0) # ma x pa @ pa x n
         expctddLdX = Y.T.view(nSamples,nrows,ncols,nDecs) # n x (ms+ma)
         # dLdWi = <dLdZ,(dVdWi)X>
-        expctddLdW_W = torch.zeros(nAnglesH,dtype=datatype)
-        expctddLdW_U = torch.zeros(nAnglesH,dtype=datatype)
+        expctddLdW_W = torch.zeros(nAnglesH,dtype=datatype).to(device)
+        expctddLdW_U = torch.zeros(nAnglesH,dtype=datatype).to(device)
         omgs.partial_difference = True
         for iAngle in range(nAnglesH):
-            dW0 = omgs(anglesW,mus,index_pd_angle=iAngle)
+            dW0 = omgs(anglesW,mus,index_pd_angle=iAngle).to(device)
             Xs = X[:,:,:,:ms].view(-1,ms).T 
             Zs = dW0[:,:ms] @ Xs # ps x n
             expctddLdW_W[iAngle] = torch.sum(Ys * Zs) # ps x n
             if ma>0:
-                dU0 = omgs(anglesU,mus,index_pd_angle=iAngle)
+                dU0 = omgs(anglesU,mus,index_pd_angle=iAngle).to(device)
                 Xa = X[:,:,:,ms:].view(-1,ma).T
                 Za = dU0[:,:ma] @ Xa # pa x n            
                 expctddLdW_U[iAngle] = torch.sum(Ya * Za) # pa x n
@@ -350,6 +381,7 @@ class NsoltInitialRotation2dLayerTestCase(unittest.TestCase):
         layer.orthTransW0.mus = mus
         layer.orthTransU0.angles.data = anglesU
         layer.orthTransU0.mus = mus
+        layer = layer.to(device)
 
         # Actual values
         torch.autograd.set_detect_anomaly(True)
@@ -375,6 +407,10 @@ class NsoltInitialRotation2dLayerTestCase(unittest.TestCase):
     def testBackwardGrayscaleWithRandomAnglesNoDcLeackage(self,
         nchs, stride, nrows, ncols, datatype,mus):
         rtol,atol=1e-2,1e-5
+        if isdevicetest:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")   
+        else:
+            device = torch.device("cpu")          
         omgs = OrthonormalMatrixGenerationSystem(dtype=datatype,partial_difference=False)
 
         # Parameters
@@ -386,8 +422,9 @@ class NsoltInitialRotation2dLayerTestCase(unittest.TestCase):
         anglesU = torch.randn(nAnglesH,dtype=datatype)
         mus = 1
         # nSamples x nRows x nCols x nDecs
-        X = torch.randn(nSamples,nrows,ncols,nDecs,dtype=datatype,requires_grad=True)
+        X = torch.randn(nSamples,nrows,ncols,nDecs,dtype=datatype,device=device,requires_grad=True)
         dLdZ = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype)
+        dLdZ = dLdZ.to(device)
 
         # Expected values
         ps,pa = nchs
@@ -395,8 +432,8 @@ class NsoltInitialRotation2dLayerTestCase(unittest.TestCase):
         anglesWNoDcLeak[:ps-1] = torch.zeros(ps-1,dtype=datatype)
         musW,musU = mus*torch.ones(ps,dtype=datatype),mus*torch.ones(pa,dtype=datatype)
         musW[0] = 1        
-        W0T = omgs(anglesWNoDcLeak,musW).T
-        U0T = omgs(anglesU,musU).T
+        W0T = omgs(anglesWNoDcLeak,musW).T.to(device)
+        U0T = omgs(anglesU,musU).T.to(device)
         # dLdX = dZdX x dLdZ
         ms,ma = int(math.ceil(nDecs/2.)),int(math.floor(nDecs/2.))
         Ys = dLdZ[:,:,:,:ps].view(nSamples*nrows*ncols,ps).T # ps * n
@@ -404,18 +441,18 @@ class NsoltInitialRotation2dLayerTestCase(unittest.TestCase):
         Y = torch.cat(
             ( W0T[:ms,:] @ Ys,          # ms x ps @ ps x n
               U0T[:ma,:] @ Ya ), dim=0) # ma x pa @ pa x n
-        expctddLdX = Y.T.view(nSamples,nrows,ncols,nDecs) # n x (ms+ma)
+        expctddLdX = Y.T.view(nSamples,nrows,ncols,nDecs).to(device) # n x (ms+ma)
         # dLdWi = <dLdZ,(dVdWi)X>
-        expctddLdW_W = torch.zeros(nAnglesH,dtype=datatype)
-        expctddLdW_U = torch.zeros(nAnglesH,dtype=datatype)
+        expctddLdW_W = torch.zeros(nAnglesH,dtype=datatype).to(device)
+        expctddLdW_U = torch.zeros(nAnglesH,dtype=datatype).to(device)
         omgs.partial_difference = True
         for iAngle in range(nAnglesH):
-            dW0 = omgs(anglesWNoDcLeak,mus,index_pd_angle=iAngle)
+            dW0 = omgs(anglesWNoDcLeak,mus,index_pd_angle=iAngle).to(device)
             Xs = X[:,:,:,:ms].view(-1,ms).T 
             Zs = dW0[:,:ms] @ Xs # ps x n
             expctddLdW_W[iAngle] = torch.sum(Ys * Zs) # ps x n
             if ma>0:
-                dU0 = omgs(anglesU,mus,index_pd_angle=iAngle)
+                dU0 = omgs(anglesU,mus,index_pd_angle=iAngle).to(device)
                 Xa = X[:,:,:,ms:].view(-1,ma).T
                 Za = dU0[:,:ma] @ Xa # pa x n            
                 expctddLdW_U[iAngle] = torch.sum(Ya * Za) # pa x n
@@ -430,6 +467,7 @@ class NsoltInitialRotation2dLayerTestCase(unittest.TestCase):
         layer.orthTransW0.mus = musW
         layer.orthTransU0.angles.data = anglesU
         layer.orthTransU0.mus = musU
+        layer = layer.to(device)
 
         # Actual values
         torch.autograd.set_detect_anomaly(True)
@@ -454,6 +492,10 @@ class NsoltInitialRotation2dLayerTestCase(unittest.TestCase):
     )
     def testGradCheck(self,nchs,stride):
         datatype = torch.double
+        if isdevicetest:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")   
+        else:
+            device = torch.device("cpu")           
 
         # Configuration
         ps, pa = nchs
@@ -470,8 +512,9 @@ class NsoltInitialRotation2dLayerTestCase(unittest.TestCase):
         musU = (-1)**torch.randint(high=2,size=(pa,))        
         
         # nSamples x nRows x nCols x nDecs
-        X = torch.randn(nSamples,nrows,ncols,nDecs,dtype=datatype,requires_grad=True)
+        X = torch.randn(nSamples,nrows,ncols,nDecs,dtype=datatype,device=device,requires_grad=True)
         dLdZ = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype)
+        dLdZ = dLdZ.to(device)
 
         # Instantiation of target class
         layer = NsoltInitialRotation2dLayer(
@@ -484,6 +527,7 @@ class NsoltInitialRotation2dLayerTestCase(unittest.TestCase):
         layer.orthTransW0.mus = musW
         layer.orthTransU0.angles.data = anglesU
         layer.orthTransU0.mus = musU
+        layer = layer.to(device)
 
         # Forward
         torch.autograd.set_detect_anomaly(True)                
@@ -498,6 +542,10 @@ class NsoltInitialRotation2dLayerTestCase(unittest.TestCase):
     )
     def testGradCheckNoDcLeakage(self,nchs,stride):
         datatype = torch.double
+        if isdevicetest:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")   
+        else:
+            device = torch.device("cpu")          
 
         # Configuration
         ps, pa = nchs
@@ -514,8 +562,9 @@ class NsoltInitialRotation2dLayerTestCase(unittest.TestCase):
         musU = (-1)**torch.randint(high=2,size=(pa,))        
         
         # nSamples x nRows x nCols x nDecs
-        X = torch.randn(nSamples,nrows,ncols,nDecs,dtype=datatype,requires_grad=True)
+        X = torch.randn(nSamples,nrows,ncols,nDecs,dtype=datatype,device=device,requires_grad=True)
         dLdZ = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype)
+        dLdZ = dLdZ.to(device)
 
         # Instantiation of target class
         layer = NsoltInitialRotation2dLayer(
@@ -528,6 +577,7 @@ class NsoltInitialRotation2dLayerTestCase(unittest.TestCase):
         layer.orthTransW0.mus = musW
         layer.orthTransU0.angles.data = anglesU
         layer.orthTransU0.mus = musU
+        layer = layer.to(device)
 
         # Forward
         torch.autograd.set_detect_anomaly(True)                

@@ -30,6 +30,7 @@ class NsoltSubbandSerialization2dLayerTestCase(unittest.TestCase):
     
     http://msiplab.eng.niigata-u.ac.jp/
     """
+
     def testConstructor(self):
         target = NsoltSubbandSerialization2dLayer()
         self.assertTrue(isinstance(target, nn.Module))

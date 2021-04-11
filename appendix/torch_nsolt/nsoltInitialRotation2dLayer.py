@@ -67,13 +67,13 @@ class NsoltInitialRotation2dLayer(nn.Module):
         if self.no_dc_leakage:
             self.orthTransW0.mus[0] = 1
             self.orthTransW0.angles.data[:ps-1] = \
-                torch.zeros(ps-1,dtype=self.orthTransW0.angles.data.dtype)
-
+                torch.zeros(ps-1,dtype=self.orthTransW0.angles.data.dtype,device=self.orthTransW0.angles.data.device)
+        
         # Process
         ms = int(math.ceil(nDecs/2.))
         ma = int(math.floor(nDecs/2.)) 
-        Ys = torch.zeros(ps,nrows*ncols*nSamples,dtype=X.dtype)                       
-        Ya = torch.zeros(pa,nrows*ncols*nSamples,dtype=X.dtype)                       
+        Ys = torch.zeros(ps,nrows*ncols*nSamples,dtype=X.dtype,device=X.device)                       
+        Ya = torch.zeros(pa,nrows*ncols*nSamples,dtype=X.dtype,device=X.device)                       
         Ys[:ms,:] = X[:,:,:,:ms].view(-1,ms).T
         if ma > 0:
             Ya[:ma,:] = X[:,:,:,ms:].view(-1,ma).T 

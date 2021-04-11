@@ -1,8 +1,8 @@
 import torch
 import torch.nn as nn
-import torch_dct as dct
+#import torch_dct as dct
 import math
-from nsoltUtility import Direction
+from nsoltUtility import Direction, idct_2d
 
 class NsoltBlockIdct2dLayer(nn.Module):
     """
@@ -14,7 +14,7 @@ class NsoltBlockIdct2dLayer(nn.Module):
        ベクトル配列をブロック配列にして出力:
           nSamples x nComponents x (Stride(1)xnRows) x (Stride(2)xnCols) 
         
-    Requirements: Python 3.7.x, PyTorch 1.7.x
+    Requirements: Python 3.7.x, PyTorch 1.7.x/1.8.x
     
     Copyright (c) 2020-2021, Shogo MURAMATSU
     
@@ -51,7 +51,7 @@ class NsoltBlockIdct2dLayer(nn.Module):
             # Permute IDCT coefficients
             V = permuteIdctCoefs_(X,block_size)
             # 2D IDCT
-            Y = dct.idct_2d(V,norm='ortho')
+            Y = idct_2d(V)
             # Reshape and return
             height = nrows * block_size[Direction.VERTICAL] 
             width = ncols * block_size[Direction.HORIZONTAL] 
@@ -77,7 +77,7 @@ def permuteIdctCoefs_(x,block_size):
     coe = coefs[:,nQDecsee+nQDecsoo:nQDecsee+nQDecsoo+nQDecsoe]
     ceo = coefs[:,nQDecsee+nQDecsoo+nQDecsoe:]
     nBlocks = coefs.size(0)
-    value = torch.empty(nBlocks,decY_,decX_,dtype=x.dtype)
+    value = torch.empty(nBlocks,decY_,decX_,dtype=x.dtype,device=x.device)
     value[:,0::2,0::2] = cee.view(nBlocks,chDecY,chDecX)
     value[:,1::2,1::2] = coo.view(nBlocks,fhDecY,fhDecX)
     value[:,1::2,0::2] = coe.view(nBlocks,fhDecY,chDecX)
