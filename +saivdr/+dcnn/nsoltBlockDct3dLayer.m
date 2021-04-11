@@ -121,8 +121,8 @@ classdef nsoltBlockDct3dLayer < nnet.layer.Layer
             nDecs = prod(decFactor);
             %
             inputComponent = zeros(height,width,depth,1,nSamples,'like',X);
-            inputSample = zeros(height,width,depth,'like',X);
-            inputLay = zeros(height,width,decD,'like',X);
+            %inputSample = zeros(height,width,depth,'like',X);
+            %inputLay = zeros(height,width,decD,'like',X);
             %inputCol = zeros(height,decH,decD,'like',X);
             outputComponent = zeros(nDecs,nRows,nCols,nLays,nSamples,'like',X);
             outputSample = zeros(nDecs,nRows,nCols,nLays,'like',X);
@@ -132,9 +132,9 @@ classdef nsoltBlockDct3dLayer < nnet.layer.Layer
             for iComponent = 1:nComponents
                 inputComponent(:,:,:,1,:) = X(:,:,:,iComponent,:);
                 for iSample = 1:nSamples
-                    inputSample(:,:,:) =  inputComponent(:,:,:,1,iSample);     
+                    inputSample = inputComponent(:,:,:,1,iSample);     
                     for iLay = 1:nLays
-                        inputLay(:,:,:) =  inputSample(:,:,...
+                        inputLay = inputSample(:,:,...
                             (iLay-1)*decD+1:iLay*decD);
                         for iCol = 1:nCols
                             inputCol = inputLay(:,...
@@ -215,28 +215,30 @@ classdef nsoltBlockDct3dLayer < nnet.layer.Layer
                     nSamples = size(dLdZ,5);
                     dLdX = zeros(height,width,depth,nComponents,nSamples,'like',dLdZ);
                     %
-                    inputSample = zeros(nElements,nRows,nCols,nLays,'like',dLdZ);
-                    inputLay = zeros(nElements,nRows,nCols,'like',dLdZ);
+                    %inputSample = zeros(nElements,nRows,nCols,nLays,'like',dLdZ);
+                    %inputLay = zeros(nElements,nRows,nCols,'like',dLdZ);
                     %inputCol = zeros(nElements,nRows,'like',dLdZ);
-                    %X = zeros(nElements,nRows,'like',dLdZ);
-                    outputCol = zeros(height,decH,decD,'like',dLdZ);
+                    %Y = zeros(nElements,nRows,'like',dLdZ);
+                    %outputCol = zeros(height,decH,decD,'like',dLdZ);
                     outputLay = zeros(height,width,decD,'like',dLdZ);
                     outputSample = zeros(height,width,depth,'like',dLdZ);
                     outputComponent = zeros(height,width,depth,1,nSamples,'like',dLdZ);
                 end
                 for iSample = 1:nSamples
-                    inputSample(:,:,:,:) = dLdZ(:,:,:,:,iSample);
+                    inputSample = dLdZ(:,:,:,:,iSample);
                     for iLay = 1:nLays
-                        inputLay(:,:,:) = inputSample(:,:,:,iLay);
+                        inputLay = inputSample(:,:,:,iLay);
                         for iCol = 1:nCols
                             %inputCol(:,:,:)= inputLay(:,:,iCol);
-                            X= Cvhd_T*inputLay(:,:,iCol);
-                            for iRow = 1:nRows
-                                %coefs = inputCol(:,iRow);
-                                outputCol((iRow-1)*decV+1:iRow*decV,:,:) = ...
-                                    ...reshape(Cvhd_T*coefs,decV,decH,decD);
-                                    reshape(X(:,iRow),decV,decH,decD);
-                            end
+                            Y = Cvhd_T*inputLay(:,:,iCol);
+                            %for iRow = 1:nRows
+                            %    %coefs = inputCol(:,iRow);
+                            %    outputCol((iRow-1)*decV+1:iRow*decV,:,:) = ...
+                            %        ...reshape(Cvhd_T*coefs,decV,decH,decD);
+                            %        reshape(Y(:,iRow),decV,decH,decD);
+                            %end
+                            outputCol = reshape(permute(reshape(Y,decV,decH,decD,nRows),...
+                                [1 4 2 3]),decV*nRows,decH,decD);
                             outputLay(:,(iCol-1)*decH+1:iCol*decH,:) = ...
                                 outputCol;
                         end
