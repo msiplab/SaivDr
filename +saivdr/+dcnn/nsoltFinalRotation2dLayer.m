@@ -167,8 +167,10 @@ classdef nsoltFinalRotation2dLayer < nnet.layer.Layer %#codegen
             
             % Layer backward function goes here.
             % dLdX = dZdX x dLdZ
-            W0 = fcn_orthmtxgen(anglesW,muW,0);
-            U0 = fcn_orthmtxgen(anglesU,muU,0);
+            %W0 = fcn_orthmtxgen(anglesW,muW,0);
+            %U0 = fcn_orthmtxgen(anglesU,muU,0);
+            [W0,dW0Pst,dW0Pre] = fcn_orthmtxgen_diff(anglesW,muW,0,[],[]);            
+            [U0,dU0Pst,dU0Pre] = fcn_orthmtxgen_diff(anglesU,muU,0,[],[]);            
             adldz_ = dLdZ; %permute(dLdZ,[3 1 2 4]);
             cdLd_ = reshape(adldz_,nDecs,nrows*ncols*nSamples);
             cdLd_upp = W0(:,1:ceil(nDecs/2))*cdLd_(1:ceil(nDecs/2),:);
@@ -183,8 +185,12 @@ classdef nsoltFinalRotation2dLayer < nnet.layer.Layer %#codegen
             dldz_upp = reshape(dldz_(1:ceil(nDecs/2),:,:,:),ceil(nDecs/2),nrows*ncols*nSamples);
             dldz_low = reshape(dldz_(ceil(nDecs/2)+1:nDecs,:,:,:),floor(nDecs/2),nrows*ncols*nSamples);
             for iAngle = 1:nAngles/2
-                dW0_T = transpose(fcn_orthmtxgen(anglesW,muW,iAngle));
-                dU0_T = transpose(fcn_orthmtxgen(anglesU,muU,iAngle));
+                %dW0_T = transpose(fcn_orthmtxgen(anglesW,muW,iAngle));
+                %dU0_T = transpose(fcn_orthmtxgen(anglesU,muU,iAngle));
+                [dW0,dW0Pst,dW0Pre] = fcn_orthmtxgen_diff(anglesW,muW,iAngle,dW0Pst,dW0Pre);            
+                [dU0,dU0Pst,dU0Pre] = fcn_orthmtxgen_diff(anglesU,muU,iAngle,dU0Pst,dU0Pre);                            
+                dW0_T = transpose(dW0);
+                dU0_T = transpose(dU0);
                 a_ = X; %permute(X,[3 1 2 4]);
                 c_upp = reshape(a_(1:ps,:,:,:),ps,nrows*ncols*nSamples);
                 c_low = reshape(a_(ps+1:ps+pa,:,:,:),pa,nrows*ncols*nSamples);

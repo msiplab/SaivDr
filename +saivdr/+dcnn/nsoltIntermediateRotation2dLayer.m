@@ -134,7 +134,8 @@ classdef nsoltIntermediateRotation2dLayer < nnet.layer.Layer %#codegen
             
             % Layer backward function goes here.
             % dLdX = dZdX x dLdZ
-            Un = fcn_orthmtxgen(anglesU,musU,0);
+            %Un = fcn_orthmtxgen(anglesU,musU,0);
+            [Un,dUnPst,dUnPre] = fcn_orthmtxgen_diff(anglesU,musU,0,[],[]);
             adLd_ = dLdZ; %permute(dLdZ,[3 1 2 4]);
             cdLd_low = reshape(adLd_(ps+1:ps+pa,:,:,:),...
                 pa,nrows*ncols*nSamples);
@@ -151,7 +152,8 @@ classdef nsoltIntermediateRotation2dLayer < nnet.layer.Layer %#codegen
             nAngles = length(anglesU);
             dLdW = zeros(nAngles,1,'like',dLdZ);
             for iAngle = 1:nAngles
-                dUn = fcn_orthmtxgen(anglesU,musU,iAngle);
+                %dUn = fcn_orthmtxgen(anglesU,musU,iAngle);
+                [dUn,dUnPst,dUnPre] = fcn_orthmtxgen_diff(anglesU,musU,iAngle,dUnPst,dUnPre);
                 a_ = X; % permute(X,[3 1 2 4]);
                 c_low = reshape(a_(ps+1:ps+pa,:,:,:),pa,nrows*ncols*nSamples);
                 if strcmp(layer.Mode,'Analysis')                
@@ -165,9 +167,7 @@ classdef nsoltIntermediateRotation2dLayer < nnet.layer.Layer %#codegen
                 %
                 dLdW(iAngle) = sum(dLdZ.*dVdW_X,'all');
             end
-        end
-        
-        
+        end        
     end
 
 end

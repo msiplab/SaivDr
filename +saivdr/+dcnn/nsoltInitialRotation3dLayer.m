@@ -9,7 +9,7 @@ classdef nsoltInitialRotation3dLayer < nnet.layer.Layer
     %
     % Requirements: MATLAB R2020a
     %
-    % Copyright (c) 2020, Shogo MURAMATSU
+    % Copyright (c) 2020-2021, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -145,7 +145,7 @@ classdef nsoltInitialRotation3dLayer < nnet.layer.Layer
             %                             inputs
             %         dLdW1, ..., dLdWk - Derivatives of the loss with respect to each
             %
-            import saivdr.dcnn.fcn_orthmtxgen
+            import saivdr.dcnn.fcn_orthmtxgen_diff
             
             %nrows = size(dLdZ,1);
             %ncols = size(dLdZ,2); 
@@ -174,8 +174,12 @@ classdef nsoltInitialRotation3dLayer < nnet.layer.Layer
             muU = layer.Mus(ps+1:end);
             anglesW = layer.Angles(1:length(layer.Angles)/2);
             anglesU = layer.Angles(length(layer.Angles)/2+1:end);
-            W0T = transpose(fcn_orthmtxgen(anglesW,muW,0));
-            U0T = transpose(fcn_orthmtxgen(anglesU,muU,0));
+            %W0T = transpose(fcn_orthmtxgen(anglesW,muW,0));
+            %U0T = transpose(fcn_orthmtxgen(anglesU,muU,0));
+            [W0,dW0Pst,dW0Pre] = fcn_orthmtxgen_diff(anglesW,muW,0,[],[]);
+            [U0,dU0Pst,dU0Pre] = fcn_orthmtxgen_diff(anglesU,muU,0,[],[]);
+            W0T = transpose(W0);
+            U0T = transpose(U0);
             
             % Layer backward function goes here.
             % dLdX = dZdX x dLdZ
@@ -194,8 +198,10 @@ classdef nsoltInitialRotation3dLayer < nnet.layer.Layer
             dldz_low = reshape(dldz_(ps+1:ps+pa,:,:,:,:),pa,nrows*ncols*nlays*nSamples);
             % (dVdWi)X
             for iAngle = 1:nAngles/2
-                dW0 = fcn_orthmtxgen(anglesW,muW,iAngle);
-                dU0 = fcn_orthmtxgen(anglesU,muU,iAngle);
+                %dW0 = fcn_orthmtxgen(anglesW,muW,iAngle);
+                %dU0 = fcn_orthmtxgen(anglesU,muU,iAngle);
+                [dW0,dW0Pst,dW0Pre] = fcn_orthmtxgen_diff(anglesW,muW,iAngle,dW0Pst,dW0Pre);
+                [dU0,dU0Pst,dU0Pre] = fcn_orthmtxgen_diff(anglesU,muU,iAngle,dU0Pst,dU0Pre);
                 a_ = X; %permute(X,[4 1 2 3 5]);
                 c_upp = reshape(a_(1:ceil(nDecs/2),:,:,:,:),ceil(nDecs/2),nrows*ncols*nlays*nSamples);
                 c_low = reshape(a_(ceil(nDecs/2)+1:nDecs,:,:,:,:),floor(nDecs/2),nrows*ncols*nlays*nSamples);
