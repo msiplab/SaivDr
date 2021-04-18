@@ -3,7 +3,7 @@ classdef nsoltIntermediateRotation3dLayer < nnet.layer.Layer
     %
     % Requirements: MATLAB R2020a
     %
-    % Copyright (c) 2020, Shogo MURAMATSU
+    % Copyright (c) 2020-2021, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -138,7 +138,8 @@ classdef nsoltIntermediateRotation3dLayer < nnet.layer.Layer
             
             % Layer backward function goes here.
             % dLdX = dZdX x dLdZ
-            Un = fcn_orthmtxgen(anglesU,musU,0);
+            %Un = fcn_orthmtxgen(anglesU,musU,0);
+            [Un,dUnPst,dUnPre] = fcn_orthmtxgen_diff(anglesU,musU,0,[],[]);
             adLd_ = dLdZ; %permute(dLdZ,[4 1 2 3 5]);
             cdLd_low = reshape(adLd_(ps+1:ps+pa,:,:,:,:),...
                 pa,nrows*ncols*nlays*nSamples);
@@ -155,7 +156,8 @@ classdef nsoltIntermediateRotation3dLayer < nnet.layer.Layer
             nAngles = length(anglesU);
             dLdW = zeros(nAngles,1,'like',dLdZ);
             for iAngle = 1:nAngles
-                dUn = fcn_orthmtxgen(anglesU,musU,iAngle);
+                %dUn = fcn_orthmtxgen(anglesU,musU,iAngle);
+                [dUn,dUnPst,dUnPre] = fcn_orthmtxgen_diff(anglesU,musU,iAngle,dUnPst,dUnPre);                
                 a_ = X; %permute(X,[4 1 2 3 5]);
                 c_low = reshape(a_(ps+1:ps+pa,:,:,:,:),pa,nrows*ncols*nlays*nSamples);
                 if strcmp(layer.Mode,'Analysis')

@@ -3,7 +3,7 @@ classdef GradEvalSteps3d < matlab.System %#codegen
     %
     % Requirements: MATLAB R2017
     %
-    % Copyright (c) 2015-2017, Shogo MURAMATSU
+    % Copyright (c) 2015-2021, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -53,7 +53,7 @@ classdef GradEvalSteps3d < matlab.System %#codegen
                 'PartialDifference','on');
 
             obj.omgpd = saivdr.dictionary.utility.OrthonormalMatrixGenerationSystem(...
-                'PartialDifference','on');          
+                'PartialDifference','sequential');          
             
         end
     end
@@ -83,7 +83,8 @@ classdef GradEvalSteps3d < matlab.System %#codegen
                 set(obj.vqStepPd,'NumberOfAntisymmetricChannels',pa);
                 nAngsPm = ps*(ps-1)/2;
                 nMusPm  = ps;
-                step(obj.omgpd,zeros(nAngsPm,1),ones(nMusPm,1),uint32(1));
+                obj.omgpd.reset()
+                obj.omgpd.step(zeros(nAngsPm,1),ones(nMusPm,1),uint32(0));
                 setupParamMtx_(obj);
                 %
                 obj.paramMtxCoefs = zeros((ps^2)*(2+sum(ord)),1);                
@@ -109,7 +110,8 @@ classdef GradEvalSteps3d < matlab.System %#codegen
 
             nAngsPm = ps*(ps-1)/2;
             nMusPm  = ps;
-            step(obj.omgpd,zeros(nAngsPm,1),ones(nMusPm,1),uint32(1));
+            obj.omgpd.reset();
+            obj.omgpd.step(zeros(nAngsPm,1),ones(nMusPm,1),uint32(0));
             %
             setupParamMtx_(obj);
             obj.paramMtxCoefs = zeros((ps^2)*(2+sum(ord)),1);
@@ -147,18 +149,24 @@ classdef GradEvalSteps3d < matlab.System %#codegen
                 angs_  = angs(sIdAng:eIdAng);
                 mus_   = mus(sIdMu:eIdMu);
                 idxMtx = state.curIdxMtx;
+                %
+                if iPdAng == 1
+                    omgpd_.reset();
+                    omgpd_.step(angs_,mus_,uint32(0));                 
+                end
                 
                 % Steps 3-5
                 if state.curOrd == 0 && state.curDir == 0
                     if ~state.isMtxU
                         if isnodc && iAng < ps
+                            omgpd_.step(angs_,mus_,iPdAng); % TODO
                             dW0 = zeros(ps);
                         else
-                            dW0 = step(omgpd_,angs_,mus_,iPdAng); % TODO
+                            dW0 = omgpd_.step(angs_,mus_,iPdAng); % TODO
                         end
                         setParamMtx_(obj,dW0,idxMtx); % TODO
                     else
-                        dU0 = step(omgpd_,angs_,mus_,iPdAng); % TODO
+                        dU0 = omgpd_.step(angs_,mus_,iPdAng); % TODO
                         setParamMtx_(obj,dU0,idxMtx); % TODO
                     end
                     pdCoefs = obj.paramMtxCoefs;
@@ -201,8 +209,8 @@ classdef GradEvalSteps3d < matlab.System %#codegen
                         arrayCoefsB = step(vqStep_,arrayCoefsB,scale,...
                             pmCoefs,idxMtx);
                     end
-                    dU = step(omgpd_,angs_,mus_,iPdAng); 
-                    setParamMtx_(obj,dU,idxMtx);
+                    dUn = omgpd_.step(angs_,mus_,iPdAng); 
+                    setParamMtx_(obj,dUn,idxMtx);
                     pdCoefs = obj.paramMtxCoefs;
                     arrayCoefsA = step(vqStepPd_,arrayCoefsC,scale,...
                         pdCoefs,idxMtx);
