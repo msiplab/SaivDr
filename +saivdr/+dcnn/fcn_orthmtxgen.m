@@ -41,19 +41,15 @@ if ~isempty(angles)
             if iAng == pdAng
                 angle = angle + pi/2;
             end
-            c = cos(angle); %
-            s = sin(angle); %
+            c = cos(angle); 
+            s = sin(angle); 
             vb = matrix(iBtm,:);
-            %
-            u  = bsxfun(@plus,vt,vb);
-            u  = bsxfun(@times,s,u);
-            vt = bsxfun(@times,c+s,vt);
-            vb = bsxfun(@times,c-s,vb);
-            vt = bsxfun(@minus,vt,u);
+            u  = bsxfun(@times,s,bsxfun(@plus,vt,vb));
             if iAng == pdAng
                 matrix = zeros(size(matrix),'like',matrix);
             end
-            matrix(iBtm,:) = bsxfun(@plus,vb,u);
+            vt = bsxfun(@minus,bsxfun(@times,c+s,vt),u);
+            matrix(iBtm,:) = bsxfun(@plus,bsxfun(@times,c-s,vb),u);
             %
             iAng = iAng + 1;
         end
@@ -63,10 +59,6 @@ end
 if isscalar(mus)
     matrix = mus*matrix;
 elseif ~isempty(mus)
-    %for idx = 1:nDim_
-    %    matrix(idx,:) = bsxfun(@times,mus(idx),matrix(idx,:));
-    %end
     matrix = bsxfun(@times,mus(:),matrix);    
 end
 end
-
