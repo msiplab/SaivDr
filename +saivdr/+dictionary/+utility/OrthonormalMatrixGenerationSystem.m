@@ -64,8 +64,12 @@ classdef OrthonormalMatrixGenerationSystem < matlab.System %#codegen
                 obj.NumberOfDimensions = (1+sqrt(1+8*length(angles)))/2;
             end
             if strcmp(obj.PartialDifference,'sequential')
-                obj.nextangle = 0;            
+                obj.nextangle = uint32(0);            
             end
+        end
+        
+        function resetImpl(obj)
+            obj.nextangle = uint32(0);            
         end
         
         function validateInputsImpl(~,~,mus,~)
@@ -123,7 +127,7 @@ classdef OrthonormalMatrixGenerationSystem < matlab.System %#codegen
                     if iAng == pdAng
                         matrix = 0*matrix;
                     end
-                    matrix(iBtm,:) = vb;                        %
+                    matrix(iBtm,:) = vb;
                     %
                     iAng = iAng + 1;
                 end
@@ -135,10 +139,7 @@ classdef OrthonormalMatrixGenerationSystem < matlab.System %#codegen
         function matrix = stepSequential_(obj,angles,mus,pdAng)
             % Check pdAng
             if pdAng ~= obj.nextangle
-                errID = 'SaivDr:BadIndex';
-                msg = "Unable to proceed sequential differentiation. " ...
-                    + "Index = " +  num2str(obj.nextangle) + " is expected.";
-                throw(MException(errID,msg));
+                error("Unable to proceed sequential differentiation. Index = %d is expected, but %d was given.", obj.nextangle, pdAng);
             end
             %
             nDim_ = obj.NumberOfDimensions;
@@ -159,9 +160,10 @@ classdef OrthonormalMatrixGenerationSystem < matlab.System %#codegen
                     obj.matrixpst(iTop,:) = vt;
                 end
                 matrix = diag(mus)*obj.matrixpst;
-                obj.nextangle = 1;
+                obj.nextangle = uint32(1);
             else % Sequential differentiation
                 %
+                matrix = 1;
                 matrixrev = eye(nDim_);
                 matrixdif = zeros(nDim_);
                 %
@@ -187,12 +189,13 @@ classdef OrthonormalMatrixGenerationSystem < matlab.System %#codegen
                             matrixdif(iBtm,:) = db;
                             %
                             obj.matrixpst = obj.matrixpst*matrixrev;
-                            matrix = diag(mus)*obj.matrixpst*matrixdif*obj.matrixpre;
+                            matrix = obj.matrixpst*matrixdif*obj.matrixpre;
                             obj.matrixpre = matrixrev.'*obj.matrixpre;
                         end
                         iAng = iAng + 1;
                     end
                 end
+                matrix = diag(mus)*matrix;
                 obj.nextangle = obj.nextangle + 1;
             end
         end

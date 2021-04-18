@@ -58,7 +58,7 @@ classdef NsoltVQStep3d <  ...
         function validateInputsImpl(obj, coefs, subScale, pmCoefs, ~)
             validateInputsImpl@saivdr.dictionary.nsoltx.AbstNsoltCoefManipulator3d(obj, coefs, subScale, pmCoefs);
             if size(coefs,1) ~= obj.NumberOfSymmetricChannels ...
-                    + obj.NumberOfAntisymmetricChannels;
+                    + obj.NumberOfAntisymmetricChannels
                 error('SaivDr: Coefficient array has invalid size.');
             end
         end
