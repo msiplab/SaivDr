@@ -1,5 +1,6 @@
 import torch
 import math
+from nsoltLayerExceptions import InvalidIndex
 
 def dct(x): 
     """ 
@@ -108,6 +109,7 @@ class OrthonormalMatrixGenerationSystem:
         super(OrthonormalMatrixGenerationSystem, self).__init__()
         self.dtype = dtype
         self.partial_difference = partial_difference
+        self.nextangle = -1
 
     def __call__(self,
         angles=0,
@@ -127,38 +129,109 @@ class OrthonormalMatrixGenerationSystem:
         nAngles = len(angles)
 
         # Number of dimensions
-        nDims = int((1+math.sqrt(1+8*nAngles))/2)
+        self.nDims = int((1+math.sqrt(1+8*nAngles))/2)
 
         # Setup of mus, which is send to the same device with angles
         if isinstance(mus, int) or isinstance(mus, float):
-            mus = mus * torch.ones(nDims,dtype=self.dtype,device=angles.device)
+            mus = mus * torch.ones(self.nDims,dtype=self.dtype,device=angles.device)
         elif not torch.is_tensor(mus): #isinstance(mus, list):
             mus = torch.tensor(mus,dtype=self.dtype,device=angles.device)
         else:
             mus = mus.to(dtype=self.dtype,device=angles.device)
 
-        matrix = torch.eye(nDims,dtype=self.dtype,device=angles.device)
-        iAng = 0
-        for iTop in range(nDims-1):
-            vt = matrix[iTop,:]
-            for iBtm in range(iTop+1,nDims):
-                angle = angles[iAng]
-                if self.partial_difference and iAng == index_pd_angle:
-                    angle = angle + math.pi/2.
-                c = torch.cos(angle)
-                s = torch.sin(angle)
-                vb = matrix[iBtm,:]
-                #
-                u  = s*(vt + vb)
-                vt = (c + s)*vt
-                vb = (c - s)*vb
-                vt = vt - u
-                if self.partial_difference and iAng == index_pd_angle:
-                    matrix = torch.zeros_like(matrix,dtype=self.dtype)
-                matrix[iBtm,:] = vb + u
-                iAng = iAng + 1
-            matrix[iTop,:] = vt
+        # Generation process
+        if self.partial_difference == 'sequential':
+            matrix = self.step_sequential_(angles,mus,index_pd_angle)
+        else:
+            matrix = self.step_normal_(angles,mus,index_pd_angle)
         matrix = mus.view(-1,1) * matrix
 
         return matrix.clone()
+    
+    def reset(self):
+        self.nextangle = -1
 
+    def step_normal_(self,angles,mus,index_pd_angle):
+        #
+        iAng = 0
+        matrix = torch.eye(self.nDims,dtype=self.dtype,device=angles.device)
+        for iTop in range(self.nDims-1):
+            vt = matrix[iTop,:]
+            for iBtm in range(iTop+1,self.nDims):
+                angle = angles[iAng]
+                if self.partial_difference and iAng == index_pd_angle:
+                    angle = angle + math.pi/2.
+                vb = matrix[iBtm,:]
+                vt, vb = rot_(vt, vb, angle)
+                if self.partial_difference and iAng == index_pd_angle:
+                    matrix = torch.zeros_like(matrix,dtype=self.dtype)
+                matrix[iBtm,:] = vb
+                iAng = iAng + 1
+            matrix[iTop,:] = vt
+        return matrix
+
+    def step_sequential_(self,angles,mus,index_pd_angle):
+        # Check index_pd_angle
+        if index_pd_angle >= 0 and index_pd_angle != self.nextangle:
+            raise InvalidIndex(
+                'Unable to proceed sequential differentiation. Index = %d is expected, but %d was given.'\
+                %(self.nextangle, index_pd_angle))
+        #
+        if index_pd_angle < 0: # Initialization
+            self.matrixpst = torch.eye(self.nDims,dtype=self.dtype,device=angles.device)            
+            self.matrixpre = torch.eye(self.nDims,dtype=self.dtype,device=angles.device)            
+            #
+            iAng = 0
+            for iTop in range(self.nDims-1):
+                vt = self.matrixpst[iTop,:]
+                for iBtm in range(iTop+1,self.nDims):
+                    angle = angles[iAng]
+                    vb = self.matrixpst[iBtm,:]
+                    vt, vb = rot_(vt, vb, angle)
+                    self.matrixpst[iBtm,:] = vb
+                    iAng = iAng + 1
+                self.matrixpst[iTop,:] = vt
+            self.nextangle = 0
+            return self.matrixpst
+        else: # Sequential differentiation
+            matrix = torch.eye(self.nDims,dtype=self.dtype,device=angles.device)
+            matrixrev = matrix.clone()
+            matrixdif = torch.zeros_like(matrix,dtype=self.dtype)       
+            #
+            iAng = 0
+            for iTop in range(self.nDims-1):
+                rt = matrixrev[iTop,:]
+                dt = torch.zeros(1,self.nDims,dtype=self.dtype,device=angles.device)
+                dt[0,iTop] = 1
+                for iBtm in range(iTop+1,self.nDims):                    
+                    if iAng == index_pd_angle:
+                        angle = angles[iAng]
+                        #
+                        rb = matrixrev[iBtm,:]
+                        rt,rb = rot_(rt,rb,-angle)
+                        matrixrev[iTop,:] = rt
+                        matrixrev[iBtm,:] = rb
+                        #
+                        db = torch.zeros(1,self.nDims,dtype=self.dtype,device=angles.device)
+                        db[0,iBtm] = 1
+                        dangle = angle + math.pi/2.
+                        dt,db = rot_(dt,db,dangle)
+                        matrixdif[iTop,:] = dt
+                        matrixdif[iBtm,:] = db
+                        #
+                        self.matrixpst = self.matrixpst @ matrixrev
+                        matrix = self.matrixpst @ matrixdif @ self.matrixpre
+                        self.matrixpre = matrixrev.T @ self.matrixpre
+                    iAng = iAng + 1
+            self.nextangle += 1
+            return matrix
+
+def rot_(vt,vb,angle):
+    c = torch.cos(angle)
+    s = torch.sin(angle)
+    u  = s*(vt + vb)
+    vt = (c + s)*vt
+    vb = (c - s)*vb
+    vt = vt - u
+    vb = vb + u
+    return vt, vb

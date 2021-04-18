@@ -652,5 +652,291 @@ class OrthonormalMatrixGenerationSystemTestCase(unittest.TestCase):
         # Evaluation
         self.assertTrue(torch.allclose(actualM,expctdM,rtol=rtol,atol=atol))    
 
+    # In sequential mode
+    
+    @parameterized.expand(
+        list(itertools.product(datatype))
+    )
+    def testPartialDifferenceInSequentialMode(self,datatype):
+        rtol,atol=1e-4,1e-7
+
+        # Configuration 
+        pdAng = 0
+
+        # Expected values
+        expctdM = torch.tensor([
+            [ 0., -1.],
+            [ 1., 0.] ],
+            dtype=datatype)
+
+        # Instantiation of target class
+        omgs = OrthonormalMatrixGenerationSystem(
+                dtype=datatype,
+                partial_difference='sequential'
+            )
+
+        # Actual values
+        omgs(angles=0,mus=1,index_pd_angle=-1)
+        actualM = omgs(angles=0,mus=1,index_pd_angle=pdAng)
+
+        # Evaluation
+        self.assertTrue(torch.allclose(actualM,expctdM,rtol=rtol,atol=atol))                
+
+    @parameterized.expand(
+        list(itertools.product(datatype))
+    )
+    def testPartialDifferenceAngsInSequentialMode(self,datatype):
+        rtol,atol=1e-4,1e-7
+
+        # Configration 
+        pdAng = 0
+
+        # Expected values
+        expctdM = torch.tensor([
+            [ math.cos(math.pi/4+math.pi/2), -math.sin(math.pi/4+math.pi/2)],
+            [ math.sin(math.pi/4+math.pi/2),  math.cos(math.pi/4+math.pi/2)] ],
+            dtype=datatype)
+
+        # Instantiation of target class
+        omgs = OrthonormalMatrixGenerationSystem(
+                dtype=datatype,
+                partial_difference='sequential'
+            )
+
+        # Actual values
+        omgs(angles=math.pi/4,mus=1,index_pd_angle=-1)
+        actualM = omgs(angles=math.pi/4,mus=1,index_pd_angle=pdAng)
+            
+        # Evaluation
+        self.assertTrue(torch.allclose(actualM,expctdM,rtol=rtol,atol=atol))                
+
+    @parameterized.expand(
+        list(itertools.product(datatype))
+    )
+    def testPartialDifferenceAngsAndMusInSequentialMode(self,datatype):
+        rtol,atol=1e-4,1e-7
+
+        # Configuration
+        pdAng = 0
+
+        # Expected values
+        expctdM = torch.tensor([
+            [ math.cos(math.pi/4+math.pi/2), -math.sin(math.pi/4+math.pi/2)],
+            [ -math.sin(math.pi/4+math.pi/2),  -math.cos(math.pi/4+math.pi/2)] ],
+            dtype=datatype)
+
+        # Instantiation of target class
+        omgs = OrthonormalMatrixGenerationSystem(
+                dtype=datatype,
+                partial_difference='sequential'
+            )
+
+        # Actual values
+        omgs(angles=math.pi/4,mus=[1,-1],index_pd_angle=-1)
+        actualM = omgs(angles=math.pi/4,mus=[1,-1],index_pd_angle=pdAng)
+
+        # Evaluation
+        self.assertTrue(torch.allclose(actualM,expctdM,rtol=rtol,atol=atol))                
+
+    @parameterized.expand(
+        list(itertools.product(datatype))
+    )
+    def testPartialDifference4x4RandAngPdAng2InSequentialMode(self,datatype):
+        rtol,atol=1e-4,1e-7
+        if isdevicetest:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")   
+        else:
+            device = torch.device("cpu")   
+
+        # Expcted values
+        angs = 2*math.pi*torch.rand(6).to(device)
+        mus = [ -1, 1, -1, 1 ]
+        pdAng = 2
+
+        expctdM = torch.as_tensor(
+            torch.tensor(mus).view(-1,1) * \
+            torch.tensor(
+                [ [1, 0, 0, 0. ],
+                 [0, 1, 0, 0. ],
+                 [0, 0, math.cos(angs[5]), -math.sin(angs[5]) ],
+                 [0, 0, math.sin(angs[5]), math.cos(angs[5]) ] ]
+            ) @ torch.tensor(
+                [ [1, 0, 0, 0 ],
+                 [0, math.cos(angs[4]), 0, -math.sin(angs[4]) ],
+                 [0, 0, 1, 0 ],
+                 [0, math.sin(angs[4]), 0, math.cos(angs[4]) ] ]
+            ) @ torch.tensor( 
+                [ [1, 0, 0, 0 ], 
+                 [0, math.cos(angs[3]), -math.sin(angs[3]), 0 ],
+                 [0, math.sin(angs[3]), math.cos(angs[3]), 0 ],
+                 [0, 0, 0, 1 ] ]
+            ) @ torch.tensor( # Partial Diff.
+                [ [ math.cos(angs[2]+math.pi/2), 0, 0, -math.sin(angs[2]+math.pi/2) ],
+                 [0, 0, 0, 0 ],
+                 [0, 0, 0, 0 ],
+                 [ math.sin(angs[2]+math.pi/2), 0, 0, math.cos(angs[2]+math.pi/2) ] ]
+            ) @ torch.tensor(
+               [ [math.cos(angs[1]), 0, -math.sin(angs[1]), 0 ],
+                 [0, 1, 0, 0 ],
+                 [math.sin(angs[1]), 0, math.cos(angs[1]), 0 ],
+                 [0, 0, 0, 1 ] ]
+            ) @ torch.tensor(
+               [ [ math.cos(angs[0]), -math.sin(angs[0]), 0, 0 ],
+                 [ math.sin(angs[0]), math.cos(angs[0]), 0, 0 ],
+                 [ 0, 0, 1, 0 ],
+                 [ 0, 0, 0, 1 ] ]
+            ),dtype=datatype).to(device)
+        
+        # Instantiation of target class
+        omgs = OrthonormalMatrixGenerationSystem(
+                dtype=datatype,
+                partial_difference='sequential'
+            )
+
+        # Actual values
+        omgs(angles=angs,mus=mus,index_pd_angle=-1)
+        for iAng in range(pdAng):
+            omgs(angles=angs,mus=mus,index_pd_angle=iAng)
+        actualM = omgs(angles=angs,mus=mus,index_pd_angle=pdAng)
+
+        # Evaluation
+        self.assertTrue(torch.allclose(actualM,expctdM,rtol=rtol,atol=atol))
+
+    @parameterized.expand(
+        list(itertools.product(datatype))
+    )
+    def testPartialDifference4x4RandAngPdAng5InSequentialMode(self,datatype):
+        rtol,atol=1e-4,1e-7
+        if isdevicetest:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")   
+        else:
+            device = torch.device("cpu")   
+
+        # Expcted values
+        angs = 2*math.pi*torch.rand(6).to(device)
+        mus = [ 1, 1, -1, -1 ]
+        pdAng = 5
+
+        expctdM = torch.as_tensor(
+            torch.tensor(mus).view(-1,1) * \
+            torch.tensor( # Partial Diff.
+                [ [0, 0, 0, 0. ],
+                 [0, 0, 0., 0. ],
+                 [0, 0, math.cos(angs[5]+math.pi/2), -math.sin(angs[5]+math.pi/2) ],
+                 [0., 0, math.sin(angs[5]+math.pi/2), math.cos(angs[5]+math.pi/2) ] ]
+            ) @ torch.tensor(
+                [ [1, 0, 0, 0 ],
+                 [0, math.cos(angs[4]), 0, -math.sin(angs[4]) ],
+                 [0, 0, 1, 0 ],
+                 [0, math.sin(angs[4]), 0, math.cos(angs[4]) ] ]
+            ) @ torch.tensor( 
+                [ [1, 0, 0, 0 ], 
+                 [0, math.cos(angs[3]), -math.sin(angs[3]), 0 ],
+                 [0, math.sin(angs[3]), math.cos(angs[3]), 0 ],
+                 [0, 0, 0, 1 ] ]
+            ) @ torch.tensor( 
+                [ [ math.cos(angs[2]), 0, 0, -math.sin(angs[2]) ],
+                 [0, 1, 0, 0 ],
+                 [0, 0, 1, 0 ],
+                 [ math.sin(angs[2]), 0, 0, math.cos(angs[2]) ] ]
+            ) @ torch.tensor(
+               [ [math.cos(angs[1]), 0, -math.sin(angs[1]), 0 ],
+                 [0, 1, 0, 0 ],
+                 [math.sin(angs[1]), 0, math.cos(angs[1]), 0 ],
+                 [0, 0, 0, 1 ] ]
+            ) @ torch.tensor(
+               [ [ math.cos(angs[0]), -math.sin(angs[0]), 0, 0 ],
+                 [ math.sin(angs[0]), math.cos(angs[0]), 0, 0 ],
+                 [ 0, 0, 1, 0 ],
+                 [ 0, 0, 0, 1 ] ]
+            ),dtype=datatype).to(device)
+        
+        # Instantiation of target class
+        omgs = OrthonormalMatrixGenerationSystem(
+                dtype=datatype,
+                partial_difference='sequential'
+            )
+
+        # Actual values
+        omgs(angles=angs,mus=mus,index_pd_angle=-1)
+        for iAng in range(pdAng):
+            omgs(angles=angs,mus=mus,index_pd_angle=iAng)
+        actualM = omgs(angles=angs,mus=mus,index_pd_angle=pdAng)
+
+        # Evaluation
+        self.assertTrue(torch.allclose(actualM,expctdM,rtol=rtol,atol=atol))    
+
+    @parameterized.expand(
+        list(itertools.product(datatype))
+    )
+    def testPartialDifference4x4RandAngPdAng1InSequentialMode(self,datatype):
+        rtol,atol=1e-1,1e-3
+        if isdevicetest:
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")   
+        else:
+            device = torch.device("cpu")   
+
+        # Expcted values
+        angs = 2*math.pi*torch.rand(6).to(device)
+        mus = [ -1, -1, -1, -1 ]
+        pdAng = 1
+        delta = 1e-3
+
+        expctdM = torch.as_tensor(
+            (1/delta)*torch.tensor(mus).view(-1,1) * \
+            torch.tensor( 
+                [ [1, 0, 0, 0. ],
+                 [0, 1, 0., 0. ],
+                 [0, 0, math.cos(angs[5]), -math.sin(angs[5]) ],
+                 [0., 0, math.sin(angs[5]), math.cos(angs[5]) ] ]
+            ) @ torch.tensor(
+                [ [1, 0, 0, 0 ],
+                 [0, math.cos(angs[4]), 0, -math.sin(angs[4]) ],
+                 [0, 0, 1, 0 ],
+                 [0, math.sin(angs[4]), 0, math.cos(angs[4]) ] ]
+            ) @ torch.tensor( 
+                [ [1, 0, 0, 0 ], 
+                 [0, math.cos(angs[3]), -math.sin(angs[3]), 0 ],
+                 [0, math.sin(angs[3]), math.cos(angs[3]), 0 ],
+                 [0, 0, 0, 1 ] ]
+            ) @ torch.tensor( 
+                [ [ math.cos(angs[2]), 0, 0, -math.sin(angs[2]) ],
+                 [0, 1, 0, 0 ],
+                 [0, 0, 1, 0 ],
+                 [ math.sin(angs[2]), 0, 0, math.cos(angs[2]) ] ]
+            ) @ ( 
+                torch.tensor( 
+               [ [math.cos(angs[1]+delta/2), 0, -math.sin(angs[1]+delta/2), 0 ],
+                 [0, 1, 0, 0 ],
+                 [math.sin(angs[1]+delta/2), 0, math.cos(angs[1]+delta/2), 0 ],
+                 [0, 0, 0, 1 ] ] ) - \
+                torch.tensor( 
+               [ [math.cos(angs[1]-delta/2), 0, -math.sin(angs[1]-delta/2), 0 ],
+                 [0, 1, 0, 0 ],
+                 [math.sin(angs[1]-delta/2), 0, math.cos(angs[1]-delta/2), 0 ],
+                 [0, 0, 0, 1 ] ] )
+            ) @ torch.tensor(
+               [ [ math.cos(angs[0]), -math.sin(angs[0]), 0, 0 ],
+                 [ math.sin(angs[0]), math.cos(angs[0]), 0, 0 ],
+                 [ 0, 0, 1, 0 ],
+                 [ 0, 0, 0, 1 ] ]
+            ),dtype=datatype).to(device)
+        
+        # Instantiation of target class
+        omgs = OrthonormalMatrixGenerationSystem(
+                dtype=datatype,
+                partial_difference='sequential'
+            )
+
+        # Actual values
+        omgs(angles=angs,mus=mus,index_pd_angle=-1)
+        for iAng in range(pdAng):
+            omgs(angles=angs,mus=mus,index_pd_angle=iAng)
+        actualM = omgs(angles=angs,mus=mus,index_pd_angle=pdAng)
+
+        # Evaluation
+        self.assertTrue(torch.allclose(actualM,expctdM,rtol=rtol,atol=atol))    
+
+
 if __name__ == '__main__':
     unittest.main()

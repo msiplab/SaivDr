@@ -29,3 +29,7 @@ class InvalidNumberOfVanishingMoments(Exception):
 class InvalidNumberOfLevels(Exception):
     def __init__(self,msg):
         super().__init__(self,msg)
+
+class InvalidIndex(Exception):
+    def __init__(self,msg):
+        super().__init__(self,msg)        
