@@ -27,27 +27,37 @@ end
 nDim_ = (1+sqrt(1+8*length(angles)))/2;
 if pdAng < 1
     if isempty(angles)
-        matrixpst = zeros(nDim_);
-        matrixpre = zeros(nDim_);
+        %matrixpst = zeros(nDim_);
+        %matrixpre = zeros(nDim_);
+        matrixpst = eye(nDim_);
+        matrixpre = eye(nDim_);        
     else
-        matrixpst = zeros(nDim_,'like',angles);
-        matrixpre = zeros(nDim_,'like',angles);
+        %matrixpst = zeros(nDim_,'like',angles);
+        %matrixpre = zeros(nDim_,'like',angles);
+        matrixpst = eye(nDim_,'like',angles);
+        matrixpre = eye(nDim_,'like',angles);        
     end
+    %{
     for idx = 1:nDim_
         matrixpst(idx,idx) = 1;
         matrixpre(idx,idx) = 1;
     end
+    %}
 else
     if isempty(angles)
-        matrixrev = zeros(nDim_);
+        %matrixrev = zeros(nDim_);
+        matrixrev = eye(nDim_);
         matrixdif = zeros(nDim_);
     else
-        matrixrev = zeros(nDim_,'like',angles);
+        %matrixrev = zeros(nDim_,'like',angles);
+        matrixrev = eye(nDim_,'like',angles);
         matrixdif = zeros(nDim_,'like',angles);
     end
+    %{
     for idx = 1:nDim_
         matrixrev(idx,idx) = 1;
     end
+    %}
 end
 if ~isempty(angles)
     if pdAng == 0 % Initialization
