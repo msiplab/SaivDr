@@ -1,12 +1,9 @@
 classdef OrthonormalMatrixGenerationSystemTestCase < matlab.unittest.TestCase
     %ORTHONORMALMATRIXGENERATIONSYSTEMTESTCASE Test case for OrthonormalMatrixGenerationSystem
     %
-    % SVN identifier:
-    % $Id: OrthonormalMatrixGenerationSystemTestCase.m 757 2015-09-09 12:28:27Z sho $
-    %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2014-2015, Shogo MURAMATSU
+    % Copyright (c) 2014-2021, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -521,5 +518,263 @@ classdef OrthonormalMatrixGenerationSystemTestCase < matlab.unittest.TestCase
 
         end        
         
+        %
+        function testPartialDifferenceInSequentialMode(testCase)
+ 
+            % Expected values
+            coefExpctd = [
+                -1 0 ;
+                0 -1];
+            
+            % Instantiation of target class
+            import saivdr.dictionary.utility.*
+            testCase.omgs = OrthonormalMatrixGenerationSystem(...
+                'PartialDifference','sequential');
+            
+            % Actual values
+            coefActual = testCase.omgs.step(0,-1,0);
+            
+            % Evaluation
+            testCase.verifyEqual(coefExpctd,coefActual,'AbsTol',1e-10);
+        end
+       
+        function testPartialDifferenceAngsInSequentialMode(testCase)
+  
+            % Configuratin
+            pdAng = 1;
+            
+            % Expected values
+            coefExpctd = [
+                cos(pi/4+pi/2) -sin(pi/4+pi/2) ;
+                sin(pi/4+pi/2)  cos(pi/4+pi/2) ];
+            
+            % Instantiation of target class
+            import saivdr.dictionary.utility.*            
+            testCase.omgs = OrthonormalMatrixGenerationSystem(...
+                'PartialDifference','sequential');
+            
+            % Actual values
+            step(testCase.omgs,pi/4,1,0);
+            coefActual = step(testCase.omgs,pi/4,1,pdAng);
+            
+            % Evaluation
+            testCase.verifyEqual(coefExpctd,coefActual,'AbsTol',1e-10);
+                   
+        end
+        
+        %
+        function testPartialDifferenceWithAnglesAndMusInSequentialMode(testCase)
+             
+            % Configuration
+            pdAng = 1;
+            
+            % Expected values
+            coefExpctd = [
+                cos(pi/4+pi/2) -sin(pi/4+pi/2) ;
+                -sin(pi/4+pi/2) -cos(pi/4+pi/2) ];
+            
+            % Instantiation of target class
+            import saivdr.dictionary.utility.*            
+            testCase.omgs = OrthonormalMatrixGenerationSystem(...
+                'PartialDifference','sequential');
+            
+            % Actual values
+            step(testCase.omgs,pi/4,[ 1 -1 ],0);                        
+            coefActual = step(testCase.omgs,pi/4,[ 1 -1 ],pdAng);            
+            
+            % Evaluation
+            testCase.verifyEqual(coefExpctd,coefActual,'AbsTol',1e-10);
+            
+        end
+        
+        function testPartialDifference4x4RandAngPdAng3InSequentialMode(testCase)
+          
+            % Expected values
+            mus = [ -1 1 -1 1 ];
+            angs = 2*pi*rand(6,1);
+            pdAng = 3;
+            coefExpctd = ...
+                diag(mus) * ...
+               [ 1  0   0             0            ;
+                 0  1   0             0            ;
+                 0  0   cos(angs(6)) -sin(angs(6)) ;
+                 0  0   sin(angs(6))  cos(angs(6)) ] *...                                                                            
+               [ 1  0            0  0            ;
+                 0  cos(angs(5)) 0 -sin(angs(5)) ;
+                 0  0            1  0            ;
+                 0  sin(angs(5)) 0 cos(angs(5))  ] *...                                                            
+               [ 1  0             0            0 ;
+                 0  cos(angs(4)) -sin(angs(4)) 0 ;
+                 0  sin(angs(4))  cos(angs(4)) 0 ;
+                 0  0             0            1 ] *...                                            
+               [ cos(angs(3)+pi/2) 0 0 -sin(angs(3)+pi/2)  ; % Partial Diff.
+                 0            0 0  0             ;
+                 0            0 0  0             ;        
+                 sin(angs(3)+pi/2) 0 0  cos(angs(3)+pi/2) ] *...                            
+               [ cos(angs(2)) 0 -sin(angs(2)) 0  ;
+                 0            1  0            0  ; 
+                 sin(angs(2)) 0  cos(angs(2)) 0  ;
+                 0            0  0            1 ] *...            
+               [ cos(angs(1)) -sin(angs(1)) 0 0  ;
+                 sin(angs(1)) cos(angs(1))  0 0  ;
+                 0            0             1 0  ;
+                 0            0             0 1 ];
+            
+            % Instantiation of target class
+            import saivdr.dictionary.utility.*            
+            testCase.omgs = OrthonormalMatrixGenerationSystem(...
+                'PartialDifference','sequential');
+            
+            % Actual values
+            for iAng = 0:pdAng-1
+                testCase.omgs.step(angs,mus,iAng);            
+            end
+            coefActual = testCase.omgs.step(angs,mus,pdAng);            
+            
+            % Evaluation
+            testCase.verifyEqual(coefExpctd,coefActual,'AbsTol',1e-10);
+
+        end
+        
+        %
+        function testPartialDifference4x4RandAngPdAng6InSequentialMode(testCase)
+ 
+            % Expected values
+            mus = [ 1 1 -1 -1 ];
+            angs = 2*pi*rand(6,1);
+            pdAng = 6;
+            coefExpctd = ...
+                diag(mus) * ...
+               [ 0  0   0             0            ;
+                 0  0   0             0            ;
+                 0  0   cos(angs(6)+pi/2) -sin(angs(6)+pi/2) ; % Partial Diff.
+                 0  0   sin(angs(6)+pi/2)  cos(angs(6)+pi/2) ] *...                                                                            
+               [ 1  0            0  0            ;
+                 0  cos(angs(5)) 0 -sin(angs(5)) ;
+                 0  0            1  0            ;
+                 0  sin(angs(5)) 0 cos(angs(5))  ] *...                                                            
+               [ 1  0             0            0 ;
+                 0  cos(angs(4)) -sin(angs(4)) 0 ;
+                 0  sin(angs(4))  cos(angs(4)) 0 ;
+                 0  0             0            1 ] *...                                            
+               [ cos(angs(3)) 0 0 -sin(angs(3))  ; 
+                 0            1 0  0             ;
+                 0            0 1  0             ;        
+                 sin(angs(3)) 0 0  cos(angs(3)) ] *...                            
+               [ cos(angs(2)) 0 -sin(angs(2)) 0  ;
+                 0            1  0            0  ; 
+                 sin(angs(2)) 0  cos(angs(2)) 0  ;
+                 0            0  0            1 ] *...            
+               [ cos(angs(1)) -sin(angs(1)) 0 0  ;
+                 sin(angs(1)) cos(angs(1))  0 0  ;
+                 0            0             1 0  ;
+                 0            0             0 1 ];
+            
+            % Instantiation of target class
+            import saivdr.dictionary.utility.*            
+            testCase.omgs = OrthonormalMatrixGenerationSystem(...
+                'PartialDifference','sequential');
+            
+            % Actual values
+            for iAng = 0:pdAng-1
+                step(testCase.omgs,angs,mus,iAng);            
+            end
+            coefActual = testCase.omgs.step(angs,mus,pdAng);            
+            
+            % Evaluation
+            testCase.verifyEqual(coefExpctd,coefActual,'AbsTol',1e-10);
+            
+        end
+        
+        %
+        function testPartialDifference4x4RandAngPdAng2InSequentialMode(testCase)
+   
+            % Expected values
+            mus = [ -1 -1 -1 -1 ];
+            angs = 2*pi*rand(6,1);
+            pdAng = 2;
+            delta = 1e-10;
+            coefExpctd = 1/delta * ...
+                diag(mus) * ...
+               [ 1  0   0             0            ;
+                 0  1   0             0            ;
+                 0  0   cos(angs(6)) -sin(angs(6)) ; 
+                 0  0   sin(angs(6))  cos(angs(6)) ] *...                                                                            
+               [ 1  0            0  0            ;
+                 0  cos(angs(5)) 0 -sin(angs(5)) ;
+                 0  0            1  0            ;
+                 0  sin(angs(5)) 0 cos(angs(5))  ] *...                                                            
+               [ 1  0             0            0 ;
+                 0  cos(angs(4)) -sin(angs(4)) 0 ;
+                 0  sin(angs(4))  cos(angs(4)) 0 ;
+                 0  0             0            1 ] *...                                            
+               [ cos(angs(3)) 0 0 -sin(angs(3))  ; 
+                 0            1 0  0             ;
+                 0            0 1  0             ;        
+                 sin(angs(3)) 0 0  cos(angs(3)) ] * ...                           
+            ( ...
+               [ cos(angs(2)+delta) 0 -sin(angs(2)+delta) 0  ; 
+                 0            1  0            0  ; 
+                 sin(angs(2)+delta) 0  cos(angs(2)+delta) 0  ;
+                 0            0  0            1 ] - ...
+               [ cos(angs(2)) 0 -sin(angs(2)) 0  ; 
+                 0            1  0            0  ; 
+                 sin(angs(2)) 0  cos(angs(2)) 0  ;
+                 0            0  0            1 ] ...                 
+             ) *...            
+               [ cos(angs(1)) -sin(angs(1)) 0 0  ;
+                 sin(angs(1)) cos(angs(1))  0 0  ;
+                 0            0             1 0  ;
+                 0            0             0 1 ];
+            
+            % Instantiation of target class
+            import saivdr.dictionary.utility.*            
+            testCase.omgs = OrthonormalMatrixGenerationSystem(...
+                'PartialDifference','sequential');
+            
+            % Actual values
+            for iAng = 0:pdAng-1
+                step(testCase.omgs,angs,mus,iAng);            
+            end
+            coefActual = step(testCase.omgs,angs,mus,pdAng);            
+            
+            % Evaluation
+            testCase.verifyEqual(coefExpctd,coefActual,'AbsTol',1e-5);
+            
+        end
+        
+        %
+        function testPartialDifference8x8RandAngPdAng2InSequentialMode(testCase)
+  
+            % Expected values
+            pdAng = 14;            
+            delta = 1e-10;            
+            angs0 = 2*pi*rand(28,1);
+            angs1 = angs0;
+            angs1(pdAng) = angs1(pdAng)+delta;
+            
+            % Instantiation of target class
+            import saivdr.dictionary.utility.*            
+            testCase.omgs = OrthonormalMatrixGenerationSystem(...
+                'PartialDifference','off');            
+            coefExpctd = 1/delta * ...
+                ( step(testCase.omgs,angs1,1) ...
+                - step(testCase.omgs,angs0,1));
+            
+            % Instantiation of target class
+            import saivdr.dictionary.utility.*            
+            testCase.omgs = OrthonormalMatrixGenerationSystem(...
+                'PartialDifference','sequential');
+            
+            % Actual values
+            for iAng = 0:pdAng-1
+                step(testCase.omgs,angs0,1,iAng);            
+            end
+            coefActual = step(testCase.omgs,angs0,1,pdAng);            
+            
+            % Evaluation
+            testCase.verifyEqual(coefExpctd,coefActual,'AbsTol',1e-5);
+            
+        end
     end
 end

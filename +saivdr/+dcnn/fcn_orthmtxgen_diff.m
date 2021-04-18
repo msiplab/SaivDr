@@ -76,7 +76,7 @@ if ~isempty(angles)
         iAng = 1;
         for iTop=1:nDim_-1
             rt = matrixrev(iTop,:);
-            dt = zeros(1,size(matrixdif,2));
+            dt = zeros(1,nDim_);
             dt(iTop) = 1;
             for iBtm=iTop+1:nDim_
                 if iAng == pdAng                
@@ -87,7 +87,7 @@ if ~isempty(angles)
                     matrixrev(iTop,:) = rt;
                     matrixrev(iBtm,:) = rb;
                     %
-                    db = zeros(1,size(matrixdif,2));
+                    db = zeros(1,nDim_);
                     db(iBtm) = 1;                    
                     dangle = angle + pi/2;
                     [dt,db] = rot_(dt,db,dangle);
