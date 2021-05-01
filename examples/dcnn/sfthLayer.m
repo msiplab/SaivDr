@@ -1,5 +1,9 @@
 classdef sfthLayer < nnet.layer.Layer 
-    % Example custom Soft-thresholding layer.
+    % SFTHLAYER
+    %
+    % Copyright (c) Shogo MURAMATSU, 2021
+    % All rights reserved.
+    % 
 
     properties
         NumberOfChannels

@@ -1,4 +1,8 @@
 classdef subbandScalingLayer < nnet.layer.Layer
+    % SUBBANDSCALINGLAYER
+    %
+    % Copyright (c) Shogo MURAMATSU, 2021
+    % All rights reserved.
     % 
     
     properties

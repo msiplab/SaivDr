@@ -1,6 +1,11 @@
 classdef letLayer < nnet.layer.Layer
-    % 
+    % LETLAYER
+    %
+    % Reference: 
     % (21) in F. Luisier, T. Blu and M. Unser, "A New SURE Approach to Image Denoising: Interscale Orthonormal Wavelet Thresholding," in IEEE Transactions on Image Processing, vol. 16, no. 3, pp. 593-606, March 2007, doi: 10.1109/TIP.2007.891064.Example custom Soft-thresholding layer.
+    %  
+    % Copyright (c) Shogo MURAMATSU, 2021
+    % All rights reserved.
     %
     
     properties
