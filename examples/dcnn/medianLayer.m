@@ -8,10 +8,11 @@ classdef medianLayer < nnet.layer.Layer
     properties
         NumberOfChannels
         PadOption
+        WindowSize
     end
     
     properties (Access=private, Hidden)
-        windowSize = [3 3];
+
     end
     
     methods
@@ -20,12 +21,14 @@ classdef medianLayer < nnet.layer.Layer
             addParameter(p,'Name','')
             addParameter(p,'NumberOfChannels',1)
             addParameter(p,'PadOption','Symmetric');
+            addParameter(p,'WindowSize',[3 3]);
             parse(p,varargin{:})
 
             % Set layer name.
             layer.Name = p.Results.Name;
             layer.NumberOfChannels = p.Results.NumberOfChannels;
             layer.PadOption = p.Results.PadOption;
+            layer.WindowSize = p.Results.WindowSize;
             
             % Check PadOption
             if ~strcmp(layer.PadOption,'Symmetric')
@@ -51,7 +54,7 @@ classdef medianLayer < nnet.layer.Layer
             %
             z = zeros(size(x),'like',x);
             padopt = layer.PadOption;
-            windowSize_ = layer.windowSize;
+            windowSize_ = layer.WindowSize;
             nPads = (windowSize_-1)/2;
             nDims = [size(X,1) size(X,2)];
             for idx = 1:szBatch
@@ -76,7 +79,7 @@ classdef medianLayer < nnet.layer.Layer
         end
         
         function dLdX = backward(layer,X,Z,dLdZ,~)
-            windowSize_ = layer.windowSize;
+            windowSize_ = layer.WindowSize;
             nChannels_ = layer.NumberOfChannels;
             nRows = windowSize_(1);
             nCols = windowSize_(2);
@@ -113,12 +116,12 @@ classdef medianLayer < nnet.layer.Layer
                     if strcmpi(padopt,'symmetric')
                         bx(nPads(1)+1:2*nPads(1),:) = ...
                             bsxfun(@plus,bx(nPads(1)+1:2*nPads(1),:),bx(nPads(1):-1:1,:));
-                        bx(end-nPads(1):end-2*nPads(1)+1,:) = ...
-                            bsxfun(@plus,bx(end-nPads(1):end-2*nPads(1)+1,:),bx(end-nPads(1)+1:end,:));
+                        bx(end-nPads(1):-1:end-2*nPads(1)+1,:) = ...
+                            bsxfun(@plus,bx(end-nPads(1):-1:end-2*nPads(1)+1,:),bx(end-nPads(1)+1:end,:));
                         bx(:,nPads(2)+1:2*nPads(2)) = ...
                             bsxfun(@plus,bx(:,nPads(2)+1:2*nPads(2)),bx(:,nPads(2):-1:1));
-                        bx(:,end-nPads(2):end-2*nPads(2)+1) = ...
-                            bsxfun(@plus,bx(:,end-nPads(2):end-2*nPads(2)+1),bx(:,end-nPads(2)+1:end));
+                        bx(:,end-nPads(2):-1:end-2*nPads(2)+1) = ...
+                            bsxfun(@plus,bx(:,end-nPads(2):-1:end-2*nPads(2)+1),bx(:,end-nPads(2)+1:end));
                     end
                     %
                     dldx(:,:,iChannel,idx) = ...
