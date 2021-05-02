@@ -4,10 +4,10 @@ classdef medianLayer < nnet.layer.Layer
     % Copyright (c) Shogo MURAMATSU, 2021
     % All rights reserved.
     %
-
-    
+   
     properties
         NumberOfChannels
+        PadOption
     end
     
     properties (Access=private, Hidden)
@@ -19,14 +19,23 @@ classdef medianLayer < nnet.layer.Layer
             p = inputParser;
             addParameter(p,'Name','')
             addParameter(p,'NumberOfChannels',1)
+            addParameter(p,'PadOption','Symmetric');
             parse(p,varargin{:})
 
             % Set layer name.
             layer.Name = p.Results.Name;
             layer.NumberOfChannels = p.Results.NumberOfChannels;
-
+            layer.PadOption = p.Results.PadOption;
+            
+            % Check PadOption
+            if ~strcmp(layer.PadOption,'Symmetric')
+                layer.PadOption = 'Zeros';
+            end
+            
             % Set layer description.
-            layer.Description = "Median filter for " + layer.NumberOfChannels + " channels";
+            layer.Description = "Median filter for " + ...
+                layer.NumberOfChannels + " channels (PadOption: " + ...
+                layer.PadOption + ")";
         end
         
         function Z = predict(layer, X)
@@ -41,9 +50,22 @@ classdef medianLayer < nnet.layer.Layer
             end
             %
             z = zeros(size(x),'like',x);
+            padopt = layer.PadOption;
+            windowSize_ = layer.windowSize;
+            nPads = (windowSize_-1)/2;
+            nDims = [size(X,1) size(X,2)];
             for idx = 1:szBatch
                 for iChannel = 1:layer.NumberOfChannels
-                    z(:,:,iChannel,idx) = medfilt2(x(:,:,iChannel,idx),layer.windowSize);
+                    if strcmpi(padopt,'Symmetric')
+                        % w = medfilt2(x(:,:,iChannel,idx),windowSize_,'symmetric'); 
+                        u = padarray(x(:,:,iChannel,idx),nPads,'both','symmetric');
+                        v = medfilt2(u,windowSize_);
+                        w = v(nPads(1)+1:nPads(1)+nDims(1),nPads(2)+1:nPads(2)+nDims(2));
+                    else
+                        w = medfilt2(x(:,:,iChannel,idx),windowSize_);
+                    end
+                    z(:,:,iChannel,idx) = w;
+                        
                 end
             end
             if isdlarray(X)
@@ -61,6 +83,7 @@ classdef medianLayer < nnet.layer.Layer
             nDims = [size(dLdZ,1) size(dLdZ,2)];
             nPads = (windowSize_-1)/2;
             szBatch = size(dLdZ,4);
+            padopt = layer.PadOption;
             %
             if isdlarray(dLdZ)
                 dldz = extractdata(dLdZ);
@@ -86,6 +109,18 @@ classdef medianLayer < nnet.layer.Layer
                                 bsxfun(@times,reshape(fwdmed(iRow+(iCol-1)*nRows,:),nDims),ax));
                         end
                     end
+                    %
+                    if strcmpi(padopt,'symmetric')
+                        bx(nPads(1)+1:2*nPads(1),:) = ...
+                            bsxfun(@plus,bx(nPads(1)+1:2*nPads(1),:),bx(nPads(1):-1:1,:));
+                        bx(end-nPads(1):end-2*nPads(1)+1,:) = ...
+                            bsxfun(@plus,bx(end-nPads(1):end-2*nPads(1)+1,:),bx(end-nPads(1)+1:end,:));
+                        bx(:,nPads(2)+1:2*nPads(2)) = ...
+                            bsxfun(@plus,bx(:,nPads(2)+1:2*nPads(2)),bx(:,nPads(2):-1:1));
+                        bx(:,end-nPads(2):end-2*nPads(2)+1) = ...
+                            bsxfun(@plus,bx(:,end-nPads(2):end-2*nPads(2)+1),bx(:,end-nPads(2)+1:end));
+                    end
+                    %
                     dldx(:,:,iChannel,idx) = ...
                         bx(nPads(1)+1:nPads(1)+nDims(1),nPads(2)+1:nPads(2)+nDims(2));
                 end
