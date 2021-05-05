@@ -140,19 +140,19 @@ sdipLgraph = sdipLgraph.connectLayers([strLv 'Sp/dc'],[strLv 'DcOut']);
 % Synthesis layers
 strLv = sprintf('Lv%0d_',nLevels);        
 sdipLgraph = sdipLgraph.addLayers(synthesisLayers{nLevels}(end:-1:1));
-sdipLgraph = sdipLgraph.addLayers(nsoltIdentityLayer('Name',[strLv 'AcIn']));
 sdipLgraph = sdipLgraph.addLayers(nsoltIdentityLayer('Name',[strLv 'DcIn']));
-sdipLgraph = sdipLgraph.connectLayers([strLv 'AcIn'],[strLv 'Cn/ac']);
+sdipLgraph = sdipLgraph.addLayers(nsoltIdentityLayer('Name',[strLv 'AcIn']));
 sdipLgraph = sdipLgraph.connectLayers([strLv 'DcIn'],[strLv 'Cn/dc']);
+sdipLgraph = sdipLgraph.connectLayers([strLv 'AcIn'],[strLv 'Cn/ac']);
 for iLv = nLevels-1:-1:1
     strLv = sprintf('Lv%0d_',iLv);   
     strLvPre = sprintf('Lv%0d_',iLv+1);
     sdipLgraph = sdipLgraph.addLayers(synthesisLayers{iLv}(end:-1:1));
+    sdipLgraph = sdipLgraph.addLayers(nsoltIdentityLayer('Name',[strLv 'DcIn']));        
     sdipLgraph = sdipLgraph.addLayers(nsoltIdentityLayer('Name',[strLv 'AcIn']));
-    sdipLgraph = sdipLgraph.addLayers(nsoltIdentityLayer('Name',[strLv 'DcIn']));    
     sdipLgraph = sdipLgraph.connectLayers([strLvPre 'E0~'],[strLv 'DcIn']);
+    sdipLgraph = sdipLgraph.connectLayers([strLv 'DcIn'],[strLv 'Cn/dc']);        
     sdipLgraph = sdipLgraph.connectLayers([strLv 'AcIn'],[strLv 'Cn/ac']);
-    sdipLgraph = sdipLgraph.connectLayers([strLv 'DcIn'],[strLv 'Cn/dc']);    
 end
 %
 sdipLgraph = sdipLgraph.addLayers(nsoltIdentityLayer('Name','Lv1_Out'));
