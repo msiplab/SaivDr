@@ -62,8 +62,8 @@ classdef nsoltFinalRotation2dLayer < nnet.layer.Layer %#codegen
             % Layer constructor function goes here.
             layer.NumberOfChannels = p.Results.NumberOfChannels;
             layer.DecimationFactor = p.Results.DecimationFactor;
-            layer.PrivateMus = p.Results.Mus;
-            layer.PrivateAngles = p.Results.Angles;
+            layer.Mus = p.Results.Mus;
+            layer.Angles = p.Results.Angles;
             layer.NoDcLeakage = p.Results.NoDcLeakage;
             layer.Name = p.Results.Name;
             layer.Description = "NSOLT final rotation " ...
@@ -74,15 +74,7 @@ classdef nsoltFinalRotation2dLayer < nnet.layer.Layer %#codegen
                 + layer.DecimationFactor(1) + "," ...
                 + layer.DecimationFactor(2) + ")";
             layer.Type = '';
-            
-            nChsTotal = sum(layer.NumberOfChannels);
-            nAngles = (nChsTotal-2)*nChsTotal/4;
-            if isempty(layer.PrivateAngles)
-                layer.Angles = zeros(nAngles,1);
-            end
-            if length(layer.PrivateAngles)~=nAngles
-                error('Invalid # of angles')
-            end
+
         end
         
         function Z = predict(layer, X)
@@ -201,6 +193,15 @@ classdef nsoltFinalRotation2dLayer < nnet.layer.Layer %#codegen
         end
         
         function layer = set.Angles(layer,angles)
+            nChsTotal = sum(layer.NumberOfChannels);
+            nAngles = (nChsTotal-2)*nChsTotal/4;
+            if isempty(angles)
+                angles = zeros(nAngles,1);
+            end
+            if length(angles)~=nAngles
+                error('Invalid # of angles')
+            end
+            %
             layer.PrivateAngles = angles;
             layer = layer.updateParameters();
         end

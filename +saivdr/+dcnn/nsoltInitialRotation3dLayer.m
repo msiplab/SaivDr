@@ -63,8 +63,8 @@ classdef nsoltInitialRotation3dLayer < nnet.layer.Layer
             layer.NumberOfChannels = p.Results.NumberOfChannels;
             layer.DecimationFactor = p.Results.DecimationFactor;
             layer.Name = p.Results.Name;
-            layer.PrivateMus = p.Results.Mus;
-            layer.PrivateAngles = p.Results.Angles;
+            layer.Mus = p.Results.Mus;
+            layer.Angles = p.Results.Angles;
             layer.NoDcLeakage = p.Results.NoDcLeakage;
             layer.Description = "NSOLT initial rotation " ...
                 + "(ps,pa) = (" ...
@@ -75,15 +75,6 @@ classdef nsoltInitialRotation3dLayer < nnet.layer.Layer
                 + layer.DecimationFactor(Direction.HORIZONTAL) + "," ...
                 + layer.DecimationFactor(Direction.DEPTH) + ")";
             layer.Type = '';
-            
-            nChsTotal = sum(layer.NumberOfChannels);
-            nAngles = (nChsTotal-2)*nChsTotal/4;
-            if isempty(layer.PrivateAngles)
-                layer.Angles = zeros(nAngles,1);
-            end
-            if length(layer.PrivateAngles)~=nAngles
-                error('Invalid # of angles')
-            end
             
         end
         
@@ -217,6 +208,15 @@ classdef nsoltInitialRotation3dLayer < nnet.layer.Layer
         end
         
         function layer = set.Angles(layer,angles)
+            nChsTotal = sum(layer.NumberOfChannels);
+            nAngles = (nChsTotal-2)*nChsTotal/4;
+            if isempty(angles)
+                angles = zeros(nAngles,1);
+            end
+            if length(angles)~=nAngles
+                error('Invalid # of angles')
+            end
+            %
             layer.PrivateAngles = angles;
             layer = layer.updateParameters();
         end
