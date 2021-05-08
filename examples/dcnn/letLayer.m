@@ -41,12 +41,10 @@ classdef letLayer < nnet.layer.Layer
             %layer.Sigma = p.Results.Sigma;
             
             % Initialize scaling coefficient.
-            layer.a1 = permute(ones(layer.NumberOfChannels,1),[2 3 1]);  
+            layer.a1 = permute(ones(layer.NumberOfChannels,1),[2 3 1]);
             layer.a2 = permute(-ones(layer.NumberOfChannels,1),[2 3 1]);
-            if layer.IsInterScale
-                layer.b1 = permute(ones(layer.NumberOfChannels,1),[2 3 1]);
-                layer.b2 = permute(zeros(layer.NumberOfChannels,1),[2 3 1]);                
-            end
+            layer.b1 = permute(ones(layer.NumberOfChannels,1),[2 3 1]);
+            layer.b2 = permute(zeros(layer.NumberOfChannels,1),[2 3 1]);
             
             %layer.NumInputs = 2;
             if layer.IsInterScale

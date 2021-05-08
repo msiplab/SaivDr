@@ -63,7 +63,7 @@ if isSerialized
 end
 
 % Calculation of atomic images
-atomicImages = zeros([patchsize 1 nChsTotal]);
+atomicImages = zeros([patchsize 1 nChsTotal],'single');
 
 % Impluse arrays
 dls = cell(nLevels+1,1);
