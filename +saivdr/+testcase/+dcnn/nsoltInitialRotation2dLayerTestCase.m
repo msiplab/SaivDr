@@ -176,7 +176,6 @@ classdef nsoltInitialRotation2dLayerTestCase < matlab.unittest.TestCase
             
             % Actual values
             layer.Angles = angles;
-            %layer = layer.updateParameters();
             actualZ = layer.predict(X);
             
             % Evaluation
@@ -244,7 +243,6 @@ classdef nsoltInitialRotation2dLayerTestCase < matlab.unittest.TestCase
             % Actual values
             layer.Mus = mus;
             layer.Angles = angles;
-            %layer = layer.updateParameters();
             actualZ = layer.predict(X);
             
             % Evaluation

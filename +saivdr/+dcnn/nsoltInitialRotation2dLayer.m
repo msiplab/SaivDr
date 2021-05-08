@@ -217,6 +217,7 @@ classdef nsoltInitialRotation2dLayer < nnet.layer.Layer %#codegen
             import saivdr.dcnn.fcn_orthmtxgen
             ps = layer.NumberOfChannels(1);
             pa = layer.NumberOfChannels(2);
+            %
             if isempty(layer.PrivateMus)
                 layer.PrivateMus = ones(ps+pa,1);
             elseif isscalar(layer.PrivateMus)
