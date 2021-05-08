@@ -24,18 +24,23 @@ if nargin < 3
     pdAng = 0;
 end
 
+if isdlarray(angles)
+    angles_ = extractdata(angles);
+else
+    angles_ = angles;
+end
 nDim_ = (1+sqrt(1+8*length(angles)))/2;
 if pdAng < 1
-    if isempty(angles)
+    if isempty(angles_)
         %matrixpst = zeros(nDim_);
         %matrixpre = zeros(nDim_);
         matrixpst = eye(nDim_);
         matrixpre = eye(nDim_);        
     else
-        %matrixpst = zeros(nDim_,'like',angles);
-        %matrixpre = zeros(nDim_,'like',angles);
-        matrixpst = eye(nDim_,'like',angles);
-        matrixpre = eye(nDim_,'like',angles);        
+        %matrixpst = zeros(nDim_,'like',angles_);
+        %matrixpre = zeros(nDim_,'like',angles_);
+        matrixpst = eye(nDim_,'like',angles_);
+        matrixpre = eye(nDim_,'like',angles_);        
     end
     %{
     for idx = 1:nDim_
@@ -44,14 +49,14 @@ if pdAng < 1
     end
     %}
 else
-    if isempty(angles)
+    if isempty(angles_)
         %matrixrev = zeros(nDim_);
         matrixrev = eye(nDim_);
         matrixdif = zeros(nDim_);
     else
-        %matrixrev = zeros(nDim_,'like',angles);
-        matrixrev = eye(nDim_,'like',angles);
-        matrixdif = zeros(nDim_,'like',angles);
+        %matrixrev = zeros(nDim_,'like',angles_);
+        matrixrev = eye(nDim_,'like',angles_);
+        matrixdif = zeros(nDim_,'like',angles_);
     end
     %{
     for idx = 1:nDim_
@@ -59,12 +64,12 @@ else
     end
     %}
 end
-if ~isempty(angles)
+if ~isempty(angles_)
     if pdAng == 0 % Initialization
         iAng = 1;
         vt = matrixpst(1,:);
         vb = matrixpst(2,:);
-        angle = angles(iAng);
+        angle = angles_(iAng);
         [vt,vb] = rot_(vt,vb,angle);
         matrixpst(1,:) = vt;
         matrixpst(2,:) = vb;
@@ -73,7 +78,7 @@ if ~isempty(angles)
             for iBtm=iTop+1:nDim_
                 if iAng > 1
                     vb = matrixpst(iBtm,:);                    
-                    angle = angles(iAng);
+                    angle = angles_(iAng);
                     [vt,vb] = rot_(vt,vb,angle);                    
                     matrixpst(iBtm,:) = vb;
                 end
@@ -90,7 +95,7 @@ if ~isempty(angles)
             dt(iTop) = 1;
             for iBtm=iTop+1:nDim_
                 if iAng == pdAng                
-                    angle = angles(iAng);                    
+                    angle = angles_(iAng);                    
                     % 
                     rb = matrixrev(iBtm,:);
                     [rt,rb] = rot_(rt,rb,-angle);
@@ -117,6 +122,9 @@ if isscalar(mus)
     matrix = mus*matrix;
 elseif ~isempty(mus)
     matrix = bsxfun(@times,mus(:),matrix);
+end
+if isdlarray(angles)
+    matrix = dlarray(matrix);
 end
 end
 

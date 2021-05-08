@@ -180,17 +180,17 @@ classdef nsoltInitialRotation3dLayer < nnet.layer.Layer
             U0_ = layer.U0; %transpose(fcn_orthmtxgen(anglesU,muU,0));
             W0T = transpose(W0_);
             U0T = transpose(U0_);
-            if isdlarray(W0_)
-                dW0Pst = dlarray(muW(:).*W0_);
-                dU0Pst = dlarray(muU(:).*U0_);
-                dW0Pre = dlarray(eye(ps,W0_.underlyingType));
-                dU0Pre = dlarray(eye(pa,U0_.underlyingType));
-            else
-                dW0Pst = bsxfun(@times,muW(:),W0_);
-                dU0Pst = bsxfun(@times,muU(:),U0_);                
-                dW0Pre = eye(ps,'like',W0_);
-                dU0Pre = eye(pa,'like',U0_);
-            end
+            %if isdlarray(W0_)
+            %    dW0Pst = dlarray(muW(:).*W0_);
+            %    dU0Pst = dlarray(muU(:).*U0_);
+            %    dW0Pre = dlarray(eye(ps,W0_.underlyingType));
+            %    dU0Pre = dlarray(eye(pa,U0_.underlyingType));
+            %else
+            dW0Pst = bsxfun(@times,muW(:),W0_);
+            dU0Pst = bsxfun(@times,muU(:),U0_);
+            dW0Pre = eye(ps,'like',W0_);
+            dU0Pre = eye(pa,'like',U0_);
+            %end
             
             % Layer backward function goes here.
             % dLdX = dZdX x dLdZ
