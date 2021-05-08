@@ -150,7 +150,7 @@ classdef nsoltInitialRotation3dLayer < nnet.layer.Layer
             nSamples = size(dLdZ,5);
             stride = layer.DecimationFactor;
             nDecs = prod(stride);
-            %
+            %{
             if isempty(layer.Mus)
                 layer.Mus = ones(ps+pa,1);
             elseif isscalar(layer.Mus)
@@ -161,10 +161,11 @@ classdef nsoltInitialRotation3dLayer < nnet.layer.Layer
                 layer.Angles(1:ps-1) = ...
                     zeros(ps-1,1,'like',layer.Angles);
             end
+            %}
             muW = layer.Mus(1:ps);
             muU = layer.Mus(ps+1:end);
-            anglesW = layer.Angles(1:length(layer.Angles)/2);
-            anglesU = layer.Angles(length(layer.Angles)/2+1:end);
+            anglesW = layer.Angles(1:nAngles/2);
+            anglesU = layer.Angles(nAngles/2+1:end);
             %W0T = transpose(fcn_orthmtxgen(anglesW,muW,0));
             %U0T = transpose(fcn_orthmtxgen(anglesU,muU,0));
             [W0_,dW0Pst,dW0Pre] = fcn_orthmtxgen_diff(anglesW,muW,0,[],[]);
@@ -217,6 +218,9 @@ classdef nsoltInitialRotation3dLayer < nnet.layer.Layer
         
         function layer = set.NoDcLeakage(layer,nodcleak)
             layer.PrivateNoDcLeakage = nodcleak;
+            %
+            layer.Mus = layer.PrivateMus;
+            layer.Angles = layer.PrivateAngles;
             layer = layer.updateParameters();
         end               
         
@@ -228,6 +232,12 @@ classdef nsoltInitialRotation3dLayer < nnet.layer.Layer
             end
             if length(angles)~=nAngles
                 error('Invalid # of angles')
+            end
+            %
+            if layer.NoDcLeakage
+                ps = layer.NumberOfChannels(1);                
+                angles(1:ps-1) = ...
+                    zeros(ps-1,1,'like',layer.PrivateAngles);
             end
             %
             layer.PrivateAngles = angles;
@@ -244,6 +254,10 @@ classdef nsoltInitialRotation3dLayer < nnet.layer.Layer
                 mus = mus*ones(ps+pa,1);
             end
             %            
+            if layer.NoDcLeakage
+                mus(1) = 1;
+            end
+            %
             layer.PrivateMus = mus;
             layer = layer.updateParameters();
         end
@@ -252,11 +266,6 @@ classdef nsoltInitialRotation3dLayer < nnet.layer.Layer
         function layer = updateParameters(layer)
             import saivdr.dcnn.fcn_orthmtxgen
             ps = layer.NumberOfChannels(1);
-            if layer.NoDcLeakage
-                layer.PrivateMus(1) = 1;
-                layer.PrivateAngles(1:ps-1) = ...
-                    zeros(ps-1,1,'like',layer.PrivateAngles);
-            end
             muW = layer.PrivateMus(1:ps);
             muU = layer.PrivateMus(ps+1:end);
             anglesW = layer.PrivateAngles(1:length(layer.PrivateAngles)/2);
