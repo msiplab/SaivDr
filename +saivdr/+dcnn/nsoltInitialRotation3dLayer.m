@@ -80,6 +80,12 @@ classdef nsoltInitialRotation3dLayer < nnet.layer.Layer
                 + layer.DecimationFactor(Direction.DEPTH) + ")";
             layer.Type = '';
             
+            nChsTotal = sum(layer.NumberOfChannels);            
+            nAngles = (nChsTotal-2)*nChsTotal/4;
+            if length(layer.PrivateAngles)~=nAngles
+                error('Invalid # of angles')
+            end
+            
         end
         
         function Z = predict(layer, X)
@@ -237,13 +243,10 @@ classdef nsoltInitialRotation3dLayer < nnet.layer.Layer
         end               
         
         function layer = set.Angles(layer,angles)
-            nChsTotal = sum(layer.NumberOfChannels);
-            nAngles = (nChsTotal-2)*nChsTotal/4;
             if isempty(angles)
+                nChsTotal = sum(layer.NumberOfChannels);
+                nAngles = (nChsTotal-2)*nChsTotal/4;
                 angles = zeros(nAngles,1);
-            end
-            if length(angles)~=nAngles
-                error('Invalid # of angles')
             end
             %
             if layer.NoDcLeakage
@@ -255,17 +258,16 @@ classdef nsoltInitialRotation3dLayer < nnet.layer.Layer
             layer.PrivateAngles = angles;
             layer = layer.updateParameters();
         end
-
+        
         function layer = set.Mus(layer,mus)
             ps = layer.NumberOfChannels(1);
             pa = layer.NumberOfChannels(2);
-            %
             if isempty(mus)
                 mus = ones(ps+pa,1);
             elseif isscalar(mus)
                 mus = mus*ones(ps+pa,1);
             end
-            %            
+            %
             if layer.NoDcLeakage
                 mus(1) = 1;
             end
