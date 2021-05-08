@@ -23,32 +23,18 @@ if nargin < 3
     pdAng = 0;
 end
 
-%{
-if isempty(angles)
-    matrix = zeros(nDim_);
-else
-    matrix = zeros(nDim_,'like',angles);
-end
-for idx = 1:nDim_
-    matrix(idx,idx) = 1;
-end
-%}
-if isdlarray(angles)
-    angles_ = extractdata(angles);
-else
-    angles_ = angles;
-end
-%matrix = dlarray(eye(nDim_,angles.underlyingType));
-%else
 nDim_ = (1+sqrt(1+8*length(angles)))/2;
-matrix = eye(nDim_,'like',angles_);
-%end
-if any(angles_) || ~isempty(angles_)
+if isdlarray(angles)
+    matrix = dlarray(eye(nDim_,angles.underlyingType));
+else
+    matrix = eye(nDim_,'like',angles);
+end
+if any(angles) || ~isempty(angles)
     iAng = 1;
     for iTop=1:nDim_-1
         vt = matrix(iTop,:);
         for iBtm=iTop+1:nDim_
-            angle = angles_(iAng);
+            angle = angles(iAng);
             if iAng == pdAng
                 angle = angle + pi/2;
             end
@@ -56,21 +42,21 @@ if any(angles_) || ~isempty(angles_)
                 c = cos(angle);
                 s = sin(angle);
                 vb = matrix(iBtm,:);
-                %if isdlarray(angles)
-                %    u = s * ( vt + vb );
-                %else
-                u  = bsxfun(@times,s,bsxfun(@plus,vt,vb));
-                %end
+                if isdlarray(angles)
+                    u = s * ( vt + vb );
+                else
+                    u  = bsxfun(@times,s,bsxfun(@plus,vt,vb));
+                end
                 if iAng == pdAng
                     matrix = zeros(size(matrix),'like',matrix);
                 end
-                %if isdlarray(angles_)
-                %    vt = ( c + s ) * vt - u;
-                %    matrix(iBtm,:) = ( c - s ) * vb + u;
-                %else
-                vt = bsxfun(@minus,bsxfun(@times,c+s,vt),u);
-                matrix(iBtm,:) = bsxfun(@plus,bsxfun(@times,c-s,vb),u);
-                %end
+                if isdlarray(angles)
+                    vt = ( c + s ) * vt - u;
+                    matrix(iBtm,:) = ( c - s ) * vb + u;
+                else
+                    vt = bsxfun(@minus,bsxfun(@times,c+s,vt),u);
+                    matrix(iBtm,:) = bsxfun(@plus,bsxfun(@times,c-s,vb),u);
+                end
             end
             %
             iAng = iAng + 1;
@@ -81,13 +67,10 @@ end
 if isscalar(mus)
     matrix = mus * matrix;
 elseif ~all(mus==1) || ~isempty(mus)
-    %if isdlarray(angles)
-    %    matrix = mus(:) .* matrix;
-    %else
-    matrix = bsxfun(@times,mus(:),matrix);
-    %end
-end
-if isdlarray(angles)
-    matrix = dlarray(matrix);
+    if isdlarray(angles)
+        matrix = mus(:) .* matrix;
+    else
+        matrix = bsxfun(@times,mus(:),matrix);
+    end
 end
 end
