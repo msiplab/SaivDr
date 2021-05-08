@@ -78,6 +78,12 @@ classdef nsoltFinalRotation2dLayer < nnet.layer.Layer %#codegen
                 + layer.DecimationFactor(1) + "," ...
                 + layer.DecimationFactor(2) + ")";
             layer.Type = '';
+            
+            nChsTotal = sum(layer.NumberOfChannels);            
+            nAngles = (nChsTotal-2)*nChsTotal/4;
+            if length(layer.PrivateAngles)~=nAngles
+                error('Invalid # of angles')
+            end
 
         end
         
@@ -226,13 +232,10 @@ classdef nsoltFinalRotation2dLayer < nnet.layer.Layer %#codegen
         end                
         
         function layer = set.Angles(layer,angles)
-            nChsTotal = sum(layer.NumberOfChannels);
-            nAngles = (nChsTotal-2)*nChsTotal/4;
             if isempty(angles)
+                nChsTotal = sum(layer.NumberOfChannels);
+                nAngles = (nChsTotal-2)*nChsTotal/4;
                 angles = zeros(nAngles,1);
-            end
-            if length(angles)~=nAngles
-                error('Invalid # of angles')
             end
             %
             if layer.NoDcLeakage

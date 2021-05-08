@@ -81,6 +81,12 @@ classdef nsoltFinalRotation3dLayer < nnet.layer.Layer
                 + layer.DecimationFactor(Direction.DEPTH) + ")";
             layer.Type = '';
             
+            nChsTotal = sum(layer.NumberOfChannels);            
+            nAngles = (nChsTotal-2)*nChsTotal/4;
+            if length(layer.PrivateAngles)~=nAngles
+                error('Invalid # of angles')
+            end
+            
         end
         
         function Z = predict(layer, X)
@@ -234,13 +240,10 @@ classdef nsoltFinalRotation3dLayer < nnet.layer.Layer
         end       
         
         function layer = set.Angles(layer,angles)
-            nChsTotal = sum(layer.NumberOfChannels);
-            nAngles = (nChsTotal-2)*nChsTotal/4;
             if isempty(angles)
+                nChsTotal = sum(layer.NumberOfChannels);
+                nAngles = (nChsTotal-2)*nChsTotal/4;
                 angles = zeros(nAngles,1);
-            end
-            if length(angles)~=nAngles
-                error('Invalid # of angles')
             end
             %
             if layer.NoDcLeakage
