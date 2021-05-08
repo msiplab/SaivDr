@@ -136,7 +136,7 @@ classdef nsoltFinalRotation2dLayer < nnet.layer.Layer %#codegen
             nDecs = prod(layer.DecimationFactor);
             ps = layer.NumberOfChannels(1);
             pa = layer.NumberOfChannels(2);
-            nAngles = length(layer.Angles);
+            nAngles = length(layer.PrivateAngles);
             %{
             if isempty(layer.Mus)
                 layer.Mus = ones(ps+pa,1);
@@ -149,17 +149,33 @@ classdef nsoltFinalRotation2dLayer < nnet.layer.Layer %#codegen
                     zeros(ps-1,1,'like',layer.Angles);
             end
             %}
-            muW = layer.Mus(1:ps);
-            muU = layer.Mus(ps+1:end);
-            anglesW = layer.Angles(1:nAngles/2);
-            anglesU = layer.Angles(nAngles/2+1:end);
+            muW = layer.PrivateMus(1:ps);
+            muU = layer.PrivateMus(ps+1:end);
+            anglesW = layer.PrivateAngles(1:nAngles/2);
+            anglesU = layer.PrivateAngles(nAngles/2+1:end);
+            %W0 = fcn_orthmtxgen(anglesW,muW,0);
+            %U0 = fcn_orthmtxgen(anglesU,muU,0);
+            %[W0,dW0Pst,dW0Pre] = fcn_orthmtxgen_diff(anglesW,muW,0,[],[]);            
+            %[U0,dU0Pst,dU0Pre] = fcn_orthmtxgen_diff(anglesU,muU,0,[],[]);            
+            W0_T = layer.W0T; %transpose(fcn_orthmtxgen(anglesW,muW,0));
+            U0_T = layer.U0T; %transpose(fcn_orthmtxgen(anglesU,muU,0));
+            W0 = transpose(W0_T);
+            U0 = transpose(U0_T);
+            if isdlarray(W0)
+                dW0Pst = dlarray(muW(:).*W0);
+                dU0Pst = dlarray(muU(:).*U0);
+                dW0Pre = dlarray(eye(ps,W0.underlyingType));
+                dU0Pre = dlarray(eye(pa,U0.underlyingType));
+            else
+                dW0Pst = bsxfun(@times,muW(:),W0);
+                dU0Pst = bsxfun(@times,muU(:),U0);
+                dW0Pre = eye(ps,'like',W0);
+                dU0Pre = eye(pa,'like',U0);
+            end
+            
             
             % Layer backward function goes here.
             % dLdX = dZdX x dLdZ
-            %W0 = fcn_orthmtxgen(anglesW,muW,0);
-            %U0 = fcn_orthmtxgen(anglesU,muU,0);
-            [W0,dW0Pst,dW0Pre] = fcn_orthmtxgen_diff(anglesW,muW,0,[],[]);            
-            [U0,dU0Pst,dU0Pre] = fcn_orthmtxgen_diff(anglesU,muU,0,[],[]);            
             adldz_ = dLdZ; %permute(dLdZ,[3 1 2 4]);
             cdLd_ = reshape(adldz_,nDecs,nrows*ncols*nSamples);
             cdLd_upp = W0(:,1:ceil(nDecs/2))*cdLd_(1:ceil(nDecs/2),:);
@@ -207,7 +223,6 @@ classdef nsoltFinalRotation2dLayer < nnet.layer.Layer %#codegen
             %
             layer.Mus = layer.PrivateMus;
             layer.Angles = layer.PrivateAngles;
-            layer = layer.updateParameters();
         end                
         
         function layer = set.Angles(layer,angles)
@@ -251,13 +266,17 @@ classdef nsoltFinalRotation2dLayer < nnet.layer.Layer %#codegen
         function layer = updateParameters(layer)
             import saivdr.dcnn.fcn_orthmtxgen
             ps = layer.NumberOfChannels(1);
-            muW = layer.Mus(1:ps);
-            muU = layer.Mus(ps+1:end);
-            anglesW = layer.Angles(1:length(layer.Angles)/2);
-            anglesU = layer.Angles(length(layer.Angles)/2+1:end);
+            mus = layer.PrivateMus;
+            angles = layer.PrivateAngles;
+            nAngles = length(angles);
+            muW = mus(1:ps);
+            muU = mus(ps+1:end);
+            anglesW = angles(1:nAngles/2);
+            anglesU = angles(nAngles/2+1:end);
             layer.W0T = transpose(fcn_orthmtxgen(anglesW,muW));
             layer.U0T = transpose(fcn_orthmtxgen(anglesU,muU));
         end
+        
     end
     
 end
