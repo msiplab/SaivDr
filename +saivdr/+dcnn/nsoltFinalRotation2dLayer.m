@@ -25,6 +25,9 @@ classdef nsoltFinalRotation2dLayer < nnet.layer.Layer %#codegen
         % (Optional) Layer properties.
         NumberOfChannels
         DecimationFactor
+    end
+    
+    properties (Dependent)
         NoDcLeakage
     end
     
@@ -37,6 +40,7 @@ classdef nsoltFinalRotation2dLayer < nnet.layer.Layer %#codegen
     end
     
     properties (Access = private)
+        PrivateNoDcLeakage
         PrivateAngles
         PrivateMus
     end
@@ -62,8 +66,8 @@ classdef nsoltFinalRotation2dLayer < nnet.layer.Layer %#codegen
             % Layer constructor function goes here.
             layer.NumberOfChannels = p.Results.NumberOfChannels;
             layer.DecimationFactor = p.Results.DecimationFactor;
-            layer.PrivateMus = p.Results.Mus;
-            layer.PrivateAngles = p.Results.Angles;
+            layer.Mus = p.Results.Mus;
+            layer.Angles = p.Results.Angles;
             layer.NoDcLeakage = p.Results.NoDcLeakage;
             layer.Name = p.Results.Name;
             layer.Description = "NSOLT final rotation " ...
@@ -74,15 +78,7 @@ classdef nsoltFinalRotation2dLayer < nnet.layer.Layer %#codegen
                 + layer.DecimationFactor(1) + "," ...
                 + layer.DecimationFactor(2) + ")";
             layer.Type = '';
-            
-            nChsTotal = sum(layer.NumberOfChannels);
-            nAngles = (nChsTotal-2)*nChsTotal/4;
-            if isempty(layer.PrivateAngles)
-                layer.Angles = zeros(nAngles,1);
-            end
-            if length(layer.PrivateAngles)~=nAngles
-                error('Invalid # of angles')
-            end
+
         end
         
         function Z = predict(layer, X)
@@ -192,6 +188,10 @@ classdef nsoltFinalRotation2dLayer < nnet.layer.Layer %#codegen
             end
         end
         
+        function nodcleak = get.NoDcLeakage(layer)
+            nodcleak = layer.PrivateNoDcLeakage;
+        end        
+        
         function angles = get.Angles(layer)
             angles = layer.PrivateAngles;
         end
@@ -200,12 +200,35 @@ classdef nsoltFinalRotation2dLayer < nnet.layer.Layer %#codegen
             mus = layer.PrivateMus;
         end
         
+        function layer = set.NoDcLeakage(layer,nodcleak)
+            layer.PrivateNoDcLeakage = nodcleak;
+            layer = layer.updateParameters();
+        end                
+        
         function layer = set.Angles(layer,angles)
+            nChsTotal = sum(layer.NumberOfChannels);
+            nAngles = (nChsTotal-2)*nChsTotal/4;
+            if isempty(angles)
+                angles = zeros(nAngles,1);
+            end
+            if length(angles)~=nAngles
+                error('Invalid # of angles')
+            end
+            %
             layer.PrivateAngles = angles;
             layer = layer.updateParameters();
         end
-
+        
         function layer = set.Mus(layer,mus)
+            ps = layer.NumberOfChannels(1);
+            pa = layer.NumberOfChannels(2);
+            %
+            if isempty(mus)
+                mus = ones(ps+pa,1);
+            elseif isscalar(mus)
+                mus = mus*ones(ps+pa,1);
+            end
+            %
             layer.PrivateMus = mus;
             layer = layer.updateParameters();
         end
@@ -213,13 +236,6 @@ classdef nsoltFinalRotation2dLayer < nnet.layer.Layer %#codegen
         function layer = updateParameters(layer)
             import saivdr.dcnn.fcn_orthmtxgen
             ps = layer.NumberOfChannels(1);
-            pa = layer.NumberOfChannels(2);
-            %
-            if isempty(layer.PrivateMus)
-                layer.PrivateMus = ones(ps+pa,1);
-            elseif isscalar(layer.PrivateMus)
-                layer.PrivateMus = layer.PrivateMus*ones(ps+pa,1);
-            end
             if layer.NoDcLeakage
                 layer.PrivateMus(1) = 1;
                 layer.PrivateAngles(1:ps-1) = ...

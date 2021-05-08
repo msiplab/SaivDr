@@ -53,20 +53,14 @@ classdef nsoltIntermediateRotation3dLayer < nnet.layer.Layer
             layer.NumberOfChannels = p.Results.NumberOfChannels;
             layer.Name = p.Results.Name;
             layer.Mode = p.Results.Mode;
-            layer.PrivateAngles = p.Results.Angles;
-            layer.PrivateMus = p.Results.Mus;
+            layer.Angles = p.Results.Angles;
+            layer.Mus = p.Results.Mus;
             layer.Description = layer.Mode ...
                 + " NSOLT intermediate rotation " ...
                 + "(ps,pa) = (" ...
                 + layer.NumberOfChannels(1) + "," ...
                 + layer.NumberOfChannels(2) + ")";
             layer.Type = '';
-            
-            if isempty(layer.PrivateAngles)
-                nChsTotal = sum(layer.NumberOfChannels);
-                nAngles = (nChsTotal-2)*nChsTotal/8;
-                layer.Angles = zeros(nAngles,1);
-            end
             
         end
         
@@ -180,26 +174,29 @@ classdef nsoltIntermediateRotation3dLayer < nnet.layer.Layer
         end
         
         function layer = set.Angles(layer,angles)
+            if isempty(angles)
+                nChsTotal = sum(layer.NumberOfChannels);
+                nAngles = (nChsTotal-2)*nChsTotal/8;
+                angles = zeros(nAngles,1);
+            end
+            %
             layer.PrivateAngles = angles;
             layer = layer.updateParameters();
         end
         
         function layer = set.Mus(layer,mus)
+            if isempty(mus)
+                mus = 1;
+            end
+            %
             layer.PrivateMus = mus;
             layer = layer.updateParameters();
         end
         
         function layer = updateParameters(layer)
-            import saivdr.dcnn.fcn_orthmtxgen           
-            ps = layer.NumberOfChannels(1);
-            pa = layer.NumberOfChannels(2);
-            %
-            if isempty(layer.PrivateMus)
-                musU = 1;
-            else
-                musU = layer.PrivateMus;
-            end
-            anglesU = layer.PrivateAngles;
+            import saivdr.dcnn.fcn_orthmtxgen
+            musU = layer.Mus;
+            anglesU = layer.Angles;
             layer.Un = fcn_orthmtxgen(anglesU,musU);
         end
     end
