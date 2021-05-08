@@ -146,6 +146,7 @@ classdef nsoltFinalRotation3dLayer < nnet.layer.Layer
             ps = layer.NumberOfChannels(1);
             pa = layer.NumberOfChannels(2);
             nAngles = length(layer.Angles);
+            %{
             if isempty(layer.Mus)
                 layer.Mus = ones(ps+pa,1);
             elseif isscalar(layer.Mus)
@@ -156,6 +157,7 @@ classdef nsoltFinalRotation3dLayer < nnet.layer.Layer
                 layer.Angles(1:ps-1) = ...
                     zeros(ps-1,1,'like',layer.Angles);
             end
+            %}
             muW = layer.Mus(1:ps);
             muU = layer.Mus(ps+1:end);
             anglesW = layer.Angles(1:nAngles/2);
@@ -211,6 +213,9 @@ classdef nsoltFinalRotation3dLayer < nnet.layer.Layer
         
         function layer = set.NoDcLeakage(layer,nodcleak)
             layer.PrivateNoDcLeakage = nodcleak;
+            %
+            layer.Mus = layer.PrivateMus;
+            layer.Angles = layer.PrivateAngles;            
             layer = layer.updateParameters();
         end       
         
@@ -223,6 +228,12 @@ classdef nsoltFinalRotation3dLayer < nnet.layer.Layer
             if length(angles)~=nAngles
                 error('Invalid # of angles')
             end
+            %
+            if layer.NoDcLeakage
+                ps = layer.NumberOfChannels(1);                
+                angles(1:ps-1) = ...
+                    zeros(ps-1,1,'like',layer.PrivateAngles);
+            end            
             %
             layer.PrivateAngles = angles;
             layer = layer.updateParameters();
@@ -238,6 +249,10 @@ classdef nsoltFinalRotation3dLayer < nnet.layer.Layer
                 mus = mus*ones(ps+pa,1);
             end
             %
+            if layer.NoDcLeakage
+                mus(1) = 1;
+            end            
+            %
             layer.PrivateMus = mus;
             layer = layer.updateParameters();
         end
@@ -245,11 +260,6 @@ classdef nsoltFinalRotation3dLayer < nnet.layer.Layer
         function layer = updateParameters(layer)
             import saivdr.dcnn.fcn_orthmtxgen
             ps = layer.NumberOfChannels(1);            
-            if layer.NoDcLeakage
-                layer.PrivateMus(1) = 1;
-                layer.PrivateAngles(1:ps-1) = ...
-                    zeros(ps-1,1,'like',layer.PrivateAngles);
-            end
             muW = layer.PrivateMus(1:ps);
             muU = layer.PrivateMus(ps+1:end);
             anglesW = layer.PrivateAngles(1:length(layer.PrivateAngles)/2);
