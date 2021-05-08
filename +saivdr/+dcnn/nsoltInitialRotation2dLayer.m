@@ -24,6 +24,9 @@ classdef nsoltInitialRotation2dLayer < nnet.layer.Layer %#codegen
         % (Optional) Layer properties.
         NumberOfChannels
         DecimationFactor
+    end
+    
+    properties (Dependent)
         NoDcLeakage
     end
     
@@ -36,6 +39,7 @@ classdef nsoltInitialRotation2dLayer < nnet.layer.Layer %#codegen
     end
     
     properties (Access = private)
+        PrivateNoDcLeakage
         PrivateAngles
         PrivateMus
     end
@@ -186,6 +190,10 @@ classdef nsoltInitialRotation2dLayer < nnet.layer.Layer %#codegen
             end
         end
         
+        function nodcleak = get.NoDcLeakage(layer)
+            nodcleak = layer.PrivateNoDcLeakage;
+        end
+        
         function angles = get.Angles(layer)
             angles = layer.PrivateAngles;
         end
@@ -193,6 +201,11 @@ classdef nsoltInitialRotation2dLayer < nnet.layer.Layer %#codegen
         function mus = get.Mus(layer)
             mus = layer.PrivateMus;
         end
+        
+        function layer = set.NoDcLeakage(layer,nodcleak)
+            layer.PrivateNoDcLeakage = nodcleak;
+            layer = layer.updateParameters();
+        end               
         
         function layer = set.Angles(layer,angles)
             nChsTotal = sum(layer.NumberOfChannels);
@@ -209,6 +222,15 @@ classdef nsoltInitialRotation2dLayer < nnet.layer.Layer %#codegen
         end
 
         function layer = set.Mus(layer,mus)
+            ps = layer.NumberOfChannels(1);
+            pa = layer.NumberOfChannels(2);
+            %
+            if isempty(mus)
+                mus = ones(ps+pa,1);
+            elseif isscalar(mus)
+                mus = mus*ones(ps+pa,1);
+            end
+            %
             layer.PrivateMus = mus;
             layer = layer.updateParameters();
         end
@@ -216,13 +238,6 @@ classdef nsoltInitialRotation2dLayer < nnet.layer.Layer %#codegen
         function layer = updateParameters(layer)
             import saivdr.dcnn.fcn_orthmtxgen
             ps = layer.NumberOfChannels(1);
-            pa = layer.NumberOfChannels(2);
-            %
-            if isempty(layer.PrivateMus)
-                layer.PrivateMus = ones(ps+pa,1);
-            elseif isscalar(layer.PrivateMus)
-                layer.PrivateMus = layer.PrivateMus*ones(ps+pa,1);
-            end
             if layer.NoDcLeakage
                 layer.PrivateMus(1) = 1;
                 layer.PrivateAngles(1:ps-1) = ...

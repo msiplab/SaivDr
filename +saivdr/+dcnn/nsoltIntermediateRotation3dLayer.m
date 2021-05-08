@@ -185,21 +185,18 @@ classdef nsoltIntermediateRotation3dLayer < nnet.layer.Layer
         end
         
         function layer = set.Mus(layer,mus)
+            if isempty(mus)
+                mus = 1;
+            end
+            %
             layer.PrivateMus = mus;
             layer = layer.updateParameters();
         end
         
         function layer = updateParameters(layer)
-            import saivdr.dcnn.fcn_orthmtxgen           
-            ps = layer.NumberOfChannels(1);
-            pa = layer.NumberOfChannels(2);
-            %
-            if isempty(layer.PrivateMus)
-                musU = 1;
-            else
-                musU = layer.PrivateMus;
-            end
-            anglesU = layer.PrivateAngles;
+            import saivdr.dcnn.fcn_orthmtxgen
+            musU = layer.Mus;
+            anglesU = layer.Angles;
             layer.Un = fcn_orthmtxgen(anglesU,musU);
         end
     end
