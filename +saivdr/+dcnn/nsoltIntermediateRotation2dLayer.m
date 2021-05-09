@@ -127,8 +127,8 @@ classdef nsoltIntermediateRotation2dLayer < nnet.layer.Layer %#codegen
             %         dLdW1, ..., dLdWk - Derivatives of the loss with respect to each
             %                             learnable parameter
             import saivdr.dcnn.fcn_orthmtxgen_diff
-            %nrows = size(dLdZ,1);
-            %ncols = size(dLdZ,2);
+            
+            % Layer backward function goes here.            
             nrows = size(dLdZ,2);
             ncols = size(dLdZ,3);
             ps = layer.NumberOfChannels(1);
@@ -141,7 +141,6 @@ classdef nsoltIntermediateRotation2dLayer < nnet.layer.Layer %#codegen
             musU = layer.PrivateMus;
             anglesU = layer.PrivateAngles;
             
-            % Layer backward function goes here.
             % dLdX = dZdX x dLdZ
             %Un = fcn_orthmtxgen(anglesU,musU,0);
             %[Un_,dUnPst,dUnPre] = fcn_orthmtxgen_diff(anglesU,musU,0,[],[]);
