@@ -178,7 +178,8 @@ classdef nsoltIntermediateRotation2dLayer < nnet.layer.Layer %#codegen
                 a_(ps+1:ps+pa,:,:,:) = reshape(c_low,pa,nrows,ncols,nSamples);
                 dVdW_X = a_; %ipermute(a_,[3 1 2 4]);
                 %
-                dLdW(iAngle) = sum(dLdZ.*dVdW_X,'all');
+                %dLdW(iAngle) = sum(dLdZ.*dVdW_X,'all');
+                dLdW(iAngle) = sum(bsxfun(@times,dLdZ,dVdW_X),'all');
             end
         end      
         

@@ -21,7 +21,7 @@ function matrix = fcn_orthmtxgen(angles,mus) %#codegen
 nDim_ = (1+sqrt(1+8*length(angles)))/2;
 matrix = eye(nDim_,'like',angles);
 if ~isempty(angles)
-    iAng = 1;
+    iAng = uint32(1);
     for iTop=1:nDim_-1
         vt = matrix(iTop,:);
         for iBtm=iTop+1:nDim_
@@ -40,9 +40,7 @@ if ~isempty(angles)
         matrix(iTop,:) = vt;
     end
 end
-if isscalar(mus)
-    matrix = mus * matrix;
-elseif ~isempty(mus) 
+if ~all(mus==1) 
     matrix = bsxfun(@times,mus(:),matrix);
 end
 end
