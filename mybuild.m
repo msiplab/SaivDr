@@ -20,8 +20,13 @@ setpath
 %% Build mex codes
 if license('checkout','matlab_coder')
     import saivdr.dcnn.mexsrcs.*
-    fcn_build_orthmtxgen;
-    fcn_build_orthmtxgen_diff;
+    datatypes = { 'single', 'double' };
+    for idatatype = 1:length(datatypes)
+        for useGpuArray = 0:1
+            fcn_build_orthmtxgen(datatypes{idatatype},useGpuArray);
+            fcn_build_orthmtxgen_diff(datatypes{idatatype},useGpuArray);
+        end
+    end
     %
     import saivdr.dictionary.olpprfb.mexsrcs.*
     fcn_build_atomext1d;

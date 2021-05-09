@@ -1,4 +1,4 @@
-function [fcnhandler,flag] = fcn_build_orthmtxgen_diff()
+function [fcnhandler,flag] = fcn_build_orthmtxgen_diff(datatype,useGpuArray)
 %FCN_BUILD_ORTHMTXGEN_DIFF
 %
 % Requirements: MATLAB R2021a
@@ -13,9 +13,18 @@ function [fcnhandler,flag] = fcn_build_orthmtxgen_diff()
 %                Niigata, 950-2181, JAPAN
 %
 % http://msiplab.eng.niigata-u.ac.jp/
-
 bsfname = 'fcn_orthmtxgen_diff';
-mexname = sprintf('%s_mex',bsfname);
+
+if nargin < 1 || isempty(datatype)
+    datatype = 'double';
+end
+if nargin < 2 || useGpuArray
+    device = 'gpu';
+else
+    device = 'cpu';
+end
+
+mexname = sprintf('%s_%s_on_%s_mex',bsfname, datatype, device);
 
 if license('checkout','matlab_coder') % Coder is available
     cdir = pwd;
@@ -28,27 +37,46 @@ if license('checkout','matlab_coder') % Coder is available
         
         outputdir = fullfile(saivdr_root,'mexcodes');
         %
-        aAngles   = coder.typeof(single(0),[inf 1],[1 0]); %#ok
-        aMus      = coder.typeof(single(0),[inf 1],[1 0]); %#ok
-        aPdAng    = coder.typeof(uint32(0),1,0); %#ok
-        aMtxPst   = coder.typeof(single(0),[inf inf],[1 1]); %#ok
-        aMtxPre   = coder.typeof(single(0),[inf inf],[1 1]); %#ok
         % build mex
-        if license('checkout','gpu_coder')  
+        codegenskip = false;
+        if license('checkout','gpu_coder')
             disp('GPU Coder')
-            cfg = coder.gpuConfig('mex');   
-        else
+            cfg = coder.gpuConfig('mex');
+        elseif strcmp(device,'cpu')
             cfg = coder.config('mex');
+        else
+            codegenskip = true;
         end
-        cfg.DynamicMemoryAllocation = 'AllVariableSizeArrays';%'Threshold';%'Off';
-        cfg.GenerateReport = true;
-        args = '{ aAngles, aMus, aPdAng, aMtxPst, aMtxPre }';
-        seval = [ 'codegen -config cfg ' ' -o ' outputdir '/' mexname ' ' ...
-            packagedir '/' bsfname '.m -args ' args];
+        if strcmp(device,'cpu') % on CPU
+            aAngles   = coder.typeof(single(0),[inf 1],[1 0]); %#ok
+            aMus      = coder.typeof(single(0),[inf 1],[1 0]); %#ok
+            aPdAng    = coder.typeof(uint32(0),1,0); %#ok
+            aMtxPst   = coder.typeof(single(0),[inf inf],[1 1]); %#ok
+            aMtxPre   = coder.typeof(single(0),[inf inf],[1 1]); %#ok
+            cfg.DynamicMemoryAllocation = 'AllVariableSizeArrays';%'Threshold';%'Off';
+        else % on GPU
+            nChs = 64;
+            maxAngs = (nChs-2)*nChs/8;
+            maxMus = nChs/2;
+            aAngles   = coder.typeof(gpuArray(single(0)),[maxAngs 1],[1 0]); %#ok
+            aMus      = coder.typeof(gpuArray(single(0)),[maxMus 1],[1 0]); %#ok
+            aPdAng    = coder.typeof(uint32(0),1,0); %#ok
+            aMtxPst   = coder.typeof(gpuArray(single(0)),[maxMus maxMus],[1 1]); %#ok
+            aMtxPre   = coder.typeof(gpuArray(single(0)),[maxMus maxMus],[1 1]); %#ok
+            cfg.DynamicMemoryAllocation = 'Off';
+        end
         
-        disp(seval)
-        eval(seval)
-        
+        if codegenskip
+            disp('Skipping code generation')
+        else
+            cfg.GenerateReport = true;
+            args = '{ aAngles, aMus, aPdAng, aMtxPst, aMtxPre }';
+            seval = [ 'codegen -config cfg ' ' -o ' outputdir '/' mexname ' ' ...
+                packagedir '/' bsfname '.m -args ' args];
+            
+            disp(seval)
+            eval(seval)
+        end
     else
         error('SaivDr: Invalid argument')
     end
@@ -66,5 +94,6 @@ else
     
     fcnhandler = [];
     flag       = false;
-
+    
 end
+
