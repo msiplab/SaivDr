@@ -51,6 +51,7 @@ classdef nsoltInitialRotation2dLayer < nnet.layer.Layer %#codegen
     end
         
     methods
+        
         function layer = nsoltInitialRotation2dLayer(varargin)
             % (Optional) Create a myLayer.
             % This function must have the same name as the class.
@@ -97,7 +98,8 @@ classdef nsoltInitialRotation2dLayer < nnet.layer.Layer %#codegen
             %         X1, ..., Xn - Input data (n: # of components)
             % Outputs:
             %         Z           - Outputs of layer forward function
-            %          
+            %     
+            
             % Layer forward function for prediction goes here.
             nrows = size(X,2);
             ncols = size(X,3);            
@@ -212,6 +214,7 @@ classdef nsoltInitialRotation2dLayer < nnet.layer.Layer %#codegen
                 d_upp = dW0(:,1:ceil(nDecs/2))*c_upp;
                 d_low = dU0(:,1:floor(nDecs/2))*c_low;
                 dLdW(iAngle) = sum(dldz_upp.*d_upp,'all');
+                %
                 dLdW(nAngles/2+iAngle) = sum(dldz_low.*d_low,'all');
             end
         end

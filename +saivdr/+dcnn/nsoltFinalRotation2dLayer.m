@@ -43,6 +43,7 @@ classdef nsoltFinalRotation2dLayer < nnet.layer.Layer %#codegen
         PrivateNoDcLeakage
         PrivateAngles
         PrivateMus
+        isUpdateRequested
     end
     
     properties (Hidden)
@@ -84,7 +85,8 @@ classdef nsoltFinalRotation2dLayer < nnet.layer.Layer %#codegen
             if length(layer.PrivateAngles)~=nAngles
                 error('Invalid # of angles')
             end
-
+            
+            layer = layer.updateParameters();
         end
         
         function Z = predict(layer, X)
@@ -106,6 +108,9 @@ classdef nsoltFinalRotation2dLayer < nnet.layer.Layer %#codegen
             stride = layer.DecimationFactor;
             nDecs = prod(stride);      
             %
+            if layer.isUpdateRequested
+                layer = layer.updateParameters();
+            end
             W0T_ = layer.W0T;
             U0T_ = layer.U0T;
             Y = X; %permute(X,[3 1 2 4]);
@@ -115,6 +120,7 @@ classdef nsoltFinalRotation2dLayer < nnet.layer.Layer %#codegen
             %Z = ipermute(reshape(Zsa,nDecs,nrows,ncols,nSamples),...
             %    [3 1 2 4]);
             Z = reshape(Zsa,nDecs,nrows,ncols,nSamples);
+            
         end
         
         function [dLdX, dLdW] = ...
@@ -133,9 +139,8 @@ classdef nsoltFinalRotation2dLayer < nnet.layer.Layer %#codegen
             %                             inputs
             %         dLdW1, ..., dLdWk - Derivatives of the loss with respect to each
             %                             learnable parameter
-            import saivdr.dcnn.*
-            %nrows = size(dLdZ,1);
-            %ncols = size(dLdZ,2);
+            import saivdr.dcnn.fcn_orthmtxgen_diff
+            
             nrows = size(dLdZ,2);
             ncols = size(dLdZ,3);            
             nSamples = size(dLdZ,4);
@@ -155,6 +160,9 @@ classdef nsoltFinalRotation2dLayer < nnet.layer.Layer %#codegen
                     zeros(ps-1,1,'like',layer.Angles);
             end
             %}
+            if layer.isUpdateRequested
+                layer = layer.updateParameters();
+            end
             muW = layer.PrivateMus(1:ps);
             muU = layer.PrivateMus(ps+1:end);
             anglesW = layer.PrivateAngles(1:nAngles/2);
@@ -178,7 +186,6 @@ classdef nsoltFinalRotation2dLayer < nnet.layer.Layer %#codegen
             dW0Pre = eye(ps,'like',W0);
             dU0Pre = eye(pa,'like',U0);
             %end
-            
             
             % Layer backward function goes here.
             % dLdX = dZdX x dLdZ
@@ -227,8 +234,7 @@ classdef nsoltFinalRotation2dLayer < nnet.layer.Layer %#codegen
         function layer = set.NoDcLeakage(layer,nodcleak)
             layer.PrivateNoDcLeakage = nodcleak;
             %
-            layer.Mus = layer.PrivateMus;
-            layer.Angles = layer.PrivateAngles;
+            layer.isUpdateRequested = true;
         end                
         
         function layer = set.Angles(layer,angles)
@@ -236,16 +242,11 @@ classdef nsoltFinalRotation2dLayer < nnet.layer.Layer %#codegen
                 nChsTotal = sum(layer.NumberOfChannels);
                 nAngles = (nChsTotal-2)*nChsTotal/4;
                 angles = zeros(nAngles,1);
-            end
-            %
-            if layer.NoDcLeakage
-                ps = layer.NumberOfChannels(1);            
-                angles(1:ps-1) = ...
-                    zeros(ps-1,1,'like',layer.PrivateAngles);
-            end            
+            end      
             %
             layer.PrivateAngles = angles;
-            layer = layer.updateParameters();
+            %layer = layer.updateParameters();
+            layer.isUpdateRequested = true;
         end
         
         function layer = set.Mus(layer,mus)
@@ -258,17 +259,21 @@ classdef nsoltFinalRotation2dLayer < nnet.layer.Layer %#codegen
                 mus = mus*ones(ps+pa,1);
             end
             %
-            if layer.NoDcLeakage
-                mus(1) = 1;
-            end
-            %
             layer.PrivateMus = mus;
-            layer = layer.updateParameters();
+            %layer = layer.updateParameters();
+            layer.isUpdateRequested = true;
         end
         
         function layer = updateParameters(layer)
             import saivdr.dcnn.fcn_orthmtxgen
             ps = layer.NumberOfChannels(1);
+            %
+            if layer.NoDcLeakage
+                layer.PrivateMus(1) = 1;           
+                layer.PrivateAngles(1:ps-1) = ...
+                    zeros(ps-1,1,'like',layer.PrivateAngles);
+            end      
+            %
             mus = layer.PrivateMus;
             angles = layer.PrivateAngles;
             nAngles = length(angles);
@@ -278,6 +283,7 @@ classdef nsoltFinalRotation2dLayer < nnet.layer.Layer %#codegen
             anglesU = angles(nAngles/2+1:end);
             layer.W0T = transpose(fcn_orthmtxgen(anglesW,muW));
             layer.U0T = transpose(fcn_orthmtxgen(anglesU,muU));
+            layer.isUpdateRequested = false;
         end
         
     end
