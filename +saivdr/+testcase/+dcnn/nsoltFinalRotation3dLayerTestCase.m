@@ -164,6 +164,7 @@ classdef nsoltFinalRotation3dLayerTestCase < matlab.unittest.TestCase
             
         end
         
+        %{        
         function testPredictGrayscaleWithDlarrayAngles(testCase, ...
                 nchs, stride, nrows, ncols, nlays, datatype)
             
@@ -215,7 +216,7 @@ classdef nsoltFinalRotation3dLayerTestCase < matlab.unittest.TestCase
                 IsEqualTo(expctdZ,'Within',tolObj));
             
         end
-        
+        %}
         
         function testPredictGrayscaleWithRandomAnglesNoDcLeackage(testCase, ...
                 nchs, stride, nrows, ncols, nlays, mus, datatype)
