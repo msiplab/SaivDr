@@ -69,7 +69,8 @@ classdef nsoltIntermediateRotation3dLayer < nnet.layer.Layer
                 error('Invalid # of angles')
             end
             
-            layer = layer.updateParameters();            
+            layer.isUpdateRequested = true;
+            
         end
         
         function Z = predict(layer, X)
@@ -127,20 +128,20 @@ classdef nsoltIntermediateRotation3dLayer < nnet.layer.Layer
             %                             learnable parameter
 
             % Layer backward function goes here.
-            import saivdr.dcnn.fcn_orthmtxgen_diff
+            import saivdr.dcnn.get_fcn_orthmtxgen_diff
             
             nrows = size(dLdZ,2);
             ncols = size(dLdZ,3);
             nlays = size(dLdZ,4);
             ps = layer.NumberOfChannels(1);
-            pa = layer.NumberOfChannels(2);            
+            pa = layer.NumberOfChannels(2);
             nSamples = size(dLdZ,5);
             %
             if layer.isUpdateRequested
                 layer = layer.updateParameters();
             end
-            musU = layer.PrivateMus;
             anglesU = layer.PrivateAngles;
+            musU = cast(layer.PrivateMus,'like',anglesU);
             % dLdX = dZdX x dLdZ
             %Un = fcn_orthmtxgen(anglesU,musU,0);
             %[Un_,dUnPst,dUnPre] = fcn_orthmtxgen_diff(anglesU,musU,0,[],[]);
@@ -161,9 +162,10 @@ classdef nsoltIntermediateRotation3dLayer < nnet.layer.Layer
             dLdX = adLd_; %ipermute(adLd_,[4 1 2 3 5]);
             
             % dLdWi = <dLdZ,(dVdWi)X>
+            fcn_orthmtxgen_diff = get_fcn_orthmtxgen_diff(anglesU);
             nAngles = length(anglesU);
             dLdW = zeros(nAngles,1,'like',dLdZ);
-            for iAngle = 1:nAngles
+            for iAngle = uint32(1:nAngles)
                 %dUn = fcn_orthmtxgen(anglesU,musU,iAngle);
                 [dUn,dUnPst,dUnPre] = fcn_orthmtxgen_diff(anglesU,musU,iAngle,dUnPst,dUnPre);                
                 a_ = X; %permute(X,[4 1 2 3 5]);
@@ -190,10 +192,12 @@ classdef nsoltIntermediateRotation3dLayer < nnet.layer.Layer
         end
         
         function layer = set.Angles(layer,angles)
+            nChsTotal = sum(layer.NumberOfChannels);
+            nAngles = (nChsTotal-2)*nChsTotal/8;
             if isempty(angles)
-                nChsTotal = sum(layer.NumberOfChannels);
-                nAngles = (nChsTotal-2)*nChsTotal/8;
                 angles = zeros(nAngles,1);
+            elseif isscalar(angles)
+                angles = angles*ones(nAngles,1,'like',angles);   
             end
             %
             layer.PrivateAngles = angles;
@@ -202,8 +206,11 @@ classdef nsoltIntermediateRotation3dLayer < nnet.layer.Layer
         end
         
         function layer = set.Mus(layer,mus)
+            pa = layer.NumberOfChannels(2);
             if isempty(mus)
-                mus = 1;
+                mus = ones(pa,1);   
+            elseif isscalar(mus)
+                mus = mus*ones(pa,1,'like',mus);   
             end
             %
             layer.PrivateMus = mus;
@@ -212,9 +219,10 @@ classdef nsoltIntermediateRotation3dLayer < nnet.layer.Layer
         end
         
         function layer = updateParameters(layer)
-            import saivdr.dcnn.fcn_orthmtxgen
-            musU = layer.PrivateMus;
+            import saivdr.dcnn.get_fcn_orthmtxgen
             anglesU = layer.PrivateAngles;
+            musU = cast(layer.PrivateMus,'like',anglesU);
+            fcn_orthmtxgen = get_fcn_orthmtxgen(anglesU);
             layer.Un = fcn_orthmtxgen(anglesU,musU);
             layer.isUpdateRequested = false;
         end

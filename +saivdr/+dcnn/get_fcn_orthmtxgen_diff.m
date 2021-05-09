@@ -1,4 +1,4 @@
-function [fcnhandler,flag] = get_fcn_orthmtxgen_diff(datatype)
+function [fcnhandler,flag] = get_fcn_orthmtxgen_diff(angles)
 %GET_FCN_ORTHMTXGEN_DIFF
 %
 % Requirements: MATLAB R2021a
@@ -16,10 +16,18 @@ function [fcnhandler,flag] = get_fcn_orthmtxgen_diff(datatype)
 import saivdr.dcnn.mexsrcs.*
 fcnname = 'fcn_orthmtxgen_diff';
 %
+%
+datatype = underlyingType(angles);
+if isgpuarray(angles)
+    device = 'gpu';
+else
+    device = 'cpu';
+end
+%
 if nargin < 1
     mexname = '';
 else
-    mexname = [fcnname '_' datatype '_mex'];
+    mexname = [fcnname '_' datatype '_on_' device '_mex'];
 end
 ftypemex = exist(mexname, 'file');
 if ftypemex == 3 % MEX file exists

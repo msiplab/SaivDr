@@ -1,4 +1,4 @@
-function [fcnhandler,flag] = get_fcn_orthmtxgen(datatype)
+function [fcnhandler,flag] = get_fcn_orthmtxgen(angles)
 %GET_FCN_ORTHMTXGEN
 %
 % Requirements: MATLAB R2020a
@@ -16,10 +16,17 @@ function [fcnhandler,flag] = get_fcn_orthmtxgen(datatype)
 import saivdr.dcnn.mexsrcs.*
 fcnname = 'fcn_orthmtxgen';
 %
+datatype = underlyingType(angles);
+if isgpuarray(angles)
+    device = 'gpu';
+else
+    device = 'cpu';
+end
+%
 if nargin < 1
     mexname = '';
 else
-    mexname = [fcnname '_' datatype '_mex'];
+    mexname = [fcnname '_' datatype '_on_' device '_mex'];
 end
 ftypemex = exist(mexname, 'file');
 if ftypemex == 3 % MEX file exists

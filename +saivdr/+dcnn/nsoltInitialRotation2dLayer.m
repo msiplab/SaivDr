@@ -140,7 +140,7 @@ classdef nsoltInitialRotation2dLayer < nnet.layer.Layer %#codegen
             %                             inputs
             %         dLdW1, ..., dLdWk - Derivatives of the loss with respect to each
             %
-            import saivdr.dcnn.fcn_orthmtxgen_diff
+            import saivdr.dcnn.get_fcn_orthmtxgen_diff
             
             nrows = size(dLdZ,2);
             ncols = size(dLdZ,3);            
@@ -165,10 +165,12 @@ classdef nsoltInitialRotation2dLayer < nnet.layer.Layer %#codegen
             if layer.isUpdateRequested
                 layer = layer.updateParameters();
             end
-            muW = layer.PrivateMus(1:ps);
-            muU = layer.PrivateMus(ps+1:end);
-            anglesW = layer.PrivateAngles(1:nAngles/2);
-            anglesU = layer.PrivateAngles(nAngles/2+1:end);
+            angles = layer.PrivateAngles;
+            mus = cast(layer.Mus,'like',angles);            
+            anglesW = angles(1:nAngles/2);
+            anglesU = angles(nAngles/2+1:end);
+            muW = mus(1:ps);
+            muU = mus(ps+1:end);
             %[W0_,dW0Pst,dW0Pre] = fcn_orthmtxgen_diff(anglesW,muW,0,[],[]);
             %[U0_,dU0Pst,dU0Pre] = fcn_orthmtxgen_diff(anglesU,muU,0,[],[]);
             W0_ = layer.W0; %transpose(fcn_orthmtxgen(anglesW,muW,0));
@@ -196,14 +198,14 @@ classdef nsoltInitialRotation2dLayer < nnet.layer.Layer %#codegen
             %dLdX = ipermute(reshape(Zsa,nDecs,nrows,ncols,nSamples),...
             %    [3 1 2 4]);
             dLdX = reshape(Zsa,nDecs,nrows,ncols,nSamples);
-            
+            fcn_orthmtxgen_diff = get_fcn_orthmtxgen_diff(angles);                        
             % dLdWi = <dLdZ,(dVdWi)X>
             dLdW = zeros(nAngles,1,'like',dLdZ);
             dldz_ = dLdZ; %permute(dLdZ,[3 1 2 4]);
             dldz_upp = reshape(dldz_(1:ps,:,:,:),ps,nrows*ncols*nSamples);
             dldz_low = reshape(dldz_(ps+1:ps+pa,:,:,:),pa,nrows*ncols*nSamples);
             % (dVdWi)X
-            for iAngle = 1:nAngles/2
+            for iAngle = uint32(1:nAngles/2)
                 %dW0 = fcn_orthmtxgen(anglesW,muW,iAngle);
                 %dU0 = fcn_orthmtxgen(anglesU,muU,iAngle);
                 [dW0,dW0Pst,dW0Pre] = fcn_orthmtxgen_diff(anglesW,muW,iAngle,dW0Pst,dW0Pre);
@@ -214,7 +216,6 @@ classdef nsoltInitialRotation2dLayer < nnet.layer.Layer %#codegen
                 d_upp = dW0(:,1:ceil(nDecs/2))*c_upp;
                 d_low = dU0(:,1:floor(nDecs/2))*c_low;
                 dLdW(iAngle) = sum(dldz_upp.*d_upp,'all');
-                %
                 dLdW(nAngles/2+iAngle) = sum(dldz_low.*d_low,'all');
             end
         end
@@ -238,10 +239,12 @@ classdef nsoltInitialRotation2dLayer < nnet.layer.Layer %#codegen
         end
         
         function layer = set.Angles(layer,angles)
+            nChsTotal = sum(layer.NumberOfChannels);
+            nAngles = (nChsTotal-2)*nChsTotal/4;
             if isempty(angles)
-                nChsTotal = sum(layer.NumberOfChannels);
-                nAngles = (nChsTotal-2)*nChsTotal/4;
                 angles = zeros(nAngles,1);
+            elseif isscalar(angles)
+                angles = angles*ones(nAngles,1,'like',angles);
             end
             %
             layer.PrivateAngles = angles;
@@ -265,7 +268,7 @@ classdef nsoltInitialRotation2dLayer < nnet.layer.Layer %#codegen
         end
         
         function layer = updateParameters(layer)
-            import saivdr.dcnn.fcn_orthmtxgen
+            import saivdr.dcnn.get_fcn_orthmtxgen
             ps = layer.NumberOfChannels(1);
             %
             if layer.NoDcLeakage
@@ -274,13 +277,14 @@ classdef nsoltInitialRotation2dLayer < nnet.layer.Layer %#codegen
                     zeros(ps-1,1,'like',layer.PrivateAngles);
             end            
             %
-            mus = layer.PrivateMus;
-            angles = layer.PrivateAngles;
+            angles = layer.PrivateAngles;            
+            mus = cast(layer.PrivateMus,'like',angles);
             nAngles = length(angles);
             muW = mus(1:ps);
             muU = mus(ps+1:end);
             anglesW = angles(1:nAngles/2);
             anglesU = angles(nAngles/2+1:end);
+            fcn_orthmtxgen = get_fcn_orthmtxgen(angles);                        
             layer.W0 = fcn_orthmtxgen(anglesW,muW);
             layer.U0 = fcn_orthmtxgen(anglesU,muU);
             layer.isUpdateRequested = false;

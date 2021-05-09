@@ -48,15 +48,15 @@ if fbsfile == 2
             codegenskip = true;
         end
         if strcmp(device,'cpu') % on CPU
-            aAngles   = coder.typeof(single(0),[inf 1],[1 0]); %#ok
-            aMus      = coder.typeof(single(0),[inf 1],[1 0]); %#ok
+            aAngles   = coder.typeof(cast(0,datatype),[inf 1],[1 0]); %#ok
+            aMus      = coder.typeof(cast(0,datatype),[inf 1],[1 0]); %#ok
             cfg.DynamicMemoryAllocation = 'AllVariableSizeArrays';%'Threshold';%'Off';
         else % on GPU
             nChs = 64;
             maxAngs = (nChs-2)*nChs/8;
             maxMus = nChs/2;
-            aAngles   = coder.typeof(gpuArray(single(0)),[maxAngs 1],[1 0]); %#ok
-            aMus      = coder.typeof(gpuArray(single(0)),[maxMus 1],[1 0]); %#ok
+            aAngles   = coder.typeof(gpuArray(cast(0,datatype)),[maxAngs 1],[1 0]); %#ok
+            aMus      = coder.typeof(gpuArray(cast(0,datatype)),[maxMus 1],[1 0]); %#ok
             cfg.DynamicMemoryAllocation = 'Off';
         end
         

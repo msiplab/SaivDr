@@ -126,7 +126,7 @@ classdef nsoltIntermediateRotation2dLayer < nnet.layer.Layer %#codegen
             %                             inputs
             %         dLdW1, ..., dLdWk - Derivatives of the loss with respect to each
             %                             learnable parameter
-            import saivdr.dcnn.fcn_orthmtxgen_diff
+            import saivdr.dcnn.get_fcn_orthmtxgen_diff
             
             % Layer backward function goes here.            
             nrows = size(dLdZ,2);
@@ -138,8 +138,8 @@ classdef nsoltIntermediateRotation2dLayer < nnet.layer.Layer %#codegen
             if layer.isUpdateRequested
                 layer = layer.updateParameters();
             end
-            musU = layer.PrivateMus;
             anglesU = layer.PrivateAngles;
+            musU = cast(layer.PrivateMus,'like',anglesU);
             
             % dLdX = dZdX x dLdZ
             %Un = fcn_orthmtxgen(anglesU,musU,0);
@@ -161,9 +161,10 @@ classdef nsoltIntermediateRotation2dLayer < nnet.layer.Layer %#codegen
             dLdX = adLd_; %ipermute(adLd_,[3 1 2 4]);
             
             % dLdWi = <dLdZ,(dVdWi)X>
+            fcn_orthmtxgen_diff = get_fcn_orthmtxgen_diff(anglesU); 
             nAngles = length(anglesU);
             dLdW = zeros(nAngles,1,'like',dLdZ);
-            for iAngle = 1:nAngles
+            for iAngle = uint32(1:nAngles)
                 %dUn = fcn_orthmtxgen(anglesU,musU,iAngle);
                 [dUn,dUnPst,dUnPre] = fcn_orthmtxgen_diff(anglesU,musU,iAngle,dUnPst,dUnPre);
                 a_ = X; % permute(X,[3 1 2 4]);
@@ -190,10 +191,12 @@ classdef nsoltIntermediateRotation2dLayer < nnet.layer.Layer %#codegen
         end
         
         function layer = set.Angles(layer,angles)
+            nChsTotal = sum(layer.NumberOfChannels);
+            nAngles = (nChsTotal-2)*nChsTotal/8;
             if isempty(angles)
-                nChsTotal = sum(layer.NumberOfChannels);
-                nAngles = (nChsTotal-2)*nChsTotal/8;
                 angles = zeros(nAngles,1);
+            elseif isscalar(angles)
+                angles = angles*ones(nAngles,1,'like',angles);   
             end
             %
             layer.PrivateAngles = angles;
@@ -202,8 +205,11 @@ classdef nsoltIntermediateRotation2dLayer < nnet.layer.Layer %#codegen
         end
         
         function layer = set.Mus(layer,mus)
+            pa = layer.NumberOfChannels(2);
             if isempty(mus)
-                mus = 1;
+                mus = ones(pa,1);   
+            elseif isscalar(mus)
+                mus = mus*ones(pa,1,'like',mus);   
             end
             %
             layer.PrivateMus = mus;
@@ -212,9 +218,10 @@ classdef nsoltIntermediateRotation2dLayer < nnet.layer.Layer %#codegen
         end
         
         function layer = updateParameters(layer)
-            import saivdr.dcnn.fcn_orthmtxgen
-            musU = layer.PrivateMus;
+            import saivdr.dcnn.get_fcn_orthmtxgen
             anglesU = layer.PrivateAngles;
+            musU = cast(layer.PrivateMus,'like',anglesU);
+            fcn_orthmtxgen = get_fcn_orthmtxgen(anglesU);
             layer.Un = fcn_orthmtxgen(anglesU,musU);
             layer.isUpdateRequested = false;
         end

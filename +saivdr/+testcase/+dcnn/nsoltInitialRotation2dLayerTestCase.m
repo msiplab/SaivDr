@@ -185,6 +185,7 @@ classdef nsoltInitialRotation2dLayerTestCase < matlab.unittest.TestCase
             
         end
         
+        %{
         function testPredictGrayscaleWithDlarrayAngles(testCase, ...
                 nchs, stride, nrows, ncols, datatype)
             
@@ -246,7 +247,7 @@ classdef nsoltInitialRotation2dLayerTestCase < matlab.unittest.TestCase
                 IsEqualTo(expctdZ,'Within',tolObj));
             
         end
-        
+        %}
         
         function testPredictGrayscaleWithRandomAnglesNoDcLeackage(testCase, ...
                 nchs, stride, nrows, ncols, mus,datatype)
