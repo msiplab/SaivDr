@@ -31,6 +31,7 @@ classdef nsoltIntermediateRotation2dLayer < nnet.layer.Layer %#codegen
     properties (Access = private)
         PrivateAngles
         PrivateMus
+        isUpdateRequested
     end
     
     properties (Hidden)
@@ -68,6 +69,8 @@ classdef nsoltIntermediateRotation2dLayer < nnet.layer.Layer %#codegen
                 error('Invalid # of angles')
             end
             
+            layer = layer.updateParameters();
+            
         end
         
         function Z = predict(layer, X)
@@ -88,6 +91,9 @@ classdef nsoltIntermediateRotation2dLayer < nnet.layer.Layer %#codegen
             pa = layer.NumberOfChannels(2);
             nSamples = size(X,4);
             %
+            if layer.isUpdateRequested
+                layer = layer.updateParameters();
+            end
             Un_ = layer.Un;
             Y = X; %permute(X,[3 1 2 4]);
             Ya = reshape(Y(ps+1:ps+pa,:,:,:),pa,nrows*ncols*nSamples);
@@ -120,16 +126,20 @@ classdef nsoltIntermediateRotation2dLayer < nnet.layer.Layer %#codegen
             %                             inputs
             %         dLdW1, ..., dLdWk - Derivatives of the loss with respect to each
             %                             learnable parameter
-            import saivdr.dcnn.*
+            import saivdr.dcnn.fcn_orthmtxgen_diff
             %nrows = size(dLdZ,1);
             %ncols = size(dLdZ,2);
             nrows = size(dLdZ,2);
             ncols = size(dLdZ,3);
-            nSamples = size(dLdZ,4);            
-            anglesU = layer.PrivateAngles;
-            musU = layer.PrivateMus;
             ps = layer.NumberOfChannels(1);
-            pa = layer.NumberOfChannels(2);
+            pa = layer.NumberOfChannels(2);            
+            nSamples = size(dLdZ,4);
+            %
+            if layer.isUpdateRequested
+                layer = layer.updateParameters();
+            end
+            musU = layer.PrivateMus;
+            anglesU = layer.PrivateAngles;
             
             % Layer backward function goes here.
             % dLdX = dZdX x dLdZ
@@ -188,7 +198,8 @@ classdef nsoltIntermediateRotation2dLayer < nnet.layer.Layer %#codegen
             end
             %
             layer.PrivateAngles = angles;
-            layer = layer.updateParameters();
+            %layer = layer.updateParameters();
+            layer.isUpdateRequested = true;
         end
         
         function layer = set.Mus(layer,mus)
@@ -197,7 +208,8 @@ classdef nsoltIntermediateRotation2dLayer < nnet.layer.Layer %#codegen
             end
             %
             layer.PrivateMus = mus;
-            layer = layer.updateParameters();
+            %layer = layer.updateParameters();
+            layer.isUpdateRequested = true;
         end
         
         function layer = updateParameters(layer)
@@ -205,6 +217,7 @@ classdef nsoltIntermediateRotation2dLayer < nnet.layer.Layer %#codegen
             musU = layer.PrivateMus;
             anglesU = layer.PrivateAngles;
             layer.Un = fcn_orthmtxgen(anglesU,musU);
+            layer.isUpdateRequested = false;
         end
         
     end

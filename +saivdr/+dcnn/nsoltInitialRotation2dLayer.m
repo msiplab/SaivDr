@@ -42,6 +42,7 @@ classdef nsoltInitialRotation2dLayer < nnet.layer.Layer %#codegen
         PrivateNoDcLeakage
         PrivateAngles
         PrivateMus
+        isUpdateRequested
     end
     
     properties (Hidden)
@@ -50,6 +51,7 @@ classdef nsoltInitialRotation2dLayer < nnet.layer.Layer %#codegen
     end
         
     methods
+        
         function layer = nsoltInitialRotation2dLayer(varargin)
             % (Optional) Create a myLayer.
             % This function must have the same name as the class.
@@ -83,6 +85,8 @@ classdef nsoltInitialRotation2dLayer < nnet.layer.Layer %#codegen
             if length(layer.PrivateAngles)~=nAngles
                 error('Invalid # of angles')
             end
+            
+            layer = layer.updateParameters();
         end
         
         function Z = predict(layer, X)
@@ -94,7 +98,8 @@ classdef nsoltInitialRotation2dLayer < nnet.layer.Layer %#codegen
             %         X1, ..., Xn - Input data (n: # of components)
             % Outputs:
             %         Z           - Outputs of layer forward function
-            %          
+            %     
+            
             % Layer forward function for prediction goes here.
             nrows = size(X,2);
             ncols = size(X,3);            
@@ -105,6 +110,9 @@ classdef nsoltInitialRotation2dLayer < nnet.layer.Layer %#codegen
             nDecs = prod(stride);
             nChsTotal = ps + pa;
             %
+            if layer.isUpdateRequested
+                layer = layer.updateParameters();
+            end
             W0_ = layer.W0;
             U0_ = layer.U0;
             %Y = reshape(permute(X,[3 1 2 4]),nDecs,nrows*ncols*nSamples);
@@ -154,6 +162,9 @@ classdef nsoltInitialRotation2dLayer < nnet.layer.Layer %#codegen
                     zeros(ps-1,1,'like',layer.Angles);
             end
             %}
+            if layer.isUpdateRequested
+                layer = layer.updateParameters();
+            end
             muW = layer.PrivateMus(1:ps);
             muU = layer.PrivateMus(ps+1:end);
             anglesW = layer.PrivateAngles(1:nAngles/2);
@@ -203,6 +214,7 @@ classdef nsoltInitialRotation2dLayer < nnet.layer.Layer %#codegen
                 d_upp = dW0(:,1:ceil(nDecs/2))*c_upp;
                 d_low = dU0(:,1:floor(nDecs/2))*c_low;
                 dLdW(iAngle) = sum(dldz_upp.*d_upp,'all');
+                %
                 dLdW(nAngles/2+iAngle) = sum(dldz_low.*d_low,'all');
             end
         end
@@ -222,8 +234,7 @@ classdef nsoltInitialRotation2dLayer < nnet.layer.Layer %#codegen
         function layer = set.NoDcLeakage(layer,nodcleak)
             layer.PrivateNoDcLeakage = nodcleak;
             %
-            layer.Mus = layer.PrivateMus;
-            layer.Angles = layer.PrivateAngles;
+            layer.isUpdateRequested = true;
         end
         
         function layer = set.Angles(layer,angles)
@@ -233,14 +244,9 @@ classdef nsoltInitialRotation2dLayer < nnet.layer.Layer %#codegen
                 angles = zeros(nAngles,1);
             end
             %
-            if layer.NoDcLeakage
-                ps = layer.NumberOfChannels(1);
-                angles(1:ps-1) = ...
-                    zeros(ps-1,1,'like',layer.PrivateAngles);
-            end
-            %
             layer.PrivateAngles = angles;
-            layer = layer.updateParameters();
+            %layer = layer.updateParameters();
+            layer.isUpdateRequested = true;
         end
         
         function layer = set.Mus(layer,mus)
@@ -253,17 +259,21 @@ classdef nsoltInitialRotation2dLayer < nnet.layer.Layer %#codegen
                 mus = mus*ones(ps+pa,1);
             end
             %
-            if layer.NoDcLeakage
-                mus(1) = 1;
-            end
-            %
             layer.PrivateMus = mus;
-            layer = layer.updateParameters();
+            %layer = layer.updateParameters();
+            layer.isUpdateRequested = true;
         end
         
         function layer = updateParameters(layer)
             import saivdr.dcnn.fcn_orthmtxgen
             ps = layer.NumberOfChannels(1);
+            %
+            if layer.NoDcLeakage
+                layer.PrivateMus(1) = 1;                
+                layer.PrivateAngles(1:ps-1) = ...
+                    zeros(ps-1,1,'like',layer.PrivateAngles);
+            end            
+            %
             mus = layer.PrivateMus;
             angles = layer.PrivateAngles;
             nAngles = length(angles);
@@ -273,6 +283,7 @@ classdef nsoltInitialRotation2dLayer < nnet.layer.Layer %#codegen
             anglesU = angles(nAngles/2+1:end);
             layer.W0 = fcn_orthmtxgen(anglesW,muW);
             layer.U0 = fcn_orthmtxgen(anglesU,muU);
+            layer.isUpdateRequested = false;
         end
         
     end

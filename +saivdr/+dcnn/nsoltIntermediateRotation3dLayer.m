@@ -31,6 +31,7 @@ classdef nsoltIntermediateRotation3dLayer < nnet.layer.Layer
     properties (Access = private)
         PrivateAngles
         PrivateMus
+        isUpdateRequested        
     end
     
     properties (Hidden)
@@ -68,6 +69,7 @@ classdef nsoltIntermediateRotation3dLayer < nnet.layer.Layer
                 error('Invalid # of angles')
             end
             
+            layer = layer.updateParameters();            
         end
         
         function Z = predict(layer, X)
@@ -89,6 +91,9 @@ classdef nsoltIntermediateRotation3dLayer < nnet.layer.Layer
             pa = layer.NumberOfChannels(2);
             nSamples = size(X,5);
             %
+            if layer.isUpdateRequested
+                layer = layer.updateParameters();
+            end
             Un_ = layer.Un;
             Y = X; %permute(X,[4 1 2 3 5]);
             Ya = reshape(Y(ps+1:ps+pa,:,:,:,:),pa,nrows*ncols*nlays*nSamples);
@@ -105,8 +110,7 @@ classdef nsoltIntermediateRotation3dLayer < nnet.layer.Layer
             Z = Y; %ipermute(Y,[4 1 2 3 5]);
         end
               
-        function [dLdX, dLdW] = ...
-                backward(layer, X, ~, dLdZ, ~)
+        function [dLdX, dLdW] = backward(layer, X, ~, dLdZ, ~)
             % (Optional) Backward propagate the derivative of the loss
             % function through the layer.
             %
@@ -121,20 +125,22 @@ classdef nsoltIntermediateRotation3dLayer < nnet.layer.Layer
             %                             inputs
             %         dLdW1, ..., dLdWk - Derivatives of the loss with respect to each
             %                             learnable parameter
-            import saivdr.dcnn.*
-            %nrows = size(dLdZ,1);
-            %ncols = size(dLdZ,2);
-            %nlays = size(dLdZ,3);            
+
+            % Layer backward function goes here.
+            import saivdr.dcnn.fcn_orthmtxgen_diff
+            
             nrows = size(dLdZ,2);
             ncols = size(dLdZ,3);
-            nlays = size(dLdZ,4);                        
-            nSamples = size(dLdZ,5);
-            anglesU = layer.PrivateAngles;
-            musU = layer.PrivateMus;
+            nlays = size(dLdZ,4);
             ps = layer.NumberOfChannels(1);
-            pa = layer.NumberOfChannels(2);
-            
-            % Layer backward function goes here.
+            pa = layer.NumberOfChannels(2);            
+            nSamples = size(dLdZ,5);
+            %
+            if layer.isUpdateRequested
+                layer = layer.updateParameters();
+            end
+            musU = layer.PrivateMus;
+            anglesU = layer.PrivateAngles;
             % dLdX = dZdX x dLdZ
             %Un = fcn_orthmtxgen(anglesU,musU,0);
             %[Un_,dUnPst,dUnPre] = fcn_orthmtxgen_diff(anglesU,musU,0,[],[]);
@@ -191,7 +197,8 @@ classdef nsoltIntermediateRotation3dLayer < nnet.layer.Layer
             end
             %
             layer.PrivateAngles = angles;
-            layer = layer.updateParameters();
+            %layer = layer.updateParameters();
+            layer.isUpdateRequested = true;
         end
         
         function layer = set.Mus(layer,mus)
@@ -200,7 +207,8 @@ classdef nsoltIntermediateRotation3dLayer < nnet.layer.Layer
             end
             %
             layer.PrivateMus = mus;
-            layer = layer.updateParameters();
+            %layer = layer.updateParameters();
+            layer.isUpdateRequested = true;
         end
         
         function layer = updateParameters(layer)
@@ -208,6 +216,7 @@ classdef nsoltIntermediateRotation3dLayer < nnet.layer.Layer
             musU = layer.PrivateMus;
             anglesU = layer.PrivateAngles;
             layer.Un = fcn_orthmtxgen(anglesU,musU);
+            layer.isUpdateRequested = false;
         end
     end
     
