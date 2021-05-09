@@ -1,8 +1,8 @@
 %MYBUILD Script for building mex codes
 %
-% Requirements: MATLAB R2015b
+% Requirements: MATLAB R2021a
 %
-% Copyright (c) 2017, Shogo MURAMATSU
+% Copyright (c) 2017-2021, Shogo MURAMATSU
 %
 % All rights reserved.
 %
@@ -19,6 +19,9 @@ setpath
 
 %% Build mex codes
 if license('checkout','matlab_coder')
+    import saivdr.dcnn.mexsrcs.*
+    fcn_build_orthmtxgen;
+    fcn_build_orthmtxgen_diff;
     %
     import saivdr.dictionary.olpprfb.mexsrcs.*
     fcn_build_atomext1d;
