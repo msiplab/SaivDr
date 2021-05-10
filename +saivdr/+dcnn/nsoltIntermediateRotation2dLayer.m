@@ -110,8 +110,7 @@ classdef nsoltIntermediateRotation2dLayer < nnet.layer.Layer %#codegen
             Z = Y; %ipermute(Y,[3 1 2 4]);
         end
         
-        function [dLdX, dLdW] = ...
-                backward(layer, X, ~, dLdZ, ~)
+        function [dLdX, dLdW] = backward(layer, X, ~, dLdZ, ~)
             % (Optional) Backward propagate the derivative of the loss  
             % function through the layer.
             %
@@ -148,17 +147,25 @@ classdef nsoltIntermediateRotation2dLayer < nnet.layer.Layer %#codegen
             dUnPst = bsxfun(@times,musU(:),Un_);
             dUnPre = eye(pa,'like',Un_);
             %
-            adLd_ = dLdZ; %permute(dLdZ,[3 1 2 4]);
-            cdLd_low = reshape(adLd_(ps+1:ps+pa,:,:,:),...
-                pa,nrows*ncols*nSamples);
-            if strcmp(layer.Mode,'Analysis')
-                cdLd_low = Un_.'*cdLd_low;                
+            dLdX = dLdZ; %permute(dLdZ,[3 1 2 4]);
+            if isgpuarray(X)
+                if strcmp(layer.Mode,'Analysis')
+                    dLdX(ps+1:ps+pa,:,:,:) = pagefun(@mtimes,Un_.',dLdZ(ps+1:ps+pa,:,:,:));
+                else
+                    dLdX(ps+1:ps+pa,:,:,:) = pagefun(@mtimes,Un_,dLdZ(ps+1:ps+pa,:,:,:));
+                end
             else
-                cdLd_low = Un_*cdLd_low;                
+                cdLd_low = reshape(dLdZ(ps+1:ps+pa,:,:,:),...
+                    pa,nrows*ncols*nSamples);
+                if strcmp(layer.Mode,'Analysis')
+                    cdLd_low = Un_.'*cdLd_low;
+                else
+                    cdLd_low = Un_*cdLd_low;
+                end
+                dLdX(ps+1:ps+pa,:,:,:) = reshape(cdLd_low,...
+                    pa,nrows,ncols,nSamples);
             end
-            adLd_(ps+1:ps+pa,:,:,:) = reshape(cdLd_low,...
-                pa,nrows,ncols,nSamples);
-            dLdX = adLd_; %ipermute(adLd_,[3 1 2 4]);
+            %dLdX = dLdX; %ipermute(adLd_,[3 1 2 4]);
             
             % dLdWi = <dLdZ,(dVdWi)X>
             fcn_orthmtxgen_diff = get_fcn_orthmtxgen_diff(anglesU); 
@@ -167,15 +174,26 @@ classdef nsoltIntermediateRotation2dLayer < nnet.layer.Layer %#codegen
             for iAngle = uint32(1:nAngles)
                 %dUn = fcn_orthmtxgen(anglesU,musU,iAngle);
                 [dUn,dUnPst,dUnPre] = fcn_orthmtxgen_diff(anglesU,musU,iAngle,dUnPst,dUnPre);
-                a_ = X; % permute(X,[3 1 2 4]);
-                c_low = reshape(a_(ps+1:ps+pa,:,:,:),pa,nrows*ncols*nSamples);
-                if strcmp(layer.Mode,'Analysis')                
-                    c_low = dUn*c_low;
+                a_ = [
+                    zeros([ps size(X,2:5)],'like',dLdZ)
+                    cast(X(ps+1:ps+pa,:,:,:),'like',dLdZ)
+                    ];
+                if isgpuarray(X)
+                    if strcmp(layer.Mode,'Analysis')
+                        a_(ps+1:ps+pa,:,:,:) = pagefun(@mtimes,dUn,a_(ps+1:ps+pa,:,:,:));
+                    else
+                        a_(ps+1:ps+pa,:,:,:) = pagefun(@mtimes,dUn.',a_(ps+1:ps+pa,:,:,:));
+                    end                    
                 else
-                    c_low = dUn.'*c_low;
+                    c_low = reshape(a_(ps+1:ps+pa,:,:,:),pa,nrows*ncols*nSamples);
+                    if strcmp(layer.Mode,'Analysis')
+                        c_low = dUn*c_low;
+                    else
+                        c_low = dUn.'*c_low;
+                    end
+                    %a_ = zeros(size(a_),'like',dLdZ);
+                    a_(ps+1:ps+pa,:,:,:) = reshape(c_low,pa,nrows,ncols,nSamples);
                 end
-                a_ = zeros(size(a_),'like',dLdZ);
-                a_(ps+1:ps+pa,:,:,:) = reshape(c_low,pa,nrows,ncols,nSamples);
                 dVdW_X = a_; %ipermute(a_,[3 1 2 4]);
                 %
                 %dLdW(iAngle) = sum(dLdZ.*dVdW_X,'all');
