@@ -126,10 +126,9 @@ classdef nsoltIntermediateRotation3dLayer < nnet.layer.Layer
             %                             inputs
             %         dLdW1, ..., dLdWk - Derivatives of the loss with respect to each
             %                             learnable parameter
-
-            % Layer backward function goes here.
             import saivdr.dcnn.get_fcn_orthmtxgen_diff
             
+            % Layer backward function goes here.
             nrows = size(dLdZ,2);
             ncols = size(dLdZ,3);
             nlays = size(dLdZ,4);
@@ -142,6 +141,7 @@ classdef nsoltIntermediateRotation3dLayer < nnet.layer.Layer
             end
             anglesU = layer.PrivateAngles;
             musU = cast(layer.PrivateMus,'like',anglesU);
+            
             % dLdX = dZdX x dLdZ
             %Un = fcn_orthmtxgen(anglesU,musU,0);
             %[Un_,dUnPst,dUnPre] = fcn_orthmtxgen_diff(anglesU,musU,0,[],[]);
@@ -149,17 +149,25 @@ classdef nsoltIntermediateRotation3dLayer < nnet.layer.Layer
             dUnPst = bsxfun(@times,musU(:),Un_);
             dUnPre = eye(pa,'like',Un_);            
             %
-            adLd_ = dLdZ; %permute(dLdZ,[4 1 2 3 5]);
-            cdLd_low = reshape(adLd_(ps+1:ps+pa,:,:,:,:),...
-                pa,nrows*ncols*nlays*nSamples);
-            if strcmp(layer.Mode,'Analysis')
-                cdLd_low = Un_.'*cdLd_low;
+            dLdX = dLdZ; %permute(dLdZ,[4 1 2 3 5]);
+            if isgpuarray(X)
+                if strcmp(layer.Mode,'Analysis')
+                    dLdX(ps+1:ps+pa,:,:,:,:) = pagefun(@mtimes,Un_.',dLdZ(ps+1:ps+pa,:,:,:,:));
+                else
+                    dLdX(ps+1:ps+pa,:,:,:,:) = pagefun(@mtimes,Un_,dLdZ(ps+1:ps+pa,:,:,:,:));                    
+                end                
             else
-                cdLd_low = Un_*cdLd_low;
+                cdLd_low = reshape(dLdZ(ps+1:ps+pa,:,:,:,:),...
+                    pa,nrows*ncols*nlays*nSamples);
+                if strcmp(layer.Mode,'Analysis')
+                    cdLd_low = Un_.'*cdLd_low;
+                else
+                    cdLd_low = Un_*cdLd_low;
+                end
+                dLdX(ps+1:ps+pa,:,:,:,:) = reshape(cdLd_low,...
+                    pa,nrows,ncols,nlays,nSamples);
             end
-            adLd_(ps+1:ps+pa,:,:,:,:) = reshape(cdLd_low,...
-                pa,nrows,ncols,nlays,nSamples);
-            dLdX = adLd_; %ipermute(adLd_,[4 1 2 3 5]);
+            %dLdX = dLdX; %ipermute(adLd_,[4 1 2 3 5]);
             
             % dLdWi = <dLdZ,(dVdWi)X>
             fcn_orthmtxgen_diff = get_fcn_orthmtxgen_diff(anglesU);
@@ -168,15 +176,26 @@ classdef nsoltIntermediateRotation3dLayer < nnet.layer.Layer
             for iAngle = uint32(1:nAngles)
                 %dUn = fcn_orthmtxgen(anglesU,musU,iAngle);
                 [dUn,dUnPst,dUnPre] = fcn_orthmtxgen_diff(anglesU,musU,iAngle,dUnPst,dUnPre);                
-                a_ = X; %permute(X,[4 1 2 3 5]);
-                c_low = reshape(a_(ps+1:ps+pa,:,:,:,:),pa,nrows*ncols*nlays*nSamples);
-                if strcmp(layer.Mode,'Analysis')
-                    c_low = dUn*c_low;
+                a_ = [ 
+                    zeros([ps size(X,2:5)],'like',dLdZ)
+                    cast(X(ps+1:ps+pa,:,:,:,:),'like',dLdZ)
+                    ];
+                if isgpuarray(X)
+                    if strcmp(layer.Mode,'Analysis')
+                        a_(ps+1:ps+pa,:,:,:,:) = pagefun(@mtimes,dUn,a_(ps+1:ps+pa,:,:,:,:));
+                    else
+                        a_(ps+1:ps+pa,:,:,:,:) = pagefun(@mtimes,dUn.',a_(ps+1:ps+pa,:,:,:,:));
+                    end
                 else
-                    c_low = dUn.'*c_low;
+                    c_low = reshape(X(ps+1:ps+pa,:,:,:,:),pa,nrows*ncols*nlays*nSamples);
+                    if strcmp(layer.Mode,'Analysis')
+                        c_low = dUn*c_low;
+                    else
+                        c_low = dUn.'*c_low;
+                    end
+                    %a_ = zeros(size(a_),'like',dLdZ);
+                    a_(ps+1:ps+pa,:,:,:,:) = reshape(c_low,pa,nrows,ncols,nlays,nSamples);
                 end
-                a_ = zeros(size(a_),'like',dLdZ);
-                a_(ps+1:ps+pa,:,:,:,:) = reshape(c_low,pa,nrows,ncols,nlays,nSamples);
                 dVdW_X = a_; %ipermute(a_,[4 1 2 3 5]);
                 %
                 %dLdW(iAngle) = sum(dLdZ.*dVdW_X,'all');

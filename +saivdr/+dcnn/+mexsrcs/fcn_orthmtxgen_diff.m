@@ -38,16 +38,18 @@ for iTop=1:nDim_-1
             angle = angles(iAng);
             %
             rb = matrixrev(iBtm,:);
-            [rt,rb] = rot_(rt,rb,-angle);
-            matrixrev(iTop,:) = rt;
-            matrixrev(iBtm,:) = rb;
-            %
             db = zeros(1,nDim_,'like',angles);
             db(iBtm) = 1;
             dangle = angle + pi/2;
-            [dt,db] = rot_(dt,db,dangle);
-            matrixdif(iTop,:) = dt;
-            matrixdif(iBtm,:) = db;
+            % 
+            %[rt,rb] = rot_(rt,rb,-angle);
+            %[dt,db] = rot_(dt,db,dangle);
+            [vt,vb] = rot_([rt;dt],[rb;db],[-angle;dangle]);
+            %
+            matrixrev(iTop,:) = vt(1,:); %rt;
+            matrixrev(iBtm,:) = vb(1,:); %rb;
+            matrixdif(iTop,:) = vt(2,:); %dt;
+            matrixdif(iBtm,:) = vb(2,:); %db;
             %
             matrixpst = matrixpst*matrixrev;
             matrix    = matrixpst*matrixdif*matrixpre;
@@ -64,10 +66,7 @@ end
 function [vt,vb] = rot_(vt,vb,angle)
 c = cos(angle);
 s = sin(angle);
-u  = bsxfun(@plus,vt,vb);
-u  = bsxfun(@times,s,u);
-vt = bsxfun(@times,c+s,vt);
-vb = bsxfun(@times,c-s,vb);
-vt = bsxfun(@minus,vt,u);
-vb = bsxfun(@plus,vb,u);
+u  = bsxfun(@times,s,bsxfun(@plus,vt,vb));
+vt = bsxfun(@minus,bsxfun(@times,c+s,vt),u);
+vb = bsxfun(@plus,bsxfun(@times,c-s,vb),u);
 end

@@ -223,8 +223,8 @@ classdef nsoltInitialRotation3dLayer < nnet.layer.Layer
                 c_low = reshape(a_(ceil(nDecs/2)+1:nDecs,:,:,:,:),floor(nDecs/2),nrows*ncols*nlays*nSamples);
                 d_upp = dW0(:,1:ceil(nDecs/2))*c_upp;
                 d_low = dU0(:,1:floor(nDecs/2))*c_low;
-                dLdW(iAngle) = sum(dldz_upp.*d_upp,'all');
-                dLdW(nAngles/2+iAngle) = sum(dldz_low.*d_low,'all');
+                dLdW(iAngle) = sum(bsxfun(@times,dldz_upp,d_upp),'all');
+                dLdW(nAngles/2+iAngle) = sum(bsxfun(@times,dldz_low,d_low),'all');
             end
         end
         
