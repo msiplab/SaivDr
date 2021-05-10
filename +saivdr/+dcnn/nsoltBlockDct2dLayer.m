@@ -103,11 +103,16 @@ classdef nsoltBlockDct2dLayer < nnet.layer.Layer %#codegen
             %inputSample = zeros(height,width,'like',X);
             %inputCol = zeros(height,decH,'like',X);      
             outputComponent = zeros(nDecs,nRows,nCols,nSamples,'like',X);
-            outputSample = zeros(nDecs,nRows,nCols,'like',X);
+            if ~isgpuarray(X)
+                outputSample = zeros(nDecs,nRows,nCols,'like',X);
+            end
             %outputCol = zeros(nDecs,nRows,'like',X);
             %Y = zeros(nDecs,nRows,'like',X);
             for iComponent = 1:nComponents
                 inputComponent(:,:,1,:) = X(:,:,iComponent,:);
+                if isgpuarray(X)
+                    arrayY = zeros(nDecs,nRows,nCols,nSamples,'like',X);
+                end
                 for iSample = 1:nSamples
                     inputSample = inputComponent(:,:,1,iSample);
                     for iCol = 1:nCols
@@ -121,9 +126,18 @@ classdef nsoltBlockDct2dLayer < nnet.layer.Layer %#codegen
                         Y = reshape(permute(reshape(inputCol,decV,nRows,decH),...
                             [1 3 2]),decV*decH,nRows);
                         %outputSample(:,:,iCol) = outputCol;
-                        outputSample(:,:,iCol) = Cvh_*Y;
+                        if ~isgpuarray(X)
+                            outputSample(:,:,iCol) = Cvh_*Y;
+                        else
+                            arrayY(:,:,iCol,iSample) = Y;
+                        end
                     end
-                    outputComponent(:,:,:,iSample) = outputSample;
+                    if ~isgpuarray(X)
+                        outputComponent(:,:,:,iSample) = outputSample;
+                    end
+                end
+                if isgpuarray(X)
+                    outputComponent = pagefun(@mtimes,Cvh_,arrayY);
                 end
                 varargout{iComponent} = outputComponent;
             end
@@ -170,7 +184,6 @@ classdef nsoltBlockDct2dLayer < nnet.layer.Layer %#codegen
             for iComponent = 1:nComponents
                 dLdZ = varargin{layer.NumInputs+layer.NumOutputs+iComponent};
                 if iComponent == 1
-                    nElements = size(dLdZ,1);
                     nRows = size(dLdZ,2);
                     nCols = size(dLdZ,3);                    
                     height = decV*nRows;
@@ -178,18 +191,30 @@ classdef nsoltBlockDct2dLayer < nnet.layer.Layer %#codegen
                     nSamples = size(dLdZ,4);
                     dLdX = zeros(height,width,nComponents,nSamples,'like',dLdZ);
                     %
-                    inputSample = zeros(nElements,nRows,nCols,'like',dLdZ);
+                    if ~isgpuarray(dLdZ)
+                        nElements = size(dLdZ,1);
+                        inputSample = zeros(nElements,nRows,nCols,'like',dLdZ);
+                    end
                     %inputCol = zeros(nElements,nRows,'like',dLdZ);
                     %Y = zeros(nElements,nRows,'like',dLdZ);
                     %outputCol = zeros(height,decH,'like',dLdZ);
                     outputSample = zeros(height,width,'like',dLdZ);
                     outputComponent = zeros(height,width,1,nSamples,'like',dLdZ);
                 end
+                if isgpuarray(dLdZ)
+                    arrayX = pagefun(@mtimes,Cvh_T,dLdZ);
+                end
                 for iSample = 1:nSamples
-                    inputSample(:,:,:) = dLdZ(:,:,:,iSample);
+                    if ~isgpuarray(dLdZ)
+                        inputSample(:,:,:) = dLdZ(:,:,:,iSample);
+                    end
                     for iCol = 1:nCols
                         %inputCol(:,:) = inputSample(:,:,iCol);
-                        Y = Cvh_T*inputSample(:,:,iCol);
+                        if isgpuarray(dLdZ)
+                            X = arrayX(:,:,iCol,iSample);
+                        else
+                            X = Cvh_T*inputSample(:,:,iCol);
+                        end
                         %for iRow = 1:nRows
                         %    %coefs = inputCol(:,iRow);
                         %    outputCol((iRow-1)*decV+1:iRow*decV,:) = ...
@@ -197,7 +222,7 @@ classdef nsoltBlockDct2dLayer < nnet.layer.Layer %#codegen
                         %        reshape(Y(:,iRow),decV,decH);
                         %end
                         outputSample(:,(iCol-1)*decH+1:iCol*decH) = ...                        
-                            reshape(permute(reshape(Y,decV,decH,nRows),...
+                            reshape(permute(reshape(X,decV,decH,nRows),...
                             [1 3 2]),decV*nRows,decH);
                     end
                     outputComponent(:,:,1,iSample) = outputSample;

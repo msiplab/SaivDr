@@ -217,14 +217,14 @@ classdef nsoltBlockIdct2dLayer < nnet.layer.Layer %#codegen
                             outputSample(:,:,iCol) = Cvh_*X;
                         else
                             arrayX(:,:,iCol,iSample) = X;
-                        end                            
+                        end
                     end
                     if ~isgpuarray(X)
                         outputComponent(:,:,:,iSample) = outputSample;
                     end
                 end
                 if isgpuarray(X)
-                        outputComponent = pagefun(@mtimes,Cvh_,arrayX);
+                    outputComponent = pagefun(@mtimes,Cvh_,arrayX);
                 end
                 varargout{iComponent} = outputComponent;
             end
