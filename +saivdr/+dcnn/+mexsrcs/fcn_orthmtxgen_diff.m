@@ -24,11 +24,11 @@ if nargin < 3
     pdAng = 0;
 end
 
-nDim_ = (1+sqrt(1+8*length(angles)))/2;
+nDim_ = (1+sqrt(1+8.*length(angles)))/2.;
 matrix = eye(nDim_,'like',angles);
 matrixrev = eye(nDim_,'like',angles);
 matrixdif = zeros(nDim_,'like',angles);
-iAng = 1;
+iAng = uint32(1);
 for iTop=1:nDim_-1
     rt = matrixrev(iTop,:);
     dt = zeros(1,nDim_,'like',angles);
@@ -56,9 +56,7 @@ for iTop=1:nDim_-1
         iAng = iAng + 1;
     end
 end
-if isscalar(mus)
-    matrix = mus*matrix;
-elseif ~isempty(mus)
+if ~all(mus==1)
     matrix = bsxfun(@times,mus(:),matrix);
 end
 end

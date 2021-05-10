@@ -130,13 +130,24 @@ classdef nsoltBlockIdct3dLayer < nnet.layer.Layer
                     outputSample = zeros(height,width,depth,'like',X);
                     outputComponent = zeros(height,width,depth,1,nSamples,'like',X);
                 end
+                if isgpuarray(X)
+                    arrayY = pagefun(@mtimes,Cvhd_T,X);
+                end
                 for iSample = 1:nSamples
-                    inputSample(:,:,:,:) = X(:,:,:,:,iSample);
+                    if ~isgpuarray(X)
+                        inputSample(:,:,:,:) = X(:,:,:,:,iSample);
+                    end
                     for iLay = 1:nLays
-                        inputLay(:,:,:) = inputSample(:,:,:,iLay);
+                        if ~isgpuarray(X)
+                     	  inputLay(:,:,:) = inputSample(:,:,:,iLay);
+                        end
                         for iCol = 1:nCols
                             %inputCol(:,:,:)= inputLay(:,:,iCol);
-                            Y = Cvhd_T*inputLay(:,:,iCol);
+                            if isgpuarray(X)
+                                Y = arrayY(:,:,iCol,iLay,iSample);
+                            else
+                                Y = Cvhd_T*inputLay(:,:,iCol);
+                            end
                             for iRow = 1:nRows
                                 %coefs = inputCol(:,iRow);
                                 outputCol((iRow-1)*decV+1:iRow*decV,:,:) = ...
@@ -214,12 +225,17 @@ classdef nsoltBlockIdct3dLayer < nnet.layer.Layer
             %inputLay = zeros(height,width,decD,'like',dLdZ);
             inputCol = zeros(height,decH,decD,'like',dLdZ);
             outputComponent = zeros(nDecs,nRows,nCols,nLays,nSamples,'like',dLdZ);
-            outputSample = zeros(nDecs,nRows,nCols,nLays,'like',dLdZ);
-            outputLay = zeros(nDecs,nRows,nCols,'like',dLdZ);
+            if ~isgpuarray(dLdZ)
+                outputSample = zeros(nDecs,nRows,nCols,nLays,'like',dLdZ);
+                outputLay = zeros(nDecs,nRows,nCols,'like',dLdZ);
+            end
             %outputCol = zeros(nDecs,nRows,'like',dLdZ);
             %X = zeros(nDecs,nRows,'like',dLdZ);
             for iComponent = 1:nComponents
                 inputComponent(:,:,:,1,:) = dLdZ(:,:,:,iComponent,:);
+                if isgpuarray(dLdZ)
+                    arrayX = zeros(nDecs,nRows,nCols,nLays,nSamples,'like',dLdZ);
+                end
                 for iSample = 1:nSamples
                     inputSample =  inputComponent(:,:,:,1,iSample);     
                     for iLay = 1:nLays
@@ -237,11 +253,22 @@ classdef nsoltBlockIdct3dLayer < nnet.layer.Layer
                                 inputCol,decV,nRows,decH,decD),[1 3 4 2]),...
                                 decV*decH*decD,nRows);
                             %outputLay(:,:,iCol) = outputCol;
-                            outputLay(:,:,iCol) = Cvhd_*X;
+                            if ~isgpuarray(X)
+                                outputLay(:,:,iCol) = Cvhd_*X;
+                            else
+                                outputLay(:,:,iCol,iSample) = X;
+                            end
                         end
-                        outputSample(:,:,:,iLay) = outputLay;
+                        if ~isgpuarray(X)
+                            outputSample(:,:,:,iLay) = outputLay;
+                        end
                     end
-                    outputComponent(:,:,:,:,iSample) = outputSample;
+                    if ~isgpuarray(X)
+                        outputComponent(:,:,:,:,iSample) = outputSample;
+                    end
+                end
+                if isgpuarray(X)
+                    outputComponent = pagefun(@mtimes,Cvhd_,arrayX);
                 end
                 varargout{iComponent} = outputComponent; 
             end               
