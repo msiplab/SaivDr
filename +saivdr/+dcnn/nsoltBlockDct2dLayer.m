@@ -84,6 +84,10 @@ classdef nsoltBlockDct2dLayer < nnet.layer.Layer %#codegen
             import saivdr.dictionary.utility.Direction                                                                        
             nComponents = layer.NumOutputs;            
             varargout = cell(1,nComponents);
+            
+            if isdlarray(X)
+                X = stripdims(X);
+            end            
                         
             % Layer forward function for prediction goes here.
             decFactor = layer.DecimationFactor;

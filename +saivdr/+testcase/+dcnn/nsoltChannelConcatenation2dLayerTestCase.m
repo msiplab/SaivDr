@@ -24,8 +24,9 @@ classdef nsoltChannelConcatenation2dLayerTestCase < matlab.unittest.TestCase
     properties (TestParameter)
         nchs = { [3 3], [4 4] };
         datatype = { 'single', 'double' };
-        nrows = struct('small', 4,'medium', 8, 'large', 16);
-        ncols = struct('small', 4,'medium', 8, 'large', 16);
+        nrows = struct('small', 1,'medium', 4, 'large', 16);
+        ncols = struct('small', 1,'medium', 4, 'large', 16);
+        batch = { 1, 8 };
     end
     
     methods (TestClassTeardown)
@@ -60,14 +61,14 @@ classdef nsoltChannelConcatenation2dLayerTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(actualDescription,expctdDescription);
         end
         
-        function testPredict(testCase,nchs,nrows,ncols,datatype)
+        function testPredict(testCase,nchs,nrows,ncols,batch,datatype)
             
             import matlab.unittest.constraints.IsEqualTo
             import matlab.unittest.constraints.AbsoluteTolerance
             tolObj = AbsoluteTolerance(1e-6,single(1e-6));
             
             % Parameters
-            nSamples = 8;
+            nSamples = batch;
             nChsTotal = sum(nchs);
             % nRows x nCols x (nChsTotal-1) x nSamples 
             Xac = randn(nrows,ncols,nChsTotal-1,nSamples,datatype);
@@ -93,14 +94,14 @@ classdef nsoltChannelConcatenation2dLayerTestCase < matlab.unittest.TestCase
             
         end
                 
-        function testBackward(testCase,nchs,nrows,ncols,datatype)
+        function testBackward(testCase,nchs,nrows,ncols,batch,datatype)
             
             import matlab.unittest.constraints.IsEqualTo
             import matlab.unittest.constraints.AbsoluteTolerance
             tolObj = AbsoluteTolerance(1e-6,single(1e-6));
             
             % Parameters
-            nSamples = 8;
+            nSamples = batch;
             nChsTotal = sum(nchs);
             % nChsTotal x nRows x nCols x nSamples
             %dLdZ = randn(nrows,ncols,nChsTotal,nSamples,datatype);

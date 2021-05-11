@@ -55,6 +55,14 @@ classdef nsoltChannelConcatenation2dLayer < nnet.layer.Layer %#codegen
             %         Z           - Outputs of layer forward function
             %  
             
+            if isdlarray(Xac) 
+                Xac = stripdims(Xac);
+            end                        
+            
+            if isdlarray(Xdc) 
+                Xdc = stripdims(Xdc);
+            end                                    
+            
             % Layer forward function for prediction goes here.
             Z = permute(cat(3,Xdc,Xac),[3 1 2 4]);
         end

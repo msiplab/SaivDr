@@ -1,7 +1,7 @@
 classdef nsoltBlockDct3dLayer < nnet.layer.Layer
     %NSOLTBLOCKDCT3DLAYER
     %
-    %   ベクトル配列をブロック配列を入力:
+    %   ベクトル配列をブロック配列を入力: 
     %      (Stride(1)xnRows) x (Stride(2)xnCols) x (Stride(3)xnLays) x nComponents x nSamples
     %
     %   コンポーネント別に出力(nComponents=1):
@@ -101,6 +101,10 @@ classdef nsoltBlockDct3dLayer < nnet.layer.Layer
             %         Z1, ..., Zm - Outputs of layer forward function
             import saivdr.dictionary.utility.Direction
             varargout = cell(1,nargout);
+            
+            if isdlarray(X)
+                X = stripdims(X);
+            end
             
             % Layer forward function for prediction goes here.
             decFactor = layer.DecimationFactor;
