@@ -10,7 +10,7 @@ classdef nsoltChannelConcatenation3dLayer < nnet.layer.Layer
     %
     % Requirements: MATLAB R2020a
     %
-    % Copyright (c) 2020, Shogo MURAMATSU
+    % Copyright (c) 2020-2021, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -54,6 +54,14 @@ classdef nsoltChannelConcatenation3dLayer < nnet.layer.Layer
             % Outputs:
             %         Z           - Outputs of layer forward function
             %
+            
+            if isdlarray(Xac) 
+                Xac = stripdims(Xac);
+            end                        
+            
+            if isdlarray(Xdc) 
+                Xdc = stripdims(Xdc);
+            end                                    
             
             % Layer forward function for prediction goes here.
             %Z = cat(4,Xac,Xdc);

@@ -2,7 +2,7 @@ classdef nsoltBlockIdct2dLayer < nnet.layer.Layer %#codegen
     %NSOLTBLOCKIDCT2DLAYER
     %
     %   コンポーネント別に入力(nComponents):
-    %      nRows x nCols x nDecs x nSamples
+    %      nDecs x nRows x nCols x nSamples
     %
     %   ベクトル配列をブロック配列にして出力:
     %      (Stride(1)xnRows) x (Stride(2)xnCols) x nComponents x nSamples
@@ -151,6 +151,10 @@ classdef nsoltBlockIdct2dLayer < nnet.layer.Layer %#codegen
                 end
                 %}
             end
+            if isdlarray(X)
+                Z = dlarray(Z,'SSCB');
+            end
+            
         end
                         
         function varargout = backward(layer,varargin)

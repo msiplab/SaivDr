@@ -24,9 +24,10 @@ classdef nsoltChannelConcatenation3dLayerTestCase < matlab.unittest.TestCase
     properties (TestParameter)
         nchs = { [4 4], [5 5] };
         datatype = { 'single', 'double' };
-        nrows = struct('small', 4,'medium', 8, 'large', 16);
-        ncols = struct('small', 4,'medium', 8, 'large', 16);
-        nlays = struct('small', 4,'medium', 8, 'large', 16);
+        nrows = struct('small', 1,'medium', 4, 'large', 16);
+        ncols = struct('small', 1,'medium', 4, 'large', 16);
+        nlays = struct('small', 1,'medium', 4, 'large', 16);
+        batch = { 1, 8 };
     end
     
     methods (TestClassTeardown)
@@ -59,14 +60,14 @@ classdef nsoltChannelConcatenation3dLayerTestCase < matlab.unittest.TestCase
             testCase.verifyEqual(actualDescription,expctdDescription);
         end
         
-        function testPredict(testCase,nchs,nrows,ncols,nlays,datatype)
+        function testPredict(testCase,nchs,nrows,ncols,nlays,batch,datatype)
             
             import matlab.unittest.constraints.IsEqualTo
             import matlab.unittest.constraints.AbsoluteTolerance
             tolObj = AbsoluteTolerance(1e-6,single(1e-6));
             
             % Parameters
-            nSamples = 8;
+            nSamples = batch;
             nChsTotal = sum(nchs);
             % nRows x nCols x nLays x (nChsTotal-1) x nSamples
             Xac = randn(nrows,ncols,nlays,nChsTotal-1,nSamples,datatype);
@@ -92,14 +93,14 @@ classdef nsoltChannelConcatenation3dLayerTestCase < matlab.unittest.TestCase
             
         end
         
-        function testBackward(testCase,nchs,nrows,ncols,nlays,datatype)
+        function testBackward(testCase,nchs,nrows,ncols,nlays,batch,datatype)
             
             import matlab.unittest.constraints.IsEqualTo
             import matlab.unittest.constraints.AbsoluteTolerance
             tolObj = AbsoluteTolerance(1e-6,single(1e-6));
             
             % Parameters
-            nSamples = 8;
+            nSamples = batch;
             nChsTotal = sum(nchs);
             % nChsTotal x nRows x nCols x nLays x nSamples
             %dLdZ = randn(nrows,ncols,nlays,nChsTotal,nSamples,datatype);
