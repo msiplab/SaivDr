@@ -1,6 +1,8 @@
 classdef scaledActivationLayer < nnet.layer.Layer
     % SUBBANDACTIVATIONLAYER
     %
+    % SSCB -> SSCB
+    % 
     % Copyright (c) Shogo MURAMATSU, 2021
     % All rights reserved.
     % 
@@ -48,7 +50,7 @@ classdef scaledActivationLayer < nnet.layer.Layer
                 "Activation function: " + layer.ActivationFunction + ")";
         end
         
-        function Z = predict(layer, X)
+        function Z = predict(layer, X)            
             U = layer.ScaleIn.*(X + layer.BiasIn);
             if strcmpi(layer.ActivationFunction,'tanh')
                 V = tanh(U);

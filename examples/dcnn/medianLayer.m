@@ -1,6 +1,8 @@
 classdef medianLayer < nnet.layer.Layer
     % MEDIANLAYER
     %
+    % SSCB -> SSCB
+    %
     % Copyright (c) Shogo MURAMATSU, 2021
     % All rights reserved.
     %
@@ -47,11 +49,7 @@ classdef medianLayer < nnet.layer.Layer
                 error('Invalid # of channels')
             end
             szBatch = size(X,4);
-            if isdlarray(X)
-                x = extractdata(X);
-            else
-                x = X;
-            end
+            x = X;
             %
             z = zeros(size(x),'like',x);
             padopt = layer.PadOption;
@@ -72,11 +70,7 @@ classdef medianLayer < nnet.layer.Layer
                         
                 end
             end
-            if isdlarray(X)
-                Z = dlarray(z);
-            else
-                Z = z;
-            end
+            Z = z;
         end
         
         function dLdX = backward(layer,X,Z,dLdZ,~)
@@ -89,12 +83,7 @@ classdef medianLayer < nnet.layer.Layer
             szBatch = size(dLdZ,4);
             padopt = layer.PadOption;
             %
-            if isdlarray(dLdZ)
-                dldz = extractdata(dLdZ);
-            else
-                dldz = dLdZ;
-            end
-            %
+            dldz = dLdZ;
             dldx = zeros(size(dldz),'like',dldz);
             for idx = 1:szBatch
                 for iChannel = 1:nChannels_
@@ -129,12 +118,7 @@ classdef medianLayer < nnet.layer.Layer
                         bx(nPads(1)+1:nPads(1)+nDims(1),nPads(2)+1:nPads(2)+nDims(2));
                 end
             end
-            %
-            if isdlarray(dLdZ)
-                dLdX = dlarray(dldx);
-            else
-                dLdX = dldx;
-            end
+            dLdX = dldx;
         end
     end
 end
