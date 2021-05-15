@@ -1,5 +1,5 @@
-classdef depthSeparationLayer < nnet.layer.Layer %#codegen
-    %DEPTHSEPARATION2DLAYER
+classdef nsoltComponentSeparation2dLayer < nnet.layer.Layer %#codegen
+    %NSOLTCOMPONENTSEPARATION2DLAYER
     %
     % Requirements: MATLAB R2020b
     %
@@ -21,29 +21,31 @@ classdef depthSeparationLayer < nnet.layer.Layer %#codegen
     end
     
     methods
-        function layer = depthSeparationLayer(numOutputs,varargin)
+        function layer = nsoltComponentSeparation2dLayer(numComponents,varargin)
             % (Optional) Create a myLayer.
             % This function must have the same name as the class.
             p = inputParser;
             addParameter(p,'Name','')
             parse(p,varargin{:})
             
-            if numOutputs < 2
-                error('numOutputs should be greater than one.');
+            if numComponents < 1
+                error('numComponents should be greater than or equal to one.');
             end
             
             % Layer constructor function goes here.
             layer.Name = p.Results.Name;
-            for idx = 1:numOutputs
-                layer.OutputNames{idx} = [ 'out' num2str(idx)];
+            for idx = 1:numComponents
+                layer.OutputNames{idx} = [ 'out' num2str(idx) ];
             end
         end
         
         function varargout = predict(layer, X)
-           numOutputs = length(layer.OutputNames);
+           numOutputs = length(layer.OutputNames);            
+           nChsPerCmp = size(X,3)/numOutputs;
            varargout = cell(numOutputs,1);
            for idx = 1:numOutputs
-                varargout{idx} = X(:,:,idx,:);
+                varargout{idx} = ...
+                    X(:,:,(idx-1)*nChsPerCmp+1:idx*nChsPerCmp,:);
            end
         end
         

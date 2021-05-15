@@ -159,7 +159,9 @@ nsoltLgraph = layerGraph;
 %% Analysis layers
 if isAnalyzer
     nsoltLgraph = nsoltLgraph.addLayers(...
-        imageInputLayer(inputSize,'Name','Image input'));
+        imageInputLayer(inputSize,...
+            'Name','Image input',...
+            'Normalization','none'));
     % Level 1
     iLv = 1;
     strLv = sprintf('Lv%0d_',iLv);
@@ -180,16 +182,18 @@ if isAnalyzer
     if nComponents > 1
         nsoltLgraph = nsoltLgraph.addLayers(...
             depthConcatenationLayer(nComponents,'Name',[strLv 'DcOut']));
+        nsoltLgraph = nsoltLgraph.addLayers(...
+            depthConcatenationLayer(nComponents,'Name',[strLv 'AcOut']));        
     else
         nsoltLgraph = nsoltLgraph.addLayers(...
             nsoltIdentityLayer('Name',[strLv 'DcOut'],'InputNames',{'in1'}));
+        nsoltLgraph = nsoltLgraph.addLayers(...
+            nsoltIdentityLayer('Name',[strLv 'AcOut'],'InputNames',{'in1'}));        
     end
     for iCmp = 1:nComponents
         strCmp = sprintf('Cmp%0d_',iCmp);
-        nsoltLgraph = nsoltLgraph.addLayers(...
-            nsoltIdentityLayer('Name',[strLv strCmp 'AcOut']));
         nsoltLgraph = nsoltLgraph.connectLayers(...
-            [strLv strCmp 'Sp/ac'],[strLv strCmp 'AcOut']);
+            [strLv strCmp 'Sp/ac'], [strLv 'AcOut/in' num2str(iCmp)]);
         nsoltLgraph = nsoltLgraph.connectLayers(...
             [strLv strCmp 'Sp/dc'], [strLv 'DcOut/in' num2str(iCmp)]);
     end
@@ -215,20 +219,36 @@ if isAnalyzer
         if nComponents > 1
             nsoltLgraph = nsoltLgraph.addLayers(...
                 depthConcatenationLayer(nComponents,'Name',[strLv 'DcOut']));
+            nsoltLgraph = nsoltLgraph.addLayers(...
+                depthConcatenationLayer(nComponents,'Name',[strLv 'AcOut']));            
         else
             nsoltLgraph = nsoltLgraph.addLayers(...
                 nsoltIdentityLayer('Name',[strLv 'DcOut'],'InputNames',{'in1'}));
+            nsoltLgraph = nsoltLgraph.addLayers(...
+                nsoltIdentityLayer('Name',[strLv 'AcOut'],'InputNames',{'in1'}));            
         end
         for iCmp = 1:nComponents
             strCmp = sprintf('Cmp%0d_',iCmp);
-            nsoltLgraph = nsoltLgraph.addLayers(...
-                nsoltIdentityLayer('Name',[strLv strCmp 'AcOut']));
             nsoltLgraph = nsoltLgraph.connectLayers(...
-                [strLv strCmp 'Sp/ac'],[strLv strCmp 'AcOut']);
+                [strLv strCmp 'Sp/ac'], [strLv 'AcOut/in' num2str(iCmp)]);
             nsoltLgraph = nsoltLgraph.connectLayers(...
                 [strLv strCmp 'Sp/dc'], [strLv 'DcOut/in' num2str(iCmp)]);
         end
     end
+end
+if ~isSynthesizer
+    for iLv = 1:nLevels
+        strLv = sprintf('Lv%0d_',iLv);
+        nsoltLgraph = nsoltLgraph.addLayers(...
+            regressionLayer('Name',[ strLv 'Ac feature output']));
+        nsoltLgraph = nsoltLgraph.connectLayers(...
+            [ strLv 'AcOut'],[ strLv 'Ac feature output']);
+    end
+    strLv = sprintf('Lv%0d_',nLevels);
+    nsoltLgraph = nsoltLgraph.addLayers(...
+        regressionLayer('Name',[ strLv 'Dc feature output']));
+    nsoltLgraph = nsoltLgraph.connectLayers(...
+            [ strLv 'DcOut'],[ strLv 'Dc feature output']);    
 end
 
 %% Synthesis layers
@@ -236,22 +256,17 @@ if isSynthesizer
     % Level N
     iLv = nLevels;
     strLv = sprintf('Lv%0d_',iLv);
-    if nComponents > 1
-        nsoltLgraph = nsoltLgraph.addLayers(...
-            depthSeparationLayer(nComponents,'Name',[strLv 'DcIn']));
-    else
-        nsoltLgraph = nsoltLgraph.addLayers(...
-            nsoltIdentityLayer('Name',[strLv 'DcIn'],'OutputNames',{'out1'}));
-    end
+    nsoltLgraph = nsoltLgraph.addLayers(...
+        nsoltComponentSeparation2dLayer(nComponents,'Name',[strLv 'DcIn']));
+    nsoltLgraph = nsoltLgraph.addLayers(...
+        nsoltComponentSeparation2dLayer(nComponents,'Name',[strLv 'AcIn']));
     for iCmp = 1:nComponents
         strCmp = sprintf('Cmp%0d_',iCmp);
         nsoltLgraph = nsoltLgraph.addLayers(synthesisLayers{iLv,iCmp}(end:-1:1));
-        nsoltLgraph = nsoltLgraph.addLayers(...
-            nsoltIdentityLayer('Name',[strLv strCmp 'AcIn']));
         nsoltLgraph = nsoltLgraph.connectLayers(...
-            [strLv strCmp 'AcIn'],[strLv strCmp 'Cn/ac']);
+            [strLv 'AcIn/out' num2str(iCmp) ], [strLv strCmp 'Cn/ac']);
         nsoltLgraph = nsoltLgraph.connectLayers(...
-            [strLv 'DcIn/out' num2str(iCmp) ],[strLv strCmp 'Cn/dc']);
+            [strLv 'DcIn/out' num2str(iCmp) ], [strLv strCmp 'Cn/dc']);
     end
     nsoltLgraph = nsoltLgraph.addLayers(blockIdctLayers{iLv});
     for iCmp = 1:nComponents
@@ -271,21 +286,23 @@ if isSynthesizer
         strLvPre = sprintf('Lv%0d_',iLv+1);
         if nComponents > 1
             nsoltLgraph = nsoltLgraph.addLayers(...
-                depthSeparationLayer(nComponents,'Name',[strLv 'DcIn']));
+                nsoltComponentSeparation2dLayer(nComponents,'Name',[strLv 'DcIn']));
+            nsoltLgraph = nsoltLgraph.addLayers(...
+                nsoltComponentSeparation2dLayer(nComponents,'Name',[strLv 'AcIn']));            
         else
             nsoltLgraph = nsoltLgraph.addLayers(...
                 nsoltIdentityLayer('Name',[strLv 'DcIn'],'OutputNames',{'out1'}));
+            nsoltLgraph = nsoltLgraph.addLayers(...
+                nsoltIdentityLayer('Name',[strLv 'AcIn'],'OutputNames',{'out1'}));            
         end
         nsoltLgraph = nsoltLgraph.connectLayers([strLvPre 'E0~'],[strLv 'DcIn']);
         for iCmp = 1:nComponents
             strCmp = sprintf('Cmp%0d_',iCmp);
             nsoltLgraph = nsoltLgraph.addLayers(synthesisLayers{iLv,iCmp}(end:-1:1));
-            nsoltLgraph = nsoltLgraph.addLayers(...
-                nsoltIdentityLayer('Name',[strLv strCmp 'AcIn']));
             nsoltLgraph = nsoltLgraph.connectLayers(...
-                [strLv strCmp 'AcIn'],[strLv strCmp 'Cn/ac']);
+                [strLv 'AcIn/out' num2str(iCmp) ], [strLv strCmp 'Cn/ac']);
             nsoltLgraph = nsoltLgraph.connectLayers(...
-                [strLv 'DcIn/out' num2str(iCmp) ],[strLv strCmp 'Cn/dc']);
+                [strLv 'DcIn/out' num2str(iCmp) ], [strLv strCmp 'Cn/dc']);
         end
         nsoltLgraph = nsoltLgraph.addLayers(blockIdctLayers{iLv});
         for iCmp = 1:nComponents
@@ -301,11 +318,34 @@ if isSynthesizer
     end
     
     % Level 1
-    nsoltLgraph = nsoltLgraph.addLayers(nsoltIdentityLayer('Name','Lv1_Out'));
+    nsoltLgraph = nsoltLgraph.addLayers(...
+        nsoltIdentityLayer('Name','Lv1_Out'));
     nsoltLgraph = nsoltLgraph.connectLayers('Lv1_E0~','Lv1_Out');
     nsoltLgraph = nsoltLgraph.addLayers(...
         regressionLayer('Name','Image output'));
     nsoltLgraph = nsoltLgraph.connectLayers('Lv1_Out','Image output');
+end
+if ~isAnalyzer
+    for iLv = 1:nLevels
+        strLv = sprintf('Lv%0d_',iLv);
+        inputSubSize = inputSize;
+        inputSubSize(1:2) = inputSubSize(1:2)./(decFactor.^iLv);
+        nsoltLgraph = nsoltLgraph.addLayers(...
+            imageInputLayer(inputSubSize,...
+                'Name',[ strLv 'Ac feature input'],...
+                'Normalization','none'));
+        nsoltLgraph = nsoltLgraph.connectLayers(...
+            [ strLv 'Ac feature input'],[ strLv 'AcIn'] );
+    end
+    strLv = sprintf('Lv%0d_',nLevels);
+    inputSubSize = inputSize;
+    inputSubSize(1:2) = inputSubSize(1:2)./(decFactor.^nLevels);    
+    nsoltLgraph = nsoltLgraph.addLayers(...
+        imageInputLayer(inputSubSize,...
+            'Name',[ strLv 'Dc feature input'],...
+            'Normalization','none'));
+    nsoltLgraph = nsoltLgraph.connectLayers(...
+            [ strLv 'Dc feature input'],[ strLv 'DcIn']);
 end
 
 %% Connect analyzer and synthesizer
@@ -313,12 +353,9 @@ if isAnalyzer && isSynthesizer
     strLv = sprintf('Lv%0d_',nLevels);
     nsoltLgraph = nsoltLgraph.connectLayers([strLv 'DcOut'],[strLv 'DcIn']);
     for iLv = nLevels:-1:1
-        for iCmp = 1:nComponents
-            strLv = sprintf('Lv%0d_',iLv);
-            strCmp = sprintf('Cmp%0d_',iCmp);
-            nsoltLgraph = nsoltLgraph.connectLayers(...
-                [strLv strCmp 'AcOut'],[strLv strCmp 'AcIn']);
-        end
+        strLv = sprintf('Lv%0d_',iLv);
+        nsoltLgraph = nsoltLgraph.connectLayers(...
+            [strLv 'AcOut'],[strLv 'AcIn']);
     end
 end
 
