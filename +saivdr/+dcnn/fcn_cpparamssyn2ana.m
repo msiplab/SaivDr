@@ -1,4 +1,4 @@
-function analysisnet = fcn_cpparamssyn2ana(analysisnet,synthesisnet)
+function analysislgraph = fcn_cpparamssyn2ana(analysislgraph,synthesislgraph)
 %FCN_CPPARAMSSYN2ANA
 %
 % Setting up the analysis dictionary (adjoint operator) by copying
@@ -6,7 +6,7 @@ function analysisnet = fcn_cpparamssyn2ana(analysisnet,synthesisnet)
 %
 % Requirements: MATLAB R2020a
 %
-% Copyright (c) 2020, Shogo MURAMATSU
+% Copyright (c) 2020-2021, Shogo MURAMATSU
 %
 % All rights reserved.
 %
@@ -19,12 +19,20 @@ function analysisnet = fcn_cpparamssyn2ana(analysisnet,synthesisnet)
 %
 import saivdr.dcnn.*
 %
-synthesisLearnables = synthesisnet.Learnables;
-nLearnables = height(synthesisLearnables);
-for iLearnable = 1:nLearnables
-    layer = synthesisLearnables.Layer(iLearnable);
-    value = synthesisLearnables.Value(iLearnable);
-    idx = (analysisnet.Learnables.Layer == strrep(layer,'~',''));
-    analysisnet.Learnables.Value(idx) = value;
+expanalyzer = '^Lv\d+_Cmp\d+_V(\w\d|0)+$';
+nLayers = height(analysislgraph.Layers);
+for iLayer = 1:nLayers
+    alayer = analysislgraph.Layers(iLayer);
+    alayerName = alayer.Name;
+    if ~isempty(regexp(alayerName,expanalyzer,'once'))
+        slayer = synthesislgraph.Layers({synthesislgraph.Layers.Name} ==  alayerName + "~");
+        alayer.Angles = slayer.Angles;
+        alayer.Mus = slayer.Mus;
+        if isa(alayer,'saivdr.dcnn.nsoltInitialRotation2dLayer')
+            alayer.NoDcLeakage = slayer.NoDcLeakage;
+        end
+        analysislgraph = analysislgraph.replaceLayer(alayerName,alayer);
+        disp("Copy angles from " + slayer.Name + " to " + alayerName)
+    end
 end
 end

@@ -5,7 +5,7 @@ function atomicimshow(synthesisnet,patchsize)
 %
 % Requirements: MATLAB R2020a
 %
-% Copyright (c) 2020, Shogo MURAMATSU
+% Copyright (c) 2020-2021, Shogo MURAMATSU
 %
 % All rights reserved.
 %
@@ -19,7 +19,8 @@ function atomicimshow(synthesisnet,patchsize)
 import saivdr.dcnn.*
 
 % Extraction of information
-targetlayer = 'Lv1_V0~';
+expfinallayer = '^Lv1_Cmp1+_V0~$';
+expidctlayer = '^Lv\d+_E0~$';
 nLayers = length(synthesisnet.Layers);
 nLevels = 0;
 isSerialized = false;
@@ -28,12 +29,15 @@ for iLayer = 1:nLayers
     if strcmp(layer.Name,'Sb_Dsz')
         isSerialized = true;
     end
-    if strcmp(layer.Name,targetlayer)
+    if ~isempty(regexp(layer.Name,expfinallayer,'once'))
         nChannels = layer.NumberOfChannels;
         decFactor = layer.DecimationFactor;
     end
-    if ~isempty(strfind(layer.Name,'E0'))
+    if ~isempty(regexp(layer.Name,expidctlayer,'once'))
         nLevels = nLevels + 1;
+        if nLevels == 1
+            nComponents = layer.NumInputs;
+        end
     end
 end
 nChsPerLv = sum(nChannels);
@@ -56,9 +60,28 @@ end
 % Remove deserialization
 if isSerialized
     synthesislgraph = layerGraph(synthesisnet);
-    synthesislgraph = synthesislgraph.removeLayers({'Sb_Dsz','Subband images'});
-    [~,synthesislgraph] = fcn_replaceinputlayers([],...
-        synthesislgraph,patchsize);
+    synthesislgraph = synthesislgraph.removeLayers( { 'Sb_Dsz', 'Subband images' });
+    %
+    for iLv = 1:nLevels
+        synthesislgraph = synthesislgraph.addLayers(...            
+            imageInputLayer(...
+            [patchsize./(decFactor.^iLv) nComponents*(sum(nChannels)-1)],...
+            'Name',['Lv' num2str(iLv) '_Ac feature input'],...
+            'Normalization','none'));
+        synthesislgraph = synthesislgraph.connectLayers(...
+            ['Lv' num2str(iLv) '_Ac feature input'],...
+            ['Lv' num2str(iLv) '_AcIn']);
+    end
+    %
+    synthesislgraph = synthesislgraph.addLayers(...
+        imageInputLayer(...
+        [patchsize./(decFactor.^nLevels) nComponents],...
+        'Name',['Lv' num2str(nLevels) '_Dc feature input'],...
+        'Normalization','none'));
+    synthesislgraph = synthesislgraph.connectLayers(...
+        ['Lv' num2str(nLevels) '_Dc feature input'],...
+        ['Lv' num2str(nLevels) '_DcIn']);
+    %
     synthesisnet = dlnetwork(synthesislgraph);
 end
 
@@ -70,14 +93,14 @@ dls = cell(nLevels+1,1);
 for iRevLv = nLevels:-1:1
     if iRevLv == nLevels
         dls{nLevels+1} = dlarray(...
-            zeros([patchsize./(decFactor.^nLevels) 1],'single'),...
+            zeros([patchsize./(decFactor.^nLevels) nComponents],'single'),...
             'SSC');
         dls{nLevels} = dlarray(...
-            zeros([patchsize./(decFactor.^nLevels) (nChsPerLv-1)],'single'),...
+            zeros([patchsize./(decFactor.^nLevels) nComponents*(nChsPerLv-1)],'single'),...
             'SSC');
     else
         dls{iRevLv} = dlarray(...
-            zeros([patchsize./(decFactor.^iRevLv) (nChsPerLv-1)],'single'),...
+            zeros([patchsize./(decFactor.^iRevLv) nComponents*(nChsPerLv-1)],'single'),...
             'SSC');
     end
 end

@@ -34,8 +34,10 @@ classdef nsoltComponentSeparation2dLayer < nnet.layer.Layer %#codegen
             
             % Layer constructor function goes here.
             layer.Name = p.Results.Name;
-            for idx = 1:numComponents
-                layer.OutputNames{idx} = [ 'out' num2str(idx) ];
+            if numComponents > 1
+                for idx = 1:numComponents
+                    layer.OutputNames{idx} = [ 'out' num2str(idx) ];
+                end
             end
         end
         
