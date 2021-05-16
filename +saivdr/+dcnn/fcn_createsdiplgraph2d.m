@@ -15,6 +15,8 @@ function sdipLgraph = fcn_createsdiplgraph2d(varargin)
 % http://msiplab.eng.niigata-u.ac.jp/
 %
 import saivdr.dcnn.*
+warning('Deprecated')
+
 p = inputParser;
 addParameter(p,'NumberOfChannels',[2 2])
 addParameter(p,'DecimationFactor',[2 2])

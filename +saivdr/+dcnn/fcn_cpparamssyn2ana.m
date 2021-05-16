@@ -25,7 +25,7 @@ for iLayer = 1:nLayers
     alayer = analysislgraph.Layers(iLayer);
     alayerName = alayer.Name;
     if ~isempty(regexp(alayerName,expanalyzer,'once'))
-        slayer = synthesislgraph.Layers({synthesislgraph.Layers.Name} ==  alayerName + "~");
+        slayer = synthesislgraph.Layers({synthesislgraph.Layers.Name} == alayerName + "~");
         alayer.Angles = slayer.Angles;
         alayer.Mus = slayer.Mus;
         if isa(alayer,'saivdr.dcnn.nsoltInitialRotation2dLayer')

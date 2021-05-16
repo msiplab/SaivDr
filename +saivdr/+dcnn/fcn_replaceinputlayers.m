@@ -15,7 +15,7 @@ function [analysislgraph, synthesislgraph] = fcn_replaceinputlayers(analysislgra
 % http://msiplab.eng.niigata-u.ac.jp/
 %
 import saivdr.dcnn.*
-warning('deprecated')
+warning('Deprecated')
 
 % Analysis layer graph
 if ~isempty(analysislgraph)
