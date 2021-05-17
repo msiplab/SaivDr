@@ -56,6 +56,9 @@ classdef scaledActivationLayer < nnet.layer.Layer
                 V = tanh(U);
             elseif strcmpi(layer.ActivationFunction,'relu')
                 V = relu(U);
+            elseif strcmpi(layer.ActivationFunction,'clippedrelu')
+                W = relu(U);
+                V = -relu(-W+1);
             elseif strcmpi(layer.ActivationFunction,'none')
                 V = U;
             else

@@ -67,10 +67,10 @@ classdef maxLayer < nnet.layer.Layer
                     if strcmpi(padopt,'Symmetric')
                         % w = medfilt2(x(:,:,iChannel,idx),windowSize_,'symmetric'); 
                         u = padarray(x(:,:,iChannel,idx),nPads,'both','symmetric');
-                        v = ordfilt2(u,1,ones(windowSize_,dtype));
+                        v = ordfilt2(u,prod(windowSize_),ones(windowSize_,dtype));
                         w = v(nPads(1)+1:nPads(1)+nDims(1),nPads(2)+1:nPads(2)+nDims(2));
                     else
-                        w = ordfilt2(x(:,:,iChannel,idx),1,ones(windowSize_,dtype));
+                        w = ordfilt2(x(:,:,iChannel,idx),prod(windowSize_),ones(windowSize_,dtype));
                     end
                     z(:,:,iChannel,idx) = w; 
                 end
