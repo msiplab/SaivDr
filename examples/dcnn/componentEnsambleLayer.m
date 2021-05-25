@@ -9,6 +9,7 @@ classdef componentEnsambleLayer < nnet.layer.Layer
     
     properties
         NumberOfComponents
+        Mode
     end
     
     methods
@@ -16,27 +17,47 @@ classdef componentEnsambleLayer < nnet.layer.Layer
             p = inputParser;
             addParameter(p,'Name','')
             addParameter(p,'NumberOfComponents',1)
+            addParameter(p,'Mode','median')
             parse(p,varargin{:})
             
             % Set layer name.
             layer.Name = p.Results.Name;
             layer.NumberOfComponents = p.Results.NumberOfComponents;
+            layer.Mode = lower(p.Results.Mode);
             
             % Check # of components
             if mod(layer.NumberOfComponents,2) == 0
-                error('# of components must be odd.');
+                error('# of components must be odd.')
             end
             %layer.NumInputs = 2;
             layer.NumInputs = layer.NumberOfComponents;
             
+            % Check mode
+            if ~strcmpi(layer.Mode,'median') && ...
+                    ~strcmpi(layer.Mode,'max') && ...
+                    ~strcmpi(layer.Mode,'min') && ...
+                    ~strcmpi(layer.Mode,'absmax') 
+                error('Mode should be MEDIAN, MAX, MIN or ABSMAX.')
+            end
+            
             % Set layer description.
             layer.Description = "Component ensamble " + ...
-                "(# of components: " + layer.NumberOfComponents + ")";
+                "(# of components: " + layer.NumberOfComponents + ", " + ...
+                "Mode: " + lower(layer.Mode) + ")";
         end
         
         function Z = predict(layer, varargin)
             if length(varargin) ~= layer.NumberOfComponents
                 error('Invalid # of components')
+            end
+            if strcmpi(layer.Mode,'max')
+                fcn = @(x) max(x,[],1);
+            elseif strcmpi(layer.Mode,'min')
+                fcn = @(x) min(x,[],1);
+            elseif strcmpi(layer.Mode,'absmax')
+                fcn = @(x) layer.absmax_(x);
+            else
+                fcn = @(x) median(x,1);
             end
             xx = zeros(layer.NumberOfComponents,numel(varargin{1}),'like',varargin{1});
             for iCmp = 1:layer.NumberOfComponents
@@ -44,9 +65,9 @@ classdef componentEnsambleLayer < nnet.layer.Layer
                 xx(iCmp,:) = x(:).';
             end
             if isdlarray(xx)
-                z = dlarray(median(extractdata(xx),1));
+                z = dlarray(fcn(extractdata(xx)));
             else
-                z = median(xx,1);
+                z = fcn(xx);
             end
             sz = size(varargin{1});
             Z = reshape(z,sz);
@@ -76,6 +97,18 @@ classdef componentEnsambleLayer < nnet.layer.Layer
             end
         end
         
+    end
+    
+    methods(Access = private)
+        function y = absmax_(~,x)
+            [xm,im] = max(abs(x),[],1);
+            sx = zeros(size(xm),'like',xm);
+            for iCol = 1:length(im)
+                iRow = im(iCol);
+                sx(iCol) = sign(x(iRow,iCol));
+            end
+            y = sx.*xm;
+        end
     end
 end
 
