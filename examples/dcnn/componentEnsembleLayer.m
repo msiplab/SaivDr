@@ -102,11 +102,15 @@ classdef componentEnsembleLayer < nnet.layer.Layer
     methods(Access = private)
         function y = absmax_(~,x)
             [xm,im] = max(abs(x),[],1);
+            %{
             sx = zeros(size(xm),'like',xm);
             for iCol = 1:length(im)
                 iRow = im(iCol);
                 sx(iCol) = sign(x(iRow,iCol));
             end
+            %}
+            idx = im+(0:length(im)-1)*height(x);
+            sx = sign(x(idx));
             y = sx.*xm;
         end
     end
