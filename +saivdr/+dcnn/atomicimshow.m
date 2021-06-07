@@ -1,4 +1,4 @@
-function atomicimshow(synthesisnet,patchsize)
+function atomicimshow(synthesisnet,patchsize,scale)
 %FCN_ATOMICIMSHOW
 %
 % Display atomic images of NSOLT synthesis network
@@ -17,6 +17,9 @@ function atomicimshow(synthesisnet,patchsize)
 % http://msiplab.eng.niigata-u.ac.jp/
 %
 import saivdr.dcnn.*
+if nargin < 3
+    scale = 1;
+end
 
 % Extraction of information
 expfinallayer = '^Lv1_Cmp1+_V0~$';
@@ -46,7 +49,7 @@ nChsTotal = nLevels*(nChsPerLv-1)+1;
 % Patch Size
 DIMENSION = 2;
 MARGIN = 2;
-if nargin < 2
+if nargin < 2 || isempty(patchsize)
     estPpOrder = floor([1 1]*sqrt(nLayers/(DIMENSION*nLevels)));
     estKernelExt = decFactor.*(estPpOrder+1);
     for iLv = 2:nLevels
@@ -124,7 +127,7 @@ end
 
 mRows = 2^(nextpow2(sqrt(nChsTotal))-1);
 mCols = ceil(nChsTotal/mRows);
-montage(imresize(atomicImages,8,'nearest')+.5,...
+montage(imresize(scale*atomicImages,8,'nearest')+.5,...
     'Size',[mRows mCols],'BorderSize',[2 2]);
 end
 
