@@ -111,15 +111,17 @@ end
 % Impluse responses
 idx = 1;
 dld = dls;
-dld{nLevels+1}(round(end/2),round(end/2),1)  = 1;
-atomicImages(:,:,1,idx) = ...
+dld{nLevels+1}(round(end/2),round(end/2),1:nComponents)  = ones(1,1,nComponents);
+atomicImages(:,:,1:nComponents,idx) = ...
     extractdata(synthesisnet.predict(dld{:}));
 idx = idx+1;
 for iRevLv = nLevels:-1:1
     for iAtom = 1:nChsPerLv-1
         dld = dls;
-        dld{iRevLv}(round(end/2),round(end/2),iAtom)  = 1;
-        atomicImages(:,:,1,idx) = ...
+        for iCmp = 1:nComponents
+            dld{iRevLv}(round(end/2),round(end/2),(iCmp-1)*(nChsPerLv-1)+iAtom)  = 1;
+        end
+        atomicImages(:,:,1:nComponents,idx) = ...
             extractdata(synthesisnet.predict(dld{:}));
         idx = idx+1;
     end
