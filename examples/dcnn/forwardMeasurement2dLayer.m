@@ -13,12 +13,9 @@ classdef forwardMeasurement2dLayer < nnet.layer.Layer
         DecimationFactor
     end
     
-    properties
-
-    end
-    
     properties (Access=private, Hidden)
         psf
+        phase
     end
     
     methods
@@ -27,7 +24,7 @@ classdef forwardMeasurement2dLayer < nnet.layer.Layer
             addParameter(p,'Name','')
             addParameter(p,'Sigma',2)
             addParameter(p,'PsfSize',9);
-            addParameter(p,'PadOption','Zeros');
+            addParameter(p,'PadOption',0);
             addParameter(p,'DecimationFactor',1);
             parse(p,varargin{:})
             
@@ -55,6 +52,9 @@ classdef forwardMeasurement2dLayer < nnet.layer.Layer
                 "PsfSize: [" + layer.PsfSize(1) + " " + layer.PsfSize(2) + "], " + ...
                 "PadOption: " + layer.PadOption + ", " + ...
                 "Stride: [" + layer.DecimationFactor(1) + " " + layer.DecimationFactor(2) + "])";
+            
+            %
+            layer.phase = mod(layer.PsfSize+1,[2 2]);  
         end
         
         function Z = predict(layer, X)
@@ -76,7 +76,8 @@ classdef forwardMeasurement2dLayer < nnet.layer.Layer
         function dLdX = backward(layer,X,~,dLdZ,~)
             padopt = layer.PadOption;
             decfactor = layer.DecimationFactor;
-            upsample2 = @(x,m) ipermute(upsample(permute(upsample(x,m(1)),[2 1 3 4]),m(2)),[2 1 3 4]);
+            ph = layer.phase;
+            upsample2 = @(x,m) ipermute(upsample(permute(upsample(x,m(1),ph(1)),[2 1 3 4]),m(2),ph(2)),[2 1 3 4]);
             szBatch = size(dLdZ,4);
             dLdY = upsample2(dLdZ,decfactor);
             dLdX = zeros(size(X),'like',dLdZ);
@@ -86,6 +87,14 @@ classdef forwardMeasurement2dLayer < nnet.layer.Layer
             end
         end
         
+        function adjoint = createAdjointLayer(layer)
+            adjoint = adjointMeasurement2dLayer(...
+                'Name',[layer.Name '~'],...
+                'Sigma',layer.Sigma,...
+                'PadOption',layer.PadOption,...
+                'PsfSize',layer.PsfSize,...
+                'DecimationFactor',layer.DecimationFactor);
+        end
     end
     
 end
