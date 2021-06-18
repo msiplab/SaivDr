@@ -13,8 +13,11 @@ classdef forwardMeasurement2dLayer < nnet.layer.Layer
         DecimationFactor
     end
     
-    properties (Access=private, Hidden)
+    properties (Hidden)
         psf
+    end
+    
+    properties (Access=private, Hidden)
         phase
     end
     
@@ -54,7 +57,7 @@ classdef forwardMeasurement2dLayer < nnet.layer.Layer
                 "Stride: [" + layer.DecimationFactor(1) + " " + layer.DecimationFactor(2) + "])";
             
             %
-            layer.phase = mod(layer.PsfSize+1,[2 2]);  
+            layer.phase = mod(layer.PsfSize+1,[2 2]);              
         end
         
         function Z = predict(layer, X)

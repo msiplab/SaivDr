@@ -13,8 +13,11 @@ classdef adjointMeasurement2dLayer < nnet.layer.Layer
         DecimationFactor
     end
         
-    properties (Access=private, Hidden)
+    properties (Hidden)
         psf
+    end
+    
+    properties (Access=private, Hidden)
         phase
     end
     
