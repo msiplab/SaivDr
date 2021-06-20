@@ -1,5 +1,16 @@
 * Release notes on Sparsity-Aware Image and Volumetric Data Restoration Package
 
+- SaivDr20210620
+-- (Major) GPU Coder support in some modules
+--- mybuild.m
+--- saivdr.dcnn.mexsrcs
+-- (Major) Added some PyTorch modules
+--- appendix/torch_nsolt
+--- examples/dcnn
+-- (Minor) Added new sample codes
+--- examples/dcnn/main_nsolt_diclrn_tree_rgb.mlx
+--- examples/dcnn/main_nsolt_sisr_rgb.mlx
+
 - SaivDr20200903
 -- (Major) Created custom layer classes for Deep Learning Toolbox
 --- saivdr.dcnn.*

@@ -15,7 +15,7 @@ of sparsity-aware image and volumetric data restoraition algorithms.
 In particular, this package provides a rich set of classes related to 
 [non-separable oversampled lapped transform ( *NSOLTs* )](https://sigport.org/documents/multidimensional-nonseparable-oversampled-lapped-transforms-theory-and-design) , which allows for convolutional layers with
  
-* Parseval tight 
+* Parseval tight (paraunitary),
 * Symmetric and
 * Multiresolution 
 
@@ -123,17 +123,18 @@ be used to see the contents as follows:
     
 ## Requirements
  
-* MATLAB R2013b or later. R2020a is recommended.
+* MATLAB R2013b or later. R2021a is recommended.
  * Signal Processing Toolbox
  * Image Processing Toolbox
  * Optimization Toolbox
- 
+
 ## Recomendation
  
  * Deep Learning Toolbox
  * Global Optimization Toolbox 
  * Parallel Computing Toolbox
  * MATLAB Coder
+ * GPU Coder
 
 ## Brief introduction
  
@@ -223,6 +224,7 @@ This work was supported by JSPS KAKENHI Grant Numbers JP23560443, JP26420347 and
 * Kosuke FURUYA,  2013-2015
 * Naotaka YUKI,   2014-2015
 * Yuya KODAMA,    2020-
+* Yasas GODAGE,   2021-
  
 ### Test contributers
 * Hidenori WATANABE, 2014-
