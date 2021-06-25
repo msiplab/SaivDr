@@ -103,17 +103,16 @@ classdef nsoltBlockDct2dLayer < nnet.layer.Layer %#codegen
             nDecs = prod(decFactor);
             nSamples = size(X,4);
             %
-            outputComponent = zeros(nDecs,nRows,nCols,nSamples,'like',X);
             if isgpuarray(X)
                 for iComponent = 1:nComponents
                     arrayX = X(:,:,iComponent,:);
                     arrayY = reshape(permute(reshape(arrayX,...
                         decV,nRows,decH,nCols,1,nSamples),[1 3 2 4 5]),...
                         decV*decH,nRows,nCols,1,nSamples);
-                    outputComponent = pagefun(@mtimes,Cvh_,arrayY);
-                    varargout{iComponent} = outputComponent;
+                    varargout{iComponent} = pagefun(@mtimes,Cvh_,arrayY);
                 end
             else
+                outputComponent = zeros(nDecs,nRows,nCols,nSamples,'like',X);
                 inputComponent = zeros(height,width,1,nSamples,'like',X);
                 outputSample = zeros(nDecs,nRows,nCols,'like',X);
                 for iComponent = 1:nComponents
