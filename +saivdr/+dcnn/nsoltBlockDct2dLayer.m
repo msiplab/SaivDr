@@ -35,7 +35,7 @@ classdef nsoltBlockDct2dLayer < nnet.layer.Layer %#codegen
         function layer = nsoltBlockDct2dLayer(varargin)
             % (Optional) Create a myLayer.
             % This function must have the same name as the class.
-            import saivdr.dictionary.utility.Direction                                                            
+            import saivdr.dictionary.utility.Direction
             p = inputParser;
             addParameter(p,'DecimationFactor',[])
             addParameter(p,'Name','')
@@ -68,7 +68,7 @@ classdef nsoltBlockDct2dLayer < nnet.layer.Layer %#codegen
             Coo = kron(Cho,Cvo);
             Coe = kron(Che,Cvo);
             Ceo = kron(Cho,Cve);
-            layer.Cvh = [Cee; Coo; Coe; Ceo];            
+            layer.Cvh = [Cee; Coo; Coe; Ceo];
             
         end
         
@@ -81,14 +81,14 @@ classdef nsoltBlockDct2dLayer < nnet.layer.Layer %#codegen
             %         X           - Input data
             % Outputs:
             %         Z1, ..., Zm - Outputs of layer forward function
-            import saivdr.dictionary.utility.Direction                                                                        
-            nComponents = layer.NumOutputs;            
+            import saivdr.dictionary.utility.Direction
+            nComponents = layer.NumOutputs;
             varargout = cell(1,nComponents);
             
             if isdlarray(X)
                 X = stripdims(X);
-            end            
-                        
+            end
+            
             % Layer forward function for prediction goes here.
             decFactor = layer.DecimationFactor;
             decV = decFactor(Direction.VERTICAL);
@@ -103,48 +103,36 @@ classdef nsoltBlockDct2dLayer < nnet.layer.Layer %#codegen
             nDecs = prod(decFactor);
             nSamples = size(X,4);
             %
-            inputComponent = zeros(height,width,1,nSamples,'like',X);
-            %inputSample = zeros(height,width,'like',X);
-            %inputCol = zeros(height,decH,'like',X);      
             outputComponent = zeros(nDecs,nRows,nCols,nSamples,'like',X);
-            if ~isgpuarray(X)
-                outputSample = zeros(nDecs,nRows,nCols,'like',X);
-            end
-            %outputCol = zeros(nDecs,nRows,'like',X);
-            %Y = zeros(nDecs,nRows,'like',X);
-            for iComponent = 1:nComponents
-                inputComponent(:,:,1,:) = X(:,:,iComponent,:);
-                if isgpuarray(X)
-                    arrayY = zeros(nDecs,nRows,nCols,nSamples,'like',X);
+            if isgpuarray(X)
+                for iComponent = 1:nComponents
+                    arrayX = X(:,:,iComponent,:);
+                    arrayY = reshape(permute(reshape(arrayX,...
+                        decV,nRows,decH,nCols,1,nSamples),[1 3 2 4 5]),...
+                        decV*decH,nRows,nCols,1,nSamples);
+                    outputComponent = pagefun(@mtimes,Cvh_,arrayY);
+                    varargout{iComponent} = outputComponent;
                 end
-                for iSample = 1:nSamples
-                    inputSample = inputComponent(:,:,1,iSample);
-                    for iCol = 1:nCols
-                        inputCol = inputSample(:,...
-                            (iCol-1)*decH+1:iCol*decH);
-                        %for iRow = 1:nRows
-                        %    x = inputCol((iRow-1)*decV+1:iRow*decV,:);      
-                        %    %outputCol(:,iRow) = Cvh_*x(:); 
-                        %    Y(:,iRow) = x(:);
-                        %end
-                        Y = reshape(permute(reshape(inputCol,decV,nRows,decH),...
-                            [1 3 2]),decV*decH,nRows);
-                        %outputSample(:,:,iCol) = outputCol;
-                        if ~isgpuarray(X)
+            else
+                inputComponent = zeros(height,width,1,nSamples,'like',X);
+                outputSample = zeros(nDecs,nRows,nCols,'like',X);
+                for iComponent = 1:nComponents
+                    inputComponent(:,:,1,:) = X(:,:,iComponent,:);
+                    for iSample = 1:nSamples
+                        inputSample = inputComponent(:,:,1,iSample);
+                        for iCol = 1:nCols
+                            inputCol = inputSample(:,...
+                                (iCol-1)*decH+1:iCol*decH);
+                            
+                            Y = reshape(permute(reshape(inputCol,decV,nRows,decH),...
+                                [1 3 2]),decV*decH,nRows);
                             outputSample(:,:,iCol) = Cvh_*Y;
-                        else
-                            arrayY(:,:,iCol,iSample) = Y;
                         end
-                    end
-                    if ~isgpuarray(X)
                         outputComponent(:,:,:,iSample) = outputSample;
                     end
+                    varargout{iComponent} = outputComponent;
                 end
-                if isgpuarray(X)
-                    outputComponent = pagefun(@mtimes,Cvh_,arrayY);
-                end
-                varargout{iComponent} = outputComponent;
-            end
+            end      
             %{
             A = zeros(nDecs,nRows,nCols,nSamples,'like',X);
             for iComponent = 1:nComponents
