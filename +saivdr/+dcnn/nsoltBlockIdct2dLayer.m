@@ -104,7 +104,7 @@ classdef nsoltBlockIdct2dLayer < nnet.layer.Layer %#codegen
                     arrayY = pagefun(@mtimes,Cvh_T,X);
                     Z(:,:,iComponent,:) = reshape(ipermute(reshape(arrayY,...
                         decV,decH,nRows,nCols,nSamples),[1 3 2 4 5]),...
-                        decV*nRows,decH*nCols,1,nSamples);
+                        height,width,1,nSamples);
                 end
             else
                 arrayX = cell(1,nComponents);
@@ -116,7 +116,7 @@ classdef nsoltBlockIdct2dLayer < nnet.layer.Layer %#codegen
                     arrayY = Cvh_T*reshape(arrayX{iComponent},decV*decH,[]);
                     Z(:,:,iComponent,:) = reshape(ipermute(reshape(arrayY,...
                         decV,decH,nRows,nCols,nSamples),[1 3 2 4 5]),...
-                        decV*nRows,decH*nCols,1,nSamples);
+                        height,width,1,nSamples);
                     %{
                     if iComponent == 1
                         outputSample = zeros(height,width,'like',X);
