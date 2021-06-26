@@ -133,9 +133,12 @@ classdef nsoltBlockDct3dLayer < nnet.layer.Layer
                     varargout{iComponent} = pagefun(@mtimes,Cvhd_,arrayY);
                 end
             else
-                parfor (iComponent = 1:nComponents, nComponents)
-                    arrayX = X(:,:,:,iComponent,:);
-                    arrayY = reshape(permute(reshape(arrayX,...
+                arrayX = cell(1,nComponents);
+                for iComponent = 1:nComponents
+                    arrayX{iComponent} = X(:,:,:,iComponent,:);
+                end
+                parfor (iComponent = 1:nComponents, nComponents) 
+                    arrayY = reshape(permute(reshape(arrayX{iComponent},...
                         decV,nRows,decH,nCols,decD,nLays,nSamples),...
                         [1 3 5 2 4 6 7]),...
                         decV*decH*decD,[]);
@@ -241,13 +244,17 @@ classdef nsoltBlockDct3dLayer < nnet.layer.Layer
                     dLdZ =  varargin{layer.NumInputs+layer.NumOutputs+iComponent};
                     arrayY{iComponent} = dLdZ;
                 end
+                arraydLdX = cell(1,nComponents);
                 parfor (iComponent = 1:nComponents, nComponents)
                     arrayX = Cvhd_T*reshape(arrayY{iComponent},decV*decH*decD,[]);
-                    dLdX(:,:,:,iComponent,:) = reshape(ipermute(reshape(arrayX,...
+                    arraydLdX{iComponent} = reshape(ipermute(reshape(arrayX,...
                         decV,decH,decD,nRows,nCols,nLays,nSamples),...
                         [1 3 5 2 4 6 7]),...
                         height,width,depth,1,nSamples);
-                end                
+                end    
+                for iComponent = 1:nComponents
+                   dLdX(:,:,:,iComponent,:) = arraydLdX{iComponent}; 
+                end
                 %{
                 if iComponent == 1
                     outputLay = zeros(height,width,decD,'like',dLdZ);

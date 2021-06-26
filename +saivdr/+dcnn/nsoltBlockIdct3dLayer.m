@@ -134,9 +134,10 @@ classdef nsoltBlockIdct3dLayer < nnet.layer.Layer
                     X = varargin{iComponent};
                     arrayX{iComponent} = X;
                 end
+                arrayZ = cell(1,nComponents);
                 parfor (iComponent = 1:nComponents, nComponents)
                     arrayY = Cvhd_T*reshape(arrayX{iComponent},decV*decH*decD,[]);
-                    Z(:,:,:,iComponent,:) = reshape(ipermute(reshape(arrayY,...
+                    arrayZ{iComponent} = reshape(ipermute(reshape(arrayY,...
                         decV,decH,decD,nRows,nCols,nLays,nSamples),...
                         [1 3 5 2 4 6 7]),...
                         height,width,depth,1,nSamples);
@@ -162,6 +163,9 @@ classdef nsoltBlockIdct3dLayer < nnet.layer.Layer
                     outputComponent(:,:,:,1,iSample) = outputSample;
                 end
                         %}
+                end
+                for iComponent = 1:nComponents
+                    Z(:,:,:,iComponent,:) = arrayZ{iComponent};
                 end
                 %{
                 A = X; % permute(X,[4 1 2 3 5]);
@@ -232,9 +236,12 @@ classdef nsoltBlockIdct3dLayer < nnet.layer.Layer
                     varargout{iComponent} = pagefun(@mtimes,Cvhd_,arrayX);
                 end
             else
+                arrayY = cell(1,nComponents);
+                for iComponent = 1:nComponents
+                    arrayY{iComponent} = dLdZ(:,:,:,iComponent,:);
+                end
                 parfor (iComponent = 1:nComponents, nComponents)
-                    arrayY = dLdZ(:,:,:,iComponent,:);
-                    arrayX = reshape(permute(reshape(arrayY,...
+                    arrayX = reshape(permute(reshape(arrayY{iComponent},...
                         decV,nRows,decH,nCols,decD,nLays,nSamples),...
                         [1 3 5 2 4 6 7]),...
                         decV*decH*decD,[]);
