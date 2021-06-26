@@ -7,7 +7,7 @@ function [analysislgraph,synthesislgraph] = fcn_attachserializationlayers(...
 %
 % Requirements: MATLAB R2020a
 %
-% Copyright (c) 2020, Shogo MURAMATSU
+% Copyright (c) 2020-2021, Shogo MURAMATSU
 %
 % All rights reserved.
 %
@@ -20,16 +20,19 @@ function [analysislgraph,synthesislgraph] = fcn_attachserializationlayers(...
 %
 import saivdr.dcnn.*
 
-nLayers = length(analysislgraph.Layers);
+expinitlayer = '^Lv1_Cmp1+_V0$';
+expdctlayer = '^Lv\d+_E0$';
+nLayers = height(analysislgraph.Layers);
 nLevels = 0;
 for iLayer = 1:nLayers
-    layerName = analysislgraph.Layers(iLayer).Name;
-    if contains(layerName,'_E0')
+    layer = analysislgraph.Layers(iLayer);
+    layerName = layer.Name;
+    if ~isempty(regexp(layerName,expdctlayer,'once'))
         nLevels = nLevels + 1;
     end
-    if contains(layerName,'Lv1_V0')
-        nChannels = analysislgraph.Layers(iLayer).NumberOfChannels;
-        decFactor = analysislgraph.Layers(iLayer).DecimationFactor;
+    if ~isempty(regexp(layerName,expinitlayer,'once'))
+        nChannels = layer.NumberOfChannels;
+        decFactor = layer.DecimationFactor;
     end
 end
 
@@ -54,14 +57,18 @@ for iLv = 1:nLevels
 end
 
 %%
-nLayers = length(synthesislgraph.Layers);
+
+expfinallayer = '^Lv1_Cmp1+_V0~$';
+expidctlayer = '^Lv\d+_E0~$';
+nLayers = height(synthesislgraph.Layers);
 nLevels = 0;
 for iLayer = 1:nLayers
-    layerName = synthesislgraph.Layers(iLayer).Name;
-    if contains(layerName,'_E0~')
+    layer = synthesislgraph.Layers(iLayer);
+    layerName = layer.Name;
+    if ~isempty(regexp(layerName,expidctlayer,'once'))
         nLevels = nLevels + 1;
     end
-    if contains(layerName,'Lv1_V0~')
+    if ~isempty(regexp(layerName,expfinallayer,'once'))
         nChannels = synthesislgraph.Layers(iLayer).NumberOfChannels;
         decFactor = synthesislgraph.Layers(iLayer).DecimationFactor;
     end    
@@ -76,14 +83,19 @@ sbDeserializationLayer =  nsoltSubbandDeserialization2dLayer(...
 synthesislgraph = synthesislgraph.addLayers(...
     sbDeserializationLayer);
 
+
 for iLv = 1:nLevels
-    synthesislgraph = synthesislgraph.replaceLayer(...
-       ['Lv' num2str(iLv) ' subband detail images'],... 
-       nsoltIdentityLayer('Name',['Lv' num2str(iLv) '_AcIn']));
+    %synthesislgraph = synthesislgraph.replaceLayer(...
+    %   ['Lv' num2str(iLv) '_Ac feature input'],... 
+    %   nsoltIdentityLayer('Name',['Lv' num2str(iLv) '_AcIn']));
+    synthesislgraph = synthesislgraph.removeLayers(...
+       ['Lv' num2str(iLv) '_Ac feature input']);    
 end
-synthesislgraph = synthesislgraph.replaceLayer(...
-    ['Lv' num2str(nLevels) ' subband approximation image'],...
-    nsoltIdentityLayer('Name',['Lv' num2str(nLevels) '_DcIn']));
+%synthesislgraph = synthesislgraph.replaceLayer(...
+%    ['Lv' num2str(nLevels) '_Dc feature input'],...
+%    nsoltIdentityLayer('Name',['Lv' num2str(nLevels) '_DcIn']));
+synthesislgraph = synthesislgraph.removeLayers(...
+    ['Lv' num2str(nLevels) '_Dc feature input']);
 
 for iLv = 1:nLevels
     strLv = [ 'Lv' num2str(iLv) ];
