@@ -132,8 +132,7 @@ classdef nsoltBlockDct3dLayer < nnet.layer.Layer
                         decV,nRows,decH,nCols,decD,nLays,1,nSamples),...
                         [1 3 5 2 4 6 7 8]),...
                         decV*decH*decD,nRows,nCols,nLays,1,nSamples);
-                    outputComponent = pagefun(@mtimes,Cvhd_,arrayY);
-                    varargout{iComponent} = outputComponent;
+                    varargout{iComponent} = pagefun(@mtimes,Cvhd_,arrayY);
                 end
             else
                 inputComponent = zeros(height,width,depth,1,nSamples,'like',X);
