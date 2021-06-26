@@ -195,7 +195,7 @@ classdef nsoltBlockDct2dLayer < nnet.layer.Layer %#codegen
                     arrayX = pagefun(@mtimes,Cvh_T,dLdZ);
                     dLdX(:,:,iComponent,:)  = reshape(ipermute(reshape(arrayX,...
                         decV,decH,nRows,nCols,nSamples),[1 3 2 4 5]),...
-                        decV*nRows,decH*nCols,1,nSamples);
+                        height,width,1,nSamples);
                 end
             else
                 arrayY = cell(1,nComponents);
@@ -207,7 +207,7 @@ classdef nsoltBlockDct2dLayer < nnet.layer.Layer %#codegen
                     arrayX = Cvh_T*reshape(arrayY{iComponent},decV*decH,[]);
                     dLdX(:,:,iComponent,:) = reshape(ipermute(reshape(arrayX,...
                         decV,decH,nRows,nCols,nSamples),[1 3 2 4 5]),...
-                        decV*nRows,decH*nCols,1,nSamples);
+                        height,width,1,nSamples);
                 end
                 %{
                 for iComponent = 1:nComponents
@@ -222,7 +222,7 @@ classdef nsoltBlockDct2dLayer < nnet.layer.Layer %#codegen
                             X = Cvh_T*inputSample(:,:,iCol);
                             outputSample(:,(iCol-1)*decH+1:iCol*decH) = ...
                                 reshape(permute(reshape(X,decV,decH,nRows),...
-                                [1 3 2]),decV*nRows,decH);
+                                [1 3 2]),height,decH);
                         end
                         outputComponent(:,:,1,iSample) = outputSample;
                     end

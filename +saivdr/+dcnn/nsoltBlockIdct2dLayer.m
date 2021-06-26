@@ -127,7 +127,7 @@ classdef nsoltBlockIdct2dLayer < nnet.layer.Layer %#codegen
                         for iCol = 1:nCols
                             Y = Cvh_T*inputSample(:,:,iCol);
                             outputCol = reshape(permute(reshape(Y,decV,decH,nRows),...
-                                [1 3 2]),decV*nRows,decH);
+                                [1 3 2]),height,decH);
                             outputSample(:,(iCol-1)*decH+1:iCol*decH) = ...
                                 outputCol;
                         end

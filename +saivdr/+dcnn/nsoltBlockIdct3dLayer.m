@@ -126,7 +126,7 @@ classdef nsoltBlockIdct3dLayer < nnet.layer.Layer
                     Z(:,:,:,iComponent,:) = reshape(ipermute(reshape(arrayY,...
                         decV,decH,decD,nRows,nCols,nLays,nSamples),...
                         [1 3 5 2 4 6 7]),...
-                        decV*nRows,decH*nCols,decD*nLays,1,nSamples);
+                        decV*nRows,width,depth,1,nSamples);
                 end
             else
                 arrayX = cell(1,nComponents);
@@ -220,19 +220,28 @@ classdef nsoltBlockIdct3dLayer < nnet.layer.Layer
             nRows = height/decV;
             nCols = width/decH;
             nLays = depth/decD;
-            nDecs = prod(decFactor);
             nSamples = size(dLdZ,5);
             %
             if isgpuarray(dLdZ)
                 for iComponent = 1:nComponents
                     arrayY = dLdZ(:,:,:,iComponent,:);
                     arrayX = reshape(permute(reshape(arrayY,...
-                        decV,nRows,decH,nCols,decD,nLays,1,nSamples),...
-                        [1 3 5 2 4 6 7 8]),...
-                        decV*decH*decD,nRows,nCols,nLays,1,nSamples);
+                        decV,nRows,decH,nCols,decD,nLays,nSamples),...
+                        [1 3 5 2 4 6 7]),...
+                        decV*decH*decD,nRows,nCols,nLays,nSamples);
                     varargout{iComponent} = pagefun(@mtimes,Cvhd_,arrayX);
                 end
             else
+                parfor iComponent = 1:nComponents
+                    arrayY = dLdZ(:,:,:,iComponent,:);
+                    arrayX = reshape(permute(reshape(arrayY,...
+                        decV,nRows,decH,nCols,decD,nLays,nSamples),...
+                        [1 3 5 2 4 6 7]),...
+                        decV*decH*decD,[]);
+                    varargout{iComponent} = reshape(Cvhd_*arrayX,...
+                        decV*decH*decD,nRows,nCols,nLays,nSamples);
+                end
+                %{
                 inputComponent = zeros(height,width,depth,1,nSamples,'like',dLdZ);
                 outputComponent = zeros(nDecs,nRows,nCols,nLays,nSamples,'like',dLdZ);
                 outputSample = zeros(nDecs,nRows,nCols,nLays,'like',dLdZ);
@@ -258,6 +267,7 @@ classdef nsoltBlockIdct3dLayer < nnet.layer.Layer
                     end
                     varargout{iComponent} = outputComponent;
                 end
+                %}
             end
             %{
             A = zeros(nDecs,nRows,nCols,nLays,nSamples,'like',dLdZ);
