@@ -135,6 +135,7 @@ classdef nsoltAtomExtension3dLayer < nnet.layer.Layer
             %
             dLdX = layer.atomext_(dLdZ,shift);
         end
+        
         function Z = atomext_(layer,X,shift)
             ps = layer.NumberOfChannels(1);
             pa = layer.NumberOfChannels(2);
@@ -143,7 +144,7 @@ classdef nsoltAtomExtension3dLayer < nnet.layer.Layer
             % Block butterfly
             Ys = X(1:ps,:,:,:,:);
             Ya = X(ps+1:ps+pa,:,:,:,:);
-            Y =  [ Ys+Ya ; Ys-Ya ];
+            Y =  cat(1,bsxfun(@plus,Ys,Ya),bsxfun(@minus,Ys,Ya));
             % Block circular shift
             if strcmp(target,'Difference')
                 Y(ps+1:ps+pa,:,:,:,:) = circshift(Y(ps+1:ps+pa,:,:,:,:),shift);
@@ -157,9 +158,9 @@ classdef nsoltAtomExtension3dLayer < nnet.layer.Layer
             % Block butterfly
             Ys = Y(1:ps,:,:,:,:);
             Ya = Y(ps+1:ps+pa,:,:,:,:);
-            Y =  [ Ys+Ya ; Ys-Ya ];
+            Y =  cat(1,bsxfun(@plus,Ys,Ya),bsxfun(@minus,Ys,Ya));
             % Output
-            Z = Y/2.0; %ipermute(Y,[4 1 2 3 5])/2.0;
+            Z = 0.5*Y; %ipermute(Y,[4 1 2 3 5])/2.0;
         end
         
     end

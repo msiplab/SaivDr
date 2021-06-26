@@ -165,6 +165,7 @@ classdef nsoltIntermediateRotation3dLayer < nnet.layer.Layer
             fcn_orthmtxgen_diff = get_fcn_orthmtxgen_diff(anglesU);
             nAngles = length(anglesU);
             dLdW = zeros(nAngles,1,'like',dLdZ);
+            dVdW_X = zeros(size(X),'like',dLdZ);
             for iAngle = uint32(1:nAngles)
                 %dUn = fcn_orthmtxgen(anglesU,musU,iAngle);
                 [dUn,dUnPst,dUnPre] = fcn_orthmtxgen_diff(anglesU,musU,iAngle,dUnPst,dUnPre);
@@ -174,7 +175,6 @@ classdef nsoltIntermediateRotation3dLayer < nnet.layer.Layer
                 else
                     c_low = dUn.'*c_low;
                 end
-                dVdW_X = zeros(size(X),'like',dLdZ);
                 dVdW_X(ps+1:ps+pa,:,:,:,:) = reshape(c_low,pa,nrows,ncols,nlays,nSamples);
                 %
                 %dLdW(iAngle) = sum(dLdZ.*dVdW_X,'all');
