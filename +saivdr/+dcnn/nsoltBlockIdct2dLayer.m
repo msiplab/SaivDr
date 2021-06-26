@@ -88,6 +88,7 @@ classdef nsoltBlockIdct2dLayer < nnet.layer.Layer %#codegen
             decFactor = layer.DecimationFactor;
             decV = decFactor(Direction.VERTICAL);
             decH = decFactor(Direction.HORIZONTAL);
+            %
             Cvh_T = layer.Cvh.';
             for iComponent = 1:nComponents
                 X = varargin{iComponent};
@@ -182,7 +183,7 @@ classdef nsoltBlockIdct2dLayer < nnet.layer.Layer %#codegen
                 for iComponent = 1:nComponents
                     arrayY = dLdZ(:,:,iComponent,:);
                     arrayX = reshape(permute(reshape(arrayY,...
-                        decV,nRows,decH,nCols,1,nSamples),[1 3 2 4 5]),...
+                        decV,nRows,decH,nCols,1,nSamples),[1 3 2 4 5 6]),...
                         decV*decH,nRows,nCols,1,nSamples);
                     varargout{iComponent} = pagefun(@mtimes,Cvh_,arrayX);
                 end
