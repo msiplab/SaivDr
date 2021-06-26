@@ -195,7 +195,7 @@ classdef nsoltBlockIdct2dLayer < nnet.layer.Layer %#codegen
                     arrayY = dLdZ(:,:,iComponent,:);
                     arrayX = reshape(permute(reshape(arrayY,...
                         decV,nRows,decH,nCols,nSamples),[1 3 2 4 5]),...
-                        decV*decH,nRows,nCols,1,nSamples);
+                        decV*decH,nRows,nCols,nSamples);
                     varargout{iComponent} = pagefun(@mtimes,Cvh_,arrayX);
                 end
             else
