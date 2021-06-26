@@ -18,7 +18,7 @@ classdef nsoltBlockIdct2dLayer < nnet.layer.Layer %#codegen
     %                8050 2-no-cho Ikarashi, Nishi-ku,
     %                Niigata, 950-2181, JAPAN
     %
-    % http://msiplab.eng.niigata-u.ac.jp/    
+    % http://msiplab.eng.niigata-u.ac.jp/
     
     properties
         % (Optional) Layer properties.
@@ -35,7 +35,7 @@ classdef nsoltBlockIdct2dLayer < nnet.layer.Layer %#codegen
         function layer = nsoltBlockIdct2dLayer(varargin)
             % (Optional) Create a myLayer.
             % This function must have the same name as the class.
-            import saivdr.dictionary.utility.Direction                                                
+            import saivdr.dictionary.utility.Direction
             p = inputParser;
             addParameter(p,'DecimationFactor',[])
             addParameter(p,'Name','')
@@ -51,7 +51,7 @@ classdef nsoltBlockIdct2dLayer < nnet.layer.Layer %#codegen
             layer.Type = '';
             layer.NumInputs = p.Results.NumberOfComponents;
             layer.NumOutputs = 1;
-
+            
             decV = layer.DecimationFactor(Direction.VERTICAL);
             decH = layer.DecimationFactor(Direction.HORIZONTAL);
             
@@ -88,25 +88,36 @@ classdef nsoltBlockIdct2dLayer < nnet.layer.Layer %#codegen
             decFactor = layer.DecimationFactor;
             decV = decFactor(Direction.VERTICAL);
             decH = decFactor(Direction.HORIZONTAL);
-            %
             Cvh_T = layer.Cvh.';
-            for iComponent = 1:nComponents
-                X = varargin{iComponent};
-                if iComponent == 1
-                    nRows = size(X,2);
-                    nCols = size(X,3);
-                    nSamples = size(X,4);
-                    %
-                    height = decFactor(1)*nRows;
-                    width = decFactor(2)*nCols;
-                    Z = zeros(height,width,nComponents,nSamples,'like',X);
-                end
-                if isgpuarray(X)
+            %
+            X = varargin{1};
+            nRows = size(X,2);
+            nCols = size(X,3);
+            height = decFactor(1)*nRows;
+            width = decFactor(2)*nCols;
+            nSamples = size(X,4);
+            Z = zeros(height,width,nComponents,nSamples,'like',X);
+            %
+            if isgpuarray(X)
+                for iComponent = 1:nComponents
+                    X = varargin{iComponent};
                     arrayY = pagefun(@mtimes,Cvh_T,X);
-                    outputComponent = reshape(ipermute(reshape(arrayY,...
-                        decV*decH,nRows,nCols,1,nSamples),[1 3 2 4 5]),...
+                    Z(:,:,iComponent,:) = reshape(ipermute(reshape(arrayY,...
+                        decV,decH,nRows,nCols,nSamples),[1 3 2 4 5]),...
                         decV*nRows,decH*nCols,1,nSamples);
-                else
+                end
+            else
+                arrayX = cell(1,nComponents);
+                for iComponent = 1:nComponents
+                    X = varargin{iComponent};                    
+                    arrayX{iComponent} = X;
+                end
+                parfor iComponent = 1:nComponents
+                    arrayY = Cvh_T*reshape(arrayX{iComponent},decV*decH,[]);
+                    Z(:,:,iComponent,:) = reshape(ipermute(reshape(arrayY,...
+                        decV,decH,nRows,nCols,nSamples),[1 3 2 4 5]),...
+                        decV*nRows,decH*nCols,1,nSamples);
+                    %{
                     if iComponent == 1
                         outputSample = zeros(height,width,'like',X);
                         outputComponent = zeros(height,width,1,nSamples,'like',X);
@@ -122,8 +133,9 @@ classdef nsoltBlockIdct2dLayer < nnet.layer.Layer %#codegen
                         end
                         outputComponent(:,:,1,iSample) = outputSample;
                     end
+                    Z(:,:,iComponent,:) = outputComponent;
+                    %}
                 end
-                Z(:,:,iComponent,:) = outputComponent;
                 %{
                 %A = permute(X,[3 1 2 4]);
                 A = X;
