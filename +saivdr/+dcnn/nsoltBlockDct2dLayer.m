@@ -6,7 +6,7 @@ classdef nsoltBlockDct2dLayer < nnet.layer.Layer %#codegen
     %
     %   コンポーネント別に出力(nComponents):
     %      nDecs x nRows x nCols x nSamples
-    %    
+    %
     % Requirements: MATLAB R2020b
     %
     % Copyright (c) 2020-2021, Shogo MURAMATSU
@@ -19,7 +19,7 @@ classdef nsoltBlockDct2dLayer < nnet.layer.Layer %#codegen
     %                Niigata, 950-2181, JAPAN
     %
     % http://msiplab.eng.niigata-u.ac.jp/
-        
+    
     properties
         % (Optional) Layer properties.
         DecimationFactor
@@ -100,18 +100,26 @@ classdef nsoltBlockDct2dLayer < nnet.layer.Layer %#codegen
             width = size(X,2);
             nRows = height/decV;
             nCols = width/decH;
-            nDecs = prod(decFactor);
             nSamples = size(X,4);
             %
             if isgpuarray(X)
                 for iComponent = 1:nComponents
                     arrayX = X(:,:,iComponent,:);
                     arrayY = reshape(permute(reshape(arrayX,...
-                        decV,nRows,decH,nCols,1,nSamples),[1 3 2 4 5 6]),...
-                        decV*decH,nRows,nCols,1,nSamples);
+                        decV,nRows,decH,nCols,nSamples),[1 3 2 4 5]),...
+                        decV*decH,nRows,nCols,nSamples);
                     varargout{iComponent} = pagefun(@mtimes,Cvh_,arrayY);
                 end
             else
+                parfor iComponent = 1:nComponents
+                    arrayX = X(:,:,iComponent,:);
+                    arrayY = reshape(permute(reshape(arrayX,...
+                        decV,nRows,decH,nCols,nSamples),[1 3 2 4 5]),...
+                        decV*decH,[]);
+                    varargout{iComponent} = reshape(Cvh_*arrayY,...
+                        decV*decH,nRows,nCols,nSamples);
+                end
+                %{
                 outputComponent = zeros(nDecs,nRows,nCols,nSamples,'like',X);
                 inputComponent = zeros(height,width,1,nSamples,'like',X);
                 outputSample = zeros(nDecs,nRows,nCols,'like',X);
@@ -130,6 +138,7 @@ classdef nsoltBlockDct2dLayer < nnet.layer.Layer %#codegen
                     end
                     varargout{iComponent} = outputComponent;
                 end
+                %}
             end
             %{
             A = zeros(nDecs,nRows,nCols,nSamples,'like',X);
@@ -171,22 +180,38 @@ classdef nsoltBlockDct2dLayer < nnet.layer.Layer %#codegen
             decV = decFactor(Direction.VERTICAL);
             decH = decFactor(Direction.HORIZONTAL);
             Cvh_T = layer.Cvh.';
-            for iComponent = 1:nComponents
-                dLdZ = varargin{layer.NumInputs+layer.NumOutputs+iComponent};
-                if iComponent == 1
-                    nRows = size(dLdZ,2);
-                    nCols = size(dLdZ,3);
-                    height = decV*nRows;
-                    width = decH*nCols;
-                    nSamples = size(dLdZ,4);
-                    dLdX = zeros(height,width,nComponents,nSamples,'like',dLdZ);
-                end
-                if isgpuarray(dLdZ)
+            %
+            dLdZ = varargin{layer.NumInputs+layer.NumOutputs+1};
+            nRows = size(dLdZ,2);
+            nCols = size(dLdZ,3);
+            height = decV*nRows;
+            width = decH*nCols;
+            nSamples = size(dLdZ,4);
+            dLdX = zeros(height,width,nComponents,nSamples,'like',dLdZ);
+            %
+            if isgpuarray(dLdZ)
+                for iComponent = 1:nComponents
+                    dLdZ = varargin{layer.NumInputs+layer.NumOutputs+iComponent};
                     arrayX = pagefun(@mtimes,Cvh_T,dLdZ);
-                    outputComponent = reshape(ipermute(reshape(arrayX,...
-                        decV*decH,nRows,nCols,1,nSamples),[1 3 2 4 5]),...
+                    dLdX(:,:,iComponent,:)  = reshape(ipermute(reshape(arrayX,...
+                        decV,decH,nRows,nCols,nSamples),[1 3 2 4 5]),...
                         decV*nRows,decH*nCols,1,nSamples);
-                else
+                end
+            else
+                arrayY = cell(1,nComponents);
+                for iComponent = 1:nComponents
+                    dLdZ =  varargin{layer.NumInputs+layer.NumOutputs+iComponent};
+                    arrayY{iComponent} = dLdZ;
+                end
+                parfor iComponent = 1:nComponents
+                    arrayX = Cvh_T*reshape(arrayY{iComponent},decV*decH,[]);
+                    dLdX(:,:,iComponent,:) = reshape(ipermute(reshape(arrayX,...
+                        decV,decH,nRows,nCols,nSamples),[1 3 2 4 5]),...
+                        decV*nRows,decH*nCols,1,nSamples);
+                end
+                %{
+                for iComponent = 1:nComponents
+                    dLdZ = varargin{layer.NumInputs+layer.NumOutputs+iComponent};
                     if iComponent == 1
                         outputSample = zeros(height,width,'like',dLdZ);
                         outputComponent = zeros(height,width,1,nSamples,'like',dLdZ);
@@ -202,8 +227,9 @@ classdef nsoltBlockDct2dLayer < nnet.layer.Layer %#codegen
                         outputComponent(:,:,1,iSample) = outputSample;
                     end
                 end
-                dLdX(:,:,iComponent,:) = outputComponent;
-                %{
+                %}
+            end
+            %{
                 %A = permute(X,[3 1 2 4]);
                 A = X;
                 for iSample = 1:nSamples
@@ -217,8 +243,7 @@ classdef nsoltBlockDct2dLayer < nnet.layer.Layer %#codegen
                         end
                     end
                 end
-                %}
-            end
+            %}
         end
     end
     
