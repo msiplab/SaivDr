@@ -122,19 +122,27 @@ classdef nsoltBlockDct3dLayer < nnet.layer.Layer
             nRows = height/decV;
             nCols = width/decH;
             nLays = depth/decD;
-            nDecs = prod(decFactor);
             %
-            outputComponent = zeros(nDecs,nRows,nCols,nLays,nSamples,'like',X);
             if isgpuarray(X)
                 for iComponent = 1:nComponents
                     arrayX = X(:,:,:,iComponent,:);
                     arrayY = reshape(permute(reshape(arrayX,...
-                        decV,nRows,decH,nCols,decD,nLays,1,nSamples),...
-                        [1 3 5 2 4 6 7 8]),...
-                        decV*decH*decD,nRows,nCols,nLays,1,nSamples);
+                        decV,nRows,decH,nCols,decD,nLays,nSamples),...
+                        [1 3 5 2 4 6 7]),...
+                        decV*decH*decD,nRows,nCols,nLays,nSamples);
                     varargout{iComponent} = pagefun(@mtimes,Cvhd_,arrayY);
                 end
             else
+                parfor iComponent = 1:nComponents
+                    arrayX = X(:,:,:,iComponent,:);
+                    arrayY = reshape(permute(reshape(arrayX,...
+                        decV,nRows,decH,nCols,decD,nLays,nSamples),...
+                        [1 3 5 2 4 6 7]),...
+                        decV*decH*decD,[]);
+                    varargout{iComponent} = reshape(Cvhd_*arrayY,...
+                        decV*decH*decD,nRows,nCols,nLays,nSamples);
+                end
+                %{
                 inputComponent = zeros(height,width,depth,1,nSamples,'like',X);
                 outputSample = zeros(nDecs,nRows,nCols,nLays,'like',X);
                 outputLay = zeros(nDecs,nRows,nCols,'like',X);
@@ -159,9 +167,8 @@ classdef nsoltBlockDct3dLayer < nnet.layer.Layer
                     end
                     varargout{iComponent} = outputComponent;
                 end
+                %}
             end
-            
-            %
             %{
             A = zeros(nDecs,nRows,nCols,nLays,nSamples,'like',X);
             for iComponent = 1:nComponents
@@ -207,7 +214,6 @@ classdef nsoltBlockDct3dLayer < nnet.layer.Layer
             decV = decFactor(Direction.VERTICAL);
             decH = decFactor(Direction.HORIZONTAL);
             decD = decFactor(Direction.DEPTH);
-            %
             Cvhd_T = layer.Cvhd.';
             for iComponent = 1:nComponents
                 dLdZ = varargin{layer.NumInputs+layer.NumOutputs+iComponent};
