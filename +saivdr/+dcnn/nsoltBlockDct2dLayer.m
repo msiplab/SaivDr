@@ -111,7 +111,7 @@ classdef nsoltBlockDct2dLayer < nnet.layer.Layer %#codegen
                     varargout{iComponent} = pagefun(@mtimes,Cvh_,arrayY);
                 end
             else
-                parfor iComponent = 1:nComponents
+                parfor (iComponent = 1:nComponents, nComponents)
                     arrayX = X(:,:,iComponent,:);
                     arrayY = reshape(permute(reshape(arrayX,...
                         decV,nRows,decH,nCols,nSamples),[1 3 2 4 5]),...
@@ -203,7 +203,7 @@ classdef nsoltBlockDct2dLayer < nnet.layer.Layer %#codegen
                     dLdZ =  varargin{layer.NumInputs+layer.NumOutputs+iComponent};
                     arrayY{iComponent} = dLdZ;
                 end
-                parfor iComponent = 1:nComponents
+                parfor (iComponent = 1:nComponents, nComponents)
                     arrayX = Cvh_T*reshape(arrayY{iComponent},decV*decH,[]);
                     dLdX(:,:,iComponent,:) = reshape(ipermute(reshape(arrayX,...
                         decV,decH,nRows,nCols,nSamples),[1 3 2 4 5]),...

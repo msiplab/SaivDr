@@ -134,7 +134,7 @@ classdef nsoltBlockIdct3dLayer < nnet.layer.Layer
                     X = varargin{iComponent};
                     arrayX{iComponent} = X;
                 end
-                parfor iComponent = 1:nComponents
+                parfor (iComponent = 1:nComponents, nComponents)
                     arrayY = Cvhd_T*reshape(arrayX{iComponent},decV*decH*decD,[]);
                     Z(:,:,:,iComponent,:) = reshape(ipermute(reshape(arrayY,...
                         decV,decH,decD,nRows,nCols,nLays,nSamples),...
@@ -232,7 +232,7 @@ classdef nsoltBlockIdct3dLayer < nnet.layer.Layer
                     varargout{iComponent} = pagefun(@mtimes,Cvhd_,arrayX);
                 end
             else
-                parfor iComponent = 1:nComponents
+                parfor (iComponent = 1:nComponents, nComponents)
                     arrayY = dLdZ(:,:,:,iComponent,:);
                     arrayX = reshape(permute(reshape(arrayY,...
                         decV,nRows,decH,nCols,decD,nLays,nSamples),...
