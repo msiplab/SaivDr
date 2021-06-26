@@ -215,48 +215,63 @@ classdef nsoltBlockDct3dLayer < nnet.layer.Layer
             decH = decFactor(Direction.HORIZONTAL);
             decD = decFactor(Direction.DEPTH);
             Cvhd_T = layer.Cvhd.';
-            for iComponent = 1:nComponents
-                dLdZ = varargin{layer.NumInputs+layer.NumOutputs+iComponent};
-                if iComponent == 1
-                    nRows = size(dLdZ,2);
-                    nCols = size(dLdZ,3);
-                    nLays = size(dLdZ,4);
-                    height = decV*nRows;
-                    width = decH*nCols;
-                    depth = decD*nLays;
-                    nSamples = size(dLdZ,5);
-                    dLdX = zeros(height,width,depth,nComponents,nSamples,'like',dLdZ);
-                end
-                if isgpuarray(dLdZ)
+            %
+            dLdZ = varargin{layer.NumInputs+layer.NumOutputs+1};            
+            nRows = size(dLdZ,2);
+            nCols = size(dLdZ,3);
+            nLays = size(dLdZ,4);
+            height = decV*nRows;
+            width = decH*nCols;
+            depth = decD*nLays;
+            nSamples = size(dLdZ,5);
+            dLdX = zeros(height,width,depth,nComponents,nSamples,'like',dLdZ);
+            %
+            if isgpuarray(dLdZ)
+                for iComponent = 1:nComponents
+                    dLdZ = varargin{layer.NumInputs+layer.NumOutputs+iComponent};                                
                     arrayX = pagefun(@mtimes,Cvhd_T,dLdZ);
-                    outputComponent = reshape(ipermute(reshape(arrayX,...
-                       decV*decH*decD,nRows,nCols,nLays,1,nSamples),...
-                       [1 3 5 2 4 6 7]),...
-                       decV*nRows,decH*nCols,decD*nLays,1,nSamples);
-                else
-                    if iComponent == 1
-                        outputLay = zeros(height,width,decD,'like',dLdZ);
-                        outputSample = zeros(height,width,depth,'like',dLdZ);
-                        outputComponent = zeros(height,width,depth,1,nSamples,'like',dLdZ);
-                    end
-                    for iSample = 1:nSamples
-                        inputSample = dLdZ(:,:,:,:,iSample);
-                        for iLay = 1:nLays
-                            inputLay = inputSample(:,:,:,iLay);
-                            for iCol = 1:nCols
-                                X = Cvhd_T*inputLay(:,:,iCol);
-                                outputLay(:,(iCol-1)*decH+1:iCol*decH,:) = ...
-                                    reshape(permute(reshape(X,decV,decH,decD,nRows),...
-                                    [1 4 2 3]),decV*nRows,decH,decD);
-                            end
-                            outputSample(:,:,(iLay-1)*decD+1:iLay*decD,:) = ...
-                                outputLay;
-                        end
-                        outputComponent(:,:,:,1,iSample) = outputSample;
-                    end
+                    dLdX(:,:,:,iComponent,:) = reshape(ipermute(reshape(arrayX,...
+                    decV,decH,decD,nRows,nCols,nLays,nSamples),...
+                    [1 3 5 2 4 6 7]),...
+                    decV*nRows,decH*nCols,decD*nLays,1,nSamples);
                 end
-                dLdX(:,:,:,iComponent,:) = outputComponent;
+            else
+                arrayY = cell(1,nComponents);
+                for iComponent = 1:nComponents
+                    dLdZ =  varargin{layer.NumInputs+layer.NumOutputs+iComponent};
+                    arrayY{iComponent} = dLdZ;
+                end
+                parfor iComponent = 1:nComponents
+                    arrayX = Cvhd_T*reshape(arrayY{iComponent},decV*decH*decD,[]);
+                    dLdX(:,:,:,iComponent,:) = reshape(ipermute(reshape(arrayX,...
+                        decV,decH,decD,nRows,nCols,nLays,nSamples),...
+                        [1 3 5 2 4 6 7]),...
+                        decV*nRows,decH*nCols,decD*nLays,1,nSamples);
+                end                
                 %{
+                if iComponent == 1
+                    outputLay = zeros(height,width,decD,'like',dLdZ);
+                    outputSample = zeros(height,width,depth,'like',dLdZ);
+                    outputComponent = zeros(height,width,depth,1,nSamples,'like',dLdZ);
+                end
+                for iSample = 1:nSamples
+                    inputSample = dLdZ(:,:,:,:,iSample);
+                    for iLay = 1:nLays
+                        inputLay = inputSample(:,:,:,iLay);
+                        for iCol = 1:nCols
+                            X = Cvhd_T*inputLay(:,:,iCol);
+                            outputLay(:,(iCol-1)*decH+1:iCol*decH,:) = ...
+                                reshape(permute(reshape(X,decV,decH,decD,nRows),...
+                                [1 4 2 3]),decV*nRows,decH,decD);
+                        end
+                        outputSample(:,:,(iLay-1)*decD+1:iLay*decD,:) = ...
+                            outputLay;
+                    end
+                    outputComponent(:,:,:,1,iSample) = outputSample;
+                end
+                %}
+            end
+            %{
                 %A = permute(dLdZ,[4 1 2 3 5]);
                 A = dLdZ;
                 for iSample = 1:nSamples
@@ -273,10 +288,8 @@ classdef nsoltBlockDct3dLayer < nnet.layer.Layer
                         end
                     end
                 end
-                %}
-            end
+            %}
         end
     end
-    
 end
 
