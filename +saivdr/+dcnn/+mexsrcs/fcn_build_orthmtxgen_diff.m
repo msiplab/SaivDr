@@ -54,7 +54,7 @@ if license('checkout','matlab_coder') % Coder is available
             aMtxPst   = coder.typeof(cast(0,datatype),[inf inf],[1 1]); %#ok
             aMtxPre   = coder.typeof(cast(0,datatype),[inf inf],[1 1]); %#ok
             cfg.DynamicMemoryAllocation = 'AllVariableSizeArrays';%'Threshold';%'Off';
-        else % on GPU
+        elseif ~codegenskip % on GPU
             nChs = 64;
             maxAngs = (nChs-2)*nChs/8;
             maxMus = nChs/2;
