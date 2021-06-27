@@ -170,6 +170,10 @@ classdef (Abstract) AbstOlsOlaProcess < matlab.System
             if isa(srcImg,'gpuArray')
                 obj.UseGpu = true;
             end
+            if obj.UseGpu && gpuDeviceCount < 1 
+                obj.UseGpu = false;
+                warning('No GPU is available.')
+            end
             
             % Preperation
             splitFactor = obj.SplitFactor;
