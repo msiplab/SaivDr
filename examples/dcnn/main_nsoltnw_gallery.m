@@ -22,7 +22,7 @@
 % 
 % 
 % 
-% Copyright (c) 2020, Shogo MURAMATSU, All rights reserved.
+% Copyright (c) 2020-2021, Shogo MURAMATSU, All rights reserved.
 %% Preparation
 
 clear 
@@ -78,6 +78,9 @@ support.fcn_download_img
 % * Furuya, K., Hara, S., Seino, K., & Muramatsu, S. (2016). Boundary operation 
 % of 2D non-separable oversampled lapped transforms. _APSIPA Transactions on Signal 
 % and Information Processing, 5_, E9. doi:10.1017/ATSIP.2016.3.
+%% Patch size
+
+szPatchTrn = [32 32];
 %% Uniform decomposition for 2-D Grayscale image
 
 % Decimation factor (Strides)
@@ -94,11 +97,20 @@ noDcLeakage = true;
 %% Construction of layers
 
 import saivdr.dcnn.*
-[analysislgraph,synthesislgraph] = fcn_creatensoltlgraphs2d(...
+analysislgraph = fcn_creatensoltlgraph2d([],...
+    'InputSize',szPatchTrn,...
     'NumberOfChannels',nChannels,...
     'DecimationFactor',decFactor,...
     'PolyPhaseOrder',ppOrder,...
-    'NumberOfVanishingMoments',noDcLeakage);
+    'NumberOfVanishingMoments',noDcLeakage, ...
+    'Mode','Analyzer');
+synthesislgraph = fcn_creatensoltlgraph2d([],...
+    'InputSize',szPatchTrn,...
+    'NumberOfChannels',nChannels,...
+    'DecimationFactor',decFactor,...
+    'PolyPhaseOrder',ppOrder,...
+    'NumberOfVanishingMoments',noDcLeakage, ...
+    'Mode','Synthesizer');
 figure(1)
 subplot(1,2,1)
 plot(analysislgraph)
@@ -106,27 +118,33 @@ title('Analysis NSOLT')
 subplot(1,2,2)
 plot(synthesislgraph)
 title('Synthesis NSOLT')
-% Construction of deep learning network.
-szPatchTrn = [32 32];
-[analysislgraph,synthesislgraph] = fcn_replaceinputlayers(analysislgraph,synthesislgraph,szPatchTrn);
-analysisnet = dlnetwork(analysislgraph);
+% Construction of synthesis deep learning network.
 synthesisnet = dlnetwork(synthesislgraph);
 
 % Initialize
 stdInitAng = pi/6;
 nLearnables = height(synthesisnet.Learnables);
 for iLearnable = 1:nLearnables
-    synthesisnet.Learnables.Value(iLearnable) = ...
-    cellfun(@(x) x+stdInitAng*randn(size(x)), ...
-    synthesisnet.Learnables.Value(iLearnable),'UniformOutput',false);
+    if synthesisnet.Learnables.Parameter(iLearnable)=="Angles"
+        synthesisnet.Learnables.Value(iLearnable) = ...
+            cellfun(@(x) x+stdInitAng*randn(size(x)), ...
+            synthesisnet.Learnables.Value(iLearnable),'UniformOutput',false);
+    end
 end
-analysisnet = fcn_cpparamssyn2ana(analysisnet,synthesisnet);
+
+% Construction of analyzer as the adjoint of synthesizer
+synthesislgraph = layerGraph(synthesisnet);
+analysislgraph = fcn_cpparamssyn2ana(analysislgraph,synthesislgraph);
+analysisnet = dlnetwork(analysislgraph);
+
+
 % Confirmation of the adjoint relation (perfect reconstruction)
 
 x = rand(szPatchTrn,'single');
+clear dls
 dlx = dlarray(x,'SSC'); % Deep learning array (SSC: Spatial,Spatial,Channel)
 [dls{1:2}] = analysisnet.predict(dlx);
-dly = synthesisnet.predict(dls{1:2});
+dly = synthesisnet.predict(dls{:});
 display("MSE: " + num2str(mse(dlx,dly)))
 % Initial state of the atomic images
 
@@ -152,16 +170,22 @@ noDcLeakage = true;
 %% Construction of layers
 
 import saivdr.dcnn.*
-[analysislgraph,synthesislgraph] = fcn_creatensoltlgraphs2d(...
+analysislgraph = fcn_creatensoltlgraph2d([],...
+    'InputSize',szPatchTrn,...
     'NumberOfChannels',nChannels,...
     'DecimationFactor',decFactor,...
     'PolyPhaseOrder',ppOrder,...
     'NumberOfLevels',nLevels,...
-    'NumberOfVanishingMoments',noDcLeakage);
-
-szPatchTrn = [64 64];
-[analysislgraph,synthesislgraph] = fcn_replaceinputlayers(...
-    analysislgraph,synthesislgraph,szPatchTrn);
+    'NumberOfVanishingMoments',noDcLeakage, ...
+    'Mode','Analyzer');
+synthesislgraph = fcn_creatensoltlgraph2d([],...
+    'InputSize',szPatchTrn,...
+    'NumberOfChannels',nChannels,...
+    'DecimationFactor',decFactor,...
+    'PolyPhaseOrder',ppOrder,...
+    'NUmberOfLevels',nLevels,...
+    'NumberOfVanishingMoments',noDcLeakage, ...
+    'Mode','Synthesizer');
 
 figure(3)
 subplot(1,2,1)
@@ -170,22 +194,29 @@ title('Analysis NSOLT')
 subplot(1,2,2)
 plot(synthesislgraph)
 title('Synthesis NSOLT')
-% Construction of deep learning network.
-analysisnet = dlnetwork(analysislgraph);
+
+% Construction of synthesis deep learning network.
 synthesisnet = dlnetwork(synthesislgraph);
 
 % Initialize
 stdInitAng = pi/6;
 nLearnables = height(synthesisnet.Learnables);
 for iLearnable = 1:nLearnables
-    synthesisnet.Learnables.Value(iLearnable) = ...
-    cellfun(@(x) x+stdInitAng*randn(), ...
-    synthesisnet.Learnables.Value(iLearnable),'UniformOutput',false);
+    if synthesisnet.Learnables.Parameter(iLearnable)=="Angles"
+        synthesisnet.Learnables.Value(iLearnable) = ...
+            cellfun(@(x) x+stdInitAng*randn(size(x)), ...
+            synthesisnet.Learnables.Value(iLearnable),'UniformOutput',false);
+    end
 end
-analysisnet = fcn_cpparamssyn2ana(analysisnet,synthesisnet);
+synthesislgraph = layerGraph(synthesisnet);
+
+% Construction of analysis deep learning network.
+analysislgraph = fcn_cpparamssyn2ana(analysislgraph,synthesislgraph);
+analysisnet = dlnetwork(analysislgraph);
 % Confirmation of the adjoint relation (perfect reconstruction)
 
 x = rand(szPatchTrn,'single');
+clear dls
 dlx = dlarray(x,'SSC'); % Deep learning array (SSC: Spatial,Spatial,Channel)
 [dls{1:nLevels+1}] = analysisnet.predict(dlx);
 dly = synthesisnet.predict(dls{:});
@@ -209,17 +240,20 @@ plot(synthesislgraph_)
 title('Synthesis NSOLT')
 %%
 synthesisnet_ = dlnetwork(synthesislgraph_);
-analysisnet_ = dlnetwork(analysislgraph_);
 
 % Initialize
 stdInitAng = pi/6;
 nLearnables = height(synthesisnet_.Learnables);
 for iLearnable = 1:nLearnables
-    synthesisnet_.Learnables.Value(iLearnable) = ...
-    cellfun(@(x) x+stdInitAng*randn(), ...
-    synthesisnet_.Learnables.Value(iLearnable),'UniformOutput',false);
+    if synthesisnet_.Learnables.Parameter(iLearnable)=="Angles"
+        synthesisnet_.Learnables.Value(iLearnable) = ...
+            cellfun(@(x) x+stdInitAng*randn(size(x)), ...
+            synthesisnet_.Learnables.Value(iLearnable),'UniformOutput',false);
+    end
 end
-analysisnet_ = fcn_cpparamssyn2ana(analysisnet_,synthesisnet_);
+synthesislgraph_ = layerGraph(synthesisnet_);
+analysislgraph_ = fcn_cpparamssyn2ana(analysislgraph_,synthesislgraph_);
+analysisnet_ = dlnetwork(analysislgraph_);
 % Confirmation of the adjoint relation (perfect reconstruction) w/ serialization
 
 x = rand(szPatchTrn,'single');
@@ -229,8 +263,96 @@ dly = synthesisnet_.predict(dls);
 display("MSE: " + num2str(mse(dlx,dly)))
 % Display the atomic images of serialized network
 
+import saivdr.dcnn.*
 figure(6)
 atomicimshow(synthesisnet_)
 title('Atomic images of initial NSOLT')
+%% Hierachical decomposition for 2-D RGB color image
+
+% Decimation factor (Strides)
+decFactor = [2 2]; % [My Mx]
+
+% Number of channels ( sum(nChannels) >= prod(decFactors) )
+nChannels = [1 1] * 4% [Ps Pa] (Ps=Pa)
+
+% Polyphase Order
+ppOrder = [1 1] *4
+
+% Number of tree levels
+nLevels = 3;
+
+% No DC-leakage
+noDcLeakage = true;
+
+% Number of components 
+nComponents = 3; % RGB
+%% Construction of layers
+
+import saivdr.dcnn.*
+analysislgraph = fcn_creatensoltlgraph2d([],...
+    'InputSize',szPatchTrn,...
+    'NumberOfComponents',nComponents,...
+    'NumberOfChannels',nChannels,...
+    'DecimationFactor',decFactor,...
+    'PolyPhaseOrder',ppOrder,...
+    'NumberOfLevels',nLevels,...
+    'NumberOfVanishingMoments',noDcLeakage, ...
+    'Mode','Analyzer');
+synthesislgraph = fcn_creatensoltlgraph2d([],...
+    'InputSize',szPatchTrn,...
+    'NumberOfComponents',nComponents,...
+    'NumberOfChannels',nChannels,...
+    'DecimationFactor',decFactor,...
+    'PolyPhaseOrder',ppOrder,...
+    'NUmberOfLevels',nLevels,...
+    'NumberOfVanishingMoments',noDcLeakage, ...
+    'Mode','Synthesizer');
+
+figure(7)
+plot(analysislgraph)
+title('Analysis NSOLT')
+figure(8)
+plot(synthesislgraph)
+title('Synthesis NSOLT')
+
+% Construction of synthesis deep learning network.
+synthesisnet = dlnetwork(synthesislgraph);
+
+% Initialize
+stdInitAng = pi/6;
+nLearnables = height(synthesisnet.Learnables);
+for iLearnable = 1:nLearnables
+    if synthesisnet.Learnables.Parameter(iLearnable)=="Angles"
+        synthesisnet.Learnables.Value(iLearnable) = ...
+            cellfun(@(x) x+stdInitAng*randn(size(x)), ...
+            synthesisnet.Learnables.Value(iLearnable),'UniformOutput',false);
+    end
+end
+synthesislgraph = layerGraph(synthesisnet);
+
+% Construction of analysis deep learning network.
+analysislgraph = fcn_cpparamssyn2ana(analysislgraph,synthesislgraph);
+analysisnet = dlnetwork(analysislgraph);
+% Confirmation of the adjoint relation (perfect reconstruction)
+
+x = rand([szPatchTrn nComponents],'single');
+clear dls
+dlx = dlarray(x,'SSC'); % Deep learning array (SSC: Spatial,Spatial,Channel)
+[dls{1:nLevels+1}] = analysisnet.predict(dlx);
+dly = synthesisnet.predict(dls{:});
+display("MSE: " + num2str(mse(dlx,dly)))
+%% Construction of whole layers
+
+import saivdr.dcnn.*
+nsoltlgraph = fcn_creatensoltlgraph2d([],...
+    'InputSize',szPatchTrn,...
+    'NumberOfComponents',nComponents,...
+    'NumberOfChannels',nChannels,...
+    'DecimationFactor',decFactor,...
+    'PolyPhaseOrder',ppOrder,...
+    'NumberOfLevels',nLevels,...
+    'NumberOfVanishingMoments',noDcLeakage, ...
+    'Mode','Whole');
+analyzeNetwork(nsoltlgraph)
 %% 
 % © Copyright, Shogo MURAMATSU, All rights reserved.
