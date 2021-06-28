@@ -1,5 +1,5 @@
 function nsoltLgraph = ...
-    fcn_creatensoltlgraph2d(varargin)
+    fcn_creatensoltlgraph2d(nsoltLgraph,varargin)
 %FCN_CREATENSOLTLGRAPHS2D
 %
 % Requirements: MATLAB R2021a
@@ -15,6 +15,10 @@ function nsoltLgraph = ...
 %
 % http://msiplab.eng.niigata-u.ac.jp/
 %
+if isempty(nsoltLgraph)
+    nsoltLgraph = layerGraph;
+end
+
 import saivdr.dcnn.*
 p = inputParser;
 addParameter(p,'InputSize',[32 32])
@@ -161,8 +165,7 @@ for iLv = 1:nLevels
     
 end
 
-%%
-nsoltLgraph = layerGraph;
+
 
 %% Analysis layers
 if isAnalyzer
