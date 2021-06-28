@@ -207,20 +207,20 @@ classdef nsoltInitialRotation3dLayer < nnet.layer.Layer
             dLdX = reshape(Zsa,nDecs,nrows,ncols,nlays,nSamples);
             
             % dLdWi = <dLdZ,(dVdWi)X>
-            fcn_orthmtxgen_diff = get_fcn_orthmtxgen_diff(angles);            
+            fcn_orthmtxgen_diff = get_fcn_orthmtxgen_diff(angles);
             dLdW = zeros(nAngles,1,'like',dLdZ);
             dldz_ = dLdZ; %permute(dLdZ,[4 1 2 3 5]);
             dldz_upp = reshape(dldz_(1:ps,:,:,:,:),ps,nrows*ncols*nlays*nSamples);
             dldz_low = reshape(dldz_(ps+1:ps+pa,:,:,:,:),pa,nrows*ncols*nlays*nSamples);
             % (dVdWi)X
+            a_ = X; %permute(X,[4 1 2 3 5]);
+            c_upp = reshape(a_(1:ceil(nDecs/2),:,:,:,:),ceil(nDecs/2),nrows*ncols*nlays*nSamples);
+            c_low = reshape(a_(ceil(nDecs/2)+1:nDecs,:,:,:,:),floor(nDecs/2),nrows*ncols*nlays*nSamples);
             for iAngle = uint32(1:nAngles/2)
                 %dW0 = fcn_orthmtxgen(anglesW,muW,iAngle);
                 %dU0 = fcn_orthmtxgen(anglesU,muU,iAngle);
                 [dW0,dW0Pst,dW0Pre] = fcn_orthmtxgen_diff(anglesW,muW,iAngle,dW0Pst,dW0Pre);
                 [dU0,dU0Pst,dU0Pre] = fcn_orthmtxgen_diff(anglesU,muU,iAngle,dU0Pst,dU0Pre);
-                a_ = X; %permute(X,[4 1 2 3 5]);
-                c_upp = reshape(a_(1:ceil(nDecs/2),:,:,:,:),ceil(nDecs/2),nrows*ncols*nlays*nSamples);
-                c_low = reshape(a_(ceil(nDecs/2)+1:nDecs,:,:,:,:),floor(nDecs/2),nrows*ncols*nlays*nSamples);
                 d_upp = dW0(:,1:ceil(nDecs/2))*c_upp;
                 d_low = dU0(:,1:floor(nDecs/2))*c_low;
                 dLdW(iAngle) = sum(bsxfun(@times,dldz_upp,d_upp),'all');
