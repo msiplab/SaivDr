@@ -51,7 +51,7 @@ if fbsfile == 2
             aAngles   = coder.typeof(cast(0,datatype),[inf 1],[1 0]); %#ok
             aMus      = coder.typeof(cast(0,datatype),[inf 1],[1 0]); %#ok
             cfg.DynamicMemoryAllocation = 'AllVariableSizeArrays';%'Threshold';%'Off';
-        else % on GPU
+        elseif ~codegenskip % on GPU
             nChs = 64;
             maxAngs = (nChs-2)*nChs/8;
             maxMus = nChs/2;

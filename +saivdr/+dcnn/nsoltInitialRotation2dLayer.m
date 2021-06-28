@@ -205,14 +205,14 @@ classdef nsoltInitialRotation2dLayer < nnet.layer.Layer %#codegen
             dldz_upp = reshape(dldz_(1:ps,:,:,:),ps,nrows*ncols*nSamples);
             dldz_low = reshape(dldz_(ps+1:ps+pa,:,:,:),pa,nrows*ncols*nSamples);
             % (dVdWi)X
+            a_ = X; %permute(X,[3 1 2 4]);
+            c_upp = reshape(a_(1:ceil(nDecs/2),:,:,:),ceil(nDecs/2),nrows*ncols*nSamples);
+            c_low = reshape(a_(ceil(nDecs/2)+1:nDecs,:,:,:),floor(nDecs/2),nrows*ncols*nSamples);
             for iAngle = uint32(1:nAngles/2)
                 %dW0 = fcn_orthmtxgen(anglesW,muW,iAngle);
                 %dU0 = fcn_orthmtxgen(anglesU,muU,iAngle);
                 [dW0,dW0Pst,dW0Pre] = fcn_orthmtxgen_diff(anglesW,muW,iAngle,dW0Pst,dW0Pre);
                 [dU0,dU0Pst,dU0Pre] = fcn_orthmtxgen_diff(anglesU,muU,iAngle,dU0Pst,dU0Pre);
-                a_ = X; %permute(X,[3 1 2 4]);
-                c_upp = reshape(a_(1:ceil(nDecs/2),:,:,:),ceil(nDecs/2),nrows*ncols*nSamples);
-                c_low = reshape(a_(ceil(nDecs/2)+1:nDecs,:,:,:),floor(nDecs/2),nrows*ncols*nSamples);
                 d_upp = dW0(:,1:ceil(nDecs/2))*c_upp;
                 d_low = dU0(:,1:floor(nDecs/2))*c_low;
                 dLdW(iAngle) = sum(bsxfun(@times,dldz_upp,d_upp),'all');

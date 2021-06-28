@@ -164,19 +164,32 @@ classdef nsoltIntermediateRotation2dLayer < nnet.layer.Layer %#codegen
             nAngles = length(anglesU);
             dLdW = zeros(nAngles,1,'like',dLdZ);
             dVdW_X = zeros(size(X),'like',dLdZ);
-            for iAngle = uint32(1:nAngles)
-                %dUn = fcn_orthmtxgen(anglesU,musU,iAngle);
-                [dUn,dUnPst,dUnPre] = fcn_orthmtxgen_diff(anglesU,musU,iAngle,dUnPst,dUnPre);
-                c_low = reshape(X(ps+1:ps+pa,:,:,:),pa,nrows*ncols*nSamples);
-                if strcmp(layer.Mode,'Analysis')
-                    c_low = dUn*c_low;
-                else
-                    c_low = dUn.'*c_low;
+            if isgpuarray(X)
+                x_low = X(ps+1:ps+pa,:,:,:);
+                for iAngle = uint32(1:nAngles)
+                    [dUn,dUnPst,dUnPre] = fcn_orthmtxgen_diff(anglesU,musU,iAngle,dUnPst,dUnPre);
+                    if strcmp(layer.Mode,'Analysis')
+                        dVdW_X(ps+1:ps+pa,:,:,:) = ...
+                            pagefun(@mtimes,dUn,x_low);
+                    else
+                        dVdW_X(ps+1:ps+pa,:,:,:) = ...
+                            pagefun(@mtimes,dUn.',x_low);
+                    end
+                    dLdW(iAngle) = sum(bsxfun(@times,dLdZ,dVdW_X),'all');
                 end
-                dVdW_X(ps+1:ps+pa,:,:,:) = reshape(c_low,pa,nrows,ncols,nSamples);
-                %
-                %dLdW(iAngle) = sum(dLdZ.*dVdW_X,'all');
-                dLdW(iAngle) = sum(bsxfun(@times,dLdZ,dVdW_X),'all');
+            else
+                x_low = reshape(X(ps+1:ps+pa,:,:,:),pa,[]);
+                for iAngle = uint32(1:nAngles)
+                    [dUn,dUnPst,dUnPre] = fcn_orthmtxgen_diff(anglesU,musU,iAngle,dUnPst,dUnPre);
+                    
+                    if strcmp(layer.Mode,'Analysis')
+                        c_low = dUn*x_low;
+                    else
+                        c_low = dUn.'*x_low;
+                    end
+                    dVdW_X(ps+1:ps+pa,:,:,:) = reshape(c_low,pa,nrows,ncols,nSamples);
+                    dLdW(iAngle) = sum(bsxfun(@times,dLdZ,dVdW_X),'all');
+                end
             end
         end
         

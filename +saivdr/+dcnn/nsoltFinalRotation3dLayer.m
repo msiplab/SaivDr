@@ -209,6 +209,9 @@ classdef nsoltFinalRotation3dLayer < nnet.layer.Layer
             dldz_ = dLdZ; %permute(dLdZ,[4 1 2 3 5]);
             dldz_upp = reshape(dldz_(1:ceil(nDecs/2),:,:,:),ceil(nDecs/2),nrows*ncols*nlays*nSamples);
             dldz_low = reshape(dldz_(ceil(nDecs/2)+1:nDecs,:,:,:),floor(nDecs/2),nrows*ncols*nlays*nSamples);
+            a_ = X; %permute(X,[4 1 2 3 5]);
+            c_upp = reshape(a_(1:ps,:,:,:),ps,nrows*ncols*nlays*nSamples);
+            c_low = reshape(a_(ps+1:ps+pa,:,:,:),pa,nrows*ncols*nlays*nSamples);
             for iAngle = uint32(1:nAngles/2)
                 %dW0_T = transpose(fcn_orthmtxgen(anglesW,muW,iAngle));
                 %dU0_T = transpose(fcn_orthmtxgen(anglesU,muU,iAngle));
@@ -216,9 +219,6 @@ classdef nsoltFinalRotation3dLayer < nnet.layer.Layer
                 [dU0,dU0Pst,dU0Pre] = fcn_orthmtxgen_diff(anglesU,muU,iAngle,dU0Pst,dU0Pre);                            
                 dW0_T = transpose(dW0);
                 dU0_T = transpose(dU0);                
-                a_ = X; %permute(X,[4 1 2 3 5]);
-                c_upp = reshape(a_(1:ps,:,:,:),ps,nrows*ncols*nlays*nSamples);
-                c_low = reshape(a_(ps+1:ps+pa,:,:,:),pa,nrows*ncols*nlays*nSamples);
                 d_upp = dW0_T(1:ceil(nDecs/2),:)*c_upp;
                 d_low = dU0_T(1:floor(nDecs/2),:)*c_low;
                 dLdW(iAngle) = sum(bsxfun(@times,dldz_upp,d_upp),'all');

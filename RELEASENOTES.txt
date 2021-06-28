@@ -1,5 +1,16 @@
 * Release notes on Sparsity-Aware Image and Volumetric Data Restoration Package
 
+- SaivDr20210627
+-- (Minor) Revised GPU implementation
+--- saivdr.dcnn.nsoltBlockDct2dLayer
+--- saivdr.dcnn.nsoltBlockIdct2dLayer
+--- saivdr.dcnn.nsoltBlockDct3dLayer
+--- saivdr.dcnn.nsoltBlockIdct2dLayer
+-- (Minor) Revised code generation when no GPU device is available
+--- saivdr.dcnn.mexsrcs.*
+-- (Minor) Revised to avoid erros when no GPU device is available
+--- saivdrrestoration.AbstOlsOlaProcess
+
 - SaivDr20210620
 -- (Major) GPU Coder support in some modules
 --- mybuild.m
