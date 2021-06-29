@@ -131,22 +131,21 @@ classdef nsoltAtomExtension2dLayer < nnet.layer.Layer %#codegen
             target = layer.TargetChannels;            
             %
             % Block butterfly
-            Ys = X(1:ps,:,:,:);
-            Ya = X(ps+1:ps+pa,:,:,:);
-            Y =  cat(1,bsxfun(@plus,Ys,Ya),bsxfun(@minus,Ys,Ya));
+            Xs = X(1:ps,:,:,:);
+            Xa = X(ps+1:ps+pa,:,:,:);
+            Ys =  bsxfun(@plus,Xs,Xa);
+            Ya =  bsxfun(@minus,Xs,Xa);
             % Block circular shift
             if strcmp(target,'Difference')
-                Y(ps+1:ps+pa,:,:,:) = circshift(Y(ps+1:ps+pa,:,:,:),shift);
+                Ya = circshift(Ya,shift);
             elseif strcmp(target,'Sum')
-                Y(1:ps,:,:,:) = circshift(Y(1:ps,:,:,:),shift);
+                Ys = circshift(Ys,shift);
             else
                 throw(MException('NsoltLayer:InvalidTargetChannels',...
                     '%s : TaregetChannels should be either of Sum or Difference',...
                     layer.TargetChannels))
             end
             % Block butterfly
-            Ys = Y(1:ps,:,:,:);
-            Ya = Y(ps+1:ps+pa,:,:,:);
             Y =  cat(1,bsxfun(@plus,Ys,Ya),bsxfun(@minus,Ys,Ya));
             % Output
             Z = 0.5*Y; %ipermute(Y,[3 1 2 4])/2.0;
