@@ -20,7 +20,7 @@ function [matrix,matrixpst,matrixpre] = fcn_orthmtxgen_diff(...
 %
 % http://msiplab.eng.niigata-u.ac.jp/
 
-if nargin < 4
+if nargin < 6
     isGpu = isgpuarray(angles);
 end
 if nargin < 3
