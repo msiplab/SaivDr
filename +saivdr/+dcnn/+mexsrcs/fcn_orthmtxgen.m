@@ -30,9 +30,12 @@ if ~isempty(angles)
                 c = cos(angle);
                 s = sin(angle);
                 vb = matrix(iBtm,:);
-                u  = bsxfun(@times,s,bsxfun(@plus,vt,vb));
-                vt = bsxfun(@minus,bsxfun(@times,c+s,vt),u);
-                matrix(iBtm,:) = bsxfun(@plus,bsxfun(@times,c-s,vb),u);
+%                 u  = bsxfun(@times,s,bsxfun(@plus,vt,vb));
+%                 vt = bsxfun(@minus,bsxfun(@times,c+s,vt),u);
+%                 matrix(iBtm,:) = bsxfun(@plus,bsxfun(@times,c-s,vb),u);
+                 u  = s.*(vt+vb);
+                 vt = (c+s).*vt-u;
+                 matrix(iBtm,:) = (c-s).*vb+u;
             end
             %
             iAng = iAng + 1;
@@ -41,6 +44,7 @@ if ~isempty(angles)
     end
 end
 if ~all(mus==1) 
-    matrix = bsxfun(@times,mus(:),matrix);
+    %matrix = bsxfun(@times,mus(:),matrix);
+    matrix = mus(:).*matrix;
 end
 end
