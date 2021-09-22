@@ -70,7 +70,7 @@ s = sin(angle);
 % u  = bsxfun(@times,s,bsxfun(@plus,vt,vb));
 % vt = bsxfun(@minus,bsxfun(@times,c+s,vt),u);
 % vb = bsxfun(@plus,bsxfun(@times,c-s,vb),u);
-u  = s*(vt+vb);
+u  = s.*(vt+vb);
 vt = (c+s).*vt-u;
 vb = (c-s).*vb+u;
 end
