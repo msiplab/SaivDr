@@ -1,5 +1,5 @@
 function [matrix,matrixpst,matrixpre] = fcn_orthmtxgen_diff(...
-    angles,mus,pdAng,matrixpst,matrixpre) %#codegen
+    angles,mus,pdAng,matrixpst,matrixpre,isGpu) %#codegen
 %FCN_ORTHMTXGEN_DIFF
 %
 % Function realization of
@@ -20,6 +20,9 @@ function [matrix,matrixpst,matrixpre] = fcn_orthmtxgen_diff(...
 %
 % http://msiplab.eng.niigata-u.ac.jp/
 
+if nargin < 4
+    isGpu = isgpuarray(angles);
+end
 if nargin < 3
     pdAng = 0;
 end
@@ -44,7 +47,7 @@ for iTop=1:nDim_-1
             % 
             %[rt,rb] = rot_(rt,rb,-angle);
             %[dt,db] = rot_(dt,db,dangle);
-            [vt,vb] = rot_([rt;dt],[rb;db],[-angle;dangle]);
+            [vt,vb] = rot_([rt;dt],[rb;db],[-angle;dangle],isGpu);
             %
             matrixrev(iTop,:) = vt(1,:); %rt;
             matrixrev(iBtm,:) = vb(1,:); %rb;
@@ -59,23 +62,33 @@ for iTop=1:nDim_-1
     end
 end
 if ~all(mus==1)
-    % TODO: Replace BSXFUN only for gpuArray    
-    matrix = bsxfun(@times,mus(:),matrix);
-    % TODO: Use direct operations on CPU    
-    %matrix = mus(:).*matrix;
+    if isGpu
+        % TODO: Replace BSXFUN only for gpuArray    
+        %matrix = bsxfun(@times,mus(:),matrix);
+        matrix = arrayfun(@times,mus(:),matrix);        
+    else
+        % TODO: Use direct operations on CPU    
+        matrix = mus(:).*matrix;
+    end
 end
 end
 
-function [vt,vb] = rot_(vt,vb,angle)
+function [vt,vb] = rot_(vt,vb,angle,isGpu)
 c = cos(angle);
 s = sin(angle);
-% TODO: Replace BSXFUN only for gpuArray
-u  = bsxfun(@times,s,bsxfun(@plus,vt,vb));
-vt = bsxfun(@minus,bsxfun(@times,c+s,vt),u);
-vb = bsxfun(@plus,bsxfun(@times,c-s,vb),u);
-% TODO: Use direct operations on CPU
-% u  = s.*(vt+vb);
-% vt = (c+s).*vt-u;
-% vb = (c-s).*vb+u;
+if isGpu
+    % TODO: Replace BSXFUN only for gpuArray
+    %u  = bsxfun(@times,s,bsxfun(@plus,vt,vb));
+    %vt = bsxfun(@minus,bsxfun(@times,c+s,vt),u);
+    %vb = bsxfun(@plus,bsxfun(@times,c-s,vb),u);
+    u  = arrayfun(@times,s,arrayfun(@plus,vt,vb));
+    vt = arrayfun(@minus,arrayfun(@times,c+s,vt),u);
+    vb = arrayfun(@plus,arrayfun(@times,c-s,vb),u);
+else
+    % TODO: Use direct operations on CPU
+    u  = s.*(vt+vb);
+    vt = (c+s).*vt-u;
+    vb = (c-s).*vb+u;
+end
 end
 

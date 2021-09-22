@@ -53,6 +53,7 @@ if license('checkout','matlab_coder') % Coder is available
             aPdAng    = coder.typeof(uint32(0),1,0); %#ok
             aMtxPst   = coder.typeof(cast(0,datatype),[inf inf],[1 1]); %#ok
             aMtxPre   = coder.typeof(cast(0,datatype),[inf inf],[1 1]); %#ok
+            cIsGpu    = coder.Constant(false); %#ok
             cfg.DynamicMemoryAllocation = 'AllVariableSizeArrays';%'Threshold';%'Off';
         elseif ~codegenskip % on GPU
             nChs = 64;
@@ -63,6 +64,7 @@ if license('checkout','matlab_coder') % Coder is available
             aPdAng    = coder.typeof(uint32(0),1,0); %#ok
             aMtxPst   = coder.typeof(gpuArray(cast(0,datatype)),[maxMus maxMus],[1 1]); %#ok
             aMtxPre   = coder.typeof(gpuArray(cast(0,datatype)),[maxMus maxMus],[1 1]); %#ok
+            cIsGpu    = coder.Constant(true); %#ok
             cfg.DynamicMemoryAllocation = 'Off';
         end
         
@@ -70,7 +72,7 @@ if license('checkout','matlab_coder') % Coder is available
             disp('Skipping code generation')
         else
             cfg.GenerateReport = true;
-            args = '{ aAngles, aMus, aPdAng, aMtxPst, aMtxPre }';
+            args = '{ aAngles, aMus, aPdAng, aMtxPst, aMtxPre, cIsGpu }';
             seval = [ 'codegen -config cfg ' ' -o ' outputdir '/' mexname ' ' ...
                 packagedir '/' bsfname '.m -args ' args];
             

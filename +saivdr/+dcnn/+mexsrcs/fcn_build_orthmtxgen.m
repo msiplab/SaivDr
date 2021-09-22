@@ -50,6 +50,7 @@ if fbsfile == 2
         if strcmp(device,'cpu') % on CPU
             aAngles   = coder.typeof(cast(0,datatype),[inf 1],[1 0]); %#ok
             aMus      = coder.typeof(cast(0,datatype),[inf 1],[1 0]); %#ok
+            cIsGpu    = coder.Constant(false); %#ok
             cfg.DynamicMemoryAllocation = 'AllVariableSizeArrays';%'Threshold';%'Off';
         elseif ~codegenskip % on GPU
             nChs = 64;
@@ -57,6 +58,7 @@ if fbsfile == 2
             maxMus = nChs/2;
             aAngles   = coder.typeof(gpuArray(cast(0,datatype)),[maxAngs 1],[1 0]); %#ok
             aMus      = coder.typeof(gpuArray(cast(0,datatype)),[maxMus 1],[1 0]); %#ok
+            cIsGpu    = coder.Constant(true); %#ok
             cfg.DynamicMemoryAllocation = 'Off';
         end
         
@@ -64,7 +66,7 @@ if fbsfile == 2
             disp('Skipping code generation')
         else
             cfg.GenerateReport = true;
-            args = '{ aAngles, aMus }';
+            args = '{ aAngles, aMus, cIsGpu }';
             seval = [ 'codegen -config cfg ' ' -o ' outputdir '/' mexname ' ' ...
                 packagedir '/' bsfname '.m -args ' args];
 

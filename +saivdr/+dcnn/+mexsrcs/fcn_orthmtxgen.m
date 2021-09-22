@@ -1,4 +1,4 @@
-function matrix = fcn_orthmtxgen(angles,mus) %#codegen
+function matrix = fcn_orthmtxgen(angles,mus,isGpu) %#codegen
 %FCN_ORTHMTXGEN
 %
 % Function realization of
@@ -18,6 +18,9 @@ function matrix = fcn_orthmtxgen(angles,mus) %#codegen
 %                Niigata, 950-2181, JAPAN
 %
 % http://msiplab.eng.niigata-u.ac.jp/
+if nargin < 3
+    isGpu = isgpuarray(angles);
+end
 nDim_ = (1+sqrt(1+8*length(angles)))/2;
 matrix = eye(nDim_,'like',angles);
 if ~isempty(angles)
@@ -30,14 +33,20 @@ if ~isempty(angles)
                 c = cos(angle);
                 s = sin(angle);
                 vb = matrix(iBtm,:);
-                % TODO: Replace BSXFUN only for gpuArra                
-                u  = bsxfun(@times,s,bsxfun(@plus,vt,vb));
-                vt = bsxfun(@minus,bsxfun(@times,c+s,vt),u);
-                matrix(iBtm,:) = bsxfun(@plus,bsxfun(@times,c-s,vb),u);
-                % TODO: Use direct operations on CPU                    
-                %u  = s.*(vt+vb);
-                %vt = (c+s).*vt-u;
-                %matrix(iBtm,:) = (c-s).*vb+u;
+                if isGpu
+                    % TODO: Replace BSXFUN only for gpuArra                
+                    %u  = bsxfun(@times,s,bsxfun(@plus,vt,vb));
+                    %vt = bsxfun(@minus,bsxfun(@times,c+s,vt),u);
+                    %matrix(iBtm,:) = bsxfun(@plus,bsxfun(@times,c-s,vb),u);
+                    u  = arrayfun(@times,s,arrayfun(@plus,vt,vb));
+                    vt = arrayfun(@minus,arrayfun(@times,c+s,vt),u);
+                    matrix(iBtm,:) = arrayfun(@plus,arrayfun(@times,c-s,vb),u);                    
+                else
+                    % TODO: Use direct operations on CPU                    
+                    u  = s.*(vt+vb);
+                    vt = (c+s).*vt-u;
+                    matrix(iBtm,:) = (c-s).*vb+u;
+                end
             end
             %
             iAng = iAng + 1;
@@ -46,9 +55,13 @@ if ~isempty(angles)
     end
 end
 if ~all(mus==1) 
-    % TODO: Replace BSXFUN only for gpuArray     
-    matrix = bsxfun(@times,mus(:),matrix);
-    % TODO: Use direct operations on CPU       
-    % matrix = mus(:).*matrix;
+    if isGpu
+        % TODO: Replace BSXFUN only for gpuArray     
+        %matrix = bsxfun(@times,mus(:),matrix);
+        matrix = arrayfun(@times,mus(:),matrix);
+    else
+        % TODO: Use direct operations on CPU       
+        matrix = mus(:).*matrix;
+    end
 end
 end
