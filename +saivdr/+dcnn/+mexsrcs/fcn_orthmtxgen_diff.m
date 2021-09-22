@@ -59,19 +59,23 @@ for iTop=1:nDim_-1
     end
 end
 if ~all(mus==1)
-    %matrix = bsxfun(@times,mus(:),matrix);
-    matrix = mus(:).*matrix;
+    % TODO: Replace BSXFUN only for gpuArray    
+    matrix = bsxfun(@times,mus(:),matrix);
+    % TODO: Use direct operations on CPU    
+    %matrix = mus(:).*matrix;
 end
 end
 
 function [vt,vb] = rot_(vt,vb,angle)
 c = cos(angle);
 s = sin(angle);
-% u  = bsxfun(@times,s,bsxfun(@plus,vt,vb));
-% vt = bsxfun(@minus,bsxfun(@times,c+s,vt),u);
-% vb = bsxfun(@plus,bsxfun(@times,c-s,vb),u);
-u  = s.*(vt+vb);
-vt = (c+s).*vt-u;
-vb = (c-s).*vb+u;
+% TODO: Replace BSXFUN only for gpuArray
+u  = bsxfun(@times,s,bsxfun(@plus,vt,vb));
+vt = bsxfun(@minus,bsxfun(@times,c+s,vt),u);
+vb = bsxfun(@plus,bsxfun(@times,c-s,vb),u);
+% TODO: Use direct operations on CPU
+% u  = s.*(vt+vb);
+% vt = (c+s).*vt-u;
+% vb = (c-s).*vb+u;
 end
 
