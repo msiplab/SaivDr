@@ -67,8 +67,11 @@ classdef nsoltSubbandDeserialization2dLayer < nnet.layer.Layer %#codegen
         end
         
         function layer = setOriginalDimension(layer,orgdim) 
-            import saivdr.dictionary.utility.Direction
-            import saivdr.dictionary.nsoltx.ChannelGroup
+            %import saivdr.dictionary.utility.Direction
+            %import saivdr.dictionary.nsoltx.ChannelGroup
+            Direction = saivdr.dictionary.utility.Direction;
+            ChannelGroup = saivdr.dictionary.nsoltx.ChannelGroup;
+            
             layer.OriginalDimension = orgdim;     
             nLevels = layer.NumberOfLevels;
             height = layer.OriginalDimension(Direction.VERTICAL);

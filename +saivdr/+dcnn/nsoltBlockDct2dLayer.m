@@ -35,7 +35,8 @@ classdef nsoltBlockDct2dLayer < nnet.layer.Layer %#codegen
         function layer = nsoltBlockDct2dLayer(varargin)
             % (Optional) Create a myLayer.
             % This function must have the same name as the class.
-            import saivdr.dictionary.utility.Direction
+            %import saivdr.dictionary.utility.Direction
+            Direction = saivdr.dictionary.utility.Direction;
             p = inputParser;
             addParameter(p,'DecimationFactor',[])
             addParameter(p,'Name','')
@@ -81,7 +82,9 @@ classdef nsoltBlockDct2dLayer < nnet.layer.Layer %#codegen
             %         X           - Input data
             % Outputs:
             %         Z1, ..., Zm - Outputs of layer forward function
-            import saivdr.dictionary.utility.Direction
+            %import saivdr.dictionary.utility.Direction
+            Direction = saivdr.dictionary.utility.Direction;
+
             nComponents = layer.NumOutputs;
             varargout = cell(1,nComponents);
             
@@ -132,7 +135,9 @@ classdef nsoltBlockDct2dLayer < nnet.layer.Layer %#codegen
             %                             inputs
             %         dLdW1, ..., dLdWk - Derivatives of the loss with respect to each
             %                             learnable parameter
-            import saivdr.dictionary.utility.Direction
+            %import saivdr.dictionary.utility.Direction
+            Direction = saivdr.dictionary.utility.Direction;
+            
             nComponents = layer.NumOutputs;
             decFactor = layer.DecimationFactor;
             decV = decFactor(Direction.VERTICAL);
