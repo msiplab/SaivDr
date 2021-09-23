@@ -20,7 +20,7 @@
 % 
 % 
 % 
-% Copyright (c) 2020, Shogo MURAMATSU, All rights reserved.
+% Copyright (c) 2020-2021, Shogo MURAMATSU, All rights reserved.
 %% Preparation
 
 clear 
@@ -64,7 +64,7 @@ title('Observation v');
 y = imresize(v,2,'bicubic');
 figure(3)
 imshow(y)
-title(['Bicubic y: PSNR = ' num2str(psnr(u,y)) ' [dB]']);
+title(['Bicubic y: PSNR = ' num2str(psnr(u,y)) ' dB']);
 %% Single image super resolution
 % 
 % 
@@ -117,72 +117,55 @@ figure(5)
 atomicimshow(synthesisnet)
 title('Atomic images of trained NSOLT')
 %%
-import saivdr.dcnn.*
-analysislgraph = analysislgraph.replaceLayer('Input image',...
-        imageInputLayer(size(y),'Name','Input image','Normalization','none'));
-for iLayer = 1:length(analysislgraph.Layers)
-    layer = analysislgraph.Layers(iLayer);
-    %{
-    if strcmp(layer.Name,'Sb_Srz')
-        newsrzlayer = layer.setOriginalDimension(size(y));
-        analysislgraph = analysislgraph.replaceLayer(...
-            'Sb_Srz',newsrzlayer);
-    end
-    %}
-    if strcmp(layer.Name,'Lv1_E0')
-        decFactor = layer.DecimationFactor;
-    end
-    if strcmp(layer.Name,'Lv1_V0')
-        nChannels = layer.NumberOfChannels;
+nLevels = extractnumlevels(analysisnet);
+decFactor = extractdecfactor(analysisnet);
+nChannels = extractnumchannels(analysisnet);
+szOrg = size(u);
+
+% Assemble analyzer
+analysislgraph4predict = analysislgraph;
+analysislgraph4predict = analysislgraph4predict.replaceLayer('Image input',...
+    imageInputLayer(szOrg,'Name','Image imput','Normalization','none'));
+for iLayer = 1:height(analysislgraph4predict.Layers)
+    layer = analysislgraph4predict.Layers(iLayer);
+    if contains(layer.Name,"Lv"+nLevels+"_DcOut") || ...
+            ~isempty(regexp(layer.Name,'^Lv\d+_AcOut','once'))
+        analysislgraph4predict = analysislgraph4predict.replaceLayer(layer.Name,...
+            regressionLayer('Name',layer.Name));
     end
 end
+analysisnet4predict = assembleNetwork(analysislgraph4predict);
 
-%isSerialize = false;
-for iLayer = 1:length(synthesislgraph.Layers)
-    layer = synthesislgraph.Layers(iLayer);
-    %{
-    if strcmp(layer.Name,'Sb_Dsz')
-        newdszlayer = layer.setOriginalDimension(size(y));
-        synthesislgraph = synthesislgraph.replaceLayer(...
-            'Sb_Dsz',newdszlayer);
-        isSerialize = true;
-    end
-    %}
-    if contains(layer.Name,'subband detail images')
-        nLevels = str2double(layer.Name(3));
-        sbSize = size(y).*(decFactor.^(-nLevels));
-        newsblayer = ...
+% Assemble synthesizer
+synthesislgraph4predict = synthesislgraph;
+synthesislgraph4predict = synthesislgraph4predict.replaceLayer('Lv1_Out',...
+    regressionLayer('Name','Lv1_Out'));
+for iLayer = 1:height(synthesislgraph4predict.Layers)
+    layer = synthesislgraph4predict.Layers(iLayer);
+    if contains(layer.Name,'Ac feature input')
+        iLv = str2double(layer.Name(3));
+        sbSize = szOrg.*(decFactor.^(-iLv));
+        newlayer = ...
             imageInputLayer([sbSize (sum(nChannels)-1)],'Name',layer.Name,'Normalization','none');
-        synthesislgraph = synthesislgraph.replaceLayer(...
-            layer.Name,newsblayer);
+        synthesislgraph4predict = synthesislgraph4predict.replaceLayer(...
+            layer.Name,newlayer);
+    elseif contains(layer.Name,sprintf('Lv%0d_Dc feature input',nLevels))
+        iLv = str2double(layer.Name(3));
+        sbSize = szOrg.*(decFactor.^(-iLv));
+        newlayer = ...
+            imageInputLayer([sbSize 1],'Name',layer.Name,'Normalization','none');
+        synthesislgraph4predict = synthesislgraph4predict.replaceLayer(...
+            layer.Name,newlayer);
     end
 end
-if contains(layer.Name,'subband approximation image')
-    nLevels = str2double(layer.Name(3));
-    sbSize = size(y).*(decFactor.^(-nLevels));
-    newsblayer = ...
-        imageInputLayer([sbSize 1],'Name',layer.Name,'Normalization','none');
-    synthesislgraph = synthesislgraph.replaceLayer(...
-        layer.Name,newsblayer);
-end
-
-%{
-if isSerialize
-    synthesislgraph = synthesislgraph.replaceLayer('Subband images',...
-        imageInputLayer(newdszlayer.InputSize,'Name','Subband images','Normalization','none'));
-end
-%}
-
-analysisnet = dlnetwork(analysislgraph);
-synthesisnet = dlnetwork(synthesislgraph);  
+synthesisnet4predict = assembleNetwork(synthesislgraph4predict);  
 %% 
 % Confirmation of perfect reconstruction (adjoint relation)
 
-x = rand(size(y),'single');
-dlx = dlarray(x,'SSC'); % Deep learning array (SSC: Spatial,Spatial,Channel)
-[dls{1:nLevels+1}] = analysisnet.predict(dlx);
-dly = synthesisnet.predict(dls{1:nLevels+1});
-display("MSE: " + num2str(mse(dlx,dly)))
+x = rand(szOrg,'single');
+[s{1:nLevels+1}] = analysisnet4predict.predict(x);
+y = synthesisnet4predict.predict(s{1:nLevels+1});
+display("MSE: " + num2str(mse(x,y)))
 % Adjoint operator of the measurement process
 
 % Adjoint process P.'
@@ -202,13 +185,13 @@ nIters = 20;
 isDcSkip = true;
 %%
 % Initalization
-z = dlarray(zeros(size(y),'like',y),'SSC'); % Deep learning array (SSC: Spatial,Spatial,Channel)
-[coefs{1:nLevels+1}] = analysisnet.predict(z);
+z = zeros(szOrg,'like',u);
+[coefs{1:nLevels+1}] = analysisnet4predict.predict(z);
 
 % profile on
 for itr = 1:nIters
-    x = linproc(extractdata(synthesisnet.predict(coefs{1:nLevels+1})));
-    [g{1:nLevels+1}] = analysisnet.predict(dlarray(adjproc(x-v),'SSC'));
+    x = linproc(synthesisnet4predict.predict(coefs{1:nLevels+1}));
+    [g{1:nLevels+1}] = analysisnet4predict.predict(adjproc(x-v));
     % Gradient descnet
     for iOutput = 1:nLevels+1
         coefs{iOutput} = coefs{iOutput}-gamma*g{iOutput};
@@ -223,9 +206,52 @@ end
 %%
 
 % Reconstruction
-r = extractdata(synthesisnet.predict(coefs{1:nLevels+1}));
+r = synthesisnet4predict.predict(coefs{1:nLevels+1});
 % Display the result
 
 figure(6)
 imshow(r)
-title(['Restoration r: PSNR = ' num2str(psnr(u,r)) ' [dB]']);
+title(['Restoration r: PSNR = ' num2str(psnr(u,r)) ' dB']);
+%%
+function nLevels = extractnumlevels(nsoltnet)
+import saivdr.dcnn.*
+
+% Extraction of information
+expidctlayer = '^Lv\d+_E0~?$';
+nLevels = 0;
+nLayers = height(nsoltnet.Layers);
+for iLayer = 1:nLayers
+    layer = nsoltnet.Layers(iLayer);
+    if ~isempty(regexp(layer.Name,expidctlayer,'once'))
+        nLevels = nLevels + 1;
+    end
+end
+end
+
+function decFactor = extractdecfactor(nsoltnet)
+import saivdr.dcnn.*
+
+% Extraction of information
+expfinallayer = '^Lv1_Cmp1+_V0~?$';
+nLayers = height(nsoltnet.Layers);
+for iLayer = 1:nLayers
+    layer = nsoltnet.Layers(iLayer);
+    if ~isempty(regexp(layer.Name,expfinallayer,'once'))
+        decFactor = layer.DecimationFactor;
+    end
+end
+end
+
+function nChannels = extractnumchannels(nsoltnet)
+import saivdr.dcnn.*
+
+% Extraction of information
+expfinallayer = '^Lv1_Cmp1+_V0~?$';
+nLayers = height(nsoltnet.Layers);
+for iLayer = 1:nLayers
+    layer = nsoltnet.Layers(iLayer);
+    if ~isempty(regexp(layer.Name,expfinallayer,'once'))
+        nChannels = layer.NumberOfChannels;
+    end
+end
+end

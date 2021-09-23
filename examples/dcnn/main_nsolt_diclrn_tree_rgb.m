@@ -1,4 +1,4 @@
-%% Uniform NSOLT dictionary learning
+%% Hierachical NSOLT dictionary learning for RGB color image
 % 
 % 
 % Please do not forget to run *setpath* in the top directory of this package, 
@@ -22,101 +22,12 @@
 % 
 % 
 % 
-% Copyright (c) 2020-2021, Shogo MURAMATSU, All rights reserved.
+% Copyright (c) 2021, Shogo MURAMATSU, All rights reserved.
 %% Preparation
 
 clear 
 close all
 support.fcn_download_img
-%% Parameter settings
-%% 
-% * Decimation factor
-% * Number of channels
-% * Sparsity ratio
-% * Number of iterations
-% * Standard deviation of initial angles
-% * Patch size for training
-% * Number of patches
-
-% Decimation factor (Strides)
-decFactor = [2 2]; % [My Mx]
-nDecs = prod(decFactor);
-
-% Number of channels ( sum(nChannels) >= prod(decFactors) )
-nChannels = [3 3]; % [Ps Pa] (Ps=Pa)
-redundancyRatio = sum(nChannels)/nDecs
-
-% Polyphase order
-ppOrder = [2 2];
-
-% Sparsity ratio
-sparsityRatio = 1/3;
-
-% Number of iterations
-nIters = 3;
-
-% Standard deviation of initial angles
-stdInitAng = pi/6;
-
-% Patch size for training
-szPatchTrn = [32 32]; % > [ (Ny+1)My (Nx+1)Mx ]
-
-% Number of patchs per image
-nSubImgs = 64;
-
-% No DC-leakage
-noDcLeakage = true;
-%% 
-% Setting of dictionary update step
-
-opts = trainingOptions('sgdm', ... % Stochastic gradient descent w/ momentum
-    ...'Momentum', 0.9000,...
-    ...'InitialLearnRate',0.0100,...
-    ...'LearnRateScheduleSettings','none',...
-    'L2Regularization',0.0,...1.0000e-04,...
-    ...'GradientThresholdMethod','l2norm',...
-    ...'GradientThreshold',Inf,...
-    'MaxEpochs',8,...20,...
-    'MiniBatchSize',8,...64,...
-    'Verbose',1,...
-    'VerboseFrequency',16,...50,...
-    ...'ValidationData',[],...
-    ...'ValidationFrequency',50,...
-    ...'ValidationPatience',Inf,...
-    ...'Shuffle','once',...
-    ...'CheckpointPath','',...
-    ...'ExecutionEnvironment','auto',...
-    ...'WorkerLoad',[],...
-    ...'OutputFcn',[],...
-    'Plots','none',...'training-progress',...
-    ...'SequenceLength','longest',...
-    ...'SequencePaddingValue',0,...
-    ...'SequencePaddingDirection','right',...
-    ...'DispatchInBackground',0,...
-    'ResetInputNormalization',0);...1
-%% Convolutional dictionary learning
-% 
-% Problem setting:
-% $$\{\hat{\mathbf{\theta}},\{ \hat{\mathbf{s}}_n \}\}=\arg\min_{\{\mathbf{\theta},\{\mathbf{s}_n\}\}}\frac{1}{2S}\sum_{n=1}^{S}\|\mathbf{v}_n-\mathbf{D}_{\mathbf{\theta}}\hat{\mathbf{s}}_n\|_2^2,\ 
-% \quad\mathrm{s.t.}\ \forall n, \|\mathbf{s}_n\|_0\leq K,$$$
-% 
-% where $\mathbf{D}_{\mathbf{\theta}}$ is a convolutional dictionary with the 
-% design parameter vector $\mathbf{\theta}}$.
-% 
-% 
-% Algorithm:
-% Iterate the sparse approximation step and the dictionary update step.
-%% 
-% * Sparse approximation step
-%% 
-% $$\hat{\mathbf{s}}_n=\arg\min_{\mathbf{s}_n}\frac{1}{2} \|\mathbf{v}_n-\hat{\mathbf{D}}\mathbf{s}_n\|_2^2\ 
-% \quad \mathrm{s.t.}\ \|\mathbf{s}_n\|_0\leq K$$
-%% 
-% * Dictionary update step
-%% 
-% $$\hat{\mathbf{\theta}}=\arg\min_{\mathbf{\theta}}\frac{1}{2S}\sum_{n=1}^{S}\|\mathbf{v}_n-\mathbf{D}_{\mathbf{\theta}}\hat{\mathbf{s}}_n\|_2^2$$
-% 
-% $$\hat{\mathbf{D}}=\mathbf{D}_{\hat{\mathbf{\theta}}$$
 %% Bivariate lattice-structure oversampled filter banks 
 % 
 % 
@@ -150,56 +61,7 @@ opts = trainingOptions('sgdm', ... % Stochastic gradient descent w/ momentum
 % &  \mathbf{O} \\ \mathbf{O} &  \mathbf{I}_{P/2}\end{array}\right)\mathbf{B}_{P}$, 
 % $\mathbf{B}_{P}=\frac{1}{\sqrt{2}}\left(\begin{array}{cc} \mathbf{I}_{P/2} &  
 % \mathbf{I}_{P/2} \\ \mathbf{I}_{P/2} &  -\mathbf{I}_{P/2}\end{array}\right)$
-%% 
-% 【Example】For $P/2=3$, a parametric orthonormal matrix $\mathbf{U}(\mathbf{\theta},\mathbf{\mu})$ 
-% can be constructed by 
 % 
-% $$\mathbf{U}(\mathbf{\theta},\mathbf{\mu}) \colon = \left(\begin{array}{cc} 
-% \mu_1 & 0& 0\\ 0 & \mu_1 & 0 \\ 0 & 0 & \mu_2 \end{array}\right)%\left(\begin{array}{ccc}  
-% 1 & 0 & 0 \\0 & \cos\theta_2& -\sin\theta_2 \\ 0 & \sin\theta_2 & \cos\theta_2 
-% \end{array}\right)%\left(\begin{array}{ccc} \cos\theta_1& 0 & -\sin\theta_1  
-% \\  0 & 1 & 0 \\\sin\theta_1 & 0 &  \cos\theta_1  \end{array}\right)%\left(\begin{array}{ccc} 
-% \cos\theta_0& -\sin\theta_0 & 0 \\ \sin\theta_0 & \cos\theta_0 & 0 \\ 0 & 0 
-% & 1 \end{array}\right),$$
-% 
-% $${\mathbf{U}(\mathbf{\theta},\mathbf{\mu})}^T = %\left(\begin{array}{ccc} 
-% \cos\theta_0& \sin\theta_0 & 0 \\ -\sin\theta_0 & \cos\theta_0 & 0 \\ 0 & 0 
-% & 1 \end{array}\right)%\left(\begin{array}{ccc} \cos\theta_1& 0 & \sin\theta_1  
-% \\  0 & 1 & 0 \\-\sin\theta_1 & 0 &  \cos\theta_1  \end{array}\right)%\left(\begin{array}{ccc} 
-% 1 & 0 & 0 \\0 & \cos\theta_2& \sin\theta_2 \\ 0 & -\sin\theta_2 & \cos\theta_2 
-% \end{array}\right)%\left(\begin{array}{cc} \mu_0 & 0& 0\\ 0 & \mu_1 & 0 \\ 0 
-% & 0 & \mu_2 \end{array}\right),$$
-% 
-% where $\mathbf{\theta}\in\mathbb{R}^{(P-2)P/8}$ and $\mathbf{\mu}=\{-1,1\}^{P/2}$. 
-% For the sake of simplification, the sign parameters $\mu_k$ are fixed to $-1$for 
-% $\mathbf{U}_n^{\{d\}}$ witn odd $n$, otherwise they are fixed to $+1$.
-% 
-% Partial differentiation can be, for examle, conducted as
-% 
-% $$\frac{\partial}{\partial \theta_1}{\mathbf{U}(\mathbf{\theta},\mathbf{\mu})}^T 
-% = %\left(\begin{array}{ccc} \cos\theta_0& \sin\theta_0 & 0 \\ -\sin\theta_0 
-% & \cos\theta_0 & 0 \\ 0 & 0 & 1 \end{array}\right)%\left(\begin{array}{ccc} 
-% -\sin\theta_1& 0 & \cos\theta_1  \\  0 & 0 & 0 \\-\cos\theta_1 & 0 &  -\sin\theta_1  
-% \end{array}\right)%\left(\begin{array}{ccc} 1 & 0 & 0 \\0 & \cos\theta_2& \sin\theta_2 
-% \\ 0 & -\sin\theta_2 & \cos\theta_2 \end{array}\right)%\left(\begin{array}{cc} 
-% \mu_0 & 0& 0\\ 0 & \mu_1 & 0 \\ 0 & 0 & \mu_2 \end{array}\right).$$
-% Definition of custom layers and networks 
-% 
-% 
-% Use a custom layer of Deep Learning Toolbox to implement Synthesis NSOLT (Synthesis 
-% NSOLT).
-% Definition of layers w/ Learnable properties
-%% 
-% * Final rotation: $\mathbf{V}_0^T$ (saivdr.dcnn.nsoltFinalRotationLayer)
-% * Intermediate rotation: ${\mathbf{V}_n^{\{d\}}}^T$ (saivdr.dcnn.nsoltIntermediateRotationLayer)
-% Definition of layers w/o Learnable properties
-%% 
-% * Bivariate inverese DCT (2-D IDCT): $\mathbf{E}_0^T=\mathbf{E}_0^{-1}$ (saivdr.dcnn.nsoltBlockDctLayer)
-% * Vertical up extension: $\mathbf{Q}^T(z_\mathrm{v}^{-1})$ (saivdr.dcnn.nsoltAtomExtensionLayer)
-% * Vertical down extension: $\bar{\mathbf{Q}}^T(z_\mathrm{v}^{-1})$  (saivdr.dcnn.nsoltAtomExtensionLayer)
-% * Horizontal left extension: $\mathbf{Q}^T(z_\mathrm{h}^{-1})$ (saivdr.dcnn.nsoltAtomExtensionLayer)
-% * Horizontal right extension: $\bar{\mathbf{Q}}^T(z_\mathrm{h}^{-1})$ (saivdr.dcnn.nsoltAtomExtensionLayer)
-%% 
 % 【References】 
 %% 
 % * MATLAB SaivDr Package: <https://github.com/msiplab/SaivDr https://github.com/msiplab/SaivDr>
@@ -216,23 +78,108 @@ opts = trainingOptions('sgdm', ... % Stochastic gradient descent w/ momentum
 % * Furuya, K., Hara, S., Seino, K., & Muramatsu, S. (2016). Boundary operation 
 % of 2D non-separable oversampled lapped transforms. _APSIPA Transactions on Signal 
 % and Information Processing, 5_, E9. doi:10.1017/ATSIP.2016.3.
+%% Hierachical decomposition for 2-D RGB image
+% Let $R_M^P(\tau)$ be the redundancy of $\tau$-level tree-structured filter 
+% bank, then we have the relation 
+% 
+% $$R_M^P(\tau)=\left\{\begin{array}{ll} (P-1)\tau + 1, & M=1, \\ \frac{P-1}{M-1}-\frac{P-M}{(M-1)M^\tau}, 
+% & M\geq 2.\end{array}\right.$$
+
+% Decimation factor (Strides)
+decFactor = [2 2]; % [My Mx]
+
+% Number of channels ( sum(nChannels) >= prod(decFactors) )
+nChannels = [1 1] * 4% [Ps Pa] (Ps=Pa)
+% Number of tree levels
+nLevels = 3
+
+% Redundancy
+P = sum(nChannels);
+M = prod(decFactor);
+redundancy = ...
+    (prod(decFactor)==1)*((P-1)*nLevels+1) + ...
+    (prod(decFactor)>1)*((P-1)/(M-1)-(P-M)/((M-1)*M^nLevels))
+
+% Polyphase Order
+ppOrder = [1 1] *4
+
+% Sparsity ratio
+sparsityRatio = 1/16;
+
+% Number of patchs per image
+nSubImgs = 128;
+
+% No DC-leakage
+noDcLeakage = true
+%% 
+% Setting of dictionary update step
+
+% Number of iterations
+nIters = 8;
+
+% Standard deviation of initial angles
+stdInitAng = pi/6; 
+
+% Patch size for training
+szPatchTrn = [64 64 3]; % > [ (Ny+1)My (Nx+1)Mx * ]
+
+% Mini batch size
+miniBatchSize = 32;
+
+% Number of Epochs (1 Epoch = nSubImgs/miniBachSize iterlations)
+maxEpochs = 32; 
+
+% Number of iterations
+maxIters = nSubImgs/miniBatchSize * maxEpochs
+% Training options
+opts = trainingOptions('sgdm', ... % Stochastic gradient descent w/ momentum
+    ...'Momentum', 0.9000,...
+    ...'InitialLearnRate',0.0100,...
+    ...'LearnRateScheduleSettings','none',...
+    'L2Regularization',0.0,...1.0000e-04,... % Set zero since parameters are rotaion angles.
+    ...'GradientThresholdMethod','l2norm',...
+    ...'GradientThreshold',Inf,...
+    'MaxEpochs',maxEpochs,...30,...
+    'MiniBatchSize',miniBatchSize,...128,...
+    'Verbose',1,...
+    'VerboseFrequency',32,...50,...
+    ...'ValidationData',[],...
+    ...'ValidationFrequency',50,...
+    ...'ValidationPatience',Inf,...
+    ...'Shuffle','once',...
+    ...'CheckpointPath','',...
+    ...'ExecutionEnvironment','auto',...
+    ...'WorkerLoad',[],...
+    ...'OutputFcn',[],...
+    'Plots','none',...'training-progress',...
+    ...'SequenceLength','longest',...
+    ...'SequencePaddingValue',0,...
+    ...'SequencePaddingDirection','right',...
+    ...'DispatchInBackground',0,...
+    'ResetInputNormalization',0);...1
+%% Construction of layers
 
 import saivdr.dcnn.*
 analysislgraph = fcn_creatensoltlgraph2d([],...
-    'InputSize',szPatchTrn,...
+    'InputSize',szPatchTrn(1:2),...
+    'NumberOfComponents',szPatchTrn(3),...
     'NumberOfChannels',nChannels,...
     'DecimationFactor',decFactor,...
     'PolyPhaseOrder',ppOrder,...
+    'NumberOfLevels',nLevels,...
     'NumberOfVanishingMoments',noDcLeakage,...
     'Mode','Analyzer');
-synthesislgraph = fcn_creatensoltlgraph2d([],...
-    'InputSize',szPatchTrn,...
+synthesislgraph= fcn_creatensoltlgraph2d([],...
+    'InputSize',szPatchTrn(1:2),...
+    'NumberOfComponents',szPatchTrn(3),...
     'NumberOfChannels',nChannels,...
     'DecimationFactor',decFactor,...
     'PolyPhaseOrder',ppOrder,...
+    'NumberOfLevels',nLevels,...
     'NumberOfVanishingMoments',noDcLeakage,...
     'Mode','Synthesizer');
-figure(1)
+
+figure(3)
 subplot(1,2,1)
 plot(analysislgraph)
 title('Analysis NSOLT')
@@ -240,7 +187,7 @@ subplot(1,2,2)
 plot(synthesislgraph)
 title('Synthesis NSOLT')
 
-% Construction of synthesis network.
+% Construction of deep learning network.
 synthesisnet = dlnetwork(synthesislgraph);
 
 % Initialize
@@ -253,43 +200,75 @@ for iLearnable = 1:nLearnables
     end
 end
 
-% Construction of analysis network
+% Copy the synthesizer's parameters to the analyzer
 synthesislgraph = layerGraph(synthesisnet);
 analysislgraph = fcn_cpparamssyn2ana(analysislgraph,synthesislgraph);
 analysisnet = dlnetwork(analysislgraph);
 % Confirmation of the adjoint relation (perfect reconstruction)
 
+nOutputs = nLevels+1;
+
 x = rand(szPatchTrn,'single');
+dls = cell(1,nOutputs);
 dlx = dlarray(x,'SSCB'); % Deep learning array (SSCB: Spatial,Spatial,Channel,Batch)
-[dls{1:2}] = analysisnet.predict(dlx);
-dly = synthesisnet.predict(dls{:});
+[dls{1:nOutputs}] = analysisnet.predict(dlx);
+dly = synthesisnet.predict(dls{1:nOutputs});
 display("MSE: " + num2str(mse(dlx,dly)))
 % Initial state of the atomic images
 
-figure(2)
-atomicimshow(synthesisnet)
+figure(4)
+imshowscale = sum(nChannels);
+atomicimshow(synthesisnet,[],imshowscale)
 title('Atomic images of initial NSOLT')
 % Preparation of traning image
+% 
+% 
 % Randomly extracting patches from the image data store
 
-imds = imageDatastore('./data/barbara.png',...
-    "ReadFcn",@(x) im2single(imread(x)));
-patchds = randomPatchExtractionDatastore(imds,imds,szPatchTrn,...
-    'PatchesPerImage',nSubImgs);
-figure(3)
+imds = imageDatastore("./data/baboon.png","ReadFcn",@(x) im2single(imread(x)));
+patchds = randomPatchExtractionDatastore(imds,imds,szPatchTrn,'PatchesPerImage',nSubImgs);
+figure(5)
 minibatch = preview(patchds);
 responses = minibatch.ResponseImage;
 montage(responses,'Size',[2 4]);
-% Alternative iteration of sparse approximation step and dictionary update step
+% Convolutional dictionary learning
+% 
+% Problem setting:
+% $$\{\hat{\mathbf{\theta}},\{ \hat{\mathbf{s}}_n \}\}=\arg\min_{\{\mathbf{\theta},\{\mathbf{s}_n\}\}}\frac{1}{2S}\sum_{n=1}^{S}\|\mathbf{v}_n-\mathbf{D}_{\mathbf{\theta}}\hat{\mathbf{s}}_n\|_2^2,\ 
+% \quad\mathrm{s.t.}\ \forall n, \|\mathbf{s}_n\|_0\leq K,$$$
+% 
+% where $\mathbf{D}_{\mathbf{\theta}}$ is a convolutional dictionary with the 
+% design parameter vector $\mathbf{\theta}}$.
+% 
+% 
+% Algorithm:
+% Iterate the sparse approximation step and the dictionary update step.
 %% 
-% * Sparse approximation： Iterative hard thresholding
-% * Dictionary update： Stochastic gradient descent
+% * Sparse approximation step
+%% 
+% $$\hat{\mathbf{s}}_n=\arg\min_{\mathbf{s}_n}\frac{1}{2} \|\mathbf{v}_n-\hat{\mathbf{D}}\mathbf{s}_n\|_2^2\ 
+% \quad \mathrm{s.t.}\ \|\mathbf{s}_n\|_0\leq K$$
+%% 
+% * Dictionary update step
+%% 
+% $$\hat{\mathbf{\theta}}=\arg\min_{\mathbf{\theta}}\frac{1}{2S}\sum_{n=1}^{S}\|\mathbf{v}_n-\mathbf{D}_{\mathbf{\theta}}\hat{\mathbf{s}}_n\|_2^2$$
+% 
+% $$\hat{\mathbf{D}}=\mathbf{D}_{\hat{\mathbf{\theta}}$$
+% 
+% 
+% Alternate iteration of sparse approximation step and dictioary update step
+%% 
+% * Sparse approximation：Iterative hard thresholding
+% * Dictionary update： Stochastic gradient descent w/ momentum
+
+% Check if IHT works for dlarray
+%x = dlarray(randn(szPatchTrn,'single'),'SSCB');
+%[y,coefs{1:nOutputs}] = iht(x,analysisnet,synthesisnet,sparsityRatio);
 %% 
 % Iterative calculation of alternative steps
 
-analyzeNetwork(synthesisnet)
-
-%%
+import saivdr.dcnn.*
+%profile on
 for iIter = 1:nIters
     
     % Sparse approximation (Applied to produce an object of TransformedDatastore)
@@ -306,7 +285,7 @@ for iIter = 1:nIters
     analysisnet = dlnetwork(analysislgraph);
 
     % Check the adjoint relation (perfect reconstruction)
-    checkadjointrelation(analysislgraph,trainedlgraph,1,szPatchTrn);
+    checkadjointrelation(analysislgraph,trainedlgraph,nLevels,szPatchTrn);
 
     % Replace layer
     synthesislgraph = trainedlgraph.replaceLayer('Lv1_Out',...
@@ -314,18 +293,29 @@ for iIter = 1:nIters
     synthesisnet = dlnetwork(synthesislgraph);
     
 end
-%% 
-% Reshape the atoms into atomic images
+%profile off
+%profile viewer
+% The atomic images of trained dictionary
 
-figure(4)
-atomicimshow(synthesisnet);
+import saivdr.dcnn.*
+figure(6)
+imshowscale = sum(nChannels);
+atomicimshow(synthesisnet,[],imshowscale)
 title('Atomic images of trained NSOLT')
+% Save the designed network
+
+import saivdr.dcnn.*
+% Construction of analysis network
+synthesislgraph = layerGraph(synthesisnet);
+analysislgraph = fcn_cpparamssyn2ana(analysislgraph,synthesislgraph);
+analysisnet = dlnetwork(analysislgraph);
+save(sprintf('./data/nsoltdictionary_rgb_%s',datetime('now','Format','yyyyMMddhhmmssSSS')),'analysisnet','synthesisnet')
 % Function of iterative hard thresholding
 % 
 % 
 % The input images of the patch pairs are replaced with sparse coefficients 
 % obtained by IHT, where normalization is omitted for the Parseval tight property 
-% of NSOLT.
+% of NSOLT ( $\mathbf{DD}^T=\mathbf{I}$ ).
 % 
 % $$\mathbf{s}^{(t+1)}\leftarrow \mathcal{H}_{T_K}\left(\mathbf{s}^{(t)}-\gamma 
 % \hat{\mathbf{D}}^T\left(\hat{\mathbf{D}}\mathbf{s}^{(t)}-\mathbf{v}\right)\right)$$
@@ -334,7 +324,8 @@ title('Atomic images of trained NSOLT')
 % 
 % where
 % 
-% $$\mathcal{H}_{T_K}(\mathbf{x})=\mathrm{sgn}(\mathbf{x})\odot\max(\mathrm{abs}(\mathbf{x}),T_K\mathbf{1})$$
+% $$[\mathcal{H}_{T_K}(\mathbf{x})]_i=\left\{\begin{array}{ll} 0 , & |[\mathbf{x}]_i| 
+% \leq T_K \\ [\mathbf{x}]_i, & |[\mathbf{x}]_i|> T_K \end{array}\right.$$
 % 
 % 【Reference】
 %% 
@@ -409,8 +400,10 @@ for iLayer = 1:length(analysislgraph4predict.Layers)
     layer = analysislgraph4predict.Layers(iLayer);
     if contains(layer.Name,"Lv"+nLevels+"_DcOut") || ...
             ~isempty(regexp(layer.Name,'^Lv\d+_AcOut','once'))
-        analysislgraph4predict = analysislgraph4predict.replaceLayer(layer.Name,...
-            regressionLayer('Name',layer.Name));
+        analysislgraph4predict = analysislgraph4predict.addLayers(...
+            regressionLayer('Name',[layer.Name '_Reg']));        
+        analysislgraph4predict = analysislgraph4predict.connectLayers(layer.Name,...
+            [layer.Name '_Reg']);
     end
 end
 analysisnet4predict = assembleNetwork(analysislgraph4predict);

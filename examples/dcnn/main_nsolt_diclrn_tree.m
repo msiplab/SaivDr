@@ -6,7 +6,7 @@
 % 
 % 
 % 
-% Requirements: MATLAB R2020a
+% Requirements: MATLAB R2021a
 % 
 % 
 % 
@@ -104,21 +104,18 @@ redundancy = ...
 ppOrder = [1 1] *4
 
 % Sparsity ratio
-sparsityRatio = 1/8;
+sparsityRatio = 1/16;
 
 % Number of patchs per image
 nSubImgs = 128;
 
 % No DC-leakage
 noDcLeakage = true
-
-% Seialize
-isSerialized = false
 %% 
 % Setting of dictionary update step
 
 % Number of iterations
-nIters = 5;
+nIters = 8;
 
 % Standard deviation of initial angles
 stdInitAng = pi/6; 
@@ -126,6 +123,14 @@ stdInitAng = pi/6;
 % Patch size for training
 szPatchTrn = [64 64]; % > [ (Ny+1)My (Nx+1)Mx ]
 
+% Mini batch size
+miniBatchSize = 32;
+
+% Number of Epochs (1 Epoch = nSubImgs/miniBachSize iterlations)
+maxEpochs = 32; 
+
+% Number of iterations
+maxIters = nSubImgs/miniBatchSize * maxEpochs
 % Training options
 opts = trainingOptions('sgdm', ... % Stochastic gradient descent w/ momentum
     ...'Momentum', 0.9000,...
@@ -134,8 +139,8 @@ opts = trainingOptions('sgdm', ... % Stochastic gradient descent w/ momentum
     'L2Regularization',0.0,...1.0000e-04,... % Set zero since parameters are rotaion angles.
     ...'GradientThresholdMethod','l2norm',...
     ...'GradientThreshold',Inf,...
-    'MaxEpochs',16,...30,...
-    'MiniBatchSize',16,...128,...
+    'MaxEpochs',maxEpochs,...30,...
+    'MiniBatchSize',miniBatchSize,...128,...
     'Verbose',1,...
     'VerboseFrequency',32,...50,...
     ...'ValidationData',[],...
@@ -155,22 +160,22 @@ opts = trainingOptions('sgdm', ... % Stochastic gradient descent w/ momentum
 %% Construction of layers
 
 import saivdr.dcnn.*
-[analysislgraph,synthesislgraph] = fcn_creatensoltlgraphs2d(...
+analysislgraph = fcn_creatensoltlgraph2d([],...
+    'InputSize',szPatchTrn,...
     'NumberOfChannels',nChannels,...
     'DecimationFactor',decFactor,...
     'PolyPhaseOrder',ppOrder,...
     'NumberOfLevels',nLevels,...
-    'NumberOfVanishingMoments',noDcLeakage);
-
-[analysislgraph,synthesislgraph] = fcn_replaceinputlayers(...
-    analysislgraph,synthesislgraph,szPatchTrn);
-
-% Serialization of subband images
-
-if isSerialized
-    [analysislgraph,synthesislgraph] = fcn_attachserializationlayers(...
-        analysislgraph,synthesislgraph,szPatchTrn);
-end
+    'NumberOfVanishingMoments',noDcLeakage,...
+    'Mode','Analyzer');
+synthesislgraph= fcn_creatensoltlgraph2d([],...
+    'InputSize',szPatchTrn,...
+    'NumberOfChannels',nChannels,...
+    'DecimationFactor',decFactor,...
+    'PolyPhaseOrder',ppOrder,...
+    'NumberOfLevels',nLevels,...
+    'NumberOfVanishingMoments',noDcLeakage,...
+    'Mode','Synthesizer');
 
 figure(3)
 subplot(1,2,1)
@@ -179,35 +184,40 @@ title('Analysis NSOLT')
 subplot(1,2,2)
 plot(synthesislgraph)
 title('Synthesis NSOLT')
+
 % Construction of deep learning network.
-analysisnet = dlnetwork(analysislgraph);
 synthesisnet = dlnetwork(synthesislgraph);
 
 % Initialize
 nLearnables = height(synthesisnet.Learnables);
 for iLearnable = 1:nLearnables
-    synthesisnet.Learnables.Value(iLearnable) = ...
-    cellfun(@(x) x+stdInitAng*randn(size(x)), ...
-    synthesisnet.Learnables.Value(iLearnable),'UniformOutput',false);
+    if synthesisnet.Learnables.Parameter(iLearnable)=="Angles"
+        synthesisnet.Learnables.Value(iLearnable) = ...
+            cellfun(@(x) x+stdInitAng*randn(size(x)), ...
+            synthesisnet.Learnables.Value(iLearnable),'UniformOutput',false);
+    end
 end
-analysisnet = fcn_cpparamssyn2ana(analysisnet,synthesisnet);
+
+% Copy the synthesizer's parameters to the analyzer
+synthesislgraph = layerGraph(synthesisnet);
+analysislgraph = fcn_cpparamssyn2ana(analysislgraph,synthesislgraph);
+analysisnet = dlnetwork(analysislgraph);
 % Confirmation of the adjoint relation (perfect reconstruction)
 
-if isSerialized
-    nOutputs = 1;
-else
-    nOutputs = nLevels+1;
-end
+
+nOutputs = nLevels+1;
+
 x = rand(szPatchTrn,'single');
 dls = cell(1,nOutputs);
-dlx = dlarray(x,'SSC'); % Deep learning array (SSC: Spatial,Spatial,Channel)
+dlx = dlarray(x,'SSCB'); % Deep learning array (SSCB: Spatial,Spatial,Channel,Batch)
 [dls{1:nOutputs}] = analysisnet.predict(dlx);
 dly = synthesisnet.predict(dls{1:nOutputs});
 display("MSE: " + num2str(mse(dlx,dly)))
 % Initial state of the atomic images
 
 figure(4)
-atomicimshow(synthesisnet)
+imshowscale = sum(nChannels);
+atomicimshow(synthesisnet,[],imshowscale)
 title('Atomic images of initial NSOLT')
 % Preparation of traning image
 % 
@@ -251,7 +261,7 @@ montage(responses,'Size',[2 4]);
 % * Dictionary update： Stochastic gradient descent w/ momentum
 
 % Check if IHT works for dlarray
-%x = dlarray(randn(szPatchTrn,'single'),'SSC');
+%x = dlarray(randn(szPatchTrn,'single'),'SSCB');
 %[y,coefs{1:nOutputs}] = iht(x,analysisnet,synthesisnet,sparsityRatio);
 %% 
 % Iterative calculation of alternative steps
@@ -261,37 +271,42 @@ for iIter = 1:nIters
     
     % Sparse approximation (Applied to produce an object of TransformedDatastore)
     coefimgds = transform(patchds, @(x) iht4inputimage(x,analysisnet,synthesisnet,sparsityRatio));
-    
-    % Synthesis dictionary update
-    trainlgraph = synthesislgraph.replaceLayer('Lv1_Out',regressionLayer('Name','regression output'));
-    synthesisdagnet = trainNetwork(coefimgds,trainlgraph,opts);
 
-    % Analysis dictionary update (Copy parameters from synthesizer to
-    % analyzer)
-    synthesislgraph = layerGraph(synthesisdagnet); 
-    synthesislgraph = synthesislgraph.replaceLayer('regression output',...
-        saivdr.dcnn.nsoltIdentityLayer('Name','Lv1_Out'));
-    synthesisnet = dlnetwork(synthesislgraph);
-    analysisnet = fcn_cpparamssyn2ana(analysisnet,synthesisnet);
-    
+    % Synthesis dictionary update
+    trainlgraph = synthesislgraph.replaceLayer('Lv1_Out',...
+        regressionLayer('Name','Lv1_Out'));
+    trainednet = trainNetwork(coefimgds,trainlgraph,opts);
+
+    % Analysis dictionary update (Copy parameters from synthesizer to analyzer)
+    trainedlgraph = layerGraph(trainednet);
+    analysislgraph = fcn_cpparamssyn2ana(analysislgraph,trainedlgraph);
+    analysisnet = dlnetwork(analysislgraph);
+
     % Check the adjoint relation (perfect reconstruction)
-    x = rand(szPatchTrn,'single');
-    dlx = dlarray(x,'SSC'); % Deep learning array (SSC: Spatial,Spatial,Channel)
-    [dls{1:nOutputs}] = analysisnet.predict(dlx);
-    dly = synthesisnet.predict(dls{1:nOutputs});
-    display("MSE: " + num2str(mse(dlx,dly)))
+    checkadjointrelation(analysislgraph,trainedlgraph,nLevels,szPatchTrn);
+
+    % Replace layer
+    synthesislgraph = trainedlgraph.replaceLayer('Lv1_Out',...
+        nsoltIdentityLayer('Name','Lv1_Out'));
+    synthesisnet = dlnetwork(synthesislgraph);
     
 end
 %profile off
 %profile viewer
 % The atomic images of trained dictionary
 
+import saivdr.dcnn.*
 figure(6)
-atomicimshow(synthesisnet)
+imshowscale = sum(nChannels);
+atomicimshow(synthesisnet,[],imshowscale)
 title('Atomic images of trained NSOLT')
 % Save the designed network
 
-analysisnet = fcn_cpparamssyn2ana(analysisnet,synthesisnet);
+import saivdr.dcnn.*
+% Construction of analysis network
+synthesislgraph = layerGraph(synthesisnet);
+analysislgraph = fcn_cpparamssyn2ana(analysislgraph,synthesislgraph);
+analysisnet = dlnetwork(analysislgraph);
 save(sprintf('./data/nsoltdictionary_%s',datetime('now','Format','yyyyMMddhhmmssSSS')),'analysisnet','synthesisnet')
 % Function of iterative hard thresholding
 % 
@@ -319,78 +334,87 @@ save(sprintf('./data/nsoltdictionary_%s',datetime('now','Format','yyyyMMddhhmmss
 function newdata = iht4inputimage(oldtbl,analyzer,synthesizer,sparsityRatio)
 % IHT for InputImage in randomPatchExtractionDatastore
 %
-persistent nInputs
-if isempty(nInputs)
-    nInputs = 0;
-    nLayers = length(synthesizer.Layers);
-    for iLayer = 1:nLayers
-        layerName = synthesizer.Layers(iLayer).Name;
-        if contains(layerName, 'subband detail images' ) || ...
-                contains(layerName, 'subband approximation image') || ...
-                contains(layerName, 'Sb_Dsz' )
-        nInputs = nInputs + 1;
-        end
+nInputs = length(synthesizer.InputNames);
+
+% Apply IHT process for every input patch
+restbl = removevars(oldtbl,'InputImage');
+dlv = dlarray(cat(4,oldtbl.InputImage{:}),'SSCB');
+[~,dlcoefs{1:nInputs}] = iht(dlv,analyzer,synthesizer,sparsityRatio);
+coefs = cellfun(@(x) permute(num2cell(extractdata(x),1:3),[4 1 2 3]),dlcoefs,'UniformOutput',false);
+%
+nImgs = length(oldtbl.InputImage);
+coefarray = cell(nImgs,nInputs);
+for iImg = 1:nImgs
+    for iInput = 1:nInputs
+        coefarray{iImg,iInput} = coefs{iInput}{iImg};
     end
 end
-
-% Loop to apply IHT process for every input patch
-restbl = removevars(oldtbl,'InputImage');
-nImgs = length(oldtbl.InputImage);
-coefs = cell(nImgs,nInputs);
-for iImg = 1:nImgs
-    v = dlarray(oldtbl.InputImage{iImg},'SSC');
-    [~,coefs{iImg,1:nInputs}] = iht(v,analyzer,synthesizer,sparsityRatio);
-end
 % Output as a cell in order to make multiple-input datastore
-newdata = [ coefs table2cell(restbl) ];
+newdata = [ coefarray table2cell(restbl) ];
 end
 %% 
 % 
 
-function [y,varargout] = iht(x,analyzer,synthesizer,sparsityRatio)
+function [dly,varargout] = iht(dlx,analyzer,synthesizer,sparsityRatio)
 % IHT Iterative hard thresholding
 %
-persistent nInputs
-if isempty(nInputs)
-    nInputs = 0;
-    nLayers = length(synthesizer.Layers);
-    for iLayer = 1:nLayers
-        layerName = synthesizer.Layers(iLayer).Name;
-        if contains(layerName, 'subband detail images' ) || ...
-                contains(layerName, 'subband approximation image') || ...
-                contains(layerName, 'Sb_Dsz' )
-        nInputs = nInputs + 1;
-        end
-    end
-end
+nInputs = length(synthesizer.InputNames);
+szBatch = size(dlx,4);
 
 % Iterative hard thresholding w/o normalization
 % (A Parseval tight frame is assumed)
 gamma = (1.-1e-3);
 nIters = 10;
-nCoefs = floor(sparsityRatio*numel(x));
-[coefs{1:nInputs}] = analyzer.predict(dlarray(zeros(size(x),'like',x),'SSC'));
+nCoefs = floor(sparsityRatio*numel(dlx(:,:,:,1)));
+[dlcoefs{1:nInputs}] = analyzer.predict(dlarray(zeros(size(dlx),'like',dlx),'SSCB'));
 % IHT
 for iter=1:nIters
     % Gradient descent
-    y = synthesizer.predict(coefs{1:nInputs});
-    [grad{1:nInputs}] = analyzer.predict(y-x);
-    coefs = cellfun(@(x,y) x-gamma*y,coefs,grad,'UniformOutput',false);
+    dly = synthesizer.predict(dlcoefs{1:nInputs});
+    [grad{1:nInputs}] = analyzer.predict(dly-dlx);
+    dlcoefs = cellfun(@(x,y) x-gamma*y,dlcoefs,grad,'UniformOutput',false);
     % Hard thresholding
-    coefvecs = cellfun(@(x) x(:).',coefs,'UniformOutput',false);
-    srzdcoefs = [coefvecs{:}]; 
-    srtdcoefs = sort(extractdata(abs(srzdcoefs)),'descend');
-    %
-    thk = srtdcoefs(nCoefs);
+    coefvecs = cellfun(@(x) extractdata(reshape(x,[],szBatch)),dlcoefs,'UniformOutput',false);
+    srtdabscoefs = sort(abs(cell2mat(coefvecs.')),1,'descend');
+    thk = reshape(srtdabscoefs(nCoefs,:),1,1,1,szBatch);
+    dlcoefs = cellfun(@(x) (abs(x)>thk).*x,dlcoefs,'UniformOutput',false);
+    % Monitoring
     %checkSparsity =...
-    %nnz(extractdata((abs(srzdcoefs)>thk).*srzdcoefs))/numel(x)<=sparsityRatio;
+    %nnz(srtdabscoefs>srtdabscoefs(nCoefs,:))/numel(dlx)<=sparsityRatio;
     %assert(checkSparsity)
-    %
-    coefs = cellfun(@(x) (abs(x)>thk).*x,coefs,'UniformOutput',false);
-    %
-    %fprintf("IHT(%d) MSE: %6.4f\n",iter,mse(x,y));
+    %fprintf("IHT(%d) MSE: %6.4f\n",iter,mse(dlx,dly));
 end
-varargout = coefs;
+varargout = dlcoefs;
 end
 %% 
-% © Copyright, Shogo MURAMATSU, All rights reserved.
+% 
+
+function checkadjointrelation(analysislgraph,synthesislgraph,nLevels,szInput)
+import saivdr.dcnn.*
+x = rand(szInput,'single');
+% Assemble analyzer
+analysislgraph4predict = analysislgraph;
+for iLayer = 1:length(analysislgraph4predict.Layers)
+    layer = analysislgraph4predict.Layers(iLayer);
+    if contains(layer.Name,"Lv"+nLevels+"_DcOut") || ...
+            ~isempty(regexp(layer.Name,'^Lv\d+_AcOut','once'))
+        analysislgraph4predict = analysislgraph4predict.replaceLayer(layer.Name,...
+            regressionLayer('Name',layer.Name));
+    end
+end
+analysisnet4predict = assembleNetwork(analysislgraph4predict);
+
+% Assemble synthesizer
+synthesislgraph4predict = synthesislgraph;
+synthesisnet4predict = assembleNetwork(synthesislgraph4predict);
+
+% Analysis and synthesis process
+[s{1:nLevels+1}] = analysisnet4predict.predict(x);
+if isvector(s{end-1})
+    s{end-1} = permute(s{end-1},[1,3,2]);
+end
+y = synthesisnet4predict.predict(s{:});
+
+% Evaluation
+display("MSE: " + num2str(mse(x,y)))
+end
