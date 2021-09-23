@@ -3,6 +3,8 @@
 - SaivDr20210922
 -- (Minor) Revised to switch implicit expansion codes
 --- saidr.dcnn.mexsrcs.*
+-- (Minor) Excluded MEX code generation for GPU device (Due to a defect) 
+--- mybuild.m
 
 - SaivDr20210627
 -- (Minor) Revised GPU implementation
