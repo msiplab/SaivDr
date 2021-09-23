@@ -22,7 +22,7 @@ if license('checkout','matlab_coder')
     import saivdr.dcnn.mexsrcs.*
     datatypes = { 'single', 'double' };
     for idatatype = 1:length(datatypes)
-        for useGpuArray = 0:0 % Skip to use GPU Coder 
+        for useGpuArray = 0:1 % Skip to use GPU Coder 
             fcn_build_orthmtxgen(datatypes{idatatype},useGpuArray);
             fcn_build_orthmtxgen_diff(datatypes{idatatype},useGpuArray);
         end
