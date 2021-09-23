@@ -24,6 +24,9 @@ else
     device = 'cpu';
 end
 
+% In R2021b, by default, code generation supports implicit expansion.
+isLessThanR2021b = verLessThan('matlab','9.11'); % Effective only for CPU
+
 mexname = sprintf('%s_%s_on_%s_mex',bsfname, datatype, device);
 
 if license('checkout','matlab_coder') % Coder is available
@@ -40,7 +43,6 @@ if license('checkout','matlab_coder') % Coder is available
         % build mex
         codegenskip = false;
         if license('checkout','gpu_coder')
-            disp('GPU Coder')
             cfg = coder.gpuConfig('mex');
         elseif strcmp(device,'cpu')
             cfg = coder.config('mex');
@@ -53,9 +55,12 @@ if license('checkout','matlab_coder') % Coder is available
             aPdAng    = coder.typeof(uint32(0),1,0); %#ok
             aMtxPst   = coder.typeof(cast(0,datatype),[inf inf],[1 1]); %#ok
             aMtxPre   = coder.typeof(cast(0,datatype),[inf inf],[1 1]); %#ok
-            cIsGpu    = coder.Constant(false); %#ok
+            cUseGpu   = coder.Constant(false); %#ok
+            cIsLt21b  = coder.Constant(isLessThanR2021b); %#ok
             cfg.DynamicMemoryAllocation = 'AllVariableSizeArrays';%'Threshold';%'Off';
+            cfg.ConstantInputs = 'Remove';
         elseif ~codegenskip % on GPU
+            disp('GPU Coder')
             nChs = 64;
             maxAngs = (nChs-2)*nChs/8;
             maxMus = nChs/2;
@@ -64,18 +69,19 @@ if license('checkout','matlab_coder') % Coder is available
             aPdAng    = coder.typeof(uint32(0),1,0); %#ok
             aMtxPst   = coder.typeof(gpuArray(cast(0,datatype)),[maxMus maxMus],[1 1]); %#ok
             aMtxPre   = coder.typeof(gpuArray(cast(0,datatype)),[maxMus maxMus],[1 1]); %#ok
-            cIsGpu    = coder.Constant(true); %#ok
+            cUseGpu   = coder.Constant(true); %#ok
+            cIsLt21b  = coder.Constant(isLessThanR2021b); %#ok            
             cfg.DynamicMemoryAllocation = 'Off';
+            cfg.ConstantInputs = 'Remove';
         end
         
         if codegenskip
             disp('Skipping code generation')
         else
             cfg.GenerateReport = true;
-            args = '{ aAngles, aMus, aPdAng, aMtxPst, aMtxPre, cIsGpu }';
+            args = '{ aAngles, aMus, aPdAng, aMtxPst, aMtxPre, cUseGpu, cIsLt21b }';
             seval = [ 'codegen -config cfg ' ' -o ' outputdir '/' mexname ' ' ...
                 packagedir '/' bsfname '.m -args ' args];
-            
             disp(seval)
             eval(seval)
         end

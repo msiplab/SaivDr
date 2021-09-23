@@ -1,4 +1,4 @@
-function matrix = fcn_orthmtxgen(angles,mus,isGpu) %#codegen
+function matrix = fcn_orthmtxgen(angles,mus,useGpu,isLessThanR2021b) %#codegen
 %FCN_ORTHMTXGEN
 %
 % Function realization of
@@ -18,8 +18,11 @@ function matrix = fcn_orthmtxgen(angles,mus,isGpu) %#codegen
 %                Niigata, 950-2181, JAPAN
 %
 % http://msiplab.eng.niigata-u.ac.jp/
+if nargin < 4
+    isLessThanR2021b = false;
+end
 if nargin < 3
-    isGpu = isgpuarray(angles);
+    useGpu = isgpuarray(angles);
 end
 nDim_ = (1+sqrt(1+8*length(angles)))/2;
 matrix = eye(nDim_,'like',angles);
@@ -33,16 +36,15 @@ if ~isempty(angles)
                 c = cos(angle);
                 s = sin(angle);
                 vb = matrix(iBtm,:);
-                if isGpu
-                    % TODO: Replace BSXFUN only for gpuArra                
-                    %u  = bsxfun(@times,s,bsxfun(@plus,vt,vb));
-                    %vt = bsxfun(@minus,bsxfun(@times,c+s,vt),u);
-                    %matrix(iBtm,:) = bsxfun(@plus,bsxfun(@times,c-s,vb),u);
-                    u  = arrayfun(@times,s,arrayfun(@plus,vt,vb));
-                    vt = arrayfun(@minus,arrayfun(@times,c+s,vt),u);
-                    matrix(iBtm,:) = arrayfun(@plus,arrayfun(@times,c-s,vb),u);                    
-                else
-                    % TODO: Use direct operations on CPU                    
+                if useGpu           
+                    u  = arrayfun(@(s,vt,vb) s.*(vt+vb),s,vt,vb);
+                    vt = arrayfun(@(c,s,vt,u) (c+s).*vt-u,c,s,vt,u);
+                    matrix(iBtm,:) = arrayfun(@(c,s,vb,u) (c-s).*vb+u,c,s,vb,u);
+                elseif isLessThanR2021b % on CPU
+                    u  = bsxfun(@times,s,bsxfun(@plus,vt,vb));
+                    vt = bsxfun(@minus,bsxfun(@times,c+s,vt),u);
+                    matrix(iBtm,:) = bsxfun(@plus,bsxfun(@times,c-s,vb),u);
+                else % on CPU                 
                     u  = s.*(vt+vb);
                     vt = (c+s).*vt-u;
                     matrix(iBtm,:) = (c-s).*vb+u;
@@ -55,12 +57,11 @@ if ~isempty(angles)
     end
 end
 if ~all(mus==1) 
-    if isGpu
-        % TODO: Replace BSXFUN only for gpuArray     
-        %matrix = bsxfun(@times,mus(:),matrix);
+    if useGpu
         matrix = arrayfun(@times,mus(:),matrix);
-    else
-        % TODO: Use direct operations on CPU       
+    elseif isLessThanR2021b % on CPU
+        matrix = bsxfun(@times,mus(:),matrix);
+    else % on CPU
         matrix = mus(:).*matrix;
     end
 end

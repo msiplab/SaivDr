@@ -1,5 +1,5 @@
 function [matrix,matrixpst,matrixpre] = fcn_orthmtxgen_diff(...
-    angles,mus,pdAng,matrixpst,matrixpre,isGpu) %#codegen
+    angles,mus,pdAng,matrixpst,matrixpre,useGpu,isLessThanR2021b) %#codegen
 %FCN_ORTHMTXGEN_DIFF
 %
 % Function realization of
@@ -20,8 +20,11 @@ function [matrix,matrixpst,matrixpre] = fcn_orthmtxgen_diff(...
 %
 % http://msiplab.eng.niigata-u.ac.jp/
 
+if nargin < 7 
+    isLessThanR2021b = false;
+end
 if nargin < 6
-    isGpu = isgpuarray(angles);
+    useGpu = isgpuarray(angles);
 end
 if nargin < 3
     pdAng = 0;
@@ -47,7 +50,8 @@ for iTop=1:nDim_-1
             % 
             %[rt,rb] = rot_(rt,rb,-angle);
             %[dt,db] = rot_(dt,db,dangle);
-            [vt,vb] = rot_([rt;dt],[rb;db],[-angle;dangle],isGpu);
+            [vt,vb] = rot_([rt;dt],[rb;db],[-angle;dangle],...
+                useGpu,isLessThanR2021b);
             %
             matrixrev(iTop,:) = vt(1,:); %rt;
             matrixrev(iBtm,:) = vb(1,:); %rb;
@@ -62,30 +66,28 @@ for iTop=1:nDim_-1
     end
 end
 if ~all(mus==1)
-    if isGpu
-        % TODO: Replace BSXFUN only for gpuArray    
-        %matrix = bsxfun(@times,mus(:),matrix);
-        matrix = arrayfun(@times,mus(:),matrix);        
-    else
-        % TODO: Use direct operations on CPU    
+    if useGpu
+        matrix = arrayfun(@times,mus(:),matrix);
+    elseif isLessThanR2021b % on CPU
+        matrix = bsxfun(@times,mus(:),matrix);
+    else % on CPU
         matrix = mus(:).*matrix;
     end
 end
 end
 
-function [vt,vb] = rot_(vt,vb,angle,isGpu)
+function [vt,vb] = rot_(vt,vb,angle,useGpu,isLessThanR2021b)
 c = cos(angle);
 s = sin(angle);
-if isGpu
-    % TODO: Replace BSXFUN only for gpuArray
-    %u  = bsxfun(@times,s,bsxfun(@plus,vt,vb));
-    %vt = bsxfun(@minus,bsxfun(@times,c+s,vt),u);
-    %vb = bsxfun(@plus,bsxfun(@times,c-s,vb),u);
-    u  = arrayfun(@times,s,arrayfun(@plus,vt,vb));
-    vt = arrayfun(@minus,arrayfun(@times,c+s,vt),u);
-    vb = arrayfun(@plus,arrayfun(@times,c-s,vb),u);
+if useGpu
+    u  = arrayfun(@(s,vt,vb) s.*(vt+vb),s,vt,vb);
+    vt = arrayfun(@(c,s,vt,u) (c+s).*vt-u,c,s,vt,u);
+    vb = arrayfun(@(c,s,vb,u) (c-s).*vb+u,c,s,vb,u);
+elseif isLessThanR2021b
+    u  = bsxfun(@times,s,bsxfun(@plus,vt,vb));
+    vt = bsxfun(@minus,bsxfun(@times,c+s,vt),u);
+    vb = bsxfun(@plus,bsxfun(@times,c-s,vb),u);    
 else
-    % TODO: Use direct operations on CPU
     u  = s.*(vt+vb);
     vt = (c+s).*vt-u;
     vb = (c-s).*vb+u;

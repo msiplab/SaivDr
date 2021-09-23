@@ -1,5 +1,9 @@
 * Release notes on Sparsity-Aware Image and Volumetric Data Restoration Package
 
+- SaivDr20210922
+-- (Minor) Revised to switch implisit expansion codes
+--- saidr.dcnn.mexsrcs.*
+
 - SaivDr20210627
 -- (Minor) Revised GPU implementation
 --- saivdr.dcnn.nsoltBlockDct2dLayer
