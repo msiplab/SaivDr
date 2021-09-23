@@ -139,7 +139,7 @@ classdef nsoltFinalRotation2dLayer < nnet.layer.Layer %#codegen
             %                             inputs
             %         dLdW1, ..., dLdWk - Derivatives of the loss with respect to each
             %                             learnable parameter
-            import saivdr.dcnn.get_fcn_orthmtxgen_diff
+            %import saivdr.dcnn.get_fcn_orthmtxgen_diff
             
             nrows = size(dLdZ,2);
             ncols = size(dLdZ,3);            
@@ -200,7 +200,7 @@ classdef nsoltFinalRotation2dLayer < nnet.layer.Layer %#codegen
             dLdX = adLd_; %ipermute(adLd_,[3 1 2 4]);
             
             % dLdWi = <dLdZ,(dVdWi)X>
-            fcn_orthmtxgen_diff = get_fcn_orthmtxgen_diff(angles);            
+            fcn_orthmtxgen_diff = saivdr.dcnn.get_fcn_orthmtxgen_diff(angles);            
             dLdW = zeros(nAngles,1,'like',dLdZ);
             dldz_ = dLdZ; %permute(dLdZ,[3 1 2 4]);
             dldz_upp = reshape(dldz_(1:ceil(nDecs/2),:,:,:),ceil(nDecs/2),nrows*ncols*nSamples);
@@ -270,7 +270,7 @@ classdef nsoltFinalRotation2dLayer < nnet.layer.Layer %#codegen
         end
         
         function layer = updateParameters(layer)
-            import saivdr.dcnn.get_fcn_orthmtxgen
+            %import saivdr.dcnn.get_fcn_orthmtxgen
             ps = layer.NumberOfChannels(1);
             %
             if layer.NoDcLeakage
@@ -286,7 +286,7 @@ classdef nsoltFinalRotation2dLayer < nnet.layer.Layer %#codegen
             muU = mus(ps+1:end);
             anglesW = angles(1:nAngles/2);
             anglesU = angles(nAngles/2+1:end);
-            fcn_orthmtxgen = get_fcn_orthmtxgen(angles);                                    
+            fcn_orthmtxgen = saivdr.dcnn.get_fcn_orthmtxgen(angles);                                    
             layer.W0T = transpose(fcn_orthmtxgen(anglesW,muW));
             layer.U0T = transpose(fcn_orthmtxgen(anglesU,muU));
             layer.isUpdateRequested = false;

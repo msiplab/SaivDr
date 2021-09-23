@@ -140,7 +140,7 @@ classdef nsoltInitialRotation2dLayer < nnet.layer.Layer %#codegen
             %                             inputs
             %         dLdW1, ..., dLdWk - Derivatives of the loss with respect to each
             %
-            import saivdr.dcnn.get_fcn_orthmtxgen_diff
+            %import saivdr.dcnn.get_fcn_orthmtxgen_diff
             
             nrows = size(dLdZ,2);
             ncols = size(dLdZ,3);            
@@ -198,7 +198,7 @@ classdef nsoltInitialRotation2dLayer < nnet.layer.Layer %#codegen
             %dLdX = ipermute(reshape(Zsa,nDecs,nrows,ncols,nSamples),...
             %    [3 1 2 4]);
             dLdX = reshape(Zsa,nDecs,nrows,ncols,nSamples);
-            fcn_orthmtxgen_diff = get_fcn_orthmtxgen_diff(angles);                        
+            fcn_orthmtxgen_diff = saivdr.dcnn.get_fcn_orthmtxgen_diff(angles);                        
             % dLdWi = <dLdZ,(dVdWi)X>
             dLdW = zeros(nAngles,1,'like',dLdZ);
             dldz_ = dLdZ; %permute(dLdZ,[3 1 2 4]);
@@ -268,7 +268,7 @@ classdef nsoltInitialRotation2dLayer < nnet.layer.Layer %#codegen
         end
         
         function layer = updateParameters(layer)
-            import saivdr.dcnn.get_fcn_orthmtxgen
+            %import saivdr.dcnn.get_fcn_orthmtxgen
             ps = layer.NumberOfChannels(1);
             %
             if layer.NoDcLeakage
@@ -284,7 +284,7 @@ classdef nsoltInitialRotation2dLayer < nnet.layer.Layer %#codegen
             muU = mus(ps+1:end);
             anglesW = angles(1:nAngles/2);
             anglesU = angles(nAngles/2+1:end);
-            fcn_orthmtxgen = get_fcn_orthmtxgen(angles);                        
+            fcn_orthmtxgen = saivdr.dcnn.get_fcn_orthmtxgen(angles);                        
             layer.W0 = fcn_orthmtxgen(anglesW,muW);
             layer.U0 = fcn_orthmtxgen(anglesU,muU);
             layer.isUpdateRequested = false;
