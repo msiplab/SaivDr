@@ -168,33 +168,22 @@ be used to see the contents as follows:
  
 ## References
 
-* Genki Fujii, Yuta Yoshida, Shogo Muramatsu, Shunsuke Ono, Samuel Choi, Takeru Ota, 
-  Fumiaki Nin, Hiroshi HibinoTitle: "OCT Volumetric Data Restoration with 
+* Ruiki Kobayashi, Shogo Muramatsu, Shunsuke Ono, "Proximal Gradient-Based Loop Unrolling with Interscale Thresholding," Proc. Assoc. Annual Summit and Conf. (APSIPA ASC), Dec. 2021
+
+* Genki Fujii, Yuta Yoshida, Shogo Muramatsu, Shunsuke Ono, Samuel Choi, Takeru Ota, Fumiaki Nin, Hiroshi Hibino, "OCT Volumetric Data Restoration with 
   Latent Distribution of Refractive Index," Proc. of 2019 IEEE International 
   Conference on Image Processing (ICIP), pp.764-768, Sept. 2019
 
 * Yuhei Kaneko, Shogo Muramatsu, Hiroyasu Yasuda, Kiyoshi Hayasaka, Yu Otake, 
-  Shunsuke Ono, Masahiro Yukawa, "Convolutional-Sparse-Coded Dynamic Mode Decompsition 
-  and Its Application to River State Estimation," Proc. of 2019 IEEE International 
-  Conference on Acoustics, Speech and Signal Processing (ICASSP), pp.1872-1876, 
-  May 2019
+  Shunsuke Ono, Masahiro Yukawa, "Convolutional-Sparse-Coded Dynamic Mode Decompsition and Its Application to River State Estimation," Proc. of 2019 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP), pp.1872-1876, May 2019
 
-* Shogo Muramatsu, Samuel Choi, Shunske Ono, Takeru Ota, Fumiaki Nin, Hiroshi Hibino,
-  "OCT Volumetric Data Restoration via Primal-Dual Plug-and-Play Method," Proc. 
-  of 2018 IEEE International Conference on Acoustics, Speech and Signal Processing 
-  (ICASSP), pp.801-805, Apr. 2018
+* Shogo Muramatsu, Samuel Choi, Shunske Ono, Takeru Ota, Fumiaki Nin, Hiroshi Hibino, "OCT Volumetric Data Restoration via Primal-Dual Plug-and-Play Method," Proc. of 2018 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP), pp.801-805, Apr. 2018
 
-* Shogo Muramatsu, Kosuke Furuya and Naotaka Yuki, "Multidimensional Nonseparable 
-  Oversampled Lapped Transforms: Theory and Design," IEEE Trans. on Signal Process., 
-  Vol.65, No.5, pp.1251-1264, DOI:10.1109/TSP.2016.2633240, March 2017. 
+* Shogo Muramatsu, Kosuke Furuya and Naotaka Yuki, "Multidimensional Nonseparable Oversampled Lapped Transforms: Theory and Design," IEEE Trans. on Signal Process., Vol.65, No.5, pp.1251-1264, DOI:10.1109/TSP.2016.2633240, March 2017
 
-* Kota Horiuchi and Shogo Muramatsu, "Fast convolution technique for Non-separable 
-  Oversampled Lapped Transforms," Proc. of Asia Pacific Signal and Information Proc. 
-  Assoc. Annual Summit and Conf. (APSIPA ASC), Dec. 2016
+* Kota Horiuchi and Shogo Muramatsu, "Fast convolution technique for Non-separable Oversampled Lapped Transforms," Proc. of Asia Pacific Signal and Information Proc. Assoc. Annual Summit and Conf. (APSIPA ASC), Dec. 2016
 
-* Shogo Muramatsu, Masaki Ishii and Zhiyu Chen, "Efficient Parameter Optimization 
-  for Example-Based Design of Non-separable Oversampled Lapped Transform," Proc. 
-  of 2016 IEEE Intl. Conf. on Image Process. (ICIP),  pp.3618-3622, Sept. 2016
+* Shogo Muramatsu, Masaki Ishii and Zhiyu Chen, "Efficient Parameter Optimization for Example-Based Design of Non-separable Oversampled Lapped Transform," Proc. of 2016 IEEE Intl. Conf. on Image Process. (ICIP),  pp.3618-3622, Sept. 2016
 
 * Shogo Muramatsu, "Structured Dictionary Learning with 2-D Non-separable 
   Oversampled Lapped Transform," Proc. of 2014 IEEE International Conference 
