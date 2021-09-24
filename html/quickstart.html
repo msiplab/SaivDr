@@ -6,7 +6,7 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>Quickstart of SaivDr Package</title><meta name="generator" content="MATLAB 9.11"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-09-23"><meta name="DC.source" content="quickstart.m"><style type="text/css">
+      --><title>Quickstart of SaivDr Package</title><meta name="generator" content="MATLAB 9.11"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-09-24"><meta name="DC.source" content="quickstart.m"><style type="text/css">
 html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
@@ -239,33 +239,22 @@ be used to see the contents as follows:
  
 ## References
 
-* Genki Fujii, Yuta Yoshida, Shogo Muramatsu, Shunsuke Ono, Samuel Choi, Takeru Ota, 
-  Fumiaki Nin, Hiroshi HibinoTitle: "OCT Volumetric Data Restoration with 
+* Ruiki Kobayashi, Shogo Muramatsu, Shunsuke Ono, "Proximal Gradient-Based Loop Unrolling with Interscale Thresholding," Proc. Assoc. Annual Summit and Conf. (APSIPA ASC), Dec. 2021
+
+* Genki Fujii, Yuta Yoshida, Shogo Muramatsu, Shunsuke Ono, Samuel Choi, Takeru Ota, Fumiaki Nin, Hiroshi Hibino, "OCT Volumetric Data Restoration with 
   Latent Distribution of Refractive Index," Proc. of 2019 IEEE International 
   Conference on Image Processing (ICIP), pp.764-768, Sept. 2019
 
 * Yuhei Kaneko, Shogo Muramatsu, Hiroyasu Yasuda, Kiyoshi Hayasaka, Yu Otake, 
-  Shunsuke Ono, Masahiro Yukawa, "Convolutional-Sparse-Coded Dynamic Mode Decompsition 
-  and Its Application to River State Estimation," Proc. of 2019 IEEE International 
-  Conference on Acoustics, Speech and Signal Processing (ICASSP), pp.1872-1876, 
-  May 2019
+  Shunsuke Ono, Masahiro Yukawa, "Convolutional-Sparse-Coded Dynamic Mode Decompsition and Its Application to River State Estimation," Proc. of 2019 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP), pp.1872-1876, May 2019
 
-* Shogo Muramatsu, Samuel Choi, Shunske Ono, Takeru Ota, Fumiaki Nin, Hiroshi Hibino,
-  "OCT Volumetric Data Restoration via Primal-Dual Plug-and-Play Method," Proc. 
-  of 2018 IEEE International Conference on Acoustics, Speech and Signal Processing 
-  (ICASSP), pp.801-805, Apr. 2018
+* Shogo Muramatsu, Samuel Choi, Shunske Ono, Takeru Ota, Fumiaki Nin, Hiroshi Hibino, "OCT Volumetric Data Restoration via Primal-Dual Plug-and-Play Method," Proc. of 2018 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP), pp.801-805, Apr. 2018
 
-* Shogo Muramatsu, Kosuke Furuya and Naotaka Yuki, "Multidimensional Nonseparable 
-  Oversampled Lapped Transforms: Theory and Design," IEEE Trans. on Signal Process., 
-  Vol.65, No.5, pp.1251-1264, DOI:10.1109/TSP.2016.2633240, March 2017. 
+* Shogo Muramatsu, Kosuke Furuya and Naotaka Yuki, "Multidimensional Nonseparable Oversampled Lapped Transforms: Theory and Design," IEEE Trans. on Signal Process., Vol.65, No.5, pp.1251-1264, DOI:10.1109/TSP.2016.2633240, March 2017
 
-* Kota Horiuchi and Shogo Muramatsu, "Fast convolution technique for Non-separable 
-  Oversampled Lapped Transforms," Proc. of Asia Pacific Signal and Information Proc. 
-  Assoc. Annual Summit and Conf. (APSIPA ASC), Dec. 2016
+* Kota Horiuchi and Shogo Muramatsu, "Fast convolution technique for Non-separable Oversampled Lapped Transforms," Proc. of Asia Pacific Signal and Information Proc. Assoc. Annual Summit and Conf. (APSIPA ASC), Dec. 2016
 
-* Shogo Muramatsu, Masaki Ishii and Zhiyu Chen, "Efficient Parameter Optimization 
-  for Example-Based Design of Non-separable Oversampled Lapped Transform," Proc. 
-  of 2016 IEEE Intl. Conf. on Image Process. (ICIP),  pp.3618-3622, Sept. 2016
+* Shogo Muramatsu, Masaki Ishii and Zhiyu Chen, "Efficient Parameter Optimization for Example-Based Design of Non-separable Oversampled Lapped Transform," Proc. of 2016 IEEE Intl. Conf. on Image Process. (ICIP),  pp.3618-3622, Sept. 2016
 
 * Shogo Muramatsu, "Structured Dictionary Learning with 2-D Non-separable 
   Oversampled Lapped Transform," Proc. of 2014 IEEE International Conference 
@@ -439,58 +428,58 @@ ista.StepMonitor = stepmonitor;
 resImg = ista.step(obsImg); <span class="comment">% STEP method of IstaImRestoration</span>
 </pre><pre class="codeoutput">
  ISTA
-(   1)  PSNR =  27.20 [dB] 
-(   2)  PSNR =  27.94 [dB] 
-(   3)  PSNR =  28.38 [dB] 
-(   4)  PSNR =  28.68 [dB] 
-(   5)  PSNR =  28.90 [dB] 
-(   6)  PSNR =  29.08 [dB] 
-(   7)  PSNR =  29.21 [dB] 
-(   8)  PSNR =  29.33 [dB] 
-(   9)  PSNR =  29.42 [dB] 
-(  10)  PSNR =  29.50 [dB] 
-(  11)  PSNR =  29.57 [dB] 
-(  12)  PSNR =  29.62 [dB] 
-(  13)  PSNR =  29.68 [dB] 
-(  14)  PSNR =  29.72 [dB] 
-(  15)  PSNR =  29.76 [dB] 
-(  16)  PSNR =  29.80 [dB] 
-(  17)  PSNR =  29.83 [dB] 
-(  18)  PSNR =  29.86 [dB] 
-(  19)  PSNR =  29.89 [dB] 
-(  20)  PSNR =  29.91 [dB] 
-(  21)  PSNR =  29.93 [dB] 
-(  22)  PSNR =  29.95 [dB] 
-(  23)  PSNR =  29.97 [dB] 
-(  24)  PSNR =  29.98 [dB] 
-(  25)  PSNR =  30.00 [dB] 
-(  26)  PSNR =  30.01 [dB] 
-(  27)  PSNR =  30.02 [dB] 
-(  28)  PSNR =  30.04 [dB] 
-(  29)  PSNR =  30.05 [dB] 
-(  30)  PSNR =  30.06 [dB] 
-(  31)  PSNR =  30.07 [dB] 
-(  32)  PSNR =  30.08 [dB] 
-(  33)  PSNR =  30.08 [dB] 
-(  34)  PSNR =  30.09 [dB] 
-(  35)  PSNR =  30.10 [dB] 
-(  36)  PSNR =  30.10 [dB] 
-(  37)  PSNR =  30.11 [dB] 
-(  38)  PSNR =  30.12 [dB] 
-(  39)  PSNR =  30.12 [dB] 
-(  40)  PSNR =  30.12 [dB] 
-(  41)  PSNR =  30.13 [dB] 
-(  42)  PSNR =  30.13 [dB] 
-(  43)  PSNR =  30.13 [dB] 
-(  44)  PSNR =  30.14 [dB] 
-(  45)  PSNR =  30.14 [dB] 
-(  46)  PSNR =  30.14 [dB] 
-(  47)  PSNR =  30.15 [dB] 
-(  48)  PSNR =  30.15 [dB] 
-(  49)  PSNR =  30.15 [dB] 
-(  50)  PSNR =  30.15 [dB] 
-(  51)  PSNR =  30.15 [dB] 
-(  52)  PSNR =  30.16 [dB] 
+(   1)  PSNR =  27.21 [dB] 
+(   2)  PSNR =  27.95 [dB] 
+(   3)  PSNR =  28.39 [dB] 
+(   4)  PSNR =  28.69 [dB] 
+(   5)  PSNR =  28.92 [dB] 
+(   6)  PSNR =  29.09 [dB] 
+(   7)  PSNR =  29.23 [dB] 
+(   8)  PSNR =  29.34 [dB] 
+(   9)  PSNR =  29.43 [dB] 
+(  10)  PSNR =  29.51 [dB] 
+(  11)  PSNR =  29.58 [dB] 
+(  12)  PSNR =  29.64 [dB] 
+(  13)  PSNR =  29.69 [dB] 
+(  14)  PSNR =  29.74 [dB] 
+(  15)  PSNR =  29.78 [dB] 
+(  16)  PSNR =  29.82 [dB] 
+(  17)  PSNR =  29.85 [dB] 
+(  18)  PSNR =  29.88 [dB] 
+(  19)  PSNR =  29.90 [dB] 
+(  20)  PSNR =  29.93 [dB] 
+(  21)  PSNR =  29.95 [dB] 
+(  22)  PSNR =  29.97 [dB] 
+(  23)  PSNR =  29.99 [dB] 
+(  24)  PSNR =  30.00 [dB] 
+(  25)  PSNR =  30.02 [dB] 
+(  26)  PSNR =  30.03 [dB] 
+(  27)  PSNR =  30.05 [dB] 
+(  28)  PSNR =  30.06 [dB] 
+(  29)  PSNR =  30.07 [dB] 
+(  30)  PSNR =  30.08 [dB] 
+(  31)  PSNR =  30.09 [dB] 
+(  32)  PSNR =  30.10 [dB] 
+(  33)  PSNR =  30.11 [dB] 
+(  34)  PSNR =  30.11 [dB] 
+(  35)  PSNR =  30.12 [dB] 
+(  36)  PSNR =  30.13 [dB] 
+(  37)  PSNR =  30.13 [dB] 
+(  38)  PSNR =  30.14 [dB] 
+(  39)  PSNR =  30.14 [dB] 
+(  40)  PSNR =  30.15 [dB] 
+(  41)  PSNR =  30.15 [dB] 
+(  42)  PSNR =  30.15 [dB] 
+(  43)  PSNR =  30.16 [dB] 
+(  44)  PSNR =  30.16 [dB] 
+(  45)  PSNR =  30.16 [dB] 
+(  46)  PSNR =  30.16 [dB] 
+(  47)  PSNR =  30.17 [dB] 
+(  48)  PSNR =  30.17 [dB] 
+(  49)  PSNR =  30.17 [dB] 
+(  50)  PSNR =  30.17 [dB] 
+(  51)  PSNR =  30.17 [dB] 
+(  52)  PSNR =  30.17 [dB] 
 </pre><img vspace="5" hspace="5" src="quickstart_02.png" alt=""> <h2 id="13">Extract the final evaluation</h2><p>The object of StepMonitoringSystem, <i>stepmonitor</i> , stores the evaluation values calculated iteratively in ISTA as a vector. The GET method of <i>stepmonitor</i>  can be used to extract the number of iterations and the sequence of PSNRs.</p><pre class="codeinput">nItr  = stepmonitor.nItr;
 psnrs = stepmonitor.PSNRs;
 psnr_ista = psnrs(nItr);
@@ -518,7 +507,7 @@ fprintf(<span class="string">'\n Wiener'</span>)
 psnr_wfdc = stepmonitor.step(wnfImg); <span class="comment">% STEP method of StepMonitoringSystem</span>
 </pre><pre class="codeoutput">
  Wiener
-(   1)  PSNR =  25.55 [dB] 
+(   1)  PSNR =  25.51 [dB] 
 </pre><h2 id="15">Compare deblurring performances</h2><p>In order to compare the deblurring performances between two methods, ISTA-based deblurring with NSOLT and Wiener filter, let us show the original, observed and two results in one figure together.</p><pre class="codeinput">hfig3 = figure(3);
 
 <span class="comment">% Original image x</span>
@@ -544,9 +533,11 @@ title([<span class="string">'{\bf u}\^ by Wiener: '</span> num2str(psnr_wfdc) <s
 </pre><pre class="codeoutput">
 * Release notes on Sparsity-Aware Image and Volumetric Data Restoration Package
 
-- SaivDr20210922
+- SaivDr20210924
 -- (Minor) Revised to switch implicit expansion codes
 --- saidr.dcnn.mexsrcs.*
+-- (Minor) Excluded MEX code generation for GPU device (Due to a defect) 
+--- mybuild.m
 
 - SaivDr20210627
 -- (Minor) Revised GPU implementation
