@@ -65,9 +65,10 @@ for iTop=1:nDim_-1
         iAng = iAng + 1;
     end
 end
-if useGpu
-    matrix = arrayfun(@times,mus(:),matrix);
-elseif isLessThanR2021b % on CPU
+%if useGpu
+%    matrix = arrayfun(@times,mus(:),matrix);
+%else
+if isLessThanR2021b % on CPU
     matrix = bsxfun(@times,mus(:),matrix);
 else % on CPU
     matrix = mus(:).*matrix;
@@ -77,11 +78,12 @@ end
 function [vt,vb] = rot_(vt,vb,angle,useGpu,isLessThanR2021b)
 c = cos(angle);
 s = sin(angle);
-if useGpu
-    u  = arrayfun(@(s,vt,vb) s.*(vt+vb),s,vt,vb);
-    vt = arrayfun(@(c,s,vt,u) (c+s).*vt-u,c,s,vt,u);
-    vb = arrayfun(@(c,s,vb,u) (c-s).*vb+u,c,s,vb,u);
-elseif isLessThanR2021b
+%if useGpu
+%    u  = arrayfun(@(s,vt,vb) s.*(vt+vb),s,vt,vb);
+%    vt = arrayfun(@(c,s,vt,u) (c+s).*vt-u,c,s,vt,u);
+%    vb = arrayfun(@(c,s,vb,u) (c-s).*vb+u,c,s,vb,u);
+%else
+if isLessThanR2021b
     u  = bsxfun(@times,s,bsxfun(@plus,vt,vb));
     vt = bsxfun(@minus,bsxfun(@times,c+s,vt),u);
     vb = bsxfun(@plus,bsxfun(@times,c-s,vb),u);    

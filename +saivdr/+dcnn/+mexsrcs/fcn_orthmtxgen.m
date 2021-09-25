@@ -36,11 +36,12 @@ if ~isempty(angles)
                 c = cos(angle);
                 s = sin(angle);
                 vb = matrix(iBtm,:);
-                if useGpu           
-                    u  = arrayfun(@(s,vt,vb) s.*(vt+vb),s,vt,vb);
-                    vt = arrayfun(@(c,s,vt,u) (c+s).*vt-u,c,s,vt,u);
-                    matrix(iBtm,:) = arrayfun(@(c,s,vb,u) (c-s).*vb+u,c,s,vb,u);
-                elseif isLessThanR2021b % on CPU
+                %if useGpu           
+                %    u  = arrayfun(@(s,vt,vb) s.*(vt+vb),s,vt,vb);
+                %    vt = arrayfun(@(c,s,vt,u) (c+s).*vt-u,c,s,vt,u);
+                %    matrix(iBtm,:) = arrayfun(@(c,s,vb,u) (c-s).*vb+u,c,s,vb,u);
+                %else
+                if isLessThanR2021b % on CPU 
                     u  = bsxfun(@times,s,bsxfun(@plus,vt,vb));
                     vt = bsxfun(@minus,bsxfun(@times,c+s,vt),u);
                     matrix(iBtm,:) = bsxfun(@plus,bsxfun(@times,c-s,vb),u);
@@ -56,9 +57,10 @@ if ~isempty(angles)
         matrix(iTop,:) = vt;
     end
 end
-if useGpu
-    matrix = arrayfun(@times,mus(:),matrix);
-elseif isLessThanR2021b % on CPU
+%if useGpu
+%    matrix = arrayfun(@times,mus(:),matrix);
+%else
+if isLessThanR2021b % on CPU
     matrix = bsxfun(@times,mus(:),matrix);
 else % on CPU
     matrix = mus(:).*matrix;
