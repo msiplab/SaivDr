@@ -33,12 +33,26 @@ classdef GaussianDenoiserBm4d < saivdr.restoration.denoiser.AbstGaussianDenoiseS
     methods
         function obj = GaussianDenoiserBm4d(varargin)
             setProperties(obj,nargin,varargin{:});
-            if exist('bm4d','dir') ~= 7 || exist('bm4d','file') ~= 2
+            if exist('bm4d','dir') ~= 7
                 disp('Downloading and unzipping BM4D_v3p2.zip...')
                 url = 'http://www.cs.tut.fi/%7Efoi/GCF-BM3D/BM4D_v3p2.zip';
                 disp(url)
-                unzip(url,'./bm4d')
-                addpath('./bm4d')                
+                try
+                    unzip(url,'./bm4d')
+                catch ME
+                    if strcmp(ME.identifier,'MATLAB:io:archive:checkfilename:urlwriteError')
+                        msg = ['There is a problem with some Linux distortions\n' ...
+                               'that the code for the Block-matching and 4D filtering (BM4D)\n' ...
+                               'algorithm cannot be downloaded in MATLAB.\n' ...
+                               'Please download it manually from\n' ...
+                               'http://www.cs.tut.fi/%%7Efoi/GCF-BM3D/BM4D_v3p2.zip\n' ...
+                               ', unzip it, rename it to \"bm4d\", and place it in the root of SaivDr.\n'];
+                        causeException = MException('MATLAB:SaivDr:BM4D:downloadError',msg);
+                        ME = addCause(ME,causeException);
+                    end
+                    rethrow(ME)
+                end
+                addpath('./bm4d')
             elseif exist('bm4d','dir') == 7 && exist('bm4d','file') ~= 2
                 disp('Adding ./bm4d to path.')                
                 addpath('./bm4d')
