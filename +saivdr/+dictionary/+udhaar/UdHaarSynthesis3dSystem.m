@@ -3,7 +3,7 @@ classdef UdHaarSynthesis3dSystem <  saivdr.dictionary.AbstSynthesisSystem  %#cod
     %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2014-2020, Shogo MURAMATSU
+    % Copyright (c) 2014-2022, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -141,10 +141,10 @@ classdef UdHaarSynthesis3dSystem <  saivdr.dictionary.AbstSynthesisSystem  %#cod
                 U{idx} = reshape(coefs((idx-1)*nPixels_+1:idx*nPixels_),dim_);
             end
             K = obj.kernels;
-            parfor (idx = 1:8, obj.nWorkers) % TODO ポリフェーズ実現 or IntegralBoxFilter3実現
-                %     Y{idx} = imfilter(U{idx},upsample3_(K{idx},ufactor),...
-                %         'conv','circular')*weight;
-                Y{idx} = upsmplfilter3_(obj,U{idx},K{idx},ufactor)*weight;
+            Ku = cellfun(@(x) filterupsample3_(obj,x,ufactor),K,'UniformOutput',false);            
+            parfor (idx = 1:8, obj.nWorkers) % TODO ポリフェーズ実現 or IntegralImage3実現
+                %Y{idx} = upsmplfilter3_(obj,U{idx},K{idx},ufactor)*weight;
+                Y{idx} = imfilter(U{idx},Ku{idx},'conv','circ')*weight;
             end
             
             nLevels_ = obj.nLevels;
@@ -166,8 +166,10 @@ classdef UdHaarSynthesis3dSystem <  saivdr.dictionary.AbstSynthesisSystem  %#cod
                     for idx=2:8
                         U{idx} = reshape(coefs((iSubband+idx-2)*nPixels_+1:(iSubband+idx-1)*nPixels_),dim_)*weight;
                     end
-                    parfor idx = 1:8 % TODO ポリフェーズ実現 or IntegralBoxFilter3実現
-                        Y{idx} = upsmplfilter3_(obj,U{idx},K{idx},ufactor);
+                    Ku = cellfun(@(x) filterupsample3_(obj,x,ufactor),K,'UniformOutput',false);                                
+                    parfor idx = 1:8 % TODO ポリフェーズ実現 or IntegralImage3実現
+                        %Y{idx} = upsmplfilter3_(obj,U{idx},K{idx},ufactor);
+                        Y{idx} = imfilter(U{idx},Ku{idx},'conv','circ');
                     end
                     %
                     iSubband = iSubband + 7;
@@ -179,6 +181,7 @@ classdef UdHaarSynthesis3dSystem <  saivdr.dictionary.AbstSynthesisSystem  %#cod
     
     methods (Access = private)
         
+        %{
         function value = upsmplfilter3_(~,u,x,ufactor)
             value = imfilter(u,...
                 shiftdim(upsample(...
@@ -189,7 +192,15 @@ classdef UdHaarSynthesis3dSystem <  saivdr.dictionary.AbstSynthesisSystem  %#cod
                 ufactor),1),...
                 'conv','circular');
         end
-        
+        %}
+        function value = filterupsample3_(~,x,ufactor)
+            value = shiftdim(upsample(...
+                shiftdim(upsample(...
+                shiftdim(upsample(x,...
+                ufactor),1),...
+                ufactor),1),...
+                ufactor),1);
+        end
     end
 end
 

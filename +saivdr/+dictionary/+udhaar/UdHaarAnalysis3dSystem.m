@@ -3,7 +3,7 @@ classdef UdHaarAnalysis3dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
     %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2018-2020, Shogo MURAMATSU
+    % Copyright (c) 2018-2022, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -145,8 +145,10 @@ classdef UdHaarAnalysis3dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
                     offset = -[1 1 1]*(2^(iLevel-2)-1);
                 end
                 %
+                Ku = cellfun(@(x) filterupsample3_(obj,x,ufactor),K,'UniformOutput',false);
                 parfor (idx = 1:8, obj.nWorkers)
-                    Y{idx} = circshift(upsmplfilter3_(obj,yaa,K{idx},ufactor),offset);
+                    %Y{idx} = circshift(upsmplfilter3_(obj,yaa,K{idx},ufactor),offset);
+                    Y{idx} = circshift(imfilter(yaa,Ku{idx},'corr','circ'),offset);
                 end
                 for idx = 1:7
                     ytmp = Y{idx};
@@ -165,6 +167,7 @@ classdef UdHaarAnalysis3dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
 
     methods (Access = private)
         
+        %{
         function value = upsmplfilter3_(~,u,x,ufactor)
             value = imfilter(u,...
                 shiftdim(upsample(...
@@ -175,7 +178,16 @@ classdef UdHaarAnalysis3dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
                 ufactor),1),...
                 'corr','circular');
         end
-        
+        %}
+        function value = filterupsample3_(~,x,ufactor)
+            value = shiftdim(upsample(...
+                shiftdim(upsample(...
+                shiftdim(upsample(x,...
+                ufactor),1),...
+                ufactor),1),...
+                ufactor),1);
+        end
+
     end
 end
 
