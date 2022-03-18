@@ -171,12 +171,11 @@ classdef UdHaarSynthesis3dSystem <  saivdr.dictionary.AbstSynthesisSystem  %#cod
             for iSubband = 1:nSubbands_
                 U{iSubband} = reshape(coefs((iSubband-1)*nPixels_+1:iSubband*nPixels_),dim_);
             end
-            %offset = [1 1 1];
+            offset = [1 1 1];
             parfor (iSubband = 1:nSubbands_, obj.nWorkers)
-                v = circshift(imfilter(U{iSubband},F_{iSubband}{1}(:),'conv','circ'),1);
-                h = circshift(imfilter(shiftdim(v,1),F_{iSubband}{2}(:),'conv','circ'),1);
-                d = circshift(imfilter(shiftdim(h,1),F_{iSubband}{3}(:),'conv','circ'),1);
-                Y{iSubband} = shiftdim(d,1);
+                v = imfilter(U{iSubband},F_{iSubband}{1}(:),'conv','circ');
+                h = imfilter(v,shiftdim(F_{iSubband}{2}(:),-1),'conv','circ');
+                Y{iSubband} = circshift(imfilter(h,shiftdim(F_{iSubband}{3}(:),-2),'conv','circ'),offset);
                 % Spatial domain
                 %Y{iSubband} = circshift(...
                 %    imfilter(U{iSubband},F_{iSubband},'conv','circ'),offset);

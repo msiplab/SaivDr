@@ -166,9 +166,8 @@ classdef UdHaarAnalysis3dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
             %U = fftn(u);
             parfor (iSubband = 1:nSubbands_, obj.nWorkers)
                 v = imfilter(u,F_{iSubband}{1}(:),'corr','circ');
-                h = imfilter(shiftdim(v,1),F_{iSubband}{2}(:),'corr','circ');
-                d = imfilter(shiftdim(h,1),F_{iSubband}{3}(:),'corr','circ');
-                Y{iSubband} = shiftdim(d,1);
+                h = imfilter(v,shiftdim(F_{iSubband}{2}(:),-1),'corr','circ');
+                Y{iSubband} = imfilter(h,shiftdim(F_{iSubband}{3}(:),-2),'corr','circ');
                 % Spatial domain
                 %Y{iSubband} = imfilter(u,F_{iSubband},'corr','circ');
                 % Frequency domain
