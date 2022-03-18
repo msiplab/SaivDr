@@ -116,8 +116,22 @@ classdef UdHaarSynthesis3dSystem <  saivdr.dictionary.AbstSynthesisSystem  %#cod
             else
                 obj.nWorkers = 0;
             end
-            %
+            % Spatial domain         
             obj.filters = filters_(obj);
+            % Frequency domain
+            %{
+            F_ = filters_(obj);
+            nSubbands_ = obj.nLevels*7 + 1;     
+            Z_ = zeros(obj.dim);
+            for iSubband=1:nSubbands_ 
+                Fext = Z_;
+                Forg = F_{iSubband};
+                szF = size(Forg);
+                Fext(1:szF(1),1:szF(2),1:szF(3)) = Forg;
+                Fext = circshift(Fext,[1 1 1]-floor(szF/2));
+                obj.filters{iSubband} = fftn(Fext);
+            end
+            %}
 
             % NOTE:
             % imfilter of R2017a has a bug for double precision array
@@ -143,13 +157,16 @@ classdef UdHaarSynthesis3dSystem <  saivdr.dictionary.AbstSynthesisSystem  %#cod
             nSubbands_ = nLevels_*7 + 1;
             U = cell(nSubbands_,1);
             Y = cell(nSubbands_,1);
-            offset = [1 1 1];
             for iSubband = 1:nSubbands_
                 U{iSubband} = reshape(coefs((iSubband-1)*nPixels_+1:iSubband*nPixels_),dim_);
             end
+            offset = [1 1 1];
             parfor (iSubband = 1:nSubbands_, obj.nWorkers)
+                % Spatial domain
                 Y{iSubband} = circshift(...
                     imfilter(U{iSubband},F_{iSubband},'conv','circ'),offset);
+                % Frequency domain
+                %Y{iSubband} = real(ifftn(fftn(U{iSubband}).*F_{iSubband}));
             end
             y = Y{1};
             for iSubband = 2:nSubbands_

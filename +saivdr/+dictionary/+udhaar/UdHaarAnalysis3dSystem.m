@@ -110,8 +110,23 @@ classdef UdHaarAnalysis3dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
             else
                 obj.nWorkers = 0;
             end
+            % Spatial domain
             obj.filters = filters_(obj);
-
+            % Frequency domain
+            %{
+            F_ = filters_(obj);
+            nSubbands_ = nLevels*7 + 1;
+            dim = size(u);
+            Z_ = zeros(dim);
+            for iSubband=1:nSubbands_
+                Fext = Z_;
+                Forg = F_{iSubband};
+                szF = size(Forg);
+                Fext(1:szF(1),1:szF(2),1:szF(3)) = Forg;
+                Fext = circshift(Fext,[1 1 1]-floor(szF/2));
+                obj.filters{iSubband} = fftn(Fext);
+            end
+            %}
             % NOTE:
             % imfilter of R2017a has a bug for double precision array
             if strcmp(version('-release'),'2017a') && ...
@@ -137,8 +152,12 @@ classdef UdHaarAnalysis3dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
             scales = repmat(size(u),[7*nLevels_+1, 1]);   
             nSubbands_ = nLevels_*7 + 1;
             Y = cell(nSubbands_,1);
+            %U = fftn(u);
             parfor (iSubband = 1:nSubbands_, obj.nWorkers)
+                % Spatial domain
                 Y{iSubband} = imfilter(u,F_{iSubband},'corr','circ');
+                % Frequency domain
+                %Y{iSubband} = real(ifftn(U.*conj(F_{iSubband})));
             end
             for iSubband = 1:nSubbands_
                 coefs_((iSubband-1)*nPixels_+1:iSubband*nPixels_) = ...
