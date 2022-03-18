@@ -1,5 +1,5 @@
 classdef UdHaarSynthesis3dSystem <  saivdr.dictionary.AbstSynthesisSystem  %#codegen
-    %DicUdHaarRec3 Synthesis system for undecimated Haar transform
+    %UDHAARSYNTHESIS3DSYSTEM Synthesis system for undecimated Haar transform
     %
     % Requirements: MATLAB R2015b
     %
@@ -34,6 +34,7 @@ classdef UdHaarSynthesis3dSystem <  saivdr.dictionary.AbstSynthesisSystem  %#cod
         nLevels
         nWorkers
         dim
+        filters
     end
     
     methods
@@ -89,6 +90,7 @@ classdef UdHaarSynthesis3dSystem <  saivdr.dictionary.AbstSynthesisSystem  %#cod
             s.nPixels = obj.nPixels;
             s.nLevels = obj.nLevels;
             s.dim = obj.dim;
+            s.filters = obj.filters;
         end
         
         function loadObjectImpl(obj, s, wasLocked)
@@ -97,6 +99,7 @@ classdef UdHaarSynthesis3dSystem <  saivdr.dictionary.AbstSynthesisSystem  %#cod
             obj.nPixels = s.nPixels;
             obj.nLevels = s.nLevels;
             obj.dim = s.dim;
+            obj.filters = s.filters;
             loadObjectImpl@saivdr.dictionary.AbstSynthesisSystem(obj,s,wasLocked);
         end
         
@@ -113,6 +116,16 @@ classdef UdHaarSynthesis3dSystem <  saivdr.dictionary.AbstSynthesisSystem  %#cod
             else
                 obj.nWorkers = 0;
             end
+            %
+            obj.filters = filters_(obj);
+
+            % NOTE:
+            % imfilter of R2017a has a bug for double precision array
+            if strcmp(version('-release'),'2017a') && ...
+                    isa(coefs,'double')
+                warning(['IMFILTER of R2017a with CIRCULAR option has a bug for double precison array.' ...
+                    ' Please visit https://jp.mathworks.com/support/bugreports/ and search #BugID: 1554862.' ])
+            end            
         end
         
         function resetImpl(~)
@@ -122,77 +135,60 @@ classdef UdHaarSynthesis3dSystem <  saivdr.dictionary.AbstSynthesisSystem  %#cod
             if obj.UseGpu
                 coefs = gpuArray(coefs);
             end
-            % NOTE:
-            % imfilter of R2017a has a bug for double precision array
-            if strcmp(version('-release'),'2017a') && ...
-                    isa(u,'double')
-                warning(['IMFILTER of R2017a with CIRCULAR option has a bug for double precison array.' ...
-                    ' Please visit https://jp.mathworks.com/support/bugreports/ and search #BugID: 1554862.' ])
-            end
-            ufactor = 2^(obj.nLevels-1);
-            kernelSize = 2^obj.nLevels;
-            weight = 1/(kernelSize^3);
             %
+            F_ = obj.filters;
             nPixels_ = obj.nPixels;
             dim_ = obj.dim;
-            U = cell(8,1);
-            Y = cell(8,1);
-            for idx = 1:8
-                U{idx} = reshape(coefs((idx-1)*nPixels_+1:idx*nPixels_),dim_);
-            end
-            K = obj.kernels;
-            Ku = cellfun(@(x) filterupsample3_(obj,x,ufactor),K,'UniformOutput',false);            
-            parfor (idx = 1:8, obj.nWorkers) % TODO ポリフェーズ実現 or IntegralImage3実現
-                %Y{idx} = upsmplfilter3_(obj,U{idx},K{idx},ufactor)*weight;
-                Y{idx} = imfilter(U{idx},Ku{idx},'conv','circ')*weight;
-            end
-            
             nLevels_ = obj.nLevels;
-            iSubband = 8;
-            for iLevel = 1:nLevels_
-                if nLevels_-iLevel < 2
-                    offset = [1 1 1];
-                else
-                    offset = [1 1 1]*2^(nLevels_-iLevel-1);
-                end
-                
-                U{1} = circshift(...
-                    Y{1} + Y{2} + Y{3} + Y{4} + Y{5} + Y{6} + Y{7} + Y{8}, offset);
-                %
+            nSubbands_ = nLevels_*7 + 1;
+            U = cell(nSubbands_,1);
+            Y = cell(nSubbands_,1);
+            offset = [1 1 1];
+            for iSubband = 1:nSubbands_
+                U{iSubband} = reshape(coefs((iSubband-1)*nPixels_+1:iSubband*nPixels_),dim_);
+            end
+            parfor (iSubband = 1:nSubbands_, obj.nWorkers)
+                Y{iSubband} = circshift(...
+                    imfilter(U{iSubband},F_{iSubband},'conv','circ'),offset);
+            end
+            y = Y{1};
+            for iSubband = 2:nSubbands_
+                y = y + Y{iSubband};
+            end
+
+        end
+    end
+
+    methods (Access = private)
+        
+        function F = filters_(obj)
+            nLevels_ = obj.nLevels;
+            F = cell(nLevels_*7+1,1);
+            K = obj.kernels;
+            % iLevel == nLevels
+            ufactor = 2^(nLevels_-1);
+            kernelSize = 2^nLevels_;
+            weight = 1/(kernelSize^3);
+            Ku = cellfun(@(x) filterupsample3_(obj,x,ufactor),K,'UniformOutput',false);
+            for idx = 1:8
+                F{idx} = Ku{idx}*weight;
+            end
+            % iLevel < nLevels
+            for iLevel = nLevels_-1:-1:1
                 ufactor = ufactor/2;
                 kernelSize = kernelSize/2;
                 weight = 1/(kernelSize^3);
-                if iLevel < nLevels_
-                    for idx=2:8
-                        U{idx} = reshape(coefs((iSubband+idx-2)*nPixels_+1:(iSubband+idx-1)*nPixels_),dim_)*weight;
-                    end
-                    Ku = cellfun(@(x) filterupsample3_(obj,x,ufactor),K,'UniformOutput',false);                                
-                    parfor idx = 1:8 % TODO ポリフェーズ実現 or IntegralImage3実現
-                        %Y{idx} = upsmplfilter3_(obj,U{idx},K{idx},ufactor);
-                        Y{idx} = imfilter(U{idx},Ku{idx},'conv','circ');
-                    end
-                    %
-                    iSubband = iSubband + 7;
+                Ku = cellfun(@(x) filterupsample3_(obj,x,ufactor),K,'UniformOutput',false);
+                for iSubband = 1:((nLevels_-iLevel)*7)+1
+                    F{iSubband} = convn(F{iSubband},Ku{1}); 
+                end
+                for idx = 2:8
+                    iSubband = (nLevels_- iLevel)*7+idx;
+                    F{iSubband} = Ku{idx}*weight;
                 end
             end
-            y = U{1};
         end
-    end
-    
-    methods (Access = private)
-        
-        %{
-        function value = upsmplfilter3_(~,u,x,ufactor)
-            value = imfilter(u,...
-                shiftdim(upsample(...
-                shiftdim(upsample(...
-                shiftdim(upsample(x,...
-                ufactor),1),...
-                ufactor),1),...
-                ufactor),1),...
-                'conv','circular');
-        end
-        %}
+
         function value = filterupsample3_(~,x,ufactor)
             value = shiftdim(upsample(...
                 shiftdim(upsample(...
@@ -200,6 +196,7 @@ classdef UdHaarSynthesis3dSystem <  saivdr.dictionary.AbstSynthesisSystem  %#cod
                 ufactor),1),...
                 ufactor),1),...
                 ufactor),1);
+            value = value(1:end-ufactor+1,1:end-ufactor+1,1:end-ufactor+1);
         end
     end
 end

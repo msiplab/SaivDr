@@ -38,6 +38,7 @@ classdef UdHaarAnalysis3dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
         coefs
         nPixels
         nWorkers
+        filters
     end
     
     methods
@@ -50,23 +51,24 @@ classdef UdHaarAnalysis3dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
             for idx = 1:8
                 K{idx} = double(zeros([2 2 2]));
             end
-            K{1}(:,:,1) = double([ 1 -1 ; -1 1 ]); % DD
-            K{1}(:,:,2) = double(-[ 1 -1 ; -1 1 ]);
-            K{2}(:,:,1) = double([ 1 1 ; -1 -1 ]); % VD
-            K{2}(:,:,2) = double(-[ 1 1 ; -1 -1 ]);
-            K{3}(:,:,1) = double([ 1 -1 ; 1 -1 ]); % HD
-            K{3}(:,:,2) = double(-[ 1 -1 ; 1 -1 ]);
-            K{4}(:,:,1) = double([ 1 1 ; 1 1 ]);   % AD
-            K{4}(:,:,2) = double(-[ 1 1 ; 1 1 ]);
             %
-            K{5}(:,:,1) = double([ 1 -1 ; -1 1 ]); % DA
-            K{5}(:,:,2) = double([ 1 -1 ; -1 1 ]);
-            K{6}(:,:,1) = double([ 1 1 ; -1 -1 ]); % VA
-            K{6}(:,:,2) = double([ 1 1 ; -1 -1 ]);
-            K{7}(:,:,1) = double([ 1 -1 ; 1 -1 ]); % HA
-            K{7}(:,:,2) = double([ 1 -1 ; 1 -1 ]);
-            K{8}(:,:,1) = double([ 1 1 ; 1 1 ]);   % AA
-            K{8}(:,:,2) = double([ 1 1 ; 1 1 ]);
+            K{1}(:,:,1) = double([ 1 1 ; 1 1 ]);   % AA
+            K{1}(:,:,2) = double([ 1 1 ; 1 1 ]);
+            K{2}(:,:,1) = double([ 1 -1 ; 1 -1 ]); % HA
+            K{2}(:,:,2) = double([ 1 -1 ; 1 -1 ]);
+            K{3}(:,:,1) = double([ 1 1 ; -1 -1 ]); % VA
+            K{3}(:,:,2) = double([ 1 1 ; -1 -1 ]);
+            K{4}(:,:,1) = double([ 1 -1 ; -1 1 ]); % DA
+            K{4}(:,:,2) = double([ 1 -1 ; -1 1 ]);
+            %
+            K{5}(:,:,1) = double([ 1 1 ; 1 1 ]);   % AD
+            K{5}(:,:,2) = double(-[ 1 1 ; 1 1 ]);
+            K{6}(:,:,1) = double([ 1 -1 ; 1 -1 ]); % HD
+            K{6}(:,:,2) = double(-[ 1 -1 ; 1 -1 ]);
+            K{7}(:,:,1) = double([ 1 1 ; -1 -1 ]); % VD
+            K{7}(:,:,2) = double(-[ 1 1 ; -1 -1 ]);
+            K{8}(:,:,1) = double([ 1 -1 ; -1 1 ]); % DD
+            K{8}(:,:,2) = double(-[ 1 -1 ; -1 1 ]);
             %
             obj.kernels = K;
         end
@@ -80,6 +82,7 @@ classdef UdHaarAnalysis3dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
             s.coefs = obj.coefs;
             s.nPixels = obj.nPixels;
             s.nWorkers = obj.nWorkers;
+            s.filters = obj.filters;
         end
         
         function loadObjectImpl(obj, s, wasLocked)
@@ -87,6 +90,7 @@ classdef UdHaarAnalysis3dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
             obj.kernels = s.kernels;
             obj.coefs = s.coefs;
             obj.nPixels = s.nPixels;
+            obj.filters = s.filters;
             loadObjectImpl@saivdr.dictionary.AbstAnalysisSystem(obj,s,wasLocked);
         end
         
@@ -106,7 +110,8 @@ classdef UdHaarAnalysis3dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
             else
                 obj.nWorkers = 0;
             end
-            
+            obj.filters = filters_(obj);
+
             % NOTE:
             % imfilter of R2017a has a bug for double precision array
             if strcmp(version('-release'),'2017a') && ...
@@ -124,61 +129,55 @@ classdef UdHaarAnalysis3dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
             if obj.UseGpu
                 u = gpuArray(u);
             end
+            nLevels_ = obj.NumberOfLevels;
             nPixels_ = obj.nPixels;
             coefs_ = obj.coefs;
-            nLevels = obj.NumberOfLevels;
-            K = obj.kernels;
-            scales = repmat(size(u),[7*nLevels+1, 1]);
-            yaa = u;
-            
-            Y = cell(8,1);
             %
-            ufactor = uint32(1);
-            iSubband = uint32(7*nLevels+1);
-            weight = double(0);
-            for iLevel = 1:nLevels
-                kernelSize = 2^iLevel;
-                weight = 1/(kernelSize^3);
-                if iLevel < 2
-                    offset = [0 0 0]; % 1
-                else
-                    offset = -[1 1 1]*(2^(iLevel-2)-1);
-                end
-                %
-                Ku = cellfun(@(x) filterupsample3_(obj,x,ufactor),K,'UniformOutput',false);
-                parfor (idx = 1:8, obj.nWorkers)
-                    %Y{idx} = circshift(upsmplfilter3_(obj,yaa,K{idx},ufactor),offset);
-                    Y{idx} = circshift(imfilter(yaa,Ku{idx},'corr','circ'),offset);
-                end
-                for idx = 1:7
-                    ytmp = Y{idx};
-                    coefs_((iSubband-idx)*nPixels_+1:(iSubband-idx+1)*nPixels_) = ...
-                        ytmp(:).'*weight;
-                end
-                iSubband = iSubband - 7;
-                ufactor = ufactor*2;
-                yaa = Y{8};
+            F_ = obj.filters;
+            scales = repmat(size(u),[7*nLevels_+1, 1]);   
+            nSubbands_ = nLevels_*7 + 1;
+            Y = cell(nSubbands_,1);
+            parfor (iSubband = 1:nSubbands_, obj.nWorkers)
+                Y{iSubband} = imfilter(u,F_{iSubband},'corr','circ');
             end
-            coefs_(1:nPixels_) = yaa(:).'*weight;
+            for iSubband = 1:nSubbands_
+                coefs_((iSubband-1)*nPixels_+1:iSubband*nPixels_) = ...
+                    reshape(Y{iSubband},[],1);
+            end
             obj.coefs = coefs_;
         end
     end
 
-
     methods (Access = private)
-        
-        %{
-        function value = upsmplfilter3_(~,u,x,ufactor)
-            value = imfilter(u,...
-                shiftdim(upsample(...
-                shiftdim(upsample(...
-                shiftdim(upsample(x,...
-                ufactor),1),...
-                ufactor),1),...
-                ufactor),1),...
-                'corr','circular');
+       
+        function F = filters_(obj)
+            nLevels_ = obj.NumberOfLevels;
+            F = cell(nLevels_*7+1,1);
+            K = obj.kernels;
+            % iLevel == nLevels
+            ufactor = 2^(nLevels_-1);
+            kernelSize = 2^nLevels_;
+            weight = 1/(kernelSize^3);
+            Ku = cellfun(@(x) filterupsample3_(obj,x,ufactor),K,'UniformOutput',false);
+            for idx = 1:8
+                F{idx} = Ku{idx}*weight;
+            end
+            % iLevel < nLevels
+            for iLevel = nLevels_-1:-1:1
+                ufactor = ufactor/2;
+                kernelSize = kernelSize/2;
+                weight = 1/(kernelSize^3);
+                Ku = cellfun(@(x) filterupsample3_(obj,x,ufactor),K,'UniformOutput',false);
+                for iSubband = 1:((nLevels_-iLevel)*7)+1
+                    F{iSubband} = convn(F{iSubband},Ku{1}); 
+                end
+                for idx = 2:8
+                    iSubband = (nLevels_- iLevel)*7+idx;
+                    F{iSubband} = Ku{idx}*weight;
+                end
+            end
         end
-        %}
+
         function value = filterupsample3_(~,x,ufactor)
             value = shiftdim(upsample(...
                 shiftdim(upsample(...
@@ -186,6 +185,7 @@ classdef UdHaarAnalysis3dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
                 ufactor),1),...
                 ufactor),1),...
                 ufactor),1);
+            value = value(1:end-ufactor+1,1:end-ufactor+1,1:end-ufactor+1);
         end
 
     end

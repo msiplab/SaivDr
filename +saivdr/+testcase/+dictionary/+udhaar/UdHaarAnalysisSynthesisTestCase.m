@@ -131,7 +131,7 @@ classdef UdHaarAnalysisSynthesisTestCase < matlab.unittest.TestCase
             if strcmp(dtype,'double')
                 tol = 1e-7;
             else
-                tol = single(1e-5);
+                tol = single(1e-4);
             end
             testCase.verifyEqual(norm(resActual(:)),norm(srcImg(:)),...
                 'AbsTol',tol,sprintf('Energy is not preserved.'));
