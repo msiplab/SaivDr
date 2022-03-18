@@ -48,6 +48,17 @@ classdef UdHaarAnalysis3dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
             setProperties(obj,nargin,varargin{:});
             %
             K = cell(8,1);
+            ha = double([1  1]);
+            hd = double([1 -1]);
+            K{1} = { ha, ha, ha };
+            K{2} = { ha, hd, ha };
+            K{3} = { hd, ha, ha };
+            K{4} = { hd, hd, ha };
+            K{5} = { ha, ha, hd };
+            K{6} = { ha, hd, hd };
+            K{7} = { hd, ha, hd };
+            K{8} = { hd, hd, hd };                
+            %{
             for idx = 1:8
                 K{idx} = double(zeros([2 2 2]));
             end
@@ -69,7 +80,7 @@ classdef UdHaarAnalysis3dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
             K{7}(:,:,2) = double(-[ 1 1 ; -1 -1 ]);
             K{8}(:,:,1) = double([ 1 -1 ; -1 1 ]); % DD
             K{8}(:,:,2) = double(-[ 1 -1 ; -1 1 ]);
-            %
+            %}
             obj.kernels = K;
         end
     end
@@ -154,8 +165,12 @@ classdef UdHaarAnalysis3dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
             Y = cell(nSubbands_,1);
             %U = fftn(u);
             parfor (iSubband = 1:nSubbands_, obj.nWorkers)
+                v = imfilter(u,F_{iSubband}{1}(:),'corr','circ');
+                h = imfilter(shiftdim(v,1),F_{iSubband}{2}(:),'corr','circ');
+                d = imfilter(shiftdim(h,1),F_{iSubband}{3}(:),'corr','circ');
+                Y{iSubband} = shiftdim(d,1);
                 % Spatial domain
-                Y{iSubband} = imfilter(u,F_{iSubband},'corr','circ');
+                %Y{iSubband} = imfilter(u,F_{iSubband},'corr','circ');
                 % Frequency domain
                 %Y{iSubband} = real(ifftn(U.*conj(F_{iSubband})));
             end
@@ -171,6 +186,42 @@ classdef UdHaarAnalysis3dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
        
         function F = filters_(obj)
             nLevels_ = obj.NumberOfLevels;
+            K = obj.kernels;
+            % iLevel == nLevels
+            ufactor = 2^(nLevels_-1);
+            kernelSize = 2^nLevels_;
+            weight = 1/kernelSize;
+            Ku = cellfun(@(x) ...
+                cellfun(@(y) filterupsample1_(obj,y,ufactor),x,'UniformOutput',false),...
+                K,'UniformOutput',false);
+            F = cellfun(@(x) ...
+                cellfun(@(y) y*weight,x,'UniformOutput',false),...
+                Ku,'UniformOutput',false);
+            % iLevel < nLevels
+            for iLevel = nLevels_-1:-1:1
+                ufactor = ufactor/2;
+                kernelSize = kernelSize/2;
+                weight = 1/kernelSize;
+                Ku = cellfun(@(x) ...
+                    cellfun(@(y) filterupsample1_(obj,y,ufactor),x,'UniformOutput',false),...
+                    K,'UniformOutput',false);                
+                for iSubband = 1:((nLevels_-iLevel)*7)+1
+                    F{iSubband} = cellfun(@(x,y) conv(x,y),F{iSubband},Ku{1},'UniformOutput',false);
+                end
+                for idx = 2:8
+                    iSubband = (nLevels_- iLevel)*7+idx;
+                    F{iSubband} = cellfun(@(x) x*weight,Ku{idx},'UniformOutput',false);
+                end
+            end
+        end
+
+        function value = filterupsample1_(~,x,ufactor)
+            value = upsample(x,ufactor);
+            value = value(1:end-ufactor+1);
+        end
+        %{
+        function F = filters_(obj)
+            nLevels_ = obj.nLevels;
             F = cell(nLevels_*7+1,1);
             K = obj.kernels;
             % iLevel == nLevels
@@ -206,7 +257,7 @@ classdef UdHaarAnalysis3dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
                 ufactor),1);
             value = value(1:end-ufactor+1,1:end-ufactor+1,1:end-ufactor+1);
         end
-
+        %}
     end
 end
 

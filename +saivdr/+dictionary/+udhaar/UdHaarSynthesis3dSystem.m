@@ -43,10 +43,21 @@ classdef UdHaarSynthesis3dSystem <  saivdr.dictionary.AbstSynthesisSystem  %#cod
             setProperties(obj,nargin,varargin{:});
             %
             K = cell(8,1);
+            %
+            ha = double([1  1]);
+            hd = double([1 -1]);
+            K{1} = { ha, ha, ha };
+            K{2} = { ha, hd, ha };
+            K{3} = { hd, ha, ha };
+            K{4} = { hd, hd, ha };
+            K{5} = { ha, ha, hd };
+            K{6} = { ha, hd, hd };
+            K{7} = { hd, ha, hd };
+            K{8} = { hd, hd, hd };            
+            %{
             for idx = 1:8
                 K{idx} = double(zeros([2 2 2]));
             end
-            %
             K{1}(:,:,1) = double([ 1 1 ; 1 1 ]);   % AA
             K{1}(:,:,2) = double([ 1 1 ; 1 1 ]);
             K{2}(:,:,1) = double([ 1 -1 ; 1 -1 ]); % HA
@@ -64,7 +75,7 @@ classdef UdHaarSynthesis3dSystem <  saivdr.dictionary.AbstSynthesisSystem  %#cod
             K{7}(:,:,2) = double(-[ 1 1 ; -1 -1 ]);
             K{8}(:,:,1) = double([ 1 -1 ; -1 1 ]); % DD
             K{8}(:,:,2) = double(-[ 1 -1 ; -1 1 ]);
-            %
+            %}
             obj.kernels = K;
             obj.FrameBound = 1;
         end
@@ -160,11 +171,15 @@ classdef UdHaarSynthesis3dSystem <  saivdr.dictionary.AbstSynthesisSystem  %#cod
             for iSubband = 1:nSubbands_
                 U{iSubband} = reshape(coefs((iSubband-1)*nPixels_+1:iSubband*nPixels_),dim_);
             end
-            offset = [1 1 1];
+            %offset = [1 1 1];
             parfor (iSubband = 1:nSubbands_, obj.nWorkers)
+                v = circshift(imfilter(U{iSubband},F_{iSubband}{1}(:),'conv','circ'),1);
+                h = circshift(imfilter(shiftdim(v,1),F_{iSubband}{2}(:),'conv','circ'),1);
+                d = circshift(imfilter(shiftdim(h,1),F_{iSubband}{3}(:),'conv','circ'),1);
+                Y{iSubband} = shiftdim(d,1);
                 % Spatial domain
-                Y{iSubband} = circshift(...
-                    imfilter(U{iSubband},F_{iSubband},'conv','circ'),offset);
+                %Y{iSubband} = circshift(...
+                %    imfilter(U{iSubband},F_{iSubband},'conv','circ'),offset);
                 % Frequency domain
                 %Y{iSubband} = real(ifftn(fftn(U{iSubband}).*F_{iSubband}));
             end
@@ -178,6 +193,42 @@ classdef UdHaarSynthesis3dSystem <  saivdr.dictionary.AbstSynthesisSystem  %#cod
 
     methods (Access = private)
         
+        function F = filters_(obj)
+            nLevels_ = obj.nLevels;
+            K = obj.kernels;
+            % iLevel == nLevels
+            ufactor = 2^(nLevels_-1);
+            kernelSize = 2^nLevels_;
+            weight = 1/kernelSize;
+            Ku = cellfun(@(x) ...
+                cellfun(@(y) filterupsample1_(obj,y,ufactor),x,'UniformOutput',false),...
+                K,'UniformOutput',false);
+            F = cellfun(@(x) ...
+                cellfun(@(y) y*weight,x,'UniformOutput',false),...
+                Ku,'UniformOutput',false);
+            % iLevel < nLevels
+            for iLevel = nLevels_-1:-1:1
+                ufactor = ufactor/2;
+                kernelSize = kernelSize/2;
+                weight = 1/kernelSize;
+                Ku = cellfun(@(x) ...
+                    cellfun(@(y) filterupsample1_(obj,y,ufactor),x,'UniformOutput',false),...
+                    K,'UniformOutput',false);                
+                for iSubband = 1:((nLevels_-iLevel)*7)+1
+                    F{iSubband} = cellfun(@(x,y) conv(x,y),F{iSubband},Ku{1},'UniformOutput',false);
+                end
+                for idx = 2:8
+                    iSubband = (nLevels_- iLevel)*7+idx;
+                    F{iSubband} = cellfun(@(x) x*weight,Ku{idx},'UniformOutput',false);
+                end
+            end
+        end
+
+        function value = filterupsample1_(~,x,ufactor)
+            value = upsample(x,ufactor);
+            value = value(1:end-ufactor+1);
+        end
+        %{
         function F = filters_(obj)
             nLevels_ = obj.nLevels;
             F = cell(nLevels_*7+1,1);
@@ -215,6 +266,7 @@ classdef UdHaarSynthesis3dSystem <  saivdr.dictionary.AbstSynthesisSystem  %#cod
                 ufactor),1);
             value = value(1:end-ufactor+1,1:end-ufactor+1,1:end-ufactor+1);
         end
+        %}
     end
 end
 
