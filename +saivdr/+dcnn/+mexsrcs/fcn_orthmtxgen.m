@@ -56,13 +56,11 @@ if ~isempty(angles)
         matrix(iTop,:) = vt;
     end
 end
-if ~all(mus==1) 
-    if useGpu
-        matrix = arrayfun(@times,mus(:),matrix);
-    elseif isLessThanR2021b % on CPU
-        matrix = bsxfun(@times,mus(:),matrix);
-    else % on CPU
-        matrix = mus(:).*matrix;
-    end
+if useGpu
+    matrix = arrayfun(@times,mus(:),matrix);
+elseif isLessThanR2021b % on CPU
+    matrix = bsxfun(@times,mus(:),matrix);
+else % on CPU
+    matrix = mus(:).*matrix;
 end
 end
