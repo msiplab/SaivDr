@@ -3,7 +3,7 @@ classdef UdHaarAnalysis2dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
     %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2014-2020, Shogo MURAMATSU
+    % Copyright (c) 2014-2022, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -32,6 +32,7 @@ classdef UdHaarAnalysis2dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
         kernels
         coefs
         nPixels
+        filters
     end
 
     methods
@@ -39,10 +40,10 @@ classdef UdHaarAnalysis2dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
             % Support name-value pair arguments
             setProperties(obj,nargin,varargin{:});
             % 
-            obj.kernels.A = [ 1 1 ; 1 1 ]; % A
-            obj.kernels.H = [ 1 -1 ; 1 -1 ]; % H
-            obj.kernels.V = [ 1 1 ; -1 -1 ]; % V
-            obj.kernels.D = [ 1 -1 ; -1 1 ]; % D
+            obj.kernels{1} = [ 1 1 ; 1 1 ]; % A
+            obj.kernels{2} = [ 1 -1 ; 1 -1 ]; % H
+            obj.kernels{3} = [ 1 1 ; -1 -1 ]; % V
+            obj.kernels{4} = [ 1 -1 ; -1 1 ]; % D
         end
     end
     
@@ -53,12 +54,14 @@ classdef UdHaarAnalysis2dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
             s.kernels = obj.kernels;
             s.coefs = obj.coefs;
             s.nPixels = obj.nPixels;
+            s.filters = obj.filters;
         end
         
         function loadObjectImpl(obj, s, wasLocked)
             obj.kernels = s.kernels;
             obj.coefs = s.coefs;
             obj.nPixels = s.nPixels;
+            obj.filters = s.filters;
             loadObjectImpl@saivdr.dictionary.AbstAnalysisSystem(obj,s,wasLocked); 
         end
         
@@ -66,15 +69,8 @@ classdef UdHaarAnalysis2dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
             nLevels = obj.NumberOfLevels;
             obj.nPixels = numel(u);
             obj.coefs = zeros(1,(3*nLevels+1)*obj.nPixels,'like',u);
-        end
-        
-        function resetImpl(~)
-        end
-        
-        function [ coefs, scales ] = stepImpl(obj, u)
-            nPixels_ = obj.nPixels;
-            nLevels = obj.NumberOfLevels;
-            scales = repmat(size(u),[3*nLevels+1, 1]);
+            obj.filters = filters_(obj);            
+
             % NOTE:
             % imfilter of R2017a has a bug for double precision array
             if strcmp(version('-release'),'2017a') && ...
@@ -82,50 +78,66 @@ classdef UdHaarAnalysis2dSystem < saivdr.dictionary.AbstAnalysisSystem %#codegen
                 warning(['IMFILTER of R2017a with CIRCULAR option has a bug for double precison array.' ...
                     ' Please visit https://jp.mathworks.com/support/bugreports/ and search #BugID: 1554862.' ])
             end
-            ya = u;
-            hd = obj.kernels.D;
-            hv = obj.kernels.V;
-            hh = obj.kernels.H;
-            ha = obj.kernels.A;
-            iSubband = 3*nLevels+1;
-            for iLevel = 1:nLevels
-                kernelSize = 2^iLevel;
-                weight = 1/(kernelSize^2);
-                if iLevel < 2
-                    offset = [0 0]; % 1
-                else
-                    offset = -[1 1]*(2^(iLevel-2)-1);
-                end
-                yd = circshift(imfilter(ya,hd,'corr','circular'),offset);
-                yv = circshift(imfilter(ya,hv,'corr','circular'),offset);
-                yh = circshift(imfilter(ya,hh,'corr','circular'),offset);
-                ya = circshift(imfilter(ya,ha,'corr','circular'),offset);
-                obj.coefs((iSubband-1)*nPixels_+1:iSubband*nPixels_) = ...
-                    yd(:).'*weight;
-                obj.coefs((iSubband-2)*nPixels_+1:(iSubband-1)*nPixels_) = ...
-                    yv(:).'*weight;
-                obj.coefs((iSubband-3)*nPixels_+1:(iSubband-2)*nPixels_) = ...
-                    yh(:).'*weight;
-                iSubband = iSubband - 3;
-                hd = upsample2_(obj,hd);
-                hv = upsample2_(obj,hv);
-                hh = upsample2_(obj,hh);
-                ha = upsample2_(obj,ha);
+            
+        end
+        
+        function resetImpl(~)
+        end
+        
+        function [ coefs_, scales ] = stepImpl(obj, u)
+            nLevels_ = obj.NumberOfLevels;
+            nPixels_ = obj.nPixels;
+            coefs_ = obj.coefs;
+            %
+            F_ = obj.filters;
+            scales = repmat(size(u),[3*nLevels_+1, 1]);   
+            nSubbands_ = nLevels_*3 + 1;
+            for iSubband = 1:nSubbands_
+                coefs_((iSubband-1)*nPixels_+1:iSubband*nPixels_) = ...
+                    reshape(imfilter(u,F_{iSubband},'corr','circ'),[],1);
             end
-            obj.coefs(1:nPixels_) = ya(:).'*weight;
-            coefs = obj.coefs;
+            obj.coefs = coefs_;
         end
 
     end
     
+   
     methods (Access = private)
         
-        function value = upsample2_(~,x)
-            ufactor = 2;
+        function F = filters_(obj)
+            nLevels_ = obj.NumberOfLevels;
+            F = cell(nLevels_*3+1,1);
+            K = obj.kernels;
+            % iLevel == nLevels
+            ufactor = 2^(nLevels_-1);
+            kernelSize = 2^nLevels_;
+            weight = 1/(kernelSize^2);
+            Ku = cellfun(@(x) filterupsample2_(obj,x,ufactor),K,'UniformOutput',false);
+            for idx = 1:4
+                F{idx} = Ku{idx}*weight;
+            end
+            % iLevel < nLevels
+            for iLevel = nLevels_-1:-1:1
+                ufactor = ufactor/2;
+                kernelSize = kernelSize/2;
+                weight = 1/(kernelSize^2);
+                Ku = cellfun(@(x) filterupsample2_(obj,x,ufactor),K,'UniformOutput',false);
+                for iSubband = 1:((nLevels_-iLevel)*3)+1
+                    F{iSubband} = convn(F{iSubband},Ku{1}); 
+                end
+                for idx = 2:4
+                    iSubband = (nLevels_- iLevel)*3+idx;
+                    F{iSubband} = Ku{idx}*weight;
+                end
+            end
+        end
+
+        function value = filterupsample2_(~,x,ufactor)
             value = shiftdim(upsample(...
                 shiftdim(upsample(x,...
                 ufactor),1),...
                 ufactor),1);
+            value = value(1:end-ufactor+1,1:end-ufactor+1);
         end
     end
     
