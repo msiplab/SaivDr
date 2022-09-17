@@ -123,7 +123,7 @@ be used to see the contents as follows:
     
 ## Requirements
  
-* MATLAB R2013b or later. R2021a is recommended.
+* MATLAB R2020a or later. R2021a is recommended.
  * Signal Processing Toolbox
  * Image Processing Toolbox
  * Optimization Toolbox
