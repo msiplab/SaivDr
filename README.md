@@ -23,104 +23,99 @@ properties. For some features, we have prepared custom layer classes with
 Deep Learning Toolbox. It is now easy to incorporate them into flexible 
 configurations and parts of your network.
 
-Information about SaivDr Package is given in Contents.m. The HELP command can 
-be used to see the contents as follows:
-
-       >> help SaivDr
+## Project Structure
         
-       Sparsity-Aware Image and Volume Data Restoration Package
-         
-           Files
-             mytest     - Script of unit testing for SaivDr Package
-             quickstart - Quickstart of *SaivDr Package*
-             setpath    - Path setup for *SaivDr Package*
-          
-           * Package structure
-               
-               + saivdr -+- testcase -+- dcnn
-                         |            |
-                         |            +- sparserep 
-                         |            |                         
-                         |            +- embedded                          
-                         |            |
-                         |            +- dictionary  -+- nsolt     -+- design
-                         |            |               |
-                         |            |               +- nsoltx    -+- design
-                         |            |               |
-                         |            |               +- nsgenlot  -+- design
-                         |            |               |
-                         |            |               +- nsgenlotx -+- design
-                         |            |               |
-                         |            |               +- olaols
-                         |            |               |
-                         |            |               +- olpprfb
-                         |            |               |
-                         |            |               +- udhaar 
-                         |            |               |
-                         |            |               +- generalfb
-                         |            |               |
-                         |            |               +- mixture
-                         |            |               |
-                         |            |               +- utility
-                         |            |
-                         |            +- restoration -+- ista
-                         |            |               |
-                         |            |               +- pds
-                         |            |               |
-                         |            |               +- metricproj
-                         |            |               |
-                         |            |               +- denoiser
-                         |            |
-                         |            +- degradation -+- linearprocess
-                         |            |               |
-                         |            |               +- noiseprocess
-                         |            |
-                         |            +- utility 
-                         |
-                         +- dcnn
-                         |
-                         +- sparserep
-                         |                         
-                         +- embedded
-                         |
-                         +- dictionary  -+- nsolt     -+- design
-                         |               |             |
-                         |               |             +- mexsrcs
-                         |               |        
-                         |               +- nsoltx    -+- design
-                         |               |             |
-                         |               |             +- mexsrcs
-                         |               |
-                         |               +- nsgenlot  -+- design
-                         |               |         
-                         |               +- nsgenlotx -+- design
-                         |               |         
-                         |               +- olaols
-                         |               |         
-                         |               +- olpprfb
-                         |               |         
-                         |               +- udhaar 
-                         |               |
-                         |               +- generalfb
-                         |               |
-                         |               +- mixture
-                         |               |
-                         |               +- utility
-                         |
-                         +- restoration -+- ista  
-                         |               |
-                         |               +- pds
-                         |               |
-                         |               +- metricproj
-                         |               |
-                         |               +- denoiser
-                         |            
-                         +- degradation -+- linearprocess
-                         |               |
-                         |               +- noiseprocess
-                         |
-                         +- utility
-    
+       Files
+         mytest     - Script of unit testing for SaivDr Package
+         quickstart - Quickstart of *SaivDr Package*
+         setpath    - Path setup for *SaivDr Package*
+      
+       * Package structure
+           
+           + saivdr -+- testcase -+- dcnn
+                     |            |
+                     |            +- sparserep 
+                     |            |                         
+                     |            +- embedded                          
+                     |            |
+                     |            +- dictionary  -+- nsolt     -+- design
+                     |            |               |
+                     |            |               +- nsoltx    -+- design
+                     |            |               |
+                     |            |               +- nsgenlot  -+- design
+                     |            |               |
+                     |            |               +- nsgenlotx -+- design
+                     |            |               |
+                     |            |               +- olaols
+                     |            |               |
+                     |            |               +- olpprfb
+                     |            |               |
+                     |            |               +- udhaar 
+                     |            |               |
+                     |            |               +- generalfb
+                     |            |               |
+                     |            |               +- mixture
+                     |            |               |
+                     |            |               +- utility
+                     |            |
+                     |            +- restoration -+- ista
+                     |            |               |
+                     |            |               +- pds
+                     |            |               |
+                     |            |               +- metricproj
+                     |            |               |
+                     |            |               +- denoiser
+                     |            |
+                     |            +- degradation -+- linearprocess
+                     |            |               |
+                     |            |               +- noiseprocess
+                     |            |
+                     |            +- utility 
+                     |
+                     +- dcnn
+                     |
+                     +- sparserep
+                     |                         
+                     +- embedded
+                     |
+                     +- dictionary  -+- nsolt     -+- design
+                     |               |             |
+                     |               |             +- mexsrcs
+                     |               |        
+                     |               +- nsoltx    -+- design
+                     |               |             |
+                     |               |             +- mexsrcs
+                     |               |
+                     |               +- nsgenlot  -+- design
+                     |               |         
+                     |               +- nsgenlotx -+- design
+                     |               |         
+                     |               +- olaols
+                     |               |         
+                     |               +- olpprfb
+                     |               |         
+                     |               +- udhaar 
+                     |               |
+                     |               +- generalfb
+                     |               |
+                     |               +- mixture
+                     |               |
+                     |               +- utility
+                     |
+                     +- restoration -+- ista  
+                     |               |
+                     |               +- pds
+                     |               |
+                     |               +- metricproj
+                     |               |
+                     |               +- denoiser
+                     |            
+                     +- degradation -+- linearprocess
+                     |               |
+                     |               +- noiseprocess
+                     |
+                     +- utility
+  
 ## Requirements
  
 * MATLAB R2020a or later. R2021a is recommended.
