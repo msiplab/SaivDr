@@ -3,7 +3,7 @@ function [fcnhandler,flag] = fcn_build_gradevalsteps3d()
 %
 % Requirements: MATLAB R2015b
 %
-% Copyright (c) 2015-2021, Shogo MURAMATSU
+% Copyright (c) 2015-2023, Shogo MURAMATSU
 %
 % All rights reserved.
 %
@@ -44,7 +44,7 @@ if license('checkout','matlab_coder') % Coder is available
         cfg.DynamicMemoryAllocation = 'AllVariableSizeArrays';%'Threshold';%'Off';
         cfg.GenerateReport = true;
         args = '{ aCoefsB, aCoefsC, aScale, aPmCoefs, aAngs, aMus, aNch, aOrd, aFpe, aNdc }';
-        seval = [ 'codegen -config cfg ' ' -o ' outputdir '/' mexname ' ' ...
+        seval = [ 'codegen -config cfg ' ' -o ''' outputdir '/' mexname ''' ' ...
             packagedir '/' bsfname '.m -args ' args];
         
         disp(seval)
