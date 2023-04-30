@@ -1,13 +1,10 @@
-classdef ModuleBlockDct2d < matlab.System & ...
-        matlab.system.mixin.CustomIcon %#codegen
+classdef ModuleBlockDct2d < matlab.System % & ...
+        % matlab.system.mixin.CustomIcon %#codegen
     %MODULEBLOCKDCT2D Block 2-d DCT module
     %
-    % SVN identifier:
-    % $Id: ModuleBlockDct2d.m 683 2015-05-29 08:22:13Z sho $
+    % Requirements: MATLAB R2020a or later
     %
-    % Requirements: MATLAB R2015b
-    %
-    % Copyright (c) 2014-2015, Shogo MURAMATSU
+    % Copyright (c) 2014-2022, Shogo MURAMATSU
     %
     % All rights reserved.
     %

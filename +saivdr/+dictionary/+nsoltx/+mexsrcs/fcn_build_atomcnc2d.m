@@ -3,7 +3,7 @@ function [fcnhandler,flag] = fcn_build_atomcnc2d()
 %
 % Requirements: MATLAB R2015b
 %
-% Copyright (c) 2014-2017, Shogo MURAMATSU
+% Copyright (c) 2014-2023, Shogo MURAMATSU
 %
 % All rights reserved.
 %
@@ -40,7 +40,7 @@ if license('checkout','matlab_coder') % Coder is available
         cfg.DynamicMemoryAllocation = 'AllVariableSizeArrays';%'Threshold';%'Off';
         cfg.GenerateReport = true;
         args = '{ aCoefs, aScale, aPmCoefs, aNch, aOrd, aFpe }';
-        seval = [ 'codegen -config cfg ' ' -o ' outputdir '/' mexname ' ' ...
+        seval = [ 'codegen -config cfg ' ' -o ''' outputdir '/' mexname ''' ' ...
             packagedir '/' bsfname '.m -args ' args];
         
         disp(seval)

@@ -3,7 +3,7 @@ function [fcnhandler,flag] = fcn_build_orthmtxgen_diff(datatype,useGpuArray)
 %
 % Requirements: MATLAB R2021a
 %
-% Copyright (c) 2021, Shogo MURAMATSU
+% Copyright (c) 2021-2023, Shogo MURAMATSU
 %
 % All rights reserved.
 %
@@ -80,7 +80,7 @@ if license('checkout','matlab_coder') % Coder is available
         else
             cfg.GenerateReport = true;
             args = '{ aAngles, aMus, aPdAng, aMtxPst, aMtxPre, cUseGpu, cIsLt21b }';
-            seval = [ 'codegen -config cfg ' ' -o ' outputdir '/' mexname ' ' ...
+            seval = [ 'codegen -config cfg ' ' -o ''' outputdir '/' mexname ''' ' ...
                 packagedir '/' bsfname '.m -args ' args];
             disp(seval)
             eval(seval)
