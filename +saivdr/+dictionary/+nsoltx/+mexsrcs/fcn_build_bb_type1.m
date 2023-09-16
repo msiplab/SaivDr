@@ -14,6 +14,7 @@ function [fcnhandler,flag] = fcn_build_bb_type1()
 %
 % http://msiplab.eng.niigata-u.ac.jp/
 %
+isOlderThanR2023b = isMATLABReleaseOlderThan("R2023b"); % 'DynamicMemoryAllocation' -> 'EnableDynamicMemoryAllocation' と 'DynamicMemoryAllocationThreshold'
 
 bsfname = 'fcn_Order1BuildingBlockTypeI';
 mexname = sprintf('%s_mex',bsfname);
@@ -35,7 +36,12 @@ if license('checkout','matlab_coder') % Coder is available
         nshift     = coder.typeof(int32(0),1,0); %#ok
         % build mex
         cfg = coder.config('mex');
-        cfg.DynamicMemoryAllocation = 'AllVariableSizeArrays';%'Threshold';
+        if isOlderThanR2023b
+            cfg.DynamicMemoryAllocation = 'AllVariableSizeArrays';%'Threshold';%'Off';
+        else
+            cfg.EnableDynamicMemoryAllocation = true;
+            cfg.DynamicMemoryAllocationThreshold = 2000000000; % in bytes
+        end
         cfg.GenerateReport = true;
         args = '{ arrayCoefs, paramMtx, aHChs, nshift }';
         seval = [ 'codegen -config cfg ' ' -o ''' outputdir '/' mexname ''' ' ...

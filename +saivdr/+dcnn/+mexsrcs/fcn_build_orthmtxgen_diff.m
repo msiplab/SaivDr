@@ -25,8 +25,8 @@ else
 end
 
 % In R2021b, by default, code generation supports implicit expansion.
-isLessThanR2021b = verLessThan('matlab','9.11'); % Effective only for CPU
-
+isOlderThanR2021b = isMATLABReleaseOlderThan("R2021b"); % LessThanR2021b = verLessThan('matlab','9.11'); % Effective only for CPU
+isOlderThanR2023b = isMATLABReleaseOlderThan("R2023b"); % 'DynamicMemoryAllocation' -> 'EnableDynamicMemoryAllocation' と 'DynamicMemoryAllocationThreshold'
 mexname = sprintf('%s_%s_on_%s_mex',bsfname, datatype, device);
 
 if license('checkout','matlab_coder') % Coder is available
@@ -56,8 +56,13 @@ if license('checkout','matlab_coder') % Coder is available
             aMtxPst   = coder.typeof(cast(0,datatype),[inf inf],[1 1]); %#ok
             aMtxPre   = coder.typeof(cast(0,datatype),[inf inf],[1 1]); %#ok
             cUseGpu   = coder.Constant(false); %#ok
-            cIsLt21b  = coder.Constant(isLessThanR2021b); %#ok
-            cfg.DynamicMemoryAllocation = 'AllVariableSizeArrays';%'Threshold';%'Off';
+            cIsLt21b  = coder.Constant(isOlderThanR2021b); %#ok
+            if isOlderThanR2023b
+                cfg.DynamicMemoryAllocation = 'AllVariableSizeArrays';%'Threshold';%'Off';
+            else
+                cfg.EnableDynamicMemoryAllocation = true;
+                cfg.DynamicMemoryAllocationThreshold = 2000000000; % in bytes
+            end
             cfg.ConstantInputs = 'Remove';
         elseif ~codegenskip % on GPU
             disp('GPU Coder')
@@ -70,8 +75,12 @@ if license('checkout','matlab_coder') % Coder is available
             aMtxPst   = coder.typeof(gpuArray(cast(0,datatype)),[maxMus maxMus],[1 1]); %#ok
             aMtxPre   = coder.typeof(gpuArray(cast(0,datatype)),[maxMus maxMus],[1 1]); %#ok
             cUseGpu   = coder.Constant(true); %#ok
-            cIsLt21b  = coder.Constant(isLessThanR2021b); %#ok            
-            cfg.DynamicMemoryAllocation = 'Off';
+            cIsLt21b  = coder.Constant(isOlderThanR2021b); %#ok            
+            if isOlderThanR2023b
+                cfg.DynamicMemoryAllocation = 'Off';
+            else
+                cfg.EnableDynamicMemoryAllocation = false;
+            end
             cfg.ConstantInputs = 'Remove';
         end
         

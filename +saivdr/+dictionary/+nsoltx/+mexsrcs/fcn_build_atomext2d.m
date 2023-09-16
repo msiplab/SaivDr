@@ -14,6 +14,7 @@ function [fcnhandler,flag] = fcn_build_atomext2d()
 %
 % http://msiplab.eng.niigata-u.ac.jp/
 %
+isOlderThanR2023b = isMATLABReleaseOlderThan("R2023b"); % 'DynamicMemoryAllocation' -> 'EnableDynamicMemoryAllocation' と 'DynamicMemoryAllocationThreshold'
 
 bsfname = 'fcn_NsoltAtomExtender2dCodeGen';
 mexname = sprintf('%s_mex',bsfname);
@@ -37,7 +38,12 @@ if license('checkout','matlab_coder') % Coder is available
         aFpe     = coder.typeof(logical(0),1,0); %#ok
         % build mex
         cfg = coder.config('mex');
-        cfg.DynamicMemoryAllocation = 'AllVariableSizeArrays';%'Threshold';%'Off';
+        if isOlderThanR2023b
+            cfg.DynamicMemoryAllocation = 'AllVariableSizeArrays';%'Threshold';%'Off';
+        else
+            cfg.EnableDynamicMemoryAllocation = true;
+            cfg.DynamicMemoryAllocationThreshold = 2000000000; % in bytes
+        end
         cfg.GenerateReport = true;
         args = '{ aCoefs, aScale, aPmCoefs, aNch, aOrd, aFpe }';
         seval = [ 'codegen -config cfg ' ' -o ''' outputdir '/' mexname ''' ' ...
