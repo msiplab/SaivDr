@@ -37,7 +37,7 @@ nfigref = 6;     % Figure reference number of training image
 ntabref = 4;     % Table reference number of PSNR table
 isEdit  = false; % Edit mode
 
-setpath
+%setpath
 
 %% Parameters
 nDec = [ 2 2 ]; % M0 M1

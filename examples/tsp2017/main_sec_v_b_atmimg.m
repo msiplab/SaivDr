@@ -35,7 +35,7 @@ close all
 nfig    = 10; % Figure number
 nfigref =  9; % Figure reference number of training image
 
-setpath
+%setpath
 
 %% Preparation
 close all 

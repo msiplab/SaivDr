@@ -31,7 +31,7 @@
 ntab     = 5;  % Table number
 nfigref1 = 9;  % Figure reference number of training volume data
 
-setpath
+%setpath
 
 %% Parameters
 nDec = [ 2 2 2 ]; % Downsampling factor [M0 M1]

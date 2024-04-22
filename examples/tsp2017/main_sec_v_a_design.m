@@ -35,7 +35,7 @@
 nfig   = 6;     % Figure number      
 isEdit = false; % Edit mode
 
-setpath
+%setpath
 
 %% Preparation
 

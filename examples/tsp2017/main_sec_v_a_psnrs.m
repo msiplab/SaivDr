@@ -32,7 +32,7 @@ ntab     = 4; % Table number
 nfigref1 = 6; % Figure reference number of training image
 nfigref2 = 8; % Figure reference number of atomic images
 
-setpath
+%setpath
 
 %% Parameters
 nDec = [ 2 2 ]; % Downsampling factor [M0 M1]
