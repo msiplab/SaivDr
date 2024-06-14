@@ -102,7 +102,7 @@ class NsoltChannelSeparation2dLayerTestCase(unittest.TestCase):
         # Parameters
         nSamples = 8
         nChsTotal = sum(nchs)
-        # nSamplesx nRows x nCols x nChsTotal 
+        # nSamples x nRows x nCols x nChsTotal 
         X = torch.randn(nSamples,nrows,ncols,nChsTotal,dtype=datatype,device=device,requires_grad=True)
         # nSamples x nRows x nCols x (nChsTotal-1)
         dLdZac = torch.randn(nSamples,nrows,ncols,nChsTotal-1,dtype=datatype)
