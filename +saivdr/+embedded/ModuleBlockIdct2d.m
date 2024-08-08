@@ -1,14 +1,11 @@
-classdef ModuleBlockIdct2d < matlab.System & ...
-        matlab.system.mixin.CustomIcon & ...
-        matlab.system.mixin.Propagates %#codegen
+classdef ModuleBlockIdct2d < matlab.System % & ...
+        % matlab.system.mixin.CustomIcon & ...
+        % matlab.system.mixin.Propagates %#codegen
     %MODULEBLOCKIDCT Block 2-D IDCT module
     %
-    % SVN identifier:
-    % $Id: ModuleBlockIdct2d.m 683 2015-05-29 08:22:13Z sho $
+    % Requirements: MATLAB R2020a or later
     %
-    % Requirements: MATLAB R2015b
-    %
-    % Copyright (c) 2014-2015, Shogo MURAMATSU
+    % Copyright (c) 2014-2022, Shogo MURAMATSU
     %
     % All rights reserved.
     %

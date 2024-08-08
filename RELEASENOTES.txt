@@ -1,8 +1,12 @@
 * Release notes on Sparsity-Aware Image and Volumetric Data Restoration Package
 
+- SaivDr2022xxxx
+-- (Minor) Removed inheritance of matlab.system.mixin.CustomIcon mixin for future releases
+--- saivdr.embedded.*
+
 - SaivDr20210924
 -- (Minor) Revised to switch implicit expansion codes
---- saidr.dcnn.mexsrcs.*
+--- saivdr.dcnn.mexsrcs.*
 -- (Minor) Excluded MEX code generation for GPU device (Due to a defect) 
 --- mybuild.m
 

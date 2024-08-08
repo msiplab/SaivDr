@@ -1,15 +1,12 @@
-classdef ModulePartialDelay < matlab.System  & ...
-        matlab.system.mixin.Nondirect & ...
-        matlab.system.mixin.CustomIcon & ...
-        matlab.system.mixin.Propagates %#codegen
+classdef ModulePartialDelay < matlab.System % & ...
+        % matlab.system.mixin.Nondirect & ...
+        % matlab.system.mixin.CustomIcon & ...
+        % matlab.system.mixin.Propagates %#codegen
     %MODULEPARTIALDELAY Partial delay moduel
     %
-    % SVN identifier:
-    % $Id: ModulePartialDelay.m 683 2015-05-29 08:22:13Z sho $
+    % Requirements: MATLAB R2020a or later
     %
-    % Requirements: MATLAB R2015b
-    %
-    % Copyright (c) 2014-2015, Shogo MURAMATSU
+    % Copyright (c) 2014-2022, Shogo MURAMATSU
     %
     % All rights reserved.
     %

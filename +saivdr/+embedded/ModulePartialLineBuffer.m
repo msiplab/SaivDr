@@ -1,14 +1,11 @@
-classdef ModulePartialLineBuffer < matlab.System  & ...
-        matlab.system.mixin.Nondirect & ...
-        matlab.system.mixin.CustomIcon %#codegen
+classdef ModulePartialLineBuffer < matlab.System % & ...
+        % matlab.system.mixin.Nondirect & ...
+        % matlab.system.mixin.CustomIcon %#codegen
     %MODULEPARTIALLINEBUFFER Partial line buffer module
     %
-    % SVN identifier:
-    % $Id: ModulePartialLineBuffer.m 683 2015-05-29 08:22:13Z sho $
+    % Requirements: MATLAB R2020a or later
     %
-    % Requirements: MATLAB R2015b
-    %
-    % Copyright (c) 2014-2015, Shogo MURAMATSU
+    % Copyright (c) 2014-2022, Shogo MURAMATSU
     %
     % All rights reserved.
     %
