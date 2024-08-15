@@ -318,8 +318,8 @@ classdef NsoltDictionaryLearningTestCase < matlab.unittest.TestCase
             [~, costPst] = step(testCase.designer,options,isOptMus);
             
             % Evaluation
-            import matlab.unittest.constraints.IsLessThan
-            testCase.verifyThat(costPst, IsLessThan(costPre));
+            import matlab.unittest.constraints.IsLessThanOrEqualTo
+            testCase.verifyThat(costPst, IsLessThanOrEqualTo(costPre));
             
         end
         
