@@ -15,7 +15,7 @@
 % <https://sigport.org/documents/multidimensional-nonseparable-oversampled-lapped-transforms-theory-and-design non-separable oversampled lapped transform ( *NSOLTs* )> , which allows for 
 % convolutional layers with
 % 
-% * Parseval tight 
+% * Parseval tight (paraunitary), 
 % * Symmetric and
 % * Multiresolution 
 %

@@ -6,8 +6,8 @@
    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>Quickstart of SaivDr Package</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-09-03"><meta name="DC.source" content="quickstart.m"><style type="text/css">
-html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+      --><title>Quickstart of SaivDr Package</title><meta name="generator" content="MATLAB 9.11"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-09-24"><meta name="DC.source" content="quickstart.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
 
 html { min-height:100%; margin-bottom:1px; }
 html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
@@ -67,7 +67,7 @@ table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px soli
 
 
 
-  </style></head><body><div class="content"><h1>Quickstart of <b>SaivDr Package</b></h1><!--introduction--><p>A brief introduction to image restroation with <b>SaivDr Package</b></p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Summary</a></li><li><a href="#2">Add the package to search path</a></li><li><a href="#3">Read a source image</a></li><li><a href="#4">Create a degradation system object</a></li><li><a href="#5">Generate an observed image</a></li><li><a href="#6">Create an NSOLT system object</a></li><li><a href="#7">Create an analysis and synthesis system object</a></li><li><a href="#10">Create an ISTA-based image restoration system object</a></li><li><a href="#11">Create a step monitor system object</a></li><li><a href="#12">Perform ISTA-based image restoration</a></li><li><a href="#13">Extract the final evaluation</a></li><li><a href="#14">Perform Wiener filtering</a></li><li><a href="#15">Compare deblurring performances</a></li><li><a href="#16">Release notes</a></li></ul></div><h2 id="1">Summary</h2><p><b>SaivDr</b> is an abbreviation of <i>Sparsity-Aware Image and Volume Data Restoration</i>. This package is developed for</p><div><ul><li>Experiments,</li><li>Development and</li><li>Implementation</li></ul></div><p>of sparsity-aware image and volume data restoraition algorithms.</p><p>In particular, this package provides a rich set of classes related to <a href="https://sigport.org/documents/multidimensional-nonseparable-oversampled-lapped-transforms-theory-and-design">non-separable oversampled lapped transform ( <b>NSOLTs</b> )</a> , which allows for convolutional layers with</p><div><ul><li>Parseval tight</li><li>Symmetric and</li><li>Multiresolution</li></ul></div><p>properties. For some features, we have prepared custom layer classes with Deep Learning Toolbox. It is now easy to incorporate them into flexible configurations and parts of your network.</p><p><img vspace="5" hspace="5" src="latstrnsolt.png" alt=""> </p><p>Information about <b>SaivDr Package</b> is given in Contents.m. The HELP command can be used to see the contents as follows:</p><pre class="codeinput">type <span class="string">README.md</span>
+  </style></head><body><div class="content"><h1>Quickstart of <b>SaivDr Package</b></h1><!--introduction--><p>A brief introduction to image restroation with <b>SaivDr Package</b></p><!--/introduction--><h2>Contents</h2><div><ul><li><a href="#1">Summary</a></li><li><a href="#2">Add the package to search path</a></li><li><a href="#3">Read a source image</a></li><li><a href="#4">Create a degradation system object</a></li><li><a href="#5">Generate an observed image</a></li><li><a href="#6">Create an NSOLT system object</a></li><li><a href="#7">Create an analysis and synthesis system object</a></li><li><a href="#10">Create an ISTA-based image restoration system object</a></li><li><a href="#11">Create a step monitor system object</a></li><li><a href="#12">Perform ISTA-based image restoration</a></li><li><a href="#13">Extract the final evaluation</a></li><li><a href="#14">Perform Wiener filtering</a></li><li><a href="#15">Compare deblurring performances</a></li><li><a href="#16">Release notes</a></li></ul></div><h2 id="1">Summary</h2><p><b>SaivDr</b> is an abbreviation of <i>Sparsity-Aware Image and Volume Data Restoration</i>. This package is developed for</p><div><ul><li>Experiments,</li><li>Development and</li><li>Implementation</li></ul></div><p>of sparsity-aware image and volume data restoraition algorithms.</p><p>In particular, this package provides a rich set of classes related to <a href="https://sigport.org/documents/multidimensional-nonseparable-oversampled-lapped-transforms-theory-and-design">non-separable oversampled lapped transform ( <b>NSOLTs</b> )</a> , which allows for convolutional layers with</p><div><ul><li>Parseval tight (paraunitary),</li><li>Symmetric and</li><li>Multiresolution</li></ul></div><p>properties. For some features, we have prepared custom layer classes with Deep Learning Toolbox. It is now easy to incorporate them into flexible configurations and parts of your network.</p><p><img vspace="5" hspace="5" src="latstrnsolt.png" alt=""> </p><p>Information about <b>SaivDr Package</b> is given in Contents.m. The HELP command can be used to see the contents as follows:</p><pre class="codeinput">type <span class="string">README.md</span>
 </pre><pre class="codeoutput">
 # SaivDr Package for MATLAB/Simulink [![View SaivDr Package on File Exchange](https://www.mathworks.com/matlabcentral/images/matlab-file-exchange.svg)](https://jp.mathworks.com/matlabcentral/fileexchange/45084-saivdr-package)
 System object definitions for sparsity-aware image and volumetric data restoration
@@ -86,7 +86,7 @@ of sparsity-aware image and volumetric data restoraition algorithms.
 In particular, this package provides a rich set of classes related to 
 [non-separable oversampled lapped transform ( *NSOLTs* )](https://sigport.org/documents/multidimensional-nonseparable-oversampled-lapped-transforms-theory-and-design) , which allows for convolutional layers with
  
-* Parseval tight 
+* Parseval tight (paraunitary),
 * Symmetric and
 * Multiresolution 
 
@@ -194,17 +194,18 @@ be used to see the contents as follows:
     
 ## Requirements
  
-* MATLAB R2013b or later. R2020a is recommended.
+* MATLAB R2013b or later. R2021a is recommended.
  * Signal Processing Toolbox
  * Image Processing Toolbox
  * Optimization Toolbox
- 
+
 ## Recomendation
  
  * Deep Learning Toolbox
  * Global Optimization Toolbox 
  * Parallel Computing Toolbox
  * MATLAB Coder
+ * GPU Coder
 
 ## Brief introduction
  
@@ -238,33 +239,22 @@ be used to see the contents as follows:
  
 ## References
 
-* Genki Fujii, Yuta Yoshida, Shogo Muramatsu, Shunsuke Ono, Samuel Choi, Takeru Ota, 
-  Fumiaki Nin, Hiroshi HibinoTitle: "OCT Volumetric Data Restoration with 
+* Ruiki Kobayashi, Shogo Muramatsu, Shunsuke Ono, "Proximal Gradient-Based Loop Unrolling with Interscale Thresholding," Proc. Assoc. Annual Summit and Conf. (APSIPA ASC), Dec. 2021
+
+* Genki Fujii, Yuta Yoshida, Shogo Muramatsu, Shunsuke Ono, Samuel Choi, Takeru Ota, Fumiaki Nin, Hiroshi Hibino, "OCT Volumetric Data Restoration with 
   Latent Distribution of Refractive Index," Proc. of 2019 IEEE International 
   Conference on Image Processing (ICIP), pp.764-768, Sept. 2019
 
 * Yuhei Kaneko, Shogo Muramatsu, Hiroyasu Yasuda, Kiyoshi Hayasaka, Yu Otake, 
-  Shunsuke Ono, Masahiro Yukawa, "Convolutional-Sparse-Coded Dynamic Mode Decompsition 
-  and Its Application to River State Estimation," Proc. of 2019 IEEE International 
-  Conference on Acoustics, Speech and Signal Processing (ICASSP), pp.1872-1876, 
-  May 2019
+  Shunsuke Ono, Masahiro Yukawa, "Convolutional-Sparse-Coded Dynamic Mode Decompsition and Its Application to River State Estimation," Proc. of 2019 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP), pp.1872-1876, May 2019
 
-* Shogo Muramatsu, Samuel Choi, Shunske Ono, Takeru Ota, Fumiaki Nin, Hiroshi Hibino,
-  "OCT Volumetric Data Restoration via Primal-Dual Plug-and-Play Method," Proc. 
-  of 2018 IEEE International Conference on Acoustics, Speech and Signal Processing 
-  (ICASSP), pp.801-805, Apr. 2018
+* Shogo Muramatsu, Samuel Choi, Shunske Ono, Takeru Ota, Fumiaki Nin, Hiroshi Hibino, "OCT Volumetric Data Restoration via Primal-Dual Plug-and-Play Method," Proc. of 2018 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP), pp.801-805, Apr. 2018
 
-* Shogo Muramatsu, Kosuke Furuya and Naotaka Yuki, "Multidimensional Nonseparable 
-  Oversampled Lapped Transforms: Theory and Design," IEEE Trans. on Signal Process., 
-  Vol.65, No.5, pp.1251-1264, DOI:10.1109/TSP.2016.2633240, March 2017. 
+* Shogo Muramatsu, Kosuke Furuya and Naotaka Yuki, "Multidimensional Nonseparable Oversampled Lapped Transforms: Theory and Design," IEEE Trans. on Signal Process., Vol.65, No.5, pp.1251-1264, DOI:10.1109/TSP.2016.2633240, March 2017
 
-* Kota Horiuchi and Shogo Muramatsu, "Fast convolution technique for Non-separable 
-  Oversampled Lapped Transforms," Proc. of Asia Pacific Signal and Information Proc. 
-  Assoc. Annual Summit and Conf. (APSIPA ASC), Dec. 2016
+* Kota Horiuchi and Shogo Muramatsu, "Fast convolution technique for Non-separable Oversampled Lapped Transforms," Proc. of Asia Pacific Signal and Information Proc. Assoc. Annual Summit and Conf. (APSIPA ASC), Dec. 2016
 
-* Shogo Muramatsu, Masaki Ishii and Zhiyu Chen, "Efficient Parameter Optimization 
-  for Example-Based Design of Non-separable Oversampled Lapped Transform," Proc. 
-  of 2016 IEEE Intl. Conf. on Image Process. (ICIP),  pp.3618-3622, Sept. 2016
+* Shogo Muramatsu, Masaki Ishii and Zhiyu Chen, "Efficient Parameter Optimization for Example-Based Design of Non-separable Oversampled Lapped Transform," Proc. of 2016 IEEE Intl. Conf. on Image Process. (ICIP),  pp.3618-3622, Sept. 2016
 
 * Shogo Muramatsu, "Structured Dictionary Learning with 2-D Non-separable 
   Oversampled Lapped Transform," Proc. of 2014 IEEE International Conference 
@@ -293,6 +283,8 @@ This work was supported by JSPS KAKENHI Grant Numbers JP23560443, JP26420347 and
 * Natsuki AIZAWA, 2013-2014
 * Kosuke FURUYA,  2013-2015
 * Naotaka YUKI,   2014-2015
+* Yuya KODAMA,    2020-
+* Yasas GODAGE,   2021-
  
 ### Test contributers
 * Hidenori WATANABE, 2014-
@@ -307,8 +299,6 @@ This work was supported by JSPS KAKENHI Grant Numbers JP23560443, JP26420347 and
 * Yuhei KANEKO,      2017-
 * Nawapan LAOCHAROENSUK, 2019-
 * Yusuke ARAI,       2020-
-* Yuya KODAMA,       2020-
-
 </pre><h2 id="2">Add the package to search path</h2><p>Before using <b>SaivDr Package</b> , it is required to add the package top and 'mexcode' directory in the second layer to the MATLAB's search path. After moving to the top directory, execute the following command:</p><pre class="codeinput">setpath
 </pre><h2 id="3">Read a source image</h2><p>In the followings, an image restoration procedure with this package is described. As a preliminary, let us read an RGB picture as the source image.</p><pre class="codeinput">srcImg = imread(<span class="string">'peppers.png'</span>);
 width  = 256; <span class="comment">% Width</span>
@@ -316,7 +306,7 @@ height = 256; <span class="comment">% Height</span>
 px     = 64;  <span class="comment">% Horizontal position of cropping</span>
 py     = 64;  <span class="comment">% Vertical position of cropping</span>
 orgImg = im2double(srcImg(py:py+height-1,px:px+width-1,:));
-</pre><h2 id="4">Create a degradation system object</h2><p>Suppose that we only have a degraded image <img src="quickstart_eq08291690262771002032.png" alt="$\mathbf{x}$" style="width:6px;height:5px;"> which is contaminated by Gaussian kernel blur <img src="quickstart_eq04341845410467366200.png" alt="$\mathbf{P}$" style="width:7px;height:7px;"> with addtive white Gaussian noise <img src="quickstart_eq06351776505552165981.png" alt="$\mathbf{w}$" style="width:8px;height:5px;">, i.e.</p><p><img src="quickstart_eq05931457240804436659.png" alt="$\mathbf{x} = \mathbf{Pu} + \mathbf{w}$" style="width:53px;height:8px;"> ,</p><p>where <img src="quickstart_eq09258825031370906642.png" alt="$\mathbf{u}$" style="width:6px;height:5px;"> is an unknown clearn original image.</p><p>Let us generate a degradation process by using the following classes provided by <b>SaivDr Package</b>.</p><div><ul><li>saivdr.degradation.linearprocess.BlurSystem</li><li>saivdr.degradation.noiseprocess.AdditiveWhiteGaussianNoiseSystem</li><li>saivdr.degradation.DegradationSystem</li></ul></div><pre class="codeinput">import <span class="string">saivdr.degradation.linearprocess.BlurSystem</span>
+</pre><h2 id="4">Create a degradation system object</h2><p>Suppose that we only have a degraded image <img src="quickstart_eq17274866754917724950.png" alt="$\mathbf{x}$"> which is contaminated by Gaussian kernel blur <img src="quickstart_eq01284226214242475479.png" alt="$\mathbf{P}$"> with addtive white Gaussian noise <img src="quickstart_eq04799245567390163595.png" alt="$\mathbf{w}$">, i.e.</p><p><img src="quickstart_eq13439294370902551857.png" alt="$\mathbf{x} = \mathbf{Pu} + \mathbf{w}$"> ,</p><p>where <img src="quickstart_eq04535311560566785116.png" alt="$\mathbf{u}$"> is an unknown clearn original image.</p><p>Let us generate a degradation process by using the following classes provided by <b>SaivDr Package</b>.</p><div><ul><li>saivdr.degradation.linearprocess.BlurSystem</li><li>saivdr.degradation.noiseprocess.AdditiveWhiteGaussianNoiseSystem</li><li>saivdr.degradation.DegradationSystem</li></ul></div><pre class="codeinput">import <span class="string">saivdr.degradation.linearprocess.BlurSystem</span>
 blurtype = <span class="string">'Gaussian'</span>;  <span class="comment">% Blur type</span>
 boundary = <span class="string">'Symmetric'</span>; <span class="comment">% Boundary option</span>
 hsigma   = 2;           <span class="comment">% Sigma for Gausian kernel</span>
@@ -336,8 +326,8 @@ import <span class="string">saivdr.degradation.DegradationSystem</span>
 dgrd = DegradationSystem(<span class="keyword">...</span><span class="comment"> % Integration of blur and AWGN</span>
     <span class="string">'LinearProcess'</span>, blur,<span class="keyword">...</span>
     <span class="string">'NoiseProcess'</span>,  awgn);
-</pre><h2 id="5">Generate an observed image</h2><p>Then, let us generate an observed image <img src="quickstart_eq08291690262771002032.png" alt="$\mathbf{x}$" style="width:6px;height:5px;"> by the DegradationSystem object, <i>dgrd</i> , created in the previous step.</p><pre class="codeinput">obsImg = dgrd.step(orgImg);
-</pre><h2 id="6">Create an NSOLT system object</h2><p>In order to restore the clearn image <img src="quickstart_eq09258825031370906642.png" alt="$\mathbf{u}$" style="width:6px;height:5px;">, let us assume that <img src="quickstart_eq09258825031370906642.png" alt="$\mathbf{u}$" style="width:6px;height:5px;"> is represented by a dictionary <img src="quickstart_eq07812796122435096599.png" alt="$\mathbf{D}$" style="width:8px;height:7px;"> as</p><p><img src="quickstart_eq08718062006498229712.png" alt="$\mathbf{u} = \mathbf{Dy}$" style="width:33px;height:9px;"> ,</p><p>where <img src="quickstart_eq01759449390978539805.png" alt="$\mathbf{y}$" style="width:6px;height:7px;"> is a coefficient vector and expected to be sparse, i.e. the number of non-zero coefficients are few.</p><p>A non-separalbe oversampled lapped transform (NSOLT) can be used as a dictionary <img src="quickstart_eq07812796122435096599.png" alt="$\mathbf{D}$" style="width:8px;height:7px;"> and instantiated by using the following static factory method:</p><div><ul><li>saivdr.dictionary.nsoltx.NsoltFactory.createOvsdLpPuFb2d()</li></ul></div><p>In this deblurring demo, a pre-designed NSOLT is loaded from the following location:</p><div><ul><li>( <i>ROOT_OF_SAIVDR</i> )/examples/quickdesign/results/</li></ul></div><p>If you are interested in the design of NSOLT, please refer, for example, to the following function:</p><div><ul><li>( <i>ROOT_OF_SAIVDR</i> )/examples/quickdesign/main_quickdesign.m</li></ul></div><pre class="codeinput"><span class="comment">% Parameters for NSOLT</span>
+</pre><h2 id="5">Generate an observed image</h2><p>Then, let us generate an observed image <img src="quickstart_eq17274866754917724950.png" alt="$\mathbf{x}$"> by the DegradationSystem object, <i>dgrd</i> , created in the previous step.</p><pre class="codeinput">obsImg = dgrd.step(orgImg);
+</pre><h2 id="6">Create an NSOLT system object</h2><p>In order to restore the clearn image <img src="quickstart_eq04535311560566785116.png" alt="$\mathbf{u}$">, let us assume that <img src="quickstart_eq04535311560566785116.png" alt="$\mathbf{u}$"> is represented by a dictionary <img src="quickstart_eq09299661882284604251.png" alt="$\mathbf{D}$"> as</p><p><img src="quickstart_eq03408383060035347535.png" alt="$\mathbf{u} = \mathbf{Dy}$"> ,</p><p>where <img src="quickstart_eq06736311022754009248.png" alt="$\mathbf{y}$"> is a coefficient vector and expected to be sparse, i.e. the number of non-zero coefficients are few.</p><p>A non-separalbe oversampled lapped transform (NSOLT) can be used as a dictionary <img src="quickstart_eq09299661882284604251.png" alt="$\mathbf{D}$"> and instantiated by using the following static factory method:</p><div><ul><li>saivdr.dictionary.nsoltx.NsoltFactory.createOvsdLpPuFb2d()</li></ul></div><p>In this deblurring demo, a pre-designed NSOLT is loaded from the following location:</p><div><ul><li>( <i>ROOT_OF_SAIVDR</i> )/examples/quickdesign/results/</li></ul></div><p>If you are interested in the design of NSOLT, please refer, for example, to the following function:</p><div><ul><li>( <i>ROOT_OF_SAIVDR</i> )/examples/quickdesign/main_quickdesign.m</li></ul></div><pre class="codeinput"><span class="comment">% Parameters for NSOLT</span>
 nLevels = 4;     <span class="comment">% # of wavelet tree levels</span>
 nDecs   = [2 2]; <span class="comment">% Decimation factor</span>
 nChs    = [4 4]; <span class="comment">% # of channels</span>
@@ -404,7 +394,7 @@ synthesizer.UseGpu = false;
 analyzer    = NsoltFactory.createAnalysis2dSystem(nsolt);
 </pre><pre class="language-matlab"><span class="comment">% saivdr.dictionary.nsoltx.NsoltSynthesis2dSystem</span>
 synthesizer = NsoltFactory.createSynthesis2dSystem(nsolt);
-</pre><h2 id="10">Create an ISTA-based image restoration system object</h2><p>Let the <img src="quickstart_eq07491953565008501379.png" alt="$\ell_1$" style="width:7px;height:9px;">-norm of <img src="quickstart_eq01759449390978539805.png" alt="$\mathbf{y}$" style="width:6px;height:7px;">, i.e. <img src="quickstart_eq03981472617682197909.png" alt="$\|\mathbf{y}\|_1$" style="width:18px;height:10px;">, be the sparsity measure of the coefficients. Then, the debluring problem can be formulated as</p><p><img src="quickstart_eq04865511837010530479.png" alt="$\hat{\mathbf{y}} = \arg\min_{\mathbf{y}}\frac{1}{2}\|\mathbf{x}-\mathbf{PDy}\|_2^2+\lambda\|\mathbf{y}\|_1$" style="width:154px;height:12px;">.</p><p>Provided that the blur process <img src="quickstart_eq04341845410467366200.png" alt="$\mathbf{P}$" style="width:7px;height:7px;"> is known and given as a linear process, the iterative shrinkage/thresholding algorithm (ISTA) becomes applicable to solve the above problem. In <b>SaivDr Package</b>, image restoration with ISTA is implemented in the following class:</p><div><ul><li>saivdr.restoration.ista.IstaImRestoration</li></ul></div><pre class="codeinput"><span class="comment">% Instantiation of ISTA system object</span>
+</pre><h2 id="10">Create an ISTA-based image restoration system object</h2><p>Let the <img src="quickstart_eq10996442600953149981.png" alt="$\ell_1$">-norm of <img src="quickstart_eq06736311022754009248.png" alt="$\mathbf{y}$">, i.e. <img src="quickstart_eq12737726885462872258.png" alt="$\|\mathbf{y}\|_1$">, be the sparsity measure of the coefficients. Then, the debluring problem can be formulated as</p><p><img src="quickstart_eq00526511760216912485.png" alt="$\hat{\mathbf{y}} = \arg\min_{\mathbf{y}}\frac{1}{2}\|\mathbf{x}-\mathbf{PDy}\|_2^2+\lambda\|\mathbf{y}\|_1$">.</p><p>Provided that the blur process <img src="quickstart_eq01284226214242475479.png" alt="$\mathbf{P}$"> is known and given as a linear process, the iterative shrinkage/thresholding algorithm (ISTA) becomes applicable to solve the above problem. In <b>SaivDr Package</b>, image restoration with ISTA is implemented in the following class:</p><div><ul><li>saivdr.restoration.ista.IstaImRestoration</li></ul></div><pre class="codeinput"><span class="comment">% Instantiation of ISTA system object</span>
 import <span class="string">saivdr.restoration.ista.IstaImRestoration2d</span>
 lambda    = 0.00185;                      <span class="comment">% lambda</span>
 ista = IstaImRestoration2d(<span class="keyword">...</span>
@@ -434,62 +424,62 @@ stepmonitor = StepMonitoringSystem(<span class="keyword">...</span>
 
 <span class="comment">% Set the object to the ISTA system object</span>
 ista.StepMonitor = stepmonitor;
-</pre><h2 id="12">Perform ISTA-based image restoration</h2><p>STEP method of IstaImRestoration system object, <i>ista</i> , executes the ISTA-based image restoration to deblur the observed image. As the result, a restored image</p><p><img src="quickstart_eq00899684586602534243.png" alt="$\hat{\mathbf{u}} = \mathbf{D}\hat{\mathbf{y}}$" style="width:33px;height:9px;"></p><p>is obtained.</p><pre class="codeinput">fprintf(<span class="string">'\n ISTA'</span>)
+</pre><h2 id="12">Perform ISTA-based image restoration</h2><p>STEP method of IstaImRestoration system object, <i>ista</i> , executes the ISTA-based image restoration to deblur the observed image. As the result, a restored image</p><p><img src="quickstart_eq16006512858398645650.png" alt="$\hat{\mathbf{u}} = \mathbf{D}\hat{\mathbf{y}}$"></p><p>is obtained.</p><pre class="codeinput">fprintf(<span class="string">'\n ISTA'</span>)
 resImg = ista.step(obsImg); <span class="comment">% STEP method of IstaImRestoration</span>
 </pre><pre class="codeoutput">
  ISTA
-(   1)  PSNR =  27.20 [dB] 
-(   2)  PSNR =  27.94 [dB] 
-(   3)  PSNR =  28.38 [dB] 
-(   4)  PSNR =  28.68 [dB] 
-(   5)  PSNR =  28.90 [dB] 
-(   6)  PSNR =  29.07 [dB] 
-(   7)  PSNR =  29.21 [dB] 
-(   8)  PSNR =  29.32 [dB] 
-(   9)  PSNR =  29.41 [dB] 
-(  10)  PSNR =  29.49 [dB] 
-(  11)  PSNR =  29.56 [dB] 
-(  12)  PSNR =  29.61 [dB] 
-(  13)  PSNR =  29.67 [dB] 
-(  14)  PSNR =  29.71 [dB] 
-(  15)  PSNR =  29.75 [dB] 
-(  16)  PSNR =  29.78 [dB] 
-(  17)  PSNR =  29.82 [dB] 
-(  18)  PSNR =  29.84 [dB] 
-(  19)  PSNR =  29.87 [dB] 
-(  20)  PSNR =  29.89 [dB] 
-(  21)  PSNR =  29.91 [dB] 
-(  22)  PSNR =  29.93 [dB] 
-(  23)  PSNR =  29.95 [dB] 
-(  24)  PSNR =  29.96 [dB] 
-(  25)  PSNR =  29.98 [dB] 
-(  26)  PSNR =  29.99 [dB] 
-(  27)  PSNR =  30.00 [dB] 
-(  28)  PSNR =  30.02 [dB] 
-(  29)  PSNR =  30.03 [dB] 
-(  30)  PSNR =  30.04 [dB] 
-(  31)  PSNR =  30.04 [dB] 
-(  32)  PSNR =  30.05 [dB] 
-(  33)  PSNR =  30.06 [dB] 
-(  34)  PSNR =  30.06 [dB] 
-(  35)  PSNR =  30.07 [dB] 
-(  36)  PSNR =  30.08 [dB] 
-(  37)  PSNR =  30.08 [dB] 
-(  38)  PSNR =  30.09 [dB] 
-(  39)  PSNR =  30.09 [dB] 
-(  40)  PSNR =  30.09 [dB] 
-(  41)  PSNR =  30.10 [dB] 
-(  42)  PSNR =  30.10 [dB] 
-(  43)  PSNR =  30.10 [dB] 
-(  44)  PSNR =  30.11 [dB] 
-(  45)  PSNR =  30.11 [dB] 
-(  46)  PSNR =  30.11 [dB] 
-(  47)  PSNR =  30.11 [dB] 
-(  48)  PSNR =  30.12 [dB] 
-(  49)  PSNR =  30.12 [dB] 
-(  50)  PSNR =  30.12 [dB] 
-(  51)  PSNR =  30.12 [dB] 
-(  52)  PSNR =  30.12 [dB] 
+(   1)  PSNR =  27.21 [dB] 
+(   2)  PSNR =  27.95 [dB] 
+(   3)  PSNR =  28.39 [dB] 
+(   4)  PSNR =  28.69 [dB] 
+(   5)  PSNR =  28.92 [dB] 
+(   6)  PSNR =  29.09 [dB] 
+(   7)  PSNR =  29.23 [dB] 
+(   8)  PSNR =  29.34 [dB] 
+(   9)  PSNR =  29.43 [dB] 
+(  10)  PSNR =  29.51 [dB] 
+(  11)  PSNR =  29.58 [dB] 
+(  12)  PSNR =  29.64 [dB] 
+(  13)  PSNR =  29.69 [dB] 
+(  14)  PSNR =  29.74 [dB] 
+(  15)  PSNR =  29.78 [dB] 
+(  16)  PSNR =  29.82 [dB] 
+(  17)  PSNR =  29.85 [dB] 
+(  18)  PSNR =  29.88 [dB] 
+(  19)  PSNR =  29.90 [dB] 
+(  20)  PSNR =  29.93 [dB] 
+(  21)  PSNR =  29.95 [dB] 
+(  22)  PSNR =  29.97 [dB] 
+(  23)  PSNR =  29.99 [dB] 
+(  24)  PSNR =  30.00 [dB] 
+(  25)  PSNR =  30.02 [dB] 
+(  26)  PSNR =  30.03 [dB] 
+(  27)  PSNR =  30.05 [dB] 
+(  28)  PSNR =  30.06 [dB] 
+(  29)  PSNR =  30.07 [dB] 
+(  30)  PSNR =  30.08 [dB] 
+(  31)  PSNR =  30.09 [dB] 
+(  32)  PSNR =  30.10 [dB] 
+(  33)  PSNR =  30.11 [dB] 
+(  34)  PSNR =  30.11 [dB] 
+(  35)  PSNR =  30.12 [dB] 
+(  36)  PSNR =  30.13 [dB] 
+(  37)  PSNR =  30.13 [dB] 
+(  38)  PSNR =  30.14 [dB] 
+(  39)  PSNR =  30.14 [dB] 
+(  40)  PSNR =  30.15 [dB] 
+(  41)  PSNR =  30.15 [dB] 
+(  42)  PSNR =  30.15 [dB] 
+(  43)  PSNR =  30.16 [dB] 
+(  44)  PSNR =  30.16 [dB] 
+(  45)  PSNR =  30.16 [dB] 
+(  46)  PSNR =  30.16 [dB] 
+(  47)  PSNR =  30.17 [dB] 
+(  48)  PSNR =  30.17 [dB] 
+(  49)  PSNR =  30.17 [dB] 
+(  50)  PSNR =  30.17 [dB] 
+(  51)  PSNR =  30.17 [dB] 
+(  52)  PSNR =  30.17 [dB] 
 </pre><img vspace="5" hspace="5" src="quickstart_02.png" alt=""> <h2 id="13">Extract the final evaluation</h2><p>The object of StepMonitoringSystem, <i>stepmonitor</i> , stores the evaluation values calculated iteratively in ISTA as a vector. The GET method of <i>stepmonitor</i>  can be used to extract the number of iterations and the sequence of PSNRs.</p><pre class="codeinput">nItr  = stepmonitor.nItr;
 psnrs = stepmonitor.PSNRs;
 psnr_ista = psnrs(nItr);
@@ -517,7 +507,7 @@ fprintf(<span class="string">'\n Wiener'</span>)
 psnr_wfdc = stepmonitor.step(wnfImg); <span class="comment">% STEP method of StepMonitoringSystem</span>
 </pre><pre class="codeoutput">
  Wiener
-(   1)  PSNR =  25.56 [dB] 
+(   1)  PSNR =  25.51 [dB] 
 </pre><h2 id="15">Compare deblurring performances</h2><p>In order to compare the deblurring performances between two methods, ISTA-based deblurring with NSOLT and Wiener filter, let us show the original, observed and two results in one figure together.</p><pre class="codeinput">hfig3 = figure(3);
 
 <span class="comment">% Original image x</span>
@@ -542,6 +532,34 @@ title([<span class="string">'{\bf u}\^ by Wiener: '</span> num2str(psnr_wfdc) <s
 </pre><img vspace="5" hspace="5" src="quickstart_03.png" alt=""> <h2 id="16">Release notes</h2><p>RELEASENOTES.txt contains release notes on <b>SaivDr Package</b>.</p><pre class="codeinput">type(<span class="string">'RELEASENOTES.txt'</span>)
 </pre><pre class="codeoutput">
 * Release notes on Sparsity-Aware Image and Volumetric Data Restoration Package
+
+- SaivDr20210924
+-- (Minor) Revised to switch implicit expansion codes
+--- saidr.dcnn.mexsrcs.*
+-- (Minor) Excluded MEX code generation for GPU device (Due to a defect) 
+--- mybuild.m
+
+- SaivDr20210627
+-- (Minor) Revised GPU implementation
+--- saivdr.dcnn.nsoltBlockDct2dLayer
+--- saivdr.dcnn.nsoltBlockIdct2dLayer
+--- saivdr.dcnn.nsoltBlockDct3dLayer
+--- saivdr.dcnn.nsoltBlockIdct2dLayer
+-- (Minor) Revised code generation when no GPU device is available
+--- saivdr.dcnn.mexsrcs.*
+-- (Minor) Revised to avoid erros when no GPU device is available
+--- saivdrrestoration.AbstOlsOlaProcess
+
+- SaivDr20210620
+-- (Major) GPU Coder support in some modules
+--- mybuild.m
+--- saivdr.dcnn.mexsrcs
+-- (Major) Added some PyTorch modules
+--- appendix/torch_nsolt
+--- examples/dcnn
+-- (Minor) Added new sample codes
+--- examples/dcnn/main_nsolt_diclrn_tree_rgb.mlx
+--- examples/dcnn/main_nsolt_sisr_rgb.mlx
 
 - SaivDr20200903
 -- (Major) Created custom layer classes for Deep Learning Toolbox
@@ -685,7 +703,7 @@ title([<span class="string">'{\bf u}\^ by Wiener: '</span> num2str(psnr_wfdc) <s
   For now, this problem is avoided by running PARPOOL before running MYTEST.
 
 ---
-</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
+</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2021b</a><br></p></div><!--
 ##### SOURCE BEGIN #####
 %% Quickstart of *SaivDr Package*
 % A brief introduction to image restroation with *SaivDr Package*
@@ -704,7 +722,7 @@ title([<span class="string">'{\bf u}\^ by Wiener: '</span> num2str(psnr_wfdc) <s
 % <https://sigport.org/documents/multidimensional-nonseparable-oversampled-lapped-transforms-theory-and-design non-separable oversampled lapped transform ( *NSOLTs* )> , which allows for 
 % convolutional layers with
 % 
-% * Parseval tight 
+% * Parseval tight (paraunitary), 
 % * Symmetric and
 % * Multiresolution 
 %

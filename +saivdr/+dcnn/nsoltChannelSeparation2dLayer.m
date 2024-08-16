@@ -58,7 +58,13 @@ classdef nsoltChannelSeparation2dLayer < nnet.layer.Layer %#codegen
             %Z1 = X(:,:,1,:);
             %Z2 = X(:,:,2:end,:);
             Zac = permute(X(2:end,:,:,:),[2 3 1 4]);            
-            Zdc = permute(X(1,:,:,:),[2 3 1 4]);            
+            Zdc = permute(X(1,:,:,:),[2 3 1 4]);           
+            
+            if isdlarray(X)
+                Zac = dlarray(Zac,'SSCB');
+                Zdc = dlarray(Zdc,'SSCB');
+            end
+
         end
         
         function dLdX = backward(~, ~, ~, ~, dLdZac,dLdZdc,~)

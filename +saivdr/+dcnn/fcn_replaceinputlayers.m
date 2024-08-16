@@ -15,6 +15,7 @@ function [analysislgraph, synthesislgraph] = fcn_replaceinputlayers(analysislgra
 % http://msiplab.eng.niigata-u.ac.jp/
 %
 import saivdr.dcnn.*
+warning('Deprecated')
 
 % Analysis layer graph
 if ~isempty(analysislgraph)
@@ -24,29 +25,35 @@ if ~isempty(analysislgraph)
 end
 
 % Synthesis layer graph
+expfinallayer = '^Lv1_Cmp1+_V0~$';
+expidctlayer = '^Lv\d+_E0~$';
 if ~isempty(synthesislgraph)
     nLayers = length(synthesislgraph.Layers);
     nLevels = 0;
     for iLayer = 1:nLayers
-        layerName = synthesislgraph.Layers(iLayer).Name;
-        if contains(layerName,'_E0~')
+        layer = synthesislgraph.Layers(iLayer);
+        layerName = layer.Name;
+        if ~isempty(regexp(layerName,expidctlayer,'once'))
             nLevels = nLevels + 1;
+            if nLevels == 1
+                nComponents  = layer.NumInputs;
+            end
         end
-        if contains(layerName,'Lv1_V0~')
-            nChannels = synthesislgraph.Layers(iLayer).NumberOfChannels;
-            decFactor = synthesislgraph.Layers(iLayer).DecimationFactor;
+        if ~isempty(regexp(layerName,expfinallayer,'once'))
+            nChannels = layer.NumberOfChannels;
+            decFactor = layer.DecimationFactor;
         end
     end
     
     for iLv = 1:nLevels
         synthesislgraph = synthesislgraph.replaceLayer(...
             ['Lv' num2str(iLv) '_AcIn'],...
-            imageInputLayer([imagesize./(decFactor.^iLv) (sum(nChannels)-1)],...
-            'Name',['Lv' num2str(iLv) ' subband detail images'],'Normalization','none'));
+            imageInputLayer([imagesize./(decFactor.^iLv) nComponents*(sum(nChannels)-1)],...
+            'Name',['Lv' num2str(iLv) '_Ac feature input'],'Normalization','none'));
     end
     synthesislgraph = synthesislgraph.replaceLayer(...
         ['Lv' num2str(nLevels) '_DcIn'],...
-        imageInputLayer([imagesize./(decFactor.^nLevels) 1],...
-        'Name',['Lv' num2str(nLevels) ' subband approximation image'],'Normalization','none'));
+        imageInputLayer([imagesize./(decFactor.^nLevels) nComponents],...
+        'Name',['Lv' num2str(nLevels) '_Dc feature input'],'Normalization','none'));
 end
 end

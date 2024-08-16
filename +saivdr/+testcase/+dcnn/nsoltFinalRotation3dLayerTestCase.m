@@ -9,7 +9,7 @@ classdef nsoltFinalRotation3dLayerTestCase < matlab.unittest.TestCase
     %
     % Requirements: MATLAB R2020a
     %
-    % Copyright (c) 2020, Shogo MURAMATSU
+    % Copyright (c) 2020-2021, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -163,6 +163,60 @@ classdef nsoltFinalRotation3dLayerTestCase < matlab.unittest.TestCase
                 IsEqualTo(expctdZ,'Within',tolObj));
             
         end
+        
+        %{        
+        function testPredictGrayscaleWithDlarrayAngles(testCase, ...
+                nchs, stride, nrows, ncols, nlays, datatype)
+            
+            import matlab.unittest.constraints.IsEqualTo
+            import matlab.unittest.constraints.AbsoluteTolerance
+            tolObj = AbsoluteTolerance(1e-6,single(1e-6));
+            import saivdr.dictionary.utility.*
+            genW = OrthonormalMatrixGenerationSystem();
+            genU = OrthonormalMatrixGenerationSystem();
+            
+            % Parameters
+            nSamples = 8;
+            nDecs = prod(stride);
+            nChsTotal = sum(nchs);
+            % nChs x nRows x nCols x nLays x nSamples
+            %X = randn(nrows,ncols,nlays,sum(nchs),nSamples,datatype);
+            X = randn(sum(nchs),nrows,ncols,nlays,nSamples,datatype);
+            angles = randn((nChsTotal-2)*nChsTotal/4,1);
+            
+            % Expected values
+            % nDecs x nRows x nCols x nLays x nSamples
+            ps = nchs(1);
+            pa = nchs(2);
+            W0T = transpose(genW.step(angles(1:length(angles)/2),1));
+            U0T = transpose(genU.step(angles(length(angles)/2+1:end),1));
+            Y = X; %permute(X,[4 1 2 3 5]);
+            Ys = reshape(Y(1:ps,:,:,:,:),ps,nrows*ncols*nlays*nSamples);
+            Ya = reshape(Y(ps+1:ps+pa,:,:,:,:),pa,nrows*ncols*nlays*nSamples);
+            Zsa = [ W0T(1:ceil(nDecs/2),:)*Ys; U0T(1:floor(nDecs/2),:)*Ya ];
+            %expctdZ = ipermute(reshape(Zsa,nDecs,nrows,ncols,nlays,nSamples),...
+            %    [4 1 2 3 5]);
+            expctdZ = dlarray(reshape(Zsa,nDecs,nrows,ncols,nlays,nSamples));
+            
+            % Instantiation of target class
+            import saivdr.dcnn.*
+            layer = nsoltFinalRotation3dLayer(...
+                'NumberOfChannels',nchs,...
+                'DecimationFactor',stride,...
+                'Name','V0~');
+            
+            % Actual values
+            layer.Angles = dlarray(angles);
+            actualZ = layer.predict(X);
+            
+            % Evaluation
+            testCase.verifyInstanceOf(actualZ,'dlarray');
+            testCase.verifyEqual(actualZ.underlyingType,datatype);
+            testCase.verifyThat(actualZ,...
+                IsEqualTo(expctdZ,'Within',tolObj));
+            
+        end
+        %}
         
         function testPredictGrayscaleWithRandomAnglesNoDcLeackage(testCase, ...
                 nchs, stride, nrows, ncols, nlays, mus, datatype)

@@ -3,7 +3,7 @@ function [fcnhandler,flag] = fcn_build_gradevalsteps2d()
 %
 % Requirements: MATLAB R2015b
 %
-% Copyright (c) 2015-2021, Shogo MURAMATSU
+% Copyright (c) 2015-2023, Shogo MURAMATSU
 %
 % All rights reserved.
 %
@@ -14,6 +14,7 @@ function [fcnhandler,flag] = fcn_build_gradevalsteps2d()
 %
 % http://msiplab.eng.niigata-u.ac.jp/
 %
+isOlderThanR2023b = isMATLABReleaseOlderThan("R2023b"); % 'DynamicMemoryAllocation' -> 'EnableDynamicMemoryAllocation' と 'DynamicMemoryAllocationThreshold'
 
 bsfname = 'fcn_GradEvalSteps2dCodeGen';
 mexname = sprintf('%s_mex',bsfname);
@@ -41,10 +42,15 @@ if license('checkout','matlab_coder') % Coder is available
         aNdc      = coder.typeof(logical(0),1,0); %#ok
         % build mex
         cfg = coder.config('mex');
-        cfg.DynamicMemoryAllocation = 'AllVariableSizeArrays';%'Threshold';%'Off';
+        if isOlderThanR2023b
+            cfg.DynamicMemoryAllocation = 'AllVariableSizeArrays';%'Threshold';%'Off';
+        else
+            cfg.EnableDynamicMemoryAllocation = true;
+            cfg.DynamicMemoryAllocationThreshold = 2000000000; % in bytes
+        end
         cfg.GenerateReport = true;
         args = '{ aCoefsB, aCoefsC, aScale, aPmCoefs, aAngs, aMus, aNch, aOrd, aFpe, aNdc }';
-        seval = [ 'codegen -config cfg ' ' -o ' outputdir '/' mexname ' ' ...
+        seval = [ 'codegen -config cfg ' ' -o ''' outputdir '/' mexname ''' ' ...
             packagedir '/' bsfname '.m -args ' args];
         
         disp(seval)

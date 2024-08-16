@@ -24,10 +24,14 @@ classdef nsoltIdentityLayer < nnet.layer.Layer %#codegen
             % This function must have the same name as the class.
             p = inputParser;
             addParameter(p,'Name','')
+            %addParameter(p,'InputNames',{'in'});
+            %addParameter(p,'OutputNames',{'out'});
             parse(p,varargin{:})
             
             % Layer constructor function goes here.
             layer.Name = p.Results.Name;
+            %layer.InputNames = p.Results.InputNames;
+            %layer.OutputNames = p.Results.OutputNames;
             layer.Description =  "Identity";
             layer.Type = '';
             

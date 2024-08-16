@@ -35,7 +35,7 @@ classdef GaussianDenoiserBm4d < saivdr.restoration.denoiser.AbstGaussianDenoiseS
             setProperties(obj,nargin,varargin{:});
             if exist('bm4d','dir') ~= 7 || exist('bm4d','file') ~= 2
                 disp('Downloading and unzipping BM4D_v3p2.zip...')
-                url = 'http://www.cs.tut.fi/%7Efoi/GCF-BM3D/BM4D_v3p2.zip';
+                url = 'https://webpages.tuni.fi/foi/GCF-BM3D/BM4D_v3p2.zip';
                 disp(url)
                 unzip(url,'./bm4d')
                 addpath('./bm4d')                

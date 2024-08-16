@@ -14,18 +14,28 @@ classdef nsoltIntermediateRotation2dLayer < nnet.layer.Layer %#codegen
     %
     % http://msiplab.eng.niigata-u.ac.jp/
     
-    
     properties
         % (Optional) Layer properties.
         NumberOfChannels
-        Mus
         Mode
-        
-        % Layer properties go here.
     end
     
-    properties (Learnable)
+    properties (Dependent)
+        Mus
+    end
+    
+    properties (Learnable,Dependent)
         Angles
+    end
+    
+    properties (Access = private)
+        PrivateAngles
+        PrivateMus
+        isUpdateRequested
+    end
+    
+    properties (Hidden)
+        Un
     end
     
     methods
@@ -53,11 +63,13 @@ classdef nsoltIntermediateRotation2dLayer < nnet.layer.Layer %#codegen
                 + layer.NumberOfChannels(2) + ")";
             layer.Type = '';
             
-            if isempty(layer.Angles)
-                nChsTotal = sum(layer.NumberOfChannels);
-                nAngles = (nChsTotal-2)*nChsTotal/8;
-                layer.Angles = zeros(nAngles,1);
+            nChsTotal = sum(layer.NumberOfChannels);
+            nAngles = (nChsTotal-2)*nChsTotal/8;
+            if length(layer.PrivateAngles)~=nAngles
+                error('Invalid # of angles')
             end
+            
+            layer = layer.updateParameters();
             
         end
         
@@ -71,31 +83,24 @@ classdef nsoltIntermediateRotation2dLayer < nnet.layer.Layer %#codegen
             % Outputs:
             %         Z           - Outputs of layer forward function
             %  
-            import saivdr.dcnn.*
             
             % Layer forward function for prediction goes here.
-            %nrows = size(X,1);
-            %ncols = size(X,2);
             nrows = size(X,2);
             ncols = size(X,3);            
             ps = layer.NumberOfChannels(1);
             pa = layer.NumberOfChannels(2);
             nSamples = size(X,4);
             %
-            if isempty(layer.Mus)
-                musU = 1;
-            else
-                musU = layer.Mus;
+            if layer.isUpdateRequested
+                layer = layer.updateParameters();
             end
-            anglesU = layer.Angles;
-            Un = fcn_orthmtxgen(anglesU,musU);
-            %
+            Un_ = layer.Un;
             Y = X; %permute(X,[3 1 2 4]);
             Ya = reshape(Y(ps+1:ps+pa,:,:,:),pa,nrows*ncols*nSamples);
             if strcmp(layer.Mode,'Analysis')
-                Za = Un*Ya;
+                Za = Un_*Ya;
             elseif strcmp(layer.Mode,'Synthesis')
-                Za = Un.'*Ya;
+                Za = Un_.'*Ya;
             else
                 throw(MException('NsoltLayer:InvalidMode',...
                     '%s : Mode should be either of Synthesis or Analysis',...
@@ -105,8 +110,7 @@ classdef nsoltIntermediateRotation2dLayer < nnet.layer.Layer %#codegen
             Z = Y; %ipermute(Y,[3 1 2 4]);
         end
         
-        function [dLdX, dLdW] = ...
-                backward(layer, X, ~, dLdZ, ~)
+        function [dLdX, dLdW] = backward(layer, X, ~, dLdZ, ~)
             % (Optional) Backward propagate the derivative of the loss  
             % function through the layer.
             %
@@ -121,53 +125,118 @@ classdef nsoltIntermediateRotation2dLayer < nnet.layer.Layer %#codegen
             %                             inputs
             %         dLdW1, ..., dLdWk - Derivatives of the loss with respect to each
             %                             learnable parameter
-            import saivdr.dcnn.*
-            %nrows = size(dLdZ,1);
-            %ncols = size(dLdZ,2);
+            %import saivdr.dcnn.get_fcn_orthmtxgen_diff
+            
+            % Layer backward function goes here.            
             nrows = size(dLdZ,2);
             ncols = size(dLdZ,3);
-            nSamples = size(dLdZ,4);            
-            anglesU = layer.Angles;
-            musU = layer.Mus;
             ps = layer.NumberOfChannels(1);
-            pa = layer.NumberOfChannels(2);
+            pa = layer.NumberOfChannels(2);            
+            nSamples = size(dLdZ,4);
+            %
+            if layer.isUpdateRequested
+                layer = layer.updateParameters();
+            end
+            anglesU = layer.PrivateAngles;
+            musU = cast(layer.PrivateMus,'like',anglesU);
             
-            % Layer backward function goes here.
             % dLdX = dZdX x dLdZ
             %Un = fcn_orthmtxgen(anglesU,musU,0);
-            [Un,dUnPst,dUnPre] = fcn_orthmtxgen_diff(anglesU,musU,0,[],[]);
-            adLd_ = dLdZ; %permute(dLdZ,[3 1 2 4]);
-            cdLd_low = reshape(adLd_(ps+1:ps+pa,:,:,:),...
+            %[Un_,dUnPst,dUnPre] = fcn_orthmtxgen_diff(anglesU,musU,0,[],[]);
+            Un_ = layer.Un;
+            dUnPst = bsxfun(@times,musU(:),Un_);
+            dUnPre = eye(pa,'like',Un_);
+            %
+            dLdX = dLdZ; %permute(dLdZ,[3 1 2 4]);
+            cdLd_low = reshape(dLdZ(ps+1:ps+pa,:,:,:),...
                 pa,nrows*ncols*nSamples);
             if strcmp(layer.Mode,'Analysis')
-                cdLd_low = Un.'*cdLd_low;                
+                cdLd_low = Un_.'*cdLd_low;
             else
-                cdLd_low = Un*cdLd_low;                
+                cdLd_low = Un_*cdLd_low;
             end
-            adLd_(ps+1:ps+pa,:,:,:) = reshape(cdLd_low,...
+            dLdX(ps+1:ps+pa,:,:,:) = reshape(cdLd_low,...
                 pa,nrows,ncols,nSamples);
-            dLdX = adLd_; %ipermute(adLd_,[3 1 2 4]);
+            %dLdX = dLdX; %ipermute(adLd_,[3 1 2 4]);
             
             % dLdWi = <dLdZ,(dVdWi)X>
+            fcn_orthmtxgen_diff = saivdr.dcnn.get_fcn_orthmtxgen_diff(anglesU);
             nAngles = length(anglesU);
             dLdW = zeros(nAngles,1,'like',dLdZ);
-            for iAngle = 1:nAngles
-                %dUn = fcn_orthmtxgen(anglesU,musU,iAngle);
-                [dUn,dUnPst,dUnPre] = fcn_orthmtxgen_diff(anglesU,musU,iAngle,dUnPst,dUnPre);
-                a_ = X; % permute(X,[3 1 2 4]);
-                c_low = reshape(a_(ps+1:ps+pa,:,:,:),pa,nrows*ncols*nSamples);
-                if strcmp(layer.Mode,'Analysis')                
-                    c_low = dUn*c_low;
-                else
-                    c_low = dUn.'*c_low;
+            dVdW_X = zeros(size(X),'like',dLdZ);
+            if isgpuarray(X)
+                x_low = X(ps+1:ps+pa,:,:,:);
+                for iAngle = uint32(1:nAngles)
+                    [dUn,dUnPst,dUnPre] = fcn_orthmtxgen_diff(anglesU,musU,iAngle,dUnPst,dUnPre);
+                    if strcmp(layer.Mode,'Analysis')
+                        dVdW_X(ps+1:ps+pa,:,:,:) = ...
+                            pagefun(@mtimes,dUn,x_low);
+                    else
+                        dVdW_X(ps+1:ps+pa,:,:,:) = ...
+                            pagefun(@mtimes,dUn.',x_low);
+                    end
+                    dLdW(iAngle) = sum(bsxfun(@times,dLdZ,dVdW_X),'all');
                 end
-                a_ = zeros(size(a_),'like',dLdZ);
-                a_(ps+1:ps+pa,:,:,:) = reshape(c_low,pa,nrows,ncols,nSamples);
-                dVdW_X = a_; %ipermute(a_,[3 1 2 4]);
-                %
-                dLdW(iAngle) = sum(dLdZ.*dVdW_X,'all');
+            else
+                x_low = reshape(X(ps+1:ps+pa,:,:,:),pa,[]);
+                for iAngle = uint32(1:nAngles)
+                    [dUn,dUnPst,dUnPre] = fcn_orthmtxgen_diff(anglesU,musU,iAngle,dUnPst,dUnPre);
+                    
+                    if strcmp(layer.Mode,'Analysis')
+                        c_low = dUn*x_low;
+                    else
+                        c_low = dUn.'*x_low;
+                    end
+                    dVdW_X(ps+1:ps+pa,:,:,:) = reshape(c_low,pa,nrows,ncols,nSamples);
+                    dLdW(iAngle) = sum(bsxfun(@times,dLdZ,dVdW_X),'all');
+                end
             end
-        end        
+        end
+        
+        function angles = get.Angles(layer)
+            angles = layer.PrivateAngles;
+        end
+        
+        function mus = get.Mus(layer)
+            mus = layer.PrivateMus;
+        end
+        
+        function layer = set.Angles(layer,angles)
+            nChsTotal = sum(layer.NumberOfChannels);
+            nAngles = (nChsTotal-2)*nChsTotal/8;
+            if isempty(angles)
+                angles = zeros(nAngles,1);
+            elseif isscalar(angles)
+                angles = angles*ones(nAngles,1,'like',angles);   
+            end
+            %
+            layer.PrivateAngles = angles;
+            %layer = layer.updateParameters();
+            layer.isUpdateRequested = true;
+        end
+        
+        function layer = set.Mus(layer,mus)
+            pa = layer.NumberOfChannels(2);
+            if isempty(mus)
+                mus = ones(pa,1);   
+            elseif isscalar(mus)
+                mus = mus*ones(pa,1,'like',mus);   
+            end
+            %
+            layer.PrivateMus = mus;
+            %layer = layer.updateParameters();
+            layer.isUpdateRequested = true;
+        end
+        
+        function layer = updateParameters(layer)
+            %import saivdr.dcnn.get_fcn_orthmtxgen
+            anglesU = layer.PrivateAngles;
+            musU = cast(layer.PrivateMus,'like',anglesU);
+            fcn_orthmtxgen = saivdr.dcnn.get_fcn_orthmtxgen(anglesU);
+            layer.Un = fcn_orthmtxgen(anglesU,musU);
+            layer.isUpdateRequested = false;
+        end
+        
     end
 
 end

@@ -164,6 +164,59 @@ classdef nsoltFinalRotation2dLayerTestCase < matlab.unittest.TestCase
             
         end
         
+        %{
+        function testPredictGrayscaleWithDlarrayAngles(testCase, ...
+                nchs, stride, nrows, ncols, datatype)
+            
+            import matlab.unittest.constraints.IsEqualTo
+            import matlab.unittest.constraints.AbsoluteTolerance
+            tolObj = AbsoluteTolerance(1e-6,single(1e-6));
+            import saivdr.dictionary.utility.*
+            genW = OrthonormalMatrixGenerationSystem();
+            genU = OrthonormalMatrixGenerationSystem();
+            
+            % Parameters
+            nSamples = 8;
+            nDecs = prod(stride);
+            nChsTotal = sum(nchs);
+            % nChs x nRows x nCols x nSamples
+            X = randn(sum(nchs),nrows,ncols,nSamples,datatype);
+            angles = randn((nChsTotal-2)*nChsTotal/4,1);
+            
+            % Expected values
+            % nDecs x nRows x nCols x nSamples
+            ps = nchs(1);
+            pa = nchs(2);
+            W0T = transpose(genW.step(angles(1:length(angles)/2),1));
+            U0T = transpose(genU.step(angles(length(angles)/2+1:end),1));
+            Y = X; %permute(X,[3 1 2 4]);
+            Ys = reshape(Y(1:ps,:,:,:),ps,nrows*ncols*nSamples);
+            Ya = reshape(Y(ps+1:ps+pa,:,:,:),pa,nrows*ncols*nSamples);
+            Zsa = [ W0T(1:ceil(nDecs/2),:)*Ys; U0T(1:floor(nDecs/2),:)*Ya ];
+            %expctdZ = ipermute(reshape(Zsa,nDecs,nrows,ncols,nSamples),...
+            %    [3 1 2 4]);
+            expctdZ = dlarray(reshape(Zsa,nDecs,nrows,ncols,nSamples));
+            
+            % Instantiation of target class
+            import saivdr.dcnn.*
+            layer = nsoltFinalRotation2dLayer(...
+                'NumberOfChannels',nchs,...
+                'DecimationFactor',stride,...
+                'Name','V0~');
+            
+            % Actual values
+            layer.Angles = dlarray(angles);
+            actualZ = layer.predict(X);
+            
+            % Evaluation
+            testCase.verifyInstanceOf(actualZ,'dlarray');
+            testCase.verifyEqual(actualZ.underlyingType,datatype);
+            testCase.verifyThat(actualZ,...
+                IsEqualTo(expctdZ,'Within',tolObj));
+            
+        end
+        %}
+        
         function testPredictGrayscaleWithRandomAnglesNoDcLeackage(testCase, ...
                 nchs, stride, nrows, ncols, mus, datatype)
             

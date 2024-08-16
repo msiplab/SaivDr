@@ -59,6 +59,12 @@ classdef nsoltChannelSeparation3dLayer < nnet.layer.Layer
             %Z2 = X(:,:,:,2:end,:);
             Zac = permute(X(2:end,:,:,:,:),[2 3 4 1 5]);            
             Zdc = permute(X(1,:,:,:,:),[2 3 4 1 5]);
+            
+            if isdlarray(X)
+                Zac = dlarray(Zac,'SSSCB');
+                Zdc = dlarray(Zdc,'SSSCB');
+            end            
+            
         end
         
         function dLdX = backward(~, ~,~,~, dLdZac,dLdZdc, ~)
