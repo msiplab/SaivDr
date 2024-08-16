@@ -4,7 +4,7 @@ classdef BlurSystem < ...
     %   
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2014-2017, Shogo MURAMATSU
+    % Copyright (c) 2014-2024, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -13,7 +13,7 @@ classdef BlurSystem < ...
     %                8050 2-no-cho Ikarashi, Nishi-ku,
     %                Niigata, 950-2181, JAPAN
     %
-    % http://msiplab.eng.niigata-u.ac.jp/    
+    % https://www.eng.niigata-u.ac.jp/~msiplab/    
     %       
     properties (Nontunable)
         BlurType = 'Identical'
@@ -143,8 +143,11 @@ classdef BlurSystem < ...
                                 2*ceil(4*obj.SigmaOfGaussianKernel)+1;
                         end
                         hs = (obj.SizeOfKernel-1)/2;
+                        if isscalar(hs)
+                            hs = hs*ones(1,3);
+                        end
                         sg = obj.SigmaOfGaussianKernel;
-                        [ X, Y, Z ] = meshgrid(-hs:hs,-hs:hs,-hs:hs);
+                        [ X, Y, Z ] = meshgrid(-hs(1):hs(1),-hs(2):hs(2),-hs(3):hs(3));
                         kernel_ = exp(-(X.^2+Y.^2+Z.^2)/(2*sg^2));
                         obj.BlurKernel = kernel_/sum(kernel_(:));
                     case {'Custom'}

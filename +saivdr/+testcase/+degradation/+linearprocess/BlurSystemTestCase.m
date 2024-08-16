@@ -3,7 +3,7 @@ classdef BlurSystemTestCase < matlab.unittest.TestCase
     %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2014-2017, Shogo MURAMATSU
+    % Copyright (c) 2014-2024, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -12,7 +12,7 @@ classdef BlurSystemTestCase < matlab.unittest.TestCase
     %                8050 2-no-cho Ikarashi, Nishi-ku,
     %                Niigata, 950-2181, JAPAN
     %
-    % http://msiplab.eng.niigata-u.ac.jp/    
+    % https://www.eng.niigata-u.ac.jp/~msiplab/    
     %
     properties
         linearproc
@@ -972,7 +972,7 @@ classdef BlurSystemTestCase < matlab.unittest.TestCase
             sigmaOfKernel = 2.0;            
             sizeOfKernel = [3 3 3];
             hs = (sizeOfKernel-1)/2;
-            [ X, Y, Z ] = meshgrid(-hs:hs,-hs:hs,-hs:hs);            
+            [ X, Y, Z ] = meshgrid(-hs(1):hs(1),-hs(2):hs(2),-hs(3):hs(3));            
             kernel = exp(-(X.^2+Y.^2+Z.^2)/(2*sigmaOfKernel^2));
             kernel = kernel/sum(kernel(:));
 
@@ -1056,7 +1056,7 @@ classdef BlurSystemTestCase < matlab.unittest.TestCase
             sizeOfKernel = [3 3 3];
             sigmaOfKernel = 1;
             hs = (sizeOfKernel-1)/2;
-            [ X, Y, Z ] = meshgrid(-hs:hs,-hs:hs,-hs:hs);
+            [ X, Y, Z ] = meshgrid(-hs(1):hs(1),-hs(2):hs(2),-hs(3):hs(3));
             kernel = exp(-(X.^2+Y.^2+Z.^2)/(2*sigmaOfKernel^2));
             kernel = kernel/sum(kernel(:));
             

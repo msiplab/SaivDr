@@ -4,7 +4,7 @@ classdef DecimationSystem < ...
     %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2014-2017, Shogo MURAMATSU
+    % Copyright (c) 2014-2024, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -13,7 +13,7 @@ classdef DecimationSystem < ...
     %                8050 2-no-cho Ikarashi, Nishi-ku,
     %                Niigata, 950-2181, JAPAN
     %
-    % http://msiplab.eng.niigata-u.ac.jp/
+    % https://www.eng.niigata-u.ac.jp/~msiplab/
     %
     properties (Nontunable)
         HorizontalDecimationFactor = 2;
@@ -151,7 +151,10 @@ classdef DecimationSystem < ...
                         end
                         hs = (obj.SizeOfGaussianKernel-1)/2;
                         sg = obj.SigmaOfGaussianKernel;
-                        [ X, Y, Z ] = meshgrid(-hs:hs,-hs:hs,-hs:hs);
+                        if isscalar(hs)
+                            hs = hs*ones(3,1);
+                        end
+                        [ X, Y, Z ] = meshgrid(-hs(1):hs(1),-hs(2):hs(2),-hs(3):hs(3));
                         kernel_ = exp(-(X.^2+Y.^2+Z.^2)/(2*sg^2));
                         obj.blurKernel = kernel_/sum(kernel_(:));
                     case {'Custom'}

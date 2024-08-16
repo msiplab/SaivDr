@@ -3,7 +3,7 @@ classdef DecimationSystemTestCase < matlab.unittest.TestCase
     %
     % Requirements: MATLAB R2015b
     %
-    % Copyright (c) 2014-2017, Shogo MURAMATSU
+    % Copyright (c) 2014-2024, Shogo MURAMATSU
     %
     % All rights reserved.
     %
@@ -12,7 +12,7 @@ classdef DecimationSystemTestCase < matlab.unittest.TestCase
     %                8050 2-no-cho Ikarashi, Nishi-ku,
     %                Niigata, 950-2181, JAPAN
     %
-    % http://msiplab.eng.niigata-u.ac.jp/    
+    % https://www.eng.niigata-u.ac.jp/~msiplab/    
     %
     properties
         linearproc
@@ -707,7 +707,7 @@ classdef DecimationSystemTestCase < matlab.unittest.TestCase
             if isFileForLmax
                 delete(fname)
             end
-            lmax = lmaxExpctd; %#ok
+            lmax = lmaxExpctd; 
             save(fname,'lmax');
             
             % Instantiation of target class
@@ -1163,7 +1163,7 @@ classdef DecimationSystemTestCase < matlab.unittest.TestCase
             sizeOfKernel = 4*dFactor + 1;
             sigmaOfKernel = max(dFactor);%(max(dFactor)/pi)*sqrt(2*log(2));
             hs = (sizeOfKernel-1)/2;
-            [ X, Y, Z ] = meshgrid(-hs:hs,-hs:hs,-hs:hs);            
+            [ X, Y, Z ] = meshgrid(-hs(1):hs(1),-hs(2):hs(2),-hs(3):hs(3));            
             kernel = exp(-(X.^2+Y.^2+Z.^2)/(2*sigmaOfKernel^2));
             kernel = kernel/sum(kernel(:));
 
@@ -1212,7 +1212,7 @@ classdef DecimationSystemTestCase < matlab.unittest.TestCase
             sizeOfKernel = 4*dFactor + 1;
             sigmaOfKernel = max(dFactor);%(max(dFactor)/pi)*sqrt(2*log(2));
             hs = (sizeOfKernel-1)/2;
-            [ X, Y, Z ] = meshgrid(-hs:hs,-hs:hs,-hs:hs);
+            [ X, Y, Z ] = meshgrid(-hs(1):hs(1),-hs(2):hs(2),-hs(3):hs(3));
             kernel = exp(-(X.^2+Y.^2+Z.^2)/(2*sigmaOfKernel^2));
             kernel = kernel/sum(kernel(:));
             
@@ -1264,7 +1264,7 @@ classdef DecimationSystemTestCase < matlab.unittest.TestCase
             sizeOfKernel = 4*dFactor + 1;
             sigmaOfKernel = max(dFactor);%(max(dFactor)/pi)*sqrt(2*log(2));
             hs = (sizeOfKernel-1)/2;
-            [ X, Y, Z ] = meshgrid(-hs:hs,-hs:hs,-hs:hs);
+            [ X, Y, Z ] = meshgrid(-hs(1):hs(1),-hs(2):hs(2),-hs(3):hs(3));
             kernel = exp(-(X.^2+Y.^2+Z.^2)/(2*sigmaOfKernel^2));
             kernel = kernel/sum(kernel(:));
             tolPm  = 1e-2;
@@ -1320,7 +1320,7 @@ classdef DecimationSystemTestCase < matlab.unittest.TestCase
             sizeOfKernel = [3 3 3];
             sigmaOfKernel = max(dFactor);%(max(dFactor)/pi)*sqrt(2*log(2));
             hs = (sizeOfKernel-1)/2;
-            [ X, Y, Z ] = meshgrid(-hs:hs,-hs:hs,-hs:hs);
+            [ X, Y, Z ] = meshgrid(-hs(1):hs(1),-hs(2):hs(2),-hs(3):hs(3));
             kernel = exp(-(X.^2+Y.^2+Z.^2)/(2*sigmaOfKernel^2));
             kernel = kernel/sum(kernel(:));
 
@@ -1373,7 +1373,7 @@ classdef DecimationSystemTestCase < matlab.unittest.TestCase
             sizeOfKernel = 4*dFactor + 1;
             sigmaOfKernel = 0.5;
             hs = (sizeOfKernel-1)/2;
-            [ X, Y, Z ] = meshgrid(-hs:hs,-hs:hs,-hs:hs);
+            [ X, Y, Z ] = meshgrid(-hs(1):hs(1),-hs(2):hs(2),-hs(3):hs(3));
             kernel = exp(-(X.^2+Y.^2+Z.^2)/(2*sigmaOfKernel^2));
             kernel = kernel/sum(kernel(:));
             tolPm  = 1e-2;
@@ -1430,7 +1430,7 @@ classdef DecimationSystemTestCase < matlab.unittest.TestCase
             sigmaOfKernel = 0.5;
             dataType = 'Volumetric Data';
             hs = (sizeOfKernel-1)/2;
-            [ X, Y, Z ] = meshgrid(-hs:hs,-hs:hs,-hs:hs);
+            [ X, Y, Z ] = meshgrid(-hs(1):hs(1),-hs(2):hs(2),-hs(3):hs(3));
             kernel = exp(-(X.^2+Y.^2+Z.^2)/(2*sigmaOfKernel^2));
             kernel = kernel/sum(kernel(:));
             tolPm  = 1e-2;
@@ -1654,7 +1654,7 @@ classdef DecimationSystemTestCase < matlab.unittest.TestCase
             sizeOfKernel = 4*dFactor + 1;
             sigmaOfKernel = max(dFactor);%(max(dFactor)/pi)*sqrt(2*log(2));
             hs = (sizeOfKernel-1)/2;
-            [ X, Y, Z ] = meshgrid(-hs:hs,-hs:hs,-hs:hs);
+            [ X, Y, Z ] = meshgrid(-hs(1):hs(1),-hs(2):hs(2),-hs(3):hs(3));
             kernel = exp(-(X.^2+Y.^2+Z.^2)/(2*sigmaOfKernel^2));
             kernel = kernel/sum(kernel(:));
            
@@ -1697,7 +1697,7 @@ classdef DecimationSystemTestCase < matlab.unittest.TestCase
             sizeOfKernel = 4*dFactor + 1;
             sigmaOfKernel = max(dFactor);%(max(dFactor)/pi)*sqrt(2*log(2));
             hs = (sizeOfKernel-1)/2;
-            [ X, Y, Z ] = meshgrid(-hs:hs,-hs:hs,-hs:hs);
+            [ X, Y, Z ] = meshgrid(-hs(1):hs(1),-hs(2):hs(2),-hs(3):hs(3));
             kernel = exp(-(X.^2+Y.^2+Z.^2)/(2*sigmaOfKernel^2));
             kernel = kernel/sum(kernel(:));
             
@@ -1899,7 +1899,7 @@ classdef DecimationSystemTestCase < matlab.unittest.TestCase
             if isFileForLmax
                 delete(fname)
             end
-            lmax = lmaxExpctd; %#ok
+            lmax = lmaxExpctd; 
             save(fname,'lmax');
             
             % Instantiation of target class
@@ -2060,7 +2060,7 @@ classdef DecimationSystemTestCase < matlab.unittest.TestCase
             sizeOfKernel = 4*dFactor + 1;
             sigmaOfKernel = max(dFactor);%(max(dFactor)/pi)*sqrt(2*log(2));
             hs = (sizeOfKernel-1)/2;
-            [ X, Y, Z ] = meshgrid(-hs:hs,-hs:hs,-hs:hs);
+            [ X, Y, Z ] = meshgrid(-hs(1):hs(1),-hs(2):hs(2),-hs(3):hs(3));
             kernel = exp(-(X.^2+Y.^2+Z.^2)/(2*sigmaOfKernel^2));
             kernel = kernel/sum(kernel(:));
 
@@ -2110,7 +2110,7 @@ classdef DecimationSystemTestCase < matlab.unittest.TestCase
             sizeOfKernel = 4*dFactor + 1;
             sigmaOfKernel = max(dFactor);%(max(dFactor)/pi)*sqrt(2*log(2));
             hs = (sizeOfKernel-1)/2;
-            [ X, Y, Z ] = meshgrid(-hs:hs,-hs:hs,-hs:hs);
+            [ X, Y, Z ] = meshgrid(-hs(1):hs(1),-hs(2):hs(2),-hs(3):hs(3));
             kernel = exp(-(X.^2+Y.^2+Z.^2)/(2*sigmaOfKernel^2));
             kernel = kernel/sum(kernel(:));
 
