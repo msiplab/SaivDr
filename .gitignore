@@ -3,6 +3,9 @@
 !/mexcodes/.emptyfolder
 matlab.mat
 *.asv
-examples/sgddesign/volumes/MRbrain.*
-examples/sgddesign/tiff/*.tif
 desktop.ini
+/examples/sgddesign/volumes/
+/examples/sgddesign/tiff/
+/examples/tsp2017/volumes/
+/examples/dcnn/data/
+!/examples/dcnn/data/.emptyfolder
