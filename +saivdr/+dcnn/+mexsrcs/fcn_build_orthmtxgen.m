@@ -29,7 +29,7 @@ isOlderThanR2021b = isMATLABReleaseOlderThan("R2021b"); % LessThanR2021b = verLe
 isOlderThanR2023b = isMATLABReleaseOlderThan("R2023b"); % 'DynamicMemoryAllocation' -> 'EnableDynamicMemoryAllocation' と 'DynamicMemoryAllocationThreshold'
 mexname = sprintf('%s_%s_on_%s_mex',bsfname, datatype, device);
 
-if license('checkout','matlab_coder') % Coder is available
+if license('checkout','matlab_coder') && useGpuArray % Coder is available
     cdir = pwd;
     saivdr_root = getenv('SAIVDR_ROOT');
     cd(saivdr_root)
