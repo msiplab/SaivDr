@@ -501,7 +501,7 @@ classdef NsoltDictionaryUpdateSgdTestCase < matlab.unittest.TestCase
             isGaAvailable = license('checkout','gads_toolbox');
             if ~isGaAvailable ...
                     || exist('ga','file') ~= 2
-                testCase.fail(testCase,'Skipped\n\tGA is not available. ... ');
+                testCase.verifyFail('Skipped\n\tGA is not available. ... ');
                 return
             end
             
