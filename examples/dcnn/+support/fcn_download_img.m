@@ -12,26 +12,22 @@ end
 
 % Downloading sample images
 dstdir = './data/';
-if exist(dstdir,'dir') == 7
-    fnames = {'lena' 'baboon' 'goldhill' 'barbara'};
-    for idx = 1:length(fnames)
-        fname = [ fnames{idx} '.png' ];
-        if exist(fullfile(dstdir,fname),'file') ~= 2
-            img = imread(...
-                sprintf('http://homepages.cae.wisc.edu/~ece533/images/%s',...
-                fname));
-            imwrite(img,fullfile(dstdir,fname))
-            if isVerbose
-                fprintf('Downloaded and saved %s in %s\n',fname,dstdir);
-            end
-        else
-            if isVerbose
-                fprintf('%s already exists in %s\n',fname,dstdir);
-            end
+if exist(dstdir,'dir') ~= 7
+    mkdir(dstdir)
+end
+for idx = 1:24 %length(fnames)
+    fname = "kodim"+num2str(idx,'%02d') + ".png";
+    if exist(fullfile(dstdir,fname),'file') ~= 2
+        img = imread(...
+            "https://www.r0k.us/graphics/kodak/kodak/"+fname);
+        imwrite(img,fullfile(dstdir,fname))
+        if isVerbose
+            fprintf('Downloaded and saved %s in %s\n',fname,dstdir);
+        end
+    else
+        if isVerbose
+            fprintf('%s already exists in %s\n',fname,dstdir);
         end
     end
-else
-    me = MException('MsipException:NoSuchFolder', ...
-        '%s folder does not exist',dstdir);
-    throw(me)
 end
+disp('See <a href="https://www.r0k.us/graphics/kodak/">Kodak Lossless True Color Image Suite</a>')
