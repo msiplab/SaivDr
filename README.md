@@ -210,6 +210,7 @@ This work was supported by JSPS KAKENHI Grant Numbers JP23560443, JP26420347 and
 * Yuya KODAMA,    2020-2022
 * Yasas GODAGE,   2021-
 * Motoyasu SUZUKI, 2024-
+* Seiyu HITOMI, 2024-
  
 ### Test contributers
 * Hidenori WATANABE, 2014-
