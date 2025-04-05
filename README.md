@@ -118,7 +118,7 @@ configurations and parts of your network.
   
 ## Requirements
  
-* MATLAB R2020a or later. R2021a is recommended.
+* MATLAB R2020a or later. R2024b is recommended.
  * Signal Processing Toolbox
  * Image Processing Toolbox
  * Optimization Toolbox
@@ -208,7 +208,7 @@ This work was supported by JSPS KAKENHI Grant Numbers JP23560443, JP26420347 and
 * Kosuke FURUYA,  2013-2015
 * Naotaka YUKI,   2014-2015
 * Yuya KODAMA,    2020-2022
-* Yasas GODAGE,   2021-
+* Yasas GODAGE,   2021-2025
 * Motoyasu SUZUKI, 2024-
 * Seiyu HITOMI, 2024-
  
