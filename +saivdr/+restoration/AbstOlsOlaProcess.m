@@ -331,9 +331,11 @@ classdef (Abstract) AbstOlsOlaProcess < matlab.System
             % Initialize
             nSplit = length(subImgs);
             subImgCmp = Composite(nSplit);
+            subRecImgCmp = Composite(nSplit);
             stateCmp = Composite(nSplit);
             for iSplit=1:nSplit
                 subImgCmp{iSplit} = subImgs{iSplit};
+                subRecImgCmp{iSplit} = subImgs{iSplit};
                 stateCmp{iSplit} = obj.States{iSplit};
             end
             
