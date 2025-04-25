@@ -1,7 +1,8 @@
 %% Read a source image
 
-download_lena
-srcImg = imread('lena.png');
+%download_lena
+%srcImg = imread('lena.png');
+srcImg = imread('peppers.png');
 width  = 256; % Width
 height = 256; % Height
 px     = 128;  % Horizontal position of cropping
