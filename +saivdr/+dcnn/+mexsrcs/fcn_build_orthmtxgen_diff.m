@@ -88,11 +88,10 @@ if license('checkout','matlab_coder') % && useGpuArray % Coder is available
             disp('Skipping code generation')
         else
             cfg.GenerateReport = true;
-            args = '{ aAngles, aMus, aPdAng, aMtxPst, aMtxPre, cUseGpu, cIsLt21b }';
-            seval = [ 'codegen -config cfg ' ' -o ''' outputdir '/' mexname ''' ' ...
-                packagedir '/' bsfname '.m -args ' args];
-            disp(seval)
-            eval(seval)
+            srcfile = [packagedir '/' bsfname '.m'];
+            outfile = [outputdir '/' mexname];
+            disp(['codegen -config cfg -o ''' outfile ''' ' srcfile ' -args {aAngles, aMus, aPdAng, aMtxPst, aMtxPre, cUseGpu, cIsLt21b}'])
+            codegen(srcfile, '-config', cfg, '-o', outfile, '-args', {aAngles, aMus, aPdAng, aMtxPst, aMtxPre, cUseGpu, cIsLt21b}); %#ok
         end
     else
         error('SaivDr: Invalid argument')
