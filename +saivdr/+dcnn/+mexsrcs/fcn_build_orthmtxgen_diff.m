@@ -29,7 +29,7 @@ isOlderThanR2021b = isMATLABReleaseOlderThan("R2021b"); % LessThanR2021b = verLe
 isOlderThanR2023b = isMATLABReleaseOlderThan("R2023b"); % 'DynamicMemoryAllocation' -> 'EnableDynamicMemoryAllocation' と 'DynamicMemoryAllocationThreshold'
 mexname = sprintf('%s_%s_on_%s_mex',bsfname, datatype, device);
 
-if license('checkout','matlab_coder') % Coder is available
+if license('checkout','matlab_coder') % && useGpuArray % Coder is available
     cdir = pwd;
     saivdr_root = getenv('SAIVDR_ROOT');
     cd(saivdr_root)
@@ -42,7 +42,7 @@ if license('checkout','matlab_coder') % Coder is available
         %
         % build mex
         codegenskip = false;
-        if license('checkout','gpu_coder')
+        if useGpuArray &&  license('checkout','gpu_coder') % Coder is available
             cfg = coder.gpuConfig('mex');
         elseif strcmp(device,'cpu')
             cfg = coder.config('mex');
@@ -88,11 +88,10 @@ if license('checkout','matlab_coder') % Coder is available
             disp('Skipping code generation')
         else
             cfg.GenerateReport = true;
-            args = '{ aAngles, aMus, aPdAng, aMtxPst, aMtxPre, cUseGpu, cIsLt21b }';
-            seval = [ 'codegen -config cfg ' ' -o ''' outputdir '/' mexname ''' ' ...
-                packagedir '/' bsfname '.m -args ' args];
-            disp(seval)
-            eval(seval)
+            srcfile = [packagedir '/' bsfname '.m'];
+            outfile = [outputdir '/' mexname];
+            disp(['codegen -config cfg -o ''' outfile ''' ' srcfile ' -args {aAngles, aMus, aPdAng, aMtxPst, aMtxPre, cUseGpu, cIsLt21b}'])
+            codegen(srcfile, '-config', cfg, '-o', outfile, '-args', {aAngles, aMus, aPdAng, aMtxPst, aMtxPre, cUseGpu, cIsLt21b}); %#ok
         end
     else
         error('SaivDr: Invalid argument')

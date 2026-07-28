@@ -205,23 +205,23 @@ classdef (Abstract) AbstOlsOlaProcess < matlab.System
             obj.refScales = refScales_;
             
             % Workers
+            % NOTE: spmd path is disabled in R2022b+ because MATLAB's
+            % inter-call variable-change detection does not inspect
+            % non-tunable/protected properties (e.g. subPadArrays), so
+            % workers can silently reuse stale object copies from a
+            % previous spmd call. parfor re-serialises closures on every
+            % call and avoids this problem entirely.
             if obj.UseParallel
                 pool = gcp('nocreate');
                 if isempty(pool)
                     parpool();
-                    pool = gcp();
                 end
-                if pool.NumWorkers >= nSplit
-                    obj.nWorkers = pool.NumWorkers;
-                    obj.isSpmd = true;
+                if obj.Debug
+                    obj.nWorkers = 'debug';
                 else
-                    if obj.Debug
-                        obj.nWorkers = 'debug';
-                    else
-                        obj.nWorkers = Inf;
-                    end
-                    obj.isSpmd = false;
+                    obj.nWorkers = nSplit;
                 end
+                obj.isSpmd = false;
             else
                 obj.nWorkers = 0;
                 obj.isSpmd = false;
@@ -313,64 +313,60 @@ classdef (Abstract) AbstOlsOlaProcess < matlab.System
         
         function recImg = stepImpl_spmd(obj,srcImg)
             obj.iteration = obj.iteration + 1;
-            
-            % Support function handles
-            analyze     = @(x)   obj.Analyzer.step(x);
-            manipulate  = @(x,s) obj.CoefsManipulator.step(x,s);
-            synthesize  = @(x,s) obj.Synthesizer.step(x,s);
-            extract_ols = @(c,s) obj.extract_ols_(c,s);
-            padding_ola = @(c)   obj.padding_ola_(c);
-            arr2vec     = @(a)   obj.arr2vec_(a,obj.DATA_DIMENSION);
-            
+
+            % Broadcast obj's components as explicit variables to prevent
+            % spmd closure-caching in R2022b+ (anonymous-function text is
+            % identical across calls, causing workers to reuse stale obj)
+            analyzer_    = obj.Analyzer;
+            coefsMani_   = obj.CoefsManipulator;
+            synthesizer_ = obj.Synthesizer;
+            ndim_        = obj.DATA_DIMENSION;
+            obj_         = obj;  % broadcast serialised copy for abstract methods
+
             % Circular global padding
             srcImg_ = padarray(srcImg,obj.PadSize,'circular');
-            
+
             % Overlap save split
             subImgs = obj.split_ols_(srcImg_);
-            
+
             % Initialize
             nSplit = length(subImgs);
-            subImgCmp = Composite(nSplit);
-            stateCmp = Composite(nSplit);
-            for iSplit=1:nSplit
-                subImgCmp{iSplit} = subImgs{iSplit};
-                stateCmp{iSplit} = obj.States{iSplit};
-            end
-            
+            states_ = obj.States;
+
             % Parallel processing
             usegpu_ = obj.UseGpu;
             spmd(nSplit)
-                %iSplit = labindex;
+                iLab = labindex;
                 if usegpu_
-                    subImg = gpuArray(subImgCmp);
+                    subImg = gpuArray(subImgs{iLab});
                 else
-                    subImg = subImgCmp;
+                    subImg = subImgs{iLab};
                 end
-                
+
                 % Analyze
-                [subCoefs, subScales] = analyze(subImg);
-                
+                [subCoefs, subScales] = analyzer_.step(subImg);
+
                 % Extract significant coefs.
-                coefs = extract_ols(subCoefs,subScales);
-                
+                coefs = obj_.extract_ols_(subCoefs,subScales);
+
                 % Process for coefficients
-                state = stateCmp;
+                state = states_{iLab};
                 if usegpu_ && iscell(state)
                     state = cellfun(@gpuArray,state,'UniformOutput',false);
                 end
-                coefs = manipulate(coefs,state);
-                
+                coefs = coefsMani_.step(coefs,state);
+
                 % Zero padding for convolution
-                subCoefArray = padding_ola(coefs);
-                if  usegpu_ 
+                subCoefArray = obj_.padding_ola_(coefs);
+                if usegpu_
                     coefs = cellfun(@gather,coefs,'UniformOutput',false);
                 end
                 stateCmp = coefs;
-                
+
                 % Synthesis
-                [subCoefs,subScales] = arr2vec(subCoefArray);
-                subRecImg = synthesize(subCoefs,subScales);
-                
+                [subCoefs,subScales] = saivdr.restoration.AbstOlsOlaProcess.arr2vec_(subCoefArray,ndim_);
+                subRecImg = synthesizer_.step(subCoefs,subScales);
+
                 if usegpu_
                     subRecImgCmp = gather(subRecImg);
                 else

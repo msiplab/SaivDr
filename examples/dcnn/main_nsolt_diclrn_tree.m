@@ -224,7 +224,7 @@ title('Atomic images of initial NSOLT')
 % 
 % Randomly extracting patches from the image data store
 
-imds = imageDatastore("./data/barbara.png","ReadFcn",@(x) im2single(imread(x)));
+imds = imageDatastore("./data/kodim01.png","ReadFcn",@(x) rgb2gray(im2single(imread(x))));
 patchds = randomPatchExtractionDatastore(imds,imds,szPatchTrn,'PatchesPerImage',nSubImgs);
 figure(5)
 minibatch = preview(patchds);
