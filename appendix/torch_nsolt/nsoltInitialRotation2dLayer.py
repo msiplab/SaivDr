@@ -65,7 +65,11 @@ class NsoltInitialRotation2dLayer(nn.Module):
 
         # No DC leackage
         if self.no_dc_leakage:
-            self.orthTransW0.mus[0] = 1
+            # Avoid in-place modification of mus, which is saved for backward
+            if self.orthTransW0.mus[0] != 1:
+                mus = self.orthTransW0.mus.clone()
+                mus[0] = 1
+                self.orthTransW0.mus = mus
             self.orthTransW0.angles.data[:ps-1] = \
                 torch.zeros(ps-1,dtype=self.orthTransW0.angles.data.dtype,device=self.orthTransW0.angles.data.device)
         
