@@ -123,8 +123,10 @@ def block_dct_matrix_3d(decimation_factor,dtype=None,device=None):
     3-D block DCT matrix, equivalent to Cvhd in MATLAB nsoltBlockDct3dLayer
 
     Rows are ordered as [ Ceee; Ceoo; Cooe; Coeo; Ceeo; Ceoe; Cooo; Coee ]
-    (Cyxz) and columns correspond to the voxels of a decV x decH x decD block
-    in column-major order (v + decV*h + decV*decH*d).
+    (Cyxz), where the coefficients in each group are ordered as in
+    saivdr.dictionary.nsoltx (depth fastest, vertical slowest). Columns
+    correspond to the voxels of a decV x decH x decD block in column-major
+    order (v + decV*h + decV*decH*d).
     """
     decV = decimation_factor[Direction.VERTICAL]
     decH = decimation_factor[Direction.HORIZONTAL]
@@ -132,20 +134,26 @@ def block_dct_matrix_3d(decimation_factor,dtype=None,device=None):
     Cve, Cvo = _dctmtx_even_odd(decV,dtype=dtype,device=device)
     Che, Cho = _dctmtx_even_odd(decH,dtype=dtype,device=device)
     Cde, Cdo = _dctmtx_even_odd(decD,dtype=dtype,device=device)
-    Cee = torch.kron(Che,Cve)
-    Coo = torch.kron(Cho,Cvo)
-    Coe = torch.kron(Che,Cvo)
-    Ceo = torch.kron(Cho,Cve)
-    return torch.cat((
-        torch.kron(Cde,Cee), # Ceee
-        torch.kron(Cdo,Ceo), # Ceoo
-        torch.kron(Cde,Coo), # Cooe
-        torch.kron(Cdo,Coe), # Coeo
-        torch.kron(Cdo,Cee), # Ceeo
-        torch.kron(Cde,Ceo), # Ceoe
-        torch.kron(Cdo,Coo), # Cooo
-        torch.kron(Cde,Coe)  # Coee
-        ),dim=0)
+    groups = (
+        (Cve,Che,Cde), # Ceee
+        (Cve,Cho,Cdo), # Ceoo
+        (Cvo,Cho,Cde), # Cooe
+        (Cvo,Che,Cdo), # Coeo
+        (Cve,Che,Cdo), # Ceeo
+        (Cve,Cho,Cde), # Ceoe
+        (Cvo,Cho,Cdo), # Cooo
+        (Cvo,Che,Cde)  # Coee
+        )
+    rows = []
+    for Cy, Cx, Cz in groups:
+        # kron rows are in the order (z,x,y) with y fastest
+        G = torch.kron(Cz,torch.kron(Cx,Cy))
+        ny, nx, nz = Cy.size(0), Cx.size(0), Cz.size(0)
+        # Reorder to y slowest and z fastest as in saivdr.dictionary.nsoltx
+        ncols = decV*decH*decD
+        G = G.reshape(nz,nx,ny,ncols).permute(2,1,0,3).reshape(ny*nx*nz,ncols)
+        rows.append(G)
+    return torch.cat(rows,dim=0)
 
 class OrthonormalMatrixGenerationSystem:
     """

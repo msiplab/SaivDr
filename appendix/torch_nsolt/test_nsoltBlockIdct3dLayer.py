@@ -10,7 +10,7 @@ from nsoltUtility import Direction
 
 # stride = [ [4, 2, 1] ]
 # stride = [ [1, 1, 1], [2, 2, 2], [1, 2, 4], [4, 2, 1] ]
-stride = [ [1, 1, 1], [2, 2, 2], [1, 2, 4], [4, 2, 1], [2, 4, 1] ]
+stride = [ [1, 1, 1], [2, 2, 2], [1, 2, 4], [4, 2, 1], [2, 4, 1], [4, 4, 2], [2, 4, 4] ]
 datatype = [ torch.float, torch.double ]
 height = [ 8, 16, 32 ]
 width = [ 8, 16, 32 ]
@@ -184,10 +184,12 @@ def permuteDctCoefs_(x):
     """
     The same order as Cvhd in MATLAB nsoltBlockDct3dLayer, i.e.,
     [ eee, eoo, ooe, oeo, eeo, eoe, ooo, oee ] (yxz),
-    where the coefficients in each group are in column-major order
+    where the coefficients in each group are ordered as in getMatrixE0_ of
+    the MATLAB test case and saivdr.dictionary.nsoltx (depth fastest,
+    vertical slowest)
     """
     n = x.size(0)
-    vec = lambda c: c.permute(0,3,2,1).reshape(n,-1)
+    vec = lambda c: c.reshape(n,-1)
     ceee = vec(x[:,0::2,0::2,0::2])
     ceoo = vec(x[:,0::2,1::2,1::2])
     cooe = vec(x[:,1::2,1::2,0::2])
@@ -214,7 +216,7 @@ def permuteIdctCoefs_(x,block_size):
         nx = len(range(px,decX_,2))
         nz = len(range(pz,decZ_,2))
         c, start_idx = coefs_align(coefs,start_idx,start_idx+ny*nx*nz)
-        value[:,py::2,px::2,pz::2] = c.reshape(nBlocks,nz,nx,ny).permute(0,3,2,1)
+        value[:,py::2,px::2,pz::2] = c.reshape(nBlocks,ny,nx,nz)
     return value
 
 def coefs_align(coefs,start_idx,end_idx):
