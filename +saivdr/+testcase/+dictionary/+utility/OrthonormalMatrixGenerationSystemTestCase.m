@@ -520,7 +520,7 @@ classdef OrthonormalMatrixGenerationSystemTestCase < matlab.unittest.TestCase
         
         %
         function testPartialDifferenceInSequentialMode(testCase)
- 
+            
             % Expected values
             coefExpctd = [
                 -1 0 ;
@@ -540,7 +540,7 @@ classdef OrthonormalMatrixGenerationSystemTestCase < matlab.unittest.TestCase
        
         function testPartialDifferenceAngsInSequentialMode(testCase)
   
-            % Configuratin
+            % Configuration
             pdAng = 1;
             
             % Expected values

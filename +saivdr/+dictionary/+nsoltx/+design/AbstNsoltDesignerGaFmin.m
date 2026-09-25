@@ -106,9 +106,21 @@ classdef AbstNsoltDesignerGaFmin < ...
     
     methods (Access = private)
         
+        function value = isUseParallel_(~,options)
+            % Interpret the UseParallel option of GAOPTIMSET, which is
+            % logical, 'always'/'never' or "auto"/"off" depending on the
+            % MATLAB release (e.g., R2026b returns "auto" or "off")
+            flag = gaoptimget(options,'UseParallel');
+            if ischar(flag) || isstring(flag)
+                value = any(strcmpi(flag,{'always','auto','on','true'}));
+            else
+                value = ~isempty(flag) && logical(flag);
+            end
+        end
+        
         function value = setHybridFmincon_(obj,options)
             hybridopts = optimoptions(@fmincon);
-            if gaoptimget(options,'UseParallel')
+            if isUseParallel_(obj,options)
                 hybridopts = optimoptions(hybridopts,...
                     'UseParallel',true);
                 %

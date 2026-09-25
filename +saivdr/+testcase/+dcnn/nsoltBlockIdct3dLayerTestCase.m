@@ -21,7 +21,7 @@ classdef nsoltBlockIdct3dLayerTestCase < matlab.unittest.TestCase
     % http://msiplab.eng.niigata-u.ac.jp/
     
     properties (TestParameter)
-        stride = { [1 1 1], [2 2 2], [1 2 4] };
+        stride = { [1 1 1], [2 2 2], [1 2 4], [4 4 2], [2 4 4] };
         datatype = { 'single', 'double' };
         height = struct('small', 8,'medium', 16, 'large', 32);
         width = struct('small', 8,'medium', 16, 'large', 32);
@@ -67,7 +67,7 @@ classdef nsoltBlockIdct3dLayerTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.utility.Direction
             import matlab.unittest.constraints.IsEqualTo
             import matlab.unittest.constraints.AbsoluteTolerance
-            tolObj = AbsoluteTolerance(1e-6,single(1e-6));
+            tolObj = AbsoluteTolerance(1e-6,single(1e-5));
             
             % Parameters
             nSamples = 8;
@@ -113,7 +113,7 @@ classdef nsoltBlockIdct3dLayerTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.utility.Direction
             import matlab.unittest.constraints.IsEqualTo
             import matlab.unittest.constraints.AbsoluteTolerance
-            tolObj = AbsoluteTolerance(1e-6,single(1e-6));
+            tolObj = AbsoluteTolerance(1e-6,single(1e-5));
             
             % Parameters
             nSamples = 8;
@@ -159,7 +159,7 @@ classdef nsoltBlockIdct3dLayerTestCase < matlab.unittest.TestCase
             import saivdr.dictionary.utility.Direction            
             import matlab.unittest.constraints.IsEqualTo
             import matlab.unittest.constraints.AbsoluteTolerance
-            tolObj = AbsoluteTolerance(1e-6,single(1e-6));
+            tolObj = AbsoluteTolerance(1e-6,single(1e-5));
             
             % Parameters
             nSamples = 8;

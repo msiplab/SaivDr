@@ -1,6 +1,27 @@
 * Release notes on Sparsity-Aware Image and Volumetric Data Restoration Package
 
 - SaivDr2022xxxx
+-- (Major) Changed Mus of the second intermediate rotations from 1 to -1, so that the network with zero angles reduces to the block DCT for any polyphase order, as in saivdr.dictionary.nsoltx
+   Networks created before this change keep their stored Mus when loaded. Newly created ones differ in the sign of antisymmetric subbands when the total number of extension pairs is odd.
+--- saivdr.dcnn.fcn_creatensoltlgraph2d
+--- saivdr.dcnn.fcn_creatensoltlgraphs2d
+--- saivdr.dcnn.fcn_createsdiplgraph2d
+-- (Major) Changed the coefficient order in each group of the 3-D block DCT to that of saivdr.dictionary.nsoltx (depth fastest, vertical slowest)
+   This affects decimation factors with two or more coefficients along multiple directions in a group, e.g., [4 4 2], [2 4 4] and [4 4 4].
+--- saivdr.dcnn.nsoltBlockDct3dLayer
+--- saivdr.dcnn.nsoltBlockIdct3dLayer
+-- (Major) Revised the PyTorch block DCT/IDCT modules to split images into 2-D/3-D blocks and to order coefficients as in saivdr.dcnn
+   The PyTorch networks now give the same outputs as saivdr.dcnn and saivdr.dictionary.nsoltx for the same parameters.
+--- appendix/torch_nsolt
+-- (Minor) Added a sequential differentiation mode to the orthonormal matrix generation
+--- appendix/torch_nsolt
+-- (Minor) Fixed in-place modification of mus in the initial and final rotation layers with no DC leakage
+--- appendix/torch_nsolt
+-- (Minor) Added decimation factors [4 4 2] and [2 4 4] to the 3-D block DCT/IDCT tests and relaxed their single-precision tolerance to 1e-5
+--- saivdr.testcase.dcnn.nsoltBlockDct3dLayerTestCase
+--- saivdr.testcase.dcnn.nsoltBlockIdct3dLayerTestCase
+-- (Minor) Fixed an error in the hybrid GA/fmincon design when UseParallel is given as a string (e.g., "auto" returned by GAOPTIMGET in R2026b)
+--- saivdr.dictionary.nsoltx.design.AbstNsoltDesignerGaFmin
 -- (Minor) Removed inheritance of matlab.system.mixin.CustomIcon mixin for future releases
 --- saivdr.embedded.*
 

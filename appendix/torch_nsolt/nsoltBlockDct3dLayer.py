@@ -1,8 +1,7 @@
 import torch
 import torch.nn as nn
-import torch_dct as dct
 import math
-from nsoltUtility import Direction
+from nsoltUtility import Direction, block_dct_matrix_3d
 
 class NsoltBlockDct3dLayer(nn.Module):
     """
@@ -50,27 +49,25 @@ class NsoltBlockDct3dLayer(nn.Module):
         height = X.size(2)
         width = X.size(3)
         depth = X.size(4)
-        stride = self.decimation_factor        
-        nrows = int(math.ceil(height/stride[Direction.VERTICAL]))
-        ncols = int(math.ceil(width/stride[Direction.HORIZONTAL]))
-        nlays = int(math.ceil(depth/stride[Direction.DEPTH]))
-        ndecs = stride[0]*stride[1]*stride[2] #math.prod(stride)
-        # Block DCT (nSamples x nComponents x nrows x ncols) x decV x decH x decD x decD
-        arrayshape = stride.copy()
-        arrayshape.insert(0,-1)
-        Y = dct.dct_3d(X.view(arrayshape),norm='ortho')
-        # Rearrange the DCT Coefs. (nSamples x nComponents x nrows x ncols) x (decV x decH x decD x decD)
-        ceee = Y[:,0::2,0::2,0::2].reshape(Y.size(0),-1)
-        ceeo = Y[:,0::2,0::2,1::2].reshape(Y.size(0),-1)
-        ceoe = Y[:,0::2,1::2,0::2].reshape(Y.size(0),-1)
-        ceoo = Y[:,0::2,1::2,1::2].reshape(Y.size(0),-1)
-        coee = Y[:,1::2,0::2,0::2].reshape(Y.size(0),-1)
-        coeo = Y[:,1::2,0::2,1::2].reshape(Y.size(0),-1)
-        cooe = Y[:,1::2,1::2,0::2].reshape(Y.size(0),-1)
-        cooo = Y[:,1::2,1::2,1::2].reshape(Y.size(0),-1)
+        stride = self.decimation_factor
+        decV = stride[Direction.VERTICAL]
+        decH = stride[Direction.HORIZONTAL]
+        decD = stride[Direction.DEPTH]
+        nrows = int(math.ceil(height/decV))
+        ncols = int(math.ceil(width/decH))
+        nlays = int(math.ceil(depth/decD))
+        ndecs = decV*decH*decD
 
-        A = torch.cat((ceee,ceeo,ceoe,ceoo,coee,coeo,cooe,cooo),dim=-1)
-        Z = A.view(nSamples,nComponents,nrows,ncols,nlays,ndecs) 
+        # Block DCT matrix (the same as Cvhd in MATLAB nsoltBlockDct3dLayer)
+        Cvhd = block_dct_matrix_3d(stride,dtype=X.dtype,device=X.device)
+        # Split into decV x decH x decD blocks, whose voxels are arranged in
+        # column-major order as in MATLAB:
+        # (nSamples x nComponents x nrows x ncols x nlays) x (decD x decH x decV)
+        arrayX = X.reshape(nSamples,nComponents,nrows,decV,ncols,decH,nlays,decD)\
+            .permute(0,1,2,4,6,7,5,3)\
+            .reshape(nSamples,nComponents,nrows,ncols,nlays,ndecs)
+        # Apply the DCT: nSamples x nComponents x nrows x ncols x nlays x ndecs
+        Z = arrayX @ Cvhd.T
 
         if nComponents<2:
             return torch.squeeze(Z,dim=1)

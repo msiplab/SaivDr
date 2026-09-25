@@ -75,7 +75,7 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
     )
     def testForwardGrayScale(self,
             nchs,stride, height, width, datatype):
-        rtol,atol = 1e-5,1e-8
+        rtol,atol = 1e-5,1e-6 # atol as AbsoluteTolerance(1e-6) in the MATLAB test
         if isdevicetest:
             device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")   
         else:
@@ -107,7 +107,7 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
         V = Zsa.T.view(nSamples,nrows,ncols,nDecs)
         A = permuteIdctCoefs_(V,stride)
         Y = idct_2d(A)
-        expctdZ = Y.reshape(nSamples,nComponents,height,width)
+        expctdZ = block_merge_(Y,nSamples,nComponents,height,width)
         
         # Instantiation of target class
         network = NsoltSynthesis2dNetwork(
@@ -261,7 +261,7 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
         V = Zsa.T.view(nSamples,nrows,ncols,nDecs)
         A = permuteIdctCoefs_(V,stride)
         Y = idct_2d(A)
-        expctdZ = Y.reshape(nSamples,nComponents,height,width)
+        expctdZ = block_merge_(Y,nSamples,nComponents,height,width)
         
         # Instantiation of target class
         network = NsoltSynthesis2dNetwork(
@@ -344,7 +344,7 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
         V = Zsa.T.view(nSamples,nrows,ncols,nDecs)
         A = permuteIdctCoefs_(V,stride)
         Y = idct_2d(A)
-        expctdZ = Y.reshape(nSamples,nComponents,height,width)
+        expctdZ = block_merge_(Y,nSamples,nComponents,height,width)
         
         # Instantiation of target class
         network = NsoltSynthesis2dNetwork(
@@ -413,7 +413,7 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
         V = Zsa.T.view(nSamples,nrows,ncols,nDecs)
         A = permuteIdctCoefs_(V,stride)
         Y = idct_2d(A)
-        expctdZ = Y.reshape(nSamples,nComponents,height,width)
+        expctdZ = block_merge_(Y,nSamples,nComponents,height,width)
         
         # Instantiation of target class
         network = NsoltSynthesis2dNetwork(
@@ -482,7 +482,7 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
         V = Zsa.T.view(nSamples,nrows,ncols,nDecs)
         A = permuteIdctCoefs_(V,stride)
         Y = idct_2d(A)
-        expctdZ = Y.reshape(nSamples,nComponents,height,width)
+        expctdZ = block_merge_(Y,nSamples,nComponents,height,width)
         
         # Instantiation of target class
         network = NsoltSynthesis2dNetwork(
@@ -566,7 +566,7 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
         V = Zsa.T.view(nSamples,nrows,ncols,nDecs)
         A = permuteIdctCoefs_(V,stride)
         Y = idct_2d(A)
-        expctdZ = Y.reshape(nSamples,nComponents,height,width)
+        expctdZ = block_merge_(Y,nSamples,nComponents,height,width)
         
         # Instantiation of target class
         network = NsoltSynthesis2dNetwork(
@@ -660,7 +660,7 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
         V = Zsa.T.view(nSamples,nrows,ncols,nDecs)
         A = permuteIdctCoefs_(V,stride)
         Y = idct_2d(A)
-        expctdZ = Y.reshape(nSamples,nComponents,height,width)
+        expctdZ = block_merge_(Y,nSamples,nComponents,height,width)
         
         # Instantiation of target class
         network = NsoltSynthesis2dNetwork(
@@ -839,7 +839,7 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
             # Update
             nrows *= stride[Direction.VERTICAL]
             ncols *= stride[Direction.HORIZONTAL]            
-            Xdc = Y.reshape(nSamples,nrows,ncols,1)
+            Xdc = block_merge_(Y,nSamples,1,nrows,ncols).view(nSamples,nrows,ncols,1)
         expctdZ = Xdc.view(nSamples,nComponents,height,width)
         
         # Instantiation of target class
@@ -9861,10 +9861,10 @@ class NsoltSynthesis2dNetworkTestCase(unittest.TestCase):
         
 """
 def permuteDctCoefs_(x):
-    cee = x[:,0::2,0::2].reshape(x.size(0),-1)
-    coo = x[:,1::2,1::2].reshape(x.size(0),-1)
-    coe = x[:,1::2,0::2].reshape(x.size(0),-1)
-    ceo = x[:,0::2,1::2].reshape(x.size(0),-1)
+    cee = x[:,0::2,0::2].transpose(1,2).reshape(x.size(0),-1)
+    coo = x[:,1::2,1::2].transpose(1,2).reshape(x.size(0),-1)
+    coe = x[:,1::2,0::2].transpose(1,2).reshape(x.size(0),-1)
+    ceo = x[:,0::2,1::2].transpose(1,2).reshape(x.size(0),-1)
     return torch.cat((cee,coo,coe,ceo),dim=-1)
 
 def permuteIdctCoefs_(x,block_size):
@@ -9884,10 +9884,10 @@ def permuteIdctCoefs_(x,block_size):
     ceo = coefs[:,nQDecsee+nQDecsoo+nQDecsoe:]
     nBlocks = coefs.size(0)
     value = torch.zeros(nBlocks,decY_,decX_,dtype=x.dtype).to(x.device)
-    value[:,0::2,0::2] = cee.view(nBlocks,chDecY,chDecX)
-    value[:,1::2,1::2] = coo.view(nBlocks,fhDecY,fhDecX)
-    value[:,1::2,0::2] = coe.view(nBlocks,fhDecY,chDecX)
-    value[:,0::2,1::2] = ceo.view(nBlocks,chDecY,fhDecX)
+    value[:,0::2,0::2] = cee.reshape(nBlocks,chDecX,chDecY).transpose(1,2)
+    value[:,1::2,1::2] = coo.reshape(nBlocks,fhDecX,fhDecY).transpose(1,2)
+    value[:,1::2,0::2] = coe.reshape(nBlocks,chDecX,fhDecY).transpose(1,2)
+    value[:,0::2,1::2] = ceo.reshape(nBlocks,fhDecX,chDecY).transpose(1,2)
     return value
 
 def block_butterfly(X,nchs):
@@ -9922,6 +9922,27 @@ def intermediate_rotation(X,nchs,R):
     Za = R @ X[:,:,:,ps:].view(-1,pa).T 
     Y[:,:,:,ps:] = Za.T.view(nSamples,nrows,ncols,pa)
     return Y
+
+def block_split_(x,block_size):
+    """
+    Split images into blocks as MATLAB blockproc does
+      (nSamples x nComponents x (decV x nRows) x (decH x nCols))
+       -> (nSamples x nComponents x nRows x nCols) x decV x decH
+    """
+    decV = block_size[Direction.VERTICAL]
+    decH = block_size[Direction.HORIZONTAL]
+    nSamples, nComponents, height, width = x.size()
+    return x.reshape(nSamples,nComponents,height//decV,decV,width//decH,decH)\
+        .permute(0,1,2,4,3,5).reshape(-1,decV,decH)
+
+def block_merge_(y,nSamples,nComponents,height,width):
+    """
+    Merge blocks into images (inverse of block_split_)
+    """
+    decV = y.size(1)
+    decH = y.size(2)
+    return y.reshape(nSamples,nComponents,height//decV,width//decH,decV,decH)\
+        .permute(0,1,2,4,3,5).reshape(nSamples,nComponents,height,width)
 
 if __name__ == '__main__':
     unittest.main()

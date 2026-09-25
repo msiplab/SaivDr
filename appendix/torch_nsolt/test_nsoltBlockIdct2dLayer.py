@@ -87,7 +87,7 @@ class NsoltBlockIdct2dLayerTestCase(unittest.TestCase):
         #Y = dct.idct_2d(A,norm='ortho')
         Y = torch.tensor(fftpack.idct(fftpack.idct(A.detach().numpy(),axis=1,type=2,norm='ortho'),axis=2,type=2,norm='ortho'),dtype=datatype)
         Y = Y.to(device)
-        expctdZ = Y.reshape(nSamples,nComponents,height,width)
+        expctdZ = block_merge_(Y,nSamples,nComponents,height,width)
 
         # Instantiation of target class
         layer = NsoltBlockIdct2dLayer(
@@ -129,7 +129,7 @@ class NsoltBlockIdct2dLayerTestCase(unittest.TestCase):
         #Y = dct.idct_2d(A,norm='ortho')
         Y = torch.tensor(fftpack.idct(fftpack.idct(A.detach().numpy(),axis=1,type=2,norm='ortho'),axis=2,type=2,norm='ortho'),dtype=datatype)
         Y = Y.to(device)
-        expctdZ = Y.reshape(nSamples,nComponents,height,width)
+        expctdZ = block_merge_(Y,nSamples,nComponents,height,width)
 
         # Instantiation of target class
         layer = NsoltBlockIdct2dLayer(
@@ -181,9 +181,9 @@ class NsoltBlockIdct2dLayerTestCase(unittest.TestCase):
         Yb = torch.tensor(fftpack.idct(fftpack.idct(Ab.detach().numpy(),axis=1,type=2,norm='ortho'),axis=2,type=2,norm='ortho'),dtype=datatype)
         Yb = Yb.to(device)                
         expctdZ = torch.cat((
-            Yr.reshape(nSamples,1,height,width),
-            Yg.reshape(nSamples,1,height,width),
-            Yb.reshape(nSamples,1,height,width)),dim=1)
+            block_merge_(Yr,nSamples,1,height,width),
+            block_merge_(Yg,nSamples,1,height,width),
+            block_merge_(Yb,nSamples,1,height,width)),dim=1)
 
             
         # Instantiation of target class
@@ -238,9 +238,9 @@ class NsoltBlockIdct2dLayerTestCase(unittest.TestCase):
         Yb = torch.tensor(fftpack.idct(fftpack.idct(Ab.detach().numpy(),axis=1,type=2,norm='ortho'),axis=2,type=2,norm='ortho'),dtype=datatype)
         Yb = Yb.to(device)                
         expctdZ = torch.cat((
-            Yr.reshape(nSamples,1,height,width),
-            Yg.reshape(nSamples,1,height,width),
-            Yb.reshape(nSamples,1,height,width)),dim=1)
+            block_merge_(Yr,nSamples,1,height,width),
+            block_merge_(Yg,nSamples,1,height,width),
+            block_merge_(Yb,nSamples,1,height,width)),dim=1)
             
         # Instantiation of target class
         layer = NsoltBlockIdct2dLayer(
@@ -281,10 +281,8 @@ class NsoltBlockIdct2dLayerTestCase(unittest.TestCase):
         dLdZ = dLdZ.to(device)
     
         # Expected values
-        arrayshape = stride.copy()
-        arrayshape.insert(0,-1)
-        #Y = dct.dct_2d(dLdZ.view(arrayshape),norm='ortho')
-        Y = torch.tensor(fftpack.dct(fftpack.dct(dLdZ.cpu().view(arrayshape).detach().numpy(),axis=2,type=2,norm='ortho'),axis=1,type=2,norm='ortho'),dtype=datatype)
+        #Y = dct.dct_2d(block_split_(dLdZ,stride),norm='ortho')
+        Y = torch.tensor(fftpack.dct(fftpack.dct(block_split_(dLdZ.cpu(),stride).detach().numpy(),axis=2,type=2,norm='ortho'),axis=1,type=2,norm='ortho'),dtype=datatype)
         Y = Y.to(device)
         
         A = permuteDctCoefs_(Y)
@@ -333,10 +331,8 @@ class NsoltBlockIdct2dLayerTestCase(unittest.TestCase):
         dLdZ = dLdZ.to(device)
 
         # Expected values
-        arrayshape = stride.copy()
-        arrayshape.insert(0,-1)
-        #Y = dct.dct_2d(dLdZ.view(arrayshape),norm='ortho')
-        Y = torch.tensor(fftpack.dct(fftpack.dct(dLdZ.cpu().view(arrayshape).detach().numpy(),axis=2,type=2,norm='ortho'),axis=1,type=2,norm='ortho'),dtype=datatype)
+        #Y = dct.dct_2d(block_split_(dLdZ,stride),norm='ortho')
+        Y = torch.tensor(fftpack.dct(fftpack.dct(block_split_(dLdZ.cpu(),stride).detach().numpy(),axis=2,type=2,norm='ortho'),axis=1,type=2,norm='ortho'),dtype=datatype)
         Y = Y.to(device)
         
         A = permuteDctCoefs_(Y)
@@ -368,10 +364,10 @@ class NsoltBlockIdct2dLayerTestCase(unittest.TestCase):
         self.assertTrue(Z.requires_grad)
 
 def permuteDctCoefs_(x):
-    cee = x[:,0::2,0::2].reshape(x.size(0),-1)
-    coo = x[:,1::2,1::2].reshape(x.size(0),-1)
-    coe = x[:,1::2,0::2].reshape(x.size(0),-1)
-    ceo = x[:,0::2,1::2].reshape(x.size(0),-1)
+    cee = x[:,0::2,0::2].transpose(1,2).reshape(x.size(0),-1)
+    coo = x[:,1::2,1::2].transpose(1,2).reshape(x.size(0),-1)
+    coe = x[:,1::2,0::2].transpose(1,2).reshape(x.size(0),-1)
+    ceo = x[:,0::2,1::2].transpose(1,2).reshape(x.size(0),-1)
     return torch.cat((cee,coo,coe,ceo),dim=-1)
 
 def permuteIdctCoefs_(x,block_size):
@@ -391,11 +387,32 @@ def permuteIdctCoefs_(x,block_size):
     ceo = coefs[:,nQDecsee+nQDecsoo+nQDecsoe:]
     nBlocks = coefs.size(0)
     value = torch.zeros(nBlocks,decY_,decX_,dtype=x.dtype)
-    value[:,0::2,0::2] = cee.view(nBlocks,chDecY,chDecX)
-    value[:,1::2,1::2] = coo.view(nBlocks,fhDecY,fhDecX)
-    value[:,1::2,0::2] = coe.view(nBlocks,fhDecY,chDecX)
-    value[:,0::2,1::2] = ceo.view(nBlocks,chDecY,fhDecX)
+    value[:,0::2,0::2] = cee.reshape(nBlocks,chDecX,chDecY).transpose(1,2)
+    value[:,1::2,1::2] = coo.reshape(nBlocks,fhDecX,fhDecY).transpose(1,2)
+    value[:,1::2,0::2] = coe.reshape(nBlocks,chDecX,fhDecY).transpose(1,2)
+    value[:,0::2,1::2] = ceo.reshape(nBlocks,fhDecX,chDecY).transpose(1,2)
     return value
+
+def block_split_(x,block_size):
+    """
+    Split images into blocks as MATLAB blockproc does
+      (nSamples x nComponents x (decV x nRows) x (decH x nCols))
+       -> (nSamples x nComponents x nRows x nCols) x decV x decH
+    """
+    decV = block_size[Direction.VERTICAL]
+    decH = block_size[Direction.HORIZONTAL]
+    nSamples, nComponents, height, width = x.size()
+    return x.reshape(nSamples,nComponents,height//decV,decV,width//decH,decH)\
+        .permute(0,1,2,4,3,5).reshape(-1,decV,decH)
+
+def block_merge_(y,nSamples,nComponents,height,width):
+    """
+    Merge blocks into images (inverse of block_split_)
+    """
+    decV = y.size(1)
+    decH = y.size(2)
+    return y.reshape(nSamples,nComponents,height//decV,width//decH,decV,decH)\
+        .permute(0,1,2,4,3,5).reshape(nSamples,nComponents,height,width)
 
 if __name__ == '__main__':
     unittest.main()

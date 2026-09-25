@@ -86,6 +86,8 @@ classdef nsoltBlockIdct3dLayer < nnet.layer.Layer
             Coee = kron(Cde,Coe);
             layer.Cvhd = ...
                 [ Ceee; Ceoo; Cooe; Coeo; Ceeo; Ceoe; Cooo; Coee ]; % Cyxz
+            % Coefficient order in each group as in saivdr.dictionary.nsoltx
+            layer.Cvhd = layer.permuteRowsYXZ_(layer.Cvhd,decV,decH,decD);
             
         end
         
@@ -190,4 +192,26 @@ classdef nsoltBlockIdct3dLayer < nnet.layer.Layer
             end
         end
     end
+    methods (Static, Access = private)
+        
+        function C = permuteRowsYXZ_(C,decV,decH,decD)
+            % Reorder the rows in each coefficient group from the order of
+            % kron (vertical fastest) to that of saivdr.dictionary.nsoltx
+            % (depth fastest, vertical slowest)
+            parity = [ 0 0 0; 0 1 1; 1 1 0; 1 0 1; 0 0 1; 0 1 0; 1 1 1; 1 0 0 ]; % Cyxz
+            perm = zeros(size(C,1),1);
+            offset = 0;
+            for iGroup = 1:size(parity,1)
+                ny = numel(1+parity(iGroup,1):2:decV);
+                nx = numel(1+parity(iGroup,2):2:decH);
+                nz = numel(1+parity(iGroup,3):2:decD);
+                idx = permute(reshape(1:ny*nx*nz,ny,nx,nz),[3 2 1]);
+                perm(offset+1:offset+ny*nx*nz) = offset + idx(:);
+                offset = offset + ny*nx*nz;
+            end
+            C = C(perm,:);
+        end
+        
+    end
+    
 end

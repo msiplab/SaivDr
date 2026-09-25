@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 #import torch_dct as dct
 import math
-from nsoltUtility import Direction, dct_2d
+from nsoltUtility import Direction, block_dct_matrix_2d
 
 class NsoltBlockDct2dLayer(nn.Module):
     """
@@ -48,21 +48,23 @@ class NsoltBlockDct2dLayer(nn.Module):
         nSamples = X.size(0)
         height = X.size(2)
         width = X.size(3)
-        stride = self.decimation_factor        
-        nrows = int(math.ceil(height/stride[Direction.VERTICAL]))
-        ncols = int(math.ceil(width/stride[Direction.HORIZONTAL]))
-        ndecs = stride[0]*stride[1] #math.prod(stride)
-        # Block DCT (nSamples x nComponents x nrows x ncols) x decV x decH
-        arrayshape = stride.copy()
-        arrayshape.insert(0,-1)
-        Y = dct_2d(X.view(arrayshape))
-        # Rearrange the DCT Coefs. (nSamples x nComponents x nrows x ncols) x (decV x decH)
-        cee = Y[:,0::2,0::2].reshape(Y.size(0),-1)
-        coo = Y[:,1::2,1::2].reshape(Y.size(0),-1)
-        coe = Y[:,1::2,0::2].reshape(Y.size(0),-1)
-        ceo = Y[:,0::2,1::2].reshape(Y.size(0),-1)
-        A = torch.cat((cee,coo,coe,ceo),dim=-1)
-        Z = A.view(nSamples,nComponents,nrows,ncols,ndecs) 
+        stride = self.decimation_factor
+        decV = stride[Direction.VERTICAL]
+        decH = stride[Direction.HORIZONTAL]
+        nrows = int(math.ceil(height/decV))
+        ncols = int(math.ceil(width/decH))
+        ndecs = decV*decH
+
+        # Block DCT matrix (the same as Cvh in MATLAB nsoltBlockDct2dLayer)
+        Cvh = block_dct_matrix_2d(stride,dtype=X.dtype,device=X.device)
+        # Split into decV x decH blocks, whose pixels are arranged in
+        # column-major order as in MATLAB:
+        # (nSamples x nComponents x nrows x ncols) x (decH x decV)
+        arrayX = X.reshape(nSamples,nComponents,nrows,decV,ncols,decH)\
+            .permute(0,1,2,4,5,3)\
+            .reshape(nSamples,nComponents,nrows,ncols,ndecs)
+        # Apply the DCT: nSamples x nComponents x nrows x ncols x ndecs
+        Z = arrayX @ Cvh.T
 
         if nComponents<2:
             return torch.squeeze(Z,dim=1)

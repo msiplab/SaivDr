@@ -1,5 +1,6 @@
 import torch
 import math
+from nsoltLayerExceptions import InvalidIndex
 
 def dct(x): 
     """ 
@@ -83,6 +84,77 @@ class Direction:
     HORIZONTAL = 1
     DEPTH = 2
 
+def dctmtx(n,dtype=None,device=None):
+    """
+    Orthonormal DCT-II matrix, equivalent to MATLAB dctmtx(n)
+    """
+    k = torch.arange(n,dtype=dtype,device=device).view(-1,1)
+    i = torch.arange(n,dtype=dtype,device=device).view(1,-1)
+    C = math.sqrt(2./n)*torch.cos(math.pi*(2*i+1)*k/(2*n))
+    C[0,:] = C[0,:]/math.sqrt(2.)
+    return C
+
+def _dctmtx_even_odd(n,dtype=None,device=None):
+    """
+    Even- and odd-indexed rows of dctmtx(n)
+    """
+    C = dctmtx(n,dtype=dtype,device=device)
+    return C[0::2,:], C[1::2,:]
+
+def block_dct_matrix_2d(decimation_factor,dtype=None,device=None):
+    """
+    2-D block DCT matrix, equivalent to Cvh in MATLAB nsoltBlockDct2dLayer
+
+    Rows are ordered as [ Cee; Coo; Coe; Ceo ] and columns correspond to
+    the pixels of a decV x decH block in column-major order (v + decV*h).
+    """
+    decV = decimation_factor[Direction.VERTICAL]
+    decH = decimation_factor[Direction.HORIZONTAL]
+    Cve, Cvo = _dctmtx_even_odd(decV,dtype=dtype,device=device)
+    Che, Cho = _dctmtx_even_odd(decH,dtype=dtype,device=device)
+    Cee = torch.kron(Che,Cve)
+    Coo = torch.kron(Cho,Cvo)
+    Coe = torch.kron(Che,Cvo)
+    Ceo = torch.kron(Cho,Cve)
+    return torch.cat((Cee,Coo,Coe,Ceo),dim=0)
+
+def block_dct_matrix_3d(decimation_factor,dtype=None,device=None):
+    """
+    3-D block DCT matrix, equivalent to Cvhd in MATLAB nsoltBlockDct3dLayer
+
+    Rows are ordered as [ Ceee; Ceoo; Cooe; Coeo; Ceeo; Ceoe; Cooo; Coee ]
+    (Cyxz), where the coefficients in each group are ordered as in
+    saivdr.dictionary.nsoltx (depth fastest, vertical slowest). Columns
+    correspond to the voxels of a decV x decH x decD block in column-major
+    order (v + decV*h + decV*decH*d).
+    """
+    decV = decimation_factor[Direction.VERTICAL]
+    decH = decimation_factor[Direction.HORIZONTAL]
+    decD = decimation_factor[Direction.DEPTH]
+    Cve, Cvo = _dctmtx_even_odd(decV,dtype=dtype,device=device)
+    Che, Cho = _dctmtx_even_odd(decH,dtype=dtype,device=device)
+    Cde, Cdo = _dctmtx_even_odd(decD,dtype=dtype,device=device)
+    groups = (
+        (Cve,Che,Cde), # Ceee
+        (Cve,Cho,Cdo), # Ceoo
+        (Cvo,Cho,Cde), # Cooe
+        (Cvo,Che,Cdo), # Coeo
+        (Cve,Che,Cdo), # Ceeo
+        (Cve,Cho,Cde), # Ceoe
+        (Cvo,Cho,Cdo), # Cooo
+        (Cvo,Che,Cde)  # Coee
+        )
+    rows = []
+    for Cy, Cx, Cz in groups:
+        # kron rows are in the order (z,x,y) with y fastest
+        G = torch.kron(Cz,torch.kron(Cx,Cy))
+        ny, nx, nz = Cy.size(0), Cx.size(0), Cz.size(0)
+        # Reorder to y slowest and z fastest as in saivdr.dictionary.nsoltx
+        ncols = decV*decH*decD
+        G = G.reshape(nz,nx,ny,ncols).permute(2,1,0,3).reshape(ny*nx*nz,ncols)
+        rows.append(G)
+    return torch.cat(rows,dim=0)
+
 class OrthonormalMatrixGenerationSystem:
     """
     ORTHONORMALMATRIXGENERATIONSYSTEM
@@ -108,6 +180,7 @@ class OrthonormalMatrixGenerationSystem:
         super(OrthonormalMatrixGenerationSystem, self).__init__()
         self.dtype = dtype
         self.partial_difference = partial_difference
+        self.nextangle = -1
 
     def __call__(self,
         angles=0,
@@ -127,38 +200,109 @@ class OrthonormalMatrixGenerationSystem:
         nAngles = len(angles)
 
         # Number of dimensions
-        nDims = int((1+math.sqrt(1+8*nAngles))/2)
+        self.nDims = int((1+math.sqrt(1+8*nAngles))/2)
 
         # Setup of mus, which is send to the same device with angles
         if isinstance(mus, int) or isinstance(mus, float):
-            mus = mus * torch.ones(nDims,dtype=self.dtype,device=angles.device)
+            mus = mus * torch.ones(self.nDims,dtype=self.dtype,device=angles.device)
         elif not torch.is_tensor(mus): #isinstance(mus, list):
             mus = torch.tensor(mus,dtype=self.dtype,device=angles.device)
         else:
             mus = mus.to(dtype=self.dtype,device=angles.device)
 
-        matrix = torch.eye(nDims,dtype=self.dtype,device=angles.device)
-        iAng = 0
-        for iTop in range(nDims-1):
-            vt = matrix[iTop,:]
-            for iBtm in range(iTop+1,nDims):
-                angle = angles[iAng]
-                if self.partial_difference and iAng == index_pd_angle:
-                    angle = angle + math.pi/2.
-                c = torch.cos(angle)
-                s = torch.sin(angle)
-                vb = matrix[iBtm,:]
-                #
-                u  = s*(vt + vb)
-                vt = (c + s)*vt
-                vb = (c - s)*vb
-                vt = vt - u
-                if self.partial_difference and iAng == index_pd_angle:
-                    matrix = torch.zeros_like(matrix,dtype=self.dtype)
-                matrix[iBtm,:] = vb + u
-                iAng = iAng + 1
-            matrix[iTop,:] = vt
+        # Generation process
+        if self.partial_difference == 'sequential':
+            matrix = self.step_sequential_(angles,mus,index_pd_angle)
+        else:
+            matrix = self.step_normal_(angles,mus,index_pd_angle)
         matrix = mus.view(-1,1) * matrix
 
         return matrix.clone()
+    
+    def reset(self):
+        self.nextangle = -1
 
+    def step_normal_(self,angles,mus,index_pd_angle):
+        #
+        iAng = 0
+        matrix = torch.eye(self.nDims,dtype=self.dtype,device=angles.device)
+        for iTop in range(self.nDims-1):
+            vt = matrix[iTop,:]
+            for iBtm in range(iTop+1,self.nDims):
+                angle = angles[iAng]
+                if self.partial_difference and iAng == index_pd_angle:
+                    angle = angle + math.pi/2.
+                vb = matrix[iBtm,:]
+                vt, vb = rot_(vt, vb, angle)
+                if self.partial_difference and iAng == index_pd_angle:
+                    matrix = torch.zeros_like(matrix,dtype=self.dtype)
+                matrix[iBtm,:] = vb
+                iAng = iAng + 1
+            matrix[iTop,:] = vt
+        return matrix
+
+    def step_sequential_(self,angles,mus,index_pd_angle):
+        # Check index_pd_angle
+        if index_pd_angle >= 0 and index_pd_angle != self.nextangle:
+            raise InvalidIndex(
+                'Unable to proceed sequential differentiation. Index = %d is expected, but %d was given.'\
+                %(self.nextangle, index_pd_angle))
+        #
+        if index_pd_angle < 0: # Initialization
+            self.matrixpst = torch.eye(self.nDims,dtype=self.dtype,device=angles.device)            
+            self.matrixpre = torch.eye(self.nDims,dtype=self.dtype,device=angles.device)            
+            #
+            iAng = 0
+            for iTop in range(self.nDims-1):
+                vt = self.matrixpst[iTop,:]
+                for iBtm in range(iTop+1,self.nDims):
+                    angle = angles[iAng]
+                    vb = self.matrixpst[iBtm,:]
+                    vt, vb = rot_(vt, vb, angle)
+                    self.matrixpst[iBtm,:] = vb
+                    iAng = iAng + 1
+                self.matrixpst[iTop,:] = vt
+            self.nextangle = 0
+            return self.matrixpst
+        else: # Sequential differentiation
+            matrix = torch.eye(self.nDims,dtype=self.dtype,device=angles.device)
+            matrixrev = matrix.clone()
+            matrixdif = torch.zeros_like(matrix,dtype=self.dtype)       
+            #
+            iAng = 0
+            for iTop in range(self.nDims-1):
+                rt = matrixrev[iTop,:]
+                dt = torch.zeros(1,self.nDims,dtype=self.dtype,device=angles.device)
+                dt[0,iTop] = 1
+                for iBtm in range(iTop+1,self.nDims):                    
+                    if iAng == index_pd_angle:
+                        angle = angles[iAng]
+                        #
+                        rb = matrixrev[iBtm,:]
+                        rt,rb = rot_(rt,rb,-angle)
+                        matrixrev[iTop,:] = rt
+                        matrixrev[iBtm,:] = rb
+                        #
+                        db = torch.zeros(1,self.nDims,dtype=self.dtype,device=angles.device)
+                        db[0,iBtm] = 1
+                        dangle = angle + math.pi/2.
+                        dt,db = rot_(dt,db,dangle)
+                        matrixdif[iTop,:] = dt
+                        matrixdif[iBtm,:] = db
+                        #
+                        self.matrixpst = self.matrixpst @ matrixrev
+                        matrix = self.matrixpst @ matrixdif @ self.matrixpre
+                        self.matrixpre = matrixrev.T @ self.matrixpre
+                    iAng = iAng + 1
+            self.nextangle += 1
+            return matrix
+
+def rot_(vt,vb,angle):
+    c = torch.cos(angle)
+    s = torch.sin(angle)
+    u  = s*(vt + vb)
+    vt = (c + s)*vt
+    vb = (c - s)*vb
+    vt = vt - u
+    vb = vb + u
+    return vt, vb

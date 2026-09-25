@@ -117,7 +117,7 @@ for iLv = 1:nLevels
                 nsoltAtomExtension2dLayer('Name',[prefix strLv strCmp 'Qh' num2str(iOrderH) 'ls'],...
                 'NumberOfChannels',nChannels,'Direction','Left','TargetChannels','Sum')
                 nsoltIntermediateRotation2dLayer('Name',[prefix strLv strCmp 'Vh' num2str(iOrderH) ],...
-                'NumberOfChannels',nChannels,'Mode','Analysis')
+                'NumberOfChannels',nChannels,'Mode','Analysis','Mus',-1)
                 ];
             synthesisLayers{iLv,iCmp} = [ synthesisLayers{iLv,iCmp}
                 nsoltAtomExtension2dLayer('Name',[prefix strLv strCmp 'Qh' num2str(iOrderH-1) 'rd~'],...
@@ -127,7 +127,7 @@ for iLv = 1:nLevels
                 nsoltAtomExtension2dLayer('Name',[prefix strLv strCmp 'Qh' num2str(iOrderH) 'ls~'],...
                 'NumberOfChannels',nChannels,'Direction','Right','TargetChannels','Sum')
                 nsoltIntermediateRotation2dLayer('Name',[prefix strLv strCmp 'Vh' num2str(iOrderH) '~'],...
-                'NumberOfChannels',nChannels,'Mode','Synthesis')
+                'NumberOfChannels',nChannels,'Mode','Synthesis','Mus',-1)
                 ];
         end
         % Atom extension in vertical
@@ -140,7 +140,7 @@ for iLv = 1:nLevels
                 nsoltAtomExtension2dLayer('Name',[prefix strLv strCmp 'Qv' num2str(iOrderV) 'us'],...
                 'NumberOfChannels',nChannels,'Direction','Up','TargetChannels','Sum')
                 nsoltIntermediateRotation2dLayer('Name',[prefix strLv strCmp 'Vv' num2str(iOrderV)],...
-                'NumberOfChannels',nChannels,'Mode','Analysis')
+                'NumberOfChannels',nChannels,'Mode','Analysis','Mus',-1)
                 ];
             synthesisLayers{iLv,iCmp} = [ synthesisLayers{iLv,iCmp}
                 nsoltAtomExtension2dLayer('Name',[prefix strLv strCmp 'Qv' num2str(iOrderV-1) 'dd~'],...
@@ -150,7 +150,7 @@ for iLv = 1:nLevels
                 nsoltAtomExtension2dLayer('Name',[prefix strLv strCmp 'Qv' num2str(iOrderV) 'us~'],...
                 'NumberOfChannels',nChannels,'Direction','Down','TargetChannels','Sum')
                 nsoltIntermediateRotation2dLayer('Name',[prefix strLv strCmp 'Vv' num2str(iOrderV) '~'],...
-                'NumberOfChannels',nChannels,'Mode','Synthesis')
+                'NumberOfChannels',nChannels,'Mode','Synthesis','Mus',-1)
                 ];
         end
         
