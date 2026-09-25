@@ -68,7 +68,7 @@ class NsoltBlockDct3dLayerTestCase(unittest.TestCase):
     )
     def testPredict(self,
             stride, height, width, depth, datatype):
-        rtol,atol = 1e-5,1e-8
+        rtol,atol = 1e-5,1e-6 # atol as AbsoluteTolerance(1e-6) in the MATLAB test
 
         # Parameters
         nSamples = 8
@@ -82,9 +82,7 @@ class NsoltBlockDct3dLayerTestCase(unittest.TestCase):
         nlays = int(math.ceil(depth/stride[Direction.DEPTH])) #.astype(int)
         ndecs = stride[0]*stride[1]*stride[2] # math.prod(stride)
         # Block DCT (nSamples x nComponents x nrows x ncols x nlays) x decV x decH x decD
-        arrayshape = stride.copy()
-        arrayshape.insert(0,-1)
-        Y = dct.dct_3d(X.view(arrayshape),norm='ortho')
+        Y = dct.dct_3d(block_split_(X,stride),norm='ortho')
         # Rearrange the DCT Coefs. (nSamples x nComponents x nrows x ncols x nlays) x (decV x decH x decD)
         A = permuteDctCoefs_(Y)
         expctdZ = A.view(nSamples,nrows,ncols,nlays,ndecs)
@@ -109,7 +107,7 @@ class NsoltBlockDct3dLayerTestCase(unittest.TestCase):
     )
     def testForward(self,
             stride, height, width, depth, datatype):
-        rtol,atol=1e-5,1e-8
+        rtol,atol=1e-5,1e-6 # atol as AbsoluteTolerance(1e-6) in the MATLAB test
             
         # Parameters
         nSamples = 8
@@ -123,9 +121,7 @@ class NsoltBlockDct3dLayerTestCase(unittest.TestCase):
         nlays = int(math.ceil(depth/stride[Direction.DEPTH])) #.astype(int)
         ndecs = stride[0]*stride[1]*stride[2] # math.prod(stride)
         # Block DCT (nSamples x nComponents x nrows x ncols x nlays) x decV x decH x decD
-        arrayshape = stride.copy()
-        arrayshape.insert(0,-1)
-        Y = dct.dct_3d(X.view(arrayshape),norm='ortho')
+        Y = dct.dct_3d(block_split_(X,stride),norm='ortho')
         # Rearrange the DCT Coefs. (nSamples x nComponents x nrows x ncols x nlays) x (decV x decH x decD)
         A = permuteDctCoefs_(Y)
         expctdZ = A.view(nSamples,nrows,ncols,nlays,ndecs)
@@ -167,7 +163,7 @@ class NsoltBlockDct3dLayerTestCase(unittest.TestCase):
         # Expected values
         A = permuteIdctCoefs_(dLdZ,stride)
         Y = dct.idct_3d(A,norm='ortho')
-        expctddLdX = Y.reshape(nSamples,nComponents,height,width,depth)
+        expctddLdX = block_merge_(Y,nSamples,nComponents,height,width,depth)
         
         # Instantiation of target class
         layer = NsoltBlockDct3dLayer(
@@ -187,66 +183,69 @@ class NsoltBlockDct3dLayerTestCase(unittest.TestCase):
 
 
 def permuteDctCoefs_(x):
-    ceee = x[:,0::2,0::2,0::2].reshape(x.size(0),-1)
-    ceeo = x[:,0::2,0::2,1::2].reshape(x.size(0),-1)
-    ceoe = x[:,0::2,1::2,0::2].reshape(x.size(0),-1)
-    ceoo = x[:,0::2,1::2,1::2].reshape(x.size(0),-1)
-    coee = x[:,1::2,0::2,0::2].reshape(x.size(0),-1)
-    coeo = x[:,1::2,0::2,1::2].reshape(x.size(0),-1)
-    cooe = x[:,1::2,1::2,0::2].reshape(x.size(0),-1)
-    cooo = x[:,1::2,1::2,1::2].reshape(x.size(0),-1)
-    return torch.cat((ceee,ceeo,ceoe,ceoo,coee,coeo,cooe,cooo),dim=-1)
+    """
+    The same order as Cvhd in MATLAB nsoltBlockDct3dLayer, i.e.,
+    [ eee, eoo, ooe, oeo, eeo, eoe, ooo, oee ] (yxz),
+    where the coefficients in each group are in column-major order
+    """
+    n = x.size(0)
+    vec = lambda c: c.permute(0,3,2,1).reshape(n,-1)
+    ceee = vec(x[:,0::2,0::2,0::2])
+    ceoo = vec(x[:,0::2,1::2,1::2])
+    cooe = vec(x[:,1::2,1::2,0::2])
+    coeo = vec(x[:,1::2,0::2,1::2])
+    ceeo = vec(x[:,0::2,0::2,1::2])
+    ceoe = vec(x[:,0::2,1::2,0::2])
+    cooo = vec(x[:,1::2,1::2,1::2])
+    coee = vec(x[:,1::2,0::2,0::2])
+    return torch.cat((ceee,ceoo,cooe,coeo,ceeo,ceoe,cooo,coee),dim=-1)
 
 def permuteIdctCoefs_(x,block_size):
-    coefs = x.view(-1,block_size[Direction.VERTICAL]*block_size[Direction.HORIZONTAL]*block_size[Direction.DEPTH]) # x.view(-1,math.prod(block_size)) 
+    """
+    Inverse of permuteDctCoefs_
+    """
     decY_ = block_size[Direction.VERTICAL]
     decX_ = block_size[Direction.HORIZONTAL]
     decZ_ = block_size[Direction.DEPTH]
-    chDecY = int(math.ceil(decY_/2.)) #.astype(int)
-    chDecX = int(math.ceil(decX_/2.)) #.astype(int)
-    chDecZ = int(math.ceil(decZ_/2.)) #.astype(int)
-    fhDecY = int(math.floor(decY_/2.)) #.astype(int)
-    fhDecX = int(math.floor(decX_/2.)) #.astype(int)
-    fhDecZ = int(math.floor(decZ_/2.)) #.astype(int)
-
-    nQDecseee = chDecY*chDecX*chDecZ
-    nQDecseeo = chDecY*chDecX*fhDecZ
-    nQDecseoe = chDecY*fhDecX*chDecZ
-    nQDecseoo = chDecY*fhDecX*fhDecZ
-    nQDecsoee = fhDecY*chDecX*chDecZ
-    nQDecsoeo = fhDecY*chDecX*fhDecZ
-    nQDecsooe = fhDecY*fhDecX*chDecZ
-    nQDecsooo = fhDecY*fhDecX*fhDecZ
-
-    start_idx = 0
-    ceee, start_idx = coefs_align(coefs,start_idx,start_idx+nQDecseee)
-    ceeo, start_idx = coefs_align(coefs,start_idx,start_idx+nQDecseeo)
-    ceoe, start_idx = coefs_align(coefs,start_idx,start_idx+nQDecseoe)
-    ceoo, start_idx = coefs_align(coefs,start_idx,start_idx+nQDecseoo)
-    coee, start_idx = coefs_align(coefs,start_idx,start_idx+nQDecsoee)
-    coeo, start_idx = coefs_align(coefs,start_idx,start_idx+nQDecsoeo)
-    cooe, start_idx = coefs_align(coefs,start_idx,start_idx+nQDecsooe)
-    cooo, start_idx = coefs_align(coefs,start_idx,start_idx+nQDecsooo)
-
+    coefs = x.reshape(-1,decY_*decX_*decZ_)
     nBlocks = coefs.size(0)
-
-    value = torch.zeros(nBlocks,decY_,decX_,decZ_,dtype=x.dtype)
-
-    value[:,0::2,0::2,0::2] = ceee.view(nBlocks,chDecY,chDecX,chDecZ)
-    value[:,0::2,0::2,1::2] = ceeo.view(nBlocks,chDecY,chDecX,fhDecZ)
-    value[:,0::2,1::2,0::2] = ceoe.view(nBlocks,chDecY,fhDecX,chDecZ)
-    value[:,0::2,1::2,1::2] = ceoo.view(nBlocks,chDecY,fhDecX,fhDecZ)
-    value[:,1::2,0::2,0::2] = coee.view(nBlocks,fhDecY,chDecX,chDecZ)
-    value[:,1::2,0::2,1::2] = coeo.view(nBlocks,fhDecY,chDecX,fhDecZ)
-    value[:,1::2,1::2,0::2] = cooe.view(nBlocks,fhDecY,fhDecX,chDecZ)
-    value[:,1::2,1::2,1::2] = cooo.view(nBlocks,fhDecY,fhDecX,fhDecZ)
-    
+    value = torch.zeros(nBlocks,decY_,decX_,decZ_,dtype=x.dtype,device=x.device)
+    start_idx = 0
+    for py,px,pz in [ (0,0,0), (0,1,1), (1,1,0), (1,0,1), (0,0,1), (0,1,0), (1,1,1), (1,0,0) ]:
+        ny = len(range(py,decY_,2))
+        nx = len(range(px,decX_,2))
+        nz = len(range(pz,decZ_,2))
+        c, start_idx = coefs_align(coefs,start_idx,start_idx+ny*nx*nz)
+        value[:,py::2,px::2,pz::2] = c.reshape(nBlocks,nz,nx,ny).permute(0,3,2,1)
     return value
 
 def coefs_align(coefs,start_idx,end_idx):
     output = coefs[:,start_idx:end_idx]
     return output, end_idx
 
+
+def block_split_(x,block_size):
+    """
+    Split volumes into blocks as MATLAB vol2col_ in the test case does
+      (nSamples x nComponents x (decV x nRows) x (decH x nCols) x (decD x nLays))
+       -> (nSamples x nComponents x nRows x nCols x nLays) x decV x decH x decD
+    """
+    decV = block_size[Direction.VERTICAL]
+    decH = block_size[Direction.HORIZONTAL]
+    decD = block_size[Direction.DEPTH]
+    nSamples, nComponents, height, width, depth = x.size()
+    return x.reshape(nSamples,nComponents,height//decV,decV,width//decH,decH,depth//decD,decD)\
+        .permute(0,1,2,4,6,3,5,7).reshape(-1,decV,decH,decD)
+
+def block_merge_(y,nSamples,nComponents,height,width,depth):
+    """
+    Merge blocks into volumes (inverse of block_split_)
+    """
+    decV = y.size(1)
+    decH = y.size(2)
+    decD = y.size(3)
+    return y.reshape(nSamples,nComponents,height//decV,width//decH,depth//decD,decV,decH,decD)\
+        .permute(0,1,2,5,3,6,4,7).reshape(nSamples,nComponents,height,width,depth)
 
 if __name__ == '__main__':
     unittest.main()

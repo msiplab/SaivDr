@@ -84,6 +84,69 @@ class Direction:
     HORIZONTAL = 1
     DEPTH = 2
 
+def dctmtx(n,dtype=None,device=None):
+    """
+    Orthonormal DCT-II matrix, equivalent to MATLAB dctmtx(n)
+    """
+    k = torch.arange(n,dtype=dtype,device=device).view(-1,1)
+    i = torch.arange(n,dtype=dtype,device=device).view(1,-1)
+    C = math.sqrt(2./n)*torch.cos(math.pi*(2*i+1)*k/(2*n))
+    C[0,:] = C[0,:]/math.sqrt(2.)
+    return C
+
+def _dctmtx_even_odd(n,dtype=None,device=None):
+    """
+    Even- and odd-indexed rows of dctmtx(n)
+    """
+    C = dctmtx(n,dtype=dtype,device=device)
+    return C[0::2,:], C[1::2,:]
+
+def block_dct_matrix_2d(decimation_factor,dtype=None,device=None):
+    """
+    2-D block DCT matrix, equivalent to Cvh in MATLAB nsoltBlockDct2dLayer
+
+    Rows are ordered as [ Cee; Coo; Coe; Ceo ] and columns correspond to
+    the pixels of a decV x decH block in column-major order (v + decV*h).
+    """
+    decV = decimation_factor[Direction.VERTICAL]
+    decH = decimation_factor[Direction.HORIZONTAL]
+    Cve, Cvo = _dctmtx_even_odd(decV,dtype=dtype,device=device)
+    Che, Cho = _dctmtx_even_odd(decH,dtype=dtype,device=device)
+    Cee = torch.kron(Che,Cve)
+    Coo = torch.kron(Cho,Cvo)
+    Coe = torch.kron(Che,Cvo)
+    Ceo = torch.kron(Cho,Cve)
+    return torch.cat((Cee,Coo,Coe,Ceo),dim=0)
+
+def block_dct_matrix_3d(decimation_factor,dtype=None,device=None):
+    """
+    3-D block DCT matrix, equivalent to Cvhd in MATLAB nsoltBlockDct3dLayer
+
+    Rows are ordered as [ Ceee; Ceoo; Cooe; Coeo; Ceeo; Ceoe; Cooo; Coee ]
+    (Cyxz) and columns correspond to the voxels of a decV x decH x decD block
+    in column-major order (v + decV*h + decV*decH*d).
+    """
+    decV = decimation_factor[Direction.VERTICAL]
+    decH = decimation_factor[Direction.HORIZONTAL]
+    decD = decimation_factor[Direction.DEPTH]
+    Cve, Cvo = _dctmtx_even_odd(decV,dtype=dtype,device=device)
+    Che, Cho = _dctmtx_even_odd(decH,dtype=dtype,device=device)
+    Cde, Cdo = _dctmtx_even_odd(decD,dtype=dtype,device=device)
+    Cee = torch.kron(Che,Cve)
+    Coo = torch.kron(Cho,Cvo)
+    Coe = torch.kron(Che,Cvo)
+    Ceo = torch.kron(Cho,Cve)
+    return torch.cat((
+        torch.kron(Cde,Cee), # Ceee
+        torch.kron(Cdo,Ceo), # Ceoo
+        torch.kron(Cde,Coo), # Cooe
+        torch.kron(Cdo,Coe), # Coeo
+        torch.kron(Cdo,Cee), # Ceeo
+        torch.kron(Cde,Ceo), # Ceoe
+        torch.kron(Cdo,Coo), # Cooo
+        torch.kron(Cde,Coe)  # Coee
+        ),dim=0)
+
 class OrthonormalMatrixGenerationSystem:
     """
     ORTHONORMALMATRIXGENERATIONSYSTEM

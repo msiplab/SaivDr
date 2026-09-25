@@ -76,7 +76,7 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
     )
     def testForwardGrayScale(self,
             nchs,stride, height, width, datatype):
-        rtol,atol = 1e-5,1e-8
+        rtol,atol = 1e-5,1e-6 # atol as AbsoluteTolerance(1e-6) in the MATLAB test
         if isdevicetest:
             device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")   
         else:
@@ -94,9 +94,7 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
         nrows = int(math.ceil(height/stride[Direction.VERTICAL])) #.astype(int)
         ncols = int(math.ceil(width/stride[Direction.HORIZONTAL])) #.astype(int)
         # Block DCT (nSamples x nComponents x nrows x ncols) x decV x decH
-        arrayshape = stride.copy()
-        arrayshape.insert(0,-1)
-        Y = dct_2d(X.view(arrayshape))
+        Y = dct_2d(block_split_(X,stride))
         # Rearrange the DCT Coefs. (nSamples x nComponents x nrows x ncols) x (decV x decH)
         A = permuteDctCoefs_(Y)
         V = A.view(nSamples,nrows,ncols,nDecs)
@@ -252,9 +250,7 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
         nrows = int(math.ceil(height/stride[Direction.VERTICAL])) #.astype(int)
         ncols = int(math.ceil(width/stride[Direction.HORIZONTAL])) #.astype(int)
         # Block DCT (nSamples x nComponents x nrows x ncols) x decV x decH
-        arrayshape = stride.copy()
-        arrayshape.insert(0,-1)
-        Y = dct_2d(X.view(arrayshape))
+        Y = dct_2d(block_split_(X,stride))
         # Rearrange the DCT Coefs. (nSamples x nComponents x nrows x ncols) x (decV x decH)
         A = permuteDctCoefs_(Y)
         V = A.view(nSamples,nrows,ncols,nDecs)
@@ -318,9 +314,7 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
         nrows = int(math.ceil(height/stride[Direction.VERTICAL])) #.astype(int)
         ncols = int(math.ceil(width/stride[Direction.HORIZONTAL])) #.astype(int)
         # Block DCT (nSamples x nComponents x nrows x ncols) x decV x decH
-        arrayshape = stride.copy()
-        arrayshape.insert(0,-1)
-        Y = dct_2d(X.view(arrayshape))
+        Y = dct_2d(block_split_(X,stride))
         # Rearrange the DCT Coefs. (nSamples x nComponents x nrows x ncols) x (decV x decH)
         A = permuteDctCoefs_(Y)
         V = A.view(nSamples,nrows,ncols,nDecs)
@@ -403,9 +397,7 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
         nrows = int(math.ceil(height/stride[Direction.VERTICAL])) #.astype(int)
         ncols = int(math.ceil(width/stride[Direction.HORIZONTAL])) #.astype(int)
         # Block DCT (nSamples x nComponents x nrows x ncols) x decV x decH
-        arrayshape = stride.copy()
-        arrayshape.insert(0,-1)
-        Y = dct_2d(X.view(arrayshape))
+        Y = dct_2d(block_split_(X,stride))
         # Rearrange the DCT Coefs. (nSamples x nComponents x nrows x ncols) x (decV x decH)
         A = permuteDctCoefs_(Y)
         V = A.view(nSamples,nrows,ncols,nDecs)
@@ -477,9 +469,7 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
         nrows = int(math.ceil(height/stride[Direction.VERTICAL])) #.astype(int)
         ncols = int(math.ceil(width/stride[Direction.HORIZONTAL])) #.astype(int)
         # Block DCT (nSamples x nComponents x nrows x ncols) x decV x decH
-        arrayshape = stride.copy()
-        arrayshape.insert(0,-1)
-        Y = dct_2d(X.view(arrayshape))
+        Y = dct_2d(block_split_(X,stride))
         # Rearrange the DCT Coefs. (nSamples x nComponents x nrows x ncols) x (decV x decH)
         A = permuteDctCoefs_(Y)
         V = A.view(nSamples,nrows,ncols,nDecs)
@@ -553,9 +543,7 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
         nrows = int(math.ceil(height/stride[Direction.VERTICAL])) #.astype(int)
         ncols = int(math.ceil(width/stride[Direction.HORIZONTAL])) #.astype(int)
         # Block DCT (nSamples x nComponents x nrows x ncols) x decV x decH
-        arrayshape = stride.copy()
-        arrayshape.insert(0,-1)
-        Y = dct_2d(X.view(arrayshape))
+        Y = dct_2d(block_split_(X,stride))
         # Rearrange the DCT Coefs. (nSamples x nComponents x nrows x ncols) x (decV x decH)
         A = permuteDctCoefs_(Y)
         V = A.view(nSamples,nrows,ncols,nDecs)
@@ -650,9 +638,7 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
         nrows = int(math.ceil(height/stride[Direction.VERTICAL])) #.astype(int)
         ncols = int(math.ceil(width/stride[Direction.HORIZONTAL])) #.astype(int)
         # Block DCT (nSamples x nComponents x nrows x ncols) x decV x decH
-        arrayshape = stride.copy()
-        arrayshape.insert(0,-1)
-        Y = dct_2d(X.view(arrayshape))
+        Y = dct_2d(block_split_(X,stride))
         # Rearrange the DCT Coefs. (nSamples x nComponents x nrows x ncols) x (decV x decH)
         A = permuteDctCoefs_(Y)
         V = A.view(nSamples,nrows,ncols,nDecs)
@@ -813,14 +799,12 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
         nrows = int(math.ceil(height/(stride[Direction.VERTICAL]))) #.astype(int)
         ncols = int(math.ceil(width/(stride[Direction.HORIZONTAL]))) #.astype(int)
         # Block DCT (nSamples x nComponents x nrows x ncols) x decV x decH
-        arrayshape = stride.copy() 
-        arrayshape.insert(0,-1)
         # Multi-level decomposition
         coefs = []
         X_ = X
         for iStage in range(nlevels):
             iLevel = iStage+1
-            Y = dct_2d(X_.view(arrayshape))
+            Y = dct_2d(block_split_(X_,stride))
             # Rearrange the DCT Coefs. (nSamples x nComponents x nrows x ncols) x (decV x decH)
             A = permuteDctCoefs_(Y)
             V = A.view(nSamples,nrows,ncols,nDecs)
@@ -5472,10 +5456,10 @@ class NsoltAnalysis2dNetworkTestCase(unittest.TestCase):
         
 """
 def permuteDctCoefs_(x):
-    cee = x[:,0::2,0::2].reshape(x.size(0),-1)
-    coo = x[:,1::2,1::2].reshape(x.size(0),-1)
-    coe = x[:,1::2,0::2].reshape(x.size(0),-1)
-    ceo = x[:,0::2,1::2].reshape(x.size(0),-1)
+    cee = x[:,0::2,0::2].transpose(1,2).reshape(x.size(0),-1)
+    coo = x[:,1::2,1::2].transpose(1,2).reshape(x.size(0),-1)
+    coe = x[:,1::2,0::2].transpose(1,2).reshape(x.size(0),-1)
+    ceo = x[:,0::2,1::2].transpose(1,2).reshape(x.size(0),-1)
     return torch.cat((cee,coo,coe,ceo),dim=-1)
 
 def permuteIdctCoefs_(x,block_size):
@@ -5495,10 +5479,10 @@ def permuteIdctCoefs_(x,block_size):
     ceo = coefs[:,nQDecsee+nQDecsoo+nQDecsoe:]
     nBlocks = coefs.size(0)
     value = torch.zeros(nBlocks,decY_,decX_,dtype=x.dtype)
-    value[:,0::2,0::2] = cee.view(nBlocks,chDecY,chDecX)
-    value[:,1::2,1::2] = coo.view(nBlocks,fhDecY,fhDecX)
-    value[:,1::2,0::2] = coe.view(nBlocks,fhDecY,chDecX)
-    value[:,0::2,1::2] = ceo.view(nBlocks,chDecY,fhDecX)
+    value[:,0::2,0::2] = cee.reshape(nBlocks,chDecX,chDecY).transpose(1,2)
+    value[:,1::2,1::2] = coo.reshape(nBlocks,fhDecX,fhDecY).transpose(1,2)
+    value[:,1::2,0::2] = coe.reshape(nBlocks,chDecX,fhDecY).transpose(1,2)
+    value[:,0::2,1::2] = ceo.reshape(nBlocks,fhDecX,chDecY).transpose(1,2)
     return value
 
 def block_butterfly(X,nchs):
@@ -5533,6 +5517,27 @@ def intermediate_rotation(X,nchs,R):
     Za = R @ X[:,:,:,ps:].view(-1,pa).T 
     Y[:,:,:,ps:] = Za.T.view(nSamples,nrows,ncols,pa)
     return Y
+
+def block_split_(x,block_size):
+    """
+    Split images into blocks as MATLAB blockproc does
+      (nSamples x nComponents x (decV x nRows) x (decH x nCols))
+       -> (nSamples x nComponents x nRows x nCols) x decV x decH
+    """
+    decV = block_size[Direction.VERTICAL]
+    decH = block_size[Direction.HORIZONTAL]
+    nSamples, nComponents, height, width = x.size()
+    return x.reshape(nSamples,nComponents,height//decV,decV,width//decH,decH)\
+        .permute(0,1,2,4,3,5).reshape(-1,decV,decH)
+
+def block_merge_(y,nSamples,nComponents,height,width):
+    """
+    Merge blocks into images (inverse of block_split_)
+    """
+    decV = y.size(1)
+    decH = y.size(2)
+    return y.reshape(nSamples,nComponents,height//decV,width//decH,decV,decH)\
+        .permute(0,1,2,4,3,5).reshape(nSamples,nComponents,height,width)
 
 if __name__ == '__main__':
     unittest.main()

@@ -1,8 +1,7 @@
 import torch
 import torch.nn as nn
-import torch_dct as dct
 import math
-from nsoltUtility import Direction
+from nsoltUtility import Direction, block_dct_matrix_3d
 
 class NsoltBlockIdct3dLayer(nn.Module):
     """
@@ -44,73 +43,28 @@ class NsoltBlockIdct3dLayer(nn.Module):
 
     def forward(self,*args):
         block_size = self.decimation_factor
+        decV = block_size[Direction.VERTICAL]
+        decH = block_size[Direction.HORIZONTAL]
+        decD = block_size[Direction.DEPTH]
         for iComponent in range(self.num_inputs):
             X = args[iComponent]
             nsamples = X.size(0)
             nrows = X.size(1)
             ncols = X.size(2)
             nlays = X.size(3)
-            
-            # Permute IDCT coefficients
-            V = permuteIdctCoefs_(X,block_size)
-            # 3D IDCT
-            Y = dct.idct_3d(V,norm='ortho')
-            # Reshape and return
-            height = nrows * block_size[Direction.VERTICAL] 
-            width = ncols * block_size[Direction.HORIZONTAL] 
-            depth = nlays * block_size[Direction.DEPTH]
+            # Block IDCT matrix (the transpose of Cvhd in MATLAB)
+            Cvhd = block_dct_matrix_3d(block_size,dtype=X.dtype,device=X.device)
+            # nsamples x nrows x ncols x nlays x (decD x decH x decV)
+            arrayY = X @ Cvhd
+            # Place the blocks: nsamples x 1 x height x width x depth
+            height = nrows * decV
+            width = ncols * decH
+            depth = nlays * decD
+            Y = arrayY.reshape(nsamples,nrows,ncols,nlays,decD,decH,decV)\
+                .permute(0,1,6,2,5,3,4)\
+                .reshape(nsamples,1,height,width,depth)
             if iComponent<1:
-                Z = Y.reshape(nsamples,1,height,width,depth)
+                Z = Y
             else:
-                Z = torch.cat((Z,Y.reshape(nsamples,1,height,width,depth)),dim=1)
+                Z = torch.cat((Z,Y),dim=1)
         return Z
-
-def permuteIdctCoefs_(x,block_size):
-    coefs = x.view(-1,block_size[Direction.VERTICAL]*block_size[Direction.HORIZONTAL]*block_size[Direction.DEPTH]) # x.view(-1,math.prod(block_size)) 
-    decY_ = block_size[Direction.VERTICAL]
-    decX_ = block_size[Direction.HORIZONTAL]
-    decZ_ = block_size[Direction.DEPTH]
-    chDecY = int(math.ceil(decY_/2.)) #.astype(int)
-    chDecX = int(math.ceil(decX_/2.)) #.astype(int)
-    chDecZ = int(math.ceil(decZ_/2.)) #.astype(int)
-    fhDecY = int(math.floor(decY_/2.)) #.astype(int)
-    fhDecX = int(math.floor(decX_/2.)) #.astype(int)
-    fhDecZ = int(math.floor(decZ_/2.)) #.astype(int)
-
-    nQDecseee = chDecY*chDecX*chDecZ
-    nQDecseeo = chDecY*chDecX*fhDecZ
-    nQDecseoe = chDecY*fhDecX*chDecZ
-    nQDecseoo = chDecY*fhDecX*fhDecZ
-    nQDecsoee = fhDecY*chDecX*chDecZ
-    nQDecsoeo = fhDecY*chDecX*fhDecZ
-    nQDecsooe = fhDecY*fhDecX*chDecZ
-    nQDecsooo = fhDecY*fhDecX*fhDecZ
-
-    start_idx = 0
-    ceee, start_idx = coefs_align(coefs,start_idx,start_idx+nQDecseee)
-    ceeo, start_idx = coefs_align(coefs,start_idx,start_idx+nQDecseeo)
-    ceoe, start_idx = coefs_align(coefs,start_idx,start_idx+nQDecseoe)
-    ceoo, start_idx = coefs_align(coefs,start_idx,start_idx+nQDecseoo)
-    coee, start_idx = coefs_align(coefs,start_idx,start_idx+nQDecsoee)
-    coeo, start_idx = coefs_align(coefs,start_idx,start_idx+nQDecsoeo)
-    cooe, start_idx = coefs_align(coefs,start_idx,start_idx+nQDecsooe)
-    cooo, start_idx = coefs_align(coefs,start_idx,start_idx+nQDecsooo)
-
-    nBlocks = coefs.size(0)
-
-    value = torch.zeros(nBlocks,decY_,decX_,decZ_,dtype=x.dtype)
-
-    value[:,0::2,0::2,0::2] = ceee.view(nBlocks,chDecY,chDecX,chDecZ)
-    value[:,0::2,0::2,1::2] = ceeo.view(nBlocks,chDecY,chDecX,fhDecZ)
-    value[:,0::2,1::2,0::2] = ceoe.view(nBlocks,chDecY,fhDecX,chDecZ)
-    value[:,0::2,1::2,1::2] = ceoo.view(nBlocks,chDecY,fhDecX,fhDecZ)
-    value[:,1::2,0::2,0::2] = coee.view(nBlocks,fhDecY,chDecX,chDecZ)
-    value[:,1::2,0::2,1::2] = coeo.view(nBlocks,fhDecY,chDecX,fhDecZ)
-    value[:,1::2,1::2,0::2] = cooe.view(nBlocks,fhDecY,fhDecX,chDecZ)
-    value[:,1::2,1::2,1::2] = cooo.view(nBlocks,fhDecY,fhDecX,fhDecZ)
-    
-    return value
-
-def coefs_align(coefs,start_idx,end_idx):
-    output = coefs[:,start_idx:end_idx]
-    return output, end_idx
