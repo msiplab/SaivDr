@@ -1,6 +1,8 @@
 * Release notes on Sparsity-Aware Image and Volumetric Data Restoration Package
 
 - SaivDr2022xxxx
+-- (Minor) Fixed LambdaMax of linear processes whose original dimension differs from the observed one, which was estimated for an image enlarged twice by the decimation factor
+--- saivdr.degradation.linearprocess.AbstLinearSystem (affects DecimationSystem)
 -- (Major) Changed Mus of the second intermediate rotations from 1 to -1, so that the network with zero angles reduces to the block DCT for any polyphase order, as in saivdr.dictionary.nsoltx
    Networks created before this change keep their stored Mus when loaded. Newly created ones differ in the sign of antisymmetric subbands when the total number of extension pairs is odd.
 --- saivdr.dcnn.fcn_creatensoltlgraph2d
