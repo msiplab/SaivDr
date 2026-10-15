@@ -1,7 +1,7 @@
 {
   "matlab": "26.2.0.3386108 (R2026b)",
-  "saivdr_commit": "b0bfb107a19376c005782ef13b427697969de5c7",
-  "generated": "2026-10-15T11:45:03",
+  "saivdr_commit": "58ea93514b211517b868b220940952d092fcecae",
+  "generated": "2026-10-16T06:14:55",
   "cases": [
     {
       "file": "atoms/Atoms2d_cmp1_nch33_dec22_ppo22_lv1.mat",
@@ -14,6 +14,54 @@
     {
       "file": "atoms/Atoms2d_cmp3_nch33_dec22_ppo02_lv2.mat",
       "sha256": "1bdec941be35c515010d2d62de36ad6787d0479b8c879d11b84ece26eb94b624"
+    },
+    {
+      "file": "degradation/Blur_average_k3_circular.mat",
+      "sha256": "aaa7f719945316853ce6afd7a1ac86be3e55b93963663b0d44f4a069997fdf45"
+    },
+    {
+      "file": "degradation/Blur_average_k4_symmetric.mat",
+      "sha256": "2a9d5d5fec5e73bab2553cb8224470b96eae5742893809d0d10c5feb70303fad"
+    },
+    {
+      "file": "degradation/Blur_custom_replicate.mat",
+      "sha256": "12d5ae3269456eb79e0e85ea7243f1072ee96969bf1d08e49c5306c85be4cde3"
+    },
+    {
+      "file": "degradation/Blur_gaussian_s1p5_k7_value.mat",
+      "sha256": "f9afb2de2bd64234035340631b9ec0c9d9a14b11014ec8887f99dfaabd23343e"
+    },
+    {
+      "file": "degradation/Blur_gaussian_s2_value.mat",
+      "sha256": "c8203b062bd82e839b2adab11d104351c110dd0e2fbab8211cbcaac3b2f311d2"
+    },
+    {
+      "file": "degradation/Decimation_average_d2x3_value.mat",
+      "sha256": "d5412f8042b813c1fc63cc7e527e7c1ec2b85ae5ccace10c5670bf16c19fa95c"
+    },
+    {
+      "file": "degradation/Decimation_gaussian_d2_value.mat",
+      "sha256": "a63bdd901802e285bacd96f496cb1cc273f034fede72c3e7fd551f186370aaf2"
+    },
+    {
+      "file": "degradation/Decimation_identical_d2_value.mat",
+      "sha256": "84d1534f4d6c558fe598ff336b648cefab32fedd3458b387190436f6a0a4047e"
+    },
+    {
+      "file": "degradation/PixelLoss_random_d0p4.mat",
+      "sha256": "760cf3892b74498d143b436eeb773617e5f006ffbd6ee2a326e6d2b4465c476b"
+    },
+    {
+      "file": "ista/Ista_db.mat",
+      "sha256": "c9b2b7848aebe2c92a87174ee0ff8f36d995ea9e41a4ccbaacc80d36a6bef1ed"
+    },
+    {
+      "file": "ista/Ista_ip.mat",
+      "sha256": "385c902b26739a6b579b0e5d5ebf54f99ce6c67726f72a09905a900c99853dc3"
+    },
+    {
+      "file": "ista/Ista_sr.mat",
+      "sha256": "35c23dbee6ab5166d35a484981b08e725d7b77af9d3aa0af56b2c6d6509d4991"
     },
     {
       "file": "layers/AtomExtension2d_nch33_down_difference_double.mat",
@@ -930,6 +978,30 @@
     {
       "file": "networks3d/Nsolt3d_whole_cmp1_nch55_dec222_ppo202_lv2_vm11_double.mat",
       "sha256": "6152ed546b0f8704a30a20da8249e897cad26617fbff87eb3e5c6cbe50452fd8"
+    },
+    {
+      "file": "nsoltx/Nsoltx_designed_lena128_lv1.mat",
+      "sha256": "2336d897acc60fad2377467ca829e1f6e2dff5a0fcd7d3ec09f2a70e9aff9fe3"
+    },
+    {
+      "file": "nsoltx/Nsoltx_designed_lena128_lv4.mat",
+      "sha256": "2a15116f54b72984cf943fbfbfa10bf9bb36b7495cdce3aefc115ea7e635950d"
+    },
+    {
+      "file": "nsoltx/Nsoltx_random_nch22_ppo00_vm0_lv1.mat",
+      "sha256": "86ba7219c55b7c173b467d707e25ef6cb1a1913efc991961ff280c665680d7be"
+    },
+    {
+      "file": "nsoltx/Nsoltx_random_nch33_ppo22_vm1_lv2.mat",
+      "sha256": "4e8fa239cbdf7e8aaea48d0ae36457978cdd9ed30bedb1797a6c00d0d694636e"
+    },
+    {
+      "file": "nsoltx/Nsoltx_random_nch44_ppo04_vm0_lv3.mat",
+      "sha256": "9c4ba29be9d909f0e2f0bfa79259345ac9f6dad68098dbb058332ded1f424dad"
+    },
+    {
+      "file": "nsoltx/Nsoltx_random_nch44_ppo20_vm1_lv1.mat",
+      "sha256": "1406d1415a65eeda78c88f78bccc29ba29fcd19dbf7f901ba765fba654b53f17"
     },
     {
       "file": "params/Params2d_analyzer_nch44_dec22_ppo22_lv2.mat",

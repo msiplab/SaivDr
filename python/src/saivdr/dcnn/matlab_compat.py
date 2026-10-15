@@ -24,7 +24,9 @@ the ``Angles`` and ``Mus`` properties of the MATLAB layers, and the layers
 of the networks are keyed by the MATLAB layer names. :func:`save_params`
 and :func:`load_params` exchange them through a MAT-file that the MATLAB
 functions ``saivdr_export_params`` and ``saivdr_import_params`` (in
-``python/tools/matlab``) read and write.
+``python/tools/matlab``) read and write. :func:`load_nsoltx` builds a
+network from a ``saivdr.dictionary.nsoltx`` filter bank exported by
+``saivdr_export_nsoltx``.
 """
 
 import numpy as np
@@ -38,6 +40,7 @@ __all__ = [
     "set_params",
     "save_params",
     "load_params",
+    "load_nsoltx",
 ]
 
 # MATLAB axis -> PyTorch axis, for each kind of array
@@ -164,3 +167,54 @@ def load_params(net, path, strict=True):
             p["NoDcLeakage"] = bool(ndl)
         params[name] = p
     return set_params(net, params, strict=strict)
+
+
+def _read_params(m):
+    names = [str(np.asarray(n).ravel()[0]) for n in m["names"].ravel()]
+    params = {}
+    for i, name in enumerate(names):
+        p = {
+            "Angles": np.asarray(m["angles"].ravel()[i], dtype=np.float64).reshape(-1),
+            "Mus": np.asarray(m["mus"].ravel()[i], dtype=np.float64).reshape(-1),
+        }
+        ndl = float(np.asarray(m["nodcleakage"]).ravel()[i])
+        if not np.isnan(ndl):
+            p["NoDcLeakage"] = bool(ndl)
+        params[name] = p
+    return params
+
+
+def load_nsoltx(path, mode="Whole", dtype=None, device=None):
+    """Build a 2-D NSOLT network from a ``saivdr.dictionary.nsoltx`` filter bank.
+
+    ``path`` is a MAT-file written by ``saivdr_export_nsoltx`` in MATLAB.
+    The returned network (see :func:`saivdr.dcnn.create_nsolt_2d`) gives the
+    same coefficients as ``saivdr.dictionary.generalfb.Analysis2dSystem``
+    with the analysis filters of the filter bank; serialized by
+    :class:`~saivdr.dcnn.NsoltSubbandSerialization2dLayer`, they are in
+    the same order as the coefficient vector of ``Analysis2dSystem``.
+    """
+    from scipy.io import loadmat
+
+    from .networks import create_nsolt_2d
+
+    m = loadmat(path)
+
+    def vec(key):
+        return tuple(int(v) for v in np.asarray(m[key]).ravel())
+
+    net = create_nsolt_2d(
+        number_of_channels=vec("number_of_channels"),
+        decimation_factor=vec("decimation_factor"),
+        polyphase_order=vec("polyphase_order"),
+        number_of_levels=vec("number_of_levels")[0],
+        number_of_vanishing_moments=vec("number_of_vanishing_moments")[0],
+        mode=mode,
+        dtype=dtype,
+        device=device,
+    )
+    params = _read_params(m)
+    missing = set(rotation_layers(net)) - set(params)
+    if missing:
+        raise KeyError(f"Parameters of {sorted(missing)} are not found in {path}")
+    return set_params(net, params, strict=False)

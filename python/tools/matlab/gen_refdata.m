@@ -8,7 +8,8 @@ function gen_refdata(varargin)
 %   gen_refdata('Name',Value,...) accepts
 %     'OutDir'  : output folder (default: <this folder>/../../tests/refdata)
 %     'Groups'  : string array of groups to generate, from
-%                 "layers", "networks2d", "networks3d", "atoms", "params"
+%                 "layers", "networks2d", "networks3d", "atoms", "params",
+%                 "nsoltx", "degradation", "ista"
 %                 (default: all)
 %     'Filter'  : regular expression on the case names (default: '.*')
 %
@@ -34,7 +35,8 @@ function gen_refdata(varargin)
 p = inputParser;
 here = fileparts(mfilename('fullpath'));
 addParameter(p,'OutDir',fullfile(here,'..','..','tests','refdata'))
-addParameter(p,'Groups',["layers","networks2d","networks3d","atoms","params"])
+addParameter(p,'Groups',["layers","networks2d","networks3d","atoms","params",...
+    "nsoltx","degradation","ista"])
 addParameter(p,'Filter','.*')
 parse(p,varargin{:})
 outDir = char(p.Results.OutDir);
@@ -64,6 +66,12 @@ end
 if any(groups=="params")
     manifest.cases = [manifest.cases; run_(refgen.paramcases(),@refgen.genparams,...
         fullfile(outDir,'params'),filter)];
+end
+for group = ["nsoltx","degradation","ista"]
+    if any(groups==group)
+        manifest.cases = [manifest.cases; run_(feval(['refgen.' char(group) 'cases']),...
+            str2func(['refgen.gen' char(group)]),fullfile(outDir,char(group)),filter)];
+    end
 end
 % Merge with an existing manifest so that partial regeneration keeps the others
 manifestFile = fullfile(outDir,'manifest.json');
