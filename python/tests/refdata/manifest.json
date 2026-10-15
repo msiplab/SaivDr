@@ -1,7 +1,7 @@
 {
   "matlab": "26.2.0.3386108 (R2026b)",
-  "saivdr_commit": "58ea93514b211517b868b220940952d092fcecae",
-  "generated": "2026-10-16T06:14:55",
+  "saivdr_commit": "6b4f124454947ab7e3624dcf7a84ab9192cacb69",
+  "generated": "2026-10-16T06:17:23",
   "cases": [
     {
       "file": "atoms/Atoms2d_cmp1_nch33_dec22_ppo22_lv1.mat",
@@ -1006,6 +1006,14 @@
     {
       "file": "params/Params2d_analyzer_nch44_dec22_ppo22_lv2.mat",
       "sha256": "fcf39deab586ac3cf51579198206783524a465244af3e0345b2c0669bb05b55f"
+    },
+    {
+      "file": "sparserep/Iht_lena128_lv1_n128_it30.mat",
+      "sha256": "812bd9580d653e4dce6a04c60563201abd66ceea047825b49ca16579ec3640a9"
+    },
+    {
+      "file": "sparserep/Iht_lena128_lv2_n512_it1000.mat",
+      "sha256": "b4ee3464ae9f4fe967d1f7fba4c7aba589a842730f4799a180dc15d67a5c6139"
     }
   ]
 }

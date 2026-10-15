@@ -9,7 +9,7 @@ function gen_refdata(varargin)
 %     'OutDir'  : output folder (default: <this folder>/../../tests/refdata)
 %     'Groups'  : string array of groups to generate, from
 %                 "layers", "networks2d", "networks3d", "atoms", "params",
-%                 "nsoltx", "degradation", "ista"
+%                 "nsoltx", "degradation", "ista", "sparserep"
 %                 (default: all)
 %     'Filter'  : regular expression on the case names (default: '.*')
 %
@@ -36,7 +36,7 @@ p = inputParser;
 here = fileparts(mfilename('fullpath'));
 addParameter(p,'OutDir',fullfile(here,'..','..','tests','refdata'))
 addParameter(p,'Groups',["layers","networks2d","networks3d","atoms","params",...
-    "nsoltx","degradation","ista"])
+    "nsoltx","degradation","ista","sparserep"])
 addParameter(p,'Filter','.*')
 parse(p,varargin{:})
 outDir = char(p.Results.OutDir);
@@ -67,7 +67,7 @@ if any(groups=="params")
     manifest.cases = [manifest.cases; run_(refgen.paramcases(),@refgen.genparams,...
         fullfile(outDir,'params'),filter)];
 end
-for group = ["nsoltx","degradation","ista"]
+for group = ["nsoltx","degradation","ista","sparserep"]
     if any(groups==group)
         manifest.cases = [manifest.cases; run_(feval(['refgen.' char(group) 'cases']),...
             str2func(['refgen.gen' char(group)]),fullfile(outDir,char(group)),filter)];

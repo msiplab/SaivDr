@@ -184,7 +184,7 @@ def _read_params(m):
     return params
 
 
-def load_nsoltx(path, mode="Whole", dtype=None, device=None):
+def load_nsoltx(path, mode="Whole", number_of_levels=None, dtype=None, device=None):
     """Build a 2-D NSOLT network from a ``saivdr.dictionary.nsoltx`` filter bank.
 
     ``path`` is a MAT-file written by ``saivdr_export_nsoltx`` in MATLAB.
@@ -193,6 +193,9 @@ def load_nsoltx(path, mode="Whole", dtype=None, device=None):
     with the analysis filters of the filter bank; serialized by
     :class:`~saivdr.dcnn.NsoltSubbandSerialization2dLayer`, they are in
     the same order as the coefficient vector of ``Analysis2dSystem``.
+
+    ``number_of_levels`` overrides the number of tree levels in the file; as
+    in ``Analysis2dSystem``, every level uses the filter bank of level 1.
     """
     from scipy.io import loadmat
 
@@ -203,17 +206,20 @@ def load_nsoltx(path, mode="Whole", dtype=None, device=None):
     def vec(key):
         return tuple(int(v) for v in np.asarray(m[key]).ravel())
 
+    if number_of_levels is None:
+        number_of_levels = vec("number_of_levels")[0]
     net = create_nsolt_2d(
         number_of_channels=vec("number_of_channels"),
         decimation_factor=vec("decimation_factor"),
         polyphase_order=vec("polyphase_order"),
-        number_of_levels=vec("number_of_levels")[0],
+        number_of_levels=number_of_levels,
         number_of_vanishing_moments=vec("number_of_vanishing_moments")[0],
         mode=mode,
         dtype=dtype,
         device=device,
     )
-    params = _read_params(m)
+    lv1 = {name[len("Lv1_") :]: p for name, p in _read_params(m).items() if name.startswith("Lv1_")}
+    params = {f"Lv{iLv}_{name}": p for iLv in range(1, number_of_levels + 1) for name, p in lv1.items()}
     missing = set(rotation_layers(net)) - set(params)
     if missing:
         raise KeyError(f"Parameters of {sorted(missing)} are not found in {path}")

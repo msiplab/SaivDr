@@ -40,3 +40,14 @@ def test_analyzer_only(tmp_path):
     x = torch.rand(1, 1, 32, 32, dtype=torch.float64)
     for a, b in zip(ana(x), whole.analyzer(x)):
         torch.testing.assert_close(a, b)
+
+
+def test_number_of_levels_override():
+    """A 1-level export with number_of_levels=4 equals the 4-level export."""
+    lv1 = [p for p in FILES if p.stem == "Nsoltx_designed_lena128_lv1"][0]
+    lv4 = [p for p in FILES if p.stem == "Nsoltx_designed_lena128_lv4"][0]
+    a = load_nsoltx(lv1, mode="Analyzer", number_of_levels=4, dtype=torch.float64)
+    b = load_nsoltx(lv4, mode="Analyzer", dtype=torch.float64)
+    x = torch.rand(1, 1, 64, 64, dtype=torch.float64)
+    for u, v in zip(a(x), b(x)):
+        torch.testing.assert_close(u, v)
