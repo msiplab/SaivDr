@@ -59,7 +59,6 @@ def main():
     parser.add_argument("--output", default=None, help="save the atomic images (requires matplotlib)")
     args = parser.parse_args()
 
-    torch.manual_seed(0)
     gen = torch.Generator().manual_seed(0)
     cfg = dict(
         number_of_channels=(3, 3),
@@ -73,7 +72,7 @@ def main():
     synthesizer = create_nsolt_2d(mode="Synthesizer", **cfg)
     with torch.no_grad():
         for p in synthesizer.parameters():
-            p.add_(torch.randn_like(p) * math.pi / 6)
+            p.add_(torch.randn(p.shape, generator=gen).to(p) * math.pi / 6)
     copy_params_syn2ana(analyzer, synthesizer)
 
     patches = random_patches(load_image(args.image), patch_size, 64, gen).to(args.device)
