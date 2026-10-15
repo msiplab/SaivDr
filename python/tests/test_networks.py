@@ -1,7 +1,5 @@
 """Properties of the networks that do not need the MATLAB reference data."""
 
-import warnings
-
 import pytest
 import torch
 
@@ -159,11 +157,3 @@ def test_deprecated_builders():
     assert isinstance(ana, dcnn.NsoltAnalyzer2d) and isinstance(syn, dcnn.NsoltSynthesizer2d)
     with pytest.warns(DeprecationWarning):
         assert isinstance(dcnn.createsdiplgraph2d(), dcnn.NsoltNetwork2d)
-
-
-def test_legacy_names_warn():
-    with pytest.warns(DeprecationWarning):
-        cls = dcnn.NsoltAnalysis2dNetwork
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore")
-        assert cls.__module__ == "saivdr.dcnn.legacy.analysis_2d"

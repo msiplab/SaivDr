@@ -8,9 +8,6 @@ Arrays follow the PyTorch convention: images are ``N x C x H x W`` (2-D) or
 conversion from and to MATLAB.
 """
 
-import importlib
-import warnings
-
 from . import matlab_compat
 from ._dct import block_dct_matrix_2d, block_dct_matrix_3d, dctmtx
 from ._orthmtx import orthmtxgen
@@ -56,27 +53,3 @@ __all__ = [
     "matlab_compat",
     "orthmtxgen",
 ]
-
-# Names of the former appendix/torch_nsolt API, resolved lazily from
-# saivdr.dcnn.legacy with a DeprecationWarning
-_LEGACY = {
-    "NsoltAnalysis2dNetwork": "analysis_2d",
-    "NsoltSynthesis2dNetwork": "synthesis_2d",
-    "OrthonormalTransform": "orthonormal_transform",
-    "OrthonormalMatrixGenerationSystem": "utility",
-}
-
-
-def __getattr__(name):
-    if name in _LEGACY:
-        warnings.warn(
-            f"saivdr.dcnn.{name} is the deprecated channel-last implementation in "
-            "saivdr.dcnn.legacy; use create_nsolt_2d or the new layers instead",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore", DeprecationWarning)
-            module = importlib.import_module(f".legacy.{_LEGACY[name]}", __name__)
-        return getattr(module, name)
-    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

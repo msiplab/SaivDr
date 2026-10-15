@@ -27,7 +27,7 @@ Optional extras:
 |---|---|---|
 | `saivdr[matlab]` | scipy | Exchanging parameters with MATLAB through MAT-files |
 | `saivdr[viz]` | matplotlib | `atomic_imshow` |
-| `saivdr[test]` | pytest, scipy, parameterized | Running the tests |
+| `saivdr[test]` | pytest, scipy | Running the tests |
 | `saivdr[dev]` | all of the above, ruff, build | Development |
 
 ## Quick start
@@ -188,15 +188,13 @@ pytest -m "not gpu"     # tests that need CUDA are marked with gpu
 ruff check . && ruff format --check .
 ```
 
-`tests/legacy` holds the tests of the former implementation (below).
-
 ## Former implementation
 
-`appendix/torch_nsolt` has moved to `saivdr.dcnn.legacy` without changes in
-behavior. It uses the channel-last layout `N x nRows x nCols x nChs` and is
-deprecated. Importing it, or `NsoltAnalysis2dNetwork` and
-`NsoltSynthesis2dNetwork` from `saivdr.dcnn`, emits a `DeprecationWarning`.
-It will be removed in a future release.
+The former PyTorch implementation in `appendix/torch_nsolt`, which used the
+channel-last layout `N x nRows x nCols x nChs`, has been removed. Its
+functionality is covered by `saivdr.dcnn`: replace `NsoltAnalysis2dNetwork`
+and `NsoltSynthesis2dNetwork` with `create_nsolt_2d(mode="Analyzer")` and
+`create_nsolt_2d(mode="Synthesizer")`.
 
 ## License
 
