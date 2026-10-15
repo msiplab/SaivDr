@@ -157,3 +157,17 @@ def test_deprecated_builders():
     assert isinstance(ana, dcnn.NsoltAnalyzer2d) and isinstance(syn, dcnn.NsoltSynthesizer2d)
     with pytest.warns(DeprecationWarning):
         assert isinstance(dcnn.createsdiplgraph2d(), dcnn.NsoltNetwork2d)
+
+
+def test_share_level_params():
+    net = create_nsolt_2d(number_of_channels=(3, 3), polyphase_order=(2, 2), number_of_levels=3, dtype=DT)
+    n_before = sum(p.numel() for p in net.parameters())
+    dcnn.share_level_params(net)
+    assert sum(p.numel() for p in net.parameters()) == n_before // 3
+    with torch.no_grad():
+        net.layers["Lv1_Cmp1_Vh1"].angles.fill_(0.3)
+    assert torch.all(net.layers["Lv3_Cmp1_Vh1"].angles == 0.3)
+    randomize(net)
+    copy_params_syn2ana(net.analyzer, net.synthesizer)
+    x = torch.randn(1, 1, 32, 32, dtype=DT)
+    torch.testing.assert_close(net(x), x)

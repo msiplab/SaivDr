@@ -41,7 +41,12 @@ net = create_nsolt_2d(number_of_channels=(3, 3), decimation_factor=(2, 2),
 y = net(torch.rand(1, 1, 32, 32))  # N x C x H x W
 ```
 
-See [python/README.md](python/README.md) for details.
+The package also provides the degradation processes, ISTA-based restoration
+and iterative hard thresholding used in the examples, and loads NSOLTs
+designed by `saivdr.dictionary.nsoltx`. Jupyter notebooks corresponding to
+`examples/quickdesign` and `examples/rgbdemos` are in
+[python/examples/notebooks](python/examples/notebooks). See
+[python/README.md](python/README.md) for details.
 
 ## Project Structure
         

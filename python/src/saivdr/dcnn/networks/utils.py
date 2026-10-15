@@ -14,6 +14,7 @@ from ..layers import (
 from ..layers.rotation import _RotationBase
 
 __all__ = [
+    "share_level_params",
     "copy_params_syn2ana",
     "copy_params_ana2syn",
     "attach_serialization_layers",
@@ -30,6 +31,30 @@ def _copy(dst, src):
         dst.mus.copy_(src.mus.to(dst.mus))
     if hasattr(dst, "no_dc_leakage") and hasattr(src, "no_dc_leakage"):
         dst.no_dc_leakage = src.no_dc_leakage
+
+
+def share_level_params(net):
+    """Make every level of ``net`` share the rotation parameters of level 1.
+
+    After this, ``Lv{k}_X`` (k >= 2) refers to the same ``angles`` parameter
+    and ``mus`` buffer as ``Lv1_X``, so that the network is a tree of a
+    single filter bank, as ``saivdr.dictionary.generalfb.Analysis2dSystem``
+    and the nsoltx dictionary learning assume. ``net`` is modified in place
+    and returned; ``net.parameters()`` then yields each shared parameter once.
+    """
+    nets = [net.analyzer, net.synthesizer] if hasattr(net, "analyzer") else [net]
+    for n in nets:
+        layers = n.layers
+        for name, layer in layers.items():
+            m = re.match(r"^(.*)Lv(\d+)_(.+)$", name)
+            if m is None or m.group(2) == "1" or not isinstance(layer, _RotationBase):
+                continue
+            src = layers[f"{m.group(1)}Lv1_{m.group(3)}"]
+            layer.angles = src.angles
+            layer._buffers["mus"] = src.mus
+            if hasattr(src, "no_dc_leakage"):
+                layer.no_dc_leakage = src.no_dc_leakage
+    return net
 
 
 def copy_params_syn2ana(analyzer, synthesizer, verbose=False):

@@ -15,6 +15,7 @@ from .utils import (
     attach_serialization_layers,
     copy_params_ana2syn,
     copy_params_syn2ana,
+    share_level_params,
 )
 
 __all__ = [
@@ -33,4 +34,5 @@ __all__ = [
     "create_nsolt_3d",
     "creatensoltlgraphs2d",
     "createsdiplgraph2d",
+    "share_level_params",
 ]

@@ -21,7 +21,8 @@ classifiers = [
 matlab = ["scipy>=1.10"]
 viz = ["matplotlib>=3.6"]
 test = ["pytest>=7.4", "scipy>=1.10"]
-dev = ["saivdr[test,viz]", "ruff>=0.6", "build"]
+examples = ["scipy>=1.10", "matplotlib>=3.6", "scikit-image>=0.20", "ipykernel"]
+dev = ["saivdr[test,examples]", "ruff>=0.6", "build", "nbconvert", "nbformat"]
 
 [project.urls]
 Repository = "https://github.com/msiplab/SaivDr"
