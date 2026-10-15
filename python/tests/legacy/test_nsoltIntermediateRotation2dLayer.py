@@ -4,9 +4,9 @@ from parameterized import parameterized
 import math
 import torch
 import torch.nn as nn
-from nsoltIntermediateRotation2dLayer import NsoltIntermediateRotation2dLayer
-from nsoltUtility import Direction, OrthonormalMatrixGenerationSystem
-from nsoltLayerExceptions import InvalidMode, InvalidMus
+from saivdr.dcnn.legacy.intermediate_rotation_2d import NsoltIntermediateRotation2dLayer
+from saivdr.dcnn.legacy.utility import Direction, OrthonormalMatrixGenerationSystem
+from saivdr.dcnn.legacy.exceptions import InvalidMode, InvalidMus
 
 nchs = [ [2, 2], [3, 3], [4, 4] ]
 mus = [ -1, 1 ]

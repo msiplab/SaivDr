@@ -3,7 +3,7 @@ import unittest
 from parameterized import parameterized
 import torch
 import math
-from nsoltUtility import OrthonormalMatrixGenerationSystem
+from saivdr.dcnn.legacy.utility import OrthonormalMatrixGenerationSystem
 
 datatype = [ torch.float, torch.double ]
 isdevicetest = True

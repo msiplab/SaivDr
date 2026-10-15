@@ -1,7 +1,7 @@
 import unittest
 import torch
 import torch.nn as nn
-from nsoltSubbandDeserialization2dLayer import NsoltSubbandDeserialization2dLayer
+from saivdr.dcnn.legacy.subband_deserialization_2d import NsoltSubbandDeserialization2dLayer
 
 class NsoltSubbandDeserialization2dLayerTestCase(unittest.TestCase):
     """

@@ -1,12 +1,12 @@
 import torch
 import torch.nn as nn
-from nsoltBlockIdct2dLayer import NsoltBlockIdct2dLayer 
-from nsoltFinalRotation2dLayer import NsoltFinalRotation2dLayer 
-from nsoltAtomExtension2dLayer import NsoltAtomExtension2dLayer
-from nsoltIntermediateRotation2dLayer import NsoltIntermediateRotation2dLayer
-from nsoltChannelConcatenation2dLayer import NsoltChannelConcatenation2dLayer
-from nsoltLayerExceptions import InvalidNumberOfChannels, InvalidPolyPhaseOrder, InvalidNumberOfVanishingMoments, InvalidNumberOfLevels
-from nsoltUtility import Direction
+from .block_idct_2d import NsoltBlockIdct2dLayer 
+from .final_rotation_2d import NsoltFinalRotation2dLayer 
+from .atom_extension_2d import NsoltAtomExtension2dLayer
+from .intermediate_rotation_2d import NsoltIntermediateRotation2dLayer
+from .channel_concatenation_2d import NsoltChannelConcatenation2dLayer
+from .exceptions import InvalidNumberOfChannels, InvalidPolyPhaseOrder, InvalidNumberOfVanishingMoments, InvalidNumberOfLevels
+from .utility import Direction
 
 class NsoltSynthesis2dNetwork(nn.Module):
     """
@@ -157,7 +157,7 @@ class NsoltSynthesis2dNetwork(nn.Module):
 
     @property
     def T(self):
-        from nsoltAnalysis2dNetwork import NsoltAnalysis2dNetwork
+        from .analysis_2d import NsoltAnalysis2dNetwork
         import re
 
         # Create analyzer as the adjoint of SELF
@@ -178,7 +178,7 @@ class NsoltSynthesis2dNetwork(nn.Module):
         syn_state_dict = self.state_dict()
         ana_state_dict = analyzer.state_dict()
         for key in syn_state_dict.keys():
-            istage_ana = int(re.sub('^layers\.|\.Lv\d_.+$','',key))            
+            istage_ana = int(re.sub(r'^layers\.|\.Lv\d_.+$','',key))            
             istage_syn = (nlevels-1)-istage_ana
             angs = syn_state_dict[key]
             ana_state_dict[key\

@@ -2,8 +2,8 @@ import torch
 import torch.nn as nn
 import torch.autograd as autograd
 #import numpy as np
-from nsoltUtility import OrthonormalMatrixGenerationSystem
-from nsoltLayerExceptions import InvalidMode, InvalidMus
+from .utility import OrthonormalMatrixGenerationSystem
+from .exceptions import InvalidMode, InvalidMus
 
 class OrthonormalTransform(nn.Module):
     """

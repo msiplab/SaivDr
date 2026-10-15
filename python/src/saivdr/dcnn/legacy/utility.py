@@ -1,6 +1,6 @@
 import torch
 import math
-from nsoltLayerExceptions import InvalidIndex
+from .exceptions import InvalidIndex
 
 def dct(x): 
     """ 

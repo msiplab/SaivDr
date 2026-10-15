@@ -5,8 +5,8 @@ import torch
 import torch.nn as nn
 import torch_dct as dct
 import math
-from nsoltBlockDct3dLayer import NsoltBlockDct3dLayer
-from nsoltUtility import Direction
+from saivdr.dcnn.legacy.block_dct_3d import NsoltBlockDct3dLayer
+from saivdr.dcnn.legacy.utility import Direction
 
 stride = [ [1, 1, 1], [2, 2, 2], [1, 2, 4], [4, 2, 1], [2, 4, 1], [4, 4, 2], [2, 4, 4] ]
 datatype = [ torch.float, torch.double ]

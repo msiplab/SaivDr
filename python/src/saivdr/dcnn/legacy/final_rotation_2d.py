@@ -1,8 +1,8 @@
 import torch
 import torch.nn as nn
 import math
-from nsoltUtility import Direction
-from orthonormalTransform import OrthonormalTransform
+from .utility import Direction
+from .orthonormal_transform import OrthonormalTransform
 
 class NsoltFinalRotation2dLayer(nn.Module):
     """

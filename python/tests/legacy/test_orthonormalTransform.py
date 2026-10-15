@@ -5,9 +5,9 @@ import torch
 import torch.nn as nn
 import math
 from random import *
-from orthonormalTransform import OrthonormalTransform
-from nsoltLayerExceptions import InvalidMode, InvalidMus
-from nsoltUtility import OrthonormalMatrixGenerationSystem
+from saivdr.dcnn.legacy.orthonormal_transform import OrthonormalTransform
+from saivdr.dcnn.legacy.exceptions import InvalidMode, InvalidMus
+from saivdr.dcnn.legacy.utility import OrthonormalMatrixGenerationSystem
 
 datatype = [ torch.float, torch.double ]
 ncols = [ 1, 2, 4 ]

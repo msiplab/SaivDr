@@ -3,9 +3,9 @@ import unittest
 from parameterized import parameterized
 import random
 import torch
-from nsoltSynthesis2dNetwork import NsoltSynthesis2dNetwork
-from nsoltAnalysis2dNetwork import NsoltAnalysis2dNetwork
-from orthonormalTransform import OrthonormalTransform
+from saivdr.dcnn.legacy.synthesis_2d import NsoltSynthesis2dNetwork
+from saivdr.dcnn.legacy.analysis_2d import NsoltAnalysis2dNetwork
+from saivdr.dcnn.legacy.orthonormal_transform import OrthonormalTransform
 
 nchs = [ [2, 2], [3, 3], [4, 4] ]
 stride = [ [1, 1], [1, 2], [2, 1], [2, 2] ]

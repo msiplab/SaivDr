@@ -6,11 +6,11 @@ import random
 import torch
 import torch.nn as nn
 #import torch_dct as dct
-from orthonormalTransform import OrthonormalTransform
-from nsoltUtility import OrthonormalMatrixGenerationSystem
-from nsoltAnalysis2dNetwork import NsoltAnalysis2dNetwork
-from nsoltLayerExceptions import InvalidNumberOfChannels, InvalidPolyPhaseOrder, InvalidNumberOfVanishingMoments, InvalidNumberOfLevels
-from nsoltUtility import Direction, dct_2d
+from saivdr.dcnn.legacy.orthonormal_transform import OrthonormalTransform
+from saivdr.dcnn.legacy.utility import OrthonormalMatrixGenerationSystem
+from saivdr.dcnn.legacy.analysis_2d import NsoltAnalysis2dNetwork
+from saivdr.dcnn.legacy.exceptions import InvalidNumberOfChannels, InvalidPolyPhaseOrder, InvalidNumberOfVanishingMoments, InvalidNumberOfLevels
+from saivdr.dcnn.legacy.utility import Direction, dct_2d
 
 nchs = [ [2, 2], [3, 3], [4, 4] ]
 stride = [ [1, 1], [1, 2], [2, 1], [2, 2] ]

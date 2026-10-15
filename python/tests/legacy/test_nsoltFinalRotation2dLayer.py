@@ -4,8 +4,8 @@ from parameterized import parameterized
 import math
 import torch
 import torch.nn as nn
-from nsoltFinalRotation2dLayer import NsoltFinalRotation2dLayer
-from nsoltUtility import Direction, OrthonormalMatrixGenerationSystem
+from saivdr.dcnn.legacy.final_rotation_2d import NsoltFinalRotation2dLayer
+from saivdr.dcnn.legacy.utility import Direction, OrthonormalMatrixGenerationSystem
 
 nchs = [ [2, 2], [3, 3], [4, 4] ]
 stride = [ [1, 1], [1, 2], [2, 1], [2, 2] ]

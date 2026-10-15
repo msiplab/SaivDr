@@ -3,7 +3,7 @@ import unittest
 from parameterized import parameterized
 import torch
 import torch.nn as nn
-from nsoltAtomExtension2dLayer import NsoltAtomExtension2dLayer
+from saivdr.dcnn.legacy.atom_extension_2d import NsoltAtomExtension2dLayer
 
 nchs = [ [3,3], [4,4] ]
 datatype = [ torch.float, torch.double ]

@@ -3,7 +3,7 @@ import unittest
 from parameterized import parameterized
 import torch
 import torch.nn as nn
-from nsoltChannelConcatenation2dLayer import NsoltChannelConcatenation2dLayer
+from saivdr.dcnn.legacy.channel_concatenation_2d import NsoltChannelConcatenation2dLayer
 
 nchs = [ [3, 3], [4, 4] ]
 datatype = [ torch.float, torch.double ]

@@ -3,7 +3,7 @@ import unittest
 from parameterized import parameterized
 import torch
 import torch.nn as nn
-from nsoltChannelSeparation2dLayer import NsoltChannelSeparation2dLayer
+from saivdr.dcnn.legacy.channel_separation_2d import NsoltChannelSeparation2dLayer
 
 nchs = [ [3, 3], [4, 4] ]
 datatype = [ torch.float, torch.double ]

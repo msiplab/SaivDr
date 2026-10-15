@@ -1,22 +1,21 @@
 import torch
 import torch.nn as nn
-#import torch_dct as dct
 import math
-from nsoltUtility import Direction, block_dct_matrix_2d
+from .utility import Direction, block_dct_matrix_3d
 
-class NsoltBlockDct2dLayer(nn.Module):
+class NsoltBlockDct3dLayer(nn.Module):
     """
-    NSOLTBLOCKDCT2DLAYER
+    NSOLTBLOCKCDT3DLAYER
     
        ベクトル配列をブロック配列を入力:
-          nSamples x nComponents x (Stride(1)xnRows) x (Stride(2)xnCols) 
+          nSamples x nComponents x (Stride[0]xnRows) x (Stride[1]xnCols) x (Stride[2]xnLays)
     
        コンポーネント別に出力(nComponents):
-          nSamples x nDecs x nRows x nCols 
+          nSamples x nDecs x nRows x nCols x nLays
         
-    Requirements: Python 3.7.x, PyTorch 1.7.x/1.8.x
+    Requirements: Python 3.7.x, PyTorch 1.7.x
     
-    Copyright (c) 2020-2021, Shogo MURAMATSU
+    Copyright (c) 2020-2021, Yuya Kodama, Shogo MURAMATSU
     
     All rights reserved.
     
@@ -33,12 +32,13 @@ class NsoltBlockDct2dLayer(nn.Module):
         decimation_factor=[],
         number_of_components=1
         ):
-        super(NsoltBlockDct2dLayer, self).__init__()
+        super(NsoltBlockDct3dLayer, self).__init__()
         self.decimation_factor = decimation_factor
         self.name = name
         self.description = "Block DCT of size " \
             + str(self.decimation_factor[Direction.VERTICAL]) + "x" \
-            + str(self.decimation_factor[Direction.HORIZONTAL])
+            + str(self.decimation_factor[Direction.HORIZONTAL]) + "x" \
+            + str(self.decimation_factor[Direction.DEPTH])
         #self.type = ''
         self.num_outputs = number_of_components
         #self.num_inputs = 1
@@ -48,23 +48,26 @@ class NsoltBlockDct2dLayer(nn.Module):
         nSamples = X.size(0)
         height = X.size(2)
         width = X.size(3)
+        depth = X.size(4)
         stride = self.decimation_factor
         decV = stride[Direction.VERTICAL]
         decH = stride[Direction.HORIZONTAL]
+        decD = stride[Direction.DEPTH]
         nrows = int(math.ceil(height/decV))
         ncols = int(math.ceil(width/decH))
-        ndecs = decV*decH
+        nlays = int(math.ceil(depth/decD))
+        ndecs = decV*decH*decD
 
-        # Block DCT matrix (the same as Cvh in MATLAB nsoltBlockDct2dLayer)
-        Cvh = block_dct_matrix_2d(stride,dtype=X.dtype,device=X.device)
-        # Split into decV x decH blocks, whose pixels are arranged in
+        # Block DCT matrix (the same as Cvhd in MATLAB nsoltBlockDct3dLayer)
+        Cvhd = block_dct_matrix_3d(stride,dtype=X.dtype,device=X.device)
+        # Split into decV x decH x decD blocks, whose voxels are arranged in
         # column-major order as in MATLAB:
-        # (nSamples x nComponents x nrows x ncols) x (decH x decV)
-        arrayX = X.reshape(nSamples,nComponents,nrows,decV,ncols,decH)\
-            .permute(0,1,2,4,5,3)\
-            .reshape(nSamples,nComponents,nrows,ncols,ndecs)
-        # Apply the DCT: nSamples x nComponents x nrows x ncols x ndecs
-        Z = arrayX @ Cvh.T
+        # (nSamples x nComponents x nrows x ncols x nlays) x (decD x decH x decV)
+        arrayX = X.reshape(nSamples,nComponents,nrows,decV,ncols,decH,nlays,decD)\
+            .permute(0,1,2,4,6,7,5,3)\
+            .reshape(nSamples,nComponents,nrows,ncols,nlays,ndecs)
+        # Apply the DCT: nSamples x nComponents x nrows x ncols x nlays x ndecs
+        Z = arrayX @ Cvhd.T
 
         if nComponents<2:
             return torch.squeeze(Z,dim=1)

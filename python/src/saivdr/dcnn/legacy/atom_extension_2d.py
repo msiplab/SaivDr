@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.autograd as autograd
-from nsoltLayerExceptions import InvalidDirection, InvalidTargetChannels
+from .exceptions import InvalidDirection, InvalidTargetChannels
 
 class NsoltAtomExtension2dLayer(nn.Module):
     """
