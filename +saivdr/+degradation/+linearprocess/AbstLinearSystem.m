@@ -97,7 +97,7 @@ classdef (Abstract) AbstLinearSystem < matlab.System %#codegen
             obj.OriginalDimension = getOriginalDimension(...
                 obj,obj.ObservedDimension);
             obj.LambdaMax = getMaxEigenValueGram_(...
-                obj,obj.OriginalDimension);            
+                obj,obj.ObservedDimension); % converted to the original dimension inside            
         end
         
         function output = stepImpl(obj,input)

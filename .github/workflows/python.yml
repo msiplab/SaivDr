@@ -1,0 +1,67 @@
+name: Python (saivdr.dcnn)
+
+on:
+  push:
+    paths: ["python/**", ".github/workflows/python.yml"]
+  pull_request:
+    paths: ["python/**", ".github/workflows/python.yml"]
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: python
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - run: pip install ruff
+      - run: ruff check .
+      - run: ruff format --check .
+
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - python: "3.10"
+            torch: "\"torch==2.1.2\" \"numpy<2\""
+          - python: "3.12"
+            torch: "torch"
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Install PyTorch (CPU)
+        run: pip install ${{ matrix.torch }} --extra-index-url https://download.pytorch.org/whl/cpu
+      - name: Install saivdr (non-editable, to test the packaging)
+        run: pip install ".[test]"
+      - name: Run tests
+        run: pytest -m "not gpu" -q
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - run: pip install build
+      - run: python -m build
+      - name: Check the wheel contents
+        run: |
+          python -m zipfile -l dist/*.whl | tee wheel.txt
+          ! grep -q refdata wheel.txt
+          grep -q saivdr/dcnn/layers/rotation.py wheel.txt
+      - name: Install the wheel and import
+        run: |
+          python -m venv /tmp/venv
+          /tmp/venv/bin/pip install torch --index-url https://download.pytorch.org/whl/cpu
+          /tmp/venv/bin/pip install dist/*.whl
+          cd /tmp && /tmp/venv/bin/python -c "import saivdr.dcnn as d; print(d.create_nsolt_2d()(__import__('torch').zeros(1,1,8,8)).shape)"
