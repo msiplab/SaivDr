@@ -27,7 +27,7 @@ configurations and parts of your network.
         
        Files
          mytest     - Script of unit testing for SaivDr Package
-         quickstart - Quickstart of *SaivDr Package*
+         quickstart - Quickstart of *SaivDr Package* (live script; Python: quickstart.ipynb)
          setpath    - Path setup for *SaivDr Package*
       
        * Package structure
