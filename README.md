@@ -45,14 +45,16 @@ The package also provides the degradation processes, ISTA-based restoration
 and iterative hard thresholding used in the examples, and loads NSOLTs
 designed by `saivdr.dictionary.nsoltx`. Jupyter notebooks corresponding to
 `examples/quickdesign` and `examples/rgbdemos` are in
-[python/examples/notebooks](python/examples/notebooks). See
+[python/examples/notebooks](python/examples/notebooks), and
+[quickstart.ipynb](quickstart.ipynb) is the counterpart of the live script
+`quickstart`. See
 [python/README.md](python/README.md) for details.
 
 ## Project Structure
         
        Files
          mytest     - Script of unit testing for SaivDr Package
-         quickstart - Quickstart of *SaivDr Package*
+         quickstart - Quickstart of *SaivDr Package* (live script; Python: quickstart.ipynb)
          setpath    - Path setup for *SaivDr Package*
 
        Folders
