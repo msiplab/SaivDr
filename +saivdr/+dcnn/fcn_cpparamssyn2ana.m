@@ -31,6 +31,10 @@ for iLayer = 1:nLayers
         if isa(alayer,'saivdr.dcnn.nsoltInitialRotation2dLayer')
             alayer.NoDcLeakage = slayer.NoDcLeakage;
         end
+        if isprop(slayer,'BoundaryOperation')
+            alayer.Direction = slayer.Direction;
+            alayer.BoundaryOperation = slayer.BoundaryOperation;
+        end
         analysislgraph = analysislgraph.replaceLayer(alayerName,alayer);
         disp("Copy angles from " + slayer.Name + " to " + alayerName)
     end

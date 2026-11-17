@@ -256,6 +256,71 @@ subplot(2,2,4)
 imshow(wnfImg)
 title(['{\bf u}\^ by Wiener: ' num2str(psnr_wfdc) ' [dB]'])
 %%
+%[text] ## Create NSOLT networks with Deep Learning Toolbox
+%[text] The package saivdr.dcnn provides NSOLT as custom layers of Deep Learning Toolbox. The function saivdr.dcnn.fcn\_creatensoltlgraph2d creates the layer graphs of the analysis and synthesis NSOLTs with the same parameters as above. The option 'BoundaryOperation' specifies how the blocks on the image boundary are processed:
+%[text] - 'Circular': The image is extended periodically, so the left and right (top and bottom) edges are treated as adjacent.
+%[text] - 'Termination': The boundary blocks are rotated by $-\\mathbf{I}$ in the intermediate rotation layers right after the shift of the difference channels, so that no coefficients wrap around to the opposite boundary, as in saivdr.dictionary.nsoltx with BoundaryOperation 'Termination'. The perfect reconstruction is kept. \
+%[text] The angles of the synthesis NSOLT are set to random values here, and the function saivdr.dcnn.fcn\_cpparamssyn2ana copies them to the analysis NSOLT, which is the adjoint of the synthesis NSOLT.
+import saivdr.dcnn.*
+nLevelsNw = 1;     % # of tree levels of the networks
+stdInitAng = pi/6; % Standard deviation of the random angles
+grayImg = rgb2gray(orgImg);
+nsoltArgs = {...
+    'InputSize',size(grayImg),...
+    'NumberOfChannels',nChs,...
+    'DecimationFactor',nDecs,...
+    'PolyPhaseOrder',nOrds,...
+    'NumberOfLevels',nLevelsNw,...
+    'NumberOfVanishingMoments',nVm,...
+    'BoundaryOperation','Termination'};
+analysislgraph = fcn_creatensoltlgraph2d([],nsoltArgs{:},'Mode','Analyzer');
+synthesislgraph = fcn_creatensoltlgraph2d([],nsoltArgs{:},'Mode','Synthesizer');
+rng(0)
+synthesisnet = dlnetwork(synthesislgraph);
+isAngles = synthesisnet.Learnables.Parameter == "Angles";
+synthesisnet.Learnables.Value(isAngles) = cellfun(@(v) v+stdInitAng*randn(size(v)), ...
+    synthesisnet.Learnables.Value(isAngles),'UniformOutput',false);
+analysislgraph = fcn_cpparamssyn2ana(analysislgraph,layerGraph(synthesisnet));
+analysisnet = dlnetwork(analysislgraph);
+%[text] Since NSOLT is paraunitary, the synthesis NSOLT reconstructs the input of the analysis NSOLT from its output. The analysis NSOLT of one level outputs the AC and DC coefficients separately, and the images are given as deep learning arrays of the format 'SSCB' (spatial, spatial, channel, batch).
+x = dlarray(single(grayImg),'SSCB');
+s = cell(1,2);
+[s{1:2}] = analysisnet.predict(x); % {AC, DC} coefficients
+y = synthesisnet.predict(s{:});
+display("MSE: " + num2str(mse(x,y)))
+%%
+%[text] ## Compare the boundary operations
+%[text] Let us give an input only on the leftmost block column of a $32\\times 32$ image and compare the maximum absolute values of the coefficients in each block column. The same random angles are used for both. Since dlnetwork casts the learnable parameters to single, the networks are cast to double so that the zeros are exact.
+szEdge = [32 32];
+boundaryOperations = ["Circular" "Termination"];
+xEdge = zeros(szEdge);
+xEdge(:,1:nDecs(2)) = randn(szEdge(1),nDecs(2)); % Input on the leftmost block column
+colMax = zeros(numel(boundaryOperations),szEdge(2)/nDecs(2));
+for iBo = 1:numel(boundaryOperations)
+    lgraph = fcn_creatensoltlgraph2d([],nsoltArgs{:},...
+        'InputSize',szEdge,...
+        'BoundaryOperation',boundaryOperations(iBo),...
+        'Mode','Analyzer');
+    net = dlnetwork(lgraph);
+    rng(0) % Same random angles for both
+    isAngles = net.Learnables.Parameter == "Angles";
+    net.Learnables.Value(isAngles) = cellfun(@(v) v+stdInitAng*randn(size(v)), ...
+        net.Learnables.Value(isAngles),'UniformOutput',false);
+    net = dlupdate(@double,net);
+    c = cell(1,2);
+    [c{1:2}] = net.predict(dlarray(xEdge,'SSCB')); % {AC, DC} coefficients
+    colMax(iBo,:) = gather(max(abs(cat(3,extractdata(c{1}),extractdata(c{2}))),[],[1 3]));
+end
+hfig4 = figure(4);
+bar(colMax.')
+xlabel('Block column (1: the input edge)')
+ylabel('Max |coefficient|')
+legend(boundaryOperations,'Location','northeast')
+title('Wrap-around to the opposite boundary')
+%[text] With 'Circular', the input on the left edge wraps around to the block columns on the right edge. With 'Termination', the coefficients there are exactly zero:
+colMaxOnRightEdge = table(boundaryOperations.',colMax(:,end),...
+    'VariableNames',{'BoundaryOperation','MaxAbsCoef'})
+%%
 %[text] ## Release notes
 %[text] RELEASENOTES.txt contains release notes on **SaivDr Package**.
 type('RELEASENOTES.txt')
