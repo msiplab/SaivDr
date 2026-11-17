@@ -11,6 +11,7 @@ __all__ = [
     "InvalidNumberOfVanishingMoments",
     "InvalidNumberOfLevels",
     "InvalidNumberOfAngles",
+    "InvalidBoundaryOperation",
 ]
 
 
@@ -52,3 +53,7 @@ class InvalidNumberOfLevels(NsoltLayerError):
 
 class InvalidNumberOfAngles(NsoltLayerError):
     """The number of angles does not match the number of channels."""
+
+
+class InvalidBoundaryOperation(NsoltLayerError):
+    """NsoltLayer:InvalidBoundaryOperation"""

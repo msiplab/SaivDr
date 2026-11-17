@@ -27,6 +27,7 @@ def _create(
     prefix,
     dtype,
     device,
+    boundary_operation,
 ):
     analyzer_cls, synthesizer_cls, network_cls = classes
     ndl = _no_dc_leakage_pair(number_of_vanishing_moments)
@@ -39,6 +40,7 @@ def _create(
         prefix=prefix,
         dtype=dtype,
         device=device,
+        boundary_operation=boundary_operation,
     )
     if mode == "Whole":
         return network_cls(number_of_vanishing_moments=ndl, **kw)
@@ -60,6 +62,7 @@ def create_nsolt_2d(
     prefix="",
     dtype=None,
     device=None,
+    boundary_operation="Circular",
 ):
     """Create a 2-D NSOLT network, equivalent to MATLAB ``fcn_creatensoltlgraph2d``.
 
@@ -80,6 +83,11 @@ def create_nsolt_2d(
     mode : {'Whole', 'Analyzer', 'Synthesizer'}
     prefix : str
         Prefix of the layer names.
+    boundary_operation : {'Circular', 'Termination'}
+        Boundary operation of the odd-order intermediate rotation layers
+        (``BoundaryOperation``). ``'Termination'`` rotates their boundary
+        slices by -I so that no coefficients wrap around to the opposite
+        boundary; the even-order layers are always ``'Circular'``.
 
     Returns
     -------
@@ -100,6 +108,7 @@ def create_nsolt_2d(
         prefix,
         dtype,
         device,
+        boundary_operation,
     )
 
 
@@ -114,6 +123,7 @@ def create_nsolt_3d(
     prefix="",
     dtype=None,
     device=None,
+    boundary_operation="Circular",
 ):
     """Create a 3-D NSOLT network (no MATLAB builder exists; see :mod:`.nsolt`).
 
@@ -132,6 +142,7 @@ def create_nsolt_3d(
         prefix,
         dtype,
         device,
+        boundary_operation,
     )
 
 

@@ -11,7 +11,7 @@ import torch
 import torch.nn as nn
 
 from .._orthmtx import check_mus, orthmtxgen
-from ..exceptions import InvalidMode, InvalidNumberOfAngles
+from ..exceptions import InvalidBoundaryOperation, InvalidDirection, InvalidMode, InvalidNumberOfAngles
 from ._common import apply_channel_matrix, as_pair
 
 __all__ = [
@@ -235,13 +235,61 @@ class NsoltFinalRotation3dLayer(_FinalRotation):
 
 
 class _IntermediateRotation(_RotationBase):
-    def __init__(self, number_of_channels, mode, name, angles, mus, dtype, device):
+    # {Direction: dimension of the boundary slice in the PyTorch layout}
+    _BOUNDARY_DIMS = {}
+
+    def __init__(
+        self, number_of_channels, mode, name, angles, mus, dtype, device, boundary_operation, direction
+    ):
         ps, pa = as_pair(number_of_channels)
         nChsTotal = ps + pa
         nAngles = (nChsTotal - 2) * nChsTotal // 8
         super().__init__(number_of_channels, nAngles, pa, angles, mus, name, dtype, device)
         self.mode = mode
         self.description = f"{mode} NSOLT intermediate rotation (ps,pa) = ({ps},{pa})"
+        self.boundary_operation = boundary_operation
+        self.direction = direction
+        self._validate_direction()
+
+    @property
+    def boundary_operation(self):
+        """``'Circular'`` or ``'Termination'`` (MATLAB ``BoundaryOperation``).
+
+        ``'Termination'`` rotates the difference channels on the boundary
+        slice (the first slice along ``direction``) by -I instead of ``Un``,
+        so that no coefficients wrap around to the opposite boundary. The
+        boundary slice does not contribute to the gradient of the angles.
+        """
+        return self._boundary_operation
+
+    @boundary_operation.setter
+    def boundary_operation(self, boundary_operation):
+        if boundary_operation not in ("Circular", "Termination"):
+            raise InvalidBoundaryOperation(
+                f"{boundary_operation} : BoundaryOperation should be either of Circular or Termination"
+            )
+        self._boundary_operation = boundary_operation
+
+    @property
+    def direction(self):
+        """Boundary of ``'Termination'`` (MATLAB ``Direction``); ``None`` is allowed for ``'Circular'``."""
+        return self._direction
+
+    @direction.setter
+    def direction(self, direction):
+        if direction in (None, ""):
+            direction = None
+        elif direction not in self._BOUNDARY_DIMS:
+            raise InvalidDirection(
+                f"{direction} : Direction should be either of {', '.join(self._BOUNDARY_DIMS)}"
+            )
+        self._direction = direction
+
+    def _validate_direction(self):
+        if self.boundary_operation == "Termination" and self.direction is None:
+            raise InvalidDirection(
+                f"Direction should be either of {', '.join(self._BOUNDARY_DIMS)} for Termination"
+            )
 
     @property
     def mode(self):
@@ -262,7 +310,17 @@ class _IntermediateRotation(_RotationBase):
         Un = self.matrix()
         if self.mode == "Synthesis":
             Un = Un.T
-        Za = apply_channel_matrix(Un, X[:, ps : ps + pa])
+        Xa = X[:, ps : ps + pa]
+        Za = apply_channel_matrix(Un, Xa)
+        if self.boundary_operation == "Termination":
+            # The boundary slice is rotated by the fixed matrix -I
+            self._validate_direction()
+            dim = self._BOUNDARY_DIMS[self.direction]
+            index = torch.arange(X.shape[dim], device=X.device)
+            shape = [1] * X.dim()
+            shape[dim] = X.shape[dim]
+            isBoundary = (index == 0).reshape(shape)
+            Za = torch.where(isBoundary, -Xa, Za)
         return torch.cat((X[:, :ps], Za), dim=1)
 
 
@@ -271,21 +329,55 @@ class NsoltIntermediateRotation2dLayer(_IntermediateRotation):
 
     Input and output: ``nSamples x (ps+pa) x nRows x nCols``. Only the lower
     ``pa`` channels are rotated, by ``Un`` (Analysis) or ``Un.T`` (Synthesis).
+
+    With ``boundary_operation='Termination'``, the boundary slice given by
+    ``direction`` (``'Vertical'``: the first row, ``'Horizontal'``: the first
+    column) is rotated by -I instead.
     """
 
+    _BOUNDARY_DIMS = {"Vertical": 2, "Horizontal": 3}
+
     def __init__(
-        self, number_of_channels, mode="Synthesis", name="", mus=None, angles=None, dtype=None, device=None
+        self,
+        number_of_channels,
+        mode="Synthesis",
+        name="",
+        mus=None,
+        angles=None,
+        dtype=None,
+        device=None,
+        boundary_operation="Circular",
+        direction=None,
     ):
-        super().__init__(number_of_channels, mode, name, angles, mus, dtype, device)
+        super().__init__(
+            number_of_channels, mode, name, angles, mus, dtype, device, boundary_operation, direction
+        )
 
 
 class NsoltIntermediateRotation3dLayer(_IntermediateRotation):
     """Intermediate rotation layer, equivalent to MATLAB ``nsoltIntermediateRotation3dLayer``.
 
     Input and output: ``nSamples x (ps+pa) x nLays x nRows x nCols``.
+
+    With ``boundary_operation='Termination'``, the boundary slice given by
+    ``direction`` (``'Vertical'``: the first row, ``'Horizontal'``: the first
+    column, ``'Depth'``: the first layer) is rotated by -I instead.
     """
 
+    _BOUNDARY_DIMS = {"Vertical": 3, "Horizontal": 4, "Depth": 2}
+
     def __init__(
-        self, number_of_channels, mode="Synthesis", name="", mus=None, angles=None, dtype=None, device=None
+        self,
+        number_of_channels,
+        mode="Synthesis",
+        name="",
+        mus=None,
+        angles=None,
+        dtype=None,
+        device=None,
+        boundary_operation="Circular",
+        direction=None,
     ):
-        super().__init__(number_of_channels, mode, name, angles, mus, dtype, device)
+        super().__init__(
+            number_of_channels, mode, name, angles, mus, dtype, device, boundary_operation, direction
+        )

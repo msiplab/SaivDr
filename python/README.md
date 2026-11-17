@@ -135,6 +135,26 @@ As in MATLAB:
 The layers of a network are kept in `net.layers`, an `nn.ModuleDict` keyed
 by the MATLAB layer names, such as `'Lv1_Cmp1_V0'` and `'Lv1_Cmp1_Vh1~'`.
 
+### Boundary operation
+
+`boundary_operation` of `create_nsolt_2d`/`create_nsolt_3d` corresponds to
+`'BoundaryOperation'` of MATLAB `fcn_creatensoltlgraph2d`:
+
+- `'Circular'` (default): the image is extended periodically.
+- `'Termination'`: the odd-order intermediate rotations (right after the
+  shift of the difference channels) rotate the boundary slice by -I instead
+  of `Un`, so that no coefficients wrap around to the opposite boundary. The
+  perfect reconstruction is kept, and the boundary slice does not contribute
+  to the gradient of the angles.
+
+The intermediate rotation layers have `boundary_operation` and `direction`
+(`'Vertical'`, `'Horizontal'` or, in 3-D, `'Depth'`), as the MATLAB
+properties `BoundaryOperation` and `Direction`. The boundary slice is the
+first row, column or layer, i.e. index 0 of the dimension 2 or 3 of
+`N x nChs x nRows x nCols` in 2-D, and of the dimension 3, 4 or 2 of
+`N x nChs x nLays x nRows x nCols` in 3-D. `copy_params_syn2ana` and
+`copy_params_ana2syn` also copy them.
+
 ### Exchanging parameters with MATLAB
 
 ```python
