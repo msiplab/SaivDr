@@ -1,0 +1,52 @@
+[build-system]
+requires = ["hatchling>=1.18"]
+build-backend = "hatchling.build"
+
+[project]
+name = "saivdr"
+dynamic = ["version"]
+description = "NSOLT layers and networks for PyTorch, ported from the SaivDr MATLAB package"
+readme = "README.md"
+license = { text = "BSD-2-Clause" }
+authors = [{ name = "Shogo Muramatsu", email = "shogo@eng.niigata-u.ac.jp" }]
+requires-python = ">=3.10"
+dependencies = ["torch>=2.1", "numpy>=1.23"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: BSD License",
+    "Topic :: Scientific/Engineering :: Image Processing",
+]
+
+[project.optional-dependencies]
+matlab = ["scipy>=1.10"]
+viz = ["matplotlib>=3.6"]
+test = ["pytest>=7.4", "scipy>=1.10"]
+examples = ["scipy>=1.10", "matplotlib>=3.6", "scikit-image>=0.20", "ipykernel"]
+dev = ["saivdr[test,examples]", "ruff>=0.6", "build", "nbconvert", "nbformat"]
+
+[project.urls]
+Repository = "https://github.com/msiplab/SaivDr"
+
+[tool.hatch.version]
+path = "src/saivdr/__init__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/saivdr"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src", "tests", "README.md", "LICENSE", "pyproject.toml"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["gpu: requires CUDA", "slow: long-running"]
+
+[tool.ruff]
+line-length = 110
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP"]
+ignore = ["B905"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["saivdr", "_refdata"]
