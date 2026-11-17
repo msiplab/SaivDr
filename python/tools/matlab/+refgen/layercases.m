@@ -111,6 +111,35 @@ p = struct('NumberOfChannels',[4 4],'Mode','Analysis');
 cases{end+1,1} = (mkcase('IntermediateRotation2d_nch44_analysis','nsoltIntermediateRotation2dLayer',p,...
     {'coef2d',[8 4 4 N]},{'coef2d'},'Learnable',true,'RandomMus',true,'DataType','single'));
 
+%% Intermediate rotations with BoundaryOperation 'Termination'
+% Non-square (non-cubic) sizes so that the directions cannot be confused
+for nch = {[2 2],[3 3]}
+    c = nch{1};
+    for mode = {'Analysis','Synthesis'}
+        for dir = {'Vertical','Horizontal'}
+            p = struct('NumberOfChannels',c,'Mode',mode{1},...
+                'BoundaryOperation','Termination','Direction',dir{1});
+            tag = sprintf('nch%s_%s_termination_%s',str(c),lower(mode{1}),lower(dir{1}));
+            cases{end+1,1} = (mkcase(['IntermediateRotation2d_' tag],'nsoltIntermediateRotation2dLayer',p,...
+                {'coef2d',[sum(c) 4 5 N]},{'coef2d'},'Learnable',true,'RandomMus',true));
+        end
+    end
+end
+for mode = {'Analysis','Synthesis'}
+    for dir = {'Vertical','Horizontal','Depth'}
+        p = struct('NumberOfChannels',[4 4],'Mode',mode{1},...
+            'BoundaryOperation','Termination','Direction',dir{1});
+        tag = sprintf('nch44_%s_termination_%s',lower(mode{1}),lower(dir{1}));
+        cases{end+1,1} = (mkcase(['IntermediateRotation3d_' tag],'nsoltIntermediateRotation3dLayer',p,...
+            {'coef3d',[8 4 5 3 N]},{'coef3d'},'Learnable',true,'RandomMus',true));
+    end
+end
+p = struct('NumberOfChannels',[4 4],'Mode','Analysis',...
+    'BoundaryOperation','Termination','Direction','Horizontal');
+cases{end+1,1} = (mkcase('IntermediateRotation2d_nch44_analysis_termination_horizontal',...
+    'nsoltIntermediateRotation2dLayer',p,{'coef2d',[8 4 5 N]},{'coef2d'},...
+    'Learnable',true,'RandomMus',true,'DataType','single'));
+
 %% Atom extensions
 for nch = {[3 3],[4 4]}
     c = nch{1};

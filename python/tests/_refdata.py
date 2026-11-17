@@ -24,6 +24,7 @@ _KWARGS = {
     "NumberOfLevels": "number_of_levels",
     "PolyPhaseOrder": "polyphase_order",
     "NumberOfVanishingMoments": "number_of_vanishing_moments",
+    "BoundaryOperation": "boundary_operation",
 }
 
 _KINDS = {"serial2d": "serial", "serial3d": "serial"}
