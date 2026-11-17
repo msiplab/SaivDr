@@ -18,6 +18,8 @@ classdef nsoltIntermediateRotation3dLayer < nnet.layer.Layer
         % (Optional) Layer properties.
         NumberOfChannels
         Mode
+        BoundaryOperation % 'Circular' or 'Termination'
+        Direction         % 'Vertical', 'Horizontal' or 'Depth' (boundary for 'Termination')
     end
     
     properties (Dependent)
@@ -48,7 +50,21 @@ classdef nsoltIntermediateRotation3dLayer < nnet.layer.Layer
             addParameter(p,'Mus',[])
             addParameter(p,'Mode','Synthesis')
             addParameter(p,'Name','')
+            addParameter(p,'BoundaryOperation','Circular')
+            addParameter(p,'Direction','')
             parse(p,varargin{:})
+
+            % Boundary operation
+            % 'Termination' replaces the rotation of the boundary slice
+            % (first row for 'Vertical', first column for 'Horizontal',
+            % first layer for 'Depth') with -I, as in
+            % saivdr.dictionary.nsoltx.NsoltAtomExtender3d.
+            % See S. Muramatsu et al., IEEE Trans. Image Process.,
+            % vol. 21, no. 4, pp. 2314-2318, 2012.
+            % Each value is validated by its set method.
+            layer.BoundaryOperation = p.Results.BoundaryOperation;
+            layer.Direction = p.Results.Direction;
+            layer.validateDirection_();
             
             % Layer constructor function goes here.
             layer.NumberOfChannels = p.Results.NumberOfChannels;
@@ -108,6 +124,10 @@ classdef nsoltIntermediateRotation3dLayer < nnet.layer.Layer
                     layer.Mode))
             end
             Y(ps+1:ps+pa,:,:,:,:) = reshape(Za,pa,nrows,ncols,nlays,nSamples);
+            % The boundary slice is rotated by -I for 'Termination'
+            if strcmp(layer.BoundaryOperation,'Termination')
+                Y = layer.negateBoundarySlice_(Y,X);
+            end
             Z = Y; %ipermute(Y,[4 1 2 3 5]);
         end
               
@@ -160,6 +180,14 @@ classdef nsoltIntermediateRotation3dLayer < nnet.layer.Layer
             dLdX(ps+1:ps+pa,:,:,:,:) = reshape(cdLd_low,...
                 pa,nrows,ncols,nlays,nSamples);
             %dLdX = dLdX; %ipermute(adLd_,[4 1 2 3 5]);
+
+            % For 'Termination', the boundary slice is rotated by the
+            % fixed matrix -I, so it gives -dLdZ and does not contribute
+            % to the angle gradients
+            if strcmp(layer.BoundaryOperation,'Termination')
+                dLdX = layer.negateBoundarySlice_(dLdX,dLdZ);
+                dLdZ = layer.zeroBoundarySlice_(dLdZ);
+            end
             
             % dLdWi = <dLdZ,(dVdWi)X>
             fcn_orthmtxgen_diff = get_fcn_orthmtxgen_diff(anglesU);
@@ -240,5 +268,70 @@ classdef nsoltIntermediateRotation3dLayer < nnet.layer.Layer
         
     end
     
+    methods
+
+        function layer = set.BoundaryOperation(layer,boundaryOperation)
+            if ~any(strcmp(boundaryOperation,{'Circular','Termination'}))
+                throw(MException('NsoltLayer:InvalidBoundaryOperation',...
+                    '%s : BoundaryOperation should be either of Circular or Termination',...
+                    boundaryOperation))
+            end
+            layer.BoundaryOperation = boundaryOperation;
+            layer.isUpdateRequested = true; %#ok<MCSUP>
+        end
+
+        function layer = set.Direction(layer,direction)
+            % Empty Direction is allowed only for 'Circular'
+            if ~isempty(direction) ...
+                    && ~any(strcmp(direction,{'Vertical','Horizontal','Depth'}))
+                throw(MException('NsoltLayer:InvalidDirection',...
+                    '%s : Direction should be either of Vertical, Horizontal or Depth',...
+                    direction))
+            end
+            layer.Direction = direction;
+            layer.isUpdateRequested = true; %#ok<MCSUP>
+        end
+
+    end
+
+    methods (Access = private)
+
+        function validateDirection_(layer)
+            % 'Termination' requires Direction
+            if strcmp(layer.BoundaryOperation,'Termination') ...
+                    && ~any(strcmp(layer.Direction,{'Vertical','Horizontal','Depth'}))
+                throw(MException('NsoltLayer:InvalidDirection',...
+                    'Direction should be either of Vertical, Horizontal or Depth for Termination'))
+            end
+        end
+
+        function idx = boundarySliceIndex_(layer)
+            % Index of the difference channels on the boundary slice
+            layer.validateDirection_();
+            ps = layer.NumberOfChannels(1);
+            pa = layer.NumberOfChannels(2);
+            if strcmp(layer.Direction,'Vertical')
+                idx = {ps+1:ps+pa,1,':',':',':'}; % first row
+            elseif strcmp(layer.Direction,'Horizontal')
+                idx = {ps+1:ps+pa,':',1,':',':'}; % first column
+            else % 'Depth'
+                idx = {ps+1:ps+pa,':',':',1,':'}; % first layer
+            end
+        end
+
+        function Y = negateBoundarySlice_(layer,Y,X)
+            % Replace the boundary slice of Y with that of -X
+            idx = layer.boundarySliceIndex_();
+            Y(idx{:}) = -X(idx{:});
+        end
+
+        function Y = zeroBoundarySlice_(layer,Y)
+            % Set the boundary slice of Y to zero
+            idx = layer.boundarySliceIndex_();
+            Y(idx{:}) = 0;
+        end
+
+    end
+
 end
 
