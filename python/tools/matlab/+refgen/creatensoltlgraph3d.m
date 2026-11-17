@@ -30,6 +30,7 @@ addParameter(p,'PolyPhaseOrder',[0 0 0])
 addParameter(p,'NumberOfLevels',1);
 addParameter(p,'NumberOfVanishingMoments',[1 1]);
 addParameter(p,'Mode','Whole');
+addParameter(p,'BoundaryOperation','Circular');
 parse(p,varargin{:})
 if p.Results.NumberOfComponents ~= 1
     error('Only a single component is supported')
@@ -50,11 +51,16 @@ if nChannels(1) ~= nChannels(2) || any(mod(ppOrder,2))
     error('Only Type-I NSOLT with even polyphase orders is supported')
 end
 
-% (polyphase-order index, label, analysis dirs, synthesis dirs, suffixes)
+% Boundary operation of the odd-order intermediate rotation layers, as in
+% saivdr.dcnn.fcn_creatensoltlgraph2d. The even-order layers are 'Circular'.
+boundaryOperation = p.Results.BoundaryOperation;
+
+% (polyphase-order index, label, analysis dirs, synthesis dirs, suffixes,
+%  boundary direction)
 steps = {
-    3, 'd', {'Back','Front'}, {'Front','Back'}, {'bd','fs'}
-    2, 'h', {'Right','Left'}, {'Left','Right'}, {'rd','ls'}
-    1, 'v', {'Down','Up'},    {'Up','Down'},    {'dd','us'}
+    3, 'd', {'Back','Front'}, {'Front','Back'}, {'bd','fs'}, 'Depth'
+    2, 'h', {'Right','Left'}, {'Left','Right'}, {'rd','ls'}, 'Horizontal'
+    1, 'v', {'Down','Up'},    {'Up','Down'},    {'dd','us'}, 'Vertical'
     };
 for iLv = 1:nLevels
     strLv = sprintf('Lv%0d_',iLv);
@@ -66,7 +72,8 @@ for iLv = 1:nLevels
         'NumberOfChannels',nChannels,'DecimationFactor',decFactor,...
         'NoDcLeakage',noDcLeakage(2));
     for iStep = 1:size(steps,1)
-        [idx,lbl,adirs,sdirs,sfx] = steps{iStep,:};
+        [idx,lbl,adirs,sdirs,sfx,bdir] = steps{iStep,:};
+        boundaryOpts = {'BoundaryOperation',boundaryOperation,'Direction',bdir};
         for iOrder = 2:2:ppOrder(idx)
             o1 = num2str(iOrder-1);
             o2 = num2str(iOrder);
@@ -74,7 +81,7 @@ for iLv = 1:nLevels
                 nsoltAtomExtension3dLayer('Name',[s 'Q' lbl o1 sfx{1}],...
                 'NumberOfChannels',nChannels,'Direction',adirs{1},'TargetChannels','Difference')
                 nsoltIntermediateRotation3dLayer('Name',[s 'V' lbl o1],...
-                'NumberOfChannels',nChannels,'Mode','Analysis','Mus',-1)
+                'NumberOfChannels',nChannels,'Mode','Analysis','Mus',-1,boundaryOpts{:})
                 nsoltAtomExtension3dLayer('Name',[s 'Q' lbl o2 sfx{2}],...
                 'NumberOfChannels',nChannels,'Direction',adirs{2},'TargetChannels','Sum')
                 nsoltIntermediateRotation3dLayer('Name',[s 'V' lbl o2],...
@@ -84,7 +91,7 @@ for iLv = 1:nLevels
                 nsoltAtomExtension3dLayer('Name',[s 'Q' lbl o1 sfx{1} '~'],...
                 'NumberOfChannels',nChannels,'Direction',sdirs{1},'TargetChannels','Difference')
                 nsoltIntermediateRotation3dLayer('Name',[s 'V' lbl o1 '~'],...
-                'NumberOfChannels',nChannels,'Mode','Synthesis','Mus',-1)
+                'NumberOfChannels',nChannels,'Mode','Synthesis','Mus',-1,boundaryOpts{:})
                 nsoltAtomExtension3dLayer('Name',[s 'Q' lbl o2 sfx{2} '~'],...
                 'NumberOfChannels',nChannels,'Direction',sdirs{2},'TargetChannels','Sum')
                 nsoltIntermediateRotation3dLayer('Name',[s 'V' lbl o2 '~'],...

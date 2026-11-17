@@ -1,7 +1,7 @@
 {
   "matlab": "26.2.0.3386108 (R2026b)",
-  "saivdr_commit": "6b4f124454947ab7e3624dcf7a84ab9192cacb69",
-  "generated": "2026-10-16T06:17:23",
+  "saivdr_commit": "908db0f292de3bc6a7d32a7430fb0ac814ea44ce",
+  "generated": "2026-11-17T09:37:23",
   "cases": [
     {
       "file": "atoms/Atoms2d_cmp1_nch33_dec22_ppo22_lv1.mat",
@@ -644,16 +644,48 @@
       "sha256": "0c8e1d9b2c7167bb8112b3eac01ead564793210c8a7825692559a68985965ffd"
     },
     {
+      "file": "layers/IntermediateRotation2d_nch22_analysis_termination_horizontal_double.mat",
+      "sha256": "f5fd5791d9c3aef058908c45510e60f3e6532e1c09b56c10d93a9854f3023f52"
+    },
+    {
+      "file": "layers/IntermediateRotation2d_nch22_analysis_termination_vertical_double.mat",
+      "sha256": "ec8056968f52c25b87d01132f031c6294f1c89d5ffb99f11d817104eeebb1cc3"
+    },
+    {
       "file": "layers/IntermediateRotation2d_nch22_synthesis_double.mat",
       "sha256": "67f254112b9c7d9c5ec1ce845f5ab74ee7f6f6a45cdeccc50570fff1c81d0360"
+    },
+    {
+      "file": "layers/IntermediateRotation2d_nch22_synthesis_termination_horizontal_double.mat",
+      "sha256": "6a15a88a8cb08f9d85605b17a4881b8bac9fc33b7b991a1f4009f37990cd33b1"
+    },
+    {
+      "file": "layers/IntermediateRotation2d_nch22_synthesis_termination_vertical_double.mat",
+      "sha256": "075dacfd93348fef4aa90fea36f0d706058ade3b584410dbb676a08337446bf5"
     },
     {
       "file": "layers/IntermediateRotation2d_nch33_analysis_double.mat",
       "sha256": "76c4e99c200f3dd2fe3f2b6b3f825acac4318016a89351cce638c4e36b09d5d2"
     },
     {
+      "file": "layers/IntermediateRotation2d_nch33_analysis_termination_horizontal_double.mat",
+      "sha256": "06e87149b37ccb6760553c4d69df1140c2784c684ae5e526ccd882ba1c1a2da5"
+    },
+    {
+      "file": "layers/IntermediateRotation2d_nch33_analysis_termination_vertical_double.mat",
+      "sha256": "fd9113812700d8d8a2e641ac95515439a9a78f3e8dc6b70e00d6a124ec1a9ead"
+    },
+    {
       "file": "layers/IntermediateRotation2d_nch33_synthesis_double.mat",
       "sha256": "11868a0f6e1ac3e6caf8c95f01b77f11f90a51d0defbe59c088b6963d7bea241"
+    },
+    {
+      "file": "layers/IntermediateRotation2d_nch33_synthesis_termination_horizontal_double.mat",
+      "sha256": "a17b54256c7aad02c4374d536d5b79141f1787ad8c29da6b250ac5a1fe444a5d"
+    },
+    {
+      "file": "layers/IntermediateRotation2d_nch33_synthesis_termination_vertical_double.mat",
+      "sha256": "259306c3c5703b2d9456fdd83da8762bf1306d12687987c334e254f6d7cd5699"
     },
     {
       "file": "layers/IntermediateRotation2d_nch44_analysis_double.mat",
@@ -664,6 +696,10 @@
       "sha256": "69a80386f8267fbf2d8f11695ab226b3e8972edc5fac59866a1873b4674d9f38"
     },
     {
+      "file": "layers/IntermediateRotation2d_nch44_analysis_termination_horizontal_single.mat",
+      "sha256": "e23b6de3d81ff8d8a975d560246a264c5e464cd4990b46e8d23a01806024bf5e"
+    },
+    {
       "file": "layers/IntermediateRotation2d_nch44_synthesis_double.mat",
       "sha256": "8322c378e106aa531350126992604e96123e35753cb9d597fce8a7ba99db00a6"
     },
@@ -672,8 +708,32 @@
       "sha256": "01f5525e3bcc6e87a73ab7bf46faf7dd275779bacbdf4f6f0002f7798b809e65"
     },
     {
+      "file": "layers/IntermediateRotation3d_nch44_analysis_termination_depth_double.mat",
+      "sha256": "f293391e6bfefe45cde33b7702e02381a5caee0c78c0d4b4e9f8e7a363a7fa48"
+    },
+    {
+      "file": "layers/IntermediateRotation3d_nch44_analysis_termination_horizontal_double.mat",
+      "sha256": "4dea56df8da79d76566dd44aeb1e872c721b7e56a3fbe7d61051407314fe02d8"
+    },
+    {
+      "file": "layers/IntermediateRotation3d_nch44_analysis_termination_vertical_double.mat",
+      "sha256": "59f33788a07a12f2de32e4f2bdba6ae6b0758550c18944754bdb9cd33a7e2f94"
+    },
+    {
       "file": "layers/IntermediateRotation3d_nch44_synthesis_double.mat",
       "sha256": "ea69a7a114972bc884cb335fb3eaf49fa50d04051d34793cf1a9cdb217919e5a"
+    },
+    {
+      "file": "layers/IntermediateRotation3d_nch44_synthesis_termination_depth_double.mat",
+      "sha256": "c7d5ba5c1174cc42f865c0f5d239b4460f92febb513ee2468063b126a0845f09"
+    },
+    {
+      "file": "layers/IntermediateRotation3d_nch44_synthesis_termination_horizontal_double.mat",
+      "sha256": "f657f6897a9f5fcd981135975f7d08fcaa0bfad1ef27e2a1f5a15a171f01353b"
+    },
+    {
+      "file": "layers/IntermediateRotation3d_nch44_synthesis_termination_vertical_double.mat",
+      "sha256": "cbcee34d4fc6f37bebc7695eeaf179969695b99a6ee96ea20bd4da6b4381c2e8"
     },
     {
       "file": "layers/IntermediateRotation3d_nch55_analysis_double.mat",
@@ -852,12 +912,28 @@
       "sha256": "c582b4cd18f6e97e2cb6814e3e7fea65dfc3fe82424c0af6ca147558541e729c"
     },
     {
+      "file": "networks2d/Nsolt2d_analyzer_cmp1_nch33_dec22_ppo22_lv1_vm00_term_double.mat",
+      "sha256": "5c594bdb0deeebaec7ddb3aa1acfe715b074eae12b42c75d4cb154edc922b7db"
+    },
+    {
       "file": "networks2d/Nsolt2d_analyzer_cmp1_nch44_dec22_ppo02_lv3_vm11_double.mat",
       "sha256": "afb54f102d7aa9e52cec8e18a0976184fff2034ffb71e01cde9550de0363f8a5"
     },
     {
+      "file": "networks2d/Nsolt2d_analyzer_cmp1_nch44_dec22_ppo02_lv3_vm11_term_double.mat",
+      "sha256": "5b75dd589b757ea7523555d3168ce093f94e53484323b43549ac5db564992ac8"
+    },
+    {
       "file": "networks2d/Nsolt2d_analyzer_cmp1_nch44_dec22_ppo20_lv2_vm10_double.mat",
       "sha256": "0f0c7c276cae1af193b340840104ed653768a852fdf2a7bcd7bbb2173a4f29db"
+    },
+    {
+      "file": "networks2d/Nsolt2d_analyzer_cmp1_nch44_dec22_ppo20_lv2_vm10_term_double.mat",
+      "sha256": "59aa652c7a7c194a41f8b266502f4cece7b0b04a92c07ff3b7acf5547d4084f4"
+    },
+    {
+      "file": "networks2d/Nsolt2d_analyzer_cmp1_nch44_dec22_ppo42_lv1_vm11_term_double.mat",
+      "sha256": "2e9a7191dadbe62968cb80fb1264d367afe8d3f331c8bd41b1486ee947e8f93b"
     },
     {
       "file": "networks2d/Nsolt2d_analyzer_cmp1_nch55_dec24_ppo22_lv1_vm11_double.mat",
@@ -866,6 +942,10 @@
     {
       "file": "networks2d/Nsolt2d_analyzer_cmp3_nch33_dec22_ppo22_lv2_vm11_double.mat",
       "sha256": "d9dd864ba34d54801462142ac9c7c075525f9ef9fb25cbfe9e407d0ea2ab983e"
+    },
+    {
+      "file": "networks2d/Nsolt2d_analyzer_cmp3_nch33_dec22_ppo22_lv2_vm11_term_double.mat",
+      "sha256": "289828ff5ee3c93d1009751c9d9d0a893cede3696e7cf145eb2881f5c759b71f"
     },
     {
       "file": "networks2d/Nsolt2d_analyzer_cmp3_nch44_dec12_ppo02_lv1_vm01_double.mat",
@@ -880,12 +960,28 @@
       "sha256": "7c538cab1533a2467f68e7d8776eef8d0b9fa739cf0e5c4a448b17d524872432"
     },
     {
+      "file": "networks2d/Nsolt2d_synthesizer_cmp1_nch33_dec22_ppo22_lv1_vm00_term_double.mat",
+      "sha256": "825b389c6860220f0f7ea41453202df358c0cb3c11e45213a6a3eb6ff770fc09"
+    },
+    {
       "file": "networks2d/Nsolt2d_synthesizer_cmp1_nch44_dec22_ppo02_lv3_vm11_double.mat",
       "sha256": "fa47eb90f37312faeb37fc46b7bf223d9360ffa491fd5df47f39121a9f0c9eb0"
     },
     {
+      "file": "networks2d/Nsolt2d_synthesizer_cmp1_nch44_dec22_ppo02_lv3_vm11_term_double.mat",
+      "sha256": "2382d258dc275a7e99d8544f281cf7fe27feaf5ac0eb679ed1b44ba025f5a5ad"
+    },
+    {
       "file": "networks2d/Nsolt2d_synthesizer_cmp1_nch44_dec22_ppo20_lv2_vm10_double.mat",
       "sha256": "c32d26e99e7abc9f3acf8e29eb17e0e3c79dfe5b38d6b6eb2d46f37018000b13"
+    },
+    {
+      "file": "networks2d/Nsolt2d_synthesizer_cmp1_nch44_dec22_ppo20_lv2_vm10_term_double.mat",
+      "sha256": "27436868301bcd275be0b6c3192e7a2bf5d7d54512d9b8d7de60ab5afc245f57"
+    },
+    {
+      "file": "networks2d/Nsolt2d_synthesizer_cmp1_nch44_dec22_ppo42_lv1_vm11_term_double.mat",
+      "sha256": "d474e8a4d98131d51345f7a68e7d6df04085d0d0dcb6426e33f9ea1b7bae525f"
     },
     {
       "file": "networks2d/Nsolt2d_synthesizer_cmp1_nch55_dec24_ppo22_lv1_vm11_double.mat",
@@ -894,6 +990,10 @@
     {
       "file": "networks2d/Nsolt2d_synthesizer_cmp3_nch33_dec22_ppo22_lv2_vm11_double.mat",
       "sha256": "41e5506fb75ed87befa8f3b9006b58098ddf4f4620fe23cf261d5ef176b99433"
+    },
+    {
+      "file": "networks2d/Nsolt2d_synthesizer_cmp3_nch33_dec22_ppo22_lv2_vm11_term_double.mat",
+      "sha256": "64095be5e0caec07f7a6727eab7d88f09a97062b46ebaf36cfa43104e8cce7c6"
     },
     {
       "file": "networks2d/Nsolt2d_synthesizer_cmp3_nch44_dec12_ppo02_lv1_vm01_double.mat",
@@ -908,16 +1008,36 @@
       "sha256": "1167374f4496b5927ebc7b6ae9676350d04b6312dd90d7d3602b34b7ce557baf"
     },
     {
+      "file": "networks2d/Nsolt2d_whole_cmp1_nch33_dec22_ppo22_lv1_vm00_term_double.mat",
+      "sha256": "3c2aaba162dc7c6589dfe153a6086752ba33fa189db56a907ffab73e76b278bf"
+    },
+    {
       "file": "networks2d/Nsolt2d_whole_cmp1_nch44_dec22_ppo02_lv3_vm11_double.mat",
       "sha256": "d86801b371ce923edb03e48b98b99651c31122f0abaf385742adeea856a417ca"
+    },
+    {
+      "file": "networks2d/Nsolt2d_whole_cmp1_nch44_dec22_ppo02_lv3_vm11_term_double.mat",
+      "sha256": "9ed42d427a6644ebdc68dc88059e2d65123d7d26d098f79b02b6c257188a392f"
     },
     {
       "file": "networks2d/Nsolt2d_whole_cmp1_nch44_dec22_ppo20_lv2_vm10_double.mat",
       "sha256": "5b5c44a51e9184b2bda37c432f6fe48be1cae334b36aab491a02312871ed9034"
     },
     {
+      "file": "networks2d/Nsolt2d_whole_cmp1_nch44_dec22_ppo20_lv2_vm10_term_double.mat",
+      "sha256": "606dbf9aa1c92bb2ea729722613550a04caf3c7dba268b8c55a850ea40eb02c5"
+    },
+    {
       "file": "networks2d/Nsolt2d_whole_cmp1_nch44_dec22_ppo22_lv2_vm11_single.mat",
       "sha256": "9aede1826224a022068582ff8403f61550fa47c20a82f08a23fe6f0f1982973d"
+    },
+    {
+      "file": "networks2d/Nsolt2d_whole_cmp1_nch44_dec22_ppo22_lv2_vm11_term_single.mat",
+      "sha256": "4a772e48ba80664883c5bbf8f5a32b8991396b471948a1b690da483c2b48d42b"
+    },
+    {
+      "file": "networks2d/Nsolt2d_whole_cmp1_nch44_dec22_ppo42_lv1_vm11_term_double.mat",
+      "sha256": "89d60f1ee479ed1e72b5b2c25de6e7f0406175db708fad61227662c80b205362"
     },
     {
       "file": "networks2d/Nsolt2d_whole_cmp1_nch55_dec24_ppo22_lv1_vm11_double.mat",
@@ -928,12 +1048,20 @@
       "sha256": "0a1e4295c8c7c9269bc31fa70a166d1420e3f189968154e2bb337750992226ec"
     },
     {
+      "file": "networks2d/Nsolt2d_whole_cmp3_nch33_dec22_ppo22_lv2_vm11_term_double.mat",
+      "sha256": "08400f09a31f2a5bf10570ff0cda71f4843812d058ec2a2e33f6f90ad58ed24b"
+    },
+    {
       "file": "networks2d/Nsolt2d_whole_cmp3_nch44_dec12_ppo02_lv1_vm01_double.mat",
       "sha256": "55bbc1b825fd47f1dbb4e42258f6121008f899525978ac1c775eebf94273abf9"
     },
     {
       "file": "networks3d/Nsolt3d_analyzer_cmp1_nch44_dec122_ppo020_lv2_vm00_double.mat",
       "sha256": "73f5125ea415f74f461d82536c7833879e8d9aa5d505fd5bd393f6d4122fd33e"
+    },
+    {
+      "file": "networks3d/Nsolt3d_analyzer_cmp1_nch44_dec122_ppo022_lv1_vm00_term_double.mat",
+      "sha256": "42679350e59146b75aac9f9ecbdfc9e6418cd1c910b7116fd3ae91e3343b0bdd"
     },
     {
       "file": "networks3d/Nsolt3d_analyzer_cmp1_nch44_dec222_ppo000_lv1_vm11_double.mat",
@@ -944,12 +1072,24 @@
       "sha256": "35eb60b3d7519f9a20e2167a2c45da6575707ae651f6f5c189d9f9dc3fada9ea"
     },
     {
+      "file": "networks3d/Nsolt3d_analyzer_cmp1_nch44_dec222_ppo222_lv1_vm10_term_double.mat",
+      "sha256": "bbd6a73a47d703d02915988e13dfb09d2376ec1f8b792228240f17ee438599ab"
+    },
+    {
       "file": "networks3d/Nsolt3d_analyzer_cmp1_nch55_dec222_ppo202_lv2_vm11_double.mat",
       "sha256": "eb5fda819f88bbf8f00521ff5788bf7cc66f67b6f6ce9bd0a964d3751a52d225"
     },
     {
+      "file": "networks3d/Nsolt3d_analyzer_cmp1_nch55_dec222_ppo202_lv2_vm11_term_double.mat",
+      "sha256": "d439cd8c09c10951abebc773659f3c21974ef0643e40c346dd2565bfcb4f1f5b"
+    },
+    {
       "file": "networks3d/Nsolt3d_synthesizer_cmp1_nch44_dec122_ppo020_lv2_vm00_double.mat",
       "sha256": "065317be64a6d199b732e8c56f40dc2fa919e80e0be025fbdaf88c7a170e367c"
+    },
+    {
+      "file": "networks3d/Nsolt3d_synthesizer_cmp1_nch44_dec122_ppo022_lv1_vm00_term_double.mat",
+      "sha256": "c3fb982d1fd6801be8ce422b2a564057057a590d2c662da04ac4a7bceee83d03"
     },
     {
       "file": "networks3d/Nsolt3d_synthesizer_cmp1_nch44_dec222_ppo000_lv1_vm11_double.mat",
@@ -960,12 +1100,24 @@
       "sha256": "1f9df2be900d2e87bee76f1249b611a775f3ac9f9e88923f65374c2b5590bc51"
     },
     {
+      "file": "networks3d/Nsolt3d_synthesizer_cmp1_nch44_dec222_ppo222_lv1_vm10_term_double.mat",
+      "sha256": "20663ba97cbea5a02f580ecdfe64722bef7dbd5283ef40a84d2483741337cea9"
+    },
+    {
       "file": "networks3d/Nsolt3d_synthesizer_cmp1_nch55_dec222_ppo202_lv2_vm11_double.mat",
       "sha256": "08341cc8ab4422ce68102165510bf6be55d460214ab2324e1eeaab82afa6d5d1"
     },
     {
+      "file": "networks3d/Nsolt3d_synthesizer_cmp1_nch55_dec222_ppo202_lv2_vm11_term_double.mat",
+      "sha256": "4d4c03e837bd826d871961077b72897a95a65a06ae325c28eee1fd3e5486aff0"
+    },
+    {
       "file": "networks3d/Nsolt3d_whole_cmp1_nch44_dec122_ppo020_lv2_vm00_double.mat",
       "sha256": "732d03383274f03b6d118d0abe2fc234ea4ace7ab6d6545896f8dc554f2e917e"
+    },
+    {
+      "file": "networks3d/Nsolt3d_whole_cmp1_nch44_dec122_ppo022_lv1_vm00_term_double.mat",
+      "sha256": "f8ed6ba86f170559213595b2705e8a22185312223ad153de6571cbd1ce899843"
     },
     {
       "file": "networks3d/Nsolt3d_whole_cmp1_nch44_dec222_ppo000_lv1_vm11_double.mat",
@@ -976,8 +1128,16 @@
       "sha256": "474c061019950027db9722a5e64a38db8b10e03ff93663c2b58c6a7bb900dc9b"
     },
     {
+      "file": "networks3d/Nsolt3d_whole_cmp1_nch44_dec222_ppo222_lv1_vm10_term_double.mat",
+      "sha256": "f88fb3b5bb15f4b6480f8a2da0f786ee96407c958f7b5daaeafca8d35b45b483"
+    },
+    {
       "file": "networks3d/Nsolt3d_whole_cmp1_nch55_dec222_ppo202_lv2_vm11_double.mat",
       "sha256": "6152ed546b0f8704a30a20da8249e897cad26617fbff87eb3e5c6cbe50452fd8"
+    },
+    {
+      "file": "networks3d/Nsolt3d_whole_cmp1_nch55_dec222_ppo202_lv2_vm11_term_double.mat",
+      "sha256": "fb095382e9172bcc60a658e1d4f6af64437adb98ede50bbdefa74f2ba253135f"
     },
     {
       "file": "nsoltx/Nsoltx_designed_lena128_lv1.mat",

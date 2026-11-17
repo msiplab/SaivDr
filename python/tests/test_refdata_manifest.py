@@ -5,7 +5,7 @@ import json
 
 from _refdata import REFDATA
 
-MAX_TOTAL_BYTES = 8 * 1024 * 1024
+MAX_TOTAL_BYTES = 10 * 1024 * 1024
 
 
 def test_manifest_matches_files():

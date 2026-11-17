@@ -12,6 +12,7 @@ from . import matlab_compat
 from ._dct import block_dct_matrix_2d, block_dct_matrix_3d, dctmtx
 from ._orthmtx import orthmtxgen
 from .exceptions import (
+    InvalidBoundaryOperation,
     InvalidDirection,
     InvalidMode,
     InvalidMus,
@@ -35,6 +36,7 @@ __all__ = [
     *_networks_all,
     "ChannelGroup",
     "Direction",
+    "InvalidBoundaryOperation",
     "InvalidDirection",
     "InvalidMode",
     "InvalidMus",

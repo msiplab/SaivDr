@@ -31,6 +31,9 @@ def _copy(dst, src):
         dst.mus.copy_(src.mus.to(dst.mus))
     if hasattr(dst, "no_dc_leakage") and hasattr(src, "no_dc_leakage"):
         dst.no_dc_leakage = src.no_dc_leakage
+    if hasattr(dst, "boundary_operation") and hasattr(src, "boundary_operation"):
+        dst.direction = src.direction
+        dst.boundary_operation = src.boundary_operation
 
 
 def share_level_params(net):

@@ -14,6 +14,7 @@ import torch
 import torch.nn as nn
 
 from ..exceptions import (
+    InvalidBoundaryOperation,
     InvalidNumberOfChannels,
     InvalidNumberOfLevels,
     InvalidNumberOfVanishingMoments,
@@ -104,6 +105,14 @@ _SPEC3D = _Spec(
 )
 
 
+# Boundary of the odd-order intermediate rotation layers of each step label.
+# With 'Termination', the boundary slice of these layers is rotated by -I so
+# that no coefficients wrap around to the opposite boundary (MATLAB
+# fcn_creatensoltlgraph2d with 'BoundaryOperation'). The even-order layers are
+# always 'Circular'.
+_BOUNDARY_DIRECTIONS = {"v": "Vertical", "h": "Horizontal", "d": "Depth"}
+
+
 def _no_dc_leakage_pair(number_of_vanishing_moments):
     v = number_of_vanishing_moments
     if isinstance(v, (bool, int, float)):
@@ -126,6 +135,7 @@ class _NsoltConfig:
         number_of_levels,
         number_of_components,
         prefix,
+        boundary_operation="Circular",
     ):
         ps, pa = (int(v) for v in number_of_channels)
         if ps != pa:
@@ -150,6 +160,11 @@ class _NsoltConfig:
         self.number_of_levels = int(number_of_levels)
         self.number_of_components = int(number_of_components)
         self.prefix = prefix
+        if boundary_operation not in ("Circular", "Termination"):
+            raise InvalidBoundaryOperation(
+                f"{boundary_operation} : BoundaryOperation should be either of Circular or Termination"
+            )
+        self.boundary_operation = boundary_operation
 
     def kwargs(self):
         return dict(
@@ -159,6 +174,7 @@ class _NsoltConfig:
             number_of_levels=self.number_of_levels,
             number_of_components=self.number_of_components,
             prefix=self.prefix,
+            boundary_operation=self.boundary_operation,
         )
 
 
@@ -173,6 +189,7 @@ class _NsoltBase(nn.Module):
         number_of_levels,
         number_of_components,
         prefix,
+        boundary_operation="Circular",
     ):
         super().__init__()
         self.config = _NsoltConfig(
@@ -183,6 +200,7 @@ class _NsoltBase(nn.Module):
             number_of_levels,
             number_of_components,
             prefix,
+            boundary_operation,
         )
         self.layers = nn.ModuleDict()
 
@@ -211,6 +229,10 @@ class _NsoltBase(nn.Module):
     def prefix(self):
         return self.config.prefix
 
+    @property
+    def boundary_operation(self):
+        return self.config.boundary_operation
+
     def _add(self, layer):
         self.layers[layer.name] = layer
         return layer.name
@@ -234,6 +256,7 @@ class _NsoltAnalyzer(_NsoltBase):
         prefix="",
         dtype=None,
         device=None,
+        boundary_operation="Circular",
     ):
         nd = self._spec.ndims
         decimation_factor = (2,) * nd if decimation_factor is None else decimation_factor
@@ -245,6 +268,7 @@ class _NsoltAnalyzer(_NsoltBase):
             number_of_levels,
             number_of_components,
             prefix,
+            boundary_operation,
         )
         self.no_dc_leakage = bool(no_dc_leakage)
         spec = self._spec
@@ -294,6 +318,8 @@ class _NsoltAnalyzer(_NsoltBase):
                                     name=f"{s}V{label}{iOrder - 1}",
                                     dtype=dtype,
                                     device=device,
+                                    boundary_operation=cfg.boundary_operation,
+                                    direction=_BOUNDARY_DIRECTIONS[label],
                                 )
                             ),
                             self._add(
@@ -372,6 +398,7 @@ class _NsoltSynthesizer(_NsoltBase):
         prefix="",
         dtype=None,
         device=None,
+        boundary_operation="Circular",
     ):
         nd = self._spec.ndims
         decimation_factor = (2,) * nd if decimation_factor is None else decimation_factor
@@ -383,6 +410,7 @@ class _NsoltSynthesizer(_NsoltBase):
             number_of_levels,
             number_of_components,
             prefix,
+            boundary_operation,
         )
         self.no_dc_leakage = bool(no_dc_leakage)
         spec = self._spec
@@ -437,6 +465,8 @@ class _NsoltSynthesizer(_NsoltBase):
                                     name=f"{s}V{label}{iOrder - 1}~",
                                     dtype=dtype,
                                     device=device,
+                                    boundary_operation=cfg.boundary_operation,
+                                    direction=_BOUNDARY_DIRECTIONS[label],
                                 )
                             ),
                             self._add(
@@ -513,10 +543,12 @@ class _NsoltNetwork(nn.Module):
         prefix="",
         dtype=None,
         device=None,
+        boundary_operation="Circular",
     ):
         super().__init__()
         ndl = _no_dc_leakage_pair(number_of_vanishing_moments)
         kw = dict(
+            boundary_operation=boundary_operation,
             number_of_channels=number_of_channels,
             decimation_factor=decimation_factor,
             polyphase_order=polyphase_order,
