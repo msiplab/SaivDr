@@ -17,7 +17,8 @@ classdef fcn_creatensoltlgraph2dBoundaryOperationTestCase < matlab.unittest.Test
     %   The networks are evaluated in double precision. Since dlnetwork
     %   casts the learnable parameters to single, the random angles are
     %   given in single, copied to the analyzer, and then both networks
-    %   are cast to double so that they are exactly adjoint.
+    %   are cast to double so that they are exactly adjoint. The tests on
+    %   GPU run only if a GPU with full-rate FP64 arithmetic is available.
     %
     % References:
     %   S. Muramatsu, T. Kobayashi, M. Hiki and H. Kikuchi, "Boundary
@@ -52,6 +53,7 @@ classdef fcn_creatensoltlgraph2dBoundaryOperationTestCase < matlab.unittest.Test
         nchs = { [2 2], [3 3] };
         ppOrder = { [2 2], [4 4], [0 2], [2 0] };
         boundaryOperation = { 'Circular', 'Termination' };
+        usegpu = struct( 'true', true, 'false', false);
     end
 
     methods (Test)
@@ -115,33 +117,35 @@ classdef fcn_creatensoltlgraph2dBoundaryOperationTestCase < matlab.unittest.Test
         end
 
         function testPerfectReconstruction(testCase, ...
-                nchs, ppOrder, boundaryOperation)
+                usegpu, nchs, ppOrder, boundaryOperation)
             % The synthesizer reconstructs the input of the analyzer
 
+            testCase.assumeFp64Gpu_(usegpu);
             import matlab.unittest.constraints.IsEqualTo
             import matlab.unittest.constraints.AbsoluteTolerance
             tolObj = AbsoluteTolerance(testCase.TOL);
 
             % Instantiation of target
             [analysisnet,synthesisnet] = testCase.createNetworks_(...
-                nchs,ppOrder,boundaryOperation,boundaryOperation);
+                nchs,ppOrder,boundaryOperation,boundaryOperation,usegpu);
 
             % Evaluation
             [actualY,X] = testCase.reconstruct_(analysisnet,synthesisnet,...
-                testCase.NBLOCKS.*testCase.DECFACTOR);
+                testCase.NBLOCKS.*testCase.DECFACTOR,usegpu);
             testCase.verifyClass(actualY,'double');
             testCase.verifyThat(actualY,IsEqualTo(X,'Within',tolObj));
         end
 
         function testNoWrapAroundHorizontalTermination(testCase, ...
-                nchs, ppOrder)
+                usegpu, nchs, ppOrder)
             % With 'Termination', an input on the left (right) edge blocks
             % never reaches the coefficients of the right (left) edge blocks
 
+            testCase.assumeFp64Gpu_(usegpu);
             testCase.assumeGreaterThan(ppOrder(2),0,...
                 'No horizontal overlap.')
             [leftToRight,rightToLeft] = testCase.edgeResponses_(...
-                nchs,ppOrder,'Termination',2);
+                nchs,ppOrder,'Termination',2,usegpu);
 
             % Evaluation
             testCase.verifyEqual(leftToRight,0,'AbsTol',testCase.TOL,...
@@ -151,14 +155,15 @@ classdef fcn_creatensoltlgraph2dBoundaryOperationTestCase < matlab.unittest.Test
         end
 
         function testNoWrapAroundVerticalTermination(testCase, ...
-                nchs, ppOrder)
+                usegpu, nchs, ppOrder)
             % With 'Termination', an input on the top (bottom) edge blocks
             % never reaches the coefficients of the bottom (top) edge blocks
 
+            testCase.assumeFp64Gpu_(usegpu);
             testCase.assumeGreaterThan(ppOrder(1),0,...
                 'No vertical overlap.')
             [topToBottom,bottomToTop] = testCase.edgeResponses_(...
-                nchs,ppOrder,'Termination',1);
+                nchs,ppOrder,'Termination',1,usegpu);
 
             % Evaluation
             testCase.verifyEqual(topToBottom,0,'AbsTol',testCase.TOL,...
@@ -167,14 +172,15 @@ classdef fcn_creatensoltlgraph2dBoundaryOperationTestCase < matlab.unittest.Test
                 'Bottom edge input wraps around to the top edge.');
         end
 
-        function testWrapAroundCircular(testCase, nchs, ppOrder)
+        function testWrapAroundCircular(testCase, usegpu, nchs, ppOrder)
             % With 'Circular', an input on an edge reaches the opposite
             % edge in the overlapping direction (sensitivity check of the
             % no-wrap-around tests)
 
+            testCase.assumeFp64Gpu_(usegpu);
             for dim = find(ppOrder > 0)
                 [fwd,bwd] = testCase.edgeResponses_(...
-                    nchs,ppOrder,'Circular',dim);
+                    nchs,ppOrder,'Circular',dim,usegpu);
                 testCase.verifyGreaterThan(fwd,1e-4,...
                     sprintf('No wrap-around in dimension %d.',dim));
                 testCase.verifyGreaterThan(bwd,1e-4,...
@@ -195,7 +201,7 @@ classdef fcn_creatensoltlgraph2dBoundaryOperationTestCase < matlab.unittest.Test
 
             % Instantiation of target
             [analysisnet,synthesisnet] = testCase.createNetworks_(...
-                nchs,ppOrder,otherOperation,boundaryOperation);
+                nchs,ppOrder,otherOperation,boundaryOperation,false);
 
             % Evaluation of the layer settings
             testCase.verifyCopiedSettings_(...
@@ -203,13 +209,28 @@ classdef fcn_creatensoltlgraph2dBoundaryOperationTestCase < matlab.unittest.Test
 
             % Evaluation of the perfect reconstruction
             [actualY,X] = testCase.reconstruct_(analysisnet,synthesisnet,...
-                testCase.NBLOCKS.*testCase.DECFACTOR);
+                testCase.NBLOCKS.*testCase.DECFACTOR,false);
             testCase.verifyThat(actualY,IsEqualTo(X,'Within',tolObj));
         end
 
     end
 
     methods (Access = private)
+
+        function assumeFp64Gpu_(testCase,usegpu)
+            % Same criterion as tansacnet.utility.isFp64GpuAvailable:
+            % a GPU supporting double precision whose compute capability
+            % is X.0 with X >= 6 (P100, V100, A100, A800, H100, ...)
+            if usegpu
+                isFp64Gpu = canUseGPU && gpuDevice().SupportsDouble;
+                if isFp64Gpu
+                    cc = str2double(split(string(gpuDevice().ComputeCapability),"."));
+                    isFp64Gpu = cc(1) >= 6 && cc(2) == 0;
+                end
+                testCase.assumeTrue(isFp64Gpu, ...
+                    'No GPU device with full-rate FP64 arithmetic was detected.')
+            end
+        end
 
         function lgraph = createLgraph_(testCase,nchs,ppOrder,mode,varargin)
             import saivdr.dcnn.*
@@ -224,7 +245,7 @@ classdef fcn_creatensoltlgraph2dBoundaryOperationTestCase < matlab.unittest.Test
         end
 
         function [analysisnet,synthesisnet] = createNetworks_(testCase,...
-                nchs,ppOrder,anaOperation,synOperation)
+                nchs,ppOrder,anaOperation,synOperation,usegpu)
             % Synthesizer with random angles and the analyzer with the
             % angles (and the boundary operation) copied from the
             % synthesizer
@@ -246,30 +267,34 @@ classdef fcn_creatensoltlgraph2dBoundaryOperationTestCase < matlab.unittest.Test
             % Cast both networks to double after copying the angles
             analysisnet = dlupdate(@double,analysisnet);
             synthesisnet = dlupdate(@double,synthesisnet);
+            if usegpu
+                analysisnet = dlupdate(@gpuArray,analysisnet);
+                synthesisnet = dlupdate(@gpuArray,synthesisnet);
+            end
         end
 
         function [fwd,bwd] = edgeResponses_(testCase,nchs,ppOrder,...
-                boundaryOperation,dim)
+                boundaryOperation,dim,usegpu)
             % fwd: max |coefs| on the last edge blocks for an input on the
             %      first edge blocks along dimension dim
             % bwd: max |coefs| on the first edge blocks for an input on the
             %      last edge blocks along dimension dim
             szInput = testCase.NBLOCKS.*testCase.DECFACTOR;
             analysisnet = testCase.createNetworks_(nchs,ppOrder,...
-                boundaryOperation,boundaryOperation);
+                boundaryOperation,boundaryOperation,usegpu);
             edgeWidth = testCase.DECFACTOR(dim);
             %
             X = zeros(szInput);
             idx = {':',':'};
             idx{dim} = 1:edgeWidth;
             X(idx{:}) = randn(size(X(idx{:})));
-            fwd = testCase.edgeCoefMax_(analysisnet,X,dim,'last');
+            fwd = testCase.edgeCoefMax_(analysisnet,X,dim,'last',usegpu);
             %
             X = zeros(szInput);
             idx = {':',':'};
             idx{dim} = szInput(dim)-edgeWidth+1:szInput(dim);
             X(idx{:}) = randn(size(X(idx{:})));
-            bwd = testCase.edgeCoefMax_(analysisnet,X,dim,'first');
+            bwd = testCase.edgeCoefMax_(analysisnet,X,dim,'first',usegpu);
         end
 
         function verifyCopiedSettings_(testCase,synthesislgraph,analysislgraph)
@@ -293,22 +318,29 @@ classdef fcn_creatensoltlgraph2dBoundaryOperationTestCase < matlab.unittest.Test
 
     methods (Static, Access = private)
 
-        function [Y,X] = reconstruct_(analysisnet,synthesisnet,szInput)
+        function [Y,X] = reconstruct_(analysisnet,synthesisnet,szInput,usegpu)
             % Analysis followed by synthesis of a random input in double
             X = randn(szInput);
+            if usegpu
+                X = gpuArray(X);
+            end
             s = cell(1,2);
             [s{1:2}] = analysisnet.predict(dlarray(X,'SSCB'));
-            Y = extractdata(synthesisnet.predict(s{:}));
+            Y = gather(extractdata(synthesisnet.predict(s{:})));
+            X = gather(X);
         end
 
-        function value = edgeCoefMax_(analysisnet,X,dim,edge)
+        function value = edgeCoefMax_(analysisnet,X,dim,edge,usegpu)
             % Maximum absolute value of the AC and DC coefficients on the
             % first or last blocks along dimension dim
+            if usegpu
+                X = gpuArray(X);
+            end
             s = cell(1,2);
             [s{1:2}] = analysisnet.predict(dlarray(X,'SSCB'));
             value = 0;
             for iCoef = 1:2
-                coefs = extractdata(s{iCoef});
+                coefs = gather(extractdata(s{iCoef}));
                 idx = {':',':',':',':'};
                 if strcmp(edge,'first')
                     idx{dim} = 1;
